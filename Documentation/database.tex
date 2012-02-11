@@ -1,6 +1,6 @@
-\chapter{Corina Database}
+\chapter{Tellervo Database}
 
-The database behind Corina is run on the popular open source relational database management system, PostgreSQL (Postgres). 
+The database behind Tellervo is run on the popular open source relational database management system, PostgreSQL (Postgres). 
 
 
 \section{Database structure}
@@ -8,12 +8,12 @@ The database behind Corina is run on the popular open source relational database
 
 \section{Spatial extension}
 
-Corina uses the PostGIS extension to Postgres to store and query spatial data within the database.  Rather than storing coordinate axis in separate fields, a single specialist `geometry' field type is used.
+Tellervo uses the PostGIS extension to Postgres to store and query spatial data within the database.  Rather than storing coordinate axis in separate fields, a single specialist `geometry' field type is used.
 
 
 \section{CPGDB functions}
 \label{txt:cpgdbfunctions}
-The Corina Postgresql Database (CPGDB) functions are a set of functions for searching, processing, and manipulating the data in the postgresql database. All functions are in thecpgdbschema, to allow for easy development alongside the database without modifying the database or its structure.
+The Tellervo Postgresql Database (CPGDB) functions are a set of functions for searching, processing, and manipulating the data in the postgresql database. All functions are in thecpgdbschema, to allow for easy development alongside the database without modifying the database or its structure.
 
 Thus, to execute a cpgdb function, you must preface the function name with cpgdb, e.g.: 
 
@@ -68,6 +68,6 @@ Thus, to execute a cpgdb function, you must preface the function name with cpgdb
 
 \section{Complex database functions}
 \index{PLJava}
-Beyond the standard database functions discussed in section \ref{txt:cpgdbfunctions}, the Corina database uses PLJava perform more complex tasks.  PLJava means that we can leaverage the full power of Java to perform calculations and analyses on the database.  
+Beyond the standard database functions discussed in section \ref{txt:cpgdbfunctions}, the Tellervo database uses PLJava perform more complex tasks.  PLJava means that we can leaverage the full power of Java to perform calculations and analyses on the database.  
 
 \end{description}

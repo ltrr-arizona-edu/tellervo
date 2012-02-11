@@ -1,23 +1,23 @@
-\chapter{Developing Corina Server}
+\chapter{Developing Tellervo Server}
 \index{Developing|(}
 \index{Developing!Webservice}
 \index{Webservice!Developing}
 
-The Corina server is made up of a PHP webservice run by Apache, connecting to a PostgreSQL database.  
+The Tellervo server is made up of a PHP webservice run by Apache, connecting to a PostgreSQL database.  
 
-The Corina webservice is written entirely in PHP.  Like the Desktop Client, the server is developed with Eclipse so most of the setup steps are identical (see chapter \ref{txt:devDesktop}).  You will, however, probably want to install the PHP development plugin so that you get syntax highlighting etc.  See the Eclipse PDT website (\url{http://www.eclipse.org/pdt/}) for further information.
+The Tellervo webservice is written entirely in PHP.  Like the Desktop Client, the server is developed with Eclipse so most of the setup steps are identical (see chapter \ref{txt:devDesktop}).  You will, however, probably want to install the PHP development plugin so that you get syntax highlighting etc.  See the Eclipse PDT website (\url{http://www.eclipse.org/pdt/}) for further information.
 
 
 \section{Webservice }
 
-The Corina database is accessed solely through the webservice interface.  A webservice is an interface designed to be accessed by programs that send requests and receive responses.  Corina uses a style of HTTP+POX (Plain Old XML) to send and receive requests via a HTTP POST.  In simple terms the Corina client sends an XML document that describes the request via POST to the Corina server.  The server then reads the XML request, performs the request and then compiles the information that has been requested, finally returning the information to the client as another XML document.  The syntax of the XML document containing the request and response is determined by the Corina XML schema and makes heavy use of the TRiDaS XML schema for describing dendrochronological entities.
+The Tellervo database is accessed solely through the webservice interface.  A webservice is an interface designed to be accessed by programs that send requests and receive responses.  Tellervo uses a style of HTTP+POX (Plain Old XML) to send and receive requests via a HTTP POST.  In simple terms the Tellervo client sends an XML document that describes the request via POST to the Tellervo server.  The server then reads the XML request, performs the request and then compiles the information that has been requested, finally returning the information to the client as another XML document.  The syntax of the XML document containing the request and response is determined by the Tellervo XML schema and makes heavy use of the TRiDaS XML schema for describing dendrochronological entities.
 
 
 \subsection{Adding TRiDaS entities to the database}
 
 \subsection{Creating new series}
 
-Due to the complications arising from the virtual measurement concept, creating new series in Corina is necessarily more complicated than any other of the TRiDaS entities.  The workflow required to create a new series is illustrated in figure \ref{fig:creatingNewMSeries}.
+Due to the complications arising from the virtual measurement concept, creating new series in Tellervo is necessarily more complicated than any other of the TRiDaS entities.  The workflow required to create a new series is illustrated in figure \ref{fig:creatingNewMSeries}.
 
 \begin{figure}[hbtp]
   \centering
@@ -116,7 +116,7 @@ The metadata for the deb file is included in the control file located in Native/
 
 The ServerControl folder also contains scripts called preinst, postinst, prerm and postrm, which are launched before and after installation, and before uninstalling.  These files are called with different parameters depending on whether this is part of a fresh install, an upgrade, or an aborted install.  There are a number of rules that the resulting deb package should follow (e.g.\ if a program is configured twice, then the second run should know and understand about previously provided details), the details of which can be found in the Debian Policy Manual\footnote{Debian Policy Manual -- \url{http://www.debian.org/doc/debian-policy/}}, along with information how and when each of the pre and post scripts is run.  Hopefully this side of the server packaging will not need to be touched again, but if you are making changes and are doing anything more than simple tweaks, please consult the Debian policy documentation.
 
-The postinst script is used to trigger the interactive script that helps the user configure the Corina server (described further in section \ref{txt:corina-server-script}).  The steps are as follows:  
+The postinst script is used to trigger the interactive script that helps the user configure the Tellervo server (described further in section \ref{txt:corina-server-script}).  The steps are as follows:  
 
 \begin{itemize*}
  \item Check the user running the script is root as we're doing privileged functions
@@ -128,10 +128,10 @@ The postinst script is used to trigger the interactive script that helps the use
  \item Print test report to screen
 \end{itemize*}
 
-\subsection{Corina server script}
+\subsection{Tellervo server script}
 \label{txt:corina-server-script}
 
-At the heart of most of the configuration and control of the Corina server is the corina-server script.  This is a command line PHP script that is launched after installation and can be re-run by the user to make changes to the configuration.  Although such a script would normally be written in Bash or similar, we decided to go with PHP because of the requirement to interact with the Corina PostgreSQL database.  
+At the heart of most of the configuration and control of the Tellervo server is the corina-server script.  This is a command line PHP script that is launched after installation and can be re-run by the user to make changes to the configuration.  Although such a script would normally be written in Bash or similar, we decided to go with PHP because of the requirement to interact with the Tellervo PostgreSQL database.  
 
 The script isolates the common tasks performed into functions.  It uses the getopt() function to read both long (e.g. --blah) and short (e.g. -b) arguments from the command line.  These depending on the arguments given, the script then calls the relevant functions.
 
@@ -151,9 +151,9 @@ The script includes a number of helper functions and classes that you may find u
 \end{description}
 
 \section{Handling client version dependencies}
-In an ideal world, the API for how clients talk to the Corina server would never change.  Unfortunately, we don't live in an ideal world!  New features in Corina will require changes to the API, as will changes to TRiDaS.  In anticipation to such changes, the Corina server includes a mechanism for detecting when a client is too old to handle the API that it is using.  In this case the server will refuse to handle the request.  A similar complementary mechanism is in place in the client for instances when a client is attempting to talk to an older server that it no longer supports.  
+In an ideal world, the API for how clients talk to the Tellervo server would never change.  Unfortunately, we don't live in an ideal world!  New features in Tellervo will require changes to the API, as will changes to TRiDaS.  In anticipation to such changes, the Tellervo server includes a mechanism for detecting when a client is too old to handle the API that it is using.  In this case the server will refuse to handle the request.  A similar complementary mechanism is in place in the client for instances when a client is attempting to talk to an older server that it no longer supports.  
 
-At the moment, the Corina desktop client is the only known software that talks to the Corina server, but in the future we may have other 3rd party clients making requests.  For example it would be possible to develop a central data repository (much like the ITRDB or perhaps as an extension to the existing ITRDB) that harvests data from multiple labs each running the Corina server. Alternatively, existing 3rd party desktop applications (e.g. TSAP-Win, PAST4 etc) may be extended to enable them to obtain data directly from servers running the Corina server software.  Either way, it is important to include the ability to specify the oldest versions of clients that are able to connect, and also to be able to specify different versions for different types of clients. 
+At the moment, the Tellervo desktop client is the only known software that talks to the Tellervo server, but in the future we may have other 3rd party clients making requests.  For example it would be possible to develop a central data repository (much like the ITRDB or perhaps as an extension to the existing ITRDB) that harvests data from multiple labs each running the Tellervo server. Alternatively, existing 3rd party desktop applications (e.g. TSAP-Win, PAST4 etc) may be extended to enable them to obtain data directly from servers running the Tellervo server software.  Either way, it is important to include the ability to specify the oldest versions of clients that are able to connect, and also to be able to specify different versions for different types of clients. 
 
 It is also necessary to include the ability to allow or disallow access to the server by unknown client applications.  If a new program is written by other developers and it attempts to access the server it could contain bugs (or even malicious code\footnote{Keep in mind though that a user with the necessary privileges would need to provide this new program with their credentials for it to make changes to data.}) that interferes with the server.  For a production instance of the server this is obviously undesirable, therefore the systems configuration option `onlyAllowKnownClients' is set to TRUE.  
 
@@ -163,9 +163,9 @@ The minimum versions of each supported client are stored in the database in the 
 \section{Handling server configuration}
 \index{systemconfig.php}
 \index{config.php}
-The Corina server is configured using two main PHP files: config.php and systemconfig.php.  The configuration is split into two primarily because the config.php values are considered to be editable by the server administrator, whereas those in systemconfig.php should normally only be edited by Corina developers.  
+The Tellervo server is configured using two main PHP files: config.php and systemconfig.php.  The configuration is split into two primarily because the config.php values are considered to be editable by the server administrator, whereas those in systemconfig.php should normally only be edited by Tellervo developers.  
 
-If you want to make configuration options editable by the administrator of the Corina server, then these should be implemented within the config.php file.  There is a config.php.template file which is used to construct the config.php file on the users system.  Simply adding hardcoded entries to this file is the simplest way when a default value is appropriate.  If you value of your field needs to be generated either by asking the administrator a question (e.g. name of lab), or dynamically at the time of installation (e.g. IP address of the server) then this template file should contain placeholder values which can then be replaced by the corina-server configuration script.  For instance the config.php.template file contains a placeholder for the hostname of the server like this: \verb|$hostname = "%%IP%%";|.  The value is set by the corina-server script using the function \verb|setConfigVariable($var, $value)|.  Keep in mind though, that during an upgrade, the config.php is maintained and not replaced.  If you make additions to the config.php.template you will also need to make provision for handling changes to the end users existing config.php.
+If you want to make configuration options editable by the administrator of the Tellervo server, then these should be implemented within the config.php file.  There is a config.php.template file which is used to construct the config.php file on the users system.  Simply adding hardcoded entries to this file is the simplest way when a default value is appropriate.  If you value of your field needs to be generated either by asking the administrator a question (e.g. name of lab), or dynamically at the time of installation (e.g. IP address of the server) then this template file should contain placeholder values which can then be replaced by the corina-server configuration script.  For instance the config.php.template file contains a placeholder for the hostname of the server like this: \verb|$hostname = "%%IP%%";|.  The value is set by the corina-server script using the function \verb|setConfigVariable($var, $value)|.  Keep in mind though, that during an upgrade, the config.php is maintained and not replaced.  If you make additions to the config.php.template you will also need to make provision for handling changes to the end users existing config.php.
 
 If you want to add new configuration fields that don't need to be edited by the system administrator, these should be handled in the systemconfig.php file.  The systemconfig.php file is automatically generated during installation/upgrade of the server from entries in the database table tblconfig.  This means that any changes to the system configuration can be handled as part of the database upgrade simply by adding new rows or editing existing rows in tblconfig.  Each entry in this table is made available to the webservice as a global variable once the corina-server script has been run.  For instance the row containing key=wsversion and value=1.0.0 is available as the variable \$wsversion within the webservice. 
 
@@ -179,14 +179,14 @@ As mentioned in section \ref{txt:serverPackage}, the server package is created a
  \item Make sure this documentation is up-to-date! 
  \item Increment the \verb|<serverversion>| tag in the pom.xml file
  \item Make sure that any upgrades that need to be made to the database are included in a new and unique SQL file stored in Databases/db-upgrade-patches.  Each file from this folder is run by the installer unless it has previously been run.  
- \item If this version of the server needs a particular version of the client then you'll need to set this value in the tblsupportedclient table by including a relevant SQL statement in your db-update-patches script e.g.: \code{UPDATE tblsupportedclient SET minversion='2.13' WHERE client='Corina WSI';}
+ \item If this version of the server needs a particular version of the client then you'll need to set this value in the tblsupportedclient table by including a relevant SQL statement in your db-update-patches script e.g.: \code{UPDATE tblsupportedclient SET minversion='2.13' WHERE client='Tellervo WSI';}
  \item TEST!  If users are running this as an upgrade, then we need to ensure this goes smoothly.  Although they are told to backup their database before running we should assume they've ignored the warning and that we are altering precious data. Test both a fresh install and an upgrade from the previous version.
 \end{itemize}
 
 
 
 \section{Administering the Maven repository}
-The following information is only necessary for the lead-developer and outlines the steps necessary to install and maintain the central Maven repository for Corina.  This Maven repository should provide all other developers with the libraries required to develop Corina and which are bundled in the release packages.
+The following information is only necessary for the lead-developer and outlines the steps necessary to install and maintain the central Maven repository for Tellervo.  This Maven repository should provide all other developers with the libraries required to develop Tellervo and which are bundled in the release packages.
 
 The repository tool that we currently use is Apache Archiva.  Installation is relatively simple:
 
@@ -212,6 +212,7 @@ If you have an existing backup of the Archiva database then you can place this i
       \end{description}
  \item Add proxy connectors for the above repositories
  \item Run the MavenDeployCommands.sh script to deploy the handful of repositories that we need that are in \emph{no} repositories 
+ \item You will need to run a similar file to deploy dependencies for TRiDaSJLib.  See the tridas source code for details
 \end{enumerate}
 
 The remote repositories contain libraries maintained by others that are not (at the time of writing) in the central Maven repositories.  We include them here to ensure they are cached in our repository and so are available to our developers even if these external repositories go down.  Our new repository will be populated with these external artefacts when a developer first requests them.  They are retrieved from the external repositories and cached in ours.

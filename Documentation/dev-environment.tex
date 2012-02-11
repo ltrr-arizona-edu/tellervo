@@ -1,20 +1,20 @@
-\chapter{Developing Corina Desktop}
+\chapter{Developing Tellervo Desktop}
 \label{txt:devDesktop}
 \index{Developing|(}
 \index{Developing!Desktop client}
-Corina is open source software and we actively encourage collaboration and assistance from others in the community.  There is always lots to do, even for people with little or no programming experience.  Please get in touch with the development team as we'd love to hear from you.
+Tellervo is open source software and we actively encourage collaboration and assistance from others in the community.  There is always lots to do, even for people with little or no programming experience.  Please get in touch with the development team as we'd love to hear from you.
 
 \section{Source code}
 \index{Source code}
-This section describes how to access the Corina source code, but as you are no doubt aware it is normal (if not essential) to use a integrated development environment for developing any more than the most simplistic applications.  If you plan to do any development work, it is probably best to skip this section and move straight on to the `Development environment' section which includes instructions for accessing the source code directly from your IDE.  If, however, you just want to browse the source code please continue reading.
+This section describes how to access the Tellervo source code, but as you are no doubt aware it is normal (if not essential) to use a integrated development environment for developing any more than the most simplistic applications.  If you plan to do any development work, it is probably best to skip this section and move straight on to the `Development environment' section which includes instructions for accessing the source code directly from your IDE.  If, however, you just want to browse the source code please continue reading.
 
-The Corina source code is maintained in a Subversion repository at Cornell.  The simplest way to see the source code is via the web viewer on the Cornell website: \url{http://dendro.cornell.edu/svn/corina/}.  You can also examine the Javadoc documentation of the code here \url{http://dendro.cornell.edu/corina/developers.php}
+The Tellervo source code is maintained in a Subversion repository at Cornell.  The simplest way to see the source code is via the web viewer on the Cornell website: \url{http://dendro.cornell.edu/svn/corina/}.  You can also examine the Javadoc documentation of the code here \url{http://dendro.cornell.edu/corina/developers.php}
 
 If you have Subversion installed you can do an anonymous checkout of the code as follows:
 
 \code{svn co http://dendro.cornell.edu/svn/corina/}
 
-An overview of the development can be seen through the Corina Ohloh pages at \url{http://www.ohloh.net/p/corina/}.  Ohloh provides graphics summarizing the code over time, including timelines of commits by user.
+An overview of the development can be seen through the Tellervo Ohloh pages at \url{http://www.ohloh.net/p/corina/}.  Ohloh provides graphics summarizing the code over time, including timelines of commits by user.
 
 
 
@@ -22,41 +22,41 @@ An overview of the development can be seen through the Corina Ohloh pages at \ur
 \index{Eclipse}
 \index{Development environment}
 \index{Integrated Development Environment (IDE)}
-The IDE of choice of the main Corina developers is Eclipse (\url{http://www.eclipse.org}). There are many other IDEs around and there is no reason you can't use them instead.  Either way, the following instructions will hopefully be of use.
+The IDE of choice of the main Tellervo developers is Eclipse (\url{http://www.eclipse.org}). There are many other IDEs around and there is no reason you can't use them instead.  Either way, the following instructions will hopefully be of use.
 
-We have successfully developed Corina on Mac, Windows and Linux computers over the years.  The methods for setting up are almost identical.  
+We have successfully developed Tellervo on Mac, Windows and Linux computers over the years.  The methods for setting up are almost identical.  
 
-The first step is to install Eclipse, Sun Java6 JDK, Subversion, Maven and NSIS\footnote{Currently there do not appear to be any readily available binaries for NSIS for MacOSX although you can build this from source.  If you do not have NSIS installed you will get an error when packaging Corina, however, all other aspects of the development environment (including building OSX binaries) should work fine.}.  These are all readily available from their respective websites.  On Ubuntu they can be install from the command line easily as follows:
+The first step is to install Eclipse, Sun Java6 JDK, Subversion, Maven and NSIS\footnote{Currently there do not appear to be any readily available binaries for NSIS for MacOSX although you can build this from source.  If you do not have NSIS installed you will get an error when packaging Tellervo, however, all other aspects of the development environment (including building OSX binaries) should work fine.}.  These are all readily available from their respective websites.  On Ubuntu they can be install from the command line easily as follows:
 
 \code{sudo apt-get install eclipse subversion sun-java6-jdk maven2 nsis}
 
-Once installed, you can then launch Eclipse.  To access the Corina source code you will need to install the Subversive plugin to Eclipse.  As of Eclipse v3.5 this can be done by going to \menutwo{Help}{Install new software}.  Select the main Update site in the `Work with' box, then locate the `Subversive SVN Team Provider' plugin under `Collaboration'.  If you are using an earlier version of Eclipse you may need to add a specific Subversive update site.  See the Subversive website (\url{http://www.eclipse.org/subversive/}) for more details.  Once installed you will need to restart Eclipse.
+Once installed, you can then launch Eclipse.  To access the Tellervo source code you will need to install the Subversive plugin to Eclipse.  As of Eclipse v3.5 this can be done by going to \menutwo{Help}{Install new software}.  Select the main Update site in the `Work with' box, then locate the `Subversive SVN Team Provider' plugin under `Collaboration'.  If you are using an earlier version of Eclipse you may need to add a specific Subversive update site.  See the Subversive website (\url{http://www.eclipse.org/subversive/}) for more details.  Once installed you will need to restart Eclipse.
 
 Next you will need to install the m2e Maven plugin to Eclipse.  This can also be installed by going to \menutwo{Help}{Install new software}, however, you will also need to add the Maven update site as this plugin is not currently available in the main Eclipse repository.  You can do this by click the `Add' button and using the URL \url{http://m2eclipse.sonatype.org/sites/m2e}.  Once again you will need to restart Eclipse before continuing.
 
-Next you need to get the Corina source code.  Go to File \menutwo{New}{Project}, then in the dialog select \menutwo{SVN}{Project from SVN}.  There are two methods of accessing the Corina repository: anonymously (in which case you will have read only access); or with a username provided by the Corina development team.  Anonymous users will need to add a repository in the form: \url{http://dendro.cornell.edu/svn/corina/} and full users will need to use \url{svn+ssh://dendro.cornell.edu/home/svn/corina/}.
+Next you need to get the Tellervo source code.  Go to File \menutwo{New}{Project}, then in the dialog select \menutwo{SVN}{Project from SVN}.  There are two methods of accessing the Tellervo repository: anonymously (in which case you will have read only access); or with a username provided by the Tellervo development team.  Anonymous users will need to add a repository in the form: \url{http://dendro.cornell.edu/svn/corina/} and full users will need to use \url{svn+ssh://dendro.cornell.edu/home/svn/corina/}.
 
-Once the project has downloaded to your workspace, you may need to set the compliance level.  This can be done by going to \menuthree{Project}{Properties}{Java compiler} and choosing compliance level of 6.0.  Corina uses a handful of Java 6 specific functions, particularly with regards JAXB, so will not run successfully with Java 5.  
+Once the project has downloaded to your workspace, you may need to set the compliance level.  This can be done by going to \menuthree{Project}{Properties}{Java compiler} and choosing compliance level of 6.0.  Tellervo uses a handful of Java 6 specific functions, particularly with regards JAXB, so will not run successfully with Java 5.  
 
-To launch Corina, you will need to \menutwo{Run}{Run Java application}.  Create a new run configuration with the main class set to `edu.cornell.dendro.corina.gui.Startup'.     
+To launch Tellervo, you will need to \menutwo{Run}{Run Java application}.  Create a new run configuration with the main class set to `edu.cornell.dendro.corina.gui.Startup'.     
 
 
 \section{Dependencies}
 \index{Dependencies!Desktop client}
 \label{txt:DependenciesDesktopClient}
-As of June 2011, Maven is used to build Corina rather than the original Ant.  One of the main benefits of Maven is that it handles dependencies much more dynamically than Ant.  This has become more of an issue as the Corina project as grown, as it is now dependent on over 80 different open source libraries.  
+As of June 2011, Maven is used to build Tellervo rather than the original Ant.  One of the main benefits of Maven is that it handles dependencies much more dynamically than Ant.  This has become more of an issue as the Tellervo project as grown, as it is now dependent on over 80 different open source libraries.  
 
 In an ideal world, any libraries that your code is dependent on should be available in central Maven repositories and downloaded and installed seamlessly as part of the build process.  Maven should also handle transient dependencies (i.e. dependencies of dependencies) automatically.  Therefore if a developer knows he needs the functions within a particular library, he simply needs to supply the details of this library without having to worry about the other libraries that this new library is in turn dependent on.  Maven also manages versions much more efficiently.  If a library is dependent on a particular version of another library this is specified within the Maven build mechanism.  This means it is much easier to keep dependencies up-to-date without having to worry about the cascading issues that upgrades often have.  In short, Maven is intended to save developers from `JAR hell'.
 
-In practice, life is not necessarily that simple.  Although Maven assists developers in many ways, it also has its own particular quirks and annoyances.  The main problem is how to handle the situation when the dependencies you need are not available in central repositories.  To solve this you either need to install these jars into your local Maven repository, or make them available in a 3rd party Maven repository.  For the ease of developement we have set up a Maven repository as part of the TRiDaS project which can be browsed at \url{http://maven.tridas.org/}.  This repository is already configured within the Corina project so assuming this repository is still alive, then your Corina project should automatically build.  If not, then you will need to install the few non-standard jars.  These jars will continue to be maintained in the Corina SVN repository and can be installed as follows:
+In practice, life is not necessarily that simple.  Although Maven assists developers in many ways, it also has its own particular quirks and annoyances.  The main problem is how to handle the situation when the dependencies you need are not available in central repositories.  To solve this you either need to install these jars into your local Maven repository, or make them available in a 3rd party Maven repository.  For the ease of developement we have set up a Maven repository as part of the TRiDaS project which can be browsed at \url{http://maven.tridas.org/}.  This repository is already configured within the Tellervo project so assuming this repository is still alive, then your Tellervo project should automatically build.  If not, then you will need to install the few non-standard jars.  These jars will continue to be maintained in the Tellervo SVN repository and can be installed as follows:
 
 \begin{itemize*}
- \item On your command line navigate to the Libraries folder of your Corina source code
+ \item On your command line navigate to the Libraries folder of your Tellervo source code
  \item On Linux and Mac you can then simply run the MavenInstallCommands script
  \item On Windows you will need to manually run the commands located in this file
 \end{itemize*}
 
-For the record, Corina currently depends upon the libraries listed in table \ref{tbl:desktopDependencies}.  The table also specifies the licenses that these libraries are made available under.
+For the record, Tellervo currently depends upon the libraries listed in table \ref{tbl:desktopDependencies}.  The table also specifies the licenses that these libraries are made available under.
 
 
 \begin{table*}[htbp]
@@ -102,7 +102,7 @@ Netbeans Swing Outline & GPLv2\\
 \bottomrule
 \end{tabular*}
 \captionsetup{width=0.6\textwidth}
-\caption{Corina's primary and major first order dependencies along with the licenses under which they are used.  Note there are a total of 82 libraries upon which Corina draws.}
+\caption{Tellervo's primary and major first order dependencies along with the licenses under which they are used.  Note there are a total of 82 libraries upon which Tellervo draws.}
 \label{tbl:desktopDependencies}
 \end{table*}
 
@@ -126,31 +126,31 @@ Subversive & Eclipse Public License - v1.0\\
 \bottomrule
 \end{tabular*}
 \captionsetup{width=0.6\textwidth}
-\caption{Additional tools/libraries typically used in the development of Corina.}
+\caption{Additional tools/libraries typically used in the development of Tellervo.}
 \end{table*}
 
 \section{Code layout}
 \index{Developing!Code layout}
-Corina has been actively developed since 2000, so has seen contributions by many different developers.  Coding practices have also changed in this time so inevitably there are some inconsistencies with how the source code is organized.  For instance, the most recent interfaces have been implemented using the Model-View-Controller (MVC) architecture whereas earlier interfaces contain both domain and user logic in single monolithic classes.  
+Tellervo has been actively developed since 2000, so has seen contributions by many different developers.  Coding practices have also changed in this time so inevitably there are some inconsistencies with how the source code is organized.  For instance, the most recent interfaces have been implemented using the Model-View-Controller (MVC) architecture whereas earlier interfaces contain both domain and user logic in single monolithic classes.  
 
-Perhaps the most important inconsistency to understand is due to the transistion to the TRiDaS data model.  In earlier versions of Corina used the concept of a `Sample'\footnote{To avoid confusing the original Corina class named `Sample' will be referred to as `Corina Sample' throughout this documentation.  Within the code all TRiDaS data model classes are prefixed with `Tridas' to help avoid confusion.  The `Sample' class is therefore not at all associated with the `TridasSample' class.} to represent each data file.  Although large portions of Corina have been refactored to use the TRiDaS data model classes, there are still some places where the Corina Sample remain.  
+Perhaps the most important inconsistency to understand is due to the transistion to the TRiDaS data model.  In earlier versions of Tellervo used the concept of a `Sample'\footnote{To avoid confusing the original Tellervo class named `Sample' will be referred to as `Tellervo Sample' throughout this documentation.  Within the code all TRiDaS data model classes are prefixed with `Tridas' to help avoid confusion.  The `Sample' class is therefore not at all associated with the `TridasSample' class.} to represent each data file.  Although large portions of Tellervo have been refactored to use the TRiDaS data model classes, there are still some places where the Tellervo Sample remain.  
 
 \section{Multimedia resources}
 \index{Icons}
-Corina includes infrastructure for multimedia resources such as icons, images and sounds within the Maven resource folder `src/main/resources'.  The most extensive is the Icons folder which contains many icons at various sizes ranging from $16\times16$ to $512\times512$ as PNG format files.  The icons are accessed via the static Builder class.  This has various accessor functions which take the filename and the size required, and return the icon itself or a URI of the icon from within the Jar.
+Tellervo includes infrastructure for multimedia resources such as icons, images and sounds within the Maven resource folder `src/main/resources'.  The most extensive is the Icons folder which contains many icons at various sizes ranging from $16\times16$ to $512\times512$ as PNG format files.  The icons are accessed via the static Builder class.  This has various accessor functions which take the filename and the size required, and return the icon itself or a URI of the icon from within the Jar.
 
 \subsection{Ring remarks}
 \index{Icons!Ring remarks}
-There are two types of ring remarks in Corina: TRiDaS controlled remarks and Corina controlled remarks.  The end user does not know the difference between the two, the only difference between them is how they are handled behind the scenes.  TRiDaS remarks are those designated in the TRiDaS schema, whereas Corina remarks are those defined specifically for Corina.  They are represented differently in TRiDaS files like this: 
+There are two types of ring remarks in Tellervo: TRiDaS controlled remarks and Tellervo controlled remarks.  The end user does not know the difference between the two, the only difference between them is how they are handled behind the scenes.  TRiDaS remarks are those designated in the TRiDaS schema, whereas Tellervo remarks are those defined specifically for Tellervo.  They are represented differently in TRiDaS files like this: 
 \code{<tridas:remark normalTridas="double pinned"/>\\ 
-<tridas:remark normal="Corina" normalStd="insect damage" normalId="165" />
+<tridas:remark normal="Tellervo" normalStd="insect damage" normalId="165" />
 }
 
-To add a new remark type to Corina you will need to first enter it in the database table tlkpreadingnote specifying the vocabulary as `2' (Corina).  To display a custom icon for this remark in the software, you will need to add a $16\times16$ and a $48\times48$ version to the resources an then add an entry to the CorinaRemarkIconMap in edu/cornell/dendro/corina/remarks/Remarks.java.  The $16\times16$ icon is used in the editor interface, and the $48\times48$ in PDFs.
+To add a new remark type to Tellervo you will need to first enter it in the database table tlkpreadingnote specifying the vocabulary as `2' (Tellervo).  To display a custom icon for this remark in the software, you will need to add a $16\times16$ and a $48\times48$ version to the resources an then add an entry to the TellervoRemarkIconMap in edu/cornell/dendro/corina/remarks/Remarks.java.  The $16\times16$ icon is used in the editor interface, and the $48\times48$ in PDFs.
 
 \section{Translations}
 \index{Translations}
-There is internationalization infrastructure in place to enable Corina to be offered in multiple languages.  This is done through the use of Resource Bundles, one for each language.  Within the code, whenever a string is required, it is provided using the \verb|I18n.getText()| function which then retrieves the correct string for the current locale.  If no string is found, then the default language (English) string is returned.  There is an Eclipse plugin to assist with this task called ResourceBundle Editor and it can be downloaded from \url{http://eclipse-rbe.sourceforge.net}.  Once installed it provides a GUI that allows you to simultaneously update all languages at once.
+There is internationalization infrastructure in place to enable Tellervo to be offered in multiple languages.  This is done through the use of Resource Bundles, one for each language.  Within the code, whenever a string is required, it is provided using the \verb|I18n.getText()| function which then retrieves the correct string for the current locale.  If no string is found, then the default language (English) string is returned.  There is an Eclipse plugin to assist with this task called ResourceBundle Editor and it can be downloaded from \url{http://eclipse-rbe.sourceforge.net}.  Once installed it provides a GUI that allows you to simultaneously update all languages at once.
 
 The \verb|I18n.getText()| function can be passed variables for insertion into the translation next e.g.\ file name, data value, line number etc.  These can be passed either as a string array, or as one or more strings.  The values are inserted into the translation string at the points marked {0}, {1} etc.  For instance, the translation string ``File {0} exists.  Rename to {1}?'' would accept two strings the first being the original filename and the second being the filename to rename to.  For obvious reasons, only non-translateable strings should be passed in this way as they will be inserted indentically in all languages.
 
@@ -161,16 +161,16 @@ The Resource Bundle also includes support for menu mnemonics (to enable navigati
  \item Graph {\&}component series [accel shift G]
 \end{itemize*}
 
-What key the `accel' keyword refers to depends on the operating system Corina is being run on.  In Windows and Linux it is normally `ALT' wheras on a Mac it is usually the Apple ⌘ command key. 
+What key the `accel' keyword refers to depends on the operating system Tellervo is being run on.  In Windows and Linux it is normally `ALT' wheras on a Mac it is usually the Apple ⌘ command key. 
 
 
 There are currently minimal translations for UK English, German, French, Dutch, Polish and Turkish.  These are by no means complete, and there are number of interfaces that are not internationalized at all.  Further assistance is required from native speakers to complete this task.
 
 \section{Logging}
 \index{Logging}
-Logging in Corina is handled by the SLF4J and Log4J packages.  Rather than write debug notes directly to System.out, Log4J handles logging in a more intelligent way.  First of all, each log message is assigned a log level which are (in order of severity) fatal, error, warn, info, debug and trace.  Through a log4j.xml configuration file contained within the resources folder, we can control the level at which messages are displayed.  For instance while we develop we would likely show all messages up to and including `trace', but when we deploy we might only want to show messages up to and including `warn'. 
+Logging in Tellervo is handled by the SLF4J and Log4J packages.  Rather than write debug notes directly to System.out, Log4J handles logging in a more intelligent way.  First of all, each log message is assigned a log level which are (in order of severity) fatal, error, warn, info, debug and trace.  Through a log4j.xml configuration file contained within the resources folder, we can control the level at which messages are displayed.  For instance while we develop we would likely show all messages up to and including `trace', but when we deploy we might only want to show messages up to and including `warn'. 
 
-Log4J also enables us to log to several places (known as appenders), e.g. console, log file or a component within our application.  It is also possible to change the level of logging depending on the log type, so minimal messages can be sent to the console but verbose messages to the log file.  Corina has the following four appenders configured:
+Log4J also enables us to log to several places (known as appenders), e.g. console, log file or a component within our application.  It is also possible to change the level of logging depending on the log type, so minimal messages can be sent to the console but verbose messages to the log file.  Tellervo has the following four appenders configured:
 
 \begin{itemize}
  \item Standard log file (corina.log) that rolls over up to 2mb of messages
@@ -185,12 +185,12 @@ Using the logging framework is very simple.  Just define a Logger as a static va
 \code{private final static Logger log = LoggerFactory.getLogger(MyClassName.class);}
 where MyClassName is the name of the current class.  Then you can log messages simply by calling log.warn(`My message'), log.debug('My message') etc.
 
-Before managed logging was introduced to Corina, debugging was often handled through the use of System.out and System.err messages.  To ensure that these messages are not lost we use another package called SysOutOverSLF4J.  This redirects messages sent to System.out and System.err to the logging system.  This is a temporary solution so when working on older classes, please take the time to transition these older calls to the proper logging calls.  We can then remove the need for SysOutOverSLF4J.
+Before managed logging was introduced to Tellervo, debugging was often handled through the use of System.out and System.err messages.  To ensure that these messages are not lost we use another package called SysOutOverSLF4J.  This redirects messages sent to System.out and System.err to the logging system.  This is a temporary solution so when working on older classes, please take the time to transition these older calls to the proper logging calls.  We can then remove the need for SysOutOverSLF4J.
 
 
 \section{Preferences}
 \index{Preferences}
-It is helpful to remember certain user preferences e.g. colors, fonts, usernames, URLs, last folder opened etc so that they don't have to do tasks repeatedly.  This is achieved through the use of a preferences file.  This file is stored in a users home folder and consulted to see if a preference has been saved, otherwise Corina falls back to a default value.  
+It is helpful to remember certain user preferences e.g. colors, fonts, usernames, URLs, last folder opened etc so that they don't have to do tasks repeatedly.  This is achieved through the use of a preferences file.  This file is stored in a users home folder and consulted to see if a preference has been saved, otherwise Tellervo falls back to a default value.  
 
 The preferences are accessed from the static member App.prefs.  To set a preference you can do the following:
 \code{App.prefs.setPref(PrefKey.PREFKEY, "the value to set");}
@@ -207,17 +207,17 @@ When you get a preference the second parameter contains the default value to ret
 \label{txt:buildScript}
 \index{Developing!Build script}
 \index{Packaging}
-Corina is built using Maven and is controlled through the pom.xml file stored in the base of the Corina source code.  Previous versions of Corina used Ant but managing the increasing number of dependencies as Corina has grown become too onerous (see section \ref{txt:DependenciesDesktopClient} for more details). 
+Tellervo is built using Maven and is controlled through the pom.xml file stored in the base of the Tellervo source code.  Previous versions of Tellervo used Ant but managing the increasing number of dependencies as Tellervo has grown become too onerous (see section \ref{txt:DependenciesDesktopClient} for more details). 
 
-Earlier versions of Corina were deployed using Java WebStart technology primarily because this is platform independent and requires just a single click for a user to install.  However, this has since been replaced with native installers for the major platforms due to various complications associated with native libraries (see section \ref{txt:NativeLibraries}) required for 3D graphics and serial port hardware.  We have also found most users are more comfortable with the standard install procedures that they are used to on their operating systems.
+Earlier versions of Tellervo were deployed using Java WebStart technology primarily because this is platform independent and requires just a single click for a user to install.  However, this has since been replaced with native installers for the major platforms due to various complications associated with native libraries (see section \ref{txt:NativeLibraries}) required for 3D graphics and serial port hardware.  We have also found most users are more comfortable with the standard install procedures that they are used to on their operating systems.
 
-While you develop Maven should automatically build Corina for you in the background.  Specific build commands are only required as you approach a release.  We use the standard Maven `life cycle' for building, packaging and deploying Corina.  The method for doing this in Eclipse is by right clicking on the pom.xml file and selecting \menutwo{Run as}{Maven package} etc.  If the option you want is not displayed, you will need to create an entry in the build menu by going to \menutwo{Run}{Run configurations}, then create a new Maven Build with the required `goal'.   The main goals are as follows:
+While you develop Maven should automatically build Tellervo for you in the background.  Specific build commands are only required as you approach a release.  We use the standard Maven `life cycle' for building, packaging and deploying Tellervo.  The method for doing this in Eclipse is by right clicking on the pom.xml file and selecting \menutwo{Run as}{Maven package} etc.  If the option you want is not displayed, you will need to create an entry in the build menu by going to \menutwo{Run}{Run configurations}, then create a new Maven Build with the required `goal'.   The main goals are as follows:
 
 \begin{description*}
  \item[clean] - This deletes any previously compiled classes and packages in the target folder.  It should only be necessary to run this occassionally if Maven has got a bit confused.  If this is the case you may also need to force Eclipse to clean too by going to \menutwo{Project}{Clean...}
- \item[generate-sources] - Runs JAXB to generated classes representing the entities within the Corina schema (see section \ref{txt:jaxb} for further details).  The classes are also generated for TRiDaS entities, but these are deleted in favour of using those provided by the TridasJLib library.
- \item[package] - This compiles Corina and builds a single executable JAR containing all dependencies (thanks to the maven-shade-plugin) along with native Windows, MacOSX and Linux packages.  These are all placed in structured folders within `target\\Binaries' ready for deploying on a website.  
- \item[install] - This installs the compiled jar in your local Maven repository. This is normally used when you are building a library that is being used by another program.  It is therefore not necessary for Corina.
+ \item[generate-sources] - Runs JAXB to generated classes representing the entities within the Tellervo schema (see section \ref{txt:jaxb} for further details).  The classes are also generated for TRiDaS entities, but these are deleted in favour of using those provided by the TridasJLib library.
+ \item[package] - This compiles Tellervo and builds a single executable JAR containing all dependencies (thanks to the maven-shade-plugin) along with native Windows, MacOSX and Linux packages.  These are all placed in structured folders within `target\\Binaries' ready for deploying on a website.  
+ \item[install] - This installs the compiled jar in your local Maven repository. This is normally used when you are building a library that is being used by another program.  It is therefore not necessary for Tellervo.
  \item[deploy] - This uploads the compiled jar into the maven.tridas.org repository.  Note that you will need to either run this phase from the command line or by setting up a customer run configuration in Eclipse.
 \end{description*}
 
@@ -226,7 +226,7 @@ I have had some issues with the m2e plugin getting a little stuck.  If you find 
 \subsection{Windows installer}
 \label{txt:windowsInstaller}
 \index{Packaging!Windows}
-Maven generates the Windows executable for the Corina application through the 'launch4j' plugin.  Windows users, however, expect an installer that will create menu entries and add uninstall options to the control panel.  An installer is also required to install the user manual and the native libraries required for the serial-port and 3D graphics features in Corina.  
+Maven generates the Windows executable for the Tellervo application through the 'launch4j' plugin.  Windows users, however, expect an installer that will create menu entries and add uninstall options to the control panel.  An installer is also required to install the user manual and the native libraries required for the serial-port and 3D graphics features in Tellervo.  
 
 The best open source tool for creating Windows installer scripts is NSIS (see \url{http://nsis.sourceforge.net}).  This is an extremely flexible scripting system that does all we need.  If you have NSIS installed the Maven package goal should create both Windows 32 and 64 bit installers automatically.  We use the Maven antrun plugin to run the makensis executable twice, once on a script for build the 32bit executable and a second for creating the 64 bit executable.  These scripts are stored in Native/BuildResources/WinBuild, and are indentical (they import the major of the script from the same file) with the exception of the location of the native libraries folder.  The Maven resource plugin moves them into the target folder and replaces the version numbering for use in filenames etc.
 
@@ -239,7 +239,7 @@ Note that the osxappbundle plugin does not support the inclusion of additional f
 
 \subsection{Linux Deb package}
 \index{Packaging!Linux}
-A Linux Debian package is produced using the JDeb Maven plugin.  If Maven does its job properly, it should all `just work' as part of the standard maven package phase.  In addition to the configuration in the pom.xml, there are three files that are used to configure the final deb file.  In src/deb/control/ there is a control file which describes the runtime dependencies, maintainer of the package, description etc.  In Native/BuildResources/LinBuild are two files, one a simple bash script that is used to launch Corina on the users computer and the other a .desktop file for configuring how it appears in the users menus.  All three of these files are automatically updated with the current version number, so hopefully you shouldn't need to change anything. 
+A Linux Debian package is produced using the JDeb Maven plugin.  If Maven does its job properly, it should all `just work' as part of the standard maven package phase.  In addition to the configuration in the pom.xml, there are three files that are used to configure the final deb file.  In src/deb/control/ there is a control file which describes the runtime dependencies, maintainer of the package, description etc.  In Native/BuildResources/LinBuild are two files, one a simple bash script that is used to launch Tellervo on the users computer and the other a .desktop file for configuring how it appears in the users menus.  All three of these files are automatically updated with the current version number, so hopefully you shouldn't need to change anything. 
 
 
 \subsection{Linux RPM package}
@@ -247,7 +247,7 @@ A Linux Debian package is produced using the JDeb Maven plugin.  If Maven does i
 \subsection{Native libraries}
 \label{txt:NativeLibraries}
 \index{Packaging!Native libraries}
-Although Corina is written in Java, it requires a number of native libraries to make use of OpenGL 3D graphics capabilities and to access the serial port of the computer.  This libraries are different for each operating system, and they are also different for 32 and 64 bit machines.  The correct libraries must be made available to the OS and are therefore typically installed outside of the jar file as part of the installation process.  
+Although Tellervo is written in Java, it requires a number of native libraries to make use of OpenGL 3D graphics capabilities and to access the serial port of the computer.  This libraries are different for each operating system, and they are also different for 32 and 64 bit machines.  The correct libraries must be made available to the OS and are therefore typically installed outside of the jar file as part of the installation process.  
 
 On Windows these libraries take the form of Dynamic Link Libraries (DLL) files which are normally placed in the same folder as the executable:
 
@@ -280,30 +280,30 @@ We have experimented with techniques for packaging the libraries within the jar,
 
 Java Architecture for XML Binding (JAXB) is a technology that automatically maps Java classes to XML schemas and vice versa.  It includes the ability to \emph{marshall} data from Java classes to XML files and \emph{unmarshall} data from XML files into Java class representations.  
 
-JAXB is used by TridasJLib to create Java class representations of the TRiDaS data model.  It is also used directly in Corina to create classes for the Corina web service.  Although the Corina webservice is based heavily on TRiDaS (the two were developed in parallel), the Corina schema extends TRiDaS by including classes such as dictionaries and the `box' concept which are required for a lab data management application.  
+JAXB is used by TridasJLib to create Java class representations of the TRiDaS data model.  It is also used directly in Tellervo to create classes for the Tellervo web service.  Although the Tellervo webservice is based heavily on TRiDaS (the two were developed in parallel), the Tellervo schema extends TRiDaS by including classes such as dictionaries and the `box' concept which are required for a lab data management application.  
 
-The Corina JAXB classes are automatically built by Maven using the 'maven-jaxb2-plugin' and placed within the `src/main/generated' folder.  Please note that any manual changes to these classes will automatically be overriden the next time Maven is run.  If you feel that changes are necessary to these classes then it is likely that one or more of the following needs modification:
+The Tellervo JAXB classes are automatically built by Maven using the 'maven-jaxb2-plugin' and placed within the `src/main/generated' folder.  Please note that any manual changes to these classes will automatically be overriden the next time Maven is run.  If you feel that changes are necessary to these classes then it is likely that one or more of the following needs modification:
 
 \begin{itemize*}
- \item The Corina schema located in `src/main/resources/schemas'
- \item The Corina JAXB bindings located in `src/main/resources/binding'
+ \item The Tellervo schema located in `src/main/resources/schemas'
+ \item The Tellervo JAXB bindings located in `src/main/resources/binding'
  \item The specification for how JAXB is run located in the `pom.xml' file
 \end{itemize*}
 
-Please note that JAXB supports plugins and extensions for enhancing the classes that it produces.  One thing to note in the Maven pom.xml is a nasty workaround when running JAXB.  As the Corina schema depends on the GML and TRiDaS schemas, these classes are also built by JAXB.  These classes however are already provided by the DendroFileIO library.  It should be possible to use a feature called `episodes' to handle this but this seems buggy and causes issues.  For now, we use an antrun task to delete the duplicate classes immediately after they are produced.
+Please note that JAXB supports plugins and extensions for enhancing the classes that it produces.  One thing to note in the Maven pom.xml is a nasty workaround when running JAXB.  As the Tellervo schema depends on the GML and TRiDaS schemas, these classes are also built by JAXB.  These classes however are already provided by the DendroFileIO library.  It should be possible to use a feature called `episodes' to handle this but this seems buggy and causes issues.  For now, we use an antrun task to delete the duplicate classes immediately after they are produced.
 
 
 \section{Java version}
 \label{txt:java}
 \index{Java}
-Although we would like Corina to run on older versions of Java (specifically Java 5), there are a number of features of Java 6 such as JAXB that we really need.  This isn't really a problem on Linux and Windows as Java 6 has been around for a long time now, but it is a bit problematic for MacOSX users.  For internal reasons Apple was extremely slow bringing Java 6 to MacOSX, only releasing it with 10.6 (Snow Leopard) several years after Windows and Linux.  Corina will therefore not run on older Mac machines.  This will gradually become less of an issue as machines age and ``Snow Leopard or later'' becomes less difficult for users to fulfill.  
+Although we would like Tellervo to run on older versions of Java (specifically Java 5), there are a number of features of Java 6 such as JAXB that we really need.  This isn't really a problem on Linux and Windows as Java 6 has been around for a long time now, but it is a bit problematic for MacOSX users.  For internal reasons Apple was extremely slow bringing Java 6 to MacOSX, only releasing it with 10.6 (Snow Leopard) several years after Windows and Linux.  Tellervo will therefore not run on older Mac machines.  This will gradually become less of an issue as machines age and ``Snow Leopard or later'' becomes less difficult for users to fulfill.  
 
-Corina was originally developed against the Sun JDK.  Although Sun re-released much of its JDK under the GPL license there are still portions that are only available under proprietary licenses due to various plugins being the copyright of third parties.  Although it is still distributed at no cost, it is not `free' under the terms required by the Free Software Foundation.  Corina can still legally be used with the Sun JDK even though it is regarded as proprietary software due to the `Major components' exception of the GPL license.  However, open source purists find this undesirable and so you may prefer to use open equivalents such as OpenJDK, IcedTea or Apache Harmony.   For this reason we now develop Corina against OpenJDK6.  Preliminary tests show Corina works fine under OpenJDK7 as well, however, we do not intend to take advantage of Java 7 features in the near future to ensure backwards compatibility for as long as possible.  The problem of backwards compatibility for MacOSX seems likely to remain for some time.
+Tellervo was originally developed against the Sun JDK.  Although Sun re-released much of its JDK under the GPL license there are still portions that are only available under proprietary licenses due to various plugins being the copyright of third parties.  Although it is still distributed at no cost, it is not `free' under the terms required by the Free Software Foundation.  Tellervo can still legally be used with the Sun JDK even though it is regarded as proprietary software due to the `Major components' exception of the GPL license.  However, open source purists find this undesirable and so you may prefer to use open equivalents such as OpenJDK, IcedTea or Apache Harmony.   For this reason we now develop Tellervo against OpenJDK6.  Preliminary tests show Tellervo works fine under OpenJDK7 as well, however, we do not intend to take advantage of Java 7 features in the near future to ensure backwards compatibility for as long as possible.  The problem of backwards compatibility for MacOSX seems likely to remain for some time.
 
 
 \section{Developing graphical interfaces}
 \index{Developing!Graphical interfaces}
-Like the rest of the code, a number of different styles and methods have been used for the creation of interfaces in Corina.  Many of the earlier interfaces were hand coded, but in recent years WYSIWYG graphical designers have been used to enable the creation of more complex designs.  Most interfaces are now Swing-based although AWT widgets are used in places.
+Like the rest of the code, a number of different styles and methods have been used for the creation of interfaces in Tellervo.  Many of the earlier interfaces were hand coded, but in recent years WYSIWYG graphical designers have been used to enable the creation of more complex designs.  Most interfaces are now Swing-based although AWT widgets are used in places.
 
 Some interfaces were created using the graphical designed in Netbeans IDE.  These can be identified by the presence of companion .form files and warning comments in the code indicating which sections are autogenerated.  The major drawback with the Netbeans form designer is that it cannot cope with externally made changes.   If changes are made to the files outside of Netbeans, then the Netbeans form designer can no longer edit these files so please make sure you are certain this is how you want to proceed.  The classes generated by Netbeans are typically used by a subclass via inheritance so that any changes can be external to the form designer generated files. 
 
@@ -316,7 +316,7 @@ The support for hardware measuring platforms has been designed to be as modular 
 
 To begin, you need to extend the abstract class edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.  You can of course also extend the class implementation of another platform if you only need to modify a few settings.  This is the case for both the QC10 and QC1100 devices which extend the GenericASCIIDevice class.  The implementation code is identical for all three, but the derived classes set the port settings to the default values for the two QuadraChek boxes.
 
-There are a number of methods that you will need to override from the base class.  If you use Eclipse to generate the class it will create placeholders for all the relevant methods.  The toString() method enables you to return the name for the device you are implementing, whereas all the is$\ldots$() methods enable Corina to understand the capabilities of the device.  For instance some devices will accept requests to zero the current measurement and/or request the current measurement value, while others will not (instead they rely on hardware buttons on the device itself).  Some devices can have the port settings (such as baud, parity, stopbits etc) altered and the corresponding is$\ldots$Editable() functions indicate whether this is possible.  All user interfaces in Corina are modified in accordance with these methods and show the user only relevant buttons.
+There are a number of methods that you will need to override from the base class.  If you use Eclipse to generate the class it will create placeholders for all the relevant methods.  The toString() method enables you to return the name for the device you are implementing, whereas all the is$\ldots$() methods enable Tellervo to understand the capabilities of the device.  For instance some devices will accept requests to zero the current measurement and/or request the current measurement value, while others will not (instead they rely on hardware buttons on the device itself).  Some devices can have the port settings (such as baud, parity, stopbits etc) altered and the corresponding is$\ldots$Editable() functions indicate whether this is possible.  All user interfaces in Tellervo are modified in accordance with these methods and show the user only relevant buttons.
 
 The guts of the work in the class are performed in the following methods:
 
@@ -328,11 +328,11 @@ The guts of the work in the class are performed in the following methods:
  \item[requestMeasurement()] -- if your platform responds to requests to send the current measurement value then you should implement this functionality here.
 \end{description} 
 
-Once your new class is complete you need to inform Corina that it exists.  To do this you need to register the device in edu.cornell.dendro.corina.hardware.SerialDeviceSelector.  You should then be able to launch Corina and test your new device in the preferences dialog.  The relevant parts of the dialog will be enabled/disabled depending on how you set the corresponding is$\ldots$Editable() methods in your class.  The dialog also includes a seperate test window with a console for debugging the raw data received from the serial port.  
+Once your new class is complete you need to inform Tellervo that it exists.  To do this you need to register the device in edu.cornell.dendro.corina.hardware.SerialDeviceSelector.  You should then be able to launch Tellervo and test your new device in the preferences dialog.  The relevant parts of the dialog will be enabled/disabled depending on how you set the corresponding is$\ldots$Editable() methods in your class.  The dialog also includes a seperate test window with a console for debugging the raw data received from the serial port.  
 
 \section{Writing documentation}
 \index{Documentation}
-The documentation in Corina is written in the well established typesetting language {\LaTeXe}.  {\LaTeX} is a great tool for producing high quality documentation with a good structure and style.  Unlike standard WYSIWYG (what you see is what you get) word processing applications like Microsoft Word, {\LaTeX} uses simple plain text code to layout a document so that it is often described as WYSIWYM (what you see is what you mean)!  The style of a {\LaTeX} document is handled separated enabling the author to concentrate on content.  By removing the possibility for authors to tinker with font sizes etc, {\LaTeX} forces you to create clear, well structured documents.  For further details see \url{http://en.wikibooks.org/wiki/LaTeX/}.
+The documentation in Tellervo is written in the well established typesetting language {\LaTeXe}.  {\LaTeX} is a great tool for producing high quality documentation with a good structure and style.  Unlike standard WYSIWYG (what you see is what you get) word processing applications like Microsoft Word, {\LaTeX} uses simple plain text code to layout a document so that it is often described as WYSIWYM (what you see is what you mean)!  The style of a {\LaTeX} document is handled separated enabling the author to concentrate on content.  By removing the possibility for authors to tinker with font sizes etc, {\LaTeX} forces you to create clear, well structured documents.  For further details see \url{http://en.wikibooks.org/wiki/LaTeX/}.
 
 The master document is `Documentation/corina-manual.tex' and imports each chapter file.  To build the documentation you will need a editor to update and compile to PDF.  On Linux I would suggest Kile, on MacOSX TeXShop and on Windows WinEdt.  To add or edit bibliography entries you will also need a {\BibTeX} editor such as JabRef or BibDesk.
 
@@ -347,7 +347,7 @@ Making a new release should be a relatively quick and simply process, but there 
 \begin{itemize}
  \item Make sure this documentation is up-to-date!  
  \item Update the logging appenders to an appropriate level so that the user is not swamped by debug messages
- \item If this release relies upon a certain version of the Corina server, make sure you set this correctly in `/corina-desktop/src/main/java/edu/cornell/dendro/corina/core/App.java'.  This is important to ensure that users aren't working against an old version of the server which could have unexpected side-effects.
+ \item If this release relies upon a certain version of the Tellervo server, make sure you set this correctly in `/corina-desktop/src/main/java/edu/cornell/dendro/corina/core/App.java'.  This is important to ensure that users aren't working against an old version of the server which could have unexpected side-effects.
  \item Increment the build version number in the pom.xml
  \item Update the splash screen and background graphics.
  \item Check the code in Eclipse and eliminate as many warnings as possible.

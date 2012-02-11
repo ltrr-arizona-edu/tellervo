@@ -1,6 +1,6 @@
 \chapter{Mapping}
 \index{Mapping|(}
-Corina includes an integrated open source 3D mapping system (based on NASA's award winning World Wind Java SDK) similar to the program Google Earth which you're no doubt familiar with. As mentioned in the installation chapter, this mapping system requires an OpenGL 3D capable graphics card. Before you can use the mapping in Corina, you must also have something to map! See the chapter on Metadata (page \pageref{txt:metadata}) for information about adding coordinates to your system.
+Tellervo includes an integrated open source 3D mapping system (based on NASA's award winning World Wind Java SDK) similar to the program Google Earth which you're no doubt familiar with. As mentioned in the installation chapter, this mapping system requires an OpenGL 3D capable graphics card. Before you can use the mapping in Tellervo, you must also have something to map! See the chapter on Metadata (page \pageref{txt:metadata}) for information about adding coordinates to your system.
 
 There are two ways to map data from your database. First of all, you can see a map of all the sites (i.e. TRiDaS objects) by going to \menutwo{Administration}{Site map}. This will give you a screen like this:
 
@@ -57,7 +57,7 @@ You can navigate around your maps using the on screen controls (figure \ref{fig:
 %\begin{SCfigure}
 %  \centering
 %  \includegraphics[width=0.8\textwidth]{Images/3dmapexample.png}
-%  \caption{Example of 3D mapping in Corina.}
+%  \caption{Example of 3D mapping in Tellervo.}
 %  \label{fig:3dmap}
 %\end{SCfigure}
 
@@ -66,7 +66,7 @@ Another method of navigating around the map is by using the built in gazetteer. 
 
 \section{Interacting with data}
 
-Each marker on the map represents either a TRiDaS object or element in your Corina database. By clicking on these pins you can get more information from the database (see figure \ref{fig:mappin}).
+Each marker on the map represents either a TRiDaS object or element in your Tellervo database. By clicking on these pins you can get more information from the database (see figure \ref{fig:mappin}).
 
 \begin{figure}[hbtp]
   \centering
@@ -81,7 +81,7 @@ The example above shows the ring marker is of a site in Napoli called Poggiomari
 \label{txt:userAddWMS}
 \index{Mapping!Layers}
 
-Corina comes ready configured with basic map layers, including high resolution satellite imagery and basic political features. You can turn background layers on and off by going to \menutwo{View}{Layers} or using the layer panel at the left of the screen when using `Site map'.
+Tellervo comes ready configured with basic map layers, including high resolution satellite imagery and basic political features. You can turn background layers on and off by going to \menutwo{View}{Layers} or using the layer panel at the left of the screen when using `Site map'.
 
 Map layers are downloaded on-the-fly so there is likely to be a delay when you initially visit to a new region. However, up to 2Gb of map data can be cache locally to your hard disk, so on future visits, maps should load quickly.
 
@@ -91,11 +91,11 @@ Data map layers (i.e.\ site and sample locations) are controlled with the layer 
 In the `Site map' you can use the `Add layer' button to add data layers of the following types:
 
 \begin{description}
- \item[All Corina objects] -- this adds a single layer containing all the objects within the Corina database.
- \item[Corina entity from database] -- this adds a layer containing the location of one record from the Corina database.  This is specified by labcode e.g. ABC would add a pin for the site ABC, whereas ABC-1 would add a pin for the element ABC-1.
+ \item[All Tellervo objects] -- this adds a single layer containing all the objects within the Tellervo database.
+ \item[Tellervo entity from database] -- this adds a layer containing the location of one record from the Tellervo database.  This is specified by labcode e.g. ABC would add a pin for the site ABC, whereas ABC-1 would add a pin for the element ABC-1.
  \item[Elements from an object] -- this adds a layer containing all the elements for a specified object.  The object is specified by labcode.
  \item[All ITRDB sites] -- this downloads the location of all sites currently available in the ITRDB database and adds them as a single layer.
- \item[ESRI Shapefile] -- this enables you to load an ESRI shapefile stored locally on your computer.  Corina supports polygon, polyline and point files, although currently it does not enable you to style this data.  Data for a layer is presented using a random color.
+ \item[ESRI Shapefile] -- this enables you to load an ESRI shapefile stored locally on your computer.  Tellervo supports polygon, polyline and point files, although currently it does not enable you to style this data.  Data for a layer is presented using a random color.
  \item[Google Earth KML/KMZ file] -- like the ESRI shapefile option this enables you to load spatial data from your computer.
  \end{description}
 
@@ -104,9 +104,9 @@ In the `Site map' you can use the `Add layer' button to add data layers of the f
 \index{Web Map Service (WMS)}
 \index{Mapping!Web Map Service (WMS)}
 
-The mapping system in Corina includes support for remote map servers that use the OGC Web Mapping Service (WMS) standard. If you go to \menuthree{View}{Layers}{Add remote layers}, you will get a dialog with a tab for each WMS server configured for your system. By default this includes the NASA Earth Observation and Jet Propulsion Lab servers.  By ticking layers in this list you can add data layers to your map.
+The mapping system in Tellervo includes support for remote map servers that use the OGC Web Mapping Service (WMS) standard. If you go to \menuthree{View}{Layers}{Add remote layers}, you will get a dialog with a tab for each WMS server configured for your system. By default this includes the NASA Earth Observation and Jet Propulsion Lab servers.  By ticking layers in this list you can add data layers to your map.
 
-You can add map data from other WMS servers by clicking the `+' tab and entering the URL of the server you would like to use.  This will give an additional tab with all the available map layers.  This server will only be available for the duration of your current session so will need to be added each time you start Corina.  If you would like a particular WMS server to be made permanently available, your Corina administrator can do this (see `Managing map services', on page \pageref{txt:managingmaps} for further details).  Additional WMS servers added in this way will be available to all users the next time they connect to your Corina server.
+You can add map data from other WMS servers by clicking the `+' tab and entering the URL of the server you would like to use.  This will give an additional tab with all the available map layers.  This server will only be available for the duration of your current session so will need to be added each time you start Tellervo.  If you would like a particular WMS server to be made permanently available, your Tellervo administrator can do this (see `Managing map services', on page \pageref{txt:managingmaps} for further details).  Additional WMS servers added in this way will be available to all users the next time they connect to your Tellervo server.
 
 Your system administrator may host a map server specifically for your lab, for instance, containing high resolution plans of an archaeological site that you are working on, or environmental data for your study region. Figure \ref{fig:wms} shows an example overlay of sea surfaces temperatures loaded dynamically from the NASA EO server.
 

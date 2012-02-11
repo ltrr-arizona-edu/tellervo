@@ -1,9 +1,9 @@
 
 \chapter{Systems architecture}
 \index{Systems architecture|(}
-The centralised nature of the Cornell Tree-Ring Lab data required a server-client architecture of some type. In the original Corina v1 this was achieved simply by having users save their data in a network folder stored on a central server. Whilst this method was adequate, it has many data storage issues that can be largely solved by moving the data storage infrastructure to a relational database management system.  
+The centralised nature of the Cornell Tree-Ring Lab data required a server-client architecture of some type. In Corina this was achieved simply by having users save their data in a network folder stored on a central server. Whilst this method was adequate, it has many data storage issues that can be largely solved by moving the data storage infrastructure to a relational database management system.  
 
-Although it would be possible (and arguably simpler) to refactor Corina to talk directly to one central database server it was decided to go a step further and implement a Web Services orientated server-client architecture for Corina v2.  
+Although it would be possible (and arguably simpler) to have refactored Corina to talk directly to one central database server it was decided to go a step further and implement a Web Services orientated server-client architecture for Tellervo.  
 
 A web services approach decouples the desktop client from the server so that the server can work on its 
 
@@ -13,7 +13,7 @@ A web services approach decouples the desktop client from the server so that the
 \index{Nonce}
 \index{Hash}
 \index{Cryptography}
-The authentication mechanism is loosely based around http digest authentication and uses a challenge and response scheme. This makes use of cryptographic hashes (a relatively short digital fingerprint of some data but which cannot be decompiled to retrieve the original data) and nonces (a pseudo-random string used just once). All hashes used in the Corina webservice use the MD5 algorithm. Whilst an MD5 hash of a short phrase can be compromised, the length and randomness of the original data means that using current cracking techniques would require a very substantial amount of processing power e.g.\ supercomputer or large botnet.  Flaws in the MD5 hash are also mitigated by the time-sensitive nature of the Corina nonce, meaning that any attack would need to be successful within a 2 minute window.  New weaknesses in security are, however, revealed on a fairly regular basis so the authentication architecture will be periodically reviewed to ensure that it still meets our needs. 
+The authentication mechanism is loosely based around http digest authentication and uses a challenge and response scheme. This makes use of cryptographic hashes (a relatively short digital fingerprint of some data but which cannot be decompiled to retrieve the original data) and nonces (a pseudo-random string used just once). All hashes used in the Tellervo webservice use the MD5 algorithm. Whilst an MD5 hash of a short phrase can be compromised, the length and randomness of the original data means that using current cracking techniques would require a very substantial amount of processing power e.g.\ supercomputer or large botnet.  Flaws in the MD5 hash are also mitigated by the time-sensitive nature of the Tellervo nonce, meaning that any attack would need to be successful within a 2 minute window.  New weaknesses in security are, however, revealed on a fairly regular basis so the authentication architecture will be periodically reviewed to ensure that it still meets our needs. 
 
 The first time a client attempts to retrieve data from the webservice (or when the client's credentials are incorrect or have expired) the following events occur:
 
@@ -48,15 +48,15 @@ A special `admin group' has been created into which only the most trusted users 
 \section{Universally Unique Identifiers}
 \label{txt:uuid}
 \index{Universally Unique Identifiers (UUID)}
-All entities in the Corina database have a primary key based on the Universally Unique Identifier (UUID) concept. This is a randomly created 128-bit number which due to the astronomically large number of possibilities ($3 \times 1038$) means that it is guaranteed to be unique across all installations of Corina. This code is typically represented by 32 hexadecimal digits and 4 hyphens like this: 550e8400-e29b-41d4-a716-446655440000.
+All entities in the Tellervo database have a primary key based on the Universally Unique Identifier (UUID) concept. This is a randomly created 128-bit number which due to the astronomically large number of possibilities ($3 \times 1038$) means that it is guaranteed to be unique across all installations of Tellervo. This code is typically represented by 32 hexadecimal digits and 4 hyphens like this: 550e8400-e29b-41d4-a716-446655440000.
 
 \section{Barcode specifications}
 \label{txt:barcodeSpecs}
 \index{Barcodes!Specifications}
 \index{Universally Unique Identifiers (UUID)}
-Barcodes in Corina are based on the UUID primary keys of database entities.  Because they are used for different entities in Corina (boxes, samples and series) it was also necessary to incorporate a method for determining what type of entity a barcode represents. This is done by appending a single character and a colon to the beginning of the UUID: `B:' for box; `S:' for sample; `Z:' for series.
+Barcodes in Tellervo are based on the UUID primary keys of database entities.  Because they are used for different entities in Tellervo (boxes, samples and series) it was also necessary to incorporate a method for determining what type of entity a barcode represents. This is done by appending a single character and a colon to the beginning of the UUID: `B:' for box; `S:' for sample; `Z:' for series.
 
-The barcodes in Corina use the Code 128 scheme. This symbology was chosen as it allows the encoding of alphanumeric characters in a high-density label and can be read by all popular barcode scanners. While it would have been possible to create a barcode of plain UUIDs, the 36 (or even 32) characters would result in a barcode wider than many scanners could read. Most scanners on the market have a maximum scan width of at least 80mm, so this was used as the baseline to work to.
+The barcodes in Tellervo use the Code 128 scheme. This symbology was chosen as it allows the encoding of alphanumeric characters in a high-density label and can be read by all popular barcode scanners. While it would have been possible to create a barcode of plain UUIDs, the 36 (or even 32) characters would result in a barcode wider than many scanners could read. Most scanners on the market have a maximum scan width of at least 80mm, so this was used as the baseline to work to.
 
 To make the barcodes less than 80mm, the UUID (with prepended entity type character code) are Base64 encoded. For example the series with UUID 3a8f4336-d17d-11df-abde-c75e325aebae would be encoded from Z:3a8f4336-d17d-11df-abde-c75e325aebae to become: Wjo6j0M20X0R36vex14yWuuu 
 

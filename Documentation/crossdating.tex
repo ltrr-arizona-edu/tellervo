@@ -4,18 +4,18 @@
 
 All algorithms work in pretty much the same way. There's a ``fixed'' sample, and there's a ``moving'' sample. Imagine you have printouts of their graphs on translucent paper. The fixed graph is taped to a table, and you can slide the moving sample left and right. This is actually how it was originally done, on graph paper, with one inch per decade. Start with the moving sample to the left of the fixed sample, overlapping it by 10 years. Look at how well the graphs match: this is the first score that's computed. Slide the moving sample to the right one year and so on until you reach the end.
 
-You could do it all simply by moving graphs and eyeballing the crossdates like this but there are hundreds of sites and millennia of chronologies you'll want to crossdate your samples against, so that would take a while. Corina has a few algorithms to find likely crossdates almost instantaneously. They aren't perfect, though, and all crossdates should be inspected visually to ensure they are a good fit. 
+You could do it all simply by moving graphs and eyeballing the crossdates like this but there are hundreds of sites and millennia of chronologies you'll want to crossdate your samples against, so that would take a while. Tellervo has a few algorithms to find likely crossdates almost instantaneously. They aren't perfect, though, and all crossdates should be inspected visually to ensure they are a good fit. 
 
 \section{Algorithms}
-Corina includes a total of five different algorithms for crossdating:
+Tellervo includes a total of five different algorithms for crossdating:
 
 
 \subsection{T-Score}
 \index{Crossdating!T-Score}
 \index{T-Score}
-The \textit{t}-score is the classic crossdate. Unfortunately, every dendro program seems to have a slightly different implementation of \textit{t}-score, so the numbers you get from Corina might not be exactly comparable to the numbers from other programs. 
+The \textit{t}-score is the classic crossdate. Unfortunately, every dendro program seems to have a slightly different implementation of \textit{t}-score, so the numbers you get from Tellervo might not be exactly comparable to the numbers from other programs. 
 
-The version Corina uses is based on the algorithms given in \citet{Baillie73}, though with some apparent bugs corrected (Ken Harris pers. comm.). In the following equations, $x_{0}, x_{1}, x_{2}, \dots$ are the data of the fixed sample in the overlap, $y_{0}, y_{1}, y_{2}, \dots$ are the data of the moving sample in the overlap, and N is the length of the overlap.
+The version Tellervo uses is based on the algorithms given in \citet{Baillie73}, though with some apparent bugs corrected (Ken Harris pers. comm.). In the following equations, $x_{0}, x_{1}, x_{2}, \dots$ are the data of the fixed sample in the overlap, $y_{0}, y_{1}, y_{2}, \dots$ are the data of the moving sample in the overlap, and N is the length of the overlap.
 
 The first step is to make each dataset bivariate normal by replacing each value with the mean of the values around it, and then taking its natural logarithm.  The preparation for the \textit{t}-score is therefore done as follows and is done to both the fixed and moving series:
 
@@ -44,7 +44,7 @@ Trend is another popular crossdate statistic.  It computes the percentage of yea
 
 The trend is the simplest crossdate. For each sample, it computes the trend of each 2-year interval (1001-1002, 1002-1003, and so on). The trend of a 2-year interval is simply whether the next ring is larger, smaller, or the same. The trend score is the percentage of intervals in the overlap which are the same. For example, a 75\% trend (a very good score, by the way) means that for 75\% of the intervals in the overlap, both samples went up in the same years and down in the same years.
 
-If one sample stays the same, and the other increases or decreases, Corina considers that to be halfway between a same-trend and different-trend, and gives it half a point. Trend is a ``non-parametric'' algorithm, because it only takes into account if a given ring is bigger or smaller than the previous one, not by how much. To the trend, a drop of ``100 1'' looks exactly the same as a drop of ``100 99''. Two completely random samples will have a trend of 50\%, on average. So you'd expect a trend must be greater than 50\% to be significant.
+If one sample stays the same, and the other increases or decreases, Tellervo considers that to be halfway between a same-trend and different-trend, and gives it half a point. Trend is a ``non-parametric'' algorithm, because it only takes into account if a given ring is bigger or smaller than the previous one, not by how much. To the trend, a drop of ``100 1'' looks exactly the same as a drop of ``100 99''. Two completely random samples will have a trend of 50\%, on average. So you'd expect a trend must be greater than 50\% to be significant.
 
 According to \citet{Huber70}, a trend is significant if:
 
@@ -69,7 +69,7 @@ Another way to think about the Weiserjahre crossdate is: it's like a trend, but 
 \subsection{R-Value}
 \index{Crossdating!R-Value}
 \index{R-Value}
-The R-value, or correlation coefficient, is a crossdate which you'll almost never use. It's not terribly useful to dendrochronologists, but statisticians might want to know its value, so Corina makes it available.
+The R-value, or correlation coefficient, is a crossdate which you'll almost never use. It's not terribly useful to dendrochronologists, but statisticians might want to know its value, so Tellervo makes it available.
 
 The R-value is used in the T-Score, the T-score being defined in terms of the r-value and the overlap, N. If you look at the equations for calculating a T-Score you will see on the penultimate line: 
 

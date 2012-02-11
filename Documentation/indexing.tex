@@ -9,10 +9,10 @@ The procedure for indexing is as follows:
 
 \begin{enumerate*}
    \item You open a series (raw data)
-   \item You ask Corina to index it
-   \item Corina shows you some possible curves
+   \item You ask Tellervo to index it
+   \item Tellervo shows you some possible curves
    \item You pick a curve (based on its graph, statistical scores, and your expectation of how the tree is growing)
-   \item Corina converts each year's ring width to a ratio of actual growth to expected growth for that year
+   \item Tellervo converts each year's ring width to a ratio of actual growth to expected growth for that year
    \item You save the series (indexed data) 
 \end{enumerate*}
 
@@ -22,7 +22,7 @@ This doesn't cause a problem with crossdating. The t-score normalizes all sample
 
 \section{Types of index}
 
-There are a total of six different indexing methods available in Corina:
+There are a total of six different indexing methods available in Tellervo:
 
 \subsection{Exponential Index}
 \index{Indexing!Exponential}
@@ -34,7 +34,7 @@ This index tries to fit an equation of the following form to your data, searchin
  \item $y = a + be-px$ 
 \end{itemize}
 
-\info{This is sometimes called a negative exponential index, because the exponent is negative. Corina doesn't require that the exponent is negative, but if it's not, using this index probably isn't such a good idea; it means the tree is generally getting bigger, not smaller.}
+\info{This is sometimes called a negative exponential index, because the exponent is negative. Tellervo doesn't require that the exponent is negative, but if it's not, using this index probably isn't such a good idea; it means the tree is generally getting bigger, not smaller.}
 
 The least-squares algorithm used comes from \citet{CLR}; the matrix solving function comes from \citet{vanLoan}.
 
@@ -48,13 +48,13 @@ Alternatively, imagine you are working on a tree with a fire scar that has a few
 \subsection{Polynomial Index}
 \index{Indexing!Polynomial}
 \index{Polynomial index|see{Indexing}}
-When you ask Corina to perform a Polynomical Index it tries to fit a polynomial curve to your data using the following equation: 
+When you ask Tellervo to perform a Polynomical Index it tries to fit a polynomial curve to your data using the following equation: 
 
 \begin{itemize}
 \item $y = a_{n}x^{n} + a_{n-1}x^{n-1} + \dots + a_{2}x^{2} + a_{1x} + a_{0}$ 
 \end{itemize}
 
-You decide what degree polynomial, n, to use and Corina automatically finds the best values of $a_{0}$, $a_{1} \dots a_{n}$, to fit your data. 
+You decide what degree polynomial, n, to use and Tellervo automatically finds the best values of $a_{0}$, $a_{1} \dots a_{n}$, to fit your data. 
 
 \subsection{Horizontal Line Index}
 \index{Indexing!Horizontal}
@@ -96,7 +96,7 @@ This comes from \citet{Cook81} who used it as a discrete filter before moving to
 \index{Cublic spline|see{Indexing}}
 Cubic splines are a very specific type of high-pass filter. A cubic spline curve is created by combining a collection of cubic (3rd degree polynomial) functions.
 
-There are many methods for constructing cubic splines through a dataset. The algorithm used by Corina has a parameter, s, which controls how tightly the spline fits the data. A lower value fits the data more tightly, a higher value fits the data more loosely. Therefore, s=0 fits the data exactly while s=1 is a simple line. A good starting point for dendro data seems to be around $s=1x1016$.
+There are many methods for constructing cubic splines through a dataset. The algorithm used by Tellervo has a parameter, s, which controls how tightly the spline fits the data. A lower value fits the data more tightly, a higher value fits the data more loosely. Therefore, s=0 fits the data exactly while s=1 is a simple line. A good starting point for dendro data seems to be around $s=1x1016$.
 
 Cubic splines were first used for dendro by \citet{Cook81} using an algorithm from \citet{Reinsch67}.
 
