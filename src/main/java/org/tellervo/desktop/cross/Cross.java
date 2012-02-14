@@ -88,7 +88,7 @@ import org.tellervo.desktop.ui.I18n;
 	 -- overlap bug: in last crossdate score, moving has overlap=2!
 
      <li>instead of the old getMinimumOverlap() method, use
-         Prefs.getPref("corina.cross.overlap"); default value is 15
+         Prefs.getPref("tellervo.cross.overlap"); default value is 15
    </ul>
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
@@ -341,7 +341,7 @@ public abstract class Cross implements Runnable {
 	/*
 	 * IDEA: make Crossdate and Algorithm separate classes
 	 * 
-	 * -- package edu.cornell.dendro.corina.cross.algorithms -- Algorithm has
+	 * -- package org.tellervo.desktop.cross.algorithms -- Algorithm has
 	 * just compute(int,int), isSig(float,int) -- name and format aren't really
 	 * coded -- put in prefs defaults? i18n? -- (also need: letter -- "t", "D",
 	 * etc.) -- rationale: Algorithm is optimized for simplicity to implementors
@@ -412,7 +412,7 @@ public abstract class Cross implements Runnable {
 
 		// careful: it can be true that n>0 but there are 0 crosses
 		// that should be run here. check first:
-		int overlap = getOverlap(); //App.prefs.getIntPref("corina.cross.overlap"
+		int overlap = getOverlap(); //App.prefs.getIntPref("tellervo.cross.overlap"
 									// , 15);
 		if (fixed.getRingWidthData().size() < overlap
 				|| moving.getRingWidthData().size() < overlap) {
@@ -509,7 +509,7 @@ public abstract class Cross implements Runnable {
 	 * 
 	 * @param algorithm
 	 *            the class name of the crossdate to use, like
-	 *            "corina.cross.TScore"
+	 *            "tellervo.cross.TScore"
 	 * @param fixed
 	 *            the fixed sample
 	 * @param moving
@@ -548,11 +548,11 @@ public abstract class Cross implements Runnable {
 	 * presented to the user: T-score, R-value, trend, D-score, weiserjahre.
 	 */
 	public final static String ALL_CROSSDATES[] = new String[] {
-			"edu.cornell.dendro.corina.cross.TScore",
-			"edu.cornell.dendro.corina.cross.RValue",
-			"edu.cornell.dendro.corina.cross.Trend",
-			"edu.cornell.dendro.corina.cross.DScore",
-			"edu.cornell.dendro.corina.cross.Weiserjahre",
+			"org.tellervo.desktop.cross.TScore",
+			"org.tellervo.desktop.cross.RValue",
+			"org.tellervo.desktop.cross.Trend",
+			"org.tellervo.desktop.cross.DScore",
+			"org.tellervo.desktop.cross.Weiserjahre",
 	// -> add new crossdates here
 	};
 
@@ -563,8 +563,8 @@ public abstract class Cross implements Runnable {
 	 * entries does not matter: the order of ALL_CROSSDATES is always used.)
 	 */
 	public final static String DEFAULT_CROSSDATES[] = new String[] {
-			"edu.cornell.dendro.corina.cross.TScore",
-			"edu.cornell.dendro.corina.cross.RValue",
-			"edu.cornell.dendro.corina.cross.Trend",
-			"edu.cornell.dendro.corina.cross.Weiserjahre", };
+			"org.tellervo.desktop.cross.TScore",
+			"org.tellervo.desktop.cross.RValue",
+			"org.tellervo.desktop.cross.Trend",
+			"org.tellervo.desktop.cross.Weiserjahre", };
 }

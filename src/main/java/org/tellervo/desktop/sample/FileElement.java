@@ -103,7 +103,7 @@ public class FileElement implements SampleLoader {
 			
 			// new @-notation
 			// (assumes c.d.r ends with file.sep!)
-			this.filename = System.getProperty("corina.dir.data", ".") + filename.substring(1);
+			this.filename = System.getProperty("tellervo.dir.data", ".") + filename.substring(1);
 			this.basename = new File(this.filename).getName();
 		}
 		// otherwise, we got passed a whole file name. try and parse it up.
@@ -121,7 +121,7 @@ public class FileElement implements SampleLoader {
 			
 			// if, for some reason, adaptive reading is turned off... 
 			// don't bother to parse it!
-			if(App.prefs.getBooleanPref("corina.dir.adaptiveread", true) == false) {
+			if(App.prefs.getBooleanPref("tellervo.dir.adaptiveread", true) == false) {
 				this.filename = filename;
 				this.basename = new File(filename).getName();
 				return;				
@@ -132,8 +132,8 @@ public class FileElement implements SampleLoader {
 			if(fn.startsWith("G:\\DATA\\")) {
 				fn = fn.substring(8);
 			}
-			else if(filename.startsWith(App.prefs.getPref("corina.dir.data", ".") + File.separator)) {
-				fn = fn.substring(App.prefs.getPref("corina.dir.data", ".").length() + File.separator.length());
+			else if(filename.startsWith(App.prefs.getPref("tellervo.dir.data", ".") + File.separator)) {
+				fn = fn.substring(App.prefs.getPref("tellervo.dir.data", ".").length() + File.separator.length());
 			}
 			else {
 				// we can't convert this into a special path.
@@ -154,7 +154,7 @@ public class FileElement implements SampleLoader {
 				this.folder = fn.substring(0, pos);
 				this.basename = fn.substring(pos + 1, fn.length());
 				
-				this.filename = App.prefs.getPref("corina.dir.data", ".") + File.separator +
+				this.filename = App.prefs.getPref("tellervo.dir.data", ".") + File.separator +
 								this.folder.replace(":", File.separator) + File.separator +
 								this.basename;
 			}
@@ -213,7 +213,7 @@ public class FileElement implements SampleLoader {
 	
 	/**
 	 Return this Element's filename, with
-	 <code>corina.dir.data</code> replaced by an "?", if it's in a
+	 <code>tellervo.dir.data</code> replaced by an "?", if it's in a
 	 subfolder of that.  (Otherwise, returns the absolute filename.)
 
 	 @return the filename, with ?'s

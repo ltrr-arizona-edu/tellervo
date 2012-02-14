@@ -31,17 +31,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
-import org.tellervo.desktop.schema.WSIRequest;
-import org.tellervo.desktop.schema.WSIRootElement;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.WSIRequest;
+import org.tellervo.schema.WSIRootElement;
 import org.tellervo.desktop.util.ListUtil;
 import org.tellervo.desktop.wsi.ResourceException;
-import org.tellervo.desktop.wsi.corina.CorinaResource;
-import org.tellervo.desktop.wsi.corina.CorinaResourceCacher;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.TellervoResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceCacher;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.MVCArrayList;
@@ -51,24 +51,24 @@ import com.dmurph.mvc.model.MVCArrayList;
  * @author Lucas Madar
  *
  */
-public class TridasObjectList extends CorinaResource {
+public class TridasObjectList extends TellervoResource {
 
 	/**
 	 * @param resourceName
 	 * @param queryType
 	 */
 	public TridasObjectList() {
-		super("tridas.objects", CorinaRequestType.READ);
+		super("tridas.objects", TellervoRequestType.READ);
 		
 		// ensure our data is all set up
 		data = new ListViews();
 		
 		// load my cache and unload on a successful remote load
-		new CorinaResourceCacher(this, true).load();
+		new TellervoResourceCacher(this, true).load();
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.wsi.corina.CorinaResource#populateRequest(edu.cornell.dendro.corina.schema.WSIRequest)
+	 * @see org.tellervo.desktop.wsi.tellervo.CorinaResource#populateRequest(org.tellervo.desktop.schema.WSIRequest)
 	 */
 	@Override
 	protected void populateRequest(WSIRequest request) {
@@ -78,11 +78,11 @@ public class TridasObjectList extends CorinaResource {
 		params.addSearchConstraint(SearchParameterName.PARENTOBJECTID, SearchOperator.IS, "NULL");
 		
 		request.setSearchParams(params);
-		request.setType(CorinaRequestType.SEARCH);
+		request.setType(TellervoRequestType.SEARCH);
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.wsi.Resource#processQueryResult(java.lang.Object)
+	 * @see org.tellervo.desktop.wsi.Resource#processQueryResult(java.lang.Object)
 	 */
 	@Override
 	protected boolean processQueryResult(WSIRootElement object)

@@ -61,7 +61,7 @@ import org.tellervo.desktop.core.AbstractSubsystem;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.platform.Platform;
-import org.tellervo.desktop.schema.WSIWmsServer;
+import org.tellervo.schema.WSIWmsServer;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.BugReport;
 import org.tellervo.desktop.util.JDisclosureTriangle;
@@ -97,74 +97,74 @@ public class Prefs extends AbstractSubsystem {
 	 */
 	public enum PrefKey{
 		
-		EDIT_FOREGROUND("corina.edit.foreground"),
-		EDIT_BACKGROUND("corina.edit.background"),
-		EDIT_FONT("corina.edit.font"),
-		EDIT_GRIDLINES("corina.edit.gridlines"),
-		GRAPH_BACKGROUND("corina.graph.background"),
-		GRAPH_GRIDLINES("corina.graph.graphpaper"),
-		GRAPH_GRIDLINES_COLOR("corina.graph.graphpaper.color"),
-		GRAPH_AXISCURSORCOLOR("corina.graph.foreground"),
-		GRID_HIGHLIGHT("corina.grid.highlight"),
-		GRID_HIGHLIGHTCOLOR("corina.grid.hightlightcolor"),
-		DISPLAY_UNITS("corina.displayunits"),
-		BARCODES_DISABLED("corina.barcodes.disable"),
-		MEASUREMENT_VARIABLE("corina.measurement.variable"),
+		EDIT_FOREGROUND("tellervo.edit.foreground"),
+		EDIT_BACKGROUND("tellervo.edit.background"),
+		EDIT_FONT("tellervo.edit.font"),
+		EDIT_GRIDLINES("tellervo.edit.gridlines"),
+		GRAPH_BACKGROUND("tellervo.graph.background"),
+		GRAPH_GRIDLINES("tellervo.graph.graphpaper"),
+		GRAPH_GRIDLINES_COLOR("tellervo.graph.graphpaper.color"),
+		GRAPH_AXISCURSORCOLOR("tellervo.graph.foreground"),
+		GRID_HIGHLIGHT("tellervo.grid.highlight"),
+		GRID_HIGHLIGHTCOLOR("tellervo.grid.hightlightcolor"),
+		DISPLAY_UNITS("tellervo.displayunits"),
+		BARCODES_DISABLED("tellervo.barcodes.disable"),
+		MEASUREMENT_VARIABLE("tellervo.measurement.variable"),
 		
 		/** Boolean indicating whether OpenGL failed on last attempt*/
 		OPENGL_FAILED("opengl.failed"),
-		SERIAL_DEVICE("corina.serial.measuring.device"),
-		SERIAL_PORT("corina.serialsampleio.port"),
-		SERIAL_DATABITS("corina.port.databits"),
-		SERIAL_BAUD("corina.port.baudrate"),
-		SERIAL_FLOWCONTROL("corina.port.flowcontrol"),
-		SERIAL_PARITY("corina.port.parity"),
-		SERIAL_LINEFEED("corina.port.linefeed"),
-		SERIAL_STOPBITS("corina.port.stopbits"),
-		SERIAL_MEASURE_CUMULATIVELY("corina.serial.measurecumulatively"),
-		SERIAL_MEASURE_IN_REVERSE("corina.serial.measurereverse"),
-		SERIAL_MULTIPLIER("corina.serial.multiplier"),
+		SERIAL_DEVICE("tellervo.serial.measuring.device"),
+		SERIAL_PORT("tellervo.serialsampleio.port"),
+		SERIAL_DATABITS("tellervo.port.databits"),
+		SERIAL_BAUD("tellervo.port.baudrate"),
+		SERIAL_FLOWCONTROL("tellervo.port.flowcontrol"),
+		SERIAL_PARITY("tellervo.port.parity"),
+		SERIAL_LINEFEED("tellervo.port.linefeed"),
+		SERIAL_STOPBITS("tellervo.port.stopbits"),
+		SERIAL_MEASURE_CUMULATIVELY("tellervo.serial.measurecumulatively"),
+		SERIAL_MEASURE_IN_REVERSE("tellervo.serial.measurereverse"),
+		SERIAL_MULTIPLIER("tellervo.serial.multiplier"),
 		
-		STATS_FORMAT_TSCORE("corina.cross.tscore.format"),
-		STATS_FORMAT_RVALUE("corina.cross.rvalue.format"),
-		STATS_FORMAT_TREND("corina.cross.trend.format"),
-		STATS_FORMAT_DSCORE("corina.cross.dscore.format"),
-		STATS_FORMAT_WEISERJAHRE("corina.cross.weiserjahre.format"),
-		STATS_OVERLAP_REQUIRED("corina.cross.overlap"),
-		STATS_OVERLAP_REQUIRED_DSCORE("corina.cross.d-overlap"),
-		STATS_MODELINE("corina.modeline.statistic"),
+		STATS_FORMAT_TSCORE("tellervo.cross.tscore.format"),
+		STATS_FORMAT_RVALUE("tellervo.cross.rvalue.format"),
+		STATS_FORMAT_TREND("tellervo.cross.trend.format"),
+		STATS_FORMAT_DSCORE("tellervo.cross.dscore.format"),
+		STATS_FORMAT_WEISERJAHRE("tellervo.cross.weiserjahre.format"),
+		STATS_OVERLAP_REQUIRED("tellervo.cross.overlap"),
+		STATS_OVERLAP_REQUIRED_DSCORE("tellervo.cross.d-overlap"),
+		STATS_MODELINE("tellervo.modeline.statistic"),
 		
-		PERSONAL_DETAILS_EMAIL("corina.bugreport.fromemail"),
-		PERSONAL_DETAILS_USERNAME("corina.login.username"),
-		PERSONAL_DETAILS_PASSWORD("corina.login.password"),
-		REMEMBER_USERNAME("corina.login.remember_username"),
-		REMEMBER_PASSWORD("corina.login.remember_password"),
-		AUTO_LOGIN("corina.login.auto_login"),
+		PERSONAL_DETAILS_EMAIL("tellervo.bugreport.fromemail"),
+		PERSONAL_DETAILS_USERNAME("tellervo.login.username"),
+		PERSONAL_DETAILS_PASSWORD("tellervo.login.password"),
+		REMEMBER_USERNAME("tellervo.login.remember_username"),
+		REMEMBER_PASSWORD("tellervo.login.remember_password"),
+		AUTO_LOGIN("tellervo.login.auto_login"),
 		
-		INDEX_POLY_DEGREES("corina.index.polydegs"),
-		INDEX_LOWPASS("corina.index.lowpass"),
-		INDEX_CUBIC_FACTOR("corina.index.cubicfactor"),
+		INDEX_POLY_DEGREES("tellervo.index.polydegs"),
+		INDEX_LOWPASS("tellervo.index.lowpass"),
+		INDEX_CUBIC_FACTOR("tellervo.index.cubicfactor"),
 		
-		EXPORT_FORMAT("corina.export.format"),
-		IMPORT_FORMAT("corina.import.format"),
+		EXPORT_FORMAT("tellervo.export.format"),
+		IMPORT_FORMAT("tellervo.import.format"),
 		
 		/** URL for the Corina webservice */
-		WEBSERVICE_URL("corina.webservice.url"),
-		WEBSERVICE_DISABLED("corina.webservice.disable"),
-		PROXY_TYPE("corina.proxy.type"),
-		PROXY_PORT_HTTP("corina.proxy.http_port"),
-		PROXY_PORT_HTTPS("corina.proxy.https_port"),
-		PROXY_HTTPS("corina.proxy.https"),
-		PROXY_HTTP("corina.proxy.http"),
+		WEBSERVICE_URL("tellervo.webservice.url"),
+		WEBSERVICE_DISABLED("tellervo.webservice.disable"),
+		PROXY_TYPE("tellervo.proxy.type"),
+		PROXY_PORT_HTTP("tellervo.proxy.http_port"),
+		PROXY_PORT_HTTPS("tellervo.proxy.https_port"),
+		PROXY_HTTPS("tellervo.proxy.https"),
+		PROXY_HTTP("tellervo.proxy.http"),
 		
-		WMS_PERSONAL_SERVERS("corina.wms.personalservers"),
+		WMS_PERSONAL_SERVERS("tellervo.wms.personalservers"),
 		
-		GRAPH_DEFAULT_AGENT("corina.graph.defaultagent"),
+		GRAPH_DEFAULT_AGENT("tellervo.graph.defaultagent"),
 				
-		FOLDER_DATA("corina.dir.data"),
-		FOLDER_LAST_READ("corina.dir.lastimport"),
-		FOLDER_LAST_SAVE("corina.dir.lastsave"),
-		FOLDER_LAST_GPS("corina.dir.lastgps");
+		FOLDER_DATA("tellervo.dir.data"),
+		FOLDER_LAST_READ("tellervo.dir.lastimport"),
+		FOLDER_LAST_SAVE("tellervo.dir.lastsave"),
+		FOLDER_LAST_GPS("tellervo.dir.lastgps");
 		
 		
 		
@@ -189,10 +189,10 @@ public class Prefs extends AbstractSubsystem {
 	protected static boolean dontWarn = false;
 
 	/*
-	 * OLD: ~/xcorina/prefs.properties [win32] ~/.corina/prefs.properties [unix]
+	 * OLD: ~/xtellervo/prefs.properties [win32] ~/.tellervo/prefs.properties [unix]
 	 * ~/Library/Corina/prefs.properties [mac]
 	 * 
-	 * NEW: ~/Corina Preferences [win32] ~/.corina [unix]
+	 * NEW: ~/Corina Preferences [win32] ~/.tellervo [unix]
 	 * ~/Library/Preferences/Corina Preferences [mac]
 	 */
 	private String CORINADIR;
@@ -239,7 +239,7 @@ public class Prefs extends AbstractSubsystem {
 		if (App.platform.isWindows()) {
 			String basedir = home;
 
-			// old location for corina preferences exists; migrate it over in
+			// old location for tellervo preferences exists; migrate it over in
 			// the end.
 			File oldprefs = new File(home + "Corina Preferences");
 
@@ -252,9 +252,9 @@ public class Prefs extends AbstractSubsystem {
 			basedir += "Corina" + File.separator;
 
 			// if the Corina directory doesn't exist, make it.
-			File corinadir = new File(basedir);
-			if (!corinadir.exists())
-				corinadir.mkdir();
+			File tellervodir = new File(basedir);
+			if (!tellervodir.exists())
+				tellervodir.mkdir();
 
 			CORINADIR = basedir;
 			FILENAME = basedir + "Corina.pref";
@@ -275,9 +275,9 @@ public class Prefs extends AbstractSubsystem {
 				basedir.mkdirs();
 		} else {
 			// plain ol' unix
-			CORINADIR = home + ".corina/";
-			FILENAME = home + ".corina/.preferences";
-			MACHINEFILENAME = "/etc/corina_system_preferences";
+			CORINADIR = home + ".tellervo/";
+			FILENAME = home + ".tellervo/.preferences";
+			MACHINEFILENAME = "/etc/tellervo_system_preferences";
 
 			File basedir = new File(CORINADIR);
 			if (!basedir.exists())
@@ -347,8 +347,8 @@ public class Prefs extends AbstractSubsystem {
 	 * 
 	 * TODO: System properties should really override the user properties (as
 	 * they are more "immediate"), but we'd have to make sure to only save the
-	 * corina properties back out. I /think/ all corina properties start with
-	 * 'corina' but I'm not sure yet.
+	 * tellervo properties back out. I /think/ all tellervo properties start with
+	 * 'tellervo' but I'm not sure yet.
 	 */
 	private synchronized void load() throws IOException {
 		// get existing properties
@@ -384,7 +384,7 @@ public class Prefs extends AbstractSubsystem {
 		}
 
 		// instantiate our properties using the system properties
-		// and corina properties as default values
+		// and tellervo properties as default values
 		prefs = new Properties(defaults);
 
 		try {
@@ -592,7 +592,7 @@ public class Prefs extends AbstractSubsystem {
 			prefs.remove(pref);
 		}
 		// Trim spaces from webservice URL
-		else if(pref.equals("corina.webservice.url"))
+		else if(pref.equals("tellervo.webservice.url"))
 		{
 			prefs.setProperty(pref, value.trim());
 		}
@@ -1203,7 +1203,7 @@ public class Prefs extends AbstractSubsystem {
 			prefs.remove(pref);
 		}
 		// Trim spaces from webservice URL
-		else if(pref.equals("corina.webservice.url"))
+		else if(pref.equals("tellervo.webservice.url"))
 		{
 			prefs.setProperty(pref, value.trim());
 		}

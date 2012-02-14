@@ -143,8 +143,8 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 		new FormatWrapper(cboTrend, PrefKey.STATS_FORMAT_TREND, "0.0%");
 		new FormatWrapper(cboDScore, PrefKey.STATS_FORMAT_DSCORE, "0.00");
 		new FormatWrapper(cboWJ, PrefKey.STATS_FORMAT_WEISERJAHRE, "0.0%");
-		new SpinnerWrapper(spnMinOverlap, "corina.cross.overlap", 15);
-		new SpinnerWrapper(spnMinOverlapDScore, "corina.cross.d-overlap", 100);
+		new SpinnerWrapper(spnMinOverlap, "tellervo.cross.overlap", 15);
+		new SpinnerWrapper(spnMinOverlapDScore, "tellervo.cross.d-overlap", 100);
 		new CheckBoxWrapper(chkHighlightSig, PrefKey.GRID_HIGHLIGHT, true);
 		new ColorComboBoxWrapper(cboHighlightColor, PrefKey.GRID_HIGHLIGHTCOLOR, Color.green);
 	}

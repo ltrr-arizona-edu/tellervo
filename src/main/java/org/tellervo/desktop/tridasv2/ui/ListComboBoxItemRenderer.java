@@ -28,7 +28,7 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSISecurityUser;
 import org.tridas.schema.ControlledVoc;
 
 

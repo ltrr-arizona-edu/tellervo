@@ -48,8 +48,8 @@ import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.WSIServerDetails;
 import org.tellervo.desktop.wsi.WSIServerDetails.WSIServerStatus;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.SeriesSearchResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -120,7 +120,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				App.dictionary = new Dictionary();
-				CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(parent, App.dictionary);
+				TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(parent, App.dictionary);
 				App.dictionary.query();
 				dlg.setVisible(true);
 				
@@ -259,13 +259,13 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		btnManualProxy.setActionCommand("manual");
 		btnNoProxy.setActionCommand("direct");
 
-		new TextComponentWrapper(txtHTTPProxyUrl, "corina.proxy.http", null);
-		new SpinnerWrapper(spnHTTPProxyPort, "corina.proxy.http_port", 80);
-		new TextComponentWrapper(txtHTTPSProxyUrl, "corina.proxy.https", null);
-		new SpinnerWrapper(spnHTTPSProxyPort, "corina.proxy.https_port", 443);
+		new TextComponentWrapper(txtHTTPProxyUrl, "tellervo.proxy.http", null);
+		new SpinnerWrapper(spnHTTPProxyPort, "tellervo.proxy.http_port", 80);
+		new TextComponentWrapper(txtHTTPSProxyUrl, "tellervo.proxy.https", null);
+		new SpinnerWrapper(spnHTTPSProxyPort, "tellervo.proxy.https_port", 443);
 		new RadioButtonWrapper(new JRadioButton[] { btnDefaultProxy, btnManualProxy, btnNoProxy }, 
-				"corina.proxy.type", "default");
-		new CheckBoxWrapper(chkDisableWS, "corina.webservice.disable", false );
+				"tellervo.proxy.type", "default");
+		new CheckBoxWrapper(chkDisableWS, "tellervo.webservice.disable", false );
 	
 		// manual proxy button behavior
 		setEnableProxy(btnManualProxy.isSelected());
@@ -276,7 +276,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		});
 		
 		// networking - server & smtp
-		new TextComponentWrapper(txtWSURL, "corina.webservice.url", null);
+		new TextComponentWrapper(txtWSURL, "tellervo.webservice.url", null);
 		originalURL = txtWSURL.getText();
 	}
 	

@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSISecurityUser;
 
 
 @SuppressWarnings("serial")

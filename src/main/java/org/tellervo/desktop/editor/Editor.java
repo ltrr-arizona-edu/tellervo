@@ -113,9 +113,9 @@ import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewer;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel;
 import org.tellervo.desktop.ui.Alert;
@@ -124,9 +124,9 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.OKCancel;
 import org.tellervo.desktop.util.Overwrite;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.EntitySearchResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
@@ -564,7 +564,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	    	EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param);
 	
 			// Query db 
-			CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+			TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
 			resource.query();	
 			dialog.setVisible(true);
 			

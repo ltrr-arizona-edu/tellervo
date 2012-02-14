@@ -21,8 +21,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ColorUtils;
 

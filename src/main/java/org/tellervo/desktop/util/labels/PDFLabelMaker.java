@@ -211,7 +211,7 @@ public class PDFLabelMaker {
 			Paragraph p = new Paragraph();
 
 			String labelText;
-			TridasGenericField labcodeField = GenericFieldUtils.findField(s, "corina.internal.labcodeText");
+			TridasGenericField labcodeField = GenericFieldUtils.findField(s, "tellervo.internal.labcodeText");
 			labelText = (labcodeField != null) ? labcodeField.getValue() : s.getTitle();
 			
 			p.add(new Chunk(labelText, labelfont));

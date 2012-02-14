@@ -98,7 +98,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		
 		boolean found = false;
 		for(TridasGenericField field : fields){
-			if(field.getName().equals("corina.objectLabCode")){
+			if(field.getName().equals("tellervo.objectLabCode")){
 				setProperty(OBJECT_CODE, field.getValue());
 				found = true;
 			}
@@ -134,7 +134,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	
 	public void populateTridasObject(TridasObject argObject){
 		TridasGenericField codeField = new TridasGenericField();
-		codeField.setName("corina.objectLabCode");
+		codeField.setName("tellervo.objectLabCode");
 		codeField.setValue(getProperty(OBJECT_CODE)+"");
 		argObject.getGenericFields().add(codeField);
 		

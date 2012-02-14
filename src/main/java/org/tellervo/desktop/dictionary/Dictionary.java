@@ -31,27 +31,27 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.WSIRequest;
-import org.tellervo.desktop.schema.WSIRootElement;
-import org.tellervo.desktop.schema.WSIRequest.Dictionaries;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSIRequest;
+import org.tellervo.schema.WSIRootElement;
+import org.tellervo.schema.WSIRequest.Dictionaries;
 import org.tellervo.desktop.wsi.ResourceException;
-import org.tellervo.desktop.wsi.corina.CorinaResource;
-import org.tellervo.desktop.wsi.corina.CorinaResourceCacher;
+import org.tellervo.desktop.wsi.tellervo.TellervoResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceCacher;
 
 import com.dmurph.mvc.model.MVCArrayList;
 
 
-public class Dictionary extends CorinaResource {
+public class Dictionary extends TellervoResource {
 
 	public static final String DICTIONARY_REGISTERED = "DICTIONARY_DICTIONARY_REGISTERED";
 	private final static Logger log = LoggerFactory.getLogger(Dictionary.class);
 
 	public Dictionary() {
-		super("dictionaries", CorinaRequestType.READ);
+		super("dictionaries", TellervoRequestType.READ);
 		
 		// load my cache and unload on a successful remote load
-		new CorinaResourceCacher(this, true).load();
+		new TellervoResourceCacher(this, true).load();
 	}
 	@Override
 	protected void populateRequest(WSIRequest request) {

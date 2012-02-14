@@ -56,7 +56,7 @@ public class ScanBarcodeUI extends javax.swing.JPanel {
         add(jLabel1, "cell 2 0,growx,aligny top");
         add(btnManual, "cell 2 2,alignx center,aligny top");
         
-        new CheckBoxWrapper(chkAlwaysManual, "corina.barcodes.disable", false );
+        new CheckBoxWrapper(chkAlwaysManual, "tellervo.barcodes.disable", false );
         
         result = new BarcodeDialogResult(parent);
 

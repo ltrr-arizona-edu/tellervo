@@ -53,7 +53,7 @@ import org.tellervo.desktop.sample.Sample;
  * <ul>
  * <li>need interface method (like getHighScores())
  * <li>instead of recomputing each time, add all to list, and return only overlap>min when asked to (filter)
- * <li>document me -- gpl header, javadoc; views should watch for when corina.cross.overlap changes (prefsListener), and ask me to recompute
+ * <li>document me -- gpl header, javadoc; views should watch for when tellervo.cross.overlap changes (prefsListener), and ask me to recompute
  * <li>use this in CrossdatePrinter, SignificantScoresView; get rid of highScores in Cross; have Crossdate.run() create a TopScores object (including compute())
  * <li>CrossdateWindow sorts the highScores list, but shouldn't (why does it?)
  * <li>do sorting here -- need a sortBy(??) method here; also, getSort(??)?
@@ -89,7 +89,7 @@ public class TopScores {
 
 		// FIXME: default=15 shouldn't be here; it's used elsewhere, as well.
 		final int minimumOverlap = c.getOverlap(); // App.prefs.getIntPref(
-													// "corina.cross.overlap",
+													// "tellervo.cross.overlap",
 													// 15);
 		int nr = 0;
 		int length = c.getRange().span();

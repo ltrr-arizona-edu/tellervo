@@ -142,19 +142,19 @@ public class SampleListTableModel extends AbstractTableModel {
 		
 		for(TridasGenericField gf : gflist)
 		{
-			if (gf.getName().equals("corina.boxCode")){
+			if (gf.getName().equals("tellervo.boxCode")){
 				boxCode = gf.getValue().toString();
 			}
-			if (gf.getName().equals("corina.boxCurationLocation")){
+			if (gf.getName().equals("tellervo.boxCurationLocation")){
 				boxCurationLocation = gf.getValue().toString();
 			}
-			if (gf.getName().equals("corina.boxTrackingLocation")) {
+			if (gf.getName().equals("tellervo.boxTrackingLocation")) {
 				boxTrackingLocation = gf.getValue().toString();
 			}
-			if (gf.getName().equals("corina.objectLabCode")){
+			if (gf.getName().equals("tellervo.objectLabCode")){
 				objectCode = gf.getValue().toString();
 			}
-			if (gf.getName().equals("corina.elementLabCode")){
+			if (gf.getName().equals("tellervo.elementLabCode")){
 				elementCode = gf.getValue().toString();
 			}
 					

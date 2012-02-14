@@ -29,10 +29,10 @@ import org.tellervo.desktop.io.control.ImportEntitySaveEvent;
 import org.tellervo.desktop.io.control.ImportSwapEntityEvent;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow.ImportStatus;
-import org.tellervo.desktop.schema.CorinaRequestType;
+import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
@@ -104,7 +104,7 @@ public class EntitySaveCommand implements ICommand {
 		}
 		
 		// set up a dialog...
-		CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(event.window, resource);
+		TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(event.window, resource);
 
 		// query the resource
 		resource.query();
@@ -238,7 +238,7 @@ public class EntitySaveCommand implements ICommand {
 	 * @return
 	 */
 	private <T extends ITridas> EntityResource<T> getUpdateAccessorResource(ITridas entity, Class<T> type) {
-		return new EntityResource<T>(entity, CorinaRequestType.UPDATE, type);
+		return new EntityResource<T>(entity, TellervoRequestType.UPDATE, type);
 	}
 	
 }

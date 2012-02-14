@@ -96,7 +96,7 @@ public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
 	{
 		JMenu layersmenu = Builder.makeMenu("menus.view.layers", "layers.png");
 
-        //JMenuItem wmslayermanager = Builder.makeMenuItem("menus.view.wmslayermanager", "edu.cornell.dendro.corina.gis.GISViewMenu.launchWMSLayerManager()");
+        //JMenuItem wmslayermanager = Builder.makeMenuItem("menus.view.wmslayermanager", "org.tellervo.desktop.gis.GISViewMenu.launchWMSLayerManager()");
 		wmslayermanager = new JMenuItem();
 		wmslayermanager.setText(I18n.getText("menus.view.wmslayermanager"));
 		wmslayermanager.addActionListener(this);

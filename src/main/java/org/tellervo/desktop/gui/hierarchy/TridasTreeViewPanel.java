@@ -50,22 +50,22 @@ import org.tellervo.desktop.gui.CorinaCodePanel.ObjectListMode;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.schema.CorinaRequestFormat;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.PopupListener;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.CorinaResourceProperties;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.EntityResource;
-import org.tellervo.desktop.wsi.corina.resources.EntitySearchResource;
-import org.tellervo.desktop.wsi.corina.resources.SeriesSearchResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.util.TridasUtils.TreeDepth;
@@ -556,10 +556,10 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         	param = new SearchParameters(SearchReturnObject.OBJECT);
         	param.addSearchConstraint(SearchParameterName.PARENTOBJECTID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
     		resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
-    		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
+    		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
     		
         	// Do Search     	
-    		CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parent, resource);
+    		TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parent, resource);
     		resource.query();	
     		dialog.setVisible(true);
     		if(!dialog.isSuccessful()) 
@@ -589,7 +589,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         	param = new SearchParameters(SearchReturnObject.ELEMENT);
         	param.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
     		resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
-    		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
+    		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
     		    		
     	}
     	else if(node.getUserObject() instanceof TridasElement) 
@@ -603,7 +603,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         	param = new SearchParameters(SearchReturnObject.SAMPLE);
         	param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
     		resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
-    		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
+    		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
     	    		
     	}
     	else if(node.getUserObject() instanceof TridasSample) 
@@ -617,7 +617,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         	param = new SearchParameters(SearchReturnObject.RADIUS);
         	param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
     		resource = new EntitySearchResource<TridasRadius>(param, TridasRadius.class);
-    		resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
+    		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
     	    		
     	}
     	else if(node.getUserObject() instanceof TridasRadius) 
@@ -641,16 +641,16 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         	}
         	        	
     		seriesSearchResource = new SeriesSearchResource(param);
-    		seriesSearchResource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
+    		seriesSearchResource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
     	    		
     	}
 
     	// Do Search     	
-		CorinaResourceAccessDialog dialog;
+		TellervoResourceAccessDialog dialog;
 		List<ITridas> returnList;
 		if(node.getUserObject() instanceof TridasRadius) 
 		{
-			dialog = new CorinaResourceAccessDialog(seriesSearchResource);
+			dialog = new TellervoResourceAccessDialog(seriesSearchResource);
 			seriesSearchResource.query();
 			dialog.setVisible(true);
 			if(!dialog.isSuccessful()) 
@@ -675,7 +675,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		}
 		else
 		{
-			dialog = new CorinaResourceAccessDialog(resource);
+			dialog = new TellervoResourceAccessDialog(resource);
 			resource.query();
 			dialog.setVisible(true);
 			if(!dialog.isSuccessful()) 
@@ -791,25 +791,25 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		{
 			entityType = "Object";
 			entity = (TridasObject) node.getUserObject();
-			rsrc = new EntityResource<TridasObject>(entity, CorinaRequestType.DELETE, TridasObject.class);
+			rsrc = new EntityResource<TridasObject>(entity, TellervoRequestType.DELETE, TridasObject.class);
 		}
 		else if(node.getUserObject() instanceof TridasElement)
 		{
 			entityType = "Element";
 			entity = (TridasElement) node.getUserObject();
-			rsrc = new EntityResource<TridasElement>(entity, CorinaRequestType.DELETE, TridasElement.class);
+			rsrc = new EntityResource<TridasElement>(entity, TellervoRequestType.DELETE, TridasElement.class);
 		}
 		else if(node.getUserObject() instanceof TridasSample)
 		{
 			entityType = "Sample";
 			entity = (TridasSample) node.getUserObject();
-			rsrc = new EntityResource<TridasSample>(entity, CorinaRequestType.DELETE, TridasSample.class);
+			rsrc = new EntityResource<TridasSample>(entity, TellervoRequestType.DELETE, TridasSample.class);
 		}
 		else if(node.getUserObject() instanceof TridasRadius)
 		{
 			entityType = "Radius";
 			entity = (TridasRadius) node.getUserObject();
-			rsrc = new EntityResource<TridasRadius>(entity, CorinaRequestType.DELETE, TridasRadius.class);
+			rsrc = new EntityResource<TridasRadius>(entity, TellervoRequestType.DELETE, TridasRadius.class);
 		}
 		else
 		{
@@ -817,7 +817,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		}
 			    			
 		// Do query
-		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(rsrc);
+		TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(rsrc);
 		rsrc.query();
 		accdialog.setVisible(true);
 		
@@ -949,7 +949,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 			TridasObjectEx object = (TridasObjectEx) entity;
 					
 			
-			TreePath path = tree.getNextMatch(GenericFieldUtils.findField(object, "corina.objectLabCode").getValue().toString(), 0, Position.Bias.Forward);
+			TreePath path = tree.getNextMatch(GenericFieldUtils.findField(object, "tellervo.objectLabCode").getValue().toString(), 0, Position.Bias.Forward);
 			tree.setSelectionPath(path);
 			tree.scrollPathToVisible(path);
 			

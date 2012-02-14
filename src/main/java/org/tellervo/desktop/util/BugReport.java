@@ -131,7 +131,7 @@ public class BugReport {
 			  // Open the file that is the first 
 			  // command line parameter
 			  FileInputStream fstream = new FileInputStream(System.getProperty("user.home")
-						+File.separator+"corina-submission.log" );
+						+File.separator+"tellervo-submission.log" );
 			  // Get the object of DataInputStream
 			  in = new DataInputStream(fstream);
 			  BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -160,10 +160,10 @@ public class BugReport {
 	
 	public static String getUserInfo() {
 
-		String corinauser = "[Not logged in]";
+		String tellervouser = "[Not logged in]";
 		if(App.currentUser!=null)
 		{
-			corinauser = App.currentUser.getUsername()+ " ("+App.currentUser.getFirstName() + " " + App.currentUser.getLastName()+")";
+			tellervouser = App.currentUser.getUsername()+ " ("+App.currentUser.getFirstName() + " " + App.currentUser.getLastName()+")";
 		}
 				
 		StringBuffer buf = new StringBuffer();
@@ -173,7 +173,7 @@ public class BugReport {
 		buf.append("\n");
 		
 		buf.append("   System user: " + System.getProperty("user.name") + "\n");
-		buf.append("   Corina user: " + corinauser+"\n"); 
+		buf.append("   Corina user: " + tellervouser+"\n"); 
 		buf.append("   Home: " + System.getProperty("user.home") + "\n");
 		buf.append("   Language: " + System.getProperty("user.language") + "\n");
 		buf.append("   Region: " + System.getProperty("user.region") + "\n");

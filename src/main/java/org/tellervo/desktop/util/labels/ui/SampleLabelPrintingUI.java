@@ -35,19 +35,19 @@ import java.util.List;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.dbbrowse.SiteRenderer;
-import org.tellervo.desktop.schema.CorinaRequestFormat;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.util.ArrayListModel;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.CorinaResourceProperties;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.EntitySearchResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
@@ -213,7 +213,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
     /**
      * Stupid function to get a list of samples from a list of objects
      * 
-     * Has the side effect of setting corina.internal.labcode generic field ;)
+     * Has the side effect of setting tellervo.internal.labcode generic field ;)
      * Hack to get lab code!
      * 
      * @param objects
@@ -269,7 +269,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 					labcode.setSampleCode(samp.getTitle());
 					
 					// set the lab code kludgily on the sample
-					GenericFieldUtils.setField(samp, "corina.internal.labcodeText", 
+					GenericFieldUtils.setField(samp, "tellervo.internal.labcodeText", 
 							LabCodeFormatter.getRadiusPrefixFormatter().format(labcode));
 					
 					// add the sample to the returns list
@@ -294,9 +294,9 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 
     	// we want an object return here, so we get a list of object->elements->samples when we use comprehensive
 		EntitySearchResource<TridasObject> sampresource = new EntitySearchResource<TridasObject>(sampparam, TridasObject.class);
-		sampresource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
+		sampresource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
 		
-		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(sampresource);
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(sampresource);
 		sampresource.query();	
 		dialog.setVisible(true);
 		

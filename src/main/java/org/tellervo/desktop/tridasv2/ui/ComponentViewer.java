@@ -61,14 +61,14 @@ import org.tellervo.desktop.sample.CorinaWsiTridasElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.schema.CorinaRequestFormat;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.EntityType;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.EntityType;
 import org.tellervo.desktop.util.PopupListener;
 import org.tellervo.desktop.wsi.ResourceEvent;
 import org.tellervo.desktop.wsi.ResourceEventListener;
-import org.tellervo.desktop.wsi.corina.CorinaResourceProperties;
-import org.tellervo.desktop.wsi.corina.resources.SeriesResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.resources.SeriesResource;
 import org.tridas.schema.TridasIdentifier;
 
 
@@ -343,10 +343,10 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		if(sample.getLoader() instanceof CorinaWsiTridasElement) {
 			TridasIdentifier identifier = ((CorinaWsiTridasElement) sample.getLoader()).getTridasIdentifier();
 			// create a new resource
-			SeriesResource resource = new SeriesResource(identifier, EntityType.MEASUREMENT_SERIES, CorinaRequestType.READ);
+			SeriesResource resource = new SeriesResource(identifier, EntityType.MEASUREMENT_SERIES, TellervoRequestType.READ);
 
 			// flag it as comprehensive
-			resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
+			resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
 			resource.setOwnerWindow(SwingUtilities.getWindowAncestor(this));
 			
 			resource.addResourceEventListener(this);

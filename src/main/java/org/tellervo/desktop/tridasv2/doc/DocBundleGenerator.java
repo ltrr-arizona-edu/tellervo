@@ -107,7 +107,7 @@ public class DocBundleGenerator {
 		if(writer != null)
 			return writer;
 		
-		String fn = "src/edu/cornell/dendro/corina/tridasv2/doc/" +  
+		String fn = "src/org.tellervo.desktop.tridasv2/doc/" +  
 			"DocsBundle" + (lang.equals("en") ? "" : ("_" + lang)) + ".properties";
 		writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(fn), "UTF-8"));
 

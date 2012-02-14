@@ -25,8 +25,8 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.ui.I18n;
 
 

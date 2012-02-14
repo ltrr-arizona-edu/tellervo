@@ -31,14 +31,14 @@ import javax.swing.table.TableRowSorter;
 import org.tellervo.desktop.admin.view.UserGroupAdminView;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gui.Bug;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.EntityType;
-import org.tellervo.desktop.schema.WSIEntity;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.SecurityUserEntityResource;
-import org.tellervo.desktop.wsi.corina.resources.WSIEntityResource;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.EntityType;
+import org.tellervo.schema.WSIEntity;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.SecurityUserEntityResource;
+import org.tellervo.desktop.wsi.tellervo.resources.WSIEntityResource;
 
 import com.dmurph.mvc.model.AbstractModel;
 

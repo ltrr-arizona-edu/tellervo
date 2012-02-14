@@ -233,7 +233,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 				outDocument = marshallToDocument(context, sendingObject, getNamespacePrefixMapper());
 								
 				// add it to the http post request
-				XMLBody xmlb = new XMLBody(outDocument, "application/corina+xml", null);				
+				XMLBody xmlb = new XMLBody(outDocument, "application/tellervo+xml", null);				
 				postEntity.addPart("xmlrequest", xmlb);
 				postEntity.addPart("traceback", new StringBody(getStackTrace()));
 				post.setEntity(postEntity);

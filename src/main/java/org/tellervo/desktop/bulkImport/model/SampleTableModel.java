@@ -26,16 +26,16 @@ package org.tellervo.desktop.bulkImport.model;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.tellervo.desktop.schema.CorinaRequestFormat;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
-import org.tellervo.desktop.schema.WSIBoxDictionary;
-import org.tellervo.desktop.schema.WSISampleTypeDictionary;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.CorinaResourceProperties;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.EntitySearchResource;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.WSIBoxDictionary;
+import org.tellervo.schema.WSISampleTypeDictionary;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tridas.schema.Date;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
@@ -99,9 +99,9 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 
 				    	// we want an object return here, so we get a list of object->elements->samples when we use comprehensive
 						EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
-						resource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
+						resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
 						
-						CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(BulkImportModel.getInstance().getMainView(), resource);
+						TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(BulkImportModel.getInstance().getMainView(), resource);
 						resource.query();	
 						dialog.setVisible(true);
 						

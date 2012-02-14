@@ -62,19 +62,19 @@ import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
-import org.tellervo.desktop.schema.WSIBox;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.WSIBox;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.PopupListener;
 import org.tellervo.desktop.util.labels.LabBarcode;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.SeriesSearchResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
@@ -366,7 +366,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 		// Do the search 
     	final DBBrowser glue = this;
 		SeriesSearchResource searchResource = new SeriesSearchResource(param);
-		CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(glue, searchResource);
+		TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(glue, searchResource);
 		searchResource.query();
 		dlg.setVisible(true);
 	
@@ -555,7 +555,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     	}
     	
     	// Save the browse list type
-//		App.prefs.setPref("corina.dbbrowser.listmode", 
+//		App.prefs.setPref("tellervo.dbbrowser.listmode", 
 //				((BrowseListMode) cboBrowseBy.getSelectedItem()).name());
     	
     	returnStatus = RET_OK;
@@ -850,7 +850,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
             }
         });
 
-        String browseModeStr = App.prefs.getPref("corina.dbbrowser.listmode", BrowseListMode.POPULATED.name());
+        String browseModeStr = App.prefs.getPref("tellervo.dbbrowser.listmode", BrowseListMode.POPULATED.name());
         
         // handle old modes, maybe?
         BrowseListMode browseMode;
@@ -1183,7 +1183,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 		
 		// Do the search 
 		SeriesSearchResource searchResource = new SeriesSearchResource(search);
-		CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(glue, searchResource);
+		TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(glue, searchResource);
 		searchResource.query();
 		dlg.setVisible(true);
 		

@@ -168,7 +168,7 @@ public class Tree extends JLabel implements DragGestureListener {
     // if you want to drag a file, here's an easy way to do it.
     // (i'm not the only one to think of this, apparently.
     // see also com.apple.mrj.datatransfer.FileTransferable)
-    // REFACTOR: move this to corina.util?
+    // REFACTOR: move this to tellervo.util?
     // -- (or maybe a more awt/swing-specific util package?)
     public static class TransferableFile implements Transferable {
 	private String filename;

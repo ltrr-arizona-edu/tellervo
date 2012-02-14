@@ -75,14 +75,14 @@ import org.tellervo.desktop.util.UpdateFolder;
 
 
 // purpose: show a list of all the available sources, to be used with
-// the corina sample browser.
+// the tellervo sample browser.
 
 // possible sources include:
 // -- local folders
 // -- remote (ftp) folders
 // -- smart lists
 
-// REFACTOR: move this to corina.browser.*
+// REFACTOR: move this to tellervo.browser.*
 // WRITEME: a SourceType interface, which has:
 // -- icon
 // -- name
@@ -325,9 +325,9 @@ public class SourcesTable extends JTable {
     // this should be user-modifyable
     private List sources = new ArrayList();
     {
-	sources.add(new FolderSource("Library (lab)", "/Users/kharris/Documents/Corina/corina/Demo Data"));
-	sources.add(new FolderSource("Library (laptop)", "/Users/kharris/Documents/Corina/corina/Demo Data Copy"));
-	sources.add(new FolderSource("Library (data)", "/Users/kharris/Documents/Corina/corina/DATA"));
+	sources.add(new FolderSource("Library (lab)", "/Users/kharris/Documents/Corina/tellervo/Demo Data"));
+	sources.add(new FolderSource("Library (laptop)", "/Users/kharris/Documents/Corina/tellervo/Demo Data Copy"));
+	sources.add(new FolderSource("Library (data)", "/Users/kharris/Documents/Corina/tellervo/DATA"));
 	sources.add(new DatabaseSource("Database (server)", "jdbc:postgresql://picea.arts.cornell.edu/dendro",
 				       "kharris", "merhaba"));
 	sources.add(new DatabaseSource("Database (local)", "jdbc:hsqldb:/Users/kharris/dendro",

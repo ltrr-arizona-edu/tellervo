@@ -26,8 +26,8 @@ package org.tellervo.desktop.bulkImport.model;
 import java.math.BigDecimal;
 
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
-import org.tellervo.desktop.schema.WSIElementTypeDictionary;
-import org.tellervo.desktop.schema.WSITaxonDictionary;
+import org.tellervo.schema.WSIElementTypeDictionary;
+import org.tellervo.schema.WSITaxonDictionary;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasUnit;

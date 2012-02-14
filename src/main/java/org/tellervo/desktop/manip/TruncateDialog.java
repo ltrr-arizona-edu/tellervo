@@ -87,7 +87,7 @@ import org.tellervo.desktop.util.OKCancel;
 import org.tellervo.desktop.util.Years;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
-import org.tellervo.desktop.wsi.corina.NewTridasIdentifier;
+import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
 
@@ -245,9 +245,9 @@ public class TruncateDialog extends JDialog {
 		// relative end year = new end - old start
 		int relEndYear = r.getEnd().diff(s.getRange().getStart());
 		
-		GenericFieldUtils.setField(series, "corina.newStartYear", relStartYear);
-		GenericFieldUtils.setField(series, "corina.newEndYear", relEndYear);
-		GenericFieldUtils.setField(series, "corina.justification", info.getJustification());
+		GenericFieldUtils.setField(series, "tellervo.newStartYear", relStartYear);
+		GenericFieldUtils.setField(series, "tellervo.newEndYear", relEndYear);
+		GenericFieldUtils.setField(series, "tellervo.justification", info.getJustification());
 		
 		// make a new 'truncate' dummy sample for saving
 		Sample tmp = new Sample(series);		

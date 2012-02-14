@@ -22,23 +22,23 @@ import org.tellervo.desktop.admin.model.GroupsWithPermissionsTableModel;
 import org.tellervo.desktop.admin.model.UsersWithPermissionsTableModel;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.EntityType;
-import org.tellervo.desktop.schema.PermissionsEntityType;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
-import org.tellervo.desktop.schema.WSIBox;
-import org.tellervo.desktop.schema.WSIPermission;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.EntityType;
+import org.tellervo.schema.PermissionsEntityType;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.WSIBox;
+import org.tellervo.schema.WSIPermission;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.EntityResource;
-import org.tellervo.desktop.wsi.corina.resources.PermissionsResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.resources.PermissionsResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasDerivedSeries;
@@ -136,7 +136,7 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		}
 		
 		// Query db 
-		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
 		resource.query();	
 		dialog.setVisible(true);
 		

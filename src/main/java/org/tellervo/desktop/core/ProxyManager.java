@@ -45,7 +45,7 @@ public class ProxyManager implements PrefsListener {
 	}
 
 	public void prefChanged(PrefsEvent e) {
-		if(e.getPref().startsWith("corina.proxy."))
+		if(e.getPref().startsWith("tellervo.proxy."))
 			setupProxy();
 	}
 	

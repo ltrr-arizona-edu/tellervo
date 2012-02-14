@@ -57,7 +57,7 @@ import javax.swing.event.DocumentEvent;
          eventually come up first?
    </ul>
 
-   @see edu.cornell.dendro.corina.tridas.LegacySiteDB
+   @see org.tellervo.desktop.tridas.LegacySiteDB
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$

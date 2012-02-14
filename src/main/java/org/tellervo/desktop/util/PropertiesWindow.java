@@ -56,7 +56,7 @@ import org.tellervo.desktop.ui.Builder;
 // - make columns not draggable
 // - allow copying (right-click?  cmd-C?)
 // - i18n?
-// - distinguish between or separate standard properties, extra system properties, and corina properties?
+// - distinguish between or separate standard properties, extra system properties, and tellervo properties?
 
 @SuppressWarnings("serial")
 public class PropertiesWindow extends JDialog {

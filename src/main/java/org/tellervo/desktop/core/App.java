@@ -44,14 +44,14 @@ import org.tellervo.desktop.prefs.Prefs;
 import org.tellervo.desktop.prefs.WizardDialog;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.schema.WSIConfiguration;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSIConfiguration;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.setupwizard.SetupWizard;
 import org.tellervo.desktop.tridasv2.TridasObjectList;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ListUtil;
-import org.tellervo.desktop.wsi.corina.CorinaWsiAccessor;
+import org.tellervo.desktop.wsi.tellervo.TellervoWsiAccessor;
 import org.tridas.io.TridasIO;
 
 import com.dmurph.mvc.MVC;
@@ -183,7 +183,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
     {
     	meter.setProgress(4);
     	meter.setNote(I18n.getText("login.bindingSchemas"));
-    	CorinaWsiAccessor.loadCorinaContext();
+    	TellervoWsiAccessor.loadCorinaContext();
     }
        
     // load coordinate reference systems

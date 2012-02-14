@@ -219,7 +219,7 @@ public class Builder {
 	// Simple helper for supplying the application icon for use in title bars
 	public static Image getApplicationIcon()
 	{
-		Image ic = ((ImageIcon) Builder.getIcon("corina-application.png", 32)).getImage();
+		Image ic = ((ImageIcon) Builder.getIcon("tellervo-application.png", 32)).getImage();
 	
 		return ic;
 	}

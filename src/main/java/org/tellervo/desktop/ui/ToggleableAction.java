@@ -24,7 +24,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
 
-public abstract class ToggleableAction extends CorinaAction {
+public abstract class ToggleableAction extends TellervoAction {
 	private static final long serialVersionUID = 1L;
 
 	/**

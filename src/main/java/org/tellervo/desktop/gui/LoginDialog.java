@@ -58,9 +58,9 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.ResourceEvent;
 import org.tellervo.desktop.wsi.ResourceEventListener;
 import org.tellervo.desktop.wsi.WSIServerDetails;
-import org.tellervo.desktop.wsi.corina.WebInterfaceCode;
-import org.tellervo.desktop.wsi.corina.WebInterfaceException;
-import org.tellervo.desktop.wsi.corina.resources.AuthenticateResource;
+import org.tellervo.desktop.wsi.tellervo.WebInterfaceCode;
+import org.tellervo.desktop.wsi.tellervo.WebInterfaceException;
+import org.tellervo.desktop.wsi.tellervo.resources.AuthenticateResource;
 
 
 public class LoginDialog extends JDialog {
@@ -218,7 +218,7 @@ public class LoginDialog extends JDialog {
 			gbc_serverUrl.gridy = 3;
 			contentPanel.add(serverUrl, gbc_serverUrl);
 			serverUrl.setColumns(10);
-			new TextComponentWrapper(serverUrl, "corina.webservice.url", null);
+			new TextComponentWrapper(serverUrl, "tellervo.webservice.url", null);
 		}
 		{
 			wsurlLock = new JToggleButton("");

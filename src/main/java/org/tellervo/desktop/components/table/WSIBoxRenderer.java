@@ -3,7 +3,7 @@
  */
 package org.tellervo.desktop.components.table;
 
-import org.tellervo.desktop.schema.WSIBox;
+import org.tellervo.schema.WSIBox;
 
 import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
 

@@ -57,7 +57,7 @@ public class GISFileMenu extends FileMenu {
 	@Override
 	public void addIOMenus(){
 		
-		JMenuItem importmenu = Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithbarcode()", "fileimport.png");
+		JMenuItem importmenu = Builder.makeMenuItem("menus.file.import", "org.tellervo.desktop.gui.menus.FileMenu.importdbwithbarcode()", "fileimport.png");
 		importmenu.setEnabled(false);
 		add(importmenu);
 		

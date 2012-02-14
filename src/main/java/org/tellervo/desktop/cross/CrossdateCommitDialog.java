@@ -57,7 +57,7 @@ import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
-import org.tellervo.desktop.wsi.corina.NewTridasIdentifier;
+import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.SeriesLink;
@@ -179,8 +179,8 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		series.setType(voc);
 		
 		// set certainty and justification
-		GenericFieldUtils.addField(series, "corina.crossdateConfidenceLevel", cboCertainty.getSelectedItem());		
-		GenericFieldUtils.addField(series, "corina.justification", txtJustification.getText());
+		GenericFieldUtils.addField(series, "tellervo.crossdateConfidenceLevel", cboCertainty.getSelectedItem());		
+		GenericFieldUtils.addField(series, "tellervo.justification", txtJustification.getText());
 		
 		// set the parent
 		SeriesLinkUtil.addToSeries(series, secondary.getSeries().getIdentifier());
@@ -197,7 +197,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		interpretation.setFirstYear(range.getStart().tridasYearValue());
 		
 		// set "newStartYear" generic field for first year of new crossdate
-		GenericFieldUtils.addField(series, "corina.newStartYear", range.getStart().toString());
+		GenericFieldUtils.addField(series, "tellervo.newStartYear", range.getStart().toString());
 
 		// get linkseries for master
 		SeriesLink linkMaster = SeriesLinkUtil.forIdentifier(primary.getSeries().getIdentifier());

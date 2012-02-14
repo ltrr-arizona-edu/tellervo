@@ -60,7 +60,7 @@ public class TridasTree extends JTree {
 			TridasObjectEx obj = ((TridasObjectEx)node.getUserObject());
 			for(TridasGenericField gf : obj.getGenericFields())
 			{
-				if (gf.getName().equals("corina.objectLabCode"))
+				if (gf.getName().equals("tellervo.objectLabCode"))
 				{
 					return gf.getValue() + " - "+obj.getTitle();
 				}

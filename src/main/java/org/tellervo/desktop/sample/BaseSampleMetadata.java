@@ -27,14 +27,14 @@ public class BaseSampleMetadata implements CorinaMetadata {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getDatingCertainty()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#getDatingCertainty()
 	 */
 	public Certainty getDatingCertainty() {
 		return Certainty.UNKNOWN;
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getName()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#getName()
 	 */
 	public String getName() {
 		return series.isSetTitle() ? series.getTitle() : 
@@ -42,14 +42,14 @@ public class BaseSampleMetadata implements CorinaMetadata {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getNumberOfSapwoodRings()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#getNumberOfSapwoodRings()
 	 */
 	public Integer getNumberOfSapwoodRings() {
 		return 0;
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getSiteCode()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#getSiteCode()
 	 */
 	public String getSiteCode() {
 		LabCode labcode = bs.getMeta(Metadata.LABCODE, LabCode.class);
@@ -62,28 +62,28 @@ public class BaseSampleMetadata implements CorinaMetadata {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#hasSiteCode()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#hasSiteCode()
 	 */
 	public boolean hasSiteCode() {
 		return getSiteCode() != null;
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getWoodCompleteness()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#getWoodCompleteness()
 	 */
 	public TridasWoodCompleteness getWoodCompleteness() {
 		return null;
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#hasSapwood()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#hasSapwood()
 	 */
 	public boolean hasSapwood() {
 		return false;
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getTaxon()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#getTaxon()
 	 */
 	public String getTaxon() {
 		return bs.getMetaString(Metadata.SUMMARY_MUTUAL_TAXON);

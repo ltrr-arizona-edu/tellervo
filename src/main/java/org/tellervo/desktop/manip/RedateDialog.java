@@ -82,7 +82,7 @@ import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.OKCancel;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
-import org.tellervo.desktop.wsi.corina.NewTridasIdentifier;
+import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasDatingType;
@@ -287,10 +287,10 @@ public class RedateDialog extends JDialog {
 		// 2: Relative start year
 		interpretation.setFirstYear(range.getStart().tridasYearValue());
 		// looks like the genericField is what's actually used?
-		GenericFieldUtils.setField(series, "corina.newStartYear", Integer.parseInt(range.getStart().toString()));
+		GenericFieldUtils.setField(series, "tellervo.newStartYear", Integer.parseInt(range.getStart().toString()));
 
 		// 3: Justification
-		GenericFieldUtils.setField(series, "corina.justification", info.getJustification());
+		GenericFieldUtils.setField(series, "tellervo.justification", info.getJustification());
 		
 		// make a new 'redate' dummy sample for saving
 		Sample tmp = new Sample(series);		

@@ -28,9 +28,9 @@ import org.tridas.schema.TridasRemark;
 public class CorinaReadingRemark extends AbstractRemark {
 	private final TridasRemark remark;
 	
-	public CorinaReadingRemark(TridasRemark corinaRemark) {	
-		remark = (TridasRemark) corinaRemark.clone();
-		corinaRemark.copyTo(remark);
+	public CorinaReadingRemark(TridasRemark tellervoRemark) {	
+		remark = (TridasRemark) tellervoRemark.clone();
+		tellervoRemark.copyTo(remark);
 		remark.setValue("");
 	}
 	

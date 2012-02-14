@@ -24,7 +24,7 @@
 package org.tellervo.desktop.bulkImport.model;
 
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.schema.WSIBox;
+import org.tellervo.schema.WSIBox;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.Date;
 import org.tridas.schema.TridasElement;
@@ -156,7 +156,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		if(getProperty(BOX) != null){
 			TridasGenericField field = null;
 			for(TridasGenericField gf: argSample.getGenericFields()){
-				if(gf.getName().equals("corina.boxID")){
+				if(gf.getName().equals("tellervo.boxID")){
 					field = gf;
 				}
 			}
@@ -164,7 +164,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 				field = new TridasGenericField();
 				argSample.getGenericFields().add(field);
 			}
-			field.setName("corina.boxID");
+			field.setName("tellervo.boxID");
 			field.setType("xs:string");
 			field.setValue(((WSIBox)getProperty(BOX)).getIdentifier().getValue());
 		}
@@ -189,7 +189,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		// Get boxID generic field
 		TridasGenericField field = null;
 		for(TridasGenericField gf: argSample.getGenericFields()){
-			if(gf.getName().equals("corina.boxID")){
+			if(gf.getName().equals("tellervo.boxID")){
 				field = gf;
 			}
 		}

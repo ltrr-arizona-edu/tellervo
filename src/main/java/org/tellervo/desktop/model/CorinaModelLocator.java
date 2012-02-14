@@ -37,9 +37,9 @@ public class CorinaModelLocator {
 	private EditorController editorController = new EditorController();
 	private ColumnChooserController columnController = new ColumnChooserController();
 	private BulkImportController bulkImportController = new BulkImportController();
-	private IOController corinaImportController = new IOController();
+	private IOController tellervoImportController = new IOController();
 	
-	private final ImportModel corinaImportModel = new ImportModel();
+	private final ImportModel tellervoImportModel = new ImportModel();
 	
 	private final UserGroupAdminController userGroupAdminControl = new UserGroupAdminController();
 	
@@ -49,7 +49,7 @@ public class CorinaModelLocator {
 	
 	public ImportModel getImportModel()
 	{
-		return corinaImportModel;
+		return tellervoImportModel;
 	}
 	
 	public static CorinaModelLocator getInstance(){

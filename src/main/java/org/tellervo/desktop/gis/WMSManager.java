@@ -39,7 +39,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.prefs.AddWMSServerDialog;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.schema.WSIWmsServer;
+import org.tellervo.schema.WSIWmsServer;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 

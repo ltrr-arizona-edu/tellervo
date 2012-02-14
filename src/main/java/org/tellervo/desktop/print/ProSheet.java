@@ -30,19 +30,19 @@ import java.util.List;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.schema.CorinaRequestFormat;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.pdf.PrintablePDF;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.CorinaResourceProperties;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.EntitySearchResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
@@ -76,8 +76,8 @@ public class ProSheet extends ReportBase {
     	
     	// we want a series returned here    	
 		EntitySearchResource<TridasObject> searchResource = new EntitySearchResource<TridasObject>(sampparam);
-		searchResource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
-		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(searchResource);
+		searchResource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(searchResource);
 		searchResource.query();	
 		dialog.setVisible(true);
 	
@@ -213,8 +213,8 @@ public class ProSheet extends ReportBase {
 			param.addSearchConstraint(SearchParameterName.SERIESDBID, SearchOperator.EQUALS, s.getIdentifier().getValue().toString());
 	    		
 			EntitySearchResource<TridasObject> searchResource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
-			searchResource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
-			CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(searchResource);
+			searchResource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+			TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(searchResource);
 			searchResource.query();	
 			dialog.setVisible(true);
 		

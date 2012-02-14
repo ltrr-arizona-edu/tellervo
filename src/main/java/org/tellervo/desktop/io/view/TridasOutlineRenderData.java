@@ -89,7 +89,7 @@ public class TridasOutlineRenderData implements RenderDataProvider {
 			TridasObject obj = ((TridasObject)entity);
 			for(TridasGenericField gf : obj.getGenericFields())
 			{
-				if (gf.getName().equals("corina.objectLabCode"))
+				if (gf.getName().equals("tellervo.objectLabCode"))
 				{
 					return gf.getValue() + " - "+obj.getTitle();
 				}

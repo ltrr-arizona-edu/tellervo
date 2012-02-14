@@ -45,7 +45,7 @@ import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.hierarchy.ManagementTreeViewPanel;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel;
-import org.tellervo.desktop.schema.CorinaRequestType;
+import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.tridasv2.TridasCloner;
 import org.tellervo.desktop.tridasv2.ui.CorinaPropertySheetTable;
 import org.tellervo.desktop.tridasv2.ui.TridasPropertyEditorFactory;
@@ -54,8 +54,8 @@ import org.tellervo.desktop.tridasv2.ui.support.TridasEntityDeriver;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.util.TridasUtils.TreeDepth;
@@ -341,27 +341,27 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		
 		if(temporaryEditingEntity instanceof TridasObject)
 		{
-			resource = new EntityResource<TridasObject>(temporaryEditingEntity, CorinaRequestType.UPDATE, TridasObject.class);
+			resource = new EntityResource<TridasObject>(temporaryEditingEntity, TellervoRequestType.UPDATE, TridasObject.class);
 			type = TridasObject.class;
 		}
 		else if (temporaryEditingEntity instanceof TridasElement)
 		{
-			resource = new EntityResource<TridasElement>(temporaryEditingEntity, CorinaRequestType.UPDATE, TridasElement.class);
+			resource = new EntityResource<TridasElement>(temporaryEditingEntity, TellervoRequestType.UPDATE, TridasElement.class);
 			type = TridasElement.class;
 		}
 		else if (temporaryEditingEntity instanceof TridasSample)
 		{
-			resource = new EntityResource<TridasSample>(temporaryEditingEntity, CorinaRequestType.UPDATE, TridasSample.class);
+			resource = new EntityResource<TridasSample>(temporaryEditingEntity, TellervoRequestType.UPDATE, TridasSample.class);
 			type = TridasSample.class;
 		}
 		else if (temporaryEditingEntity instanceof TridasRadius)
 		{
-			resource = new EntityResource<TridasRadius>(temporaryEditingEntity, CorinaRequestType.UPDATE, TridasRadius.class);
+			resource = new EntityResource<TridasRadius>(temporaryEditingEntity, TellervoRequestType.UPDATE, TridasRadius.class);
 			type = TridasRadius.class;
 		}
 		else if (temporaryEditingEntity instanceof TridasMeasurementSeries)
 		{
-			resource = new EntityResource<TridasMeasurementSeries>(temporaryEditingEntity, CorinaRequestType.UPDATE, TridasMeasurementSeries.class);
+			resource = new EntityResource<TridasMeasurementSeries>(temporaryEditingEntity, TellervoRequestType.UPDATE, TridasMeasurementSeries.class);
 			type = TridasMeasurementSeries.class;
 		}
 		else 
@@ -372,7 +372,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		
 		// set up a dialog...
 		Window parentWindow = SwingUtilities.getWindowAncestor(this);
-		CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, resource);
+		TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parentWindow, resource);
 
 		// query the resource
 		resource.query();

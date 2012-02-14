@@ -197,8 +197,8 @@ public class OpenRecent {
 		if(menu == null)
 			menu = Builder.makeMenu("menus.file.open_recent");
 		
-		menu.putClientProperty("corina.open_recent_tag", tag);
-		menu.putClientProperty("corina.open_recent_itemsToKeep", itemsToKeep);
+		menu.putClientProperty("tellervo.open_recent_tag", tag);
+		menu.putClientProperty("tellervo.open_recent_itemsToKeep", itemsToKeep);
 
 		// generate its elements
 		updateMenu(menu);
@@ -349,11 +349,11 @@ public class OpenRecent {
 	
 	// BUG: error handling in here is miserable-to-nonexistant
 	private static void updateMenu(final JMenu menu) {
-		String possibleTag = (String) menu.getClientProperty("corina.open_recent_tag");
+		String possibleTag = (String) menu.getClientProperty("tellervo.open_recent_tag");
 		final String tag = (possibleTag == null) ? "documents" : possibleTag;
 		final List<OpenableDocumentDescriptor> recent = getListForTag(tag);
 		
-		Integer itemsToKeep = (Integer) menu.getClientProperty("corina.open_recent_itemsToKeep");
+		Integer itemsToKeep = (Integer) menu.getClientProperty("tellervo.open_recent_itemsToKeep");
 
 		// clear the bottom n items from the menu
 		if(itemsToKeep != null) {
@@ -373,7 +373,7 @@ public class OpenRecent {
 				// todo: if already open, just toFront() it!
 				public void actionPerformed(ActionEvent e) {
 					try {
-						doOpen(recent.get(glue), menu.getClientProperty("corina.open_recent_action"));
+						doOpen(recent.get(glue), menu.getClientProperty("tellervo.open_recent_action"));
 					} catch (FileNotFoundException fnfe) {
 						// file moved?
 						Alert.error(I18n.getText("error.loadingSample"), I18n.getText("error.cantOpenFile")+ " " + recent.get(glue) + ".\n"
@@ -415,7 +415,7 @@ public class OpenRecent {
 		}
 	}
 
-	// load recent-list from |corina.recent.files|.
+	// load recent-list from |tellervo.recent.files|.
 	// only called on class-load, so doesn't need to be synch.
 	private static void loadList(String tag) {
 		File file = OpenRecent.getOpenRecentFile(tag);

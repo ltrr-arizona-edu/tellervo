@@ -87,7 +87,7 @@ public class AboutBox extends javax.swing.JDialog {
     private void addDetails(){
     
     	// Set icon
-	    Icon icon = Builder.getIcon("corina-application.png", 128);
+	    Icon icon = Builder.getIcon("tellervo-application.png", 128);
 	    if (icon != null) {
 	    	  lblIcon.setIcon(icon);
 	    }

@@ -153,7 +153,7 @@ public class XCorina extends JFrame {
 		_self = this;
 
 		// boilerplate
-		setTitle("Corina");
+		setTitle(I18n.getText("about.Tellervo"));
 
 		// set application icon
 		setIconImage(Builder.getApplicationIcon());
@@ -161,7 +161,7 @@ public class XCorina extends JFrame {
 		// set background...
 		ClassLoader cl = this.getClass().getClassLoader();		
 		BufferedImage img = null;
-		URL url = cl.getResource("Images/background3.png");
+		URL url = cl.getResource("Images/appbackground.png");
 		if (url != null) {
 			try {
 				img = ImageIO.read(url);

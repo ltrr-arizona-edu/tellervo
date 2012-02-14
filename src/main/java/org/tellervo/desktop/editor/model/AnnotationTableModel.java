@@ -132,7 +132,7 @@ public class AnnotationTableModel extends AbstractTableModel implements ICloneab
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.mvc.model.ICloneable#cloneFrom(edu.cornell.dendro.corina.mvc.model.ICloneable)
+	 * @see org.tellervo.desktop.mvc.model.ICloneable#cloneFrom(org.tellervo.desktop.mvc.model.ICloneable)
 	 */
 	@Override
 	public void cloneFrom( ICloneable argOther) {

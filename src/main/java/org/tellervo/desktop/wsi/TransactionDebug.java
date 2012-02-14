@@ -33,7 +33,7 @@ import org.tellervo.desktop.gui.BugReportDialog;
 import org.tellervo.desktop.gui.XMLDebugView;
 import org.tellervo.desktop.util.BugReport;
 import org.tellervo.desktop.util.XMLDebug;
-import org.tellervo.desktop.wsi.corina.CorinaNamespacePrefixMapper;
+import org.tellervo.desktop.wsi.tellervo.TellervoNamespacePrefixMapper;
 
 
 public class TransactionDebug {
@@ -60,7 +60,7 @@ public class TransactionDebug {
 		// Marshall it to an xml document
 		try {
 			Document doc = WebJaxbAccessor.marshallToDocument(context, out, 
-					new CorinaNamespacePrefixMapper());
+					new TellervoNamespacePrefixMapper());
 			
 			sent(doc, noun);
 		} catch (JAXBException e) {
@@ -76,7 +76,7 @@ public class TransactionDebug {
 		Document doc;
 		try {
 			doc = WebJaxbAccessor.marshallToDocument(context, in,
-					new CorinaNamespacePrefixMapper());
+					new TellervoNamespacePrefixMapper());
 			XMLDebugView.addDocument(doc, noun, true);
 
 			if(isExtremelyVerboseDebuggingEnabled) {

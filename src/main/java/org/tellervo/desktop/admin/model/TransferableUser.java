@@ -5,7 +5,7 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSISecurityUser;
 
 
 @SuppressWarnings("serial")

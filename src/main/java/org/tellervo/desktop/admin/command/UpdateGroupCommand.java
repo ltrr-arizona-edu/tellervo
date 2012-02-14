@@ -25,10 +25,10 @@ import javax.swing.JOptionPane;
 
 import org.tellervo.desktop.admin.control.UpdateGroupEvent;
 import org.tellervo.desktop.admin.model.UserGroupAdminModel;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.SecurityGroupEntityResource;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.SecurityGroupEntityResource;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
@@ -50,9 +50,9 @@ public class UpdateGroupCommand implements ICommand {
         	parent = event.parent;
         	
 			// associate a resource
-	    	SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(CorinaRequestType.UPDATE, group);
+	    	SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(TellervoRequestType.UPDATE, group);
 	    	
-			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(parent, rsrc);
+			TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(parent, rsrc);
 			rsrc.query();
 			accdialog.setVisible(true);
 			

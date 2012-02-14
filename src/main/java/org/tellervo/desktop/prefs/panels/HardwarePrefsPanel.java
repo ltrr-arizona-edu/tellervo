@@ -242,7 +242,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		
 		chkDisableBarcodes = new JCheckBox("Disable support for barcode scanner");
 		panelBarcode.add(chkDisableBarcodes, "cell 0 0");
-		new CheckBoxWrapper(chkDisableBarcodes, "corina.barcodes.disable", false );
+		new CheckBoxWrapper(chkDisableBarcodes, "tellervo.barcodes.disable", false );
 		
 		lblMeasureCumulatively = new JLabel("Measure cumulatively:");
 		panel.add(lblMeasureCumulatively, "cell 2 5,alignx trailing");

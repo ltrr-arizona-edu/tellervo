@@ -11,7 +11,7 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
-import org.tellervo.desktop.ui.CorinaAction;
+import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.ui.I18n;
 
 
@@ -64,7 +64,7 @@ public class GraphToolbar extends JToolBar {
 	}
 	
 	
-	private void addToggle(CorinaAction action, String key) {
+	private void addToggle(TellervoAction action, String key) {
 		AbstractButton button = new TitlelessToggleButton(action);
 		action.connectToggleableButton(button);
 
@@ -73,7 +73,7 @@ public class GraphToolbar extends JToolBar {
 		add(button);
 	}
 	
-	private void addButton(CorinaAction action, String key) {
+	private void addButton(TellervoAction action, String key) {
 		AbstractButton button = new TitlelessButton(action);
 
 		button.setToolTipText(getToolTip(key));

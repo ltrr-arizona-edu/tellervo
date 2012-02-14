@@ -462,8 +462,8 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			// because Sample(filename) takes arbitrary
 			// formats, load(Reader) does not.  (fixable?))
 
-			// use $(TMP)/corinaXXXXX.clip for the filename
-			File tmpFile = File.createTempFile("corina", ".clip");
+			// use $(TMP)/tellervoXXXXX.clip for the filename
+			File tmpFile = File.createTempFile("tellervo", ".clip");
 			tmpFile.deleteOnExit();
 			final String tmpFilename = tmpFile.getPath();
 
@@ -544,7 +544,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		 (it's good this came up, though.  opening a file 5 times because
 		 it's not the most popular format is killing i/o performance.)
 
-		 quick hack just to make it work: save to /tmp/corinaXXXXX.clip, ...
+		 quick hack just to make it work: save to /tmp/tellervoXXXXX.clip, ...
 		 */
 	}
 

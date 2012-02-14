@@ -92,7 +92,7 @@ import org.tellervo.desktop.ui.I18n;
     <h2>Left to do:</h2>
     <ul>
         <li>Javadoc
-        <li>Move to corina.menus (or corina.gui.menus), along with other menus
+        <li>Move to tellervo.menus (or tellervo.gui.menus), along with other menus
         <li>Use this in Editor and Browser
         <li>Get rid of "Redo", unless a subclass explicitly adds it?
     </ul>

@@ -71,7 +71,7 @@ import org.tellervo.indexing.*;
     <h2>Left to do:</h2>
     <ul>
         <li>move run() body into constructor; there's no reason for this to be Runnable
-        <li>document corina.index.polydegs
+        <li>document tellervo.index.polydegs
         <li>is a public list really the best interface?
     </ul>
 

@@ -114,7 +114,7 @@ public class TridasAnnotation extends CorinaAnnotation {
     		String objectCode = "??";
     		for(TridasGenericField gf : elem.getGenericFields())
     		{
-    			if (gf.getName().equals("corina.objectLabCode")){
+    			if (gf.getName().equals("tellervo.objectLabCode")){
     				objectCode = gf.getValue().toString();
     			}
     		}

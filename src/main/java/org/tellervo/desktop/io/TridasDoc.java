@@ -43,7 +43,7 @@ import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
 import org.tellervo.desktop.tridasv2.TridasIdentifierMap;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.wsi.corina.TridasGenericFieldMap;
+import org.tellervo.desktop.wsi.tellervo.TridasGenericFieldMap;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.NormalTridasVariable;
@@ -145,7 +145,7 @@ public class TridasDoc implements Filetype {
 						labcode.clearSites();
 						for(TridasObject object : objArray) {
 							for(TridasGenericField f : object.getGenericFields()) {
-								if("corina.objectLabCode".equals(f.getName())) {
+								if("tellervo.objectLabCode".equals(f.getName())) {
 									labcode.appendSiteCode(f.getValue());
 								}
 							}
@@ -314,13 +314,13 @@ public class TridasDoc implements Filetype {
 				getValue().toGregorianCalendar().getTime());
 		
 		// count of direct children
-		s.setMeta(Metadata.CHILD_COUNT, genericFields.getInteger("corina.directChildCount", 0));
+		s.setMeta(Metadata.CHILD_COUNT, genericFields.getInteger("tellervo.directChildCount", 0));
 		
 		// reconciled only works on Direct VMs
 		if(s.getSampleType() == SampleType.DIRECT) {
 			// set it to the value of reconciled, or false if it's not present
-			if(genericFields.containsKey("corina.isReconciled"))
-				s.setMeta(Metadata.RECONCILED, genericFields.getBoolean("corina.isReconciled"));
+			if(genericFields.containsKey("tellervo.isReconciled"))
+				s.setMeta(Metadata.RECONCILED, genericFields.getBoolean("tellervo.isReconciled"));
 			else
 				s.setMeta(Metadata.RECONCILED, Boolean.FALSE);
 		}
@@ -367,14 +367,14 @@ public class TridasDoc implements Filetype {
 		// no values: summary VM
 		else {
 			// make up our range...
-			s.setRange(new Range(firstYear, genericFields.getInteger("corina.readingCount", 0)));
+			s.setRange(new Range(firstYear, genericFields.getInteger("tellervo.readingCount", 0)));
 			
 			// ok, build lab code...
 			LabCode labcode = new LabCode();
 			
 			for(int objectIdx = 1;;objectIdx++) {
-				String objectCode = genericFields.getString("corina.objectCode." + objectIdx);
-				String objectTitle = genericFields.getString("corina.objectTitle." + objectIdx);
+				String objectCode = genericFields.getString("tellervo.objectCode." + objectIdx);
+				String objectTitle = genericFields.getString("tellervo.objectTitle." + objectIdx);
 				
 				// we're done here!
 				if(objectCode == null || objectTitle == null)
@@ -385,21 +385,21 @@ public class TridasDoc implements Filetype {
 			}
 			
 			// ok if these are null
-			labcode.setElementCode(genericFields.getString("corina.elementTitle"));
-			labcode.setRadiusCode(genericFields.getString("corina.radiusTitle"));
-			labcode.setSampleCode(genericFields.getString("corina.sampleTitle"));
+			labcode.setElementCode(genericFields.getString("tellervo.elementTitle"));
+			labcode.setRadiusCode(genericFields.getString("tellervo.radiusTitle"));
+			labcode.setSampleCode(genericFields.getString("tellervo.sampleTitle"));
 			labcode.setSeriesCode(series.getTitle());
 			
 			s.setMeta(Metadata.LABCODE, labcode);			
 			s.setMeta(Metadata.TITLE, LabCodeFormatter.getDefaultFormatter().format(labcode));
 			
 			// set up summary metadata
-			if(genericFields.containsKey("corina.seriesCount") && s.getSampleType() == SampleType.SUM)
-				s.setMeta(Metadata.SUMMARY_SUM_CONSTITUENT_COUNT, genericFields.getInteger("corina.seriesCount"));
-			if(genericFields.containsKey("corina.summaryTaxonName"))
-				s.setMeta(Metadata.SUMMARY_MUTUAL_TAXON, genericFields.getString("corina.summaryTaxonName"));
-			if(genericFields.containsKey("corina.summaryTaxonCount"))
-				s.setMeta(Metadata.SUMMARY_MUTUAL_TAXON_COUNT, genericFields.getInteger("corina.summaryTaxonCount"));
+			if(genericFields.containsKey("tellervo.seriesCount") && s.getSampleType() == SampleType.SUM)
+				s.setMeta(Metadata.SUMMARY_SUM_CONSTITUENT_COUNT, genericFields.getInteger("tellervo.seriesCount"));
+			if(genericFields.containsKey("tellervo.summaryTaxonName"))
+				s.setMeta(Metadata.SUMMARY_MUTUAL_TAXON, genericFields.getString("tellervo.summaryTaxonName"));
+			if(genericFields.containsKey("tellervo.summaryTaxonCount"))
+				s.setMeta(Metadata.SUMMARY_MUTUAL_TAXON_COUNT, genericFields.getInteger("tellervo.summaryTaxonCount"));
 		
 			// Version
 			if(series instanceof ITridasDerivedSeries) {

@@ -177,7 +177,7 @@ public class FileMenu extends JMenu {
 			fileimport.add(importitem);
 		}
 		
-		//fileimport = Builder.makeMenuItem("menus.file.import", "edu.cornell.dendro.corina.gui.menus.FileMenu.importdbwithtricycle()", "fileimport.png");
+		//fileimport = Builder.makeMenuItem("menus.file.import", "org.tellervo.desktop.gui.menus.FileMenu.importdbwithtricycle()", "fileimport.png");
 		add(fileimport);
 		
 		addExportMenus();
@@ -202,10 +202,10 @@ public class FileMenu extends JMenu {
 		});
 		add(filenew);
 		
-		fileopen = Builder.makeMenuItem("menus.file.open", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendb()", "fileopen.png");
+		fileopen = Builder.makeMenuItem("menus.file.open", "org.tellervo.desktop.gui.menus.FileMenu.opendb()", "fileopen.png");
 		add(fileopen);
 		
-		fileopenmulti = Builder.makeMenuItem("menus.file.openmulti", "edu.cornell.dendro.corina.gui.menus.FileMenu.opendbmulti()", "folder_documents.png");
+		fileopenmulti = Builder.makeMenuItem("menus.file.openmulti", "org.tellervo.desktop.gui.menus.FileMenu.opendbmulti()", "folder_documents.png");
 		add(fileopenmulti);
 		
 		openrecent = OpenRecent.makeOpenRecentMenu();
@@ -351,7 +351,7 @@ public class FileMenu extends JMenu {
 		
 		// Add exit button if not on Mac
 		if (!Platform.isMac()) {
-			add(Builder.makeMenuItem("menus.file.quit", "edu.cornell.dendro.corina.gui.XCorina.quit()", "exit.png"));
+			add(Builder.makeMenuItem("menus.file.quit", "org.tellervo.desktop.gui.XCorina.quit()", "exit.png"));
 		}
 		
 	}

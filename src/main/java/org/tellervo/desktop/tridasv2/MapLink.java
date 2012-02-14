@@ -40,7 +40,7 @@ public class MapLink {
 	private URI mapURI;
 	
 	public MapLink(ITridasGeneric generic) {
-		TridasGenericField field = GenericFieldUtils.findField(generic, "corina.mapLink");
+		TridasGenericField field = GenericFieldUtils.findField(generic, "tellervo.mapLink");
 
 		// no URI? no link!
 		if(field == null) {

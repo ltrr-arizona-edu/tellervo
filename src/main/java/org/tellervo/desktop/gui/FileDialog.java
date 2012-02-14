@@ -68,7 +68,7 @@ import org.tellervo.desktop.ui.I18n;
  * 
  * <li>automatically uses a bunch of default filters</li>
  * 
- * <li>gets its initial directory from corina.dir.data; subsequent calls start
+ * <li>gets its initial directory from tellervo.dir.data; subsequent calls start
  * from the last-used-directory</li>
  * 
  * <li>incredibly neat preview component</li>
@@ -167,7 +167,7 @@ public class FileDialog {
 	// XXX: can you say race condition - aaron... dependence on static
 	// initializers, data and methods needs to be fixed
 	// If this class is referenced before Prefs is, we are SOL
-	//private static String wd = App.prefs.getPref("corina.dir.data");
+	//private static String wd = App.prefs.getPref("tellervo.dir.data");
 	
 	// working directory
 	// we keep a map of working directories for each function,

@@ -20,7 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import org.tellervo.desktop.schema.WSIWmsServer;
+import org.tellervo.schema.WSIWmsServer;
 import org.tellervo.desktop.ui.Builder;
 
 import net.miginfocom.swing.MigLayout;

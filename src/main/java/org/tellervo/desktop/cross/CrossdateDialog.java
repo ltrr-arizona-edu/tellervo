@@ -64,15 +64,15 @@ import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Center;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.SeriesSearchResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasGenericField;
 
@@ -169,7 +169,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 				SearchOperator.EQUALS, ds.getInterpretation().getDatingReference().getLinkSeries().getIdentifier().getValue());
 	
 		SeriesSearchResource searchResource = new SeriesSearchResource(search);
-		CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(new JDialog(), searchResource);
+		TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(new JDialog(), searchResource);
 		
 		// start our query (remotely)
 		searchResource.query();
@@ -292,11 +292,11 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 				reviewString += I18n.getText("meta.author")+": " + floatingSeries.getAuthor() + "\n";
 				for (TridasGenericField gf: floatingSample.getSeries().getGenericFields())
 				{
-					if(gf.getName().equals("corina.justification"))
+					if(gf.getName().equals("tellervo.justification"))
 					{
 						reviewString += I18n.getText("general.justification") +": "+gf.getValue().toString() + "\n";
 					}
-					if(gf.getName().equals("corina.crossdateConfidenceLevel"))
+					if(gf.getName().equals("tellervo.crossdateConfidenceLevel"))
 					{
 						reviewString += I18n.getText("general.certainty")+ ": " + gf.getValue().toString() + " "+ I18n.getText("general.star")+"\n";
 					}

@@ -67,7 +67,7 @@ public class Bayesian {
       crossdate run on them, and save that distribution.  more info on how to
       do this is under "filters", below.  basically, i can use the user-mode
       tool i plan to write to generate my first system-mode distributions that
-      will ship with corina.
+      will ship with tellervo.
 
       ----
       filters:
@@ -82,7 +82,7 @@ public class Bayesian {
       Confidence brings up a window that lists available distribution profiles.
       by default, there are 3: t-score, trend, and d-score, each created with (say)
       10,000 random pairs from cornell data, but users can create their own
-      (where will they live?  ~/.corina/distributions/ or ~\Corina Preferences\Distributions\,
+      (where will they live?  ~/.tellervo/distributions/ or ~\Corina Preferences\Distributions\,
       i would say.)  at any time, a user can create a new distribution (or delete an
       existing one, except for the builtins), by specifying (1) which algorithm it
       is for, (2) what filter on samples to use (e.g., species matches "quer*"), (3) what
@@ -485,7 +485,7 @@ public class Bayesian {
   }
 
     // in theory, you can change these at any time, and it won't break an existing
-    // corina that has old stats files.  but they do have to be monotonically increasing
+    // tellervo that has old stats files.  but they do have to be monotonically increasing
     // (a bug is flagged at runtime if they're not).
     private static final float INTERVALS[] = new float[] {
 	0.5f,    0.9f,
@@ -539,7 +539,7 @@ public class Bayesian {
 	if (args.length >= 2) {
 	    algorithm = (Class<Cross>) Class.forName(args[1]);
 	} else {
-	    algorithm = (Class<Cross>) Class.forName("edu.cornell.dendro.corina.cross.TScore");
+	    algorithm = (Class<Cross>) Class.forName("org.tellervo.desktop.cross.TScore");
 	}
 
 	int numberOfPairs;

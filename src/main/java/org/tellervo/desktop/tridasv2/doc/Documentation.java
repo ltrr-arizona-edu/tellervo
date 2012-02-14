@@ -76,7 +76,7 @@ public class Documentation {
     static {
 		ResourceBundle bundle;
 		try {
-			bundle = ResourceBundle.getBundle("edu/cornell/dendro/corina/tridasv2/doc/DocsBundle");
+			bundle = ResourceBundle.getBundle("org.tellervo.desktop.tridasv2/doc/DocsBundle");
 		} catch (MissingResourceException mre) {
 			mre.printStackTrace();
 			bundle = new ResourceBundle() {

@@ -26,13 +26,13 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.admin.control.DeleteGroupEvent;
 import org.tellervo.desktop.admin.model.UserGroupAdminModel;
 import org.tellervo.desktop.admin.view.UserGroupAdminView;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.WSIEntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.WSIEntityResource;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
-import edu.cornell.dendro.corina.schema.*;
+import org.tellervo.schema.*;
 
 
 public class DeleteGroupCommand implements ICommand {
@@ -49,9 +49,9 @@ public class DeleteGroupCommand implements ICommand {
     		entity.setType(EntityType.SECURITY_GROUP);
         			
     		// associate a resource
-        	WSIEntityResource rsrc = new WSIEntityResource(CorinaRequestType.DELETE, entity);
+        	WSIEntityResource rsrc = new WSIEntityResource(TellervoRequestType.DELETE, entity);
         	
-    		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(view, rsrc);
+    		TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(view, rsrc);
     		rsrc.query();
     		accdialog.setVisible(true);
     		

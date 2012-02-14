@@ -58,10 +58,10 @@ public class Remarks {
 		
 		// add dictionary remarks
 		List<?> dictionaryRemarks = Dictionary.getDictionary("readingNoteDictionary");
-		List<TridasRemark> corinaRemarks = ListUtil.subListOfType(dictionaryRemarks, TridasRemark.class);
+		List<TridasRemark> tellervoRemarks = ListUtil.subListOfType(dictionaryRemarks, TridasRemark.class);
 		
-		for(TridasRemark r : corinaRemarks) {
-			// only corina remarks for now
+		for(TridasRemark r : tellervoRemarks) {
+			// only tellervo remarks for now
 			if("Corina".equals(r.getNormalStd()))
 				remarks.add(new CorinaReadingRemark(r));
 		}
@@ -122,7 +122,7 @@ public class Remarks {
 	}
 	
 	public static Map<String, String> getCorinaRemarkIcons() {
-		return corinaRemarkIconMap;
+		return tellervoRemarkIconMap;
 	}
 	
 	/** A map from tridas remarks -> icons */
@@ -150,9 +150,9 @@ public class Remarks {
 		
 	};
 	
-	private final static Map<String, String> corinaRemarkIconMap = new HashMap<String, String>();
+	private final static Map<String, String> tellervoRemarkIconMap = new HashMap<String, String>();
 	static {
-		corinaRemarkIconMap.put("insect damage", "bug.png");
+		tellervoRemarkIconMap.put("insect damage", "bug.png");
 
 
 	}

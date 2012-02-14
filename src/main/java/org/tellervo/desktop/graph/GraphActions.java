@@ -23,7 +23,7 @@ package org.tellervo.desktop.graph;
 import java.beans.IntrospectionException;
 
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.ui.CorinaAction;
+import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.ui.ToggleableAction;
 import org.tellervo.desktop.ui.ToggleableActionGroup;
 import org.tellervo.desktop.ui.ToggleableBoundAction;
@@ -112,73 +112,73 @@ public class GraphActions {
 		};		
 	}
 
-	protected CorinaAction squeezeVertically;
-	protected CorinaAction spreadB25;
-	protected CorinaAction spreadB50;
-	protected CorinaAction spreadB100;
-	protected CorinaAction spreadB200;
+	protected TellervoAction squeezeVertically;
+	protected TellervoAction spreadB25;
+	protected TellervoAction spreadB50;
+	protected TellervoAction spreadB100;
+	protected TellervoAction spreadB200;
 	
-	protected CorinaAction squishBaselines;
-	protected CorinaAction fitHorizontally;
-	protected CorinaAction fitBoth;
-	protected CorinaAction zoomInHorizontally;
-	protected CorinaAction zoomOutHorizontally;
+	protected TellervoAction squishBaselines;
+	protected TellervoAction fitHorizontally;
+	protected TellervoAction fitBoth;
+	protected TellervoAction zoomInHorizontally;
+	protected TellervoAction zoomOutHorizontally;
 	
-	protected CorinaAction scaleUp;
-	protected CorinaAction scaleDown;
-	protected CorinaAction scaleReset;
+	protected TellervoAction scaleUp;
+	protected TellervoAction scaleDown;
+	protected TellervoAction scaleReset;
 	
-	protected CorinaAction zoomIn;
-	protected CorinaAction zoomOut;
-	protected CorinaAction zoomReset;
+	protected TellervoAction zoomIn;
+	protected TellervoAction zoomOut;
+	protected TellervoAction zoomReset;
 	
-	protected CorinaAction setToLogScale;
-	protected CorinaAction setToNormalScale;
+	protected TellervoAction setToLogScale;
+	protected TellervoAction setToNormalScale;
 	
 	
 	@SuppressWarnings("serial")
 	private void createControllerActions() {
-		squeezeVertically = new CorinaAction("graph.baselines_align", "squeezevertically.png", Builder.ICONS, 22) {
+		squeezeVertically = new TellervoAction("graph.baselines_align", "squeezevertically.png", Builder.ICONS, 22) {
 			public void actionPerformed(ActionEvent e) {
 				controller.squeezeTogether();
 			}		
 		};
 		
-		spreadB25 = new CorinaAction("graph.units25") {
+		spreadB25 = new TellervoAction("graph.units25") {
 			public void actionPerformed(ActionEvent e) {
 				controller.spreadOut(25);
 			}
 		};
-		spreadB50 = new CorinaAction("graph.units50") {
+		spreadB50 = new TellervoAction("graph.units50") {
 			public void actionPerformed(ActionEvent e) {
 				controller.spreadOut(50);
 			}
 		};
-		spreadB100 = new CorinaAction("graph.units100") {
+		spreadB100 = new TellervoAction("graph.units100") {
 			public void actionPerformed(ActionEvent e) {
 				controller.spreadOut(100);
 			}
 		};
-		spreadB200 = new CorinaAction("graph.units200") {
+		spreadB200 = new TellervoAction("graph.units200") {
 			public void actionPerformed(ActionEvent e) {
 				controller.spreadOut(200);
 			}
 		};
 		
-		squishBaselines = new CorinaAction("graph.baselines_squish") {
+		squishBaselines = new TellervoAction("graph.baselines_squish") {
 			public void actionPerformed(ActionEvent e) {
 				controller.squishTogether();
 			}
 		};
 
-		fitHorizontally = new CorinaAction("graph.fit_horiz", "fitcharthoriz.png", Builder.ICONS, 22) {
+		fitHorizontally = new TellervoAction("graph.fit_horiz", "fitcharthoriz.png", Builder.ICONS, 22) {
 			public void actionPerformed(ActionEvent e) {
 				controller.squishTogether();
 				controller.scaleToFitWidth();
 			}
 		};
 
-		fitBoth = new CorinaAction("graph.fit_both") {
+		fitBoth = new TellervoAction("graph.fit_both") {
 			public void actionPerformed(ActionEvent e) {
 				controller.squishTogether();
 				controller.scaleToFitWidth();
@@ -186,37 +186,37 @@ public class GraphActions {
 			}
 		};
 		
-		scaleDown = new CorinaAction("graph.escale_halve"){
+		scaleDown = new TellervoAction("graph.escale_halve"){
 			public void actionPerformed(ActionEvent e) {
 				controller.halveScale();
 			}
 		};
-		scaleUp = new CorinaAction("graph.escale_double"){
+		scaleUp = new TellervoAction("graph.escale_double"){
 			public void actionPerformed(ActionEvent e) {
 				controller.doubleScale();
 			}
 		};
-		scaleReset = new CorinaAction("graph.escale_reset"){
+		scaleReset = new TellervoAction("graph.escale_reset"){
 			public void actionPerformed(ActionEvent e) {
 				controller.resetScaling();
 			}
 		};
 		
-		zoomInHorizontally = new CorinaAction("graph.hzoom_in", "haxiszoomin.png", Builder.ICONS, 22) {
+		zoomInHorizontally = new TellervoAction("graph.hzoom_in", "haxiszoomin.png", Builder.ICONS, 22) {
 			public void actionPerformed(ActionEvent e) {
 				controller.squishTogether();
 				controller.zoomInHorizontal();
 			}
 		};		
 		
-		zoomOutHorizontally = new CorinaAction("graph.hzoom_out", "haxiszoomout.png", Builder.ICONS, 22) {
+		zoomOutHorizontally = new TellervoAction("graph.hzoom_out", "haxiszoomout.png", Builder.ICONS, 22) {
 			public void actionPerformed(ActionEvent e) {
 				controller.squishTogether();
 				controller.zoomOutHorizontal();
 			}
 		};	
 		
-		zoomIn = new CorinaAction("graph.vzoom_in", "vaxiszoomin.png", Builder.ICONS, 22){
+		zoomIn = new TellervoAction("graph.vzoom_in", "vaxiszoomin.png", Builder.ICONS, 22){
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Zooming in on vertical scale");
 				int height = info.getTenUnitHeight();			
@@ -230,7 +230,7 @@ public class GraphActions {
 				info.setTenUnitHeight(newHeight);
 			}
 		};
-		zoomOut = new CorinaAction("graph.vzoom_out", "vaxiszoomout.png", Builder.ICONS, 22){
+		zoomOut = new TellervoAction("graph.vzoom_out", "vaxiszoomout.png", Builder.ICONS, 22){
 			public void actionPerformed(ActionEvent e) {
 				System.out.println("Zooming out on vertical scale");
 
@@ -246,7 +246,7 @@ public class GraphActions {
 				info.setTenUnitHeight(newHeight);
 			}
 		};
-		zoomReset = new CorinaAction("graph.zoom_reset"){
+		zoomReset = new TellervoAction("graph.zoom_reset"){
 			public void actionPerformed(ActionEvent e) {
 				// reload pref
 				info.setTenUnitHeight(GraphPrefs.TENUNIT_HEIGHT.get());
@@ -256,7 +256,7 @@ public class GraphActions {
 
 	}
 
-	protected CorinaAction[] plotTypes;
+	protected TellervoAction[] plotTypes;
 	
 	@SuppressWarnings("serial")
 	private void createAgentActions() {
@@ -264,7 +264,7 @@ public class GraphActions {
 		PlotAgent defaultAgent = PlotAgent.getDefault();
 		
 		// create an array of actions for the agents
-		plotTypes = new CorinaAction[agents.length];
+		plotTypes = new TellervoAction[agents.length];
 		
 		ToggleableActionGroup agentGroup = new ToggleableActionGroup();
 

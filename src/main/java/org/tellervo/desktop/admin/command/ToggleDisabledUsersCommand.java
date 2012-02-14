@@ -27,7 +27,7 @@ import javax.swing.table.TableRowSorter;
 import org.tellervo.desktop.admin.control.ToggleDisabledUsersEvent;
 import org.tellervo.desktop.admin.model.SecurityUserTableModelA;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSISecurityUser;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;

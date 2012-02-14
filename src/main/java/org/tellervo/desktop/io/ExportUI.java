@@ -98,7 +98,7 @@ public class ExportUI extends javax.swing.JPanel{
     	
 		try{
 			// load the last export directory. If it doesn't exist, use the users home folder
-			exportDirectory = App.prefs.getPref("corina.dir.export", System.getProperty("user.home"));
+			exportDirectory = App.prefs.getPref("tellervo.dir.export", System.getProperty("user.home"));
 			
 			// now, keep going back until it exists and is a directory.
 			File exdf = new File(exportDirectory).getAbsoluteFile();

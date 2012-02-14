@@ -24,7 +24,7 @@ import java.util.ArrayList;
 
 import javax.swing.JDialog;
 
-import org.tellervo.desktop.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityGroup;
 
 import com.dmurph.mvc.MVCEvent;
 

@@ -60,7 +60,7 @@ public class Help {
 	/**
 	 * The base url of the help pages
 	 */
-	public static String baseURI = "http://dendro.cornell.edu/corina-manual/";
+	public static String baseURI = "http://dendro.cornell.edu/tellervo-manual/";
 	
 	/**
 	 * Open the help page index
@@ -69,17 +69,17 @@ public class Help {
 	public static void showHelpIndex() 
 	{
 		//Help.showHelpPage("UserGuideContents");
-		//Help.showExternalPage("http://dendro.cornell.edu/corina/documentation/corina-manual.pdf");
+		//Help.showExternalPage("http://dendro.cornell.edu/tellervo/documentation/tellervo-manual.pdf");
 		
 		@SuppressWarnings("unused")
 		String[] locations = new String[] {
-				"http://dendro.cornell.edu/corina/documentation/corina-manual.pdf" ,
+				"http://dendro.cornell.edu/tellervo/documentation/tellervo-manual.pdf" ,
 			};
 
 		SimpleViewer pdf = new SimpleViewer();
 		pdf.setupViewer();
 		
-		pdf.openDefaultFile("http://dendro.cornell.edu/corina/documentation/corina-manual.pdf");
+		pdf.openDefaultFile("http://dendro.cornell.edu/tellervo/documentation/tellervo-manual.pdf");
 		
 
 

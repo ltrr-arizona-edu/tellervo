@@ -42,7 +42,7 @@ import org.tellervo.desktop.gis.GrfxWarning;
 import org.tellervo.desktop.gis.WMSTableModel;
 import org.tellervo.desktop.prefs.AddWMSServerDialog;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.schema.WSIWmsServer;
+import org.tellervo.schema.WSIWmsServer;
 import org.tellervo.desktop.ui.I18n;
 
 import net.miginfocom.swing.MigLayout;

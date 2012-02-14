@@ -65,7 +65,7 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getWoodCompleteness()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#getWoodCompleteness()
 	 */
 	@Override
 	public final TridasWoodCompleteness getWoodCompleteness() {
@@ -82,7 +82,7 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#hasSapwood()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#hasSapwood()
 	 */
 	@Override
 	public final boolean hasSapwood() {
@@ -110,7 +110,7 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getNumberOfSapwoodRings()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#getNumberOfSapwoodRings()
 	 */
 	@Override
 	public final Integer getNumberOfSapwoodRings() {
@@ -128,7 +128,7 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getDatingCertainty()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#getDatingCertainty()
 	 */
 	@Override
 	public final Certainty getDatingCertainty() {
@@ -141,7 +141,7 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#getSiteCode()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#getSiteCode()
 	 */
 	@Override
 	public final String getSiteCode() {		
@@ -149,7 +149,7 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.sample.CorinaMetadata#hasSiteCode()
+	 * @see org.tellervo.desktop.sample.CorinaMetadata#hasSiteCode()
 	 */
 	@Override
 	public final boolean hasSiteCode() {
@@ -172,7 +172,7 @@ public class SampleMetadata extends BaseSampleMetadata implements CorinaMetadata
 	@Override
 	public String getBoxID() {
 		if(have(sample)) {
-			TridasGenericField field = GenericFieldUtils.findField(sample, "corina.boxID");
+			TridasGenericField field = GenericFieldUtils.findField(sample, "tellervo.boxID");
 			if(field != null)
 				return field.getValue();
 		}

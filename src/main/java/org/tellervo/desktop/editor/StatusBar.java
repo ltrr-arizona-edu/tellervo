@@ -84,7 +84,7 @@ public class StatusBar extends JPanel
   -- (need multiple labels for that?  icon, year, other stuff.  probably, but it's not hard.)
 
   RENAME:
-  -- "modeline" is an emacs term, because emacs has modes.  corina shouldn't really
+  -- "modeline" is an emacs term, because emacs has modes.  tellervo shouldn't really
   (and doesn't) have modes, so "status bar" ("status line"?) is more appropriate.
 */
 

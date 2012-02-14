@@ -47,7 +47,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.XCorina;
 import org.tellervo.desktop.gui.menus.HelpMenu;
-import org.tellervo.desktop.ui.CorinaAction;
+import org.tellervo.desktop.ui.TellervoAction;
 
 
 // TODO: refactor.  lots of duplicate code in here.
@@ -116,7 +116,7 @@ public class Macintosh {
 	 */
 
 	@SuppressWarnings("unchecked")
-	public static void registerAboutHandler(final CorinaAction about) {
+	public static void registerAboutHandler(final TellervoAction about) {
 		try {
 			InvocationHandler handler = new InvocationHandler() {
 				public Object invoke(Object proxy, Method method, Object[] args) {

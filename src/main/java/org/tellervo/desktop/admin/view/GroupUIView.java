@@ -45,16 +45,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.admin.model.SecurityMixTableModelB;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.PermissionsEntityType;
-import org.tellervo.desktop.schema.WSIPermission;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSIPermission.Entity;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.PermissionsEntityType;
+import org.tellervo.schema.WSIPermission;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSIPermission.Entity;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.PermissionsResource;
-import org.tellervo.desktop.wsi.corina.resources.SecurityGroupEntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.PermissionsResource;
+import org.tellervo.desktop.wsi.tellervo.resources.SecurityGroupEntityResource;
 
 import java.awt.FlowLayout;
 
@@ -286,7 +286,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 				null, group);
 		
 
-		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
 		resource.query();	
 		dialog.setVisible(true);
 		
@@ -402,9 +402,9 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 		if(isNewGroup)
 		{
 			// associate a resource
-	    	SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(CorinaRequestType.CREATE, group);
+	    	SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(TellervoRequestType.CREATE, group);
 	    	
-			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
+			TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(this, rsrc);
 			rsrc.query();
 			accdialog.setVisible(true);
 			
@@ -429,9 +429,9 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 			// Editing existing group
 			
 			// associate a resource
-	    	SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(CorinaRequestType.UPDATE, group);
+	    	SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(TellervoRequestType.UPDATE, group);
 	    	
-			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
+			TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(this, rsrc);
 			rsrc.query();
 			accdialog.setVisible(true);
 			
@@ -449,7 +449,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 		
 		// Now set the default permissions
 		PermissionsResource resource = new PermissionsResource(defaultPermissions);
-		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
 		resource.query();	
 		dialog.setVisible(true);
 		

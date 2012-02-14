@@ -19,11 +19,11 @@ import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.CorinaWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.schema.CorinaRequestFormat;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.EntityType;
-import org.tellervo.desktop.schema.WSIBox;
-import org.tellervo.desktop.schema.WSIEntity;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.EntityType;
+import org.tellervo.schema.WSIBox;
+import org.tellervo.schema.WSIEntity;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
@@ -32,9 +32,9 @@ import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.labels.LabBarcode;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.CorinaResourceProperties;
-import org.tellervo.desktop.wsi.corina.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.schema.NormalTridasMeasuringMethod;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
@@ -164,7 +164,7 @@ public class EditorFactory {
 		 * @return a WSIBox, or null if it doesn't exist
 		 */
 		public WSIBox loadBoxFromSample(TridasSample sample) {
-			TridasGenericField field = GenericFieldUtils.findField(sample, "corina.boxID");
+			TridasGenericField field = GenericFieldUtils.findField(sample, "tellervo.boxID");
 			
 			if(field == null)
 				return null;
@@ -176,13 +176,13 @@ public class EditorFactory {
 			
 			// get a box resource
 			EntityResource<WSIBox> rsrc = new EntityResource<WSIBox>(entity,
-					CorinaRequestType.READ, WSIBox.class);
+					TellervoRequestType.READ, WSIBox.class);
 			
 			// we want it minimal 
 			// (because we're asking for a box and don't want its massive amount of info
-			rsrc.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.MINIMAL);
+			rsrc.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
 			
-			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(dialog, rsrc);
+			TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(dialog, rsrc);
 			rsrc.query();
 			accdialog.setVisible(true);
 			
@@ -208,13 +208,13 @@ public class EditorFactory {
 			
 			// associate a resource
 			EntityResource<TridasObject> rsrc = new EntityResource<TridasObject>(entity, 
-					CorinaRequestType.READ, TridasObject.class);
+					TellervoRequestType.READ, TridasObject.class);
 			
 			// we want it comprehensive 
 			// (because we're asking for a sample and getting back an object->sample tree)
-			rsrc.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
+			rsrc.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
 			
-			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(dialog, rsrc);
+			TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(dialog, rsrc);
 			rsrc.query();
 			accdialog.setVisible(true);
 			

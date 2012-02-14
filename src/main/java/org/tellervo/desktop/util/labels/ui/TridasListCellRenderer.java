@@ -25,7 +25,7 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import org.tellervo.desktop.schema.WSIBox;
+import org.tellervo.schema.WSIBox;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
@@ -47,28 +47,28 @@ public class TridasListCellRenderer extends DefaultListCellRenderer {
         
         if(value instanceof TridasMeasurementSeries){
         	TridasMeasurementSeries ms = (TridasMeasurementSeries) value;
-        	TridasGenericField f = GenericFieldUtils.findField(ms, "corina.internal.labcodeText");
+        	TridasGenericField f = GenericFieldUtils.findField(ms, "tellervo.internal.labcodeText");
                 	
         	value = (f != null) ? f.getValue() : ms.getTitle();
         }
         
         if(value instanceof TridasRadius){
         	TridasRadius r = (TridasRadius) value;
-        	TridasGenericField f = GenericFieldUtils.findField(r, "corina.internal.labcodeText");
+        	TridasGenericField f = GenericFieldUtils.findField(r, "tellervo.internal.labcodeText");
                 	
         	value = (f != null) ? f.getValue() : r.getTitle();
         }
         
         if(value instanceof TridasSample){
         	TridasSample s = (TridasSample) value;
-        	TridasGenericField f = GenericFieldUtils.findField(s, "corina.internal.labcodeText");
+        	TridasGenericField f = GenericFieldUtils.findField(s, "tellervo.internal.labcodeText");
                 	
         	value = (f != null) ? f.getValue() : s.getTitle();
         }
         
         if(value instanceof TridasElement){
         	TridasElement e = (TridasElement) value;
-        	TridasGenericField f = GenericFieldUtils.findField(e, "corina.internal.labcodeText");
+        	TridasGenericField f = GenericFieldUtils.findField(e, "tellervo.internal.labcodeText");
                 	
         	value = (f != null) ? f.getValue() : e.getTitle();
         } 

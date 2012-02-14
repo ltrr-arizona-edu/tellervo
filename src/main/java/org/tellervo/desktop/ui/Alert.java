@@ -76,7 +76,7 @@ public class Alert {
       -- error loading sample (x3)
       ---- file not found (always check for this!)
       -- error saving sample (x4)
-      -- (...list others here: there are 242 calls to showMessageDialog() in corina...)
+      -- (...list others here: there are 242 calls to showMessageDialog() in tellervo...)
       -- error printing
 
       can i use this?  i think so...
@@ -115,6 +115,6 @@ public class Alert {
     }
 
     // icon for dialogs
-    private final static Icon treeIcon = Builder.getIcon("corina-application.png", 64); // WAS: Tree-64x64.png
+    private final static Icon treeIcon = Builder.getIcon("tellervo-application.png", 64); // WAS: Tree-64x64.png
  
 }

@@ -7,9 +7,9 @@ import javax.swing.table.AbstractTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.schema.WSIPermission;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSIPermission;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.ui.I18n;
 
 

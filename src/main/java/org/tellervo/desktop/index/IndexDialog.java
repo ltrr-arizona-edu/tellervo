@@ -96,7 +96,7 @@ import org.tellervo.desktop.util.NoEmptySelection;
 import org.tellervo.desktop.util.OKCancel;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
-import org.tellervo.desktop.wsi.corina.NewTridasIdentifier;
+import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tellervo.indexing.Exponential;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
@@ -255,14 +255,14 @@ public class IndexDialog extends JDialog {
 		}
 		
 		if(loader instanceof CorinaWsiTridasElement) 
-			return corinaWsiApplyIndex(index);
+			return tellervoWsiApplyIndex(index);
 				
 		// well, fine then. Just apply the index to the existing sample.
 		legacyApplyIndex(index);
 		return true;
 	}
 
-	private boolean corinaWsiApplyIndex(Index index) {
+	private boolean tellervoWsiApplyIndex(Index index) {
 		// we have to have a name set in order to create an index
 		if(!nameAndVersion.testAndComplainRequired(EnumSet.of(NameVersionJustificationPanel.Fields.NAME)))
 			return false;

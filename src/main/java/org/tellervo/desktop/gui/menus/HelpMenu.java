@@ -51,7 +51,7 @@ import org.tellervo.desktop.gui.Help;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.setupwizard.SetupWizard;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.ui.CorinaAction;
+import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.ui.I18n;
 
 import com.dmurph.mvc.MVC;
@@ -112,7 +112,7 @@ public class HelpMenu extends JMenu {
     */
     protected void addHelpMenu() {
 
-		JMenuItem helpwiki = Builder.makeMenuItem("menus.help.corina_help", true, "help.png");
+		JMenuItem helpwiki = Builder.makeMenuItem("menus.help.contents", true, "help.png");
 
 		helpwiki.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
@@ -130,7 +130,7 @@ public class HelpMenu extends JMenu {
     */
     protected void addSystemInfoMenu() {
         add(Builder.makeMenuItem("menus.help.system_info",
-                                 "edu.cornell.dendro.corina.util.PropertiesWindow.showPropertiesWindow()", "system.png"));
+                                 "org.tellervo.desktop.util.PropertiesWindow.showPropertiesWindow()", "system.png"));
     }
 
     /**
@@ -138,7 +138,7 @@ public class HelpMenu extends JMenu {
      * FIXME: not really just an "error" log... more like "activity" log.
      */
     protected void addErrorLogMenu() {
-        //add(Builder.makeMenuItem("menus.help.error_log", "edu.cornell.dendro.corina.gui.ErrorLog.showLogViewer()", "log.png"));
+        //add(Builder.makeMenuItem("menus.help.error_log", "org.tellervo.desktop.gui.ErrorLog.showLogViewer()", "log.png"));
         JMenuItem logviewer = new JMenuItem(I18n.getText("menus.help.error_log"));
         logviewer.addActionListener(new ActionListener(){
 
@@ -152,17 +152,17 @@ public class HelpMenu extends JMenu {
         logviewer.setIcon(Builder.getIcon("bug.png", 22));
         add(logviewer);
     	
-    	//add(Builder.makeMenuItem("menus.help.error_log", "edu.cornell.dendro.corina.gui.Log4JViewer.showLogViewer()", "log.png"));
-        add(Builder.makeMenuItem("menus.help.error_ws", "edu.cornell.dendro.corina.wsi.TransactionDebug.forceGenerateWSBug()", "bugreport.png"));
+    	//add(Builder.makeMenuItem("menus.help.error_log", "org.tellervo.desktop.gui.Log4JViewer.showLogViewer()", "log.png"));
+        add(Builder.makeMenuItem("menus.help.error_ws", "org.tellervo.desktop.wsi.TransactionDebug.forceGenerateWSBug()", "bugreport.png"));
 
-        debugMenu = Builder.makeMenuItem("menus.help.xml_debug", "edu.cornell.dendro.corina.gui.XMLDebugView.showDialog()", "networksettings.png");
+        debugMenu = Builder.makeMenuItem("menus.help.xml_debug", "org.tellervo.desktop.gui.XMLDebugView.showDialog()", "networksettings.png");
         add(debugMenu);
         
 
         add(Builder.makeMenuItem("menus.help.showmvcmonitor", "com.dmurph.mvc.MVC.showEventMonitor()"));
         
-        //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.DebugInstantiator.showMe()"));
-        //add(Builder.makeMenuItem("debug_instantiator", "edu.cornell.dendro.corina.gui.newui.NewJFrame1.main()"));
+        //add(Builder.makeMenuItem("debug_instantiator", "org.tellervo.desktop.gui.DebugInstantiator.showMe()"));
+        //add(Builder.makeMenuItem("debug_instantiator", "org.tellervo.desktop.gui.newui.NewJFrame1.main()"));
     }
 
     /**
@@ -175,7 +175,7 @@ public class HelpMenu extends JMenu {
       add(menuitem);
     }
     
-	public static final CorinaAction ABOUT_ACTION = new CorinaAction("menus.about") {
+	public static final TellervoAction ABOUT_ACTION = new TellervoAction("menus.about") {
 		private static final long serialVersionUID = -6930373548175605620L;
 		public void actionPerformed(ActionEvent ae) {
 	      AboutBox.getInstance().setVisible(true);

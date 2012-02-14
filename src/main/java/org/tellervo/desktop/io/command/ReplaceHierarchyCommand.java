@@ -7,13 +7,13 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.io.control.ImportSwapEntityEvent;
 import org.tellervo.desktop.io.control.ReplaceHierarchyEvent;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow;
-import org.tellervo.desktop.schema.CorinaRequestFormat;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.EntityType;
-import org.tellervo.desktop.schema.WSIEntity;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.CorinaResourceProperties;
-import org.tellervo.desktop.wsi.corina.resources.EntityResource;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.EntityType;
+import org.tellervo.schema.WSIEntity;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
@@ -183,14 +183,14 @@ public class ReplaceHierarchyCommand implements ICommand {
 		
 		// associate a resource
 		EntityResource<TridasObject> rsrc = new EntityResource<TridasObject>(entity, 
-				CorinaRequestType.READ, TridasObject.class);
+				TellervoRequestType.READ, TridasObject.class);
 		log.debug("Searching webservice for new hierarchy - 2");
 		// we want it comprehensive 
 		// (because we're asking for a sample and getting back an object->series tree)
-		rsrc.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.COMPREHENSIVE);
+		rsrc.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
 		log.debug("Searching webservice for new hierarchy - 3");
 		
-		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(event.parentDialog, rsrc);
+		TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(event.parentDialog, rsrc);
 		log.debug("Searching webservice for new hierarchy - 4");
 		rsrc.query();
 		log.debug("Searching webservice for new hierarchy - 5");

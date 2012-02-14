@@ -24,8 +24,8 @@ import java.util.ArrayList;
 
 import javax.swing.JDialog;
 
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.tracking.ITrackable;

@@ -818,7 +818,7 @@
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
 									classpathref="maven.plugin.classpath"/>
 								<delete dir="src/main/generated/net"/>
-								<delete dir="src/main/generated/org"/>
+								<delete dir="src/main/generated/org/tridas"/>
 							</tasks>
 						</configuration>
 						<goals>

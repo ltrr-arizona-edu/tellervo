@@ -107,7 +107,7 @@ public class WindowMenu extends JMenu {
 
 	// aqua higs say "bring all to front" is optional.
 	// i don't see much use for it: if you really need
-	// that, click the corina icon in the dock.  it's
+	// that, click the tellervo icon in the dock.  it's
 	// not worth my time to duplicate that functionality.
 
         // ---------------------------------------------------------

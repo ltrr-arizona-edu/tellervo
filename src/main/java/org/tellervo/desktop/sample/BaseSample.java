@@ -62,7 +62,7 @@ public class BaseSample implements TridasIdentifiable {
 	 <code>wj</code>, and <code>elements</code> aren't stored in
 	 <code>meta</code> - they're their own members.
 	
-	 @see edu.cornell.dendro.corina.formats.Corina */
+	 @see org.tellervo.desktop.formats.Corina */
 
 	private Map<String, Object> meta;
 	private ITridasSeries series;

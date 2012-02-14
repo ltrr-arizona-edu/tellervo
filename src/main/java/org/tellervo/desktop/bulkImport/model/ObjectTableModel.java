@@ -24,7 +24,7 @@
 package org.tellervo.desktop.bulkImport.model;
 
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
-import org.tellervo.desktop.schema.WSIObjectTypeDictionary;
+import org.tellervo.schema.WSIObjectTypeDictionary;
 import org.tridas.schema.TridasObject;
 
 

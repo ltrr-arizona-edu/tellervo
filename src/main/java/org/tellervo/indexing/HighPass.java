@@ -30,7 +30,7 @@ import java.util.List;
    call this "Gaussian smoothing" or a "convolution matrix".</p>
 
    <p>The weights are taken from the property
-   <code>corina.index.lowpass</code>; if it isn't set, the filter "1 2
+   <code>tellervo.index.lowpass</code>; if it isn't set, the filter "1 2
    4 2 1" is used.  The weights must be integers, separated by spaces.
    If there are an even number of weights, the last one is ignored.
    The divisor is the sum of all the weights.</p>

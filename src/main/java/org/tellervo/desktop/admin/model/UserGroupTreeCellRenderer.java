@@ -9,8 +9,8 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.ui.Builder;
 
 

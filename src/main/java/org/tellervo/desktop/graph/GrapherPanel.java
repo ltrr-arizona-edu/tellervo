@@ -1080,7 +1080,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 	 so i'll set it as a goal that paintComponent() should, for all
 	 normal uses, return within 50 ms.  i can't guess what systems
-	 every person running corina will have, but my reference platform
+	 every person running tellervo will have, but my reference platform
 	 is a 500 MHz PPC G4.  if it returns within 50 ms on a 500 MHz
 	 computer (rather slow by today's standards), i'll be satisfied.
 

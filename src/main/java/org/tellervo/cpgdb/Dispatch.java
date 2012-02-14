@@ -56,7 +56,7 @@ public class Dispatch {
 			props.setProperty("password", "t3stus3r");
 			props.setProperty("loglevel", "1");
 			
-			Connection sqlConnection = DriverManager.getConnection("jdbc:postgresql://negaverse.no-ip.org/corina", props);
+			Connection sqlConnection = DriverManager.getConnection("jdbc:postgresql://negaverse.no-ip.org/tellervo", props);
 
 			System.out.println("PG DB TEST!");
 			

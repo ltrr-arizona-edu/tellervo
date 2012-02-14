@@ -83,7 +83,7 @@ public interface CorinaMetadata {
 	/**
 	 * Get the Box ID of the associated Sample
 	 * 
-	 * @return the box ID from sample's corina.boxID (a uuid String), or null
+	 * @return the box ID from sample's tellervo.boxID (a uuid String), or null
 	 */
 	public String getBoxID();
 }

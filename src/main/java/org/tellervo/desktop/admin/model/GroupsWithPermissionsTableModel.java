@@ -7,14 +7,14 @@ import javax.swing.table.AbstractTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.schema.WSIPermission;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
-import org.tellervo.desktop.schema.WSIPermission.Entity;
+import org.tellervo.schema.WSIPermission;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
+import org.tellervo.schema.WSIPermission.Entity;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.PermissionsResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.PermissionsResource;
 
 
 public class GroupsWithPermissionsTableModel extends AbstractTableModel {
@@ -172,7 +172,7 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 	    PermissionsResource resource = new PermissionsResource(permission);
 		
 		// Query db 
-		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
 		resource.query();	
 		dialog.setVisible(true);
 		
@@ -219,7 +219,7 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 		PermissionsResource resource = new PermissionsResource(permission);
 		
 		// Query db 
-		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
 		resource.query();	
 		dialog.setVisible(true);
 		

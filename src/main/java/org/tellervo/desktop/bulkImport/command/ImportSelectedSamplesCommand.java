@@ -34,11 +34,11 @@ import org.tellervo.desktop.bulkImport.model.SampleModel;
 import org.tellervo.desktop.bulkImport.model.SampleTableModel;
 import org.tellervo.desktop.bulkImport.model.SingleRadiusModel;
 import org.tellervo.desktop.bulkImport.model.SingleSampleModel;
-import org.tellervo.desktop.schema.CorinaRequestType;
+import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
@@ -143,7 +143,7 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			// sample first
 			EntityResource<TridasSample> sampleResource;
 			if(origSample.getIdentifier() != null){
-				sampleResource = new EntityResource<TridasSample>(origSample, CorinaRequestType.UPDATE, TridasSample.class);
+				sampleResource = new EntityResource<TridasSample>(origSample, TellervoRequestType.UPDATE, TridasSample.class);
 			}else{
 				sampleResource = new EntityResource<TridasSample>(origSample, parentObject, TridasSample.class);
 			}
@@ -151,7 +151,7 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			
 			// set up a dialog...
 			Window parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
-			CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, sampleResource);
+			TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parentWindow, sampleResource);
 			
 			sampleResource.query();
 			dialog.setVisible(true);
@@ -195,7 +195,7 @@ public class ImportSelectedSamplesCommand implements ICommand {
 				// sample first
 				EntityResource<TridasRadius> radiusResource;
 				if(origRadius.getIdentifier() != null){
-					radiusResource = new EntityResource<TridasRadius>(origRadius, CorinaRequestType.UPDATE, TridasRadius.class);
+					radiusResource = new EntityResource<TridasRadius>(origRadius, TellervoRequestType.UPDATE, TridasRadius.class);
 				}else{
 					radiusResource = new EntityResource<TridasRadius>(origRadius, parentSample, TridasRadius.class);
 				}
@@ -203,7 +203,7 @@ public class ImportSelectedSamplesCommand implements ICommand {
 				
 				// set up a dialog...
 				parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
-				dialog = CorinaResourceAccessDialog.forWindow(parentWindow, radiusResource);
+				dialog = TellervoResourceAccessDialog.forWindow(parentWindow, radiusResource);
 				
 				radiusResource.query();
 				dialog.setVisible(true);

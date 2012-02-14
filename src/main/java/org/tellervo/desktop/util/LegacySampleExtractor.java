@@ -35,7 +35,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.editor.EditorFactory.BarcodeDialogResult;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tridas.schema.ComplexPresenceAbsence;
 import org.tridas.schema.ControlledVoc;
@@ -421,8 +421,8 @@ public class LegacySampleExtractor {
 				series.setAnalyst(user.getFirstName() + " " + user.getLastName());
 				series.setDendrochronologist(user.getFirstName() + " " + user.getLastName());
 				
-				GenericFieldUtils.addField(series, "corina.analystID", user.getId());
-				GenericFieldUtils.addField(series, "corina.dendrochronologistID", user.getId());
+				GenericFieldUtils.addField(series, "tellervo.analystID", user.getId());
+				GenericFieldUtils.addField(series, "tellervo.dendrochronologistID", user.getId());
 			}
 		}
 	}
@@ -563,8 +563,8 @@ public class LegacySampleExtractor {
 		legacyMetadataMap.put("type_H", "Charcoal");
 		legacyMetadataMap.put("type_C", "Core");
 		// pith
-		legacyMetadataMap.put("pith_+", "complete"); // older corina
-		legacyMetadataMap.put("pith_P", "complete"); // newer corina
+		legacyMetadataMap.put("pith_+", "complete"); // older tellervo
+		legacyMetadataMap.put("pith_P", "complete"); // newer tellervo
 		legacyMetadataMap.put("pith_*", "incomplete");
 		legacyMetadataMap.put("pith_N", "absent");
 		// terminal ring

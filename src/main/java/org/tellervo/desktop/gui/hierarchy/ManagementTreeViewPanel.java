@@ -32,11 +32,11 @@ import org.tellervo.desktop.admin.view.PermissionByEntityDialog;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.TridasEntityChooser;
 import org.tellervo.desktop.gui.TridasEntityChooser.EntitiesAccepted;
-import org.tellervo.desktop.schema.EntityType;
+import org.tellervo.schema.EntityType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.util.TridasUtils.TreeDepth;
 import org.tridas.schema.TridasDerivedSeries;
@@ -357,7 +357,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 		}
 		
 		// Do query
-		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(rsrc);
+		TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(rsrc);
 		rsrc.query();
 		accdialog.setVisible(true);
 		
@@ -437,7 +437,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 		}
 		
 		// Do query
-		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(rsrc);
+		TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(rsrc);
 		rsrc.query();
 		accdialog.setVisible(true);
 		

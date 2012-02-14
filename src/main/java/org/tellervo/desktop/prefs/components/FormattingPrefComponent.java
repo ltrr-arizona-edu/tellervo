@@ -45,7 +45,7 @@ public class FormattingPrefComponent extends Container {
 
     private static float SAMPLE_NUMBER = 0.49152f;
 
-    // example: "corina.cross.tscore.format", "0.00", "T-score format:"
+    // example: "tellervo.cross.tscore.format", "0.00", "T-score format:"
     // defaultValue may be null, in which case it falls back to "0.00" if needed.
     public FormattingPrefComponent(String key, String defaultValue) {
       setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));

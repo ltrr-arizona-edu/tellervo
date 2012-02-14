@@ -50,7 +50,7 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
-import org.tellervo.desktop.wsi.corina.NewTridasIdentifier;
+import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasIdentifier;
@@ -294,7 +294,7 @@ public class SumCreationDialog {
 		}
 		if (uniqueVals.size()>1){
 			// Elements are different so just set the sum name to the object code
-			anysample.getMetaString("corina.objectCode[0]");
+			anysample.getMetaString("tellervo.objectCode[0]");
 			sumName = LabCodeFormatter.getElementPrefixFormatter().format(anysample.getMeta(Metadata.LABCODE, LabCode.class));
 			return;
 		}

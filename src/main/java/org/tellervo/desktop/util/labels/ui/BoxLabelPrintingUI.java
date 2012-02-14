@@ -34,7 +34,7 @@ import java.util.Collections;
 import javax.swing.ListSelectionModel;
 
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.schema.WSIBox;
+import org.tellervo.schema.WSIBox;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.util.ArrayListModel;
 

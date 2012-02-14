@@ -39,7 +39,7 @@
 
 package org.tellervo.desktop.gui;
 
-// import edu.cornell.dendro.corina.util.JLinedLabel; -- FUTURE
+// import org.tellervo.desktop.util.JLinedLabel; -- FUTURE
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;

@@ -45,12 +45,12 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.editor.ScanBarcodeUI;
 import org.tellervo.desktop.editor.EditorFactory.BarcodeDialogResult;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.EntityType;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
-import org.tellervo.desktop.schema.WSIBox;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.EntityType;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.WSIBox;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -58,9 +58,9 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tellervo.desktop.util.labels.ui.TridasListCellRenderer;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasSample;
@@ -190,7 +190,7 @@ public class BoxCuration extends javax.swing.JDialog
     	{
     		for(TridasGenericField gf: s.getGenericFields())
     		{
-    			if(gf.getName().equals("corina.boxID"))
+    			if(gf.getName().equals("tellervo.boxID"))
     			{
     				if(gf.getValue().equals(box.getIdentifier().getValue()))
     				{
@@ -225,7 +225,7 @@ public class BoxCuration extends javax.swing.JDialog
     	{
     		s.setGenericFields(new ArrayList<TridasGenericField>());
     		TridasGenericField gf= new TridasGenericField();
-    		gf.setName("corina.boxID");
+    		gf.setName("tellervo.boxID");
     		gf.setType("xs:string");
     		gf.setValue(box.getIdentifier().getValue());				
     		s.getGenericFields().add(gf);
@@ -233,10 +233,10 @@ public class BoxCuration extends javax.swing.JDialog
     	
     	
 		// Create resource
-		 EntityResource<TridasSample> resource = new EntityResource<TridasSample>(s, CorinaRequestType.UPDATE, TridasSample.class);
+		 EntityResource<TridasSample> resource = new EntityResource<TridasSample>(s, TellervoRequestType.UPDATE, TridasSample.class);
 		
 		// set up a dialog...
-		CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(this, resource);
+		TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(this, resource);
 		
 		resource.query();
 		dialog.setVisible(true);
@@ -267,16 +267,16 @@ public class BoxCuration extends javax.swing.JDialog
 		EntityResource<WSIBox> resource;
 		if(isNewRecord)
 		{
-			resource = new EntityResource<WSIBox>(box, CorinaRequestType.CREATE, WSIBox.class);
+			resource = new EntityResource<WSIBox>(box, TellervoRequestType.CREATE, WSIBox.class);
 		}
 		else
 		{
-			resource = new EntityResource<WSIBox>(box, CorinaRequestType.UPDATE, WSIBox.class);
+			resource = new EntityResource<WSIBox>(box, TellervoRequestType.UPDATE, WSIBox.class);
 		}
 		
 		// set up a dialog...
 		Window parentWindow = SwingUtilities.getWindowAncestor(getParent());
-		CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, resource);
+		TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parentWindow, resource);
 		
 		resource.query();
 		dialog.setVisible(true);
@@ -438,10 +438,10 @@ public class BoxCuration extends javax.swing.JDialog
 		id.setValue(idstr);
 		
     	// we want a box returned here
-		EntityResource<WSIBox> resource = new EntityResource<WSIBox>(id, EntityType.BOX, CorinaRequestType.READ, WSIBox.class);
+		EntityResource<WSIBox> resource = new EntityResource<WSIBox>(id, EntityType.BOX, TellervoRequestType.READ, WSIBox.class);
 
 		// Query db 
-		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(resource);
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
 		resource.query();	
 		dialog.setVisible(true);
 		

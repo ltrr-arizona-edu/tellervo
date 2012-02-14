@@ -8,10 +8,10 @@ import javax.swing.JDialog;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
-import org.tellervo.desktop.wsi.tellervo.CorinaResourceAccessDialog;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.SecurityGroupEntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.SecurityUserEntityResource;
 
@@ -53,7 +53,7 @@ public class UGASubmission extends TestCase{
 		m.setSecurityGroups(testGroups);
 		user.setMemberOf(m);
 		
-		SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.UPDATE, user);
+		SecurityUserEntityResource rsrc = new SecurityUserEntityResource(TellervoRequestType.UPDATE, user);
 		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(new JDialog(), rsrc);
 		rsrc.query();
 		accdialog.setVisible(true);
@@ -72,7 +72,7 @@ public class UGASubmission extends TestCase{
 		m.setSecurityUsers(testUsers);
 		group.setMembers(m);
 		
-		SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(CorinaRequestType.UPDATE, group);
+		SecurityGroupEntityResource rsrc = new SecurityGroupEntityResource(TellervoRequestType.UPDATE, group);
 		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(new JDialog(), rsrc);
 		rsrc.query();
 		accdialog.setVisible(true);

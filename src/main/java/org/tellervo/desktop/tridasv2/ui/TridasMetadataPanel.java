@@ -54,7 +54,7 @@ import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
-import org.tellervo.desktop.schema.CorinaRequestType;
+import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.TridasCloner;
@@ -66,8 +66,8 @@ import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.FilterableComboBoxModel;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.ComplexPresenceAbsence;
@@ -442,7 +442,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			if(code!=null)
 			{				
 				TridasGenericField gf = new TridasGenericField();
-				gf.setName("corina.objectLabCode");
+				gf.setName("tellervo.objectLabCode");
 				gf.setValue(code);
 				gf.setType("xs:string");
 				((TridasObject)temporarySelectingEntity).getGenericFields().add(gf);
@@ -635,7 +635,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 
 			// set up a dialog...
 			Window parentWindow = SwingUtilities.getWindowAncestor(this);
-			CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, resource);
+			TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parentWindow, resource);
 
 			// query the resource
 			resource.query();
@@ -719,7 +719,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @return
 	 */
 	private <T extends ITridas> EntityResource<T> getUpdateAccessorResource(ITridas entity, Class<T> type) {
-		return new EntityResource<T>(entity, CorinaRequestType.UPDATE, type);
+		return new EntityResource<T>(entity, TellervoRequestType.UPDATE, type);
 	}
 	
 	/**

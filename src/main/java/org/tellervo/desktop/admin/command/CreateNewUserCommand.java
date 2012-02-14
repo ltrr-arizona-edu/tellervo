@@ -28,13 +28,13 @@ import javax.swing.JOptionPane;
 
 import org.tellervo.desktop.admin.control.CreateNewUserEvent;
 import org.tellervo.desktop.admin.model.UserGroupAdminModel;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.util.StringUtils;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.SecurityGroupEntityResource;
-import org.tellervo.desktop.wsi.corina.resources.SecurityUserEntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.SecurityGroupEntityResource;
+import org.tellervo.desktop.wsi.tellervo.resources.SecurityUserEntityResource;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
@@ -61,9 +61,9 @@ public class CreateNewUserCommand implements ICommand {
 			}
 					
 			// associate a resource
-	    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.CREATE, user);
+	    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(TellervoRequestType.CREATE, user);
 	    
-			CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(parent, rsrc);
+			TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(parent, rsrc);
 			rsrc.query();
 			accdialog.setVisible(true);
 			
@@ -81,9 +81,9 @@ public class CreateNewUserCommand implements ICommand {
 						group.getUserMembers().add(user.getId());
 					}
 					
-			    	SecurityGroupEntityResource rsrc2 = new SecurityGroupEntityResource(CorinaRequestType.UPDATE, group);
+			    	SecurityGroupEntityResource rsrc2 = new SecurityGroupEntityResource(TellervoRequestType.UPDATE, group);
 			    	
-					CorinaResourceAccessDialog accdialog2 = new CorinaResourceAccessDialog(parent, rsrc2);
+					TellervoResourceAccessDialog accdialog2 = new TellervoResourceAccessDialog(parent, rsrc2);
 					rsrc2.query();
 					accdialog2.setVisible(true);
 					

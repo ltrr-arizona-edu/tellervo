@@ -61,7 +61,7 @@ public class DecimalRenderer extends DefaultTableCellRenderer {
   private String sample = null;
   private boolean offsetSet = false;
 
-  // sample is something like "0.00" (it has nothing to do with corina.Sample)
+  // sample is something like "0.00" (it has nothing to do with tellervo.Sample)
   public DecimalRenderer(String sample) {
     this.sample = sample;
   }

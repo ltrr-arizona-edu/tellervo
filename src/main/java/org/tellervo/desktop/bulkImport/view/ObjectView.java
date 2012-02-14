@@ -46,7 +46,7 @@ import org.tellervo.desktop.components.table.DynamicKeySelectionManager;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
-import org.tellervo.desktop.schema.WSIObjectTypeDictionary;
+import org.tellervo.schema.WSIObjectTypeDictionary;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
 import org.tellervo.desktop.ui.Builder;

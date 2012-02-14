@@ -119,7 +119,7 @@ public class JaxbResponseHandler<T> implements ResponseHandler<T> {
 		boolean usefulFile = false;	// preserve this file outside this local context?
 
 		try {
-			tempFile = File.createTempFile("corina", ".xml");
+			tempFile = File.createTempFile("tellervo", ".xml");
 			fileOut = new OutputStreamWriter(new FileOutputStream(tempFile, false), charset);
 		
 			// ok, dump the webservice xml to a file

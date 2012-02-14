@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.sample.Sample;
 
-// wrapper for corina.formats: load() and save() a file, given only its filename
+// wrapper for tellervo.formats: load() and save() a file, given only its filename
 public class Files {
 	
 	private final static Logger log = LoggerFactory.getLogger(Files.class);
@@ -173,13 +173,13 @@ public class Files {
 
 	/**
 	 * Default Filetype class to use for saving files. Value is
-	 * "corina.formats.Corina".
+	 * "tellervo.formats.Corina".
 	 * 
-	 * @see edu.cornell.dendro.corina.formats.Corina
+	 * @see org.tellervo.desktop.formats.Corina
 	 */
-	private final static String DEFAULT_SAVER = "edu.cornell.dendro.corina.formats.Corina";
+	private final static String DEFAULT_SAVER = "org.tellervo.desktop.formats.Corina";
 
-	// FIXME: make pref: "default save format: corina, tucson, ..., whatever it
+	// FIXME: make pref: "default save format: tellervo, tucson, ..., whatever it
 	// was before.
 
 	// save a file
@@ -209,7 +209,7 @@ public class Files {
 			".MPJ", ".MTW", // dunno what these are, but they're not mine
 			".GRF", // "GS Draw File: Copyright Golden Software Inc. 1991-1994"
 					// (a GRaF)
-			".JAR", ".CLASS", ".JAVA", "SITE.LOC", "SITE.XML", // (old corina
+			".JAR", ".CLASS", ".JAVA", "SITE.LOC", "SITE.XML", // (old tellervo
 																// data files --
 																// remove these
 																// later)
@@ -220,13 +220,13 @@ public class Files {
 	};
 
 	private final static String LOADERS[] = {
-			"edu.cornell.dendro.corina.formats.Corina",
-			"edu.cornell.dendro.corina.formats.TRML",
-			"edu.cornell.dendro.corina.formats.TSAPMatrix",
-			"edu.cornell.dendro.corina.formats.Hohenheim",
-			"edu.cornell.dendro.corina.formats.Heidelberg",
-			"edu.cornell.dendro.corina.formats.Tucson",
-			"edu.cornell.dendro.corina.formats.TwoColumn", // <-- should always
+			"org.tellervo.desktop.formats.Corina",
+			"org.tellervo.desktop.formats.TRML",
+			"org.tellervo.desktop.formats.TSAPMatrix",
+			"org.tellervo.desktop.formats.Hohenheim",
+			"org.tellervo.desktop.formats.Heidelberg",
+			"org.tellervo.desktop.formats.Tucson",
+			"org.tellervo.desktop.formats.TwoColumn", // <-- should always
 															// be last
 	};
 }

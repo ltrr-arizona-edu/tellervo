@@ -23,7 +23,7 @@ package org.tellervo.desktop.util;
 // this class will help you do stuff for each (get it?  get it?) sample in a folder
 
 // ugh, disgusting.  java is a horrible language for this.  use lisp, dumbass.
-// (will that involve porting corina to lisp?)
+// (will that involve porting tellervo to lisp?)
 // -- do i need common lisp?  will scheme do?
 
 public class ForEach {

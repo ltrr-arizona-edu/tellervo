@@ -54,14 +54,14 @@ import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.ui.CorinaAction;
+import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.ui.I18n;
 
 
-// TODO: move all menus to corina.gui.menus or even corina.menus (i'm tending towards the latter)
+// TODO: move all menus to tellervo.gui.menus or even tellervo.menus (i'm tending towards the latter)
 // TODO: error-log should be a singleton-window, and centered
 // TODO: system-info should be a singleton-window, and centered
-// TODO: perhaps also provide a menuitem which takes you to the corina web page?
+// TODO: perhaps also provide a menuitem which takes you to the tellervo web page?
 // TODO: the error log should be just a text dump window, perhaps
 // TODO: need a complaint menu item; perhaps "Submit Complaint..."
 
@@ -87,7 +87,7 @@ public class AdminMenu extends JMenu {
 	
 	
 	
-  public static final CorinaAction ABOUT_ACTION = new CorinaAction("menus.about") {
+  public static final TellervoAction ABOUT_ACTION = new TellervoAction("menus.about") {
     public void actionPerformed(ActionEvent ae) {
       AboutBox.getInstance().setVisible(true);
    
@@ -132,14 +132,14 @@ public class AdminMenu extends JMenu {
 	protected void addPasswordMenu()
   	{
   	  JMenuItem changepwd = Builder.makeMenuItem("menus.admin.changepwd",
-              "edu.cornell.dendro.corina.admin.SetPasswordUI.loadDialog()", "password.png");
+              "org.tellervo.desktop.admin.SetPasswordUI.loadDialog()", "password.png");
    	  add(changepwd); 
    	  
    	  
    	  if(App.prefs.getBooleanPref(PrefKey.REMEMBER_PASSWORD, false))
    	  {
    		  JMenuItem forgetpwd = Builder.makeMenuItem("menus.admin.forgetpwd",
-   				  "edu.cornell.dendro.corina.gui.menus.AdminMenu.forgetPassword()", "forgetpassword.png");
+   				  "org.tellervo.desktop.gui.menus.AdminMenu.forgetPassword()", "forgetpassword.png");
    		  add(forgetpwd);
    	  }
    	  
@@ -166,11 +166,11 @@ public class AdminMenu extends JMenu {
 
     	
     	JMenuItem boxlabel = Builder.makeMenuItem("menus.admin.boxlabels",
-                "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.boxLabelDialog()", "box.png");
+                "org.tellervo.desktop.util.labels.ui.PrintingDialog.boxLabelDialog()", "box.png");
         labelmenu.add(boxlabel);
     	
         JMenuItem samplelabel = Builder.makeMenuItem("menus.admin.samplelabels",
-                "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.sampleLabelDialog()", "sample.png");
+                "org.tellervo.desktop.util.labels.ui.PrintingDialog.sampleLabelDialog()", "sample.png");
         labelmenu.add(samplelabel);   
         add(labelmenu);
     }
@@ -184,7 +184,7 @@ public class AdminMenu extends JMenu {
 	 	
 	 	
 	    JMenuItem prosheet = Builder.makeMenuItem("menus.admin.prosheet",
-	            "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.proSheetPrintingDialog()", "prosheet.png");
+	            "org.tellervo.desktop.util.labels.ui.PrintingDialog.proSheetPrintingDialog()", "prosheet.png");
 	    reportmenu.add(prosheet); 
 	 	add(reportmenu);
 	 }
@@ -195,7 +195,7 @@ public class AdminMenu extends JMenu {
 	protected void addUserGroupMenu() {
 		
 	  	JMenuItem usergroup = Builder.makeMenuItem("menus.admin.usersandgroups",
-	            "edu.cornell.dendro.corina.admin.view.UserGroupAdminView.main()", "edit_group.png");
+	            "org.tellervo.desktop.admin.view.UserGroupAdminView.main()", "edit_group.png");
 	
 	  	
 		// Enable if user is an admin
@@ -214,32 +214,32 @@ public class AdminMenu extends JMenu {
 	 	
 	 	
 	    JMenuItem findsample = Builder.makeMenuItem("menus.admin.findsample",
-	            "edu.cornell.dendro.corina.admin.SampleCuration.showDialog()", "findsample.png");
+	            "org.tellervo.desktop.admin.SampleCuration.showDialog()", "findsample.png");
 	    curationmenu.add(findsample); 
 	    
 	    curationmenu.addSeparator();
 	    
 	    JMenuItem boxdetails = Builder.makeMenuItem("menus.admin.boxdetails",
-	            "edu.cornell.dendro.corina.admin.BoxCuration.showDialog()", "box.png");
+	            "org.tellervo.desktop.admin.BoxCuration.showDialog()", "box.png");
 	    curationmenu.add(boxdetails); 
 	    
 	    JMenuItem checkoutbox = Builder.makeMenuItem("menus.admin.checkoutbox",
-	            "edu.cornell.dendro.corina.admin.BoxCuration.checkoutBox()", "checkout.png");
+	            "org.tellervo.desktop.admin.BoxCuration.checkoutBox()", "checkout.png");
 	    curationmenu.add(checkoutbox); 
 	    
 	    JMenuItem checkinbox = Builder.makeMenuItem("menus.admin.checkinbox",
-	            "edu.cornell.dendro.corina.admin.BoxCuration.checkinBox()", "checkin.png");
+	            "org.tellervo.desktop.admin.BoxCuration.checkinBox()", "checkin.png");
 	    curationmenu.add(checkinbox); 
 	    
 	    JMenuItem inventory = Builder.makeMenuItem("menus.admin.inventory",
-	            "edu.cornell.dendro.corina.util.labels.ui.PrintingDialog.proSheetPrintingDialog()");
+	            "org.tellervo.desktop.util.labels.ui.PrintingDialog.proSheetPrintingDialog()");
 	    inventory.setEnabled(false);
 	    //curationmenu.add(inventory); 
 	    
 	 	add(curationmenu);
 	 	addSeparator();
-		add(Builder.makeMenuItem("menus.admin.metadatabrowser", "edu.cornell.dendro.corina.gui.menus.AdminMenu.metadataBrowser()", "database.png"));
-		add(Builder.makeMenuItem("general.sitemap", "edu.cornell.dendro.corina.gui.menus.AdminMenu.showMap()", "globe.png"));
+		add(Builder.makeMenuItem("menus.admin.metadatabrowser", "org.tellervo.desktop.gui.menus.AdminMenu.metadataBrowser()", "database.png"));
+		add(Builder.makeMenuItem("general.sitemap", "org.tellervo.desktop.gui.menus.AdminMenu.showMap()", "globe.png"));
 
 
 	}

@@ -23,11 +23,11 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import org.tellervo.desktop.sample.ElementList;
-import org.tellervo.desktop.schema.SearchReturnObject;
+import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.wsi.ResourceEvent;
 import org.tellervo.desktop.wsi.ResourceEventListener;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.SeriesSearchResource;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 
 
 /**

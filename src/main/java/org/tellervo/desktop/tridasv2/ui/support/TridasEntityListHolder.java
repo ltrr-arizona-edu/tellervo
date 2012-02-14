@@ -30,8 +30,8 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.EntitySearchResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasIdentifier;
 
@@ -96,9 +96,9 @@ public class TridasEntityListHolder {
 		
 		// make the dialog
 		if(parentWindow == null || parentWindow instanceof Frame)
-			qh.dialog = new CorinaResourceAccessDialog((Frame) parentWindow, qh.resource);
+			qh.dialog = new TellervoResourceAccessDialog((Frame) parentWindow, qh.resource);
 		else if(parentWindow instanceof Dialog)
-			qh.dialog = new CorinaResourceAccessDialog((Dialog) parentWindow, qh.resource);
+			qh.dialog = new TellervoResourceAccessDialog((Dialog) parentWindow, qh.resource);
 		else 
 			throw new IllegalArgumentException("Not frame or dialog??");
 		
@@ -178,7 +178,7 @@ public class TridasEntityListHolder {
 
 	private static class ListQueryHolder {
 		public EntitySearchResource<ITridas> resource;
-		public CorinaResourceAccessDialog dialog;
+		public TellervoResourceAccessDialog dialog;
 	}
 
 }

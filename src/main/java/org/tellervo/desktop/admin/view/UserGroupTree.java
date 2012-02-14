@@ -43,8 +43,8 @@ import org.tellervo.desktop.admin.model.TransferableGroup;
 import org.tellervo.desktop.admin.model.TransferableUser;
 import org.tellervo.desktop.admin.model.UserGroupAdminModel;
 import org.tellervo.desktop.admin.model.UserGroupNode;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
 
 
 public class UserGroupTree extends JTree implements TreeSelectionListener,

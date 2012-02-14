@@ -60,7 +60,7 @@ import org.tellervo.indexing.Exponential;
   bit more homogeneous should help.
 */
 
-// TODO: move to appropriate places, like corina.index.Index.indexMany()
+// TODO: move to appropriate places, like tellervo.index.Index.indexMany()
 // BUG: after one of these is called by the browser, how will it know to update itself?
 // -- do i need a way to say "hey browser, add/modify just this one element"?
 

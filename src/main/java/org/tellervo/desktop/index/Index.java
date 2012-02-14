@@ -299,7 +299,7 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 		// should i fire a metadataChanged event here?
 	}
 
-	// get a unique id number for this algorithm -- (this is for ms-dos-corina compatibility)
+	// get a unique id number for this algorithm -- (this is for ms-dos-tellervo compatibility)
 	//public abstract int getID();
 
 	public final void unapply() {

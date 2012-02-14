@@ -226,7 +226,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		
 		// now, make this remember the last things we reconciled against!
 		crossMenu = Builder.makeMenu("menus.tools.crossdateAgainst");
-		crossMenu.putClientProperty("corina.crossdate_open_recent_action", new OpenRecent.SampleOpener("crossdate") {
+		crossMenu.putClientProperty("tellervo.crossdate_open_recent_action", new OpenRecent.SampleOpener("crossdate") {
 			@Override
 			public void performOpen(Sample s) {
 				// new crossdate window

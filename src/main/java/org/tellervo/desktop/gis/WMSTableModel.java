@@ -28,7 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.prefs.Prefs;
-import org.tellervo.desktop.schema.WSIWmsServer;
+import org.tellervo.schema.WSIWmsServer;
 
 
 /**

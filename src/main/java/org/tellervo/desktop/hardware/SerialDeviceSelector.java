@@ -165,11 +165,11 @@ public class SerialDeviceSelector {
 				}
 
 				/*UnitMultiplier units = null;
-				if(App.prefs.getPref("corina.port.unitmultiplier", null)!=null &&
+				if(App.prefs.getPref("tellervo.port.unitmultiplier", null)!=null &&
 					device.isUnitsEditable())
 				{
 					try{
-						units = UnitMultiplier.valueOf(App.prefs.getPref("corina.port.unitmultiplier", null));
+						units = UnitMultiplier.valueOf(App.prefs.getPref("tellervo.port.unitmultiplier", null));
 					} catch (Exception e) {}
 				}*/
 				

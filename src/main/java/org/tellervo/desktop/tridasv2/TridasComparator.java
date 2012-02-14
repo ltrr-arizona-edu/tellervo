@@ -134,7 +134,7 @@ public class TridasComparator implements Comparator<ITridas> {
 			if(o1 instanceof TridasSample){
 				TridasSample s1 = (TridasSample) o1;
 				try{
-				v1 = GenericFieldUtils.findField(s1, "corina.internal.labcodeText").getValue().toString();
+				v1 = GenericFieldUtils.findField(s1, "tellervo.internal.labcodeText").getValue().toString();
 				} catch (NullPointerException e)
 				{
 					v1 = o1.getTitle();
@@ -147,7 +147,7 @@ public class TridasComparator implements Comparator<ITridas> {
 			if(o2 instanceof TridasSample){
 				TridasSample s2 = (TridasSample) o2;
 				try{
-				v2 = GenericFieldUtils.findField(s2, "corina.internal.labcodeText").getValue().toString();
+				v2 = GenericFieldUtils.findField(s2, "tellervo.internal.labcodeText").getValue().toString();
 				} catch (NullPointerException e)
 				{
 					v2 = o2.getTitle();

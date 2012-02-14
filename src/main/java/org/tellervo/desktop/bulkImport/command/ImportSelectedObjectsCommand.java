@@ -33,11 +33,11 @@ import org.tellervo.desktop.bulkImport.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkImport.model.ObjectTableModel;
 import org.tellervo.desktop.bulkImport.model.SingleObjectModel;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.schema.CorinaRequestType;
+import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVCEvent;
@@ -148,18 +148,18 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			
 			EntityResource<TridasObjectEx> resource;
 			if(origObject.getIdentifier() != null){
-				resource = new EntityResource<TridasObjectEx>(origObject, CorinaRequestType.UPDATE, TridasObjectEx.class);
+				resource = new EntityResource<TridasObjectEx>(origObject, TellervoRequestType.UPDATE, TridasObjectEx.class);
 			}else{
 				if(parentObject != null){
 					resource = new EntityResource<TridasObjectEx>(origObject, parentObject, TridasObjectEx.class);
 				}else{
-					resource = new EntityResource<TridasObjectEx>(origObject, CorinaRequestType.CREATE, TridasObjectEx.class);
+					resource = new EntityResource<TridasObjectEx>(origObject, TellervoRequestType.CREATE, TridasObjectEx.class);
 				}
 			}
 			
 			// set up a dialog...
 			Window parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
-			CorinaResourceAccessDialog dialog = CorinaResourceAccessDialog.forWindow(parentWindow, resource);
+			TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parentWindow, resource);
 			
 			resource.query();
 			dialog.setVisible(true);

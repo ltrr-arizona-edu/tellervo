@@ -85,7 +85,7 @@ public class TridasImportPanel extends TridasMetadataPanel {
 	}
 	
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel#populateNewEntity(edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel.EditType, org.tridas.interfaces.ITridas)
+	 * @see org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel#populateNewEntity(org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType, org.tridas.interfaces.ITridas)
 	 */
 	@Override
 	protected void populateNewEntity(EditType type, ITridas entity) {
@@ -120,7 +120,7 @@ public class TridasImportPanel extends TridasMetadataPanel {
 	}
 
 	/* (non-Javadoc)
-	 * @see edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel#suggestSelectedEntity(edu.cornell.dendro.corina.tridasv2.ui.TridasMetadataPanel.EditType, java.util.List)
+	 * @see org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel#suggestSelectedEntity(org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType, java.util.List)
 	 */
 	@Override
 	protected ITridas suggestSelectedEntity(EditType mode,

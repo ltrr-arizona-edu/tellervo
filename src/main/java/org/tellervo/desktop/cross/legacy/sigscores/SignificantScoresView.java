@@ -354,7 +354,7 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
   }
 
   private void refreshFont() {
-    // WAS: corina.cross.font (merged with corina.edit.font)
+    // WAS: tellervo.cross.font (merged with tellervo.edit.font)
     if (App.prefs.getPref(PrefKey.EDIT_FONT, null) != null) {
       Font f = Font.decode(App.prefs.getPref(PrefKey.EDIT_FONT, null));
       table.setFont(f);
@@ -374,15 +374,15 @@ public class SignificantScoresView extends JPanel implements PrefsListener {
   public void prefChanged(PrefsEvent e) {
     String pref = e.getPref();
 
-    if (pref.equals("corina.edit.gridlines"))
+    if (pref.equals("tellervo.edit.gridlines"))
       refreshGridlines();
     else if (pref.equals("???"))
       refreshFormat();
-    else if (pref.equals("corina.edit.font"))
+    else if (pref.equals("tellervo.edit.font"))
       refreshFont();
-    else if (pref.equals("corina.edit.background"))
+    else if (pref.equals("tellervo.edit.background"))
       refreshForeground();
-    else if (pref.equals("corina.edit.foreground"))
+    else if (pref.equals("tellervo.edit.foreground"))
       refreshBackground();
   }
 

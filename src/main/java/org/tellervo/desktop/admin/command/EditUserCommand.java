@@ -28,7 +28,7 @@ import org.tellervo.desktop.admin.control.EditUserEvent;
 import org.tellervo.desktop.admin.model.SecurityUserTableModelA;
 import org.tellervo.desktop.admin.view.UserUIView;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSISecurityUser;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;

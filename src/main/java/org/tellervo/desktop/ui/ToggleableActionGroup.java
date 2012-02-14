@@ -38,27 +38,27 @@ import java.util.List;
  *
  */
 public class ToggleableActionGroup implements PropertyChangeListener {
-	private List<CorinaAction> actions;
+	private List<TellervoAction> actions;
 	private boolean currentlyProcessingAction;
 	
 	public ToggleableActionGroup() {
-		actions = new ArrayList<CorinaAction>();
+		actions = new ArrayList<TellervoAction>();
 		currentlyProcessingAction = false;
 	}
 	
-	public void add(CorinaAction action) {
+	public void add(TellervoAction action) {
 		actions.add(action);		
 		action.addPropertyChangeListener(this);
 	}
 	
-	public void remove(CorinaAction action) {
+	public void remove(TellervoAction action) {
 		actions.remove(action);
 		action.removePropertyChangeListener(this);
 	}
 
 	public synchronized void propertyChange(PropertyChangeEvent evt) {
 		// only care about our selection key!
-		if(!CorinaAction.CORINA_SELECTED_KEY.equals(evt.getPropertyName()))
+		if(!TellervoAction.CORINA_SELECTED_KEY.equals(evt.getPropertyName()))
 			return;
 		
 		// ignore any infinite-loop causing events (uuurgh!)
@@ -74,9 +74,9 @@ public class ToggleableActionGroup implements PropertyChangeListener {
 		currentlyProcessingAction = true;
 		// deselect everything that's not the caller
 		try {
-			for(CorinaAction action : actions) {
+			for(TellervoAction action : actions) {
 				if(!action.equals(evt.getSource()))
-					action.putValue(CorinaAction.CORINA_SELECTED_KEY, false);
+					action.putValue(TellervoAction.CORINA_SELECTED_KEY, false);
 			}
 		} finally {
 			// make sure this gets called even if things go fishy above

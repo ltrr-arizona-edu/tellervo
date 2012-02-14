@@ -24,11 +24,11 @@ import java.util.List;
 import java.util.Map;
 
 import org.tellervo.desktop.io.Metadata;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.EntityType;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.NewTridasIdentifier;
-import org.tellervo.desktop.wsi.corina.resources.SeriesResource;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.EntityType;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
+import org.tellervo.desktop.wsi.tellervo.resources.SeriesResource;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.SeriesLink;
@@ -57,7 +57,7 @@ import org.tridas.schema.TridasRadius;
  *
  */
 
-public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoader<SeriesResource> implements Cloneable {
+public class CorinaWsiTridasElement extends AbstractTellervoGUIDeletableSampleLoader<SeriesResource> implements Cloneable {
 	private String shortName;
 	private String name;
 	private TridasIdentifier identifier;
@@ -110,7 +110,7 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 	
 	@Override
 	protected Sample doLoad(SeriesResource resource,
-			CorinaResourceAccessDialog dialog) throws IOException {
+			TellervoResourceAccessDialog dialog) throws IOException {
 
 		// start the query
 		resource.query();
@@ -139,7 +139,7 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 
 	@Override
 	protected boolean doSave(Sample s, SeriesResource resource,
-			CorinaResourceAccessDialog dialog) throws IOException {
+			TellervoResourceAccessDialog dialog) throws IOException {
 
 		// start the query
 		resource.query();
@@ -172,7 +172,7 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 	@Override
 	protected SeriesResource getResource(Map<String, ? extends Object> properties) {
 		SeriesResource resource = new SeriesResource(identifier,
-				EntityType.MEASUREMENT_SERIES, CorinaRequestType.READ);
+				EntityType.MEASUREMENT_SERIES, TellervoRequestType.READ);
 		
 		// set resource properties
 		if(properties != null && !properties.isEmpty())
@@ -229,7 +229,7 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 				if (series instanceof ITridasDerivedSeries) {
 					// create a new derived series - parent is null
 					resource = new SeriesResource(series, null,
-							CorinaRequestType.CREATE);
+							TellervoRequestType.CREATE);
 					return resource;
 				}
 
@@ -243,12 +243,12 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 							"Creating a new series without a radius that has an identifier?");
 
 				resource = new SeriesResource(series, radius.getIdentifier()
-						.getValue(), CorinaRequestType.CREATE);
+						.getValue(), TellervoRequestType.CREATE);
 				return resource;
 			}
 
 			// we're just updating
-			resource = new SeriesResource(series, null, CorinaRequestType.UPDATE);
+			resource = new SeriesResource(series, null, TellervoRequestType.UPDATE);
 			return resource;
 			
 		} finally {
@@ -286,7 +286,7 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 
 	@Override
 	protected boolean doDelete(SeriesResource resource,
-			CorinaResourceAccessDialog dialog) throws IOException {
+			TellervoResourceAccessDialog dialog) throws IOException {
 		
 		// start the query
 		resource.query();
@@ -306,7 +306,7 @@ public class CorinaWsiTridasElement extends AbstractCorinaGUIDeletableSampleLoad
 
 	@Override
 	protected SeriesResource getDeletionResource() {
-		return new SeriesResource(identifier, EntityType.MEASUREMENT_SERIES, CorinaRequestType.DELETE);
+		return new SeriesResource(identifier, EntityType.MEASUREMENT_SERIES, TellervoRequestType.DELETE);
 	}
 
 	@Override

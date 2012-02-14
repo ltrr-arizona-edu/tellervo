@@ -47,8 +47,8 @@ import org.tellervo.desktop.admin.control.CreateNewUserEvent;
 import org.tellervo.desktop.admin.control.UpdateUserEvent;
 import org.tellervo.desktop.admin.model.SecurityGroupTableModelB;
 import org.tellervo.desktop.admin.model.UserGroupAdminModel;
-import org.tellervo.desktop.schema.WSISecurityGroup;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 

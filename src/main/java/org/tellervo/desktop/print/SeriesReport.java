@@ -313,7 +313,7 @@ public class SeriesReport extends ReportBase {
 			Image icon = null;
 			String remarkStr = null;
 			
-			// Get actual icon (either tridas or corina)
+			// Get actual icon (either tridas or tellervo)
 			if(remark.isSetNormalTridas()) {
 				remarkStr = remark.getNormalTridas().toString().toLowerCase();
 				remarkStr = remarkStr.replace("_", " ");
@@ -515,7 +515,7 @@ public class SeriesReport extends ReportBase {
 						PdfPCell valueCell = new PdfPCell();	
 						valueCell = remarkCell;	
 
-						// Get actual icon (either tridas or corina)
+						// Get actual icon (either tridas or tellervo)
 						if(remark.isSetNormalTridas()) {
 							remstr = remark.getNormalTridas().toString();
 							icon = getTridasIcon(remark.getNormalTridas());	

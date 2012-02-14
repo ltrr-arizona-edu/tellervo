@@ -28,16 +28,16 @@ import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.CorinaCodePanel;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
-import org.tellervo.desktop.schema.CorinaRequestFormat;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.CorinaResourceProperties;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.EntitySearchResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
@@ -345,8 +345,8 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 				EntitySearchResource<TridasElement> searchResource = new EntitySearchResource<TridasElement>(search, TridasElement.class);
 				
 				
-				searchResource.setProperty(CorinaResourceProperties.ENTITY_REQUEST_FORMAT, CorinaRequestFormat.STANDARD);
-				CorinaResourceAccessDialog dlg = new CorinaResourceAccessDialog(parent, searchResource);
+				searchResource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.STANDARD);
+				TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(parent, searchResource);
 				searchResource.query();
 				dlg.setVisible(true);
 				

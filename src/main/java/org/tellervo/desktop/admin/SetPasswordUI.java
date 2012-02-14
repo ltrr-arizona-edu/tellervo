@@ -35,14 +35,14 @@ import javax.swing.LayoutStyle;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.LoginDialog;
 import org.tellervo.desktop.gui.UserCancelledException;
-import org.tellervo.desktop.schema.CorinaRequestType;
-import org.tellervo.desktop.schema.WSISecurityUser;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.StringUtils;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.SecurityUserEntityResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.SecurityUserEntityResource;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -227,10 +227,10 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
 		}
 		
 		// associate a resource
-    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(CorinaRequestType.UPDATE, thisUser);
+    	SecurityUserEntityResource rsrc = new SecurityUserEntityResource(TellervoRequestType.UPDATE, thisUser);
     	
     	
-		CorinaResourceAccessDialog accdialog = new CorinaResourceAccessDialog(this, rsrc);
+		TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(this, rsrc);
 		rsrc.query();
 		accdialog.setVisible(true);
 		

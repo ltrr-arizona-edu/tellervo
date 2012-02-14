@@ -29,11 +29,11 @@ import org.tellervo.desktop.gui.XMLDebugView;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.sample.CorinaWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.schema.SearchReturnObject;
+import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.tridasv2.TridasComparator;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.EntitySearchResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
@@ -64,7 +64,7 @@ public class PrintReportFramework {
 		
 		EntitySearchResource<TridasSample> sampresource = new EntitySearchResource<TridasSample>(sampparam);
 		
-		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(sampresource);
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(sampresource);
 		sampresource.query();	
 		dialog.setVisible(true);
 		if(!dialog.isSuccessful()) 

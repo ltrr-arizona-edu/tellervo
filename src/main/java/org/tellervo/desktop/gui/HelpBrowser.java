@@ -72,7 +72,7 @@ import org.slf4j.LoggerFactory;
    <h2>Left to do</h2>
    <ul>
       <li>javadoc me
-      <li>use special icon for corina-help (which?)
+      <li>use special icon for tellervo-help (which?)
       <li>I18n: "Corina Help", "Back", "Forward", error msgs
       <li>what's the initial size/position?
       <li>change Help.java to use this HelpBrowser instead of JavaHelp
@@ -109,7 +109,7 @@ public class HelpBrowser extends JFrame {
     // forward/back buttons
     private JButton backButton, fwdButton;
 
-    private static final String HELP_PAGE = "corina/manual/index.html";
+    private static final String HELP_PAGE = "tellervo/manual/index.html";
 
     private static class JPrettyEditorPane extends JEditorPane {
 	@Override

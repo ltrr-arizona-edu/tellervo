@@ -96,7 +96,7 @@ public class XMLResponseHandler implements ResponseHandler<Document> {
 		try {
 			// read this into a temporary file if we can
 			try {
-				tempFile = File.createTempFile("corina", ".xml");
+				tempFile = File.createTempFile("tellervo", ".xml");
 				fileOut = new OutputStreamWriter(new FileOutputStream(tempFile, false), charset);
 
 			} catch (IOException ioe) {

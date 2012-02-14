@@ -35,7 +35,7 @@ import org.tellervo.desktop.hardware.TestMeasurePanel;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.panels.HardwarePrefsPanel;
 import org.tellervo.desktop.prefs.wrappers.FormatWrapper;
-import org.tellervo.desktop.schema.WSIWmsServer;
+import org.tellervo.schema.WSIWmsServer;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;

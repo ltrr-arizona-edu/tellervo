@@ -27,7 +27,7 @@ import org.tellervo.desktop.admin.control.EditGroupEvent;
 import org.tellervo.desktop.admin.model.SecurityGroupTableModelA;
 import org.tellervo.desktop.admin.view.GroupUIView;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityGroup;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;

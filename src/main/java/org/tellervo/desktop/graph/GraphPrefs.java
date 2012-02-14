@@ -17,7 +17,7 @@ import org.tellervo.desktop.prefs.PrefHolder;
  *
  */
 public final class GraphPrefs extends PrefHolder {
-	public final static String PREFIX = "corina.graph.";
+	public final static String PREFIX = "tellervo.graph.";
 	public final static Integer DPI = Toolkit.getDefaultToolkit().getScreenResolution();
 
 	public final static PrefHandle<PlotAgent> PLOT_AGENT = mkEnum(PREFIX, "defaultagent", PlotAgent.class, PlotAgent.STANDARD);

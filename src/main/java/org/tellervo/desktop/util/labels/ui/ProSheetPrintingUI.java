@@ -27,13 +27,13 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.dbbrowse.SiteRenderer;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
-import org.tellervo.desktop.schema.SearchOperator;
-import org.tellervo.desktop.schema.SearchParameterName;
-import org.tellervo.desktop.schema.SearchReturnObject;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.util.ArrayListModel;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.SearchParameters;
-import org.tellervo.desktop.wsi.corina.resources.SeriesSearchResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 import org.tridas.schema.TridasObject;
 
 
@@ -310,7 +310,7 @@ public class ProSheetPrintingUI extends javax.swing.JPanel implements ActionList
     	// we want a series returned here
 		SeriesSearchResource searchResource = new SeriesSearchResource(sampparam);
 		
-		CorinaResourceAccessDialog dialog = new CorinaResourceAccessDialog(searchResource);
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(searchResource);
 		searchResource.query();	
 		dialog.setVisible(true);
 		

@@ -29,7 +29,7 @@ public class AMeasurement {
 	
 	public AMeasurement(boolean enabled, Integer value, String source) {
 	
-		NormalTridasUnit displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("corina.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
+		NormalTridasUnit displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("tellervo.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
 
 		
 		if(!source.equals("manual"))
