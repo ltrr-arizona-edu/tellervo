@@ -1,8 +1,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>../../target/Corina.jar</jar>
-  <outfile>../../target/Corina.exe</outfile>
+  <jar>../../target/Tellervo.jar</jar>
+  <outfile>../../target/Tellervo.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir></chdir>

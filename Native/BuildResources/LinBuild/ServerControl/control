@@ -8,6 +8,6 @@ Suggests: openssh-server, pgadmin3, corina
 Replaces: [[name]]-server (<<${serverversion})
 Maintainer: Peter Brewer <p.brewer@cornell.edu>
 Description: Database and webservice for the Corina dendrochronology desktop application
- The Corina server provides a PHP/PostgreSQL-based web service for managing dendrochronology
+ The Tellervo server provides a PHP/PostgreSQL-based web service for managing dendrochronology
  samples, data and metadata alongside the Corina desktop application.  
 Distribution: development

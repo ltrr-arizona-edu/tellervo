@@ -1,18 +1,18 @@
 #!/bin/bash
-echo "*******************" >> /var/log/corina-installation.log
-echo "Preinst run ${serverversion} with $1 argument" >> /var/log/corina-installation.log
-date '+%R.%S' >> /var/log/corina-installation.log
-echo "*******************" >> /var/log/corina-installation.log
+echo "*******************" >> /var/log/tellervo-installation.log
+echo "Preinst run ${serverversion} with $1 argument" >> /var/log/tellervo-installation.log
+date '+%R.%S' >> /var/log/tellervo-installation.log
+echo "*******************" >> /var/log/tellervo-installation.log
 
 if [ $1 = 'upgrade' ]; then
    ## Upgrading so, move aside config.php file so
    ## so it doesn't get over-written
 
-   echo "Upgrading Corina server to a new version" >> /var/log/corina-installation.log
-   if [ -e "/var/www/corina-webservice/config.php" ];
+   echo "Upgrading Corina server to a new version" >> /var/log/tellervo-installation.log
+   if [ -e "/var/www/tellervo-webservice/config.php" ];
    then
-     echo "Backing up config.php for reinstatement after the upgrade" >> /var/log/corina-installation.log
-     cp /var/www/corina-webservice/config.php /tmp/
+     echo "Backing up config.php for reinstatement after the upgrade" >> /var/log/tellervo-installation.log
+     cp /var/www/tellervo-webservice/config.php /tmp/
    fi
 
 #elif [ $1 = 'install' ]; then

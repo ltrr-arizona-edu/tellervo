@@ -109,8 +109,8 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:svn://svn.code.sf.net/p/tellervo/code-0/branches/dev/</connection>
-		<developerConnection>scm:svn+ssh://svn.code.sf.net/p/tellervo/code-0/branches/dev/</developerConnection>
+		<connection>scm:svn://svn.code.sf.net/p/tellervo/code-0/trunk</connection>
+		<developerConnection>scm:svn+ssh://svn.code.sf.net/p/tellervo/code-0/trunk</developerConnection>
 		<url>http://www.tellervo.org</url>
 	</scm>
 	<properties>
