@@ -22,11 +22,11 @@
 		</jaxb:globalBindings>
 	</jaxb:bindings> 
 	
-	<!-- Corina -->
-	<jaxb:bindings schemaLocation="../schemas/corina.xsd" node="/xs:schema">
+	<!-- Tellervo -->
+	<jaxb:bindings schemaLocation="../schemas/tellervo.xsd" node="/xs:schema">
 		
-		<!-- Rename Corina root element to WSIRootElement -->
-		<jaxb:bindings node="//xs:element[@name='corina']">
+		<!-- Rename Tellervo root element to WSIRootElement -->
+		<jaxb:bindings node="//xs:element[@name='tellervo']">
 			<jaxb:class name="WSIRootElement" />
 		</jaxb:bindings>
    
@@ -54,10 +54,10 @@
 			</ai:interfaces>
 		</jaxb:bindings>-->
 		
-		<!-- Add ICorinaEntity interface to ITridas-like things that are specific to Corina -->
+		<!-- Add ITellervoEntity interface to ITridas-like things that are specific to Tellervo -->
 		<!--<bindings node="//xs:element[@name='securityUser']/xs:complexType">
 			<ai:interfaces check="false">
-				edu.cornell.dendro.corina.interfaces.ICorinaEntity
+				edu.cornell.dendro.tellervo.interfaces.ITellervoEntity
 			</ai:interfaces>
 		</bindings>-->
 			
@@ -76,7 +76,7 @@
 		</jaxb:bindings>
 	
 		<jaxb:schemaBindings>
-			<jaxb:package name="edu.cornell.dendro.corina.schema"/>
+			<jaxb:package name="org.tellervo.schema"/>
 			<jaxb:nameXmlTransform>
 				<jaxb:elementName prefix="WSI" />
 			</jaxb:nameXmlTransform>

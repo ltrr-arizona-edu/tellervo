@@ -11,9 +11,9 @@ import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.schema.CorinaRequestType;
 import org.tellervo.desktop.schema.WSISecurityGroup;
 import org.tellervo.desktop.schema.WSISecurityUser;
-import org.tellervo.desktop.wsi.corina.CorinaResourceAccessDialog;
-import org.tellervo.desktop.wsi.corina.resources.SecurityGroupEntityResource;
-import org.tellervo.desktop.wsi.corina.resources.SecurityUserEntityResource;
+import org.tellervo.desktop.wsi.tellervo.CorinaResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.SecurityGroupEntityResource;
+import org.tellervo.desktop.wsi.tellervo.resources.SecurityUserEntityResource;
 
 import junit.framework.TestCase;
 
