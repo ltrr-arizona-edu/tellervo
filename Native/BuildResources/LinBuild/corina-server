@@ -1,0 +1,1807 @@
+#!/usr/bin/php
+<?php
+
+/**
+ * Check this script is being run from the command line
+ */
+if (!isset($argc))
+{
+	writeStdErr("This file should be called from the command line only.");
+	exit(1);
+}
+
+// Static locations of various files 
+$wsbase           = "/var/www/corina-webservice/";
+$folderbase       = "/usr/share/corina-server/";
+
+$pg_hba_file      = "/etc/postgresql/9.1/main/pg_hba.conf";
+$pg_hba_file_orig = "/etc/postgresql/9.1/main/pg_hba.conf.bak";
+$permsfile        = $folderbase."set_database_permission.sql";
+$permstemplate    = $folderbase."set_database_permission.template";
+$logfile          = "/var/log/corina-installation.log";
+$configtemplate   = $folderbase."config.php.template";
+$dbtemplate       = $folderbase."corina_database_template.sql";
+$credentialsFile  = $folderbase."corina_server_credentials";
+$upgradeScripts   = $folderbase."db-upgrade-patches";
+$configfile       = $wsbase."config.php";
+$dbsetupfile      = $wsbase."inc/dbsetup.php";
+$systemconfig     = $wsbase."systemconfig.php";
+
+
+// Global variables
+$user = "";
+$pwd = "";
+$wsurl = "";
+$errorsFound = FALSE;
+
+// Set custom error handler to divert messages to log file
+set_error_handler("myErrorHandler");
+
+
+if($_SERVER['USER']=='root')
+{
+	// Make sure log file exists and make sure it is read and writeable
+	exec("touch $logfile > /dev/null");
+	exec("chmod a+rw $logfile > /dev/null");
+	
+	// Log the date of running to the log file
+	exec("echo \"*******************\" >> ".$logfile); 
+	exec("echo \"Running corina-server\" >> ".$logfile); 
+	exec("date >> ".$logfile); 
+	exec("echo \"*******************\" >> ".$logfile); 
+}
+
+/**
+ * Grab command line arguments either using long or short options
+ */
+ 
+$shortopts = "htrces";
+$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "upgrade-db", "version" );
+$args = getopt($shortopts,$longopts);
+
+// Depending on command line arguments run different functions
+if($args["test"]===false || $args["t"]===false)
+{
+	// Test configuration
+	include($configfile);
+	include($dbsetupfile);
+	$setupsuccessful = verifySetup();
+	printComplete(setupsuccessful);
+}
+else if($args["reconfigure"]===false || $args["r"]===false)
+{
+	// Reconfigure server
+	requireRoot();
+	postgresSetup();
+	include($configfile);
+	include($dbsetupfile);
+	generateSystemsConfig();
+	apacheSetup();
+	verifySetup();
+	printComplete();
+	exit(0);
+}
+else if($args["sysconfig"]===false || $args["s"]===false)
+{
+	requireRoot();
+	include($configfile);
+	include($dbsetupfile);
+	generateSystemsConfig();
+	exit(0);
+}
+else if($args["help"]===false || $args["h"]===false)
+{
+    // Show help documentation
+  	showHelp();
+}
+else if($args["stop"]===false)
+{
+	requireRoot();
+	echo "Stopping PostgreSQL...\n";
+	exec("/etc/init.d/postgresql stop");
+	echo "Stopping Apache...\n";
+	exec("/etc/init.d/apache2 stop");
+	echo "\n\n";
+	exit(0);
+}
+else if($args["start"]===false)
+{
+	requireRoot();
+	echo "Starting PostgreSQL...\n";
+	exec("/etc/init.d/postgresql start");
+	echo "Starting Apache...\n";
+	exec("/etc/init.d/apache2 start");
+	echo "\n";
+	exit(0);
+}
+else if($args["restart"]===false)
+{
+	requireRoot();
+	echo "Restarting PostgreSQL...\n";
+	exec("/etc/init.d/postgresql restart");
+	echo "Restarting Apache...\n";
+	exec("/etc/init.d/apache2 restart");
+	echo "\n";
+	exit(0);
+}
+else if($args["resetpwd"]===false)
+{
+	requireRoot();
+	setDBUser();
+	echo "\n";
+	exit(0);
+}
+else if($args["emptylog"]===false || $args["e"]===false)
+{
+	requireRoot();
+	include($configfile);
+	include($dbsetupfile);
+	emptyLog();
+	exit(0);
+	
+}
+else if($args["upgrade-db"]===false)
+{
+	requireRoot();
+	include($configfile);
+	include($dbsetupfile);
+	runDBUpgrades();
+	exit(0);
+}
+else if ($args["configure"]===false || $args["c"]===false)
+{
+	// Configure
+	requireRoot();
+	
+	// Check if the server is already configured
+	if( (file_exists($configfile)) && (file_exists($dbsetupfile)) )
+	{
+		// Include config files as they already exist
+		include($configfile);
+		include($dbsetupfile);
+			
+		// Verify if the configuration is already ok
+		if(verifySetup(TRUE)===TRUE)
+		{
+			// setup already done so display and close 
+			echo "Configuration complete\n\n";
+			verifySetup();
+			printComplete();
+			exit(0);
+		}	
+	}
+	
+	// Setup not yet ok so configure from scratch
+	createScriptsFromTemplates();
+	postgresSetup();
+	include($configfile);
+	include($dbsetupfile);
+	generateSystemsConfig();
+	include($systemconfig);
+	runDBUpgrades();
+	apacheSetup();
+	verifySetup();
+	printComplete();
+	exit(0);
+}
+else if ($args["version"]===false)
+{
+	include($configfile);
+	include($dbsetupfile);
+	echo "\n";
+	printTitle();
+	echoTruncatedString("Corina Database", 20);
+	echo " - version ".getCorinaDBVersion()."\n";
+	echo "\n";
+	exit(0);
+}
+
+
+showHelp(true);
+exit(1);
+
+/**
+ * END OF SCRIPT BODY
+ */
+
+/**
+ * Print the program name and version
+ */
+function printTitle()
+{
+  echoTruncatedString("Corina Server", 20);
+  echo " - version ".getCorinaDPKGVersion()."\n";
+}
+
+/**
+ * Show help information about the script
+ */ 
+function showHelp($forced=false)
+{
+  echo "\n";
+  printTitle();
+  echo "\nUseage: corina-server [<option> ...]\n";
+  echo "Options:\n";
+  echo "  -h, --help         Show this help\n";
+  echo "  -t, --test         Run tests on existing setup\n";
+  echo "  -c, --configure    Configure server\n";
+  echo "  -r, --reconfigure  Reconfigure the server overwriting existing config\n";
+  echo "      --resetpwd     Reset the PostgreSQL database password\n";
+  echo "      --start        Start the Corina server\n";
+  echo "      --stop         Stop the Corina server\n"; 
+  echo "      --restart      Restart the Corina server\n";   
+  echo "      --upgrade-db   Run database upgrade scripts\n";
+  echo "      --version      Show version of Corina server that is installed\n";
+  echo "\n";
+  
+  if(forced) exit(1);
+  
+  exit(0);
+
+}
+
+/**
+* Run any applicable upgrade scripts
+*/
+function runDBUpgrades()
+{	
+	global $upgradeScripts;
+	global $logfile;
+	
+	$scriptsRun = 0;
+
+	echo "Upgrading existing Corina database to latest version...\n";
+	
+	exec("echo \"*******************\" >> $logfile");
+    exec("echo \"Upgrading existing Corina database to latest version...\" >> $logfile" );
+    exec("echo \"*******************\" >> $logfile");	
+	
+	// Loop through all upgrade scripts and run any that haven't 
+	// already been run
+
+	if (is_dir($upgradeScripts)) 
+	{
+	    if ($dh = opendir($upgradeScripts)) 
+	    {
+	        while (($file = readdir($dh)) !== false) 
+			{
+				// Ignore directories and hidden files
+		        if ($file != "." && $file != ".." && strpos($file, ".")!=0) 
+			    {
+			      	$result = runSQLUpgradeFile($file);
+			      	if($result) $scriptsRun++;
+		        }
+		    }
+		    closedir($dh);
+		}
+	}
+	
+	global $configfile;
+    global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;
+	
+	$f = getCorinaDPKGVersion();
+
+	// Remove +SNAPSHOT from end
+	$f = str_replace("+SNAPSHOT", "", $f);
+	
+	$sql = "UPDATE tblconfig SET value='$f' where key='wsversion'";
+        $dbconnstatus = pg_connection_status($dbconn);
+	if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+	    $result = pg_query($dbconn, $sql);    	
+    }
+    else
+    {
+	    die("Unable to connect to PostgreSQL database to update the version information\n\n");
+    }
+    
+    if($scriptsRun==0)
+    {
+    	echo "Database was up-to-date.  No upgrade scripts were run\n";
+    }
+    else
+    {
+    	echo "Database upgrade complete.\n";
+    	echo "Database now at version ".trim($f).".\n";
+    }
+	
+}
+
+/**
+ * Get the version of Corina according to dpkg.  
+ *
+ * @return version
+ */ 
+function getCorinaDPKGVersion()
+{
+	$f = exec("dpkg-query -W corina-server");
+	
+	if(strpos($f, "No packages found")===TRUE)
+	{
+	 return false;
+	}  
+	
+	// Trim off the 'corina-server' from the beginning
+	$f = str_replace("corina-server", "", $f);
+	
+	return trim($f);
+}
+
+/**
+* Get the version of Corina installed from the database.  If the database is not
+* available then returns 'Unknown'
+*/
+function getCorinaDBVersion()
+{
+	global $configfile;
+    global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;	
+		
+	$sql = "SELECT value FROM tblconfig WHERE key='wsversion'";
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	$result = pg_query($dbconn, $sql);    	
+        while ($row = pg_fetch_array($result))
+	  	{
+	     	   return trim($row['value']); 		
+	  	} 	
+    }
+
+	return "Unknown";
+}
+
+
+/**
+* Run the SQL filename provided to upgrade the database
+*
+* Returns true if file was run successfully (or has already been installed) and false if it failed.
+* The entire thing is performed as a transaction so if there is any trouble (including writing
+* to the upgrade log) then the entire upgrade file is rolled back.
+*/
+function runSQLUpgradeFile($filename)
+{
+	global $configfile;
+    global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;
+	global $logfile;
+	global $upgradeScripts;
+	$colors = new Colors();
+		
+	$sql = "SELECT * FROM tblupgradelog WHERE filename = '$filename'";
+	$dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	$result = pg_query($dbconn, $sql);
+    	if(pg_num_rows($result)>=1) return true;    	
+    }
+    else
+    {
+    	die("Unable to connect to PostgreSQL database to run upgrade.\n\n");
+    }
+		
+		
+	$sql = file_get_contents($upgradeScripts."/".$filename);
+	
+	exec("echo \"Upgrading database with SQL \n ".escapeshellcmd($sql)."\" >> $logfile");
+	
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	echoTruncatedString("    - Applying patch: $filename...");   	
+    	pg_query($dbconn, "BEGIN WORK"); 
+    	
+    	
+    	$result = pg_query($dbconn, $sql);
+    	
+    	if(!$result)
+    	{
+	    	echo $colors->getColoredString("WARNING", "yellow");
+    		echo "\n\n";
+
+    		exec("echo \"Error running upgrade script '".escapeshellcmd($filename)."'\" >> $logfile");
+    		exec("echo \"".escapeshellcmd($error)."\" >> $logfile" );
+    		pg_query($dbconn, "ROLLBACK");
+    		 
+    		return false;
+    	}
+    	else
+    	{
+    		// Database patched successfully    	    		
+    		// Now insert record into upgradelog
+    		$sql = "INSERT into tblupgradelog (filename) VALUES ('$filename');";
+		    $result = pg_query($dbconn, $sql);
+		    
+		    if(!$result)
+	    	{
+	    	    echo $colors->getColoredString("WARNING", "yellow");
+    			echo "\n\n";
+
+	    		exec("echo \"Unable to add patch name to upgradelog\" >> $logfile");
+	    		exec("echo \"".escapeshellcmd($error)."\" >> $logfile" );
+	    		pg_query($dbconn, "ROLLBACK"); 
+	    		return false;
+	    	}	
+
+			// All is well so go ahead and commit the entire thing to the database
+	    	pg_query($dbconn, "COMMIT");  
+	    	echo $colors->getColoredString("PASSED", "green");
+    		echo "\n";   
+		    return true; 	
+    	}
+    }
+    else
+    {
+    	die("Unable to connect to PostgreSQL database to run upgrade.\n\n");
+    }
+}
+
+
+
+
+
+/**
+* Flush the log tables of all entries older than 1 week
+*/
+function emptyLog()
+{
+	global $configfile;
+    global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;
+		
+	$sql = "DELETE FROM tbliptracking where timestamp > (CURRENT_DATE - INTERVAL '1 week';
+	        DELETE FROM tblrequestlog where timestamp > (CURRENT_DATE - INTERVAL '1 week';";
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	$result = pg_query($dbconn, $sql);    	
+    }
+    else
+    {
+    	die("Unable to connect to PostgreSQL database.\n\n");
+    }
+	
+}
+
+
+/**
+ * Check the user running this script is a superuser
+ */
+function requireRoot()
+{
+	if($_SERVER['USER']!='root')
+	{
+		$colors = new Colors();
+		echo $colors->getColoredString("\nRoot or sudo privileges are required to run this script.\n\n", "red");
+		die();
+	}
+}
+
+
+/**
+ * Only run this after config.php file has been generated
+ */
+function generateSystemsConfig()
+{
+	global $configfile;
+    global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;
+	
+	echo "\nGenerating systems config file...\n";
+	
+	// Create the file
+	$fh = fopen($systemconfig, 'w') or exit("Can't create system configuration file\n\n");
+	fwrite($fh, "<?php
+/**
+* This configuration file is automatically generated by the corina-server 
+* configure script.  Do not make changes to this file!
+* Generated : ".date(DATE_RFC822)."
+*/\n\n");
+	
+	$sql = "SELECT * FROM tblconfig";
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	$result = pg_query($dbconn, $sql);    	
+        while ($row = pg_fetch_array($result))
+        {
+			fwrite($fh, "// ".$row['description']."\n");
+			fwrite($fh, "$".$row['key']." = \"".$row['value']."\";\n\n");
+        } 
+    }
+    else
+    {    
+    	exit("Unable to connect to PostgreSQL database.\n\n");
+    }
+    
+	$sql = "SELECT * FROM tblsupportedclient";
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	$xstr = "";  	 
+    	$result = pg_query($dbconn, $sql);    	
+        while ($row = pg_fetch_array($result))
+        {
+			$xstr.="\n   array(\"name\" => \"".$row['client']."\", \"minVersion\" => \"".$row['minversion']."\"),";
+        } 
+        $xstr = substr($xstr, 0, -1); 
+        fwrite($fh, "// Array of known clients and the minimum version that can be used when accessing this webservice\n");  
+        fwrite($fh, "$"."corinaClientIdentifiers = array( $xstr \n);\n\n");
+    }
+    else
+    {
+    	exit("Unable to connect to PostgreSQL database.\n\n");
+    }
+	
+	fwrite($fh, "\n\n//END OF FILE\n?>");
+	fclose($fh);
+}
+
+
+/**
+ *  Check that the specified service is running
+ */
+function checkServiceIsRunning($service)
+{
+  $response = shell_exec("ps ax");
+  if(strlen(strstr($response, $service))>0)
+  {
+    return TRUE;
+  }
+  else
+  {
+    return FALSE;
+  }
+}
+
+/**
+ * Create script files by copying from templates and alter basic info
+ */
+function createScriptsFromTemplates()
+{
+  global $permsfile;
+  global $permstemplate;
+  global $configfile;
+  global $configtemplate;
+  global $logfile;
+  global $database;
+  global $pg_hba_file;
+  global $pg_hba_file_orig;
+
+
+  exec("cp $permstemplate $permsfile >> $logfile" );
+  exec("cp $configtemplate $configfile >> $logfile" );
+  setConfigVariable("%%IP%%", getIP());   
+
+  echo "\nPlease enter the name of your laboratory : ";
+  $response = fgets(STDIN);
+  setConfigVariable("%%LABNAME%%", trim($response, "\n\r"));   
+
+  echo "\nPlease enter a code/acronym for your lab e.g. C for Cornell : ";
+  $response = fgets(STDIN);
+  setConfigVariable("%%LABACRONYM%%", trim($response, "\n\r"));   
+ 
+  echo "\n";
+  // Back up pg_hba file if it hasn't been already 
+  if(!file_exists($pg_hba_file_orig))
+  {
+     exec("sudo -u postgres sh -c \"cp $pg_hba_file $pg_hba_file_orig >> $logfile\"" );
+  }
+
+}
+
+/**
+ * Get the IP address of this computer
+ */
+function getIP()
+{
+  exec("ifconfig $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
+  return $response[0];
+}
+
+/**
+ * Helper function for altering variables in the webservice config.php file
+ * 
+ * @param $var - variable to replace
+ * @param $value - value to replace it with
+ */
+function setConfigVariable($var, $value)
+{
+  global $configfile;
+
+  $files_to_search = array($configfile);
+  
+  // Search and Replace Arrays
+  $snr = new File_SearchReplace($var,
+                              $value,
+                              $files_to_search,
+                              '', // directorie(s) to search
+                              false) ;
+  $snr->doSearch();
+}
+
+/**
+ * Interactive script to set up the Postgres database
+ */
+function postgresSetup()
+{
+  global $logfile;
+  global $permsfile; 
+  global $pg_hba_file;
+  global $pg_hba_file_orig;
+  global $user;
+  global $pwd;
+  global $dbtemplate;
+  global $credentialsFile;
+
+  // Find out if the user wants a new db
+  echo "Would you like the installer to set up a blank Corina database?\n";
+  echo "    [Y]/n  ";
+  $response = fgets(STDIN); 
+
+   if((trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
+   {
+     // User doesn't want a new db so must already have one
+     echo "\nWhat is the name of your Corina PostgreSQL database? : ";
+     $response = fgets(STDIN);
+
+     if(trim($response)=="")
+     {
+       echo "\nPlease create your Corina database then retry this configuration script\n";
+       printComplete(FALSE);
+     }
+     else
+     {
+       // Set db name in config file
+       setConfigVariable("%%DBNAME%%", trim($response, "\n\r"));   
+      
+       // Create a new user or get details of an existing one
+       setDBUser();
+
+       // Create credentials file
+       exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile"); 
+      }
+   }
+   else
+   {  
+      // Create a new user or get details of an existing one
+      setDBUser();
+
+      // Write to credentials file
+      exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile"); 
+
+      // Create db user and set permissions
+      echo "Setting database permissions...\n";
+      $snr = new File_SearchReplace("%%DBUSER%%",
+                              trim($user, "\n\r"),
+			      $permsfile,
+                              '', // directorie(s) to search
+                              false) ;
+      $snr->doSearch();
+      $snr = new File_SearchReplace("%%DBPWD%%",
+                              trim($pwd, "\n\r"),
+			      $permsfile,
+                              '', // directorie(s) to search
+                              false) ;
+      $snr->doSearch();
+      exec("su - postgres -c \"psql --file=/usr/share/corina-server/set_database_permission.sql 2>> ".$logfile."\"");
+      setConfigVariable("%%DBNAME%%", "corina");   
+      
+      // Create the database and populate from the database template
+      echo "\nCreating database...\n";
+      exec("su - postgres -c \"createdb corina 2>> ".$logfile."\"");
+      exec("su - postgres -c \"psql corina < $dbtemplate 2>> ".$logfile."\"");
+      
+      // Set pg_hba.conf file entry
+      $pg_hba_str = "local        all      ".trim($user, "\n\r")."                  trust\\n".
+                    "host         all      ".trim($user, "\n\r")."   samenet        md5\\n";
+      $command = "sudo -u postgres sh -c \"sed '1 i\\# ADDED BY CORINA CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
+      exec($command, $resp);
+
+      // Restart postgres
+      echo "Restarting PostgreSQL...\n";
+      exec("/etc/init.d/postgresql restart\n");
+   }
+}  
+
+/**
+ * Set up the database user either by creating a new user or
+ * by getting the credentials of an existing one.
+ */
+function setDBUser()
+{
+  global $user;
+  global $pwd;
+
+  echo "\n\nWould you like to create a new database user?\n";
+  echo "    [Y]/n  ";
+  
+  $response = fgets(STDIN); 
+  if((trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
+  {
+       echo "\nPlease provide details of a PostgreSQL user with full access to this database...\n";
+       echo "    Username : ";
+       $user = fgets(STDIN); 
+       $pwd = promptForPwd(FALSE);
+  }
+  else
+  {
+      echo "\nCreating a PostgreSQL database user. Note this is a PostgreSQL system user not a user for accessing Corina\n";
+      echo "(We recommend the username to be corina)\n";
+      echo "    Username : ";
+      $user = fgets(STDIN); 
+      echo "\nEnter a new password.\nPassword should be 8-20 characters, and include numbers, letters, and capitals but no spaces.\n";
+      $pwd = promptForPwd();
+  }
+}
+
+/**
+ * Interactive script for getting a password.  Checks that the password
+ * is strong and asks for it twice to check for typos.
+ * 
+ * @param $isCreating - if true then prompts are tailored to a new password
+ *                      otherwise they are for getting existing password
+ */
+function promptForPwd($isCreating=TRUE)
+{
+   $pwd1 = prompt_silent("    Password : ");
+   
+   if ((!preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$#", $pwd1) || strpos($pwd1, " ")))
+   {
+     echo "Your password is invalid.  Please try again.\n";
+     return promptForPwd();
+   }
+	
+   if($isCreating===TRUE)
+   {
+	   
+	   $pwd2 = prompt_silent("    Repeat   : ");
+	
+	   if($pwd1!=$pwd2)
+	   {
+	      echo "\nPasswords do not match.  Try again!\n";
+	      return promptForPwd();
+	   }
+
+	   return $pwd1;
+   }
+
+   return $pwd1;
+}
+
+/**
+ * Interactive script for setting up Apache 2 webserver
+ */
+function apacheSetup()
+{
+  global $logfile;
+  echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
+  echo "    [Y]/n  ";
+  $response = fgets(STDIN); 
+
+  if(trim(strtolower($response))=='n')
+  {
+     return;
+  }
+  echo "\nSetting up webservice...\n";
+  exec("ln /usr/share/corina-server/corina-apache /etc/apache2/sites-enabled/ 2>> $logfile", $response);
+  
+  echo "\nRestarting webserver...\n";
+  exec("/etc/init.d/apache2 restart >> $logfile");
+
+}
+
+/**
+ * Checks whether the config.php file is valid
+ */
+function isConfigPhpValid()
+{
+	global $configfile;
+	if(fopen($configfile, "r")) 
+	{ 
+	  // If file contains a % then the search/replace hasn't worked
+ 	  $contents = file_get_contents($configfile);
+	  if(strpos($contents, "%")===false)
+	  {
+	  	return TRUE;
+	  }
+	  else
+	  {
+	  	return FALSE;
+	  }
+	} 
+	else 
+	{ 
+	  return FALSE; 
+	} 
+
+}
+
+/**
+ * Check whether the systemsconfig.php file is valid
+ */
+function isSysConfigValid()
+{
+  global $systemconfig;
+
+		if(fopen($systemconfig, "r")) 
+		{ 
+		  // If file is less than 10 lines long it hasn't been filled 
+	 	  $lines = count(file($systemconfig));
+		  if($lines>10)
+		  {
+		  	return TRUE;
+		  }
+		  else
+		  {
+		  	return FALSE;
+		  }
+		} 
+		else 
+		{ 
+		  return FALSE; 
+		} 
+}
+
+/**
+ * Run checks to see if setup has been successful
+ */
+function verifySetup($silent=false)
+{
+  global $wsurl;
+  global $systemconfig;
+  global $configfile;
+  $runningresult = TRUE;
+  
+  require("/var/www/corina-webservice/config.php");
+
+  if($silent!=TRUE) echo "\nVerifying Corina server setup...\n";
+  
+  if($securehttp===TRUE)
+  {
+    $http = "https://";
+  }
+  else
+  {
+    $http = "http://";
+  }
+  $wsurl = $http.$domain;
+  
+
+	if($silent)
+	{
+		if(checkServiceIsRunning("apache2")==FALSE) return FALSE;
+		if(checkServiceIsRunning("postgres")==FALSE) return FALSE;
+		if(!fopen($wsurl, "r")) return FALSE;
+		if(!fopen($cdbCredentialsFile, "r")) return FALSE;
+		if(isSysConfigValid()===FALSE) return FALSE;
+		if(isConfigPhpValid()===FALSE) return FALSE;
+	}
+	else
+	{
+		echoTruncatedString("    - Checking Apache is running:");
+		printResult(checkServiceIsRunning("apache2"));
+		if(checkServiceIsRunning("apache2")===FALSE) $runningresult = FALSE;
+		
+		echoTruncatedString("    - Checking PostgreSQL is running:");
+		printResult(checkServiceIsRunning("postgres"));
+		if(checkServiceIsRunning("postgres")===FALSE) $runningresult = FALSE;
+		
+		echoTruncatedString("    - Checking webservice is accessible:");
+		if(fopen($wsurl, "r"))
+		{
+		    printResult(TRUE);
+		}
+		else
+		{
+		    printResult(FALSE);
+		    $runningresult = FALSE;
+		}
+		
+		echoTruncatedString("    - Checking database credentials file can be read:"); 
+		if(fopen($cdbCredentialsFile, "r")) 
+		{ 
+		  printResult(TRUE); 
+		} 
+		else 
+		{ 
+		  printResult(FALSE); 
+		  $runningresult = FALSE;
+		} 
+		
+		echoTruncatedString("    - Checking systems configuration file is valid:"); 
+		printResult(isSysConfigValid()); 
+		if(isSysConfigValid()===FALSE) $runningresult = FALSE;
+		
+		echoTruncatedString("    - Checking webservice configuration file is valid:"); 
+		printResult(isConfigPhpValid());
+		if(isConfigPhpValid()===FALSE) $runningresult = FALSE;
+	}
+	
+	if($silent!=TRUE) echoTruncatedString("    - Checking connection to PostgreSQL database:"); 
+	
+	$contents = str_replace("\n", "=", file_get_contents($cdbCredentialsFile));
+	$myarray = explode("=", $contents, 5);
+	$username = $myarray[1];
+	$password = $myarray[3];
+	
+	//Set up database connection
+	$conn_string = "dbname=$dbName user=".$username." password=".$password;
+	$dbconn = pg_connect ($conn_string);
+	
+	//Date format
+	$sql = "set datestyle to 'ISO'";
+	pg_query($dbconn, $sql);
+
+	if($silent!=TRUE)
+	{
+		printResult(!$dbconn===FALSE);
+		$runningresult = FALSE;	
+	}
+	else
+	{
+		if($dbconn===FALSE) return FALSE;
+	}
+	
+	// Check that webservice and database versions are in sync
+	if($silent!=TRUE) echoTruncatedString("    - Checking webservice and database versions are in sync:"); 
+	if($silent!=TRUE)
+	{
+		printResult(getCorinaDPKGVersion()==getCorinaDBVersion());
+		if(getCorinaDPKGVersion()!=getCorinaDBVersion())
+		{		
+			//echo "DPKGVersion ='".getCorinaDPKGVersion()."'\n";
+			//echo "DBVersion   ='".getCorinaDBVersion()."'\n";
+			$runningresult = FALSE;
+		}
+	}
+	else
+	{
+		if(getCorinaDPKGVersion()!=getCorinaDBVersion()) return FALSE;
+	}
+	
+	return $runningresult;  
+}
+
+/**
+ * Script for hidding password from console
+ */
+function prompt_silent($prompt = "Enter Password:") {
+  if (preg_match('/^win/i', PHP_OS)) {
+    $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
+    file_put_contents(
+      $vbscript, 'wscript.echo(InputBox("'
+      . addslashes($prompt)
+      . '", "", "password here"))');
+    $command = "cscript //nologo " . escapeshellarg($vbscript);
+    $password = rtrim(shell_exec($command));
+    unlink($vbscript);
+    return $password;
+  } else {
+    $command = "/usr/bin/env bash -c 'echo OK'";
+    if (rtrim(shell_exec($command)) !== 'OK') {
+      trigger_error("Can't invoke bash");
+      return;
+    }
+    $command = "/usr/bin/env bash -c 'read -s -p \""
+      . addslashes($prompt)
+      . "\" mypassword && echo \$mypassword'";
+    $password = rtrim(shell_exec($command));
+    echo "\n";
+    return $password;
+  }
+}
+
+/**
+ * Custom error handler.  Diverts all errors to log file
+ */
+function myErrorHandler($errno, $errstr, $errfile, $errline)
+{
+    global $logfile;
+    if (!(error_reporting() & $errno)) {
+        // This error code is not included in error_reporting
+        return;
+    }
+    $errType = "MISC PHP ERROR";    
+
+    switch ($errno)
+    {
+    case E_ERROR:
+    case E_USER_ERROR:
+     $errType = "ERROR ";
+     break;
+    case E_WARNING:
+    case E_USER_WARNING:
+     $errType = "WARNING ";
+     break;
+    case E_NOTICE:
+    case E_USER_NOTICE:
+     $errType = "NOTICE ";
+     break;
+    }
+
+    error_log("--- ".$errType." - ".$errstr. "\n" , 3, $logfile);
+}
+
+/**
+ * Helper function for printing the 'goodbye' line of the script depending
+ * on success.
+ */
+function printComplete($forceSuccess=null)
+{
+  global $errorsFound;
+  global $wsurl;
+
+  $colors = new Colors();
+  echo "\n\n";
+  
+  if($forceSuccess===TRUE)
+  {
+  	echo "Configuration was successful.  Your Corina webservice is now available at:\n";
+  	echo "    - $wsurl"."webservice.php\n\n";
+  	exit(0);
+  }
+  else if ($forceSuccess===FALSE)
+  {
+        echo $colors->getColoredString("Errors occurred during configuration. Check the error log and try again.", "white", "red");
+        echo "\n\n";
+        exit(1);
+  }
+  else if($errorsFound===FALSE)
+  {
+  	echo "Configuration was successful.  Your Corina webservice is now available at:\n";
+  	echo "    - $wsurl"."webservice.php\n\n";
+  	exit(0);
+  }
+  else
+  { 
+        echo $colors->getColoredString("Errors occurred during configuration. Check the error log and try again.", "white", "red");
+        echo "\n\n";
+        exit(1);
+  }
+}
+
+/**
+ * Print the result of a test
+ */
+function printResult($res)
+{
+  global $errorsFound;
+  $colors = new Colors();
+
+  if($res===TRUE)
+  {
+    echo $colors->getColoredString("PASSED", "green")."\n";
+  }
+  else if ($res===FALSE)
+  {
+    echo $colors->getColoredString("FAILED", "red")."\n";
+    $errorsFound = TRUE;
+  }
+
+} 
+
+/**
+ * Echo a string to the console truncated if longer than $length   
+ */
+function echoTruncatedString($str, $length=70)
+{
+  if(strlen($str)>$length-1)
+  {
+  	$str = substr($str, 0, $length-4 )."... ";
+  }
+  else
+  {
+  	$str = str_pad($str, $length);
+  }
+
+  echo $str;
+
+}
+
+/**
+ *  Writes a string to stderr
+ */
+function writeStdErr($error)
+{
+    $STDERR = fopen("php://stderr", "w");
+    fwrite($STDERR, $error);
+    fclose($STDERR);
+}
+
+
+/**
+ * Copyright (c) 2002-2005, Richard Heyes
+ * All rights reserved.
+ *
+ * PHP version 4, 5
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ *  o Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ *  o Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *  o The names of the authors may not be used to endorse or promote
+ *    products derived from this software without specific prior written
+ *    permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @category File
+ * @package  File_SearchReplace
+ * @author   Richard Heyes <richard@phpguru.org>
+ * @license  http://www.opensource.org/licenses/bsd-license.php BSD
+ * @version  CVS: $Id: SearchReplace.php 304758 2010-10-25 10:29:02Z clockwerx $
+ * @link     http://pear.php.net/File_SearchReplace
+ */
+
+/**
+ * Search and Replace Utility
+ *
+ * @category File
+ * @package  File_SearchReplace
+ * @author   Richard Heyes <richard@phpguru.org>
+ * @license  http://www.opensource.org/licenses/bsd-license.php BSD
+ * @link     http://pear.php.net/File_SearchReplace
+ */
+class File_SearchReplace
+{
+
+    // {{{ Properties (All private)
+
+    var $find;
+    var $replace;
+    var $files;
+    var $directories;
+    var $include_subdir;
+    var $ignore_lines;
+    var $ignore_sep;
+    var $occurences;
+    var $search_function;
+    var $php5;
+    var $last_error;
+
+    // }}}
+    // {{{ Constructor
+
+    /**
+     * Sets up the object
+     *
+     * @param string $find           The string/regex to find.
+     * @param string $replace        The string/regex to replace $find with.
+     * @param array  $files          The file(s) to perform this operation on.
+     * @param array  $directories    The directories to perform this operation on.
+     * @param bool   $include_subdir If performing on directories, whether to
+     *                               traverse subdirectories.
+     * @param array  $ignore_lines   Ignore lines beginning with any of the strings
+     *                               in this array. This
+     *                               feature only works with the "normal" search.
+     *
+     * @access public
+     */
+    function File_SearchReplace($find, $replace, $files, $directories = '',
+                                $include_subdir = true, $ignore_lines = array())
+    {
+
+        $this->setFind($find);
+        $this->setReplace($replace);
+        $this->setFiles($files);
+
+        $this->setDirectories($directories);
+        $this->setIncludeSubdir($include_subdir);
+
+        $this->setIgnoreLines((array) $ignore_lines);
+
+        $this->occurences      = 0;
+        $this->search_function = 'search';
+        $this->php5            = substr(PHP_VERSION, 0, 1) == 5;
+        $this->last_error      = '';
+
+    }
+
+    // }}}
+    // {{{ getNumOccurences()
+
+    /**
+     * Accessor to return the number of occurences found.
+     *
+     * @access public
+     * @return int Number of occurences found.
+     */
+    function getNumOccurences()
+    {
+        return $this->occurences;
+    }
+
+    // }}}
+    // {{{ getLastError()
+
+    /**
+     * Accessor for retrieving last error.
+     *
+     * @access public
+     * @return string The last error that occurred, if any.
+     */
+    function getLastError()
+    {
+        return $this->last_error;
+    }
+
+    // }}}
+    // {{{ setFind()
+
+    /**
+     * Accessor for setting find variable.
+     *
+     * @param mixed $find The string/regex to find, or array of strings
+     *
+     * @access public
+     * @return void
+     */
+    function setFind($find)
+    {
+        $this->find = $find;
+    }
+
+    // }}}
+    // {{{ setReplace()
+
+    /**
+     * Accessor for setting replace variable.
+     *
+     * @param mixed $replace The string/regex to replace the find
+     * string/regex with, or array of strings
+     *
+     * @access public
+     * @return void
+     */
+    function setReplace($replace)
+    {
+        $this->replace = $replace;
+    }
+
+    // }}}
+    // {{{ setFiles()
+
+    /**
+     * Accessor for setting files variable.
+     *
+     * @param array $files The file(s) to perform this operation on.
+     *
+     * @access public
+     * @return void
+     */
+    function setFiles($files)
+    {
+        $this->files = $files;
+    }
+
+    // }}}
+    // {{{ setDirectories()
+
+    /**
+     * Accessor for setting directories variable.
+     *
+     * @param array $directories The directories to perform this operation on.
+     *
+     * @access public
+     * @return void
+     */
+    function setDirectories($directories)
+    {
+        $this->directories = $directories;
+    }
+
+    // }}}
+    // {{{ setIncludeSubdir
+
+    /**
+     * Accessor for setting include_subdir variable.
+     *
+     * @param bool $include_subdir Whether to traverse subdirectories or not.
+     *
+     * @access public
+     * @return void
+     */
+    function setIncludeSubdir($include_subdir)
+    {
+        $this->include_subdir = $include_subdir;
+    }
+
+    // }}}
+    // {{{ setIgnoreLines()
+
+    /**
+     * Accessor for setting ignore_lines variable.
+     *
+     * @param array $ignore_lines Ignore lines beginning with any of the
+     *                            strings in this array. This
+     *                            feature only works with the "normal" search.
+     *
+     * @access public
+     * @return void
+     */
+    function setIgnoreLines($ignore_lines)
+    {
+        $this->ignore_lines = $ignore_lines;
+    }
+
+    // }}}
+    // {{{ setSearchFunction()
+
+    /**
+     * Function to determine which search function is used.
+     *
+     * Can be any one of:
+     *  normal - Default search. Goes line by line. Ignore lines feature
+     *           only works with this type.
+     *  quick  - Uses str_replace for straight replacement throughout
+     *           file. Quickest of the lot.
+     *  preg   - Uses preg_replace(), so any valid regex
+     *
+     * @param string $search_function The search function that should be used.
+     *
+     * @access public
+     * @return void
+     */
+    function setSearchFunction($search_function)
+    {
+        switch($search_function) {
+        case 'normal':
+            $this->search_function = 'search';
+            return true;
+            break;
+
+        case 'quick' :
+            $this->search_function = 'quickSearch';
+            return true;
+            break;
+
+        case 'preg'  :
+            $this->search_function = 'pregSearch';
+            return true;
+            break;
+
+        default      :
+            $this->last_error = 'Invalid search function specified';
+            return false;
+            break;
+        }
+    }
+
+    // }}}
+    // {{{ search()
+
+    /**
+     * Default ("normal") search routine.
+     *
+     * @param string $filename The filename to search and replace upon.
+     *
+     * @access private
+     * @return array Will return an array containing the new file contents
+     *               and the number of occurences.
+     *               Will return false if there are no occurences.
+     */
+    function search($filename)
+    {
+        $occurences = 0;
+
+        $lines = file($filename);
+
+        // just for the sake of catching occurences
+        $local_find    = $this->getFind();
+        $local_replace = $this->getReplace();
+
+        if (empty($this->ignore_lines) && $this->php5) { // PHP5 acceleration
+            $lines = str_replace($local_find, $local_replace,
+                                      $lines, $occurences);
+
+        } else { // str_replace() doesn't return number of occurences in PHP4
+                 // so we need to count them manually and/or filter strings
+            $ignore_lines_num = count($this->ignore_lines);
+
+
+
+            foreach ($lines as $i => $line) {
+
+                if ($ignore_lines_num > 0) {
+                    for ($j = 0; $j < $ignore_lines_num; $j++) {
+                        $text = substr($line, 0, strlen($this->ignore_lines[$j]));
+                        if ($text == $this->ignore_lines[$j]) {
+                            continue 2;
+                        }
+                    }
+                }
+
+                if ($this->php5) {
+                    $lines[$i] = str_replace($local_find, $local_replace,
+                                                  $line, $counted);
+
+                    $occurences += $counted;
+                } else {
+                    foreach ($local_find as $fk => $ff) {
+                        $occurences += substr_count($line, $ff);
+                        if (!is_array($local_replace)) {
+                            $fr = $local_replace;
+                        } else {
+                            $fr = "";
+                            if (isset($local_replace[$fk])) {
+                                $fr = $local_replace[$fk];
+                            }
+                        }
+                        $lines[$i] = str_replace($ff, $fr, $line);
+                    }
+                }
+            }
+
+        }
+
+        if ($occurences > 0) {
+            return array($occurences, implode('', $lines));
+        }
+
+        return false;
+    }
+
+    // }}}
+    // {{{ quickSearch()
+
+    /**
+     * Quick search routine.
+     *
+     * @param string $filename The filename to search and replace upon.
+     *
+     * @access private
+     * @return array Will return an array containing the new file contents
+     *               and the number of occurences.
+     *               Will return false if there are no occurences.
+     */
+    function quickSearch($filename)
+    {
+
+        clearstatcache();
+
+        $file = file_get_contents($filename);
+
+        $local_find    = $this->getFind();
+        $local_replace = $this->getReplace();
+
+        $occurences = 0;
+
+        // logic is the same as in str_replace function with one exception:
+        //   if <search> is a string and <replacement> is an array - substitution
+        //   is done from the first element of array. str_replace in this case
+        //   usualy fails with notice and returns "ArrayArrayArray..." string
+        // (this exclusive logic of SearchReplace will not work for php5, though,
+        // because I haven't decided yet whether it is bug or feature)
+
+        if ($this->php5) {
+            $file = str_replace($local_find, $local_replace, $file, $counted);
+
+            $occurences += $counted;
+        } else {
+            foreach ($local_find as $fk => $ff) {
+                $occurences += substr_count($file, $ff);
+                if (!is_array($local_replace)) {
+                    $fr = $local_replace;
+                } else {
+                    $fr = isset($local_replace[$fk]) ? $local_replace[$fk] : "";
+                }
+                $file = str_replace($ff, $fr, $file);
+            }
+        }
+
+        if ($occurences > 0) {
+            return array($occurences, $file);
+        }
+
+        return false;
+
+    }
+
+    // }}}
+    // {{{ pregSearch()
+
+    /**
+     * Preg search routine.
+     *
+     * @param string $filename The filename to search and replace upon.
+     *
+     * @access private
+     * @return array Will return an array containing the new file contents
+     *               and the number of occurences.
+     *               Will return false if there are no occurences.
+     */
+    function pregSearch($filename)
+    {
+
+        clearstatcache();
+
+        $file = file_get_contents($filename);
+
+        $local_find    = $this->getFind();
+        $local_replace = $this->getReplace();
+
+        $occurences = 0;
+
+        foreach ($local_find as $fk => $ff) {
+            $occurences += preg_match_all($ff, $file, $matches);
+            if (!is_array($local_replace)) {
+                $fr = $local_replace;
+            } else {
+                $fr = isset($local_replace[$fk]) ? $local_replace[$fk] : "";
+            }
+            $file = preg_replace($ff, $fr, $file);
+        }
+
+        if ($occurences > 0) {
+            return array($occurences, $file);
+        }
+
+        return false;
+
+    }
+
+    // }}}
+    // {{{ writeout()
+
+    /**
+     * Function to writeout the file contents.
+     *
+     * @param string $filename The filename of the file to write.
+     * @param string $contents The contents to write to the file.
+     *
+     * @access private
+     * @return void
+     */
+    function writeout($filename, $contents)
+    {
+
+        if ($fp = @fopen($filename, 'w')) {
+            flock($fp, 2);
+            fwrite($fp, $contents);
+            flock($fp, 3);
+            fclose($fp);
+        } else {
+            $this->last_error = 'Could not open file: '.$filename;
+        }
+
+    }
+
+    // }}}
+    // {{{ doFiles()
+
+    /**
+     * Function called by doSearch() to go through any files that need searching.
+     *
+     * @param string $ser_func The search function to use.
+     *
+     * @access private
+     * @return void
+     */
+    function doFiles($ser_func)
+    {
+        if (!is_array($this->files)) {
+            $this->files = explode(',', $this->files);
+        }
+
+        foreach ($this->files as $file) {
+            if ($file == '.' OR $file == '..') {
+                continue;
+            }
+
+            if (is_dir($file)) {
+                continue;
+            }
+
+            $newfile = $this->$ser_func($file);
+            if (is_array($newfile)) {
+                $this->writeout($file, $newfile[1]);
+                $this->occurences += $newfile[0];
+            }
+        }
+    }
+
+    // }}}
+    // {{{ doDirectories()
+
+    /**
+     * Function called by doSearch() to go through any directories that
+     * need searching.
+     *
+     * @param string $ser_func The search function to use.
+     *
+     * @access private
+     * @return void
+     */
+    function doDirectories($ser_func)
+    {
+        if (!is_array($this->directories)) {
+            $this->directories = explode(',', $this->directories);
+        }
+
+        foreach ($this->directories as $directory) {
+            $dh = opendir($directory);
+            while ($file = readdir($dh)) {
+                if ($file == '.' OR $file == '..') {
+                    continue;
+                }
+
+                if (is_dir($directory.$file)) {
+                    if ($this->include_subdir) {
+                        $this->directories[] = $directory.$file.'/';
+                        continue;
+                    } else {
+                        continue;
+                    }
+                }
+
+                $newfile = $this->$ser_func($directory.$file);
+                if (is_array($newfile) == true) {
+                    $this->writeout($directory.$file, $newfile[1]);
+                    $this->occurences += $newfile[0];
+                }
+            }
+        }
+    }
+
+    // }}}
+    // {{{ doSearch()
+
+    /**
+     * This starts the search/replace off. The behavior of this function will likely
+     * to be changed in future versions to work in read only mode. If you want to do
+     * actual replace with writing files - use doReplace method instead.
+     *
+     * @access public
+     * @return void
+     */
+    function doSearch()
+    {
+        $this->doReplace();
+    }
+
+    // }}}
+    // {{{ doReplace()
+
+    /**
+     * This starts the search/replace off. Call this to do the replace.
+     * First do whatever files are specified, and/or if directories are specified,
+     * do those too.
+     *
+     * @access public
+     * @return void
+     */
+    function doReplace()
+    {
+        $this->occurences = 0;
+        if (!empty($this->find)) {
+            if (!empty($this->files)) {
+                $this->doFiles($this->search_function);
+            }
+
+            if (!empty($this->directories)) {
+                $this->doDirectories($this->search_function);
+            }
+        }
+    }
+
+    // }}}
+
+    /**
+     * Helper method to ensure we always have an array of things to find.
+     *
+     * @access public
+     * @return array
+     */
+    function getFind()
+    {
+        return array_values((array) $this->find);
+    }
+
+    /**
+     * Helper method to fetch replace
+     *
+     * @access public
+     * @return mixed
+     */
+    function getReplace()
+    {
+        if (is_array($this->replace)) {
+            return array_values($this->replace);
+        }
+
+        return $this->replace;
+    }
+}
+
+
+	/**
+	 * Class for printing colors in a terminal
+	 */
+	class Colors {
+		private $foreground_colors = array();
+		private $background_colors = array();
+ 
+		public function __construct() {
+		// Set up shell colors
+		$this->foreground_colors['black'] = '0;30';
+		$this->foreground_colors['dark_gray'] = '1;30';
+		$this->foreground_colors['blue'] = '0;34';
+		$this->foreground_colors['light_blue'] = '1;34';
+		$this->foreground_colors['green'] = '0;32';
+		$this->foreground_colors['light_green'] = '1;32';
+		$this->foreground_colors['cyan'] = '0;36';
+		$this->foreground_colors['light_cyan'] = '1;36';
+		$this->foreground_colors['red'] = '0;31';
+		$this->foreground_colors['light_red'] = '1;31';
+		$this->foreground_colors['purple'] = '0;35';
+		$this->foreground_colors['light_purple'] = '1;35';
+		$this->foreground_colors['brown'] = '0;33';
+		$this->foreground_colors['yellow'] = '1;33';
+		$this->foreground_colors['light_gray'] = '0;37';
+		$this->foreground_colors['white'] = '1;37';
+ 
+		$this->background_colors['black'] = '40';
+		$this->background_colors['red'] = '41';
+		$this->background_colors['green'] = '42';
+		$this->background_colors['yellow'] = '43';
+		$this->background_colors['blue'] = '44';
+		$this->background_colors['magenta'] = '45';
+		$this->background_colors['cyan'] = '46';
+		$this->background_colors['light_gray'] = '47';
+		}
+ 
+		// Returns colored string
+	public function getColoredString($string, $foreground_color = null, $background_color = null) {
+		$colored_string = "";
+ 
+			// Check if given foreground color found
+		if (isset($this->foreground_colors[$foreground_color])) {
+			$colored_string .= "\033[" . $this->foreground_colors[$foreground_color] . "m";
+		}
+		// Check if given background color found
+		if (isset($this->background_colors[$background_color])) {
+			$colored_string .= "\033[" . $this->background_colors[$background_color] . "m";
+			}
+ 
+			// Add string and end coloring
+		$colored_string .=  $string . "\033[0m";
+ 
+			return $colored_string;
+		}
+ 
+		// Returns all foreground color names
+		public function getForegroundColors() {
+			return array_keys($this->foreground_colors);
+		}
+ 
+		// Returns all background color names
+	public function getBackgroundColors() {
+		return array_keys($this->background_colors);
+	}
+}
+
+
+
+?>

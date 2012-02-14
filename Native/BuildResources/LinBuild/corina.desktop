@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=${version}
+Type=Application
+Name=${name}
+Comment=Dendrochronology software
+Generic=Dendrochronology software
+TryExec=corina
+Exec=corina
+Icon=/usr/share/pixmaps/corina.png
+Terminal=false
+Categories=Utility;Science

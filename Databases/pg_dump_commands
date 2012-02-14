@@ -1,0 +1,8 @@
+# Dump structure only
+pg_dump -O -s corina_live > /tmp/structure_only.sql
+
+# Dump content of lookup tables
+pg_dump -a -d -t tlkptaxonrank -t tlkptaxon -t tlkpvocabulary -t tlkpvmeasurementop -t tlkpunit -t tlkpsecuritypermission -t tlkpsampletype -t tlkpreadingnote -t tlkppresenceabsence -t tlkpobjecttype -t tlkpmeasuringmethod -t tlkpmeasurementvariable -t tlkplocationtype -t tlkpindextype -t tlkpelementtype -t tlkpelementshape -t tlkpelementauthenticity -t tlkpdatingtype -t tlkpdatecertainty -t tlkpcoveragetemporalfoundation -t tlkpcoveragetemporal  -t tlkpcomplexpresenceabsence -t tblsupportedclient -t tblconfig -t spatial_ref_sys corina_live > /tmp/lookup_tables.sql
+
+
+pg_dump -Fc corina_live > /tmp/corina_live.dump

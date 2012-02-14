@@ -1,0 +1,29 @@
+#!/bin/bash
+echo "*******************" >> /var/log/corina-installation.log
+echo "Postinst run ${serverversion} with $1 argument" >> /var/log/corina-installation.log
+date '+%R.%S' >> /var/log/corina-installation.log
+echo "*******************" >> /var/log/corina-installation.log
+
+if [ $1 = 'upgrade' ]; then
+    if [ -e "/tmp/config.php" ]
+    then
+      echo "Reinstating config.php from previous installation" >> /var/log/corina-installation.log
+      mv /tmp/config.php /var/www/corina-webservice/
+      echo "Regenerating systemconfig.php" >> /var/log/corina-installation.log
+      /usr/bin/corina-server --sysconfig
+      echo "Testing configuration" >> /var/log/corina-installation.log
+      /usr/bin/corina-server --test
+	  exit
+    fi
+    
+elif [ $1 = 'configure' ]; then
+      echo "Configuring new installation" >> /var/log/corina-installation.log
+      /usr/bin/corina-server --configure
+      
+#elif [ $1 = 'abort-upgrade' ]; then
+
+#elif [ $1 = 'abort-remove' ]; then
+
+#elif [ $1 = 'abort-deconfigure' ]; then
+
+fi

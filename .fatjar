@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Fri Mar 12 10:48:14 EST 2010
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=/Users/peterbrewer/Desktop/corina.jar
+manifest.mergeall=true
+manifest.mainclass=edu.cornell.dendro.corina.gui.Startup
+manifest.file=<createnew>
+jarname.isextern=true
+onejar.expand=
+excludes=
+includes=

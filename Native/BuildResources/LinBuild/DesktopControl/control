@@ -1,0 +1,9 @@
+Package: [[name]]
+Version: [[version]]
+Section: misc
+Priority: optional
+Architecture: all
+Depends: openjdk-6-jdk, librxtx-java, libjogl-java
+Maintainer: Peter Brewer <p.brewer@cornell.edu>
+Description: Application for measuring, managing and curating dendrochronology samples
+Distribution: development

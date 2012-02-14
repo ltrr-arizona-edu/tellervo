@@ -1,0 +1,163 @@
+
+\chapter{Installation}
+\label{txt:installation}
+Tellervo is made up of two packages; the Tellervo desktop application and the Tellervo database server.  Tellervo was designed primarily for laboratories with multiple users, each running the Tellervo desktop application on their own computer connecting to a single central server containing the lab's data.  In this situation the Tellervo server would be run on a separate computer to those running the desktop client, but this need not necessarily be the case.  It is perfectly possible to run both the server and the client on the same computer.  This is likely to be the situation if you simply want to try out Tellervo, if you don't have a separate server, or if you do not work in a multi-user laboratory.
+
+
+\section{Server installation}
+\index{Installation!Server}
+For the Tellervo desktop application to be useful you will require access to a Tellervo server.  If you are running Tellervo in a lab where the Tellervo server has already been set up by your systems administrator, you can skip this section.
+
+The Tellervo server is made up of a number of components, which unlike the desktop client, can't be easily combined together into cross-platform packages.  Although all the constituent components are open-source and available for all major platforms, building and maintaining separate packages for each platform is too large a task for a small development team.  To conserve resources, we therefore made the decision to utilize Virtual Machine technology to ensure that the Tellervo server could still be run on all major operating systems.  This means that we can package the Tellervo server for a single operating system (Ubuntu Linux) and then distribute it as a Virtual Appliance that can be run as a program on your normal operating system. 
+
+The Tellervo server is therefore available via two main methods.  The first is as a VirtualBox\footnote{Note that the Tellervo appliance is provided in the open standard format OVA.  You should be able to run the appliance in other Virtual Machine applications (e.g. VMWare, Citrix etc) but the OVA standard is very young and changing fast.  We recommend sticking with VirtualBox until the standard stabilizes. } Virtual Appliance which can be run on any major operating system, the second is as an Ubuntu package for running natively on an Ubuntu Linux server.  The source code for the server is also available so it is perfectly possible for more experienced users to set up the Tellervo server to run natively on other platforms.  But to do this you will require a good knowledge of Apache 2, PHP and PostgreSQL.  Choose the most applicable method and follow the instructions in the following sections.
+
+
+\subsection[Install as Virtual Appliance]{Install as Virtual Appliance (recommended method)}
+\label{txt:virtualAppliance}
+\index{Virtual appliance}
+To run the Tellervo server Virtual Appliance, you will first need to download and install VirtualBox from \url{http://www.virtualbox.org}.  Installation packages are available for Windows, MacOSX, OpenSolaris and many Linux distributions.
+
+Once you have VirtualBox installed, you will then need to download the Tellervo server from the Cornell website \url{http://dendro.cornell.edu/corina}.  This package contains a bare-bones Ubuntu Linux server with everything required to run the Tellervo server installed and ready to use.  As VirtualBox, the entire Ubuntu operating system and Tellervo server components are all open source there are no license fees to pay.
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \begin{center}
+    \includegraphics[width=0.48\textwidth]{Images/serverconfig.png}
+  \end{center}
+  \caption{Screenshot of VirtualBox running the Tellervo server.  The console contains the results of the tests run at the end of the configuration routine.}
+  \label{fig:serverconfig}
+\end{wrapfigure}
+
+\begin{enumerate}
+ \item Open VirtualBox and go to \menutwo{File}{Import Appliance}
+ \item Press the choose button and locate the virtual appliance file that you downloaded from the website\footnote{If you are using an older version of VirtualBox it may expect an OVF rather than the OVA file provided.  The OVA file is a tar file containing several files required by VirtualBox including an OVF file.  If you rename the extension of the OVA file to tar then extract the contents to a folder using a tools like WinRAR you should then be able to continue.}
+ \item Rename the server if you choose, then press the finish/import button
+ \item Once the server is installed, highlight it in the virtual machine list and press the start button
+ \item Read and accept the information about how to gain and release control of the keyboard in VirtualBox
+ \item The server will boot and eventually present you with a command line login screen.  Log in with the details:
+    \begin{description}
+      \item[Username] : corina
+      \item[Password] : w3l0v3tr33s
+    \end{description}
+ \item Start the server configuration by typing: \code{sudo corina-server} You will be prompted for the server password again
+ \item Answer the questions and the configuration will finish by testing your new server (see figure \ref{fig:serverconfig}). 
+ \item Note down the URL of your new Tellervo webservice as you will need to enter this when you start your Tellervo desktop client.  If you need to know the URL at a later date you can run the tests again by typing: \code{corina-server --test}
+ \item You can now install and run the Tellervo Desktop application (see section \ref{txt:desktopinstall})
+\end{enumerate}
+
+To save on download size and disk space only the essential packages to make the server run have been installed.  This means there is no graphical interface just a command line.  Hopefully this should not be a problem as once set up, the only interaction needed with the Virtual Appliance will be through the normal Tellervo desktop application.  If you would prefer to use a graphical interface to the server this can be easily installed.  See chapter \ref{txt:servermaintenance} for further details.
+
+
+\subsection{Ubuntu native installation}
+\label{txt:installnativeserver}
+If you are fortunate enough to be running Ubuntu then the native Ubuntu deb package is the best and easiest method for installing the Tellervo server, otherwise see section \ref{txt:virtualAppliance} to install the server as a Virtual Appliance.  
+
+To install the Tellervo server in Ubuntu simply download the deb package from the Cornell server \url{http://dendro.cornell.edu/corina} and install with your favourite package manager.  For instance, to install from the command line simply type: \code{sudo dpkg --install corina-server.deb} 
+
+The package will automatically run a configuration script to assist with creating a database user, building the Tellervo PostgreSQL database, setting database permissions and setting up the Apache webservice.  The configuration ends with a test routine to check all services are set up correctly and if so, will provide you with the URL of the newly configured Tellervo webservice.
+
+\subsection{Advanced install on other operating systems}
+\label{txt:installadvancedserver}
+As mentioned previously, the limited resources available for Tellervo development means that we have been unable to produce native installers for platforms other that Ubuntu.  If you are an experience systems administrator though, it should not be too difficult to set up the Tellervo server manually.  
+
+\index{Dependencies!Server}
+The Tellervo server is essentially a PostgreSQL database accessed via a PHP webservice running on Apache 2.  The following dependencies are therefore required: postgresql-9.1; postgis; postgresql-contrib-9.1; postgresql-9.1-pljava; sun-java6-jre; apache2; php5; php5-pgsql; php5-curl; php5-mhash.
+
+The basic procedure for installation is as follows:
+
+\begin{itemize*}
+ \item Install all dependencies
+ \item Create PostgreSQL database from Tellervo template SQL file
+ \item Set up a database user and provide access to the server in the pg\_hba.conf file
+ \item Give this user read and write permissions to the database
+ \item Copy the webservice code into a web accessible folder
+ \item Set up Apache to see this folder by creating an entry in the sites-enabled folder
+ \item Restart PostgreSQL and Apache and check you can access the webservice from a web browser
+\end{itemize*}
+
+
+
+
+\section{Desktop application}
+\label{txt:desktopinstall}
+\index{Installation!Desktop application}
+Installation packages for the Tellervo desktop application are available for Windows, MacOSX and Ubuntu Linux.  Tellervo can also be run on other operating systems as long as they support Java 6 or later\footnote{Tellervo was initially developed against Sun Java 6 JRE, however, now OpenJDK6 is routinely used.  See section \ref{txt:java}, page \pageref{txt:java} for more information.}.
+
+To install Tellervo, download the installation file for your operating system from \url{http://dendro.cornell.edu/corina/download.php}. The website should provide you with a link to the installer for your current operating system:
+
+\begin{description}
+\item \includegraphics[width=3mm]{Images/windows.png} \textbf{Windows} -- Run the setup.exe and follow the instructions. If you do not have Java installed the installer will direct you to the Java website where you can get the latest version. Once installed, Tellervo can be launched via the Start menu.
+
+\item \includegraphics[width=3mm]{Images/mac.png} \textbf{Mac OS X} -- As mentioned above, Tellervo requires Java 6. Although MacOSX ships with Java installed, unfortunately Apple have been very slow to provide Java 6. Although it was released in 2006, it was not until August 2009 that Apple made Java 6 available as part of v10.6 (Snow Leopard). Tellervo can therefore only be run on Snow Leopard or later. To install Tellervo, download then open the zip file and drag the Tellervo.app into your applications folder.  To use the 3D mapping or measuring platform hardware in Tellervo you will also need to install the `Tellervo Drivers' package.  
+
+\item \includegraphics[width=3mm]{Images/ubuntu.png} \textbf{Ubuntu Linux} --  A deb file is available which was designed for use on Ubuntu distributions but should work on any Debian based system. Install using your favorite package management system or from the command line like this: e.g. \code{sudo dpkg --install corina\_2.xx-1\_all.deb} On Ubuntu and similar distributions, the package should add a Tellervo shortcut to your applications menu. Alternatively you can start Tellervo from the command line by typing corina.
+
+\item \includegraphics[width=3mm]{Images/java.png} \textbf{Other operating systems} -- Make sure you have Java 6 installed, then download the Tellervo jar file to your hard disk. You can run Tellervo from the command line by typing: \code{java -jar corina.jar}
+\end{description}
+
+Once you have installed your Tellervo Desktop application and you have access to a Tellervo server you are now ready to launch Tellervo for the first time.
+
+\subsection{First time launch}
+\index{Wizard, Setup}
+When you launch Tellervo for the first time you will be presented with a setup wizard (figure \ref{fig:setupwizard}).  Following the wizard to configure the main settings required before you can begin to use Tellervo.  If you want to re-run this wizard at any time you can do so from the entry in the Help menu. You can also manually edit all these settings from the Tellervo preferences dialog which can be found in \menutwo{Edit}{Preferences}.
+
+\begin{figure}[hbtp]
+  \centering
+    \includegraphics[width=0.6\textwidth]{Images/setupwizard.png}
+  \caption{The Tellervo setup wizard will launch the first time you start Tellervo.}
+  \label{fig:setupwizard}
+\end{figure}
+
+The pages of the wizard include:
+
+\begin{description}
+ \item[Network connection] -- this configures how your computer accesses the internet.  Most users will be able to use the default `Use system default proxy settings' option here, but if you know that your computer is behind a corporate proxy server you may choose to manually provide the settings.
+ \item[Configuring the Tellervo server] -- Tellervo comes in two parts: the Tellervo desktop client that you are using; and the Tellervo server which runs the database that stores your data.  If you are working in a lab your systems administrator may have already set up the Tellervo server and given you the URL to connect to.  Alternatively, you may have already installed the Tellervo server yourself.  If so the installation program should have given you the URL. If you don't have access to a Tellervo server yet, you should close this wizard, then go to the Tellervo website and download it.
+ \item[Measuring platform configuration] -- the next page enables you to configure measuring platform hardware attached to your computer.  Some measuring platforms have fixed settings in which case the port settings will be set automatically, but others can be changed in the hardware and must be set explicitly here. Use the `Test Connection' button to make sure that Tellervo can successfully communicate with your platform.
+\end{description}
+
+
+Once you have completed the wizard you will be presented with a dialog (figure \ref{fig:login}) for logging in to your Tellervo server.
+
+The username and password details requested are your Tellervo login credentials (not your system or network credentials) provided to you by your systems administrator.  If you are using your own Virtual Appliance server, the default admin user details are provided in section \ref{txt:passwords}, page \pageref{txt:passwords}.  The dialog gives you the option for saving your username and/or password if you prefer.  We recommend using this feature only on personal machines.  You may choose to cancel the login if you like and Tellervo will continue to load, however, you will not have access to the Tellervo database therefore very few functions will be available to you.
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+  \begin{center}
+    \includegraphics[width=0.48\textwidth]{Images/login.png}
+  \end{center}
+  \caption{Tellervo server login dialog.}
+  \label{fig:login}
+\end{wrapfigure}
+
+Once you have logged in you will be presented with the Tellervo home screen.  This contains the main menus for the program as well as three quick-link icons for creating new records, opening existing records and importing existing data files to the database.
+
+
+\subsection{Mapping support}
+\index{Mapping}
+Tellervo includes 3D mapping for visualization of sampling locations. Although this is not necessary for most tasks, to make use of the mapping functions you will require a OpenGL 3D capable graphics card. To check whether your computer already supports 3D mapping, open Tellervo, go to Admin, then Site map.  Tellervo will warn you if your graphics card is not supported.
+
+All MacOSX computers should automatically support OpenGL.  Most Windows and Linux computers made since 2006 should also support OpenGL, however, this does require proper drivers to be installed. In some cases Windows computers may include a compatible graphics card, but may only have the default Windows video drivers installed.  If you are having trouble with the mapping in Tellervo make sure you have installed the most recent drivers for your graphics card.  Linux users may be required to install proprietary graphics drivers.  
+
+The mapping component of Tellervo makes use of NASA's open source World Wind Java.  NASA's website \url{http://worldwind.arc.nasa.gov/} contains further information and instructions that you may find helpful if you are having problems getting the mapping to work.  
+
+\section{Uninstalling}
+
+We understand that Tellervo will never suit the requirements of all users, but as an open source product, we would really appreciate feedback as to why it didn't work for you.  Without this feedback it is difficult to prioritize future development.
+
+\subsection{Tellervo desktop application}
+For Windows users, Tellervo desktop can be uninstalled using the standard add/remove programs feature in control panel, or via the item in the Tellervo start menu.  Mac users should simply delete the application from their applications folder.  Linux users should use their prefered package management tool e.g.\ from the command line:
+\code{sudo dpkg --remove corina}
+
+\subsection{Tellervo server}
+
+\warn{Please note that uninstalling the Tellervo server will delete your Tellervo database and all the data it contains.  Make sure that you export any data you need before doing uninstalling.}
+
+If you are running the Tellervo server as a virtual appliance simply follow the uninstall instructions for VirtualBox.  If you are running Tellervo server as a native Linux server, you should use your preferred package mangement tool e.g.\ from the command line:
+\code{sudo dpkg --remove corina-server}
+
+
+
+
+
+
+

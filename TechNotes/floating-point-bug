@@ -1,7 +1,0 @@
-Rumor has it that java on alpha/linux sometimes crashes on
-floating-point comparisons to NaN.
-
-(http://nagoya.apache.org/bugzilla/show_bug.cgi?id=13586)
-
-Solution: every time I compare to NaN, -- what?  avoid it, if i can.
-don't know if that's possible, though.

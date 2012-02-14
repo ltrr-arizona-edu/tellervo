@@ -1,0 +1,63 @@
+
+\chapter{Systems architecture}
+\index{Systems architecture|(}
+The centralised nature of the Cornell Tree-Ring Lab data required a server-client architecture of some type. In Corina this was achieved simply by having users save their data in a network folder stored on a central server. Whilst this method was adequate, it has many data storage issues that can be largely solved by moving the data storage infrastructure to a relational database management system.  
+
+Although it would be possible (and arguably simpler) to have refactored Corina to talk directly to one central database server it was decided to go a step further and implement a Web Services orientated server-client architecture for Tellervo.  
+
+A web services approach decouples the desktop client from the server so that the server can work on its 
+
+\section{Authentication design}
+\label{txt:authentication}
+\index{Authentication}
+\index{Nonce}
+\index{Hash}
+\index{Cryptography}
+The authentication mechanism is loosely based around http digest authentication and uses a challenge and response scheme. This makes use of cryptographic hashes (a relatively short digital fingerprint of some data but which cannot be decompiled to retrieve the original data) and nonces (a pseudo-random string used just once). All hashes used in the Tellervo webservice use the MD5 algorithm. Whilst an MD5 hash of a short phrase can be compromised, the length and randomness of the original data means that using current cracking techniques would require a very substantial amount of processing power e.g.\ supercomputer or large botnet.  Flaws in the MD5 hash are also mitigated by the time-sensitive nature of the Tellervo nonce, meaning that any attack would need to be successful within a 2 minute window.  New weaknesses in security are, however, revealed on a fairly regular basis so the authentication architecture will be periodically reviewed to ensure that it still meets our needs. 
+
+The first time a client attempts to retrieve data from the webservice (or when the client's credentials are incorrect or have expired) the following events occur:
+
+
+\begin{itemize*}
+ \item Server returns an message requesting authentication. This message includes a nonce (a hash of the current date and time to the nearest minute) which we will call `server nonce'.
+ \item The client creates a second nonce (client nonce) which is a random hash of it's choosing, and a response which is a hash of ``username:hashofpassword:servernonce:clientnonc''. It sends this response, along with the username and client nonce back to the server but does not send the original server nonce.
+ \item The server computes the same ``username:hashofpassword:servernonce:clientnonce'' hash using the information it has stored in the database. As the server nonce is constant for a minute the two response should match. If not the server recomputes the server nonce for one minute ago and tries again. This ensures that the server nonce sent to the client is valid for between 1 and 2 minutes.
+ \item Once the server authenticates the user a session cookie is sent to the client. On subsequent requests the server recognises the session id and doesn't request authentication again. 
+\end{itemize*}
+
+As the user's password is hashed at all points, even if the communication is hijacked the attacker will not be able to derive the users password. The user's password is also stored in hash form within the database. This also means that system administrators do not have access to the passwords either.
+
+The use of the server nonce within the response means that it will only be valid for a maximum of two minutes. This minimizes the possibility of a replay attack. 
+
+
+\section{Database permissions design}
+\index{Database!Permissions architecture}
+The database has a user and group based security scheme at three TRiDaS levels: object, element and series. A user can be a member of one or more groups, and groups can be members of zero or more other groups. The current implementation allows for one nested level of groups within groups however this could be extended if required. Security is set on a group-by-group basis rather than on a single user to ensure ease of management.
+
+There are five types of permissions granted: create, read, update, delete and no permission. Each permission is independent of each other with the exception of 'no permission' which overrides all other permissions.
+
+A group can be assigned one or more of the permissions types to any of the sites, trees or measurements in the database. Intermediate objects such as subsites, specimens and radii inherit permissions from their parent object. For instance if a group has permission to read a site then it will have permission to read all subsites from that site.
+
+It is envisaged that most of the time, permissions will be set on a site-by-site basis. It will not be necessary to explicitly assign permissions to trees and measurements as all permissions will be inherited. So assuming that no permissions are set on a tree for a particular group, the permissions for the tree will be derived from the site from which the tree was found. If, however, permissions are assigned to the tree, then these will override those of the site. In this way it will be possible to allow a group to read the data from one particular tree from a site in which there otherwise do not have permission to access.
+
+Privileges are cumulative. This means that if a user is a member of multiple groups then they will gain all the privileges assigned to those groups. If one of the groups that the user is a member of has `no privileges' set on an object it will however override all other privileges. Therefore if a user is a member of groups A and B, and group A has read privilege and group B has `no privilege' then the user will not be able to access the record.
+
+A special `admin group' has been created into which only the most trusted users are placed. Members of the admin group automatically gain full privileges on all data within the database. They also have permission to perform a number of administrative tasks that standard users are insulated from. 
+
+
+\section{Universally Unique Identifiers}
+\label{txt:uuid}
+\index{Universally Unique Identifiers (UUID)}
+All entities in the Tellervo database have a primary key based on the Universally Unique Identifier (UUID) concept. This is a randomly created 128-bit number which due to the astronomically large number of possibilities ($3 \times 1038$) means that it is guaranteed to be unique across all installations of Tellervo. This code is typically represented by 32 hexadecimal digits and 4 hyphens like this: 550e8400-e29b-41d4-a716-446655440000.
+
+\section{Barcode specifications}
+\label{txt:barcodeSpecs}
+\index{Barcodes!Specifications}
+\index{Universally Unique Identifiers (UUID)}
+Barcodes in Tellervo are based on the UUID primary keys of database entities.  Because they are used for different entities in Tellervo (boxes, samples and series) it was also necessary to incorporate a method for determining what type of entity a barcode represents. This is done by appending a single character and a colon to the beginning of the UUID: `B:' for box; `S:' for sample; `Z:' for series.
+
+The barcodes in Tellervo use the Code 128 scheme. This symbology was chosen as it allows the encoding of alphanumeric characters in a high-density label and can be read by all popular barcode scanners. While it would have been possible to create a barcode of plain UUIDs, the 36 (or even 32) characters would result in a barcode wider than many scanners could read. Most scanners on the market have a maximum scan width of at least 80mm, so this was used as the baseline to work to.
+
+To make the barcodes less than 80mm, the UUID (with prepended entity type character code) are Base64 encoded. For example the series with UUID 3a8f4336-d17d-11df-abde-c75e325aebae would be encoded from Z:3a8f4336-d17d-11df-abde-c75e325aebae to become: Wjo6j0M20X0R36vex14yWuuu 
+
+\index{Systems architecture|)}

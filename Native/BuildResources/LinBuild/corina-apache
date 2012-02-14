@@ -1,0 +1,6 @@
+<Directory /var/www/corina-webservice/>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+</Directory>                                                                                        

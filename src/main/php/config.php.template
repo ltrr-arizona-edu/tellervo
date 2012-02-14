@@ -1,0 +1,66 @@
+<?php
+/**
+ * *******************************************************************
+ * PHP Corina Middleware
+ * E-Mail: p.brewer@cornell.edu
+ * Requirements : PHP >= 5.2
+ * 
+ * Configuration values to be set by the Administrator of the server
+ * 
+ * @author Peter Brewer
+ * @license http://opensource.org/licenses/gpl-license.php GPL
+ * @package CorinaWS
+ * *******************************************************************
+ */
+
+/**
+ * LAB DETAILS
+ */
+// Laboratory name
+$labname = "%%LABNAME%%";
+
+// Laboratory acronym.  Used as prefix to sample codes e.g. "C" for Cornell becomes C-ABC-1-A
+// Can be left blank
+$labacronym = "%%LABACRONYM%%";
+
+
+/**
+ * POSTGRESQL SETTINGS
+ */
+// PostgreSQL credentials file
+$cdbCredentialsFile = "/usr/share/corina-server/corina_server_credentials";
+
+// Hostname or IP of the server running PostgreSQL
+$hostname = "%%IP%%";
+
+// PostgreSQL Database name e.g. "corina"
+$dbName = "%%DBNAME%%";
+
+// Port on which PostgreSQL is running (normally "5432")
+$pgport = "5432";
+
+
+/**
+ * WEBSERVER SETTINGS
+ */
+// Domain name of the server this software is running on e.g. "dendro.cornell.edu/"
+$domain = "%%IP%%/corina-webservice/";
+
+// Does the server use https?
+$securehttp = FALSE;
+
+// Whether to display debug messages
+$debugFlag = FALSE; 
+
+// Include timing in debug messages
+$timingFlag = FALSE;
+
+// Base folder on the server where the webservice is stored
+$baseFolder = "/var/www/corina-webservice/";
+
+// Timezone of the server this software is running on.  For options see:
+// http://php.net/manual/en/timezones.php
+$serverTimezone = "America/New_York";
+date_default_timezone_set($serverTimezone); 
+
+?>

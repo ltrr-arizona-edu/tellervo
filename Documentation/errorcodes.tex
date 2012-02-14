@@ -1,0 +1,66 @@
+\chapter{XML Error Codes}
+
+\begin{longtable}{lll}
+  \caption{The Corina webservice provides error feedback by means of an error code and description.}\\
+  \toprule
+  \textbf{Section} & \textbf{Code} & \textbf{Description} \\
+  \endhead
+  \midrule
+  & & \\
+
+  \textbf{General}
+  & 001 & Error connecting to database \\
+  & 002 & Generic SQL error \\
+  
+  & & \\
+  \midrule
+  & & \\
+  
+  \textbf{Authentication}
+  & 101 & Authentication failed \\
+  & 102 & Login required \\
+  & 103 & Permission denied \\
+  & 104 & Unsupported request \\
+  & 105 & Invalid server nonce \\
+  & 106 & User unknown \\
+  & 107 & Unsupported client \\
+  & 108 & Unsupported client version \\
+
+  & & \\
+  \midrule
+  & & \\
+
+  \textbf{Miscellaneous} 
+  & 666 & Unknown Error \\
+  & 667 & Program bug \\
+
+  & & \\
+  \midrule
+  & & \\
+
+  \textbf{Internal} 
+  & 701 & Internal SQL error \\
+  & 702 & Feature not yet implemented \\
+  & 703 & Invalid XML being returned by webservice \\
+  & 704 & Configuration error \\
+
+  & & \\
+  \midrule
+  & & \\
+
+  \textbf{User} 
+  & 901 & Invalid user parameter(s) \\
+  & 902 & Missing user parameter(s) \\
+  & 903 & No records match \\
+  & 904 & Parameters too short \\
+  & 905 & Invalid XML request \\
+  & 906 & Record already exists \\
+  & 907 & Foreign key violation \\
+  & 908 & Unique constraint violation \\
+  & 909 & Check constraint violation \\
+  & 910 & Invalid data type \\
+  & 911 & Series with this version number already exists \\
+
+
+  \bottomrule
+\end{longtable}
