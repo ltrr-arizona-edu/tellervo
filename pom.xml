@@ -4,10 +4,9 @@
 	
 	<!-- Metadata -->
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>edu.cornell.dendro</groupId>
-	<artifactId>corina</artifactId>
-	<version>2.12.2-SNAPSHOT</version>
-	<name>Corina</name>
+	<groupId>org.tellervo</groupId>
+	<artifactId>tellervo</artifactId>
+	<name>Tellervo</name>
 	<description>Dendrochronological collection, curation and management software</description>
 	<licenses>
 		<license>
@@ -110,9 +109,9 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:svn:http://dendro.cornell.edu/svn/corina/branches/dev/</connection>
-		<developerConnection>scm:svn:svn+ssh://dendro.cornell.edu/home/svn/corina/branches/dev</developerConnection>
-		<url>http://dendro.cornell.edu/corina</url>
+		<connection>scm:svn://svn.code.sf.net/p/tellervo/code-0/branches/dev/</connection>
+		<developerConnection>scm:svn+ssh://svn.code.sf.net/p/tellervo/code-0/branches/dev/</developerConnection>
+		<url>http://www.tellervo.org</url>
 	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -1136,4 +1135,9 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	<version>0.9-SNAPSHOT</version>
+	<issueManagement>
+		<url>https://sourceforge.net/p/tellervo/tickets/</url>
+		<system>Sourceforge.net</system>
+	</issueManagement>
 </project>
