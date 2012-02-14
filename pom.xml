@@ -549,7 +549,7 @@
 						<configuration>
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>edu.cornell.dendro.corina.gui.Startup</mainClass>
+									<mainClass>org.tellervo.gui.Startup</mainClass>
 								</transformer>
 							</transformers>
 							<filters>
@@ -588,8 +588,8 @@
 							<headerType>gui</headerType>
 							<outfile>${project.build.directory}/${project.build.finalName}.exe</outfile>
 							<jar>${project.build.directory}/${project.build.finalName}.jar</jar>
-							<icon>src/main/resources/Icons/corina-application.ico</icon>
-							<errTitle>TRiCYCLE</errTitle>
+							<icon>src/main/resources/Icons/tellervo-application.ico</icon>
+							<errTitle>Tellervo</errTitle>
 							<jre>
 								<minVersion>1.6.0</minVersion>
 							</jre>
@@ -619,24 +619,24 @@
 						<fileSet>
 							<directory>Documentation/</directory>
 							<includes>
-								<include>corina-manual.pdf</include>
+								<include>tellervo-manual.pdf</include>
 							</includes>
 						</fileSet>
 						<fileSet>
 							<directory>${project.build.directory}/classes/MacBuild</directory>
 							<includes>
-								<include>Corina Drivers.pkg</include>
+								<include>Tellervo Drivers.pkg</include>
 							</includes>
 						</fileSet>
 					</additionalResources>
-					<bundleName>Corina</bundleName>
+					<bundleName>Tellervo</bundleName>
 					<zipFile>${project.build.directory}/Binaries/Desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>
-					<mainClass>edu.cornell.dendro.corina.gui.Startup</mainClass>
+					<mainClass>org.tellervo.gui.Startup</mainClass>
 					<vmOptions>
 					 
 					</vmOptions>
 					<jvmVersion>1.5+</jvmVersion>
-					<iconFile>src/main/resources/Icons/corina-application.icns</iconFile>
+					<iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile>
 					<javaApplicationStub>${project.build.directory}/classes/MacBuild/JavaApplicationStub</javaApplicationStub>
 				</configuration>
 				<executions>
@@ -673,11 +673,11 @@
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
-										<prefix>/usr/share/corina</prefix>
+										<prefix>/usr/share/tellervo</prefix>
 									</mapper>
 								</data>
 								<data>
-									<src>${project.build.directory}/classes/LinBuild/corina</src>
+									<src>${project.build.directory}/classes/LinBuild/tellervo</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
@@ -686,7 +686,7 @@
 									</mapper>
 								</data>
 								<data>
-									<src>${project.build.directory}/classes/LinBuild/corina.desktop</src>
+									<src>${project.build.directory}/classes/LinBuild/tellervo.desktop</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
@@ -706,7 +706,7 @@
 								</data>
 								-->
 								<data>
-									<src>src/main/resources/Icons/48x48/corina-application.png</src>
+									<src>src/main/resources/Icons/48x48/tellervo-application.png</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
@@ -725,11 +725,11 @@
 							<goal>jdeb</goal>
 						</goals>
 						<configuration>	
-							<deb>${project.build.directory}/Binaries/Server/corina-server-${serverversion}.deb</deb>
+							<deb>${project.build.directory}/Binaries/Server/tellervo-server-${serverversion}.deb</deb>
 							<controlDir>${project.build.directory}/classes/LinBuild/ServerControl/</controlDir>
 							<dataSet>
 								<data>
-									<src>${project.build.directory}/classes/LinBuild/corina-server</src>
+									<src>${project.build.directory}/classes/LinBuild/tellervo-server</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
@@ -738,11 +738,11 @@
 									</mapper>
 								</data>
 								<data>
-									<src>${project.build.directory}/corina-pljava.jar</src>
+									<src>${project.build.directory}/tellervo-pljava.jar</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
-										<prefix>/usr/share/corina-server/</prefix>
+										<prefix>/usr/share/tellervo-server/</prefix>
 										<filemode>755</filemode>
 									</mapper>
 								</data>
@@ -751,7 +751,7 @@
 									<type>directory</type>
 									<mapper>
 										<type>perm</type>
-										<prefix>/usr/share/corina-server/db-upgrade-patches</prefix>
+										<prefix>/usr/share/tellervo-server/db-upgrade-patches</prefix>
 									</mapper>
 								</data>
 								<data>
@@ -759,7 +759,7 @@
 									<type>directory</type>
 									<mapper>
 										<type>perm</type>
-										<prefix>/usr/share/corina-server</prefix>
+										<prefix>/usr/share/tellervo-server</prefix>
 									</mapper>
 								</data>
 								<data>
@@ -767,7 +767,7 @@
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
-										<prefix>/usr/share/corina-server</prefix>
+										<prefix>/usr/share/tellervo-server</prefix>
 									</mapper>
 								</data>
 								<data>
@@ -775,7 +775,7 @@
 									<type>directory</type>
 									<mapper>
 										<type>perm</type>
-										<prefix>/var/www/corina-webservice</prefix>
+										<prefix>/var/www/tellervo-webservice</prefix>
 									</mapper>
 								</data>
 							</dataSet>
@@ -806,7 +806,7 @@
 				
 				
 					<!-- Delete the duplicate TRiDaS and GML 
-					classes produced by JAXB when creating the Corina classes. -->
+					classes produced by JAXB when creating the Tellervo classes. -->
 					<execution>
 						<id>DeleteDuplicateJAXBClasses</id>
 						<phase>generate-sources</phase>
@@ -838,8 +838,8 @@
 								<trycatch>
 									<try>
 										<zip destfile="${project.build.directory}/Binaries/Desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip" update="true">
-											<zipfileset src="${project.build.finalName}/Corina.app" />
-											<zipfileset src="Native/MacBuild/Corina Drivers.pkg"/>
+											<zipfileset src="${project.build.finalName}/Tellervo.app" />
+											<zipfileset src="Native/MacBuild/Tellervo Drivers.pkg"/>
 										</zip>
 									</try>
 									<catch>
@@ -902,9 +902,9 @@
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
 									classpathref="maven.plugin.classpath"/>							     
 							      
-							      <jar jarfile="${project.build.directory}/corina-pljava.jar"
+							      <jar jarfile="${project.build.directory}/tellervo-pljava.jar"
 								       basedir="${project.build.directory}/classes"
-								       includes="edu/cornell/dendro/cpgdb/** edu/cornell/dendro/corina_indexing/**"/>
+								       includes="edu/cornell/dendro/cpgdb/** edu/cornell/dendro/tellervo_indexing/**"/>
 							      
 							</tasks>
 						</configuration>
