@@ -11,17 +11,17 @@ if (!isset($argc))
 }
 
 // Static locations of various files 
-$wsbase           = "/var/www/corina-webservice/";
-$folderbase       = "/usr/share/corina-server/";
+$wsbase           = "/var/www/tellervo-webservice/";
+$folderbase       = "/usr/share/tellervo-server/";
 
 $pg_hba_file      = "/etc/postgresql/9.1/main/pg_hba.conf";
 $pg_hba_file_orig = "/etc/postgresql/9.1/main/pg_hba.conf.bak";
 $permsfile        = $folderbase."set_database_permission.sql";
 $permstemplate    = $folderbase."set_database_permission.template";
-$logfile          = "/var/log/corina-installation.log";
+$logfile          = "/var/log/tellervo-installation.log";
 $configtemplate   = $folderbase."config.php.template";
-$dbtemplate       = $folderbase."corina_database_template.sql";
-$credentialsFile  = $folderbase."corina_server_credentials";
+$dbtemplate       = $folderbase."tellervo_database_template.sql";
+$credentialsFile  = $folderbase."server_credentials";
 $upgradeScripts   = $folderbase."db-upgrade-patches";
 $configfile       = $wsbase."config.php";
 $dbsetupfile      = $wsbase."inc/dbsetup.php";
@@ -46,7 +46,7 @@ if($_SERVER['USER']=='root')
 	
 	// Log the date of running to the log file
 	exec("echo \"*******************\" >> ".$logfile); 
-	exec("echo \"Running corina-server\" >> ".$logfile); 
+	exec("echo \"Running tellervo-server\" >> ".$logfile); 
 	exec("date >> ".$logfile); 
 	exec("echo \"*******************\" >> ".$logfile); 
 }
@@ -190,8 +190,8 @@ else if ($args["version"]===false)
 	include($dbsetupfile);
 	echo "\n";
 	printTitle();
-	echoTruncatedString("Corina Database", 20);
-	echo " - version ".getCorinaDBVersion()."\n";
+	echoTruncatedString("Tellervo Database", 20);
+	echo " - version ".getTellervoDBVersion()."\n";
 	echo "\n";
 	exit(0);
 }
@@ -209,8 +209,8 @@ exit(1);
  */
 function printTitle()
 {
-  echoTruncatedString("Corina Server", 20);
-  echo " - version ".getCorinaDPKGVersion()."\n";
+  echoTruncatedString("Tellervo Server", 20);
+  echo " - version ".getTellervoDPKGVersion()."\n";
 }
 
 /**
@@ -220,18 +220,18 @@ function showHelp($forced=false)
 {
   echo "\n";
   printTitle();
-  echo "\nUseage: corina-server [<option> ...]\n";
+  echo "\nUseage: tellervo-server [<option> ...]\n";
   echo "Options:\n";
   echo "  -h, --help         Show this help\n";
   echo "  -t, --test         Run tests on existing setup\n";
   echo "  -c, --configure    Configure server\n";
   echo "  -r, --reconfigure  Reconfigure the server overwriting existing config\n";
   echo "      --resetpwd     Reset the PostgreSQL database password\n";
-  echo "      --start        Start the Corina server\n";
-  echo "      --stop         Stop the Corina server\n"; 
-  echo "      --restart      Restart the Corina server\n";   
+  echo "      --start        Start the Tellervo server\n";
+  echo "      --stop         Stop the Tellervo server\n"; 
+  echo "      --restart      Restart the Tellervo server\n";   
   echo "      --upgrade-db   Run database upgrade scripts\n";
-  echo "      --version      Show version of Corina server that is installed\n";
+  echo "      --version      Show version of Tellervo server that is installed\n";
   echo "\n";
   
   if(forced) exit(1);
@@ -250,10 +250,10 @@ function runDBUpgrades()
 	
 	$scriptsRun = 0;
 
-	echo "Upgrading existing Corina database to latest version...\n";
+	echo "Upgrading existing Tellervo database to latest version...\n";
 	
 	exec("echo \"*******************\" >> $logfile");
-    exec("echo \"Upgrading existing Corina database to latest version...\" >> $logfile" );
+    exec("echo \"Upgrading existing Tellervo database to latest version...\" >> $logfile" );
     exec("echo \"*******************\" >> $logfile");	
 	
 	// Loop through all upgrade scripts and run any that haven't 
@@ -281,7 +281,7 @@ function runDBUpgrades()
 	global $dbsetupfile;
 	global $dbconn;
 	
-	$f = getCorinaDPKGVersion();
+	$f = getTellervoDPKGVersion();
 
 	// Remove +SNAPSHOT from end
 	$f = str_replace("+SNAPSHOT", "", $f);
@@ -310,30 +310,30 @@ function runDBUpgrades()
 }
 
 /**
- * Get the version of Corina according to dpkg.  
+ * Get the version of Tellervo according to dpkg.  
  *
  * @return version
  */ 
-function getCorinaDPKGVersion()
+function getTellervoDPKGVersion()
 {
-	$f = exec("dpkg-query -W corina-server");
+	$f = exec("dpkg-query -W tellervo-server");
 	
 	if(strpos($f, "No packages found")===TRUE)
 	{
 	 return false;
 	}  
 	
-	// Trim off the 'corina-server' from the beginning
-	$f = str_replace("corina-server", "", $f);
+	// Trim off the 'tellervo-server' from the beginning
+	$f = str_replace("tellervo-server", "", $f);
 	
 	return trim($f);
 }
 
 /**
-* Get the version of Corina installed from the database.  If the database is not
+* Get the version of Tellervo installed from the database.  If the database is not
 * available then returns 'Unknown'
 */
-function getCorinaDBVersion()
+function getTellervoDBVersion()
 {
 	global $configfile;
     global $systemconfig;
@@ -499,7 +499,7 @@ function generateSystemsConfig()
 	$fh = fopen($systemconfig, 'w') or exit("Can't create system configuration file\n\n");
 	fwrite($fh, "<?php
 /**
-* This configuration file is automatically generated by the corina-server 
+* This configuration file is automatically generated by the tellervo-server 
 * configure script.  Do not make changes to this file!
 * Generated : ".date(DATE_RFC822)."
 */\n\n");
@@ -532,7 +532,7 @@ function generateSystemsConfig()
         } 
         $xstr = substr($xstr, 0, -1); 
         fwrite($fh, "// Array of known clients and the minimum version that can be used when accessing this webservice\n");  
-        fwrite($fh, "$"."corinaClientIdentifiers = array( $xstr \n);\n\n");
+        fwrite($fh, "$"."tellervoClientIdentifiers = array( $xstr \n);\n\n");
     }
     else
     {
@@ -641,19 +641,19 @@ function postgresSetup()
   global $credentialsFile;
 
   // Find out if the user wants a new db
-  echo "Would you like the installer to set up a blank Corina database?\n";
+  echo "Would you like the installer to set up a blank Tellervo database?\n";
   echo "    [Y]/n  ";
   $response = fgets(STDIN); 
 
    if((trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
    {
      // User doesn't want a new db so must already have one
-     echo "\nWhat is the name of your Corina PostgreSQL database? : ";
+     echo "\nWhat is the name of your Tellervo PostgreSQL database? : ";
      $response = fgets(STDIN);
 
      if(trim($response)=="")
      {
-       echo "\nPlease create your Corina database then retry this configuration script\n";
+       echo "\nPlease create your Tellervo database then retry this configuration script\n";
        printComplete(FALSE);
      }
      else
@@ -690,13 +690,13 @@ function postgresSetup()
                               '', // directorie(s) to search
                               false) ;
       $snr->doSearch();
-      exec("su - postgres -c \"psql --file=/usr/share/corina-server/set_database_permission.sql 2>> ".$logfile."\"");
-      setConfigVariable("%%DBNAME%%", "corina");   
+      exec("su - postgres -c \"psql --file=/usr/share/tellervo-server/set_database_permission.sql 2>> ".$logfile."\"");
+      setConfigVariable("%%DBNAME%%", "tellervo");   
       
       // Create the database and populate from the database template
       echo "\nCreating database...\n";
-      exec("su - postgres -c \"createdb corina 2>> ".$logfile."\"");
-      exec("su - postgres -c \"psql corina < $dbtemplate 2>> ".$logfile."\"");
+      exec("su - postgres -c \"createdb tellervo 2>> ".$logfile."\"");
+      exec("su - postgres -c \"psql tellervo < $dbtemplate 2>> ".$logfile."\"");
       
       // Set pg_hba.conf file entry
       $pg_hba_str = "local        all      ".trim($user, "\n\r")."                  trust\\n".
@@ -732,8 +732,8 @@ function setDBUser()
   }
   else
   {
-      echo "\nCreating a PostgreSQL database user. Note this is a PostgreSQL system user not a user for accessing Corina\n";
-      echo "(We recommend the username to be corina)\n";
+      echo "\nCreating a PostgreSQL database user. Note this is a PostgreSQL system user not a user for accessing Tellervo\n";
+      echo "(We recommend the username to be tellervo)\n";
       echo "    Username : ";
       $user = fgets(STDIN); 
       echo "\nEnter a new password.\nPassword should be 8-20 characters, and include numbers, letters, and capitals but no spaces.\n";
@@ -790,7 +790,7 @@ function apacheSetup()
      return;
   }
   echo "\nSetting up webservice...\n";
-  exec("ln /usr/share/corina-server/corina-apache /etc/apache2/sites-enabled/ 2>> $logfile", $response);
+  exec("ln /usr/share/tellervo-server/tellervo-apache /etc/apache2/sites-enabled/ 2>> $logfile", $response);
   
   echo "\nRestarting webserver...\n";
   exec("/etc/init.d/apache2 restart >> $logfile");
@@ -859,9 +859,9 @@ function verifySetup($silent=false)
   global $configfile;
   $runningresult = TRUE;
   
-  require("/var/www/corina-webservice/config.php");
+  require("/var/www/tellervo-webservice/config.php");
 
-  if($silent!=TRUE) echo "\nVerifying Corina server setup...\n";
+  if($silent!=TRUE) echo "\nVerifying Tellervo server setup...\n";
   
   if($securehttp===TRUE)
   {
@@ -953,17 +953,17 @@ function verifySetup($silent=false)
 	if($silent!=TRUE) echoTruncatedString("    - Checking webservice and database versions are in sync:"); 
 	if($silent!=TRUE)
 	{
-		printResult(getCorinaDPKGVersion()==getCorinaDBVersion());
-		if(getCorinaDPKGVersion()!=getCorinaDBVersion())
+		printResult(getTellervoDPKGVersion()==getTellervoDBVersion());
+		if(getTellervoDPKGVersion()!=getTellervoDBVersion())
 		{		
-			//echo "DPKGVersion ='".getCorinaDPKGVersion()."'\n";
-			//echo "DBVersion   ='".getCorinaDBVersion()."'\n";
+			//echo "DPKGVersion ='".getTellervoDPKGVersion()."'\n";
+			//echo "DBVersion   ='".getTellervoDBVersion()."'\n";
 			$runningresult = FALSE;
 		}
 	}
 	else
 	{
-		if(getCorinaDPKGVersion()!=getCorinaDBVersion()) return FALSE;
+		if(getTellervoDPKGVersion()!=getTellervoDBVersion()) return FALSE;
 	}
 	
 	return $runningresult;  
@@ -1043,7 +1043,7 @@ function printComplete($forceSuccess=null)
   
   if($forceSuccess===TRUE)
   {
-  	echo "Configuration was successful.  Your Corina webservice is now available at:\n";
+  	echo "Configuration was successful.  Your Tellervo webservice is now available at:\n";
   	echo "    - $wsurl"."webservice.php\n\n";
   	exit(0);
   }
@@ -1055,7 +1055,7 @@ function printComplete($forceSuccess=null)
   }
   else if($errorsFound===FALSE)
   {
-  	echo "Configuration was successful.  Your Corina webservice is now available at:\n";
+  	echo "Configuration was successful.  Your Tellervo webservice is now available at:\n";
   	echo "    - $wsurl"."webservice.php\n\n";
   	exit(0);
   }

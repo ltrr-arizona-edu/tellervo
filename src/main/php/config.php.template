@@ -28,12 +28,12 @@ $labacronym = "%%LABACRONYM%%";
  * POSTGRESQL SETTINGS
  */
 // PostgreSQL credentials file
-$cdbCredentialsFile = "/usr/share/corina-server/corina_server_credentials";
+$cdbCredentialsFile = "/usr/share/tellervo-server/server_credentials";
 
 // Hostname or IP of the server running PostgreSQL
 $hostname = "%%IP%%";
 
-// PostgreSQL Database name e.g. "corina"
+// PostgreSQL Database name e.g. "tellervo"
 $dbName = "%%DBNAME%%";
 
 // Port on which PostgreSQL is running (normally "5432")
@@ -44,7 +44,7 @@ $pgport = "5432";
  * WEBSERVER SETTINGS
  */
 // Domain name of the server this software is running on e.g. "dendro.cornell.edu/"
-$domain = "%%IP%%/corina-webservice/";
+$domain = "%%IP%%/tellervo-webservice/";
 
 // Does the server use https?
 $securehttp = FALSE;
@@ -56,7 +56,7 @@ $debugFlag = FALSE;
 $timingFlag = FALSE;
 
 // Base folder on the server where the webservice is stored
-$baseFolder = "/var/www/corina-webservice/";
+$baseFolder = "/var/www/tellervo-webservice/";
 
 // Timezone of the server this software is running on.  For options see:
 // http://php.net/manual/en/timezones.php

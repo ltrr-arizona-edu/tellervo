@@ -1,13 +1,13 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 
@@ -17,7 +17,7 @@ try{
 	require_once("systemconfig.php");
 } catch (Exception $e)
 {
-	trigger_error('704'.'System configuration file missing.  Server administrator needs to run corina-server --reconfigure', E_USER_ERROR);
+	trigger_error('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_ERROR);
 }
 require_once("inc/meta.php");
 require_once("inc/auth.php");

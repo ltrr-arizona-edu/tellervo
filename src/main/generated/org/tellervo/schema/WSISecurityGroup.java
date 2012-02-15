@@ -41,8 +41,8 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="description" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="isActive" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;attribute name="userMembers" type="{http://dendro.cornell.edu/schema/tellervo/1.0}idList" />
- *       &lt;attribute name="groupMembers" type="{http://dendro.cornell.edu/schema/tellervo/1.0}idList" />
+ *       &lt;attribute name="userMembers" type="{http://www.tellervo.org/schema/tellervo/1.0}idList" />
+ *       &lt;attribute name="groupMembers" type="{http://www.tellervo.org/schema/tellervo/1.0}idList" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>

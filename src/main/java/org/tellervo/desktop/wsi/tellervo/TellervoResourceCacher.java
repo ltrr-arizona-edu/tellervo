@@ -38,7 +38,7 @@ public class TellervoResourceCacher extends ResourceCacher<WSIRootElement> {
 
 	@Override
 	protected File getCacheFile() {
-		return new File(App.prefs.getCorinaDir() + getResource().getResourceName() + ".xmlcache");
+		return new File(App.prefs.getTellervoDir() + getResource().getResourceName() + ".xmlcache");
 	}
 
 	@Override

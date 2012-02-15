@@ -1,7 +1,7 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
@@ -10,7 +10,7 @@
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 
@@ -468,7 +468,7 @@ class dbEntity
     
     function getDBIDXML()
     {
-    	return "<tridas:genericField name=\"corinaDBID\" type=\"integer\">".$this->getID()."</tridas:genericField>\n";
+    	return "<tridas:genericField name=\"tellervoDBID\" type=\"integer\">".$this->getID()."</tridas:genericField>\n";
     }
     
     function getFileXML()
@@ -3029,7 +3029,7 @@ class taxonEntity extends dbEntity
     
     function getHigherTaxonXML($theRank)
     {
-        $xml = "<tridas:genericField name=\"corina.$theRank\" >";
+        $xml = "<tridas:genericField name=\"tellervo.$theRank\" >";
         switch($theRank)
         {
             case "kingdom":
@@ -3883,7 +3883,7 @@ class measurementEntity extends dbEntity
     function getUsedSoftware()
     {
     	global $wsversion;
-    	return "Corina ".$wsversion;
+    	return "Tellervo ".$wsversion;
     }
     
     function getCode()

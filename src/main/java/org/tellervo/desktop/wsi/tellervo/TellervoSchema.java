@@ -134,6 +134,7 @@ public class TellervoSchema {
     	{ "http://www.opengis.net/gml", "gmlsf.xsd", "gml" },
     	{ "http://www.tridas.org/1.2.2", "tridas.xsd", "tridas" },
     	{ "http://www.tellervo.org/schema/tellervo/1.0", "tellervo.xsd", "c"},
+
     };
     
     /**

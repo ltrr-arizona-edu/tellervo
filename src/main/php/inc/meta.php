@@ -1,13 +1,13 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 
@@ -142,10 +142,10 @@ class meta
    */
   function getClientVersion()
   {
-  	global $corinaClientIdentifiers;
+  	global $tellervoClientIdentifiers;
   	global $firebug;
   	
-  	foreach($corinaClientIdentifiers as $app)
+  	foreach($tellervoClientIdentifiers as $app)
   	{ 	
   		
 	  	if (strstr($this->clientversion, $app['name']))
@@ -181,11 +181,11 @@ class meta
    */
   function isClientVersionValid()
   {
-  	global $corinaClientIdentifiers;
+  	global $tellervoClientIdentifiers;
 	global $onlyAllowKnownClients;
 	global $firebug;
 	
-  	foreach($corinaClientIdentifiers as $app)
+  	foreach($tellervoClientIdentifiers as $app)
   	{ 			
 	  	if (strstr($this->clientversion, $app['name']))
 	  	{
@@ -237,9 +237,9 @@ class meta
   
   function getClientName()
   {
-  	global $corinaClientIdentifiers;	
+  	global $tellervoClientIdentifiers;	
   	
-  	foreach($corinaClientIdentifiers as $app)
+  	foreach($tellervoClientIdentifiers as $app)
   	{ 	
 	  	if (strstr($this->clientversion, $app['name']))
 	  	{
@@ -251,9 +251,9 @@ class meta
   
   function getMinRequiredClientVersion()
   {
-  	global $corinaClientIdentifiers;	
+  	global $tellervoClientIdentifiers;	
   	
-  	foreach($corinaClientIdentifiers as $app)
+  	foreach($tellervoClientIdentifiers as $app)
   	{ 	
 	  	if (strstr($this->clientversion, $app['name']))
 	  	{

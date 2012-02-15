@@ -1,13 +1,13 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.0
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 
@@ -47,7 +47,7 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
                         E_STRICT             => 'Runtime Notice',
                         E_RECOVERABLE_ERROR  => 'Catchable Fatal Error'
                     );
-    // Array of errors triggered by the Corina WS
+    // Array of errors triggered by the Tellervo WS
     $usererrors     = array( 
                         E_USER_ERROR, 
                         E_USER_WARNING, 
@@ -65,8 +65,8 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
                         E_WARNING, 
                         E_CORE_WARNING
                     );
-    // Associative array that translates Corina error codes into PHP error types
-    $corinaErrCodes = array(
+    // Associative array that translates Tellervo error codes into PHP error types
+    $tellervoErrCodes = array(
                         001 => E_USER_ERROR,
                         002 => E_USER_ERROR,
                         101 => E_USER_ERROR,
@@ -102,7 +102,7 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
         $firebug->log($message, "PHP warning code $errno");
     }
 
-    // Corina specific errors
+    // Tellervo specific errors
     elseif ($errno == E_USER_ERROR)
     {
         $errno = (int) substr($errmsg, 0, 3);

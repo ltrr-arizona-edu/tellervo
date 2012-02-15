@@ -1,6 +1,6 @@
 <?php
 //*******************************************************************
-////// PHP Corina Middleware
+////// PHP Tellervo Middleware
 ////// License: GPL
 ////// Author: Peter Brewer
 ////// E-Mail: p.brewer@cornell.edu

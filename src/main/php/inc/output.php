@@ -1,13 +1,13 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  *
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 
@@ -47,13 +47,13 @@ function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd
 	// If debug flag is on then validate created XML
 	if($debugFlag)
 	{
-		global $corinaXSD;
+		global $tellervoXSD;
 		$origErrorLevel = error_reporting(E_ERROR);
 		$doc = new DomDocument;
 		$doc->loadXML($theOutput);
 		libxml_use_internal_errors(true);
 
-		if($doc->schemaValidate($corinaXSD))
+		if($doc->schemaValidate($tellervoXSD))
 		{
 			header('Content-Type: application/xhtml+xml; charset=utf-8');
 			echo $theOutput;
@@ -92,7 +92,7 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
 {
 	global $domain;
 	global $securehttp;
-	global $corinaNS;
+	global $tellervoNS;
 	global $tridasNS;
 	global $gmlNS;
 	global $xlinkNS;
@@ -109,12 +109,12 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
 		{
 			$http = "http://";
 		}
-		$outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"$http".$domain."css/corina.css\"?>\n";
+		$outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"$http".$domain."css/tellervo.css\"?>\n";
 		$outputStr.= "<?xml-stylesheet type=\"text/css\" href=\"$http".$domain."css/docbook/driver.css\"?>\n";
 	}
 
 	// Set root XML tag
-	$outputStr.= "\n<corina xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\" xmlns:xlink=\"$xlinkNS\">\n";
+	$outputStr.= "\n<tellervo xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\" xmlns:xlink=\"$xlinkNS\">\n";
 
 
 
@@ -133,9 +133,9 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
 	{
 		// There was an error so try and be helpful
 
-		if($metaHeader->getClientName()=='Corina WSI')
+		if($metaHeader->getClientName()=='Tellervo WSI')
 		{
-			// Don't waste time showing docs as client is Corina and docs won't be read
+			// Don't waste time showing docs as client is Tellervo and docs won't be read
 		}
 		elseif($metaHeader->getIsLoginRequired())
 		{
@@ -154,7 +154,7 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
 
 	}
 
-	$outputStr.= "</corina>";
+	$outputStr.= "</tellervo>";
 	return $outputStr;
 }
 
@@ -163,14 +163,14 @@ function writeHelpOutput($metaHeader)
 {
 	/*    header('Content-Type: application/xhtml+xml; charset=utf-8');
 	 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-	 echo "<?xml-stylesheet type=\"text/css\" href=\"css/corina.css\"?>";
+	 echo "<?xml-stylesheet type=\"text/css\" href=\"css/tellervo.css\"?>";
 	 echo "<?xml-stylesheet type=\"text/css\" href=\"css/docbook/driver.css\"?>";
-	 echo "<corina>\n";
+	 echo "<tellervo>\n";
 	 echo $metaHeader->asXML();
 	 echo "<help>\n";
 	 echo getHelpDocbook($metaHeader->getObjectName());
 	 echo "</help>\n";
-	 echo "</corina>";
+	 echo "</tellervo>";
 	 */
 	writeIntroOutput($metaHeader);
 }
@@ -179,14 +179,14 @@ function writeIntroOutput($metaHeader)
 {
 	header('Content-Type: application/xhtml+xml; charset=utf-8');
 	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-	echo "<?xml-stylesheet type=\"text/css\" href=\"css/corina.css\"?>";
+	echo "<?xml-stylesheet type=\"text/css\" href=\"css/tellervo.css\"?>";
 	echo "<?xml-stylesheet type=\"text/css\" href=\"css/docbook/driver.css\"?>";
-	echo "<corina>\n";
+	echo "<tellervo>\n";
 	echo $metaHeader->asXML();
 	echo "<help>\n";
 	echo getHelpDocbook("Introduction");
 	echo "</help>\n";
-	echo "</corina>";
+	echo "</tellervo>";
 }
 
 
@@ -196,16 +196,16 @@ function writeKMLOutput($xmldata)
 	header('Content-Type: application/xhtml+xml; charset=utf-8');
 	$xml.= "<kml xmlns=\"http://earth.google.com/kml/2.2\"> ";
 	$xml.= "<Document>";
-	/*    $xml.= "<name>Corina Sites</name>";
+	/*    $xml.= "<name>Tellervo Sites</name>";
 	 $xml.= "<open>1</open>";
-	 $xml.= "<description>Sites where dendrochronology samples have been collected by the Cornell Tree Ring Laboratory and stored in Corina</description>";
+	 $xml.= "<description>Sites where dendrochronology samples have been collected by the Cornell Tree Ring Laboratory and stored in Tellervo</description>";
 
 	 $xml.= "<Style id=\"redLineRedPoly\"> <LineStyle> <color>ff0000ff</color></LineStyle> <PolyStyle> <color>ff0000ff</color> </PolyStyle> </Style>";
 
 	 $xml.= "<Folder>";
 	 $xml.= "<name>Sites</name>";
 	 $xml.= "<visibility>1</visibility>";
-	 $xml.= "<description>Sites where dendrochronology samples have been collected by the Cornell Tree Ring Laboratory and stored in Corina</description>";
+	 $xml.= "<description>Sites where dendrochronology samples have been collected by the Cornell Tree Ring Laboratory and stored in Tellervo</description>";
 	 /
 	 $xml.= "<Placemark>";
 	 $xml.= "<name>Site</name>";

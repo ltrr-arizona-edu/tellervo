@@ -8,12 +8,12 @@ require_once('../config.php');
 $snippetDir = '/var/www/webservice/unittests/crudTestRequests/';
 $wsURL = "https://dendro.cornell.edu/webservice.php";
 $xmlrequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
-    <corina>
+    <tellervo>
       <request type=\"read\">
           <site id=\"1\">
                           </site>
                             </request>
-                            </corina>";
+                            </tellervo>";
 $siteID = NULL;
 $subSiteID = NULL;
 $treeID = NULL;
@@ -78,7 +78,7 @@ sort($fileArray);
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <title>Corina Unit Tests</title>
+        <title>Tellervo Unit Tests</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
         <meta http-equiv="Content-Language" content="en-us" />
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
@@ -108,7 +108,7 @@ sort($fileArray);
 <div id="main">
 <div id="hub-description">
 
-<h2>Corina Webservice Unit Tests</h2>
+<h2>Tellervo Webservice Unit Tests</h2>
 <table width=600 border=1>
 <tr>
 <td width="70"><b>No.</b></td>

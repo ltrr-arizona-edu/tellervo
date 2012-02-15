@@ -34,13 +34,13 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  *       &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *         &lt;choice>
  *           &lt;sequence>
- *             &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}request"/>
+ *             &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}request"/>
  *           &lt;/sequence>
  *           &lt;sequence>
- *             &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}header"/>
+ *             &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}header"/>
  *             &lt;choice>
- *               &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}content" minOccurs="0"/>
- *               &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}help" minOccurs="0"/>
+ *               &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}content" minOccurs="0"/>
+ *               &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}help" minOccurs="0"/>
  *             &lt;/choice>
  *           &lt;/sequence>
  *         &lt;/choice>

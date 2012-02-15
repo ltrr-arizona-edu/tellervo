@@ -472,7 +472,7 @@ public class OpenRecent {
 	 * @return a File representing our OpenRecent file
 	 */
 	private static File getOpenRecentFile(String tag) {
-		return new File(App.prefs.getCorinaDir() + OPENRECENT_FILENAME_PREFIX + 
+		return new File(App.prefs.getTellervoDir() + OPENRECENT_FILENAME_PREFIX + 
 				tag + OPENRECENT_FILENAME_SUFFIX);
 	}
 }

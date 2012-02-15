@@ -3,20 +3,20 @@ set_time_limit(0);
 
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 
 
 /**
  * This is an import script for moving a simple Access db containing 
- * Cornell field collection info into the Corina databaes.  It is
+ * Cornell field collection info into the Tellervo databaes.  It is
  * unlikely to be of any use to anyone else!
  */
 

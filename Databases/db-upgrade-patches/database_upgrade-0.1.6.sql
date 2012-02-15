@@ -351,3 +351,12 @@ CREATE OR REPLACE RULE protectadmin AS
    WHERE old.securitygroupid = 1 DO INSTEAD NOTHING;
 
 
+DELETE FROM tblconfig WHERE key='corinaxsd';
+INSERT INTO tblconfig (key,value,description) VALUES ('tellervoXSD', '$baseFolder/schemas/tellervo.xsd', 'Path to Tellervo XSD');
+
+DELETE FROM tblconfig WHERE key='corinaNS';
+INSERT INTO tblconfig (key,value,description) VALUES ('tellervoNS', 'http://www.tellervo.org/schema/tellervo.xsd', 'Tellervo namespace URL');
+
+
+
+

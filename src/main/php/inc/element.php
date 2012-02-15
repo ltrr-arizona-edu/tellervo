@@ -1,13 +1,13 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.0
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 require_once('dbhelper.php');
@@ -44,7 +44,7 @@ class element extends elementEntity implements IDBAccessor
     {
         require_once('object.php');
         global $dbconn;
-        global $corinaNS;
+        global $tellervoNS;
         global $tridasNS;
         global $gmlNS;
 
@@ -400,7 +400,7 @@ class element extends elementEntity implements IDBAccessor
         case "comprehensive":
             require_once('object.php');
             global $dbconn;
-	        global $corinaNS;
+	        global $tellervoNS;
 	        global $tridasNS;
 	        global $gmlNS;
 	        
@@ -416,18 +416,18 @@ class element extends elementEntity implements IDBAccessor
             // Grab the XML representation of the immediate parent using the 'comprehensive'
             // attribute so that we get all the object ancestors formatted correctly                   
             $xml = new DomDocument();   
-    		$xml->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".end($this->parentEntityArray)->asXML('comprehensive')."</root>");                   
+    		$xml->loadXML("<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".end($this->parentEntityArray)->asXML('comprehensive')."</root>");                   
 
     		// We need to locate the leaf tridas:object (one with no child tridas:objects)
     		// because we need to insert our element xml here
 	        $xpath = new DOMXPath($xml);
-	       	$xpath->registerNamespace('cor', $corinaNS);
+	       	$xpath->registerNamespace('cor', $tellervoNS);
 	       	$xpath->registerNamespace('tridas', $tridasNS);		    		
     		$nodelist = $xpath->query("//tridas:object[* and not(descendant::tridas:object)]");
     		
     		// Create a temporary DOM document to store our element XML
     		$tempdom = new DomDocument();
-			$tempdom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
+			$tempdom->loadXML("<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
    		
 			// Import and append the element XML node into the main XML DomDocument
 			$elemnode = $tempdom->getElementsByTagName("element")->item(0);
@@ -452,7 +452,7 @@ class element extends elementEntity implements IDBAccessor
 	public function asKML()
 	{
 		$kml = "<Placemark><name>".dbHelper::escapeXMLChars($this->getTitle())."</name><description><![CDATA[<br><b>Type</b>: ".dbHelper::escapeXMLChars($this->getType())."<br><b>Description</b>: ".dbHelper::escapeXMLChars($this->getDescription())."<br><br><font style=\"font-size: 8px; color: grey\">Created: ".$this->getCreatedTimeStamp('j M Y \a\t H:i')."<br>Last modified: ".$this->getLastModifiedTimestamp('j M Y \a\t H:i')."]]></description>";
-		$kml .= "<styleUrl>#corinaDefault</styleUrl>";
+		$kml .= "<styleUrl>#tellervoDefault</styleUrl>";
 		$kml .= $this->location->asKML();
 		$kml .= "</Placemark>";
 		return $kml;
@@ -503,7 +503,7 @@ class element extends elementEntity implements IDBAccessor
                 $xml = "<tridas:element>";
                 $xml.= $this->getIdentifierXML();   
                 if($this->getComments()!=NULL)					$xml.="<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
-                $xml.="<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\"/>\n";
+                $xml.="<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Tellervo\"/>\n";
                 if($this->getDescription()!=NULL) $xml.="<tridas:description>".dbhelper::escapeXMLChars($this->getDescription())."</tridas:description>\n";
                 if($format!="minimal")
                 {
@@ -568,7 +568,7 @@ class element extends elementEntity implements IDBAccessor
 	                
 	                if($format!="minimal") $xml.= $this->taxon->getHigherTaxonomyXML();
         
-            		$xml.="<tridas:genericField name=\"corina.objectLabCode\" type=\"xs:string\">".$this->getSummaryObjectCode()."</tridas:genericField>\n";           
+            		$xml.="<tridas:genericField name=\"tellervo.objectLabCode\" type=\"xs:string\">".$this->getSummaryObjectCode()."</tridas:genericField>\n";           
                     
                     if($format=="summary")
                     {

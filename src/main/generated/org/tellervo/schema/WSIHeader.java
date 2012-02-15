@@ -39,7 +39,7 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}securityUser" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}securityUser" minOccurs="0"/>
  *         &lt;element name="wsVersion" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="clientVersion" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="requestDate" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
@@ -59,9 +59,9 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  *           &lt;/complexType>
  *         &lt;/element>
  *         &lt;element name="requestUrl" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="requestType" type="{http://dendro.cornell.edu/schema/tellervo/1.0}tellervoRequestType"/>
- *         &lt;element name="status" type="{http://dendro.cornell.edu/schema/tellervo/1.0}tellervoRequestStatus"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}message" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="requestType" type="{http://www.tellervo.org/schema/tellervo/1.0}tellervoRequestType"/>
+ *         &lt;element name="status" type="{http://www.tellervo.org/schema/tellervo/1.0}tellervoRequestStatus"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}message" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="timing" maxOccurs="unbounded" minOccurs="0">
  *           &lt;complexType>
  *             &lt;simpleContent>
@@ -71,7 +71,7 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  *             &lt;/simpleContent>
  *           &lt;/complexType>
  *         &lt;/element>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}nonce" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}nonce" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

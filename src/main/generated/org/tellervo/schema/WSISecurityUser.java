@@ -44,7 +44,7 @@ import org.tridas.interfaces.IdAble;
  *       &lt;attribute name="firstName" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="lastName" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="isActive" type="{http://www.w3.org/2001/XMLSchema}boolean" />
- *       &lt;attribute name="memberOf" type="{http://dendro.cornell.edu/schema/tellervo/1.0}idList" />
+ *       &lt;attribute name="memberOf" type="{http://www.tellervo.org/schema/tellervo/1.0}idList" />
  *       &lt;attribute name="hashOfPassword" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>

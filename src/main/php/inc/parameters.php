@@ -1,7 +1,7 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
@@ -10,7 +10,7 @@
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 require_once('inc/dbEntity.php');
@@ -66,7 +66,7 @@ class searchParameters implements IParams
 
     function setParamsFromXMLRequest()
     {
-    	global $corinaNS;
+    	global $tellervoNS;
         global $tridasNS;
         global $firebug;
 	
@@ -80,7 +80,7 @@ class searchParameters implements IParams
 		// Get individual params
 		$paramsTags = $this->xmlRequestDom->getElementsByTagName("param");	
 		
-				// Create an array for translating the search parameters names into Corina database table and field names
+				// Create an array for translating the search parameters names into Tellervo database table and field names
 		$translationArray = array (		
 									'objectid' => 							array('tbl' => 'vwtblobject', 'field' => 'objectid'),
 									//'objectdbid' => 						array('tbl' => 'vwtblobject', 'field' => 'objectid'),                        
@@ -281,7 +281,7 @@ class permissionParameters extends permissionEntity implements IParams
     
     function setParamsFromXMLRequest()
     {
-    	global $corinaNS;
+    	global $tellervoNS;
         global $tridasNS;
 	global $firebug;
 
@@ -430,7 +430,7 @@ class objectParameters extends objectEntity implements IParams
     
     function setParamsFromXMLRequest()
     {
-		global $corinaNS;
+		global $tellervoNS;
         global $tridasNS;
 	
 
@@ -456,13 +456,13 @@ class objectParameters extends objectEntity implements IParams
 		    case "type": 				
 		   		if($child->hasAttribute("normalStd"))
 		   		{
-		   			if($child->getAttribute("normalStd")=="Corina")
+		   			if($child->getAttribute("normalStd")=="Tellervo")
 		   			{
 		   				$this->setType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
 		   			}
 		   			else
 		   			{
-		   				trigger_error("901"."Webservice only supports Corina vocabularies for element type", E_USER_ERROR);
+		   				trigger_error("901"."Webservice only supports Tellervo vocabularies for element type", E_USER_ERROR);
 		   				break;
 		   			}
 		   		}
@@ -512,9 +512,9 @@ class objectParameters extends objectEntity implements IParams
 		   		$value = $child->nodeValue;		   		
 		   		switch($name)
 		   		{	   			
-		   			case "corina.objectLabCode" : $this->setCode($value); break;
-		   			case "corina.countOfChildSeries" : break;
-		   			case "corina.mapLink" :		break;
+		   			case "tellervo.objectLabCode" : $this->setCode($value); break;
+		   			case "tellervo.countOfChildSeries" : break;
+		   			case "tellervo.mapLink" :		break;
 		   			
 		   			default:
 		   			trigger_error("901"."Unknown attribute type $name in the &lt;".$child->tagName."&gt; tag of the 'object'. This tag is being ignored", E_USER_NOTICE);
@@ -581,7 +581,7 @@ class elementParameters extends elementEntity implements IParams
 	
 	function setParamsFromXMLRequest()
 	{
-		global $corinaNS;
+		global $tellervoNS;
         global $tridasNS;
         global $taxonomicAuthorityEdition;
         global $firebug;
@@ -602,13 +602,13 @@ class elementParameters extends elementEntity implements IParams
 		   	case "type": 				
 		   		if($child->hasAttribute("normalStd"))
 		   		{
-		   			if($child->getAttribute("normalStd")=="Corina")
+		   			if($child->getAttribute("normalStd")=="Tellervo")
 		   			{
 		   				$this->setType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
 		   			}
 		   			else
 		   			{
-		   				trigger_error("901"."Webservice only supports Corina vocabularies for element type", E_USER_ERROR);
+		   				trigger_error("901"."Webservice only supports Tellervo vocabularies for element type", E_USER_ERROR);
 		   				break;
 		   			}
 		   		}
@@ -629,7 +629,7 @@ class elementParameters extends elementEntity implements IParams
 		   		}
 		   		else
 		   		{
-					trigger_error("901"."The Corina web service only supports taxonomic data that conforms to the '$taxonomicAuthorityEdition'.  Please normalise your data and try again.", E_USER_ERROR);
+					trigger_error("901"."The Tellervo web service only supports taxonomic data that conforms to the '$taxonomicAuthorityEdition'.  Please normalise your data and try again.", E_USER_ERROR);
 		   		}
 		   		break; 
 		   	case "shape": $this->setShape(null, $child->getAttribute("normalTridas")); break; 
@@ -768,18 +768,18 @@ class elementParameters extends elementEntity implements IParams
 		   				$this->setName($value);
 		   				break;
 		   			
-		   			case "corina.boxID":	
+		   			case "tellervo.boxID":	
 		   				$this->setBoxID($value);
 		   				break;
 		   				
 		   			// Ignore autogenerated fields
-		   			case "corina.kingdom":	break;
-		   			case "corina.phylum":	break;
-		   			case "corina.class":	break;
-		   			case "corina.order":	break;
-		   			case "corina.family":	break;
-		   			case "corina.genus":	break;
-		   			case "corina.species":	break;		   			
+		   			case "tellervo.kingdom":	break;
+		   			case "tellervo.phylum":	break;
+		   			case "tellervo.class":	break;
+		   			case "tellervo.order":	break;
+		   			case "tellervo.family":	break;
+		   			case "tellervo.genus":	break;
+		   			case "tellervo.species":	break;		   			
 		   			//default:
 		   			//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'element' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
 		   		}
@@ -842,7 +842,7 @@ class sampleParameters extends sampleEntity implements IParams
 	
     function setParamsFromXMLRequest()
     {
-		global $corinaNS;
+		global $tellervoNS;
         global $tridasNS;
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
@@ -861,13 +861,13 @@ class sampleParameters extends sampleEntity implements IParams
 		   	case "type": 				
 		   		if($child->hasAttribute("normalStd"))
 		   		{
-		   			if($child->getAttribute("normalStd")=="Corina")
+		   			if($child->getAttribute("normalStd")=="Tellervo")
 		   			{
 		   				$this->setType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
 		   			}
 		   			else
 		   			{
-		   				trigger_error("901"."Webservice only supports Corina vocabularies for sample type", E_USER_ERROR);
+		   				trigger_error("901"."Webservice only supports Tellervo vocabularies for sample type", E_USER_ERROR);
 		   				break;
 		   			}
 		   		}
@@ -886,7 +886,7 @@ class sampleParameters extends sampleEntity implements IParams
 		   		$value = $child->nodeValue;		   		
 		   		switch($name)
 		   		{	  
-		   			case "corina.boxID":
+		   			case "tellervo.boxID":
 		   				$this->setBoxID($value);
 		   				break; 			
 		   			default:
@@ -943,7 +943,7 @@ class radiusParameters extends radiusEntity implements IParams
     
     function setParamsFromXMLRequest()
     {
-		global $corinaNS;
+		global $tellervoNS;
         global $tridasNS;
         global $firebug;
 
@@ -1089,7 +1089,7 @@ class measurementParameters extends measurementEntity implements IParams
     
     function setParamsFromXMLRequest()
     {
-		global $corinaNS;
+		global $tellervoNS;
         global $tridasNS;
         global $firebug;
 
@@ -1132,7 +1132,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   					}
 		   					else
 		   					{
-		   						trigger_error("901"."Only identifier tags are currently supported in Corina.", E_USER_NOTICE);
+		   						trigger_error("901"."Only identifier tags are currently supported in Tellervo.", E_USER_NOTICE);
 		   					}
 		   				}
    					}
@@ -1204,41 +1204,41 @@ class measurementParameters extends measurementEntity implements IParams
 		   		$value = $child->nodeValue;		   		
 		   		switch($name)
 		   		{
-		   			case "corina.analystID":
+		   			case "tellervo.analystID":
 		   				$this->analyst->setParamsFromDB($value);
 		   				break;
 		   			
-		   			case "corina.dendrochronologistID":
+		   			case "tellervo.dendrochronologistID":
 		   				$this->dendrochronologist->setParamsFromDB($value);
 		   				break;
 
-		   			case "corina.authorID":
+		   			case "tellervo.authorID":
 		   				$this->setAuthor($value);
 		   				break;
 		   				
-		   			case "corina.justification":
+		   			case "tellervo.justification":
 		   				$this->setJustification($value);
 		   				break;
 		   			
-		   			case "corina.crossdateConfidenceLevel":
+		   			case "tellervo.crossdateConfidenceLevel":
 		   				$this->setConfidenceLevel($value);
 		   				break;
 		   				
-		   			case "corina.isReconciled":		   				
+		   			case "tellervo.isReconciled":		   				
 		   				$this->setIsReconciled($value);
 		   				break;
 		   				
-		   			case "corina.newStartYear":
+		   			case "tellervo.newStartYear":
 	   					$this->setNewStartYear($value);
 	   					break;	
 		   				
-		   			case "corina.newEndYear":
+		   			case "tellervo.newEndYear":
 		   				$this->setNewEndYear($value);	   					
 		   			  				
-		   			case "corina.directChildCount":		break;
-		   			case "corina.mapLink":				break;
-		   			case "corina.isPublished":			break;
-		   			case "corina.readingCount":			break;		   			
+		   			case "tellervo.directChildCount":		break;
+		   			case "tellervo.mapLink":				break;
+		   			case "tellervo.isPublished":			break;
+		   			case "tellervo.readingCount":			break;		   			
 		   				
 		   		}
 		   		break;
@@ -1315,7 +1315,7 @@ class measurementParameters extends measurementEntity implements IParams
 				   					}
 				   					else
 				   					{
-					   					// Corina or free text remark
+					   					// Tellervo or free text remark
 					   					$currReadingNote->setID($valuechild->getAttribute("normalId"));
 					   					$currReadingNote->setControlledVoc(null, $valuechild->getAttribute("normalStd"));
 					   					
@@ -1447,7 +1447,7 @@ class boxParameters extends boxEntity implements IParams
     
     function setParamsFromXMLRequest()
     {
-		global $corinaNS;
+		global $tellervoNS;
         global $tridasNS;
 	
 
@@ -1503,7 +1503,7 @@ class securityGroupParameters extends securityGroupEntity implements IParams
     function setParamsFromXMLRequest()
     {
     	global $firebug;
-		global $corinaNS;
+		global $tellervoNS;
         global $tridasNS;
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
@@ -1565,7 +1565,7 @@ class securityUserParameters extends securityUserEntity implements IParams
     function setParamsFromXMLRequest()
     {
     	global $firebug;
-		global $corinaNS;
+		global $tellervoNS;
         global $tridasNS;
 
         $children = $this->xmlRequestDom->documentElement->childNodes;

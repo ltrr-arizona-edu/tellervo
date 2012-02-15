@@ -11,12 +11,12 @@ if (!isset($argc))
 if ($argc != 2 || in_array($argv[1], array('--help', '-help', '-h', '-?'))) {
 	?>
 		
-This is a command line PHP script for extracting site location data from a Corina v1.1 site database file.
+This is a command line PHP script for extracting site location data from a Tellervo v1.1 site database file.
 
   Usage:
   <?php echo $argv[0]; ?> <infile>
 
-  <infile> if the Corina sitedb file that you want to process
+  <infile> if the Tellervo sitedb file that you want to process
   
   With the --help, -help, -h,
   or -? options, you can get this help.
@@ -30,7 +30,7 @@ $dbName = "gps";
 $table = $argv[1];
 
 // Postgres credentials file location
-$cdbCredentialsFile = "/home/aps03pwb/.corina_server_credentials";
+$cdbCredentialsFile = "/home/aps03pwb/.tellervo_server_credentials";
 
 
 $contents = str_replace("\n", "=", file_get_contents($cdbCredentialsFile));
@@ -41,7 +41,7 @@ $firstRun = true;
 
 //Set up database connection
 $conn_string = "host=dendro.cornell.edu port=5432 dbname=$dbName user=".$username." password=".$password;
-$conn_string2 = "host=dendro.cornell.edu port=5432 dbname=corina_dev user=".$username." password=".$password;
+$conn_string2 = "host=dendro.cornell.edu port=5432 dbname=tellervo_dev user=".$username." password=".$password;
 $dbconn = pg_connect ($conn_string);
 $dbconn2 = pg_connect ($conn_string2);
 

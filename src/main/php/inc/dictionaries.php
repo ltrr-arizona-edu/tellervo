@@ -1,13 +1,13 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.0
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 require_once('dbhelper.php');
@@ -122,7 +122,7 @@ class dictionaries
 	                	}
 	                	else
 	                	{
-	                    	$xmldata.= "<".$item." normalStd=\"Corina\" normalId=\"".$row['id']."\" normal=\"".dbHelper::escapeXMLChars($row['value'])."\"/>\n";
+	                    	$xmldata.= "<".$item." normalStd=\"Tellervo\" normalId=\"".$row['id']."\" normal=\"".dbHelper::escapeXMLChars($row['value'])."\"/>\n";
 	                	}
 	                }
                 }

@@ -1,6 +1,6 @@
 <?php
 //*******************************************************************
-////// PHP Corina Middleware
+////// PHP Tellervo Middleware
 ////// License: GPL
 ////// Author: Peter Brewer
 ////// E-Mail: p.brewer@cornell.edu
@@ -86,7 +86,7 @@ else
 	echo "<html>
 	<link rel=\"stylesheet\" href=\"css/weblogin.css\" type=\"text/css\" />
 	<link rel=\"stylesheet\" href=\"css/openLayersStyle.css\" type=\"text/css\" />
-	<div id=\"weblogin\"><h1>Corina login:</h1>
+	<div id=\"weblogin\"><h1>Tellervo login:</h1>
 	<br/>
 	<form method=\"POST\">
 	<table>
@@ -103,7 +103,7 @@ else
     die();
 }
 
-$xmldata = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<kml xmlns=\"http://earth.google.com/kml/2.1\">\n<Document>\n<name>Corina Map</name>\n";
+$xmldata = "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<kml xmlns=\"http://earth.google.com/kml/2.1\">\n<Document>\n<name>Tellervo Map</name>\n";
 $xmldata .= getTScoreStyle();
 
 $fullSQL = null;

@@ -7,10 +7,10 @@
 <form name="myform" method="post" action="webservice.php">
 <br/>
 XML:  <textarea name="xmlrequest" rows="20" cols="80">
-<corina>
+<tellervo>
 <request type="read">
 </request>
-</corina>
+</tellervo>
 
 </textarea><br/>
 
@@ -21,11 +21,11 @@ XML:  <textarea name="xmlrequest" rows="20" cols="80">
 
 <pre>
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;corina xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:tridas="http://www.tridas.org/1.3"&gt;
+&lt;tellervo xmlns="http://www.tellervo.org/schema/tellervo/1.0" xmlns:tridas="http://www.tridas.org/1.3"&gt;
   &lt;request type="plainlogin"&gt;
      &lt;authenticate username="yourusername" password="yourpassword" /&gt;
   &lt;/request&gt;
-&lt;/corina&gt;
+&lt;/tellervo&gt;
 </pre>
 
 
@@ -33,11 +33,11 @@ XML:  <textarea name="xmlrequest" rows="20" cols="80">
 
 <pre>
 &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
-&lt;corina xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:tridas="http://www.tridas.org/1.3"&gt;
+&lt;tellervo xmlns="http://www.tellervo.org/schema/tellervo/1.0" xmlns:tridas="http://www.tridas.org/1.3"&gt;
   &lt;request type="read"&gt;
      &lt;entity type="object" id="136a70a6-566b-546b-a3ae-c48cb046e4cd" /&gt;
   &lt;/request&gt;
-&lt;/corina&gt;
+&lt;/tellervo&gt;
 </pre>
 
 
@@ -45,13 +45,13 @@ XML:  <textarea name="xmlrequest" rows="20" cols="80">
 
 <pre>
 &lt;?xml version="1.0" encoding="UTF-8" ?&gt;
-&lt;corina xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:tridas="http://www.tridas.org/1.3"&gt;
+&lt;tellervo xmlns="http://www.tellervo.org/schema/tellervo/1.0" xmlns:tridas="http://www.tridas.org/1.3"&gt;
   &lt;request type="search"&gt;
      &lt;searchParams returnObject="measurementSeries" limit="5"&gt;
         &lt;param name="objectid" operator="=" value="136a70a6-566b-546b-a3ae-c48cb046e4cd" /&gt;
      &lt;/searchParams&gt;
   &lt;/request&gt;
-&lt;/corina&gt;
+&lt;/tellervo&gt;
 </pre>
 
 <h4>Example UUIDs</h4>

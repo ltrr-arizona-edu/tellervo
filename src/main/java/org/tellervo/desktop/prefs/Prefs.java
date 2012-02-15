@@ -216,7 +216,7 @@ public class Prefs extends AbstractSubsystem {
 	}
 
 	// returns the directory for storing Corina-related files...
-	public String getCorinaDir() {
+	public String getTellervoDir() {
 		return CORINADIR;
 	}
 

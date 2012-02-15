@@ -1,13 +1,13 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 
@@ -335,7 +335,7 @@ class dbHelper
 	    }
 	    else
 	    { 
-	        return "<link type=\"corina/xml\" object=\"$object\" id=\"$id\" url=\"https://$domain"."/$wspage\" />\n";
+	        return "<link type=\"tellervo/xml\" object=\"$object\" id=\"$id\" url=\"https://$domain"."/$wspage\" />\n";
 	    }
 	
 	}

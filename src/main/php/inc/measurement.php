@@ -1,13 +1,13 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  *
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 require_once('dbhelper.php');
@@ -70,7 +70,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		$this->setMeasuringUnits($row['unitid'], NULL, $row['power']);
 		$this->setVariable($row['measurementvariableid'], NULL);		
 
-		// Generic Fields (Corina specific)
+		// Generic Fields (Tellervo specific)
 		$this->setJustification($row['justification']);
 		$this->setConfidenceLevel($row['confidence']);		
 		$this->setIsPublished(dbHelper::formatBool($row['ispublished']));
@@ -89,7 +89,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		$this->setReadingCount($row['readingcount']);	
 		$this->setDirectChildCount($row['directchildcount']);
 		
-		// Corina specific backend fields
+		// Tellervo specific backend fields
 		$this->setMasterVMeasurementID($row['mastervmeasurementid']);
 		$this->setMeasurementID($row['measurementid']);
 		
@@ -169,7 +169,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	{
 		require_once('radius.php');
 		global $dbconn;
-		global $corinaNS;
+		global $tellervoNS;
 		global $tridasNS;
 		global $gmlNS;
 
@@ -420,7 +420,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
 		if (sizeof($paramsClass->readingsArray)>0)     $this->setReadingsArray($paramsClass->readingsArray);
 		
-		// Corina specific genericFields
+		// Tellervo specific genericFields
 		if ($paramsClass->getIsReconciled()!=NULL)         	$this->setIsReconciled($paramsClass->getIsReconciled());
 		if ($paramsClass->getMasterVMeasurementID()!=NULL)  $this->setMasterVMeasurementID($paramsClass->getMasterVMeasurementID());
 		if ($paramsClass->getJustification()!=NULL)			$this->setJustification($paramsClass->getJustification());
@@ -781,11 +781,11 @@ class measurement extends measurementEntity implements IDBAccessor
 
 	function textAsNode($text, $dom)
 	{
-		global $corinaNS;
+		global $tellervoNS;
 		global $tridasNS;
 		global $gmlNS;
 
-		$domhead = "<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">";
+		$domhead = "<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">";
 		$domfoot = "</root>";
 
 		$tmpdom = new DomDocument();
@@ -852,7 +852,7 @@ class measurement extends measurementEntity implements IDBAccessor
 
 	function fullSeriesAsXML($format='standard')
 	{
-		global $corinaNS;
+		global $tellervoNS;
 		global $tridasNS;
 		global $gmlNS;
 		global $xlinkNS;
@@ -873,7 +873,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		$this->buildDerivationTrees($direct, $objectToElementMap, $elementTree, $objectTree, $all, $boxes);
 
 		$dom = new DomDocument();
-		$dom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\" xmlns:xlink=\"$xlinkNS\"></root>");
+		$dom->loadXML("<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\" xmlns:xlink=\"$xlinkNS\"></root>");
 		$this->outputDerivationTree($dom, $dom->documentElement, $objectTree, $elementTree, $objectToElementMap, $all, $format);
 		
 		// now, just print out the derivedSeries in order. $this is going to be last.
@@ -960,7 +960,7 @@ class measurement extends measurementEntity implements IDBAccessor
 					<tr><td><b>Death Year:</b></td><td> ".$this->getDeathYear()."</td></tr>
 					</table>
 					<br><b>Other comments:</b><br> ".$this->getComments()."]]></description>";
-		$kml .= "<styleUrl>#corinaDefault</styleUrl>";
+		$kml .= "<styleUrl>#tellervoDefault</styleUrl>";
 			
 
 			
@@ -1082,7 +1082,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	}
 
 	/**
-	 * Get the Corina specific (genericField) XML tags that summarise the higher levels of the TRiDaS hierarchy
+	 * Get the Tellervo specific (genericField) XML tags that summarise the higher levels of the TRiDaS hierarchy
 	 *
 	 * @return String
 	 */
@@ -1097,16 +1097,16 @@ class measurement extends measurementEntity implements IDBAccessor
 			{
 				$keycode=dbHelper::escapeXMLChars($object->getCode());
 			}
-			$tags .= "<tridas:genericField name=\"corina.objectTitle.$i\" type=\"xs:string\">".dbHelper::escapeXMLChars($object->getTitle())."</tridas:genericField>\n";
-			$tags .= "<tridas:genericField name=\"corina.objectCode.$i\" type=\"xs:string\">".dbHelper::escapeXMLChars($object->getCode())."</tridas:genericField>\n";
+			$tags .= "<tridas:genericField name=\"tellervo.objectTitle.$i\" type=\"xs:string\">".dbHelper::escapeXMLChars($object->getTitle())."</tridas:genericField>\n";
+			$tags .= "<tridas:genericField name=\"tellervo.objectCode.$i\" type=\"xs:string\">".dbHelper::escapeXMLChars($object->getCode())."</tridas:genericField>\n";
 			$i++;
 		}
-		$tags.= "<tridas:genericField name=\"corina.elementTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryElementTitle())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.sampleTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummarySampleTitle())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.radiusTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryRadiusTitle())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.seriesCount\" type=\"xs:int\">".dbHelper::escapeXMLChars($this->getMeasurementCount())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.summaryTaxonName\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryTaxonName())."</tridas:genericField>\n";
-		$tags.= "<tridas:genericField name=\"corina.summaryTaxonCount\" type=\"xs:int\">".dbHelper::escapeXMLChars($this->getSummaryTaxonCount())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"tellervo.elementTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryElementTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"tellervo.sampleTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummarySampleTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"tellervo.radiusTitle\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryRadiusTitle())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"tellervo.seriesCount\" type=\"xs:int\">".dbHelper::escapeXMLChars($this->getMeasurementCount())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"tellervo.summaryTaxonName\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryTaxonName())."</tridas:genericField>\n";
+		$tags.= "<tridas:genericField name=\"tellervo.summaryTaxonCount\" type=\"xs:int\">".dbHelper::escapeXMLChars($this->getSummaryTaxonCount())."</tridas:genericField>\n";
 		
 		if($includeKeycode===TRUE)
 		{
@@ -1147,17 +1147,17 @@ class measurement extends measurementEntity implements IDBAccessor
 
 		$xml .= $this->getInterpretationXML();
 		
-		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"corina.justification\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getJustification())."</tridas:genericField>\n";
-		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"corina.crossdateConfidenceLevel\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getConfidenceLevel())."</tridas:genericField>\n";
-		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"corina.operationParameter\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getIndexNameFromParamID($this->vmeasurementOpParam))."</tridas:genericField>\n";
-		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"corina.authorID\" type=\"xs:int\">".dbhelper::escapeXMLChars($this->author->getID())."</tridas:genericField>\n";
-	    											$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
+		if($this->getJustification()!=NULL)			$xml.= "<tridas:genericField name=\"tellervo.justification\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getJustification())."</tridas:genericField>\n";
+		if($this->getConfidenceLevel()!=NULL)		$xml.= "<tridas:genericField name=\"tellervo.crossdateConfidenceLevel\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getConfidenceLevel())."</tridas:genericField>\n";
+		if(isset($this->vmeasurementOpParam))       $xml.= "<tridas:genericField name=\"tellervo.operationParameter\" type=\"xs:string\">".dbhelper::escapeXMLChars($this->getIndexNameFromParamID($this->vmeasurementOpParam))."</tridas:genericField>\n";
+		if($this->getAuthor()!=NULL)				$xml.= "<tridas:genericField name=\"tellervo.authorID\" type=\"xs:int\">".dbhelper::escapeXMLChars($this->author->getID())."</tridas:genericField>\n";
+	    											$xml.= "<tridas:genericField name=\"tellervo.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
 		
 		$xml .= $this->getPermissionsXML();
-		//if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
+		//if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"tellervo.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
 		
-		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
-		$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:int\">".$this->getDirectChildCount()."</tridas:genericField>\n";
+		if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"tellervo.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
+		$xml.= "<tridas:genericField name=\"tellervo.directChildCount\" type=\"xs:int\">".$this->getDirectChildCount()."</tridas:genericField>\n";
 
 		$xml.= $this->getSummaryXMLTags();
 
@@ -1208,15 +1208,15 @@ class measurement extends measurementEntity implements IDBAccessor
 				
 			// Include permissions details if requested
 			$xml .= $this->getPermissionsXML();
-			//if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
+			//if($this->hasGeometry())				$xml.= "<tridas:genericField name=\"tellervo.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
 			
-			if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->isReconciled, "english")."</tridas:genericField>\n";
-			if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"corina.isPublished\" type=\"xs:boolean\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
-			if($this->analyst->getID()!=NULL)			$xml.= "<tridas:genericField name=\"corina.analystID\" type=\"xs:int\">".$this->analyst->getID()."</tridas:genericField>\n";
-			if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"corina.dendrochronologistID\" type=\"xs:int\">".$this->dendrochronologist->getID()."</tridas:genericField>\n";
-			if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"corina.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
-														$xml.= "<tridas:genericField name=\"corina.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
-					$xml.= "<tridas:genericField name=\"corina.directChildCount\" type=\"xs:int\">".$this->getDirectChildCount()."</tridas:genericField>\n";
+			if($this->getIsReconciled()!=NULL)    		$xml.= "<tridas:genericField name=\"tellervo.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->isReconciled, "english")."</tridas:genericField>\n";
+			if(isset($this->isPublished))           	$xml.= "<tridas:genericField name=\"tellervo.isPublished\" type=\"xs:boolean\">".dbHelper::formatBool($this->isPublished, "english")."</tridas:genericField>\n";
+			if($this->analyst->getID()!=NULL)			$xml.= "<tridas:genericField name=\"tellervo.analystID\" type=\"xs:int\">".$this->analyst->getID()."</tridas:genericField>\n";
+			if($this->dendrochronologist->getID()!=NULL) $xml.= "<tridas:genericField name=\"tellervo.dendrochronologistID\" type=\"xs:int\">".$this->dendrochronologist->getID()."</tridas:genericField>\n";
+			if($this->getReadingCount()!=NULL)			$xml.= "<tridas:genericField name=\"tellervo.readingCount\" type=\"xs:int\">".$this->getReadingCount()."</tridas:genericField>\n";
+														$xml.= "<tridas:genericField name=\"tellervo.isReconciled\" type=\"xs:boolean\">".dbHelper::formatBool($this->getIsReconciled(), 'english')."</tridas:genericField>\n";
+					$xml.= "<tridas:genericField name=\"tellervo.directChildCount\" type=\"xs:int\">".$this->getDirectChildCount()."</tridas:genericField>\n";
 														
 			// show summary information in standard and summary modes
 			/*if($format=="summary" || $format=="standard") {
@@ -1329,7 +1329,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		// Set variable and units
 		if($type=='wj')
 		{
-			$xml .="<tridas:variable normalStd=\"Corina\" normal=\"Weiserjahre\"/>\n";
+			$xml .="<tridas:variable normalStd=\"Tellervo\" normal=\"Weiserjahre\"/>\n";
 			$xml.="<tridas:unitless/>\n";
 		}
 		else if ($type=='val')

@@ -26,6 +26,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.FlowLayout;
+import java.awt.FocusTraversalPolicy;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -36,6 +37,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.ArrayList;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -82,7 +85,7 @@ public class LoginDialog extends JDialog {
 	private JLabel lblTitle;
 	private boolean cancelled = true;
 	private boolean ignoreSavedInfo = false;
-
+	private LoginFocusTraversalPolicy focusPolicy;
 	
 	public LoginDialog(Frame frame) {
 		super(frame, true);
@@ -310,9 +313,21 @@ public class LoginDialog extends JDialog {
 		username.addFocusListener(focusListener);
 		password.addFocusListener(focusListener);
 		
+		ArrayList<Component> order = new ArrayList<Component>(7);
+		
+		order.add(username);
+		order.add(password);
+		order.add(loginButton);
+		
+		focusPolicy = new LoginFocusTraversalPolicy(order);
+		setFocusTraversalPolicy(focusPolicy);		
+		
 		// finally, make it so when we press enter we choose to log in
 		getRootPane().setDefaultButton(loginButton);
 		setLocationRelativeTo(null);
+		
+		
+		
 	}
 	
 	/**
@@ -415,7 +430,8 @@ public class LoginDialog extends JDialog {
 		// remember the username? load it.
 		if(App.prefs.getBooleanPref(PrefKey.REMEMBER_USERNAME, true)) {
 			rememberUsername.setSelected(true);
-			username.setText(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, ""));			
+			username.setText(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, ""));		
+			focusPolicy.setDefaultComponent(password);
 		} else {
 			rememberUsername.setSelected(false);
 		}
@@ -423,7 +439,8 @@ public class LoginDialog extends JDialog {
 		// remember the password? load it.
 		if(App.prefs.getBooleanPref(PrefKey.REMEMBER_PASSWORD, false)) {
 			rememberPassword.setSelected(true);
-			password.setText(decryptPassword(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_PASSWORD, "").toCharArray()));			
+			password.setText(decryptPassword(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_PASSWORD, "").toCharArray()));
+			focusPolicy.setDefaultComponent(loginButton);
 		} else {
 			rememberPassword.setSelected(false);
 		}

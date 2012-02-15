@@ -63,8 +63,8 @@ public class WSCookieStoreHandler {
 			return cs;
 			
 		} catch(IOException ioe) {
-			log.error("Failed to load cookie store: " + getStorePath());
-			ioe.printStackTrace();
+			log.error("Failed to load cookie store: " + getStorePath()+ "  - file does not exist or is not readable");
+			//ioe.printStackTrace();
 		} catch(ClassNotFoundException cnfe) {
 			// err??
 			// ignore, I suppose
@@ -92,6 +92,6 @@ public class WSCookieStoreHandler {
 	}
 	
 	private static String getStorePath() {
-		return App.prefs.getCorinaDir() + "WebCookieStore";
+		return App.prefs.getTellervoDir() + "WebCookieStore";
 	}
 }

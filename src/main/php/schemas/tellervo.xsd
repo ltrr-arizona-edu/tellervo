@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns="http://dendro.cornell.edu/schema/corina/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.2.2" targetNamespace="http://dendro.cornell.edu/schema/corina/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns="http://www.tellervo.org/schema/tellervo/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.2.2" targetNamespace="http://www.tellervo.org/schema/tellervo/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!--
 %%%%%%%%%%%%%%
 %		EXTERNAL SCHEMAS	
@@ -48,7 +48,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="corinaRequestType">
+	<xs:simpleType name="tellervoRequestType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="create"/>
 			<xs:enumeration value="read"/>
@@ -67,7 +67,7 @@
 		</xs:restriction>	
 	</xs:simpleType>
 
-	<xs:simpleType name="corinaRequestFormat">
+	<xs:simpleType name="tellervoRequestFormat">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="standard"/>
 			<xs:enumeration value="summary"/>
@@ -76,7 +76,7 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-	<xs:simpleType name="corinaRequestStatus">
+	<xs:simpleType name="tellervoRequestStatus">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="OK"/>
 			<xs:enumeration value="Warning"/>
@@ -245,7 +245,7 @@
 %%%%%%%%%%%%%%
 %		ROOT
 %%%%%%%%%%%%%% -->
-	<xs:element name="corina">
+	<xs:element name="tellervo">
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
@@ -341,8 +341,8 @@
 					</xs:element>
 				</xs:sequence>
 			</xs:choice>
-			<xs:attribute name="type" type="corinaRequestType"/>
-			<xs:attribute name="format" type="corinaRequestFormat"/>
+			<xs:attribute name="type" type="tellervoRequestType"/>
+			<xs:attribute name="format" type="tellervoRequestFormat"/>
 			<xs:attribute name="parentEntityID" type="xs:token"/>
 			<xs:attribute name="mergeWithID" type="xs:token"/>
 		</xs:complexType>
@@ -374,8 +374,8 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="requestUrl" type="xs:string"/>
-				<xs:element name="requestType" type="corinaRequestType"/>
-				<xs:element name="status" type="corinaRequestStatus"/>
+				<xs:element name="requestType" type="tellervoRequestType"/>
+				<xs:element name="status" type="tellervoRequestStatus"/>
 				<xs:element ref="message" minOccurs="0" maxOccurs="unbounded"/>
                                 <xs:element name="timing" minOccurs="0" maxOccurs="unbounded">
                                         <xs:complexType>
@@ -408,6 +408,7 @@
 				<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded" />
 
                 <xs:element ref="objectTypeDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="elementTypeDictionary" minOccurs="0" maxOccurs="1"/>
@@ -701,7 +702,7 @@
 	<xs:element name="permission">
 		<xs:annotation>
 			<xs:documentation>
-				Contains access information for the Corina database  
+				Contains access information for the Tellervo database  
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -710,6 +711,7 @@
 				<xs:element name="permissionToRead" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="permissionToUpdate" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="permissionToDelete" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="permissionDenied" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
 				<xs:element name="entity" minOccurs="1" maxOccurs="unbounded">
 					<xs:complexType>
 						<xs:attribute name="type" type="permissionsEntityType" use="required"/>
@@ -751,7 +753,7 @@
 	<xs:element name="securityUser" >
 		<xs:annotation>
 			<xs:documentation>
-				A user in the Corina database
+				A user in the Tellervo database
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
@@ -774,7 +776,7 @@
 	<xs:element name="securityGroup">
 	<xs:annotation>
 			<xs:documentation>
-				A group in the Corina database
+				A group in the Tellervo database
 			</xs:documentation>
 		</xs:annotation>		
 		<xs:complexType>

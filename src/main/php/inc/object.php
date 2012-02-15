@@ -1,13 +1,13 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.0
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 require_once('dbhelper.php');
@@ -229,13 +229,13 @@ class object extends objectEntity implements IDBAccessor
         case "comprehensive":
             require_once('object.php');
             global $dbconn;
-	        global $corinaNS;
+	        global $tellervoNS;
 	        global $tridasNS;
 	        global $gmlNS;
 
 	        // Create a DOM Document to hold the XML as it's produced
             $xml = new DomDocument();
-    		$xml->loadXML("<object xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\"></object>");
+    		$xml->loadXML("<object xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\"></object>");
     		$xml->formatOutput = true;
 
     	    $myParentObjectArray = Array();
@@ -260,7 +260,7 @@ class object extends objectEntity implements IDBAccessor
 				foreach($myParentObjectArray as $obj)
 				{
 					$dom = new DomDocument();
-					$dom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$obj->asXML()."</root>");
+					$dom->loadXML("<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$obj->asXML()."</root>");
 					$dom->formatOutput = true;
 					
 					$objnode = $dom->getElementsByTagName("object")->item(0);
@@ -303,13 +303,13 @@ class object extends objectEntity implements IDBAccessor
 		<b>Location type:</b> ".dbHelper::escapeXMLChars($this->location->getType())."\n<br>
 		<b>Associated series:</b> ".$this->getCountOfChildVMeasurements()."<br>
 		<b>Description</b>: ".dbHelper::escapeXMLChars($this->getDescription())."\n]]></description>\n";
-		$kml .= "<styleUrl>#corinaDefault</styleUrl>\n";
+		$kml .= "<styleUrl>#tellervoDefault</styleUrl>\n";
 		$kml .= $this->location->asKML();
 		$kml .= "</Placemark>\n";
 		if($this->location->asKML(2, "POLYGON")!=NULL)
 		{
 			$kml .= "<Placemark>\n<name>Extent of ".$this->getTitle()."</name>\n";
-			$kml .= "<styleUrl>#corinaDefault</styleUrl>\n";
+			$kml .= "<styleUrl>#tellervoDefault</styleUrl>\n";
 			$kml .= $this->location->asKML(2, "POLYGON");
 			$kml .= "</Placemark>\n";
 		}
@@ -355,7 +355,7 @@ class object extends objectEntity implements IDBAccessor
             	$xml.= "<tridas:object>\n";
                 $xml.= $this->getIdentifierXML(); 
                 if($this->getComments()!=NULL)		$xml.= "<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";    
-                									$xml.= "<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Corina\" />\n";        	
+                									$xml.= "<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Tellervo\" />\n";        	
             	if($this->getDescription()!=NULL)	$xml.= "<tridas:description>".dbHelper::escapeXMLChars($this->getDescription())."</tridas:description>";
                	if($this->getCreator()!=NULL)		$xml.= "<tridas:creator>".dbHelper::escapeXMLChars($this->getCreator())."</tridas:creator>";
             	if($this->getOwner()!=NULL)			$xml.= "<tridas:owner>".dbHelper::escapeXMLChars($this->getOwner())."</tridas:owner>";         	
@@ -370,9 +370,9 @@ class object extends objectEntity implements IDBAccessor
             		$xml .="</tridas:coverage>";
             	}
             	if($this->hasGeometry()) 			$xml.= $this->location->asXML();
-            	if($this->hasGeometry())			$xml.="<tridas:genericField name=\"corina.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
-            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"corina.objectLabCode\" type=\"xs:string\">".$this->getCode()."</tridas:genericField>\n";
-            	if($this->getCountOfChildVMeasurements()!=NULL) $xml.="<tridas:genericField name=\"corina.countOfChildSeries\" type=\"xs:int\">".$this->getCountOfChildVMeasurements()."</tridas:genericField>\n";
+            	if($this->hasGeometry())			$xml.="<tridas:genericField name=\"tellervo.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
+            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"tellervo.objectLabCode\" type=\"xs:string\">".$this->getCode()."</tridas:genericField>\n";
+            	if($this->getCountOfChildVMeasurements()!=NULL) $xml.="<tridas:genericField name=\"tellervo.countOfChildSeries\" type=\"xs:int\">".$this->getCountOfChildVMeasurements()."</tridas:genericField>\n";
             	
             
             }  

@@ -1,7 +1,7 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
@@ -10,7 +10,7 @@
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 require_once("inc/parameters.php");
@@ -109,8 +109,8 @@ class request
      */
     function validateXML($xmlrequest)
     {
-        global $corinaXSD;
-        global $corinaNS;
+        global $tellervoXSD;
+        global $tellervoNS;
         global $tridasNS;
     	global $myMetaHeader;
     	global $myAuth;      
@@ -141,7 +141,7 @@ class request
    		}        
         
         // Do the validation
-        if($doc->schemaValidate($corinaXSD))
+        if($doc->schemaValidate($tellervoXSD))
         {      
         	$this->xmlrequest = $xmlrequest;
             $this->xmlRequestDom = $doc;
@@ -216,12 +216,12 @@ class request
     function createParamObjects()
     {
         global $domain;
-        global $corinaNS;
+        global $tellervoNS;
         global $tridasNS;
         global $firebug;
 
         $xpath = new DOMXPath($this->xmlRequestDom);
-       	$xpath->registerNamespace('cor', $corinaNS);
+       	$xpath->registerNamespace('cor', $tellervoNS);
        	$xpath->registerNamespace('tridas', $tridasNS);
         
        	$firebug->log($this->crudMode, "CRUD Mode");
@@ -365,7 +365,7 @@ class request
             $requestTag = $this->xmlRequestDom->getElementsByTagName("request")->item(0);
             if($requestTag!=NULL) $parentID = $requestTag->getAttribute("parentEntityID");
 			
-        	$fragment = $xpath->query("/cor:corina/cor:request/*");
+        	$fragment = $xpath->query("/cor:tellervo/cor:request/*");
 
 
             foreach ($fragment as $item)

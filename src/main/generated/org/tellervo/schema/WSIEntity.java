@@ -35,7 +35,7 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="type" type="{http://dendro.cornell.edu/schema/tellervo/1.0}entityType" />
+ *       &lt;attribute name="type" type="{http://www.tellervo.org/schema/tellervo/1.0}entityType" />
  *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}token" />
  *     &lt;/restriction>
  *   &lt;/complexContent>

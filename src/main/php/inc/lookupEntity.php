@@ -1,7 +1,7 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
@@ -10,7 +10,7 @@
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 
@@ -240,7 +240,7 @@ class unit extends lookupEntity
 	
 	/**
 	 * This is a helper function to deal with the units of readings. 
-     * Internally Corina uses microns as this is (hopefully) the smallest 
+     * Internally Tellervo uses microns as this is (hopefully) the smallest 
      * unit required in dendro
      * 
      * To use default units set $inputUnits or $outputUnits to "db-default"

@@ -1,13 +1,13 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 
@@ -48,9 +48,9 @@ class geometry
 				
 		// Wrap GML tags in root elements
 		$start = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>".
-				 "<corina xmlns=\"$gmlNS\">".
+				 "<tellervo xmlns=\"$gmlNS\">".
     			 "<featureMember>\n";
-    	$end =  "</featureMember></corina>"; 
+    	$end =  "</featureMember></tellervo>"; 
         $doc = new DomDocument;
         $doc->loadXML($start.$gml.$end);
 

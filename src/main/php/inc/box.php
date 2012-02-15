@@ -1,13 +1,13 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
+ * PHP Tellervo Middleware
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 
@@ -247,7 +247,7 @@ class box extends boxEntity implements IDBAccessor
         case "comprehensive":
             require_once('sample.php');
             global $dbconn;
-	        global $corinaNS;
+	        global $tellervoNS;
 	        global $tridasNS;
 	        global $gmlNS;
 	        
@@ -263,18 +263,18 @@ class box extends boxEntity implements IDBAccessor
             // Grab the XML representation of the immediate parent using the 'comprehensive'
             // attribute so that we get all the object ancestors formatted correctly                   
             $xml = new DomDocument();   
-    		$xml->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->parentEntityArray[0]->asXML('comprehensive')."</root>");                   
+    		$xml->loadXML("<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->parentEntityArray[0]->asXML('comprehensive')."</root>");                   
 
     		// We need to locate the leaf tridas:sample (one with no child sample)
     		// because we need to insert our sample xml here
 	        $xpath = new DOMXPath($xml);
-	       	$xpath->registerNamespace('cor', $corinaNS);
+	       	$xpath->registerNamespace('cor', $tellervoNS);
 	       	$xpath->registerNamespace('tridas', $tridasNS);		    		
     		$nodelist = $xpath->query("//tridas:sample[* and not(descendant::tridas:sample)]");
 
     		// Create a temporary DOM document to store our element XML
     		$tempdom = new DomDocument();
-			$tempdom->loadXML("<root xmlns=\"$corinaNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
+			$tempdom->loadXML("<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
    		
 			// Import and append the radius XML node into the main XML DomDocument
 			$node = $tempdom->getElementsByTagName("radius")->item(0);

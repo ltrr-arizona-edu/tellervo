@@ -50,30 +50,30 @@ import org.tridas.util.TridasObjectEx;
  *         &lt;element ref="{http://www.tridas.org/1.2.2}radius" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.2.2}measurementSeries" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://www.tridas.org/1.2.2}derivedSeries" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}box" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}securityGroup" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}permission" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}objectTypeDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}elementTypeDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}sampleTypeDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}coverageTemporalDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}coverageTemporalFoundationDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}locationTypeDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}elementAuthenticityDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}elementShapeDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}sapwoodDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}heartwoodDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}measurementVariableDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}datingTypeDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}taxonDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}regionDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}readingNoteDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}securityUserDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}securityGroupDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}boxDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}configurationDictionary" minOccurs="0"/>
- *         &lt;element ref="{http://dendro.cornell.edu/schema/tellervo/1.0}wmsServerDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}box" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}securityGroup" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}permission" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}objectTypeDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}elementTypeDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}sampleTypeDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}coverageTemporalDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}coverageTemporalFoundationDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}locationTypeDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}elementAuthenticityDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}elementShapeDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}sapwoodDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}heartwoodDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}measurementVariableDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}datingTypeDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}taxonDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}regionDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}readingNoteDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}securityUserDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}securityGroupDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}boxDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}configurationDictionary" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}wmsServerDictionary" minOccurs="0"/>
  *       &lt;/choice>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -93,37 +93,37 @@ public class WSIContent
 
     private final static long serialVersionUID = 1001L;
     @XmlElements({
+        @XmlElement(name = "wmsServerDictionary", type = WSIWmsServerDictionary.class),
+        @XmlElement(name = "securityGroupDictionary", type = WSISecurityGroupDictionary.class),
+        @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.2.2", type = TridasSample.class),
+        @XmlElement(name = "locationTypeDictionary", type = WSILocationTypeDictionary.class),
+        @XmlElement(name = "datingTypeDictionary", type = WSIDatingTypeDictionary.class),
+        @XmlElement(name = "securityUserDictionary", type = WSISecurityUserDictionary.class),
+        @XmlElement(name = "objectTypeDictionary", type = WSIObjectTypeDictionary.class),
+        @XmlElement(name = "measurementVariableDictionary", type = WSIMeasurementVariableDictionary.class),
+        @XmlElement(name = "sapwoodDictionary", type = WSISapwoodDictionary.class),
+        @XmlElement(name = "heartwoodDictionary", type = WSIHeartwoodDictionary.class),
+        @XmlElement(name = "coverageTemporalFoundationDictionary", type = WSICoverageTemporalFoundationDictionary.class),
         @XmlElement(name = "securityUser", type = WSISecurityUser.class),
         @XmlElement(name = "element", namespace = "http://www.tridas.org/1.2.2", type = TridasElement.class),
-        @XmlElement(name = "datingTypeDictionary", type = WSIDatingTypeDictionary.class),
-        @XmlElement(name = "coverageTemporalDictionary", type = WSICoverageTemporalDictionary.class),
-        @XmlElement(name = "sampleTypeDictionary", type = WSISampleTypeDictionary.class),
-        @XmlElement(name = "elementShapeDictionary", type = WSIElementShapeDictionary.class),
-        @XmlElement(name = "readingNoteDictionary", type = WSIReadingNoteDictionary.class),
-        @XmlElement(name = "sample", namespace = "http://www.tridas.org/1.2.2", type = TridasSample.class),
-        @XmlElement(name = "elementAuthenticityDictionary", type = WSIElementAuthenticityDictionary.class),
-        @XmlElement(name = "securityGroupDictionary", type = WSISecurityGroupDictionary.class),
-        @XmlElement(name = "objectTypeDictionary", type = WSIObjectTypeDictionary.class),
-        @XmlElement(name = "permission", type = WSIPermission.class),
-        @XmlElement(name = "heartwoodDictionary", type = WSIHeartwoodDictionary.class),
-        @XmlElement(name = "securityUserDictionary", type = WSISecurityUserDictionary.class),
-        @XmlElement(name = "wmsServerDictionary", type = WSIWmsServerDictionary.class),
-        @XmlElement(name = "configurationDictionary", type = WSIConfigurationDictionary.class),
-        @XmlElement(name = "regionDictionary", type = WSIRegionDictionary.class),
         @XmlElement(name = "elementTypeDictionary", type = WSIElementTypeDictionary.class),
-        @XmlElement(name = "measurementVariableDictionary", type = WSIMeasurementVariableDictionary.class),
-        @XmlElement(name = "derivedSeries", namespace = "http://www.tridas.org/1.2.2", type = TridasDerivedSeries.class),
-        @XmlElement(name = "measurementSeries", namespace = "http://www.tridas.org/1.2.2", type = TridasMeasurementSeries.class),
-        @XmlElement(name = "sql"),
-        @XmlElement(name = "securityGroup", type = WSISecurityGroup.class),
-        @XmlElement(name = "radius", namespace = "http://www.tridas.org/1.2.2", type = TridasRadius.class),
+        @XmlElement(name = "permission", type = WSIPermission.class),
         @XmlElement(name = "box", type = WSIBox.class),
+        @XmlElement(name = "taxonDictionary", type = WSITaxonDictionary.class),
+        @XmlElement(name = "radius", namespace = "http://www.tridas.org/1.2.2", type = TridasRadius.class),
+        @XmlElement(name = "securityGroup", type = WSISecurityGroup.class),
+        @XmlElement(name = "coverageTemporalDictionary", type = WSICoverageTemporalDictionary.class),
+        @XmlElement(name = "measurementSeries", namespace = "http://www.tridas.org/1.2.2", type = TridasMeasurementSeries.class),
+        @XmlElement(name = "sampleTypeDictionary", type = WSISampleTypeDictionary.class),
+        @XmlElement(name = "regionDictionary", type = WSIRegionDictionary.class),
+        @XmlElement(name = "elementAuthenticityDictionary", type = WSIElementAuthenticityDictionary.class),
+        @XmlElement(name = "configurationDictionary", type = WSIConfigurationDictionary.class),
+        @XmlElement(name = "elementShapeDictionary", type = WSIElementShapeDictionary.class),
         @XmlElement(name = "object", namespace = "http://www.tridas.org/1.2.2", type = TridasObjectEx.class),
+        @XmlElement(name = "sql"),
         @XmlElement(name = "boxDictionary", type = WSIBoxDictionary.class),
-        @XmlElement(name = "locationTypeDictionary", type = WSILocationTypeDictionary.class),
-        @XmlElement(name = "sapwoodDictionary", type = WSISapwoodDictionary.class),
-        @XmlElement(name = "coverageTemporalFoundationDictionary", type = WSICoverageTemporalFoundationDictionary.class),
-        @XmlElement(name = "taxonDictionary", type = WSITaxonDictionary.class)
+        @XmlElement(name = "readingNoteDictionary", type = WSIReadingNoteDictionary.class),
+        @XmlElement(name = "derivedSeries", namespace = "http://www.tridas.org/1.2.2", type = TridasDerivedSeries.class)
     })
     protected List<Object> sqlsAndObjectsAndElements;
 
@@ -145,37 +145,37 @@ public class WSIContent
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link WSIWmsServerDictionary }
+     * {@link WSISecurityGroupDictionary }
+     * {@link TridasSample }
+     * {@link WSILocationTypeDictionary }
+     * {@link WSIDatingTypeDictionary }
+     * {@link WSISecurityUserDictionary }
+     * {@link WSIObjectTypeDictionary }
+     * {@link WSIMeasurementVariableDictionary }
+     * {@link WSISapwoodDictionary }
+     * {@link WSIHeartwoodDictionary }
+     * {@link WSICoverageTemporalFoundationDictionary }
      * {@link WSISecurityUser }
      * {@link TridasElement }
-     * {@link WSIDatingTypeDictionary }
-     * {@link WSICoverageTemporalDictionary }
-     * {@link WSISampleTypeDictionary }
-     * {@link WSIElementShapeDictionary }
-     * {@link WSIReadingNoteDictionary }
-     * {@link TridasSample }
-     * {@link WSIElementAuthenticityDictionary }
-     * {@link WSISecurityGroupDictionary }
-     * {@link WSIObjectTypeDictionary }
-     * {@link WSIPermission }
-     * {@link WSIHeartwoodDictionary }
-     * {@link WSISecurityUserDictionary }
-     * {@link WSIWmsServerDictionary }
-     * {@link WSIConfigurationDictionary }
-     * {@link WSIRegionDictionary }
      * {@link WSIElementTypeDictionary }
-     * {@link WSIMeasurementVariableDictionary }
-     * {@link TridasDerivedSeries }
-     * {@link TridasMeasurementSeries }
-     * {@link Object }
-     * {@link WSISecurityGroup }
-     * {@link TridasRadius }
+     * {@link WSIPermission }
      * {@link WSIBox }
-     * {@link TridasObject }
-     * {@link WSIBoxDictionary }
-     * {@link WSILocationTypeDictionary }
-     * {@link WSISapwoodDictionary }
-     * {@link WSICoverageTemporalFoundationDictionary }
      * {@link WSITaxonDictionary }
+     * {@link TridasRadius }
+     * {@link WSISecurityGroup }
+     * {@link WSICoverageTemporalDictionary }
+     * {@link TridasMeasurementSeries }
+     * {@link WSISampleTypeDictionary }
+     * {@link WSIRegionDictionary }
+     * {@link WSIElementAuthenticityDictionary }
+     * {@link WSIConfigurationDictionary }
+     * {@link WSIElementShapeDictionary }
+     * {@link TridasObject }
+     * {@link Object }
+     * {@link WSIBoxDictionary }
+     * {@link WSIReadingNoteDictionary }
+     * {@link TridasDerivedSeries }
      * 
      * 
      */
@@ -294,37 +294,37 @@ public class WSIContent
      * 
      * @param sqlsAndObjectsAndElements
      *     allowed object is
+     *     {@link WSIWmsServerDictionary }
+     *     {@link WSISecurityGroupDictionary }
+     *     {@link TridasSample }
+     *     {@link WSILocationTypeDictionary }
+     *     {@link WSIDatingTypeDictionary }
+     *     {@link WSISecurityUserDictionary }
+     *     {@link WSIObjectTypeDictionary }
+     *     {@link WSIMeasurementVariableDictionary }
+     *     {@link WSISapwoodDictionary }
+     *     {@link WSIHeartwoodDictionary }
+     *     {@link WSICoverageTemporalFoundationDictionary }
      *     {@link WSISecurityUser }
      *     {@link TridasElement }
-     *     {@link WSIDatingTypeDictionary }
-     *     {@link WSICoverageTemporalDictionary }
-     *     {@link WSISampleTypeDictionary }
-     *     {@link WSIElementShapeDictionary }
-     *     {@link WSIReadingNoteDictionary }
-     *     {@link TridasSample }
-     *     {@link WSIElementAuthenticityDictionary }
-     *     {@link WSISecurityGroupDictionary }
-     *     {@link WSIObjectTypeDictionary }
-     *     {@link WSIPermission }
-     *     {@link WSIHeartwoodDictionary }
-     *     {@link WSISecurityUserDictionary }
-     *     {@link WSIWmsServerDictionary }
-     *     {@link WSIConfigurationDictionary }
-     *     {@link WSIRegionDictionary }
      *     {@link WSIElementTypeDictionary }
-     *     {@link WSIMeasurementVariableDictionary }
-     *     {@link TridasDerivedSeries }
-     *     {@link TridasMeasurementSeries }
-     *     {@link Object }
-     *     {@link WSISecurityGroup }
-     *     {@link TridasRadius }
+     *     {@link WSIPermission }
      *     {@link WSIBox }
-     *     {@link TridasObject }
-     *     {@link WSIBoxDictionary }
-     *     {@link WSILocationTypeDictionary }
-     *     {@link WSISapwoodDictionary }
-     *     {@link WSICoverageTemporalFoundationDictionary }
      *     {@link WSITaxonDictionary }
+     *     {@link TridasRadius }
+     *     {@link WSISecurityGroup }
+     *     {@link WSICoverageTemporalDictionary }
+     *     {@link TridasMeasurementSeries }
+     *     {@link WSISampleTypeDictionary }
+     *     {@link WSIRegionDictionary }
+     *     {@link WSIElementAuthenticityDictionary }
+     *     {@link WSIConfigurationDictionary }
+     *     {@link WSIElementShapeDictionary }
+     *     {@link TridasObject }
+     *     {@link Object }
+     *     {@link WSIBoxDictionary }
+     *     {@link WSIReadingNoteDictionary }
+     *     {@link TridasDerivedSeries }
      *     
      */
     public void setSqlsAndObjectsAndElements(List<Object> sqlsAndObjectsAndElements) {

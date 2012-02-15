@@ -1,6 +1,6 @@
 <?php
 //*******************************************************************
-////// PHP Corina Middleware
+////// PHP Tellervo Middleware
 ////// License: GPL
 ////// Author: Peter Brewer
 ////// E-Mail: p.brewer@cornell.edu
@@ -88,10 +88,10 @@ switch($theMode)
         $myMetaHeader->setUser("Guest", "", "", "");
         // Output the resulting XML
         echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-        echo "<corina>\n";
+        echo "<tellervo>\n";
         echo $myMetaHeader->asXML();
         echo "<help> Details of how to use this web service will be added here later! </help>";
-        echo "</corina>\n";
+        echo "</tellervo>\n";
         die;
 }
 
@@ -191,9 +191,9 @@ if(!($myMetaHeader->status == "Error"))
 
 // Output the resulting XML
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
-echo "<corina>\n";
+echo "<tellervo>\n";
 echo $myMetaHeader->asXML();
 echo "<data>\n";
 echo $xmldata;
 echo "</data>\n";
-echo "</corina>";
+echo "</tellervo>";
