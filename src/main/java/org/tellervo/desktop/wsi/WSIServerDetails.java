@@ -72,7 +72,7 @@ public class WSIServerDetails {
 	private Integer minorversion = null;
 	private String revision = "";
 	private WSIServerStatus status = WSIServerStatus.NOT_CHECKED;
-	private String errMessage= null;
+	private String errMessage= "";
 	private Boolean isNetworkConnected = false;
 
 	public WSIServerDetails()
@@ -140,9 +140,9 @@ public class WSIServerDetails {
 				String s = "";
 				while ((s = reader.readLine()) != null)
 				{
-				      if(s.contains("<wsVersion>"))
+				      if(s.contains("<webserviceVersion>"))
 				      {
-				    	  String[] strparts = s.split("<[/]*wsVersion>");
+				    	  String[] strparts = s.split("<[/]*webserviceVersion>");
 				    	  if(strparts.length>0) parserThisServerVersion(strparts[1]);
 				    	  
 				    	  status = WSIServerStatus.VALID;

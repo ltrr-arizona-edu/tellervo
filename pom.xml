@@ -117,7 +117,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>HH:mm dd-MMM-yyyy</maven.build.timestamp.format>
     	<timestamp>${maven.build.timestamp}</timestamp>
-    	<serverversion>1.0.6</serverversion>
+    	<serverversion>1.0.9</serverversion>
 	</properties>
 
 	<!--  Repository to deploy to.  When deploying make sure your .m2/settings.xml
@@ -549,7 +549,7 @@
 						<configuration>
 							<transformers>
 								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>org.tellervo.gui.Startup</mainClass>
+									<mainClass>org.tellervo.desktop.gui.Startup</mainClass>
 								</transformer>
 							</transformers>
 							<filters>
@@ -604,6 +604,7 @@
 			          on Linux and Windows computers the App will not include
 			          the Apple integration portions therefore they will have
 			          an ugly menu bar. -->
+			 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>osxappbundle-maven-plugin</artifactId>
@@ -630,7 +631,7 @@
 						</fileSet>
 					</additionalResources>
 					<bundleName>Tellervo</bundleName>
-					<zipFile>${project.build.directory}/Binaries/Desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>
+					<zipFile>${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>
 					<mainClass>org.tellervo.gui.Startup</mainClass>
 					<vmOptions>
 					 
@@ -665,7 +666,7 @@
 							<goal>jdeb</goal>
 						</goals>
 						<configuration>
-							<deb>${project.build.directory}/Binaries/Desktop/${project.version}/Linux/${project.build.finalName}.deb</deb>
+							<deb>${project.build.directory}/binaries/desktop/${project.version}/Linux/${project.build.finalName}.deb</deb>
 							<controlDir>${project.build.directory}/classes/LinBuild/DesktopControl/</controlDir>
 							<dataSet>
 								<data>
@@ -725,7 +726,7 @@
 							<goal>jdeb</goal>
 						</goals>
 						<configuration>	
-							<deb>${project.build.directory}/Binaries/Server/tellervo-server-${serverversion}.deb</deb>
+							<deb>${project.build.directory}/binaries/server/${serverversion}/Linux/tellervo-server-${serverversion}.deb</deb>
 							<controlDir>${project.build.directory}/classes/LinBuild/ServerControl/</controlDir>
 							<dataSet>
 								<data>
@@ -746,6 +747,15 @@
 										<filemode>755</filemode>
 									</mapper>
 								</data>
+								<data>
+									<src>${project.build.directory}/classes/LinBuild/tellervo-apache</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/usr/share/tellervo-server/</prefix>
+										<filemode>755</filemode>
+									</mapper>
+								</data>								
 								<data>
 									<src>Databases/db-upgrade-patches</src>
 									<type>directory</type>
@@ -827,7 +837,7 @@
 					</execution>
 					
 					<!-- Insert native libraries into MacOSX App file -->
-					<!-- 
+					 
 					<execution>
 						<id>AddLibsToMacOSXApp</id>
 						<phase>package</phase>
@@ -837,7 +847,7 @@
 									classpathref="maven.plugin.classpath"/>	
 								<trycatch>
 									<try>
-										<zip destfile="${project.build.directory}/Binaries/Desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip" update="true">
+										<zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip" update="true">
 											<zipfileset src="${project.build.finalName}/Tellervo.app" />
 											<zipfileset src="Native/MacBuild/Tellervo Drivers.pkg"/>
 										</zip>
@@ -852,9 +862,10 @@
 							<goal>run</goal>
 						</goals>					
 					</execution>
-					-->
+					
 					
 					<!-- Run Makensis to create the windows installers -->
+				 
 					<execution>
 						<id>RunNSIS</id>
 						<phase>package</phase>
@@ -862,8 +873,8 @@
 							<tasks>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
 									classpathref="maven.plugin.classpath"/>
-							      <mkdir dir="${project.build.directory}/Binaries/Desktop/${project.version}/Windows"/>
-							      <mkdir dir="${project.build.directory}/Binaries/Desktop/${project.version}/Windows64"/>
+							      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Windows"/>
+							      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Windows64"/>
 							      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
 							        <arg value="nsis-32bit.nsi"/>  
 							      </exec>  
@@ -884,8 +895,8 @@
 							<tasks>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
 									classpathref="maven.plugin.classpath"/>
-							      <mkdir dir="${project.build.directory}/Binaries/Desktop/${project.version}/Java"/>
-							      <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/Binaries/Desktop/${project.version}/Java/${project.build.finalName}.jar" failonerror="false"/>
+							      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Java"/>
+							      <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/binaries/desktop/${project.version}/Java/${project.build.finalName}.jar" failonerror="false"/>
 							</tasks>
 						</configuration>
 						<goals>

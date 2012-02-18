@@ -272,7 +272,7 @@ class meta
     {
         $xml.="<securityUser id=\"".$this->securityUserID."\" username=\"".$this->username."\" firstName=\"".$this->firstname."\" lastName=\"".$this->lastname."\" />\n";
     }
-    $xml.="<wsVersion>".$this->wsversion."</wsVersion>\n";
+    $xml.="<webserviceVersion>".$this->wsversion."</webserviceVersion>\n";
     $xml.="<clientVersion>".$this->clientversion."</clientVersion>\n";
     $xml.="<requestDate>".$this->requestdate."</requestDate>\n";
     $xml.="<queryTime unit=\"seconds\">".round((microtime(true)-$this->startTimestamp), 2)."</queryTime>\n";

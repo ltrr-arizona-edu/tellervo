@@ -46,15 +46,15 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  *           &lt;complexType>
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                 &lt;attribute name="type" use="required" type="{http://www.tellervo.org/schema/tellervo/1.0}permissionsEntityType" />
+ *                 &lt;attribute name="type" use="required" type="{http://www.tellervo.org/schema/1.0}permissionsEntityType" />
  *                 &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
  *               &lt;/restriction>
  *             &lt;/complexContent>
  *           &lt;/complexType>
  *         &lt;/element>
  *         &lt;choice maxOccurs="unbounded">
- *           &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}securityUser"/>
- *           &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}securityGroup"/>
+ *           &lt;element ref="{http://www.tellervo.org/schema/1.0}securityUser"/>
+ *           &lt;element ref="{http://www.tellervo.org/schema/1.0}securityGroup"/>
  *         &lt;/choice>
  *       &lt;/sequence>
  *       &lt;attribute name="decidedBy" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -88,8 +88,8 @@ public class WSIPermission implements Serializable, Cloneable, CopyTo, Equals, H
     @XmlElement(name = "entity", required = true)
     protected List<WSIPermission.Entity> entities;
     @XmlElements({
-        @XmlElement(name = "securityGroup", type = WSISecurityGroup.class),
-        @XmlElement(name = "securityUser", type = WSISecurityUser.class)
+        @XmlElement(name = "securityUser", type = WSISecurityUser.class),
+        @XmlElement(name = "securityGroup", type = WSISecurityGroup.class)
     })
     protected List<Object> securityUsersAndSecurityGroups;
     @XmlAttribute(name = "decidedBy")
@@ -290,8 +290,8 @@ public class WSIPermission implements Serializable, Cloneable, CopyTo, Equals, H
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link WSISecurityGroup }
      * {@link WSISecurityUser }
+     * {@link WSISecurityGroup }
      * 
      * 
      */
@@ -642,8 +642,8 @@ public class WSIPermission implements Serializable, Cloneable, CopyTo, Equals, H
      * 
      * @param securityUsersAndSecurityGroups
      *     allowed object is
-     *     {@link WSISecurityGroup }
      *     {@link WSISecurityUser }
+     *     {@link WSISecurityGroup }
      *     
      */
     public void setSecurityUsersAndSecurityGroups(List<Object> securityUsersAndSecurityGroups) {
@@ -660,7 +660,7 @@ public class WSIPermission implements Serializable, Cloneable, CopyTo, Equals, H
      * &lt;complexType>
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *       &lt;attribute name="type" use="required" type="{http://www.tellervo.org/schema/tellervo/1.0}permissionsEntityType" />
+     *       &lt;attribute name="type" use="required" type="{http://www.tellervo.org/schema/1.0}permissionsEntityType" />
      *       &lt;attribute name="id" type="{http://www.w3.org/2001/XMLSchema}string" />
      *     &lt;/restriction>
      *   &lt;/complexContent>

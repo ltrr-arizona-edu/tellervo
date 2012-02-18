@@ -35,7 +35,7 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

@@ -74,7 +74,7 @@ INSERT INTO tblsupportedclient (client, minversion) VALUES ('Corina WSI', '2.13'
 -- Add unique constraints to security tables
 --
 ALTER TABLE tblsecurityobject ADD CONSTRAINT "uniq-object-group-permission" UNIQUE (objectid, securitygroupid, securitypermissionid);
-ALTER TABLE tblsecurityelement ADD CONSTRAINT "uniq-element-group-permission" UNIQUE (securitygroupid, securitypermissionid, securityelementid)
+ALTER TABLE tblsecurityelement ADD CONSTRAINT "uniq-element-group-permission" UNIQUE (securitygroupid, securitypermissionid, securityelementid);
 
 --
 -- Add functions to maintain Admin group and at least one admin user
@@ -90,7 +90,7 @@ RETURN NEW;
 END;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION "checkGroupIsDeletable"() OWNER TO corina;
+ALTER FUNCTION "checkGroupIsDeletable"() OWNER TO tellervo;
 
 CREATE TRIGGER "checkGroupIsDeletable"
   BEFORE DELETE
@@ -121,7 +121,7 @@ RAISE EXCEPTION 'Cannot delete the last user with administrative privileges';
 END;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION enforce_atleastoneadminuser() OWNER TO corina;
+ALTER FUNCTION enforce_atleastoneadminuser() OWNER TO tellervo;
 
 CREATE TRIGGER enforce_atleastoneadminuser
   AFTER UPDATE OR DELETE
@@ -157,7 +157,7 @@ RETURN NEW;
 END;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION enforce_noadminpermedits() OWNER TO corina;
+ALTER FUNCTION enforce_noadminpermedits() OWNER TO tellervo;
 
 
 CREATE TRIGGER enforce_noadminpermedits
@@ -351,12 +351,13 @@ CREATE OR REPLACE RULE protectadmin AS
    WHERE old.securitygroupid = 1 DO INSTEAD NOTHING;
 
 
-DELETE FROM tblconfig WHERE key='corinaxsd';
+DELETE FROM tblconfig WHERE key='corinaXSD';
 INSERT INTO tblconfig (key,value,description) VALUES ('tellervoXSD', '$baseFolder/schemas/tellervo.xsd', 'Path to Tellervo XSD');
 
 DELETE FROM tblconfig WHERE key='corinaNS';
-INSERT INTO tblconfig (key,value,description) VALUES ('tellervoNS', 'http://www.tellervo.org/schema/tellervo.xsd', 'Tellervo namespace URL');
+INSERT INTO tblconfig (key,value,description) VALUES ('tellervoNS', 'http://www.tellervo.org/schema/1.0', 'Tellervo namespace URL');
 
-
+DELETE FROM tblsupportedclient WHERE client = 'Corina WSI';
+INSERT INTO tblsupportedclient (client, minversion) VALUES ('Tellervo WSI', '0.9');
 
 

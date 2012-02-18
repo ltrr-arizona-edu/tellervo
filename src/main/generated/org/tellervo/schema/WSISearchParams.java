@@ -39,7 +39,7 @@ import org.tridas.adapters.IntegerAdapter;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;choice>
- *           &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}param" maxOccurs="unbounded"/>
+ *           &lt;element ref="{http://www.tellervo.org/schema/1.0}param" maxOccurs="unbounded"/>
  *           &lt;element name="all">
  *             &lt;complexType>
  *               &lt;complexContent>
@@ -50,9 +50,9 @@ import org.tridas.adapters.IntegerAdapter;
  *           &lt;/element>
  *         &lt;/choice>
  *       &lt;/sequence>
- *       &lt;attribute name="returnObject" type="{http://www.tellervo.org/schema/tellervo/1.0}searchReturnObject" />
- *       &lt;attribute name="limit" type="{http://www.tellervo.org/schema/tellervo/1.0}signedInt" />
- *       &lt;attribute name="skip" type="{http://www.tellervo.org/schema/tellervo/1.0}signedInt" />
+ *       &lt;attribute name="returnObject" type="{http://www.tellervo.org/schema/1.0}searchReturnObject" />
+ *       &lt;attribute name="limit" type="{http://www.tellervo.org/schema/1.0}signedInt" />
+ *       &lt;attribute name="skip" type="{http://www.tellervo.org/schema/1.0}signedInt" />
  *       &lt;attribute name="includeChildren" type="{http://www.w3.org/2001/XMLSchema}boolean" />
  *     &lt;/restriction>
  *   &lt;/complexContent>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema xmlns="http://www.tellervo.org/schema/tellervo/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.2.2" targetNamespace="http://www.tellervo.org/schema/tellervo/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
+<xs:schema xmlns="http://www.tellervo.org/schema/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.2.2" targetNamespace="http://www.tellervo.org/schema/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<!--
 %%%%%%%%%%%%%%
 %		EXTERNAL SCHEMAS	
@@ -355,7 +355,7 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="securityUser" minOccurs="0" maxOccurs="1"/>
-				<xs:element name="wsVersion" type="xs:string"/>
+				<xs:element name="webserviceVersion" type="xs:string"/>
 				<xs:element name="clientVersion" type="xs:string"/>
 				<xs:element name="requestDate" type="xs:dateTime"/>
 				<xs:element name="queryTime">

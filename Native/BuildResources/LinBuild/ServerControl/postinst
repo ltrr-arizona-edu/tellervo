@@ -4,21 +4,12 @@ echo "Postinst run ${serverversion} with $1 argument" >> /var/log/tellervo-insta
 date '+%R.%S' >> /var/log/tellervo-installation.log
 echo "*******************" >> /var/log/tellervo-installation.log
 
-if [ $1 = 'upgrade' ]; then
-    if [ -e "/tmp/config.php" ]
-    then
-      echo "Reinstating config.php from previous installation" >> /var/log/tellervo-installation.log
-      mv /tmp/config.php /var/www/tellervo-webservice/
-      echo "Regenerating systemconfig.php" >> /var/log/tellervo-installation.log
-      /usr/bin/tellervo-server --sysconfig
-      echo "Testing configuration" >> /var/log/tellervo-installation.log
-      /usr/bin/tellervo-server --test
-	  exit
-    fi
-    
-elif [ $1 = 'configure' ]; then
+   
+if [ $1 = 'configure' ]; then
       echo "Configuring new installation" >> /var/log/tellervo-installation.log
       /usr/bin/tellervo-server --configure
+
+#elif [ $1 = 'upgrade' ]; then
       
 #elif [ $1 = 'abort-upgrade' ]; then
 

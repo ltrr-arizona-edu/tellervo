@@ -38,7 +38,7 @@
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "..\..\Binaries\Desktop\${PRODUCT_VERSION}\${OUTFOLDER}\tellervo-${PRODUCT_VERSION}-${PLATFORM_SUFFIX}setup.exe"
+OutFile "..\..\binaries\desktop\${PRODUCT_VERSION}\${OUTFOLDER}\tellervo-${PRODUCT_VERSION}-${PLATFORM_SUFFIX}setup.exe"
 
 InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
@@ -49,9 +49,9 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
   File "..\..\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
-  CreateDirectory "$SMPROGRAMS\Cornell Dendro"
-  CreateShortCut "$SMPROGRAMS\Cornell Dendro\Tellervo - TRiDaS.lnk" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
-  CreateShortCut "$DESKTOP\Tellervo - TRiDaS.lnk" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
+  CreateDirectory "$SMPROGRAMS\Tellervo"
+  CreateShortCut "$SMPROGRAMS\Tellervo\Tellervo.lnk" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
+  CreateShortCut "$DESKTOP\Tellervo.lnk" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
   File "..\..\..\Native\Libraries\${PLATFORM}\gluegen-rt.dll"
   File "..\..\..\Native\Libraries\${PLATFORM}\jogl.dll"
   File "..\..\..\Native\Libraries\${PLATFORM}\jogl_awt.dll"
@@ -60,7 +60,7 @@ Section "MainSection" SEC01
 SectionEnd
 
 Section -AdditionalIcons
-  CreateShortCut "$SMPROGRAMS\Cornell Dendro\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\Tellervo\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
 Section -Post
@@ -94,11 +94,11 @@ Section Uninstall
   Delete "$INSTDIR\jogl_cg.dll"
   Delete "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
 
-  Delete "$SMPROGRAMS\Cornell Dendro\Uninstall.lnk"
-  Delete "$DESKTOP\Tellervo - TRiDaS.lnk"
-  Delete "$SMPROGRAMS\Cornell Dendro\Tellervo - TRiDaS.lnk"
+  Delete "$SMPROGRAMS\Tellervo\Uninstall.lnk"
+  Delete "$DESKTOP\Tellervo.lnk"
+  Delete "$SMPROGRAMS\Tellervo\Tellervo.lnk"
 
-  RMDir "$SMPROGRAMS\Cornell Dendro"
+  RMDir "$SMPROGRAMS\Tellervo"
   RMDir "$INSTDIR"
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"

@@ -133,7 +133,7 @@ public class TellervoSchema {
     	{ "http://www.w3.org/1999/xlink", "xlinks.xsd", "xlink" },
     	{ "http://www.opengis.net/gml", "gmlsf.xsd", "gml" },
     	{ "http://www.tridas.org/1.2.2", "tridas.xsd", "tridas" },
-    	{ "http://www.tellervo.org/schema/tellervo/1.0", "tellervo.xsd", "c"},
+    	{ "http://www.tellervo.org/schema/1.0", "tellervo.xsd", "c"},
 
     };
     

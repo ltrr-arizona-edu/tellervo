@@ -180,12 +180,12 @@ $BODY$
 
 
 -- INSTALL pljava updates
-UPDATE sqlj.jar_repository SET jarowner='corina';
+UPDATE sqlj.jar_repository SET jarowner='tellervo';
 SELECT sqlj.remove_jar('stupid_jar', false);
 SELECT sqlj.remove_jar('indexing_jar', false);
 SELECT sqlj.remove_jar('cpgdb_jar', false);
-SELECT sqlj.install_jar('file:///usr/share/corina-server/corina-pljava.jar', 'corina_jar', false);
-SELECT sqlj.set_classpath('cpgdb', 'corina_jar');
+SELECT sqlj.install_jar('file:///usr/share/tellervo-server/tellervo-pljava.jar', 'tellervo_jar', false);
+SELECT sqlj.set_classpath('cpgdb', 'tellervo_jar');
 
 
 CREATE OR REPLACE FUNCTION cpgdb.purgecachetables()

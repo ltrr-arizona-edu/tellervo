@@ -32,8 +32,8 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;attribute name="name" type="{http://www.tellervo.org/schema/tellervo/1.0}searchParameterName" />
- *       &lt;attribute name="operator" type="{http://www.tellervo.org/schema/tellervo/1.0}searchOperator" />
+ *       &lt;attribute name="name" type="{http://www.tellervo.org/schema/1.0}searchParameterName" />
+ *       &lt;attribute name="operator" type="{http://www.tellervo.org/schema/1.0}searchOperator" />
  *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}string" />
  *     &lt;/restriction>
  *   &lt;/complexContent>

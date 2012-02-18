@@ -568,7 +568,7 @@ public class LoginDialog extends JDialog {
 		WSIServerDetails serverDetails = new WSIServerDetails();
 		if(!serverDetails.isServerValid())
 		{
-			Alert.error(this, "Incompatible Server", serverDetails.getErrorMessage());
+			Alert.error(this, "Incompatible Server", "Server URL is invalid:\n" + serverDetails.getErrorMessage());
 			return;
 					
 		}
@@ -598,7 +598,7 @@ public class LoginDialog extends JDialog {
 						
 						// failure. what type?
 						JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
-								e.getLocalizedMessage(),
+								"Error authenticating: Query failed",
 							    "Could not authenticate",
 							    JOptionPane.ERROR_MESSAGE);
 						enableDialogButtons(true);
@@ -662,7 +662,7 @@ public class LoginDialog extends JDialog {
 						{
 							// failure. what type?
 							JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
-									"Error: " + e.toString(),
+									"Error authenticating",
 								    "Could not authenticate",
 								    JOptionPane.ERROR_MESSAGE);
 							enableDialogButtons(true);

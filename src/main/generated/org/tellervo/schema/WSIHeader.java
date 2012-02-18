@@ -39,8 +39,8 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}securityUser" minOccurs="0"/>
- *         &lt;element name="wsVersion" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/1.0}securityUser" minOccurs="0"/>
+ *         &lt;element name="webserviceVersion" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="clientVersion" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="requestDate" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
  *         &lt;element name="queryTime">
@@ -59,9 +59,9 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  *           &lt;/complexType>
  *         &lt;/element>
  *         &lt;element name="requestUrl" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="requestType" type="{http://www.tellervo.org/schema/tellervo/1.0}tellervoRequestType"/>
- *         &lt;element name="status" type="{http://www.tellervo.org/schema/tellervo/1.0}tellervoRequestStatus"/>
- *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}message" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="requestType" type="{http://www.tellervo.org/schema/1.0}tellervoRequestType"/>
+ *         &lt;element name="status" type="{http://www.tellervo.org/schema/1.0}tellervoRequestStatus"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/1.0}message" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="timing" maxOccurs="unbounded" minOccurs="0">
  *           &lt;complexType>
  *             &lt;simpleContent>
@@ -71,7 +71,7 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
  *             &lt;/simpleContent>
  *           &lt;/complexType>
  *         &lt;/element>
- *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}nonce" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/1.0}nonce" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -83,7 +83,7 @@ import org.jvnet.jaxb2_commons.locator.util.LocatorUtils;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "securityUser",
-    "wsVersion",
+    "webserviceVersion",
     "clientVersion",
     "requestDate",
     "queryTime",
@@ -102,7 +102,7 @@ public class WSIHeader
     private final static long serialVersionUID = 1001L;
     protected WSISecurityUser securityUser;
     @XmlElement(required = true)
-    protected String wsVersion;
+    protected String webserviceVersion;
     @XmlElement(required = true)
     protected String clientVersion;
     @XmlElement(required = true)
@@ -151,31 +151,31 @@ public class WSIHeader
     }
 
     /**
-     * Gets the value of the wsVersion property.
+     * Gets the value of the webserviceVersion property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getWsVersion() {
-        return wsVersion;
+    public String getWebserviceVersion() {
+        return webserviceVersion;
     }
 
     /**
-     * Sets the value of the wsVersion property.
+     * Sets the value of the webserviceVersion property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setWsVersion(String value) {
-        this.wsVersion = value;
+    public void setWebserviceVersion(String value) {
+        this.webserviceVersion = value;
     }
 
-    public boolean isSetWsVersion() {
-        return (this.wsVersion!= null);
+    public boolean isSetWebserviceVersion() {
+        return (this.webserviceVersion!= null);
     }
 
     /**
@@ -469,9 +469,9 @@ public class WSIHeader
             strategy.appendField(locator, this, "securityUser", buffer, theSecurityUser);
         }
         {
-            String theWsVersion;
-            theWsVersion = this.getWsVersion();
-            strategy.appendField(locator, this, "wsVersion", buffer, theWsVersion);
+            String theWebserviceVersion;
+            theWebserviceVersion = this.getWebserviceVersion();
+            strategy.appendField(locator, this, "webserviceVersion", buffer, theWebserviceVersion);
         }
         {
             String theClientVersion;
@@ -539,11 +539,11 @@ public class WSIHeader
             }
         }
         {
-            String lhsWsVersion;
-            lhsWsVersion = this.getWsVersion();
-            String rhsWsVersion;
-            rhsWsVersion = that.getWsVersion();
-            if (!strategy.equals(LocatorUtils.property(thisLocator, "wsVersion", lhsWsVersion), LocatorUtils.property(thatLocator, "wsVersion", rhsWsVersion), lhsWsVersion, rhsWsVersion)) {
+            String lhsWebserviceVersion;
+            lhsWebserviceVersion = this.getWebserviceVersion();
+            String rhsWebserviceVersion;
+            rhsWebserviceVersion = that.getWebserviceVersion();
+            if (!strategy.equals(LocatorUtils.property(thisLocator, "webserviceVersion", lhsWebserviceVersion), LocatorUtils.property(thatLocator, "webserviceVersion", rhsWebserviceVersion), lhsWebserviceVersion, rhsWebserviceVersion)) {
                 return false;
             }
         }
@@ -644,9 +644,9 @@ public class WSIHeader
             currentHashCode = strategy.hashCode(LocatorUtils.property(locator, "securityUser", theSecurityUser), currentHashCode, theSecurityUser);
         }
         {
-            String theWsVersion;
-            theWsVersion = this.getWsVersion();
-            currentHashCode = strategy.hashCode(LocatorUtils.property(locator, "wsVersion", theWsVersion), currentHashCode, theWsVersion);
+            String theWebserviceVersion;
+            theWebserviceVersion = this.getWebserviceVersion();
+            currentHashCode = strategy.hashCode(LocatorUtils.property(locator, "webserviceVersion", theWebserviceVersion), currentHashCode, theWebserviceVersion);
         }
         {
             String theClientVersion;
@@ -722,13 +722,13 @@ public class WSIHeader
             } else {
                 copy.securityUser = null;
             }
-            if (this.isSetWsVersion()) {
-                String sourceWsVersion;
-                sourceWsVersion = this.getWsVersion();
-                String copyWsVersion = ((String) strategy.copy(LocatorUtils.property(locator, "wsVersion", sourceWsVersion), sourceWsVersion));
-                copy.setWsVersion(copyWsVersion);
+            if (this.isSetWebserviceVersion()) {
+                String sourceWebserviceVersion;
+                sourceWebserviceVersion = this.getWebserviceVersion();
+                String copyWebserviceVersion = ((String) strategy.copy(LocatorUtils.property(locator, "webserviceVersion", sourceWebserviceVersion), sourceWebserviceVersion));
+                copy.setWebserviceVersion(copyWebserviceVersion);
             } else {
-                copy.wsVersion = null;
+                copy.webserviceVersion = null;
             }
             if (this.isSetClientVersion()) {
                 String sourceClientVersion;

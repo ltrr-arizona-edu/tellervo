@@ -103,6 +103,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     private SearchPanel searchPanel;
     
     
+    /**
+     * @wbp.parser.constructor
+     */
     public DBBrowser(java.awt.Frame parent, boolean modal) {
     	this(parent, modal, false);	
     }

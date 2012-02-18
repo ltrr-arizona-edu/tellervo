@@ -240,7 +240,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		else if(!serverDetails.isServerValid())
 		{
 			Alert.error("Invalid Webservice URL", 
-			"The URL you have entered is not a valid Corina Webservice");
+			"The URL you have entered is not a valid Tellervo Webservice");
 			return false;
 		}
 		

@@ -47,9 +47,9 @@ import org.tridas.util.TridasObjectEx;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;choice>
- *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}searchParams" minOccurs="0"/>
- *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}authenticate" minOccurs="0"/>
- *         &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}entity" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/1.0}searchParams" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/1.0}authenticate" minOccurs="0"/>
+ *         &lt;element ref="{http://www.tellervo.org/schema/1.0}entity" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;sequence>
  *           &lt;element ref="{http://www.tridas.org/1.2.2}project" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://www.tridas.org/1.2.2}object" maxOccurs="unbounded" minOccurs="0"/>
@@ -58,10 +58,10 @@ import org.tridas.util.TridasObjectEx;
  *           &lt;element ref="{http://www.tridas.org/1.2.2}radius" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://www.tridas.org/1.2.2}measurementSeries" maxOccurs="unbounded" minOccurs="0"/>
  *           &lt;element ref="{http://www.tridas.org/1.2.2}derivedSeries" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}securityGroup" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}box" maxOccurs="unbounded" minOccurs="0"/>
- *           &lt;element ref="{http://www.tellervo.org/schema/tellervo/1.0}permission" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tellervo.org/schema/1.0}securityUser" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tellervo.org/schema/1.0}securityGroup" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tellervo.org/schema/1.0}box" maxOccurs="unbounded" minOccurs="0"/>
+ *           &lt;element ref="{http://www.tellervo.org/schema/1.0}permission" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;/sequence>
  *         &lt;sequence>
  *         &lt;/sequence>
@@ -76,8 +76,8 @@ import org.tridas.util.TridasObjectEx;
  *           &lt;/element>
  *         &lt;/sequence>
  *       &lt;/choice>
- *       &lt;attribute name="type" type="{http://www.tellervo.org/schema/tellervo/1.0}tellervoRequestType" />
- *       &lt;attribute name="format" type="{http://www.tellervo.org/schema/tellervo/1.0}tellervoRequestFormat" />
+ *       &lt;attribute name="type" type="{http://www.tellervo.org/schema/1.0}tellervoRequestType" />
+ *       &lt;attribute name="format" type="{http://www.tellervo.org/schema/1.0}tellervoRequestFormat" />
  *       &lt;attribute name="parentEntityID" type="{http://www.w3.org/2001/XMLSchema}token" />
  *       &lt;attribute name="mergeWithID" type="{http://www.w3.org/2001/XMLSchema}token" />
  *     &lt;/restriction>
