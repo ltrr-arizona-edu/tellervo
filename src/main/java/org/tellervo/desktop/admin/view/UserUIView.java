@@ -147,6 +147,7 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
                 chkEnabled.setText("Account enabled");
                 getContentPane().add(chkEnabled, "cell 1 2,alignx left,aligny top");
         btnSetPwd = new javax.swing.JButton();
+        btnSetPwd.setActionCommand("setpwd");
         btnSetPwd.setIcon(Builder.getIcon("password.png", 16));
         
         btnSetPwd.setText("Reset Password");
@@ -283,8 +284,14 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 		{
 			saveChangesToUser();
 		}
+		if(e.getActionCommand().equals("setpwd"))
+		{
+			SetPasswordUI setpwddialog = new SetPasswordUI(null, user);
+			setpwddialog.setVisible(true);
+		}
 		
 	}
+	
 	
 	private void saveChangesToUser()
 	{

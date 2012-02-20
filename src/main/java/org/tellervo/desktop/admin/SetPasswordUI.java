@@ -55,7 +55,8 @@ import net.miginfocom.swing.MigLayout;
 public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     
 	private static final long serialVersionUID = 6612655712307306825L;
-	WSISecurityUser thisUser;
+	WSISecurityUser userToChange;
+	WSISecurityUser userDoingChange;
 	Frame parent;
 	
     /**
@@ -66,12 +67,29 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     public SetPasswordUI(Frame parent) {
         super(parent, true);
         this.parent = parent;
-        thisUser = App.currentUser;
+        userToChange = App.currentUser;
+        userDoingChange = App.currentUser;
         initComponents();
         setupGui(false);   
         internationalizeComponents();
         
     }
+    
+    /**
+     * Create a new admin 'set password' dialog for resetting
+     * another users password
+     * 
+     * @param parent
+     * @param otherUser
+     */
+    public SetPasswordUI(java.awt.Frame parent, WSISecurityUser otherUser) {
+        super(parent, true);
+        userToChange = otherUser;  
+        userDoingChange = App.currentUser;
+        initComponents();
+        setupGui(true);      
+    }
+       
     
 
     private void internationalizeComponents()
@@ -84,21 +102,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	btnOk.setText(I18n.getText("general.ok"));
     }
     
-    /**
-     * Create a new admin 'set password' dialog for resetting
-     * another users password
-     * 
-     * @param parent
-     * @param otherUser
-     */
-    public SetPasswordUI(java.awt.Frame parent, WSISecurityUser otherUser) {
-        super(parent, true);
-        thisUser = otherUser;  
-     
-        initComponents();
-        setupGui(true);      
-    }
-        
+ 
     /**
      * Setup gui, either as a normal user or
      * with admin privileges 
@@ -115,7 +119,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     		lblUser.setVisible(true);
         	lblUserText.setVisible(true);
         	this.lblOld.setText("Admin password");
-        	this.lblUserText.setText(this.thisUser.getUsername());
+        	this.lblUserText.setText(this.userToChange.getUsername());
     	}
     	else
     	{
@@ -192,7 +196,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	LoginDialog dlg = new LoginDialog(this);
     	dlg.setGuiForConfirmation();
     	dlg.setInstructionText("Confirm original credentials");
-    	dlg.setUsername(thisUser.getUsername());
+    	dlg.setUsername(userDoingChange.getUsername());
     	dlg.setPassword(new String(pwd));
     	dlg.setVisible(false);
     	try {
@@ -259,7 +263,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     private Boolean setPassword(char[] pwd)
     {
     	   	    	   	
-    	return setPassword(thisUser, pwd);
+    	return setPassword(userToChange, pwd);
     	
     }
     
