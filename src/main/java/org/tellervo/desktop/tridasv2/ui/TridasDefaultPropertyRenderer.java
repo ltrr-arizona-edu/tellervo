@@ -47,8 +47,8 @@ public class TridasDefaultPropertyRenderer extends DefaultCellRenderer  {
 			boolean isSelected, boolean hasFocus, int row, int column) {
 
 		// blank out the value if we're null...
-		if (table instanceof CorinaPropertySheetTable && 
-				!((CorinaPropertySheetTable)table).isCellEditable(row, column))
+		if (table instanceof TellervoPropertySheetTable && 
+				!((TellervoPropertySheetTable)table).isCellEditable(row, column))
 			value = null;
 		
 		// if we're not selected, be inconspicuous

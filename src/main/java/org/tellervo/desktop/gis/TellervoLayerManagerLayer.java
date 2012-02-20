@@ -43,7 +43,7 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
-public class CorinaLayerManagerLayer extends RenderableLayer implements SelectListener{
+public class TellervoLayerManagerLayer extends RenderableLayer implements SelectListener{
 
     protected WorldWindow wwd;
     protected boolean update = true;
@@ -77,7 +77,7 @@ public class CorinaLayerManagerLayer extends RenderableLayer implements SelectLi
     protected Color dragColor = Color.RED;
     
 
-    public CorinaLayerManagerLayer(WorldWindow wwd, LayerList visibleLayers)
+    public TellervoLayerManagerLayer(WorldWindow wwd, LayerList visibleLayers)
     {
         if (wwd == null)
         {

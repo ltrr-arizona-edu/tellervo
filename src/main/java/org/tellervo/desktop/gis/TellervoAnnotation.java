@@ -32,7 +32,7 @@ import java.awt.event.ActionListener;
 
 import javax.media.opengl.GL;
 
-public class CorinaAnnotation extends GlobeAnnotation implements ActionListener{
+public class TellervoAnnotation extends GlobeAnnotation implements ActionListener{
 
     protected ImageAnnotation busyImage = new BusyImage(BUSY_IMAGE_PATH);
 
@@ -54,7 +54,7 @@ public class CorinaAnnotation extends GlobeAnnotation implements ActionListener{
     protected javax.swing.event.EventListenerList listenerList = new javax.swing.event.EventListenerList();
 
     
-	public CorinaAnnotation(Position position)
+	public TellervoAnnotation(Position position)
 	{
 		super("", position);
 	

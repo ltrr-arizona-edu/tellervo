@@ -33,7 +33,7 @@ import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.dbbrowse.SiteRenderer;
+import org.tellervo.desktop.gui.dbbrowse.TridasObjectRenderer;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
@@ -272,7 +272,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
      */
     private void populateObjectCombo()
     {
-    	cboObject.setRenderer(new SiteRenderer());
+    	cboObject.setRenderer(new TridasObjectRenderer());
     	objModel.replaceContents(App.tridasObjects.getObjectList());
     	objModel.setSelectedItem(null);
     	

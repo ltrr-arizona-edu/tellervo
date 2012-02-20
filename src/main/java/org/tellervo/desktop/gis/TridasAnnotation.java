@@ -12,14 +12,14 @@ import gov.nasa.worldwind.render.FrameFactory;
 import gov.nasa.worldwind.render.ScreenAnnotation;
 
 import org.tellervo.desktop.admin.BoxCuration;
-import org.tellervo.desktop.gis.CorinaAnnotation.BusyImage;
+import org.tellervo.desktop.gis.TellervoAnnotation.BusyImage;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.util.TridasObjectEx;
 
-public class TridasAnnotation extends CorinaAnnotation {
+public class TridasAnnotation extends TellervoAnnotation {
 
 	private ITridas entity;
 	private ScreenAnnotation titleLabel;

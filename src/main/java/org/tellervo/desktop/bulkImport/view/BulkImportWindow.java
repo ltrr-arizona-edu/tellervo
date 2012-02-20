@@ -28,7 +28,7 @@ import javax.swing.JTabbedPane;
 
 import org.tellervo.desktop.bulkImport.control.BulkImportController;
 import org.tellervo.desktop.bulkImport.model.BulkImportModel;
-import org.tellervo.desktop.model.CorinaModelLocator;
+import org.tellervo.desktop.model.TellervoModelLocator;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 
@@ -84,7 +84,7 @@ public class BulkImportWindow extends JFrame {
 	
 	public static void main()	
 	{
-		CorinaModelLocator.getInstance();
+		TellervoModelLocator.getInstance();
 		MVCEvent event = new MVCEvent(BulkImportController.DISPLAY_BULK_IMPORT);
 		event.dispatch();
 	}

@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.dbbrowse.SiteRenderer;
+import org.tellervo.desktop.gui.dbbrowse.TridasObjectRenderer;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
@@ -177,7 +177,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 		lstSelected.setModel(selModel);
 		lstSelected.setCellRenderer(new TridasListCellRenderer());
 		
-		cboObjects.setRenderer(new SiteRenderer());	
+		cboObjects.setRenderer(new TridasObjectRenderer());	
     }
     
     private void populateObjectList()

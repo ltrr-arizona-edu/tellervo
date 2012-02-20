@@ -183,7 +183,7 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
     {
     	meter.setProgress(4);
     	meter.setNote(I18n.getText("login.bindingSchemas"));
-    	TellervoWsiAccessor.loadCorinaContext();
+    	TellervoWsiAccessor.loadTellervoContext();
     }
        
     // load coordinate reference systems

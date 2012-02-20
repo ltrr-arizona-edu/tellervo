@@ -60,7 +60,7 @@ import org.tellervo.desktop.admin.model.TransferableUser;
 import org.tellervo.desktop.admin.model.UserGroupAdminModel;
 import org.tellervo.desktop.admin.model.UserGroupNode;
 import org.tellervo.desktop.admin.model.UserGroupTreeCellRenderer;
-import org.tellervo.desktop.model.CorinaModelLocator;
+import org.tellervo.desktop.model.TellervoModelLocator;
 import org.tellervo.schema.WSISecurityGroup;
 import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.ui.Alert;
@@ -129,7 +129,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     public static void main() {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-               	CorinaModelLocator.getInstance();
+               	TellervoModelLocator.getInstance();
                	new AuthenticateEvent(mainModel).dispatch();
             }
         });

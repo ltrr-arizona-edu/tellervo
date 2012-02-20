@@ -41,7 +41,7 @@ import javax.swing.table.TableModel;
 import com.l2fprod.common.propertysheet.PropertySheetTable;
 import com.l2fprod.common.propertysheet.PropertySheetTableModel.Item;
 
-public class CorinaPropertySheetTable extends PropertySheetTable {
+public class TellervoPropertySheetTable extends PropertySheetTable {
 	private static final long serialVersionUID = 1L;
 
 	private boolean isEditable;
@@ -52,7 +52,7 @@ public class CorinaPropertySheetTable extends PropertySheetTable {
 	/** The text we want to show in the watermark */
 	private String watermarkText;
 	
-	public CorinaPropertySheetTable() {
+	public TellervoPropertySheetTable() {
 		isEditable = true;
 		hasWatermark = false;
 		setColumnWidths();

@@ -207,7 +207,7 @@ public class GISPanel extends JPanel implements SelectListener{
             
             if(isMiniMap)
             {
-	            CorinaLayerManagerLayer layermanager = new CorinaLayerManagerLayer(getWwd(), getWwd().getModel().getLayers());
+	            TellervoLayerManagerLayer layermanager = new TellervoLayerManagerLayer(getWwd(), getWwd().getModel().getLayers());
 	            layermanager.setName("Show/hide layer list");
 	            layermanager.setMinimized(true);
 	            layermanager.setPosition(AVKey.NORTHWEST);

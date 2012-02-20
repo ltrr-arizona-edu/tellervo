@@ -385,18 +385,26 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
                 // Set or unset members for this group                 
                 //if(count($this->userMembers)>0)
                 //{
-                    $sql = "delete from tblsecurityusermembership where securitygroupid=".$this->id;
+                    $sql = "delete from tblsecurityusermembership where ";
+                    $sql.= "securitygroupid='$this->id' AND securityuserid NOT IN (";
+                    foreach($this->userMembers as $item)
+                    {
+                        $sql.= $item.", ";
+                    }
+                    $sql = substr($sql, 0, -2).")";
                     $result = pg_query($dbconn, $sql);
 
                     foreach($this->userMembers as $item)
                     {
-			if($item!="")
-			{
-                        	$sql = "insert into tblsecurityusermembership (securitygroupid, securityuserid) values ('$this->id', '$item')";
-	                        $firebug->log($sql, "Membership SQL"); 
-        	                $result = pg_query($dbconn, $sql);
-			}
+                        if($item!="")
+                        {
+                                $sql = "insert into tblsecurityusermembership (securitygroupid, securityuserid) values ('$this->id', '$item')";
+                                $firebug->log($sql, "Membership SQL");
+                                pg_send_query($dbconn, $sql);
+                                pg_get_result($dbconn);
+                        }
                     }
+                
                 //} 
                 
                 // Set or unset groups for this group                 

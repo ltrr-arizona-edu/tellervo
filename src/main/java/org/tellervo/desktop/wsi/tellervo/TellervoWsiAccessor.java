@@ -74,7 +74,7 @@ public class TellervoWsiAccessor extends WebJaxbAccessor<WSIRootElement, WSIRoot
 	/**
 	 * Load and cache the tellervo context!
 	 */
-	public static void loadCorinaContext() {
+	public static void loadTellervoContext() {
 		try {
 			getCorinaContext();
 		} catch (Exception e) {

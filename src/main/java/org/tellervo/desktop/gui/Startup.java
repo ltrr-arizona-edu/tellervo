@@ -60,7 +60,7 @@ import javax.swing.UIManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.model.CorinaModelLocator;
+import org.tellervo.desktop.model.TellervoModelLocator;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.ui.Builder;
 
@@ -176,7 +176,7 @@ public class Startup implements PrivilegedAction {
 	 */
 	public static void main(String args[]) {
 		// initialize controllers
-		CorinaModelLocator.getInstance();
+		TellervoModelLocator.getInstance();
 		
 		// the Java Web Start security manager is by default horribly
 		// restrictive.

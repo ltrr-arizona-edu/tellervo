@@ -31,8 +31,8 @@ import org.tellervo.desktop.io.model.ImportModel;
  * @author daniel
  */
 @SuppressWarnings("unused")
-public class CorinaModelLocator {
-	private static final CorinaModelLocator model = new CorinaModelLocator();
+public class TellervoModelLocator {
+	private static final TellervoModelLocator model = new TellervoModelLocator();
 	
 	private EditorController editorController = new EditorController();
 	private ColumnChooserController columnController = new ColumnChooserController();
@@ -43,7 +43,7 @@ public class CorinaModelLocator {
 	
 	private final UserGroupAdminController userGroupAdminControl = new UserGroupAdminController();
 	
-	private CorinaModelLocator(){
+	private TellervoModelLocator(){
 		
 	}
 	
@@ -52,7 +52,7 @@ public class CorinaModelLocator {
 		return tellervoImportModel;
 	}
 	
-	public static CorinaModelLocator getInstance(){
+	public static TellervoModelLocator getInstance(){
 		return model;
 	}
 }

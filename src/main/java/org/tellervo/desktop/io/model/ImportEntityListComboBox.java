@@ -31,7 +31,7 @@ import javax.swing.JSeparator;
 import javax.swing.ListCellRenderer;
 import javax.swing.border.EmptyBorder;
 
-import org.tellervo.desktop.gui.dbbrowse.SiteRenderer;
+import org.tellervo.desktop.gui.dbbrowse.TridasObjectRenderer;
 import org.tellervo.desktop.tridasv2.ui.ComboBoxFilterable;
 import org.tellervo.desktop.tridasv2.ui.support.NotPresent;
 import org.tellervo.desktop.ui.FilterableComboBoxModel;
@@ -132,14 +132,14 @@ public class ImportEntityListComboBox extends ComboBoxFilterable {
 		private static final long serialVersionUID = 1L;
 
 		private JSeparator separator;
-		private SiteRenderer siteRenderer;
+		private TridasObjectRenderer siteRenderer;
 		
 		public EntityListComboBoxRenderer() {
 			setOpaque(true);
 			setBorder(new EmptyBorder(1, 1, 1, 1));
 
 			separator = new JSeparator(JSeparator.HORIZONTAL);
-			siteRenderer = new SiteRenderer();
+			siteRenderer = new TridasObjectRenderer();
 		}		
 		
 		public void setMaxWidth(int maxwidth) {

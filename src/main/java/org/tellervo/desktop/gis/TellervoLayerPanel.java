@@ -30,7 +30,7 @@ import java.awt.event.*;
  * @see LayerTreeUsage
  * @see OnScreenLayerManager
  */
-public class CorinaLayerPanel extends JPanel
+public class TellervoLayerPanel extends JPanel
 {
 	private static final long serialVersionUID = 1L;
 	protected JPanel layersPanel;
@@ -48,7 +48,7 @@ public class CorinaLayerPanel extends JPanel
     private JSplitPane splitPane;
     private JSplitPane splitPane_1;
     private JButton btnAddData;
-	private final static Logger log = LoggerFactory.getLogger(CorinaLayerPanel.class);
+	private final static Logger log = LoggerFactory.getLogger(TellervoLayerPanel.class);
 
     /**
      * Create a panel with the default size.
@@ -56,7 +56,7 @@ public class CorinaLayerPanel extends JPanel
      * @param wwd WorldWindow to supply the layer list.
      * @wbp.parser.constructor
      */
-    public CorinaLayerPanel(WorldWindow wwd)
+    public TellervoLayerPanel(WorldWindow wwd)
     {
         this.makePanel(wwd, null);
     }
@@ -67,7 +67,7 @@ public class CorinaLayerPanel extends JPanel
      * @param wwd  WorldWindow to supply the layer list.
      * @param size Size of the panel.
      */
-    public CorinaLayerPanel(WorldWindow wwd, Dimension size)
+    public TellervoLayerPanel(WorldWindow wwd, Dimension size)
     {
         // Make a panel at a specified size.
         super(new BorderLayout());

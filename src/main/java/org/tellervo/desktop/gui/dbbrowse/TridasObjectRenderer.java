@@ -31,11 +31,9 @@ import javax.swing.ListCellRenderer;
 
 import org.tridas.util.TridasObjectEx;
 
-/**
- * A quick and dirty class to render stars in a combo box
- */
-public class SiteRenderer implements ListCellRenderer {
-	public SiteRenderer() {
+
+public class TridasObjectRenderer implements ListCellRenderer {
+	public TridasObjectRenderer() {
 		panel = new JPanel();
 		lblCode = new JLabel("code");		
 		lblName = new JLabel("name");

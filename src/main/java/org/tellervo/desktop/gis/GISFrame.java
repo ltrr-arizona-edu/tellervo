@@ -47,7 +47,7 @@ public class GISFrame extends JFrame {
 	private static final long serialVersionUID = -451333846688316647L;
 	protected GISPanel wwMapPanel;
 	protected JSplitPane splitPane;
-	protected CorinaLayerPanel layerPanel;
+	protected TellervoLayerPanel layerPanel;
 	private final Boolean isMiniMap;
 	
 	/**
@@ -90,7 +90,7 @@ public class GISFrame extends JFrame {
 		{
 			JPanel container = new JPanel();
 			container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-            layerPanel = new CorinaLayerPanel(wwMapPanel.getWwd());
+            layerPanel = new TellervoLayerPanel(wwMapPanel.getWwd());
             
             JButton addLayer = new JButton("Add layer");
             final GISFrame glue = this;
@@ -135,7 +135,7 @@ public class GISFrame extends JFrame {
         try {
         	if(wwMapPanel.getWwd()!=null)
         	{      	
-	        	CorinaGazetteerPanel gazPanel = new CorinaGazetteerPanel(wwMapPanel.getWwd(), null);
+	        	TellervoGazetteerPanel gazPanel = new TellervoGazetteerPanel(wwMapPanel.getWwd(), null);
 	        	
 				getContentPane().add(gazPanel,   //use default yahoo service
 				        BorderLayout.SOUTH);

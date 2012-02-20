@@ -46,7 +46,7 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.dbbrowse.SiteRenderer;
+import org.tellervo.desktop.gui.dbbrowse.TridasObjectRenderer;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.SearchOperator;
@@ -734,7 +734,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
      */
     private void populateObjectCombo()
     {
-    	SiteRenderer rend = new SiteRenderer();
+    	TridasObjectRenderer rend = new TridasObjectRenderer();
     	rend.setMaximumTitleLength(30);
     	cboObject.setRenderer(rend);
     	objModel = new ArrayListModel<TridasObject>(App.tridasObjects.getObjectList());

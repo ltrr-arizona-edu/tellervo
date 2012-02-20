@@ -24,7 +24,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.dbbrowse.SiteRenderer;
+import org.tellervo.desktop.gui.dbbrowse.TridasObjectRenderer;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.schema.SearchOperator;
@@ -71,7 +71,7 @@ public class ProSheetPrintingUI extends javax.swing.JPanel implements ActionList
 		
 		cboMaster.setModel(availModel);
 		
-		cboObject.setRenderer(new SiteRenderer());	
+		cboObject.setRenderer(new TridasObjectRenderer());	
 		cboObject.setModel(objModel);
     }
     

@@ -58,7 +58,7 @@ import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel;
 import org.tellervo.desktop.tridasv2.TridasCloner;
-import org.tellervo.desktop.tridasv2.ui.CorinaPropertySheetTable;
+import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetTable;
 import org.tellervo.desktop.tridasv2.ui.TridasPropertyEditorFactory;
 import org.tellervo.desktop.tridasv2.ui.TridasPropertyRendererFactory;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityDeriver;
@@ -103,7 +103,7 @@ public class ImportDialog extends JDialog implements PropertyChangeListener, Tri
 	/** Our property sheet panel (contains table and description) */
 	private PropertySheetPanel propertiesPanel;
 	/** Our properties table */
-	private CorinaPropertySheetTable propertiesTable;
+	private TellervoPropertySheetTable propertiesTable;
 	/** Panel containing the edit/save changes/cancel buttons for the current entity */
 	private JPanel bottombar;
 	/** The lock/unlock button for making changes to the currently selected entity */
@@ -243,7 +243,7 @@ public class ImportDialog extends JDialog implements PropertyChangeListener, Tri
 	private void initPropertiesPanel() {
 		
 		// Create table and panel to hold it
-		propertiesTable = new CorinaPropertySheetTable();
+		propertiesTable = new TellervoPropertySheetTable();
 		propertiesPanel = new PropertySheetPanel(propertiesTable);
 		propertiesPanel.getTable().setEnabled(false);
 

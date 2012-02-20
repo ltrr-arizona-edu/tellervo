@@ -57,7 +57,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.xml.sax.SAXException;
 
 
-public class CorinaGazetteerPanel extends JPanel {
+public class TellervoGazetteerPanel extends JPanel {
 
 	private static final long serialVersionUID = 1462658061492070327L;
 	private final WorldWindow wwd;
@@ -65,7 +65,7 @@ public class CorinaGazetteerPanel extends JPanel {
     private JPanel resultsPanel;
     private JComboBox resultsBox;
 
-    public CorinaGazetteerPanel(final WorldWindow wwd, String gazetteerClassName)
+    public TellervoGazetteerPanel(final WorldWindow wwd, String gazetteerClassName)
         throws IllegalAccessException, InstantiationException, ClassNotFoundException
     {
         super(new BorderLayout());
@@ -99,14 +99,14 @@ public class CorinaGazetteerPanel extends JPanel {
                         }
                         catch (NoItemException e)
                         {
-                            JOptionPane.showMessageDialog(CorinaGazetteerPanel.this,
+                            JOptionPane.showMessageDialog(TellervoGazetteerPanel.this,
                                 "Location not available \"" + (field.getText() != null ? field.getText() : "") + "\"\n"
                                     + "(" + e.getMessage() + ")",
                                 "Location Not Available", JOptionPane.ERROR_MESSAGE);
                         }
                         catch (IllegalArgumentException e)
                         {
-                            JOptionPane.showMessageDialog(CorinaGazetteerPanel.this,
+                            JOptionPane.showMessageDialog(TellervoGazetteerPanel.this,
                                 "Error parsing input \"" + (field.getText() != null ? field.getText() : "") + "\"\n"
                                     + e.getMessage(),
                                 "Lookup Failure", JOptionPane.ERROR_MESSAGE);                  
@@ -114,7 +114,7 @@ public class CorinaGazetteerPanel extends JPanel {
                         catch (Exception e)
                         {
                             e.printStackTrace();
-                            JOptionPane.showMessageDialog(CorinaGazetteerPanel.this,
+                            JOptionPane.showMessageDialog(TellervoGazetteerPanel.this,
                                 "Error looking up \"" + (field.getText() != null ? field.getText() : "") + "\"\n"
                                     + e.getMessage(),
                                 "Lookup Failure", JOptionPane.ERROR_MESSAGE);
@@ -146,7 +146,7 @@ public class CorinaGazetteerPanel extends JPanel {
                     {
                         JComboBox cb = (JComboBox)actionEvent.getSource();
                         PointOfInterest selectedPoi = (PointOfInterest)cb.getSelectedItem();
-                        CorinaGazetteerPanel.moveToLocation(wwd, selectedPoi);
+                        TellervoGazetteerPanel.moveToLocation(wwd, selectedPoi);
                     }
                 });
             }
@@ -193,7 +193,7 @@ public class CorinaGazetteerPanel extends JPanel {
         {
             if (poi.size() == 1)
             {
-            	CorinaGazetteerPanel.moveToLocation(wwd, poi.get(0));
+            	TellervoGazetteerPanel.moveToLocation(wwd, poi.get(0));
             }
             else
             {

@@ -82,7 +82,7 @@ public abstract class AbstractComboBoxRenderer extends JPanel implements
             	if(val.isSetNormalStd())
             	{
             		
-            		if(!val.getNormalStd().equals("Corina") &&  
+            		if(!val.getNormalStd().equals("Tellervo") &&  
             		   !val.getNormalStd().equals("Catalogue of Life Annual Checklist 2008"))
             		{
                     	Color blend = ColorUtils.blend(table.getSelectionBackground(), Color.red);
@@ -129,7 +129,7 @@ public abstract class AbstractComboBoxRenderer extends JPanel implements
             	if(val.isSetNormalStd())
             	{
             		
-            		if(!val.getNormalStd().equals("Corina") && 
+            		if(!val.getNormalStd().equals("Tellervo") && 
             		   !val.getNormalStd().equals("Catalogue of Life Annual Checklist 2008"))
             		{
                     	Color blend = ColorUtils.blend(table.getSelectionBackground(), Color.red);

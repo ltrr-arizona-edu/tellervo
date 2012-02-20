@@ -87,8 +87,8 @@ import org.tellervo.desktop.io.model.ImportModel;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow;
 import org.tellervo.desktop.io.model.TridasRepresentationTreeModel;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow.ImportStatus;
-import org.tellervo.desktop.model.CorinaModelLocator;
-import org.tellervo.desktop.tridasv2.ui.CorinaPropertySheetTable;
+import org.tellervo.desktop.model.TellervoModelLocator;
+import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetTable;
 import org.tellervo.desktop.tridasv2.ui.TridasPropertyEditorFactory;
 import org.tellervo.desktop.tridasv2.ui.TridasPropertyRendererFactory;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityDeriver;
@@ -164,7 +164,7 @@ public class ImportView extends JFrame{
 	private PropertySheetPanel propertiesPanel;
 	
 	/** Our properties table */
-	private CorinaPropertySheetTable propertiesTable;
+	private TellervoPropertySheetTable propertiesTable;
 	
 	/** Panel containing the edit/save changes/cancel buttons for the current entity */
 	private JPanel bottombar;
@@ -220,7 +220,7 @@ public class ImportView extends JFrame{
 	{
 
 		topChooserListener = new ChoiceComboBoxActionListener(this);
-		model = CorinaModelLocator.getInstance().getImportModel();
+		model = TellervoModelLocator.getInstance().getImportModel();
 		MVC.showEventMonitor();
 		initComponents();
 		linkModel();
@@ -237,7 +237,7 @@ public class ImportView extends JFrame{
 		if(usingOldImporter(file, fileType)) return;
 		
 		topChooserListener = new ChoiceComboBoxActionListener(this);
-		model = CorinaModelLocator.getInstance().getImportModel();
+		model = TellervoModelLocator.getInstance().getImportModel();
 		//MVC.showEventMonitor();
 		initComponents();
 		linkModel();
@@ -365,7 +365,7 @@ public class ImportView extends JFrame{
 				panelMetadata.add(bottombar, BorderLayout.SOUTH);
 				
 				// Create metadata table and panel to hold it
-				propertiesTable = new CorinaPropertySheetTable();
+				propertiesTable = new TellervoPropertySheetTable();
 				propertiesPanel = new PropertySheetPanel(propertiesTable);
 				//propertiesPanel.getTable().setEnabled(false);
 

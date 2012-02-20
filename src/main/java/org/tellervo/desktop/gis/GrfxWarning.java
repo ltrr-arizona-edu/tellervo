@@ -66,7 +66,7 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
     {
     	this.txtGrfxWarning.setContentType("text/html");
     	this.txtGrfxWarning.setEditable(false);
-    	this.txtGrfxWarning.setText("<html><font color=\"red\"><center><b>Mapping disabled</b></center></font><p>The 3D globe mapping in Corina requires an OpenGL 3D capable graphics card.  Either your graphics card is not supported or you do not have the proper graphics drivers installed.  Most graphics cards manufactured since 2006 are supported. </p></html>");
+    	this.txtGrfxWarning.setText("<html><font color=\"red\"><center><b>Mapping disabled</b></center></font><p>The 3D globe mapping in Tellervo requires an OpenGL 3D capable graphics card.  Either your graphics card is not supported or you do not have the proper graphics drivers installed.  Most graphics cards manufactured since 2006 are supported. </p></html>");
     	
     	this.btnRetry.addActionListener(this);
     }

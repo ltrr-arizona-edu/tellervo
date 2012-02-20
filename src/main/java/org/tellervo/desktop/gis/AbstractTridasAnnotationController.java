@@ -33,10 +33,10 @@ public abstract class AbstractTridasAnnotationController implements ActionListen
 {
     private WorldWindow wwd;
     private boolean enabled;
-    private CorinaAnnotation annotation;
+    private TellervoAnnotation annotation;
     protected ButtonAnnotation toolTipComponent;
 
-    public AbstractTridasAnnotationController(WorldWindow worldWindow, CorinaAnnotation annotation)
+    public AbstractTridasAnnotationController(WorldWindow worldWindow, TellervoAnnotation annotation)
     {
         if (worldWindow == null)
         {
@@ -83,12 +83,12 @@ public abstract class AbstractTridasAnnotationController implements ActionListen
         this.getWorldWindow().removeSelectListener(this);
     }
 
-    public CorinaAnnotation getAnnotation()
+    public TellervoAnnotation getAnnotation()
     {
         return this.annotation;
     }
 
-    public void setAnnotation(CorinaAnnotation annotation)
+    public void setAnnotation(TellervoAnnotation annotation)
     {
         if (this.annotation == annotation)
             return;
@@ -166,9 +166,9 @@ public abstract class AbstractTridasAnnotationController implements ActionListen
         {
             this.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.HAND_CURSOR));
         }
-        else if (topObject != null && topObject instanceof CorinaAnnotation)
+        else if (topObject != null && topObject instanceof TellervoAnnotation)
         {
-            if (((CorinaAnnotation) topObject).isBusy())
+            if (((TellervoAnnotation) topObject).isBusy())
             {
                 this.setCursor(java.awt.Cursor.getPredefinedCursor(java.awt.Cursor.WAIT_CURSOR));
             }

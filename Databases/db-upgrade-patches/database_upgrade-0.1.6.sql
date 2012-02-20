@@ -104,19 +104,27 @@ CREATE OR REPLACE FUNCTION enforce_atleastoneadminuser()
   RETURNS trigger AS
 $BODY$DECLARE
  usrrow tblsecurityuser%ROWTYPE;
- grprow tblsecuritygroup%ROWTYPE;
-
+ grprow int;
+ cnt int;
 BEGIN
 
-FOR usrrow IN SELECT * from tblsecurityuser WHERE isactive=t LOOP
-   FOR grprow IN SELECT cpgdb.getgroupmembership(usrrow.securityuserid) LOOP
-      IF grprow.securitygroupid=1 THEN
-         RETURN old;
+cnt := 0;
+FOR usrrow IN SELECT * from tblsecurityuser WHERE isactive='t' LOOP
+   RAISE NOTICE 'Checking details of user %', usrrow.securityuserid;
+   FOR grprow IN SELECT securitygroupid from cpgdb.getgroupmembership(usrrow.securityuserid) LOOP
+      IF grprow=1 THEN
+         cnt = cnt +1;
       END IF;
    END LOOP;   
 END LOOP;
 
-RAISE EXCEPTION 'Cannot delete the last user with administrative privileges';
+RAISE NOTICE 'Number of remaining admin users is %', cnt;
+
+IF(cnt=0) THEN
+	RAISE EXCEPTION 'Cannot delete the last user with administrative privileges';
+END IF;
+
+RETURN old;
 
 END;$BODY$
   LANGUAGE plpgsql VOLATILE
@@ -153,7 +161,7 @@ IF OLD.securitygroupid=1 THEN
    RETURN OLD;
 END IF;
 
-RETURN NEW;
+RETURN OLD;
 END;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
@@ -161,7 +169,7 @@ ALTER FUNCTION enforce_noadminpermedits() OWNER TO tellervo;
 
 
 CREATE TRIGGER enforce_noadminpermedits
-  BEFORE INSERT OR UPDATE OR DELETE
+  BEFORE UPDATE OR DELETE
   ON tblsecuritydefault
   FOR EACH ROW
   EXECUTE PROCEDURE enforce_noadminpermedits();

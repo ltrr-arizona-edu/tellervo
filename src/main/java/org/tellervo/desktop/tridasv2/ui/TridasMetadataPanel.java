@@ -103,7 +103,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	/** Our property sheet panel (contains table and description) */
 	private PropertySheetPanel propertiesPanel;
 	/** Our properties table */
-	private CorinaPropertySheetTable propertiesTable;
+	private TellervoPropertySheetTable propertiesTable;
 	/** The sidebar that has buttons for sample, series, etc */
 	private JButtonBar buttonBar;
 	/** The current entity selected */
@@ -541,7 +541,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	}
 	
 	private void initPropertiesPanel() {
-		propertiesTable = new CorinaPropertySheetTable();
+		propertiesTable = new TellervoPropertySheetTable();
 		
 		propertiesPanel = new PropertySheetPanel(propertiesTable);
 
