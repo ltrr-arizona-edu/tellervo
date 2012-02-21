@@ -50,9 +50,8 @@ import org.jdom.xpath.XPath;
  */
 public class DocBundleGenerator {
 	public static void main(String args[]) {
-		InputStream is = DocBundleGenerator.class.getClassLoader().getResourceAsStream(
-				"edu/cornell/dendro/webservice/schemas/tridas.xsd");
-		
+
+		InputStream is = DocBundleGenerator.class.getClassLoader().getResourceAsStream("schemas/tridas.xsd");
 		Document doc;
 		SAXBuilder builder = new SAXBuilder();
 		try {
@@ -97,6 +96,7 @@ public class DocBundleGenerator {
 		}
 		
 		closeWriters();
+		System.out.println("XML Documentation bundle created successfully!");
 	}
 	
 	private static Map<String, PrintWriter> writers;
@@ -107,7 +107,7 @@ public class DocBundleGenerator {
 		if(writer != null)
 			return writer;
 		
-		String fn = "src/org.tellervo.desktop.tridasv2/doc/" +  
+		String fn = "src/main/java/org/tellervo/desktop/tridasv2/doc/" +  
 			"DocsBundle" + (lang.equals("en") ? "" : ("_" + lang)) + ".properties";
 		writer = new PrintWriter(new OutputStreamWriter(new FileOutputStream(fn), "UTF-8"));
 

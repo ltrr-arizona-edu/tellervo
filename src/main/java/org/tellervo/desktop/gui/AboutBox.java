@@ -36,6 +36,10 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import org.tellervo.desktop.Build;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JSeparator;
+import java.awt.Color;
+import javax.swing.border.EtchedBorder;
 
 
 /*
@@ -111,8 +115,6 @@ public class AboutBox extends javax.swing.JDialog {
         lblVersion.setText(strVersion);
         lblCompiledAt.setText(strTimestamp);   
         lblRevision.setText(strRevision);
-
-        txtDescription.setText(strDescription);        
         txtLicense.setText(strLicense);
         txtLicense.setCaretPosition(0);
         
@@ -161,12 +163,10 @@ public class AboutBox extends javax.swing.JDialog {
         tabbedPane = new javax.swing.JTabbedPane();
         panelAbout = new javax.swing.JPanel();
         panelSummary = new javax.swing.JPanel();
-        lblCorina = new javax.swing.JLabel();
+        lblTellervo = new javax.swing.JLabel();
         lblVersion = new javax.swing.JLabel();
         lblCompiledAt = new javax.swing.JLabel();
-        txtDescription = new javax.swing.JTextPane();
         txtCopyright = new javax.swing.JTextPane();
-        seperator = new javax.swing.JSeparator();
         lblIcon = new javax.swing.JLabel();
         panelLicense = new javax.swing.JPanel();
         scrollPane = new javax.swing.JScrollPane();
@@ -174,8 +174,8 @@ public class AboutBox extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        lblCorina.setFont(new java.awt.Font("Lucida Grande", 1, 18));
-        lblCorina.setText("Corina");
+        lblTellervo.setFont(new java.awt.Font("Lucida Grande", 1, 18));
+        lblTellervo.setText("Tellervo");
 
         lblVersion.setFont(new java.awt.Font("Lucida Grande", 0, 10));
         lblVersion.setText("Version : 2.01");
@@ -191,7 +191,7 @@ public class AboutBox extends javax.swing.JDialog {
         	gl_panelSummary.createParallelGroup(Alignment.LEADING)
         		.addGroup(gl_panelSummary.createSequentialGroup()
         			.addGap(24)
-        			.addComponent(lblCorina)
+        			.addComponent(lblTellervo)
         			.addGap(18)
         			.addComponent(lblVersion)
         			.addPreferredGap(ComponentPlacement.RELATED)
@@ -208,58 +208,29 @@ public class AboutBox extends javax.swing.JDialog {
         				.addComponent(lblRevision)
         				.addComponent(lblCompiledAt)
         				.addComponent(lblVersion)
-        				.addComponent(lblCorina))
+        				.addComponent(lblTellervo))
         			.addContainerGap(164, Short.MAX_VALUE))
         );
         panelSummary.setLayout(gl_panelSummary);
 
-        txtDescription.setBorder(null);
-        txtDescription.setEditable(false);
-        txtDescription.setFont(new java.awt.Font("Lucida Grande", 0, 11));
-        txtDescription.setOpaque(false);
-
-        txtCopyright.setBorder(null);
+        txtCopyright.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
         txtCopyright.setEditable(false);
         txtCopyright.setFont(new java.awt.Font("Lucida Grande", 0, 8));
         txtCopyright.setOpaque(false);
 
-        seperator.setBackground(new java.awt.Color(255, 255, 255));
-
-        org.jdesktop.layout.GroupLayout gl_panelAbout = new org.jdesktop.layout.GroupLayout(panelAbout);
-        panelAbout.setLayout(gl_panelAbout);
-        gl_panelAbout.setHorizontalGroup(
-            gl_panelAbout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(org.jdesktop.layout.GroupLayout.TRAILING, gl_panelAbout.createSequentialGroup()
-                .addContainerGap()
-                .add(gl_panelAbout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, seperator, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE)
-                    .add(gl_panelAbout.createSequentialGroup()
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(txtCopyright, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, gl_panelAbout.createSequentialGroup()
-                        .add(lblIcon, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 128, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                        .add(panelSummary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .add(org.jdesktop.layout.GroupLayout.LEADING, txtDescription, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 382, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        gl_panelAbout.setVerticalGroup(
-            gl_panelAbout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(gl_panelAbout.createSequentialGroup()
-                .addContainerGap()
-                .add(gl_panelAbout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING, false)
-                    .add(panelSummary, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .add(lblIcon, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 128, Short.MAX_VALUE))
-                .add(43, 43, 43)
-                .add(txtDescription, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(seperator, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 18, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .add(2, 2, 2)
-                .add(txtCopyright, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(82, Short.MAX_VALUE))
-        );
-
         tabbedPane.addTab("About", panelAbout);
+        panelAbout.setLayout(new MigLayout("", "[128px][48.00px][274px]", "[grow][128px][18px,grow][100px]"));
+        seperator = new javax.swing.JSeparator();
+        
+                seperator.setBackground(new java.awt.Color(255, 255, 255));
+                panelAbout.add(seperator, "cell 0 0 3 1,growx,aligny bottom");
+        
+        separator = new JSeparator();
+        separator.setBackground(Color.WHITE);
+        panelAbout.add(separator, "cell 0 2 3 1,growx,aligny top");
+        panelAbout.add(txtCopyright, "cell 0 3 3 1,growx,aligny top");
+        panelAbout.add(lblIcon, "cell 0 1 2 1,grow");
+        panelAbout.add(panelSummary, "cell 2 1,grow");
 
         scrollPane.setFont(new java.awt.Font("Courier", 0, 9));
 
@@ -322,7 +293,7 @@ public class AboutBox extends javax.swing.JDialog {
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     protected javax.swing.JLabel lblCompiledAt;
-    protected javax.swing.JLabel lblCorina;
+    protected javax.swing.JLabel lblTellervo;
     protected javax.swing.JLabel lblIcon;
     protected javax.swing.JLabel lblVersion;
     protected javax.swing.JLabel lblRevision;
@@ -333,6 +304,6 @@ public class AboutBox extends javax.swing.JDialog {
     protected javax.swing.JSeparator seperator;
     protected javax.swing.JTabbedPane tabbedPane;
     protected javax.swing.JTextPane txtCopyright;
-    protected javax.swing.JTextPane txtDescription;
     protected javax.swing.JTextPane txtLicense;
+    private JSeparator separator;
 }

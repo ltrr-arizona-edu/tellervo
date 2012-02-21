@@ -57,8 +57,8 @@ public class Documentation {
 		
 		int maxdepth = Math.min(3, keys.length);
 		for(int i = maxdepth - 1; i >= 0; i--) {
-			//String thisKey = StringUtils.join(keys, '.', keys.length - (i+1), keys.length);
-			String thisKey = StringUtils.join(keys);
+			String thisKey = StringUtils.join(keys, '.', keys.length - (i+1), keys.length);
+			//String thisKey = StringUtils.join(keys);
 			
 			try {
 				return msg.getString(thisKey);
@@ -76,7 +76,7 @@ public class Documentation {
     static {
 		ResourceBundle bundle;
 		try {
-			bundle = ResourceBundle.getBundle("org.tellervo.desktop.tridasv2/doc/DocsBundle");
+			bundle = ResourceBundle.getBundle("org/tellervo/desktop/tridasv2/doc/DocsBundle");
 		} catch (MissingResourceException mre) {
 			mre.printStackTrace();
 			bundle = new ResourceBundle() {
