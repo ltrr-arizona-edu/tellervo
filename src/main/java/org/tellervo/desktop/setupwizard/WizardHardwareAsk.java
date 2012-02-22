@@ -16,7 +16,7 @@ public class WizardHardwareAsk extends AbstractWizardPanel implements ActionList
 	
 	public WizardHardwareAsk() {
 		super("Setting up measuring platform", 
-		"Corina supports a variety of dendro measuring platforms. If you have a platform already attached " +
+		"Tellervo supports a variety of dendro measuring platforms. If you have a platform already attached " +
 		"to your computer you can go ahead and configure it now.  Otherwise, you should skip this step and set" +
 		"up your platform on another ocassion.  Serial cables should only be plugged in to your computer when " +
 		"the computer is turned off. \n\n" +

@@ -8,13 +8,13 @@ Tellervo is open source software and we actively encourage collaboration and ass
 \index{Source code}
 This section describes how to access the Tellervo source code, but as you are no doubt aware it is normal (if not essential) to use a integrated development environment for developing any more than the most simplistic applications.  If you plan to do any development work, it is probably best to skip this section and move straight on to the `Development environment' section which includes instructions for accessing the source code directly from your IDE.  If, however, you just want to browse the source code please continue reading.
 
-The Tellervo source code is maintained in a Subversion repository at Cornell.  The simplest way to see the source code is via the web viewer on the Cornell website: \url{http://dendro.cornell.edu/svn/corina/}.  You can also examine the Javadoc documentation of the code here \url{http://dendro.cornell.edu/corina/developers.php}
+The Tellervo source code is maintained in a Subversion repository at Sourceforget.net.  The simplest way to see the source code is via the web viewer on the Sourceforge website: \url{http://sourceforge.net/p/tellervo/code-0}.  You can also examine the Javadoc documentation of the code on the Tellervo website.
 
 If you have Subversion installed you can do an anonymous checkout of the code as follows:
 
-\code{svn co http://dendro.cornell.edu/svn/corina/}
+\code{svn checkout svn://svn.code.sf.net/p/tellervo/code-0/trunk tellervo-code-0}
 
-An overview of the development can be seen through the Tellervo Ohloh pages at \url{http://www.ohloh.net/p/corina/}.  Ohloh provides graphics summarizing the code over time, including timelines of commits by user.
+An overview of the development can be seen through the Tellervo Ohloh pages at \url{http://www.ohloh.net/p/tellervo/}.  Ohloh provides graphics summarizing the code over time, including timelines of commits by user.
 
 
 
@@ -34,11 +34,11 @@ Once installed, you can then launch Eclipse.  To access the Tellervo source code
 
 Next you will need to install the m2e Maven plugin to Eclipse.  This can also be installed by going to \menutwo{Help}{Install new software}, however, you will also need to add the Maven update site as this plugin is not currently available in the main Eclipse repository.  You can do this by click the `Add' button and using the URL \url{http://m2eclipse.sonatype.org/sites/m2e}.  Once again you will need to restart Eclipse before continuing.
 
-Next you need to get the Tellervo source code.  Go to File \menutwo{New}{Project}, then in the dialog select \menutwo{SVN}{Project from SVN}.  There are two methods of accessing the Tellervo repository: anonymously (in which case you will have read only access); or with a username provided by the Tellervo development team.  Anonymous users will need to add a repository in the form: \url{http://dendro.cornell.edu/svn/corina/} and full users will need to use \url{svn+ssh://dendro.cornell.edu/home/svn/corina/}.
+Next you need to get the Tellervo source code.  Go to File \menutwo{New}{Project}, then in the dialog select \menutwo{SVN}{Project from SVN}.  There are two methods of accessing the Tellervo repository: anonymously (in which case you will have read only access); or with a username provided by the Tellervo development team.  Anonymous users will need to add a repository in the form: \url{svn://svn.code.sf.net/p/tellervo/code-0/trunk} and full users will need to use \url{svn+ssh://svn.code.sf.net/p/tellervo/code-0/trunk}.
 
 Once the project has downloaded to your workspace, you may need to set the compliance level.  This can be done by going to \menuthree{Project}{Properties}{Java compiler} and choosing compliance level of 6.0.  Tellervo uses a handful of Java 6 specific functions, particularly with regards JAXB, so will not run successfully with Java 5.  
 
-To launch Tellervo, you will need to \menutwo{Run}{Run Java application}.  Create a new run configuration with the main class set to `edu.cornell.dendro.corina.gui.Startup'.     
+To launch Tellervo, you will need to \menutwo{Run}{Run Java application}.  Create a new run configuration with the main class set to `org.tellervo.desktop.gui.Startup'.     
 
 
 \section{Dependencies}
@@ -146,7 +146,7 @@ There are two types of ring remarks in Tellervo: TRiDaS controlled remarks and T
 <tridas:remark normal="Tellervo" normalStd="insect damage" normalId="165" />
 }
 
-To add a new remark type to Tellervo you will need to first enter it in the database table tlkpreadingnote specifying the vocabulary as `2' (Tellervo).  To display a custom icon for this remark in the software, you will need to add a $16\times16$ and a $48\times48$ version to the resources an then add an entry to the TellervoRemarkIconMap in edu/cornell/dendro/corina/remarks/Remarks.java.  The $16\times16$ icon is used in the editor interface, and the $48\times48$ in PDFs.
+To add a new remark type to Tellervo you will need to first enter it in the database table tlkpreadingnote specifying the vocabulary as `2' (Tellervo).  To display a custom icon for this remark in the software, you will need to add a $16\times16$ and a $48\times48$ version to the resources an then add an entry to the TellervoRemarkIconMap in org/tellervo/desktop/remarks/Remarks.java.  The $16\times16$ icon is used in the editor interface, and the $48\times48$ in PDFs.
 
 \section{Translations}
 \index{Translations}
@@ -173,8 +173,8 @@ Logging in Tellervo is handled by the SLF4J and Log4J packages.  Rather than wri
 Log4J also enables us to log to several places (known as appenders), e.g. console, log file or a component within our application.  It is also possible to change the level of logging depending on the log type, so minimal messages can be sent to the console but verbose messages to the log file.  Tellervo has the following four appenders configured:
 
 \begin{itemize}
- \item Standard log file (corina.log) that rolls over up to 2mb of messages
- \item Submission log file (corina-submission.log) that contains the last 100kb of verbose messages and is used by the bug submission tool to enable users to notify developers of problems.
+ \item Standard log file (tellervo.log) that rolls over up to 2mb of messages
+ \item Submission log file (tellervo-submission.log) that contains the last 100kb of verbose messages and is used by the bug submission tool to enable users to notify developers of problems.
  \item Console -- standard messages to the console when launched from command line
  \item Swing GUI -- a swing component for displaying basic logs to the users in the application.
 \end{itemize}
@@ -221,7 +221,7 @@ While you develop Maven should automatically build Tellervo for you in the backg
  \item[deploy] - This uploads the compiled jar into the maven.tridas.org repository.  Note that you will need to either run this phase from the command line or by setting up a customer run configuration in Eclipse.
 \end{description*}
 
-I have had some issues with the m2e plugin getting a little stuck.  If you find you are getting Maven build errors you may like to try running Maven from the command line.  Navigate to the base of your corina folder and type mvn clean, mvn package, mvn install or mvn deploy depending on what you are trying to do.
+I have had some issues with the m2e plugin getting a little stuck.  If you find you are getting Maven build errors you may like to try running Maven from the command line.  Navigate to the base of your Tellervo folder and type mvn clean, mvn package, mvn install or mvn deploy depending on what you are trying to do.
 
 \subsection{Windows installer}
 \label{txt:windowsInstaller}
@@ -314,7 +314,7 @@ More recently the Google WindowBuilder Pro tool has been used for interface desi
 \label{txtSupportingNewMeasuringPlatforms}
 The support for hardware measuring platforms has been designed to be as modular and extensible as possible. Adding support for additional measuring platform types should therefore be quick and painless!  
 
-To begin, you need to extend the abstract class edu.cornell.dendro.corina.hardware.AbstractSerialMeasuringDevice.  You can of course also extend the class implementation of another platform if you only need to modify a few settings.  This is the case for both the QC10 and QC1100 devices which extend the GenericASCIIDevice class.  The implementation code is identical for all three, but the derived classes set the port settings to the default values for the two QuadraChek boxes.
+To begin, you need to extend the abstract class org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.  You can of course also extend the class implementation of another platform if you only need to modify a few settings.  This is the case for both the QC10 and QC1100 devices which extend the GenericASCIIDevice class.  The implementation code is identical for all three, but the derived classes set the port settings to the default values for the two QuadraChek boxes.
 
 There are a number of methods that you will need to override from the base class.  If you use Eclipse to generate the class it will create placeholders for all the relevant methods.  The toString() method enables you to return the name for the device you are implementing, whereas all the is$\ldots$() methods enable Tellervo to understand the capabilities of the device.  For instance some devices will accept requests to zero the current measurement and/or request the current measurement value, while others will not (instead they rely on hardware buttons on the device itself).  Some devices can have the port settings (such as baud, parity, stopbits etc) altered and the corresponding is$\ldots$Editable() functions indicate whether this is possible.  All user interfaces in Tellervo are modified in accordance with these methods and show the user only relevant buttons.
 
@@ -328,13 +328,13 @@ The guts of the work in the class are performed in the following methods:
  \item[requestMeasurement()] -- if your platform responds to requests to send the current measurement value then you should implement this functionality here.
 \end{description} 
 
-Once your new class is complete you need to inform Tellervo that it exists.  To do this you need to register the device in edu.cornell.dendro.corina.hardware.SerialDeviceSelector.  You should then be able to launch Tellervo and test your new device in the preferences dialog.  The relevant parts of the dialog will be enabled/disabled depending on how you set the corresponding is$\ldots$Editable() methods in your class.  The dialog also includes a seperate test window with a console for debugging the raw data received from the serial port.  
+Once your new class is complete you need to inform Tellervo that it exists.  To do this you need to register the device in org.tellervo.desktop.hardware.SerialDeviceSelector.  You should then be able to launch Tellervo and test your new device in the preferences dialog.  The relevant parts of the dialog will be enabled/disabled depending on how you set the corresponding is$\ldots$Editable() methods in your class.  The dialog also includes a seperate test window with a console for debugging the raw data received from the serial port.  
 
 \section{Writing documentation}
 \index{Documentation}
 The documentation in Tellervo is written in the well established typesetting language {\LaTeXe}.  {\LaTeX} is a great tool for producing high quality documentation with a good structure and style.  Unlike standard WYSIWYG (what you see is what you get) word processing applications like Microsoft Word, {\LaTeX} uses simple plain text code to layout a document so that it is often described as WYSIWYM (what you see is what you mean)!  The style of a {\LaTeX} document is handled separated enabling the author to concentrate on content.  By removing the possibility for authors to tinker with font sizes etc, {\LaTeX} forces you to create clear, well structured documents.  For further details see \url{http://en.wikibooks.org/wiki/LaTeX/}.
 
-The master document is `Documentation/corina-manual.tex' and imports each chapter file.  To build the documentation you will need a editor to update and compile to PDF.  On Linux I would suggest Kile, on MacOSX TeXShop and on Windows WinEdt.  To add or edit bibliography entries you will also need a {\BibTeX} editor such as JabRef or BibDesk.
+The master document is `Documentation/tellervo-manual.tex' and imports each chapter file.  To build the documentation you will need a editor to update and compile to PDF.  On Linux I would suggest Kile, on MacOSX TeXShop and on Windows WinEdt.  To add or edit bibliography entries you will also need a {\BibTeX} editor such as JabRef or BibDesk.
 
 Images specific to the documentation should be stored in `Documentation/Images', but you will also automatically have access to the image and icon resources in the application itself.  This can be useful, for instance when illustrating what icon a user needs to click for perform a task.  To reference a icon for instance you can use the path `Icons/48x48/myicon.png'.
 
@@ -347,7 +347,7 @@ Making a new release should be a relatively quick and simply process, but there 
 \begin{itemize}
  \item Make sure this documentation is up-to-date!  
  \item Update the logging appenders to an appropriate level so that the user is not swamped by debug messages
- \item If this release relies upon a certain version of the Tellervo server, make sure you set this correctly in `/corina-desktop/src/main/java/edu/cornell/dendro/corina/core/App.java'.  This is important to ensure that users aren't working against an old version of the server which could have unexpected side-effects.
+ \item If this release relies upon a certain version of the Tellervo server, make sure you set this correctly in `/src/main/java/org/tellervo/desktop/core/App.java'.  This is important to ensure that users aren't working against an old version of the server which could have unexpected side-effects.
  \item Increment the build version number in the pom.xml
  \item Update the splash screen and background graphics.
  \item Check the code in Eclipse and eliminate as many warnings as possible.
@@ -355,8 +355,8 @@ Making a new release should be a relatively quick and simply process, but there 
  \item Run Maven package.
  \item TEST!
  \item Deploy to maven.tridas.org by running Maven deploy.
- \item Copy `/target/Binaries' to the \url{http://dendro.cornell.edu/corina/download/} folder.  The new release will automatically be added to the options for download.
- \item If this new release should be the recommmended release for internal and/or external uses, alter the download.php page to reflect this.
+ \item Copy `/target/binaries' to the \url{http://www.tellervo.org/download/} folder.  The new release will automatically be added to the options for download.
+ \item If this new release should be the recommmended release for internal and/or external uses, alter the index.php page to reflect this.
 \end{itemize}
 
 

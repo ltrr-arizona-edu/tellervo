@@ -7,6 +7,25 @@
 \authors{Peter W.\ Brewer}
 \version{1.0}
 
+
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    unicode=false,          % non-Latin characters in Acrobat’s bookmarks
+    pdftoolbar=true,        % show Acrobat’s toolbar?
+    pdfmenubar=true,        % show Acrobat’s menu?
+    pdffitwindow=false,     % window fit to page when opened
+    pdfstartview={FitH},    % fits the width of the page to the window
+    pdftitle={Tellervo: A guide for users and developers},    % title
+    pdfauthor={Peter W Brewer},     % author
+    pdfsubject={Tellervo},   % subject of the document
+    pdfnewwindow=true,      % links in new window
+    colorlinks,%
+    citecolor=black,%
+    filecolor=black,%
+    linkcolor=black,%
+    urlcolor=black
+}
+
 %% Define the path to the resources folder so that we can
 %% seamlessly use application images/icons in document
 \graphicspath{{../src/main/resources/}}
@@ -54,7 +73,7 @@
     \addcontentsline{toc}{chapter}{References}
     \bibliographystyle{model2-names}
     \begin{multicols}{2}
-      \bibliography{corina}
+      \bibliography{tellervo}
     \end{multicols}
     
     % Index

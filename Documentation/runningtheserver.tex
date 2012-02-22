@@ -15,7 +15,7 @@ The simplest method is to make a copy of your entire Virtual Appliance, but this
 
 \begin{enumerate*}
  \item Open VirtualBox
- \item If you server is running you will need to do a full shutdown.  From the server console type \verb|sudo shutdown now| or alternatively you can close the console window and select `Power off the machine'.  This second method is not recommended though as it is like pulling the power plug from the virtual computer.
+ \item If you server is running you will need to do a full shutdown.  From the server console type \verb|sudo halt| then once it has halted you can close the console window and select `Power off the machine'. 
  \item Select your virtual machine in the list on the left and go to \menutwo{File}{Export Appliance}.
  \item Follow the wizard, specifying a file where you'd like to back the server up to.  Keep in mind that this will contain a complete copy of the server (including operating system) so could be 1Gb or more.
 \end{enumerate*}
@@ -27,18 +27,20 @@ If you have followed the instructions in section \ref{txt:BackupVA} to backup yo
 \subsection{Backup PostgreSQL database}
 The more standard way of backing up your database is to do a dump of the PostgreSQL database itself into a large text file.  This is a little more involved, so it is only recommended if you are familiar with command line and/or Linux.  You can create the file with a command like the one below, but you should read up on pg\_dump so that you understand the possible options that you can use.
 
-\code{pg\_dump -f /folder/and/file/to/make.sql name\_of\_corina\_database}
+\code{pg\_dump -Fc /folder/and/file/to/make/mybackup.sql database\_name}
 
-For example the following line will backup the database called `corina' into a file called backup.sql in the tmp folder.  Keep in mind that the tmp folder is cleaned each time the server is booted.
+For example the following line will backup the database called `tellervo' (the standard name for your database) into a file called backup.sql in the tmp folder.  Keep in mind that the tmp folder is cleaned each time the server is booted.
 
-\code{pg\_dump -f /tmp/backup.sql corina}
+\code{pg\_dump -Fc /tmp/backup.sql tellervo}
+
+It then makes sense to transfer this backup off the virtual machine onto a separate computer as per normal backup procedures.  If you are familiar with Linux you could do this by using SFTP or similar transfer protocols.  If you just want a quick and dirty method, you could save the backup.sql file to /var/www/tellervo-server/ and then you can access the file from any web browser at the address http://your.server.ip/tellervo-server/backup.sql.  Keep in mind though that anyone could potential download the file as long as it is left there so you will want to delete it as soon as you have transferred it.  You can do this from the server command line by typing sudo rm /var/www/tellervo.org/backup.sql.  
 
 
 \subsection{Restoring a PostgreSQL database}
 To restore your database from a backup file you can use the standard PostgreSQL command line tool psql to populate an empty database:
 
-\code{createdb corina\_new}
-\code{psql corina\_new < /tmp/backup.sql}
+\code{createdb tellervo\_new}
+\code{psql tellervo\_new < /tmp/backup.sql}
 
 
 
@@ -50,7 +52,7 @@ Upgrading the server requires you to type a few commands into the Linux command 
  \item Type the following commands: 
        \code{cd /tmp} 
        \code{wget http://url.of.new.server.file} 
-       \code{dpkg --install corina-server-X.X.X.deb}
+       \code{dpkg --install tellervo-server-X.X.X.deb}
 \end{enumerate}
 
 The URL of the new file can be obtained from the Tellervo website.  
@@ -75,8 +77,8 @@ The basic installation of the Tellervo server includes the standard configuratio
 There are a number of default usernames and passwords setup on your server.  If your server is accessible for the internet we strongly advise you to change these defaults and anyone with knowledge of the Tellervo server could access and compromise your machine.
 
 \begin{description*}
- \item[System user] - these are the credentials you use to log in to the command prompt in your Tellervo Virtual Appliance.  By default the user is `corina' and the password is `w3l0v3tr33s'.  To change this log in to the command prompt and type \verb|passwd| and follow the instructions.  There is no easy way to recover this password if you loose it.
- \item[PostgreSQL database user] - these are the credentials used by the webservice to read and write to the database and are set by the database administrator during the initial configuration of the Tellervo server. You are only ever likely to need this again if you want to directly access the database from a third party tool like PGAdminIII.  You can reset this password from the Tellervo Virtual Appliance command prompt by typing \verb|corina-server --reconfigure|
+ \item[System user] - these are the credentials you use to log in to the command prompt in your Tellervo Virtual Appliance.  By default the user is `tellervo' and the password is `w3l0v3tr33s'.  To change this log in to the command prompt and type \verb|passwd| and follow the instructions.  There is no easy way to recover this password if you loose it.
+ \item[PostgreSQL database user] - these are the credentials used by the webservice to read and write to the database and are set by the database administrator during the initial configuration of the Tellervo server. You are only ever likely to need this again if you want to directly access the database from a third party tool like PGAdminIII.  You can reset this password from the Tellervo Virtual Appliance command prompt by typing \verb|tellervo-server --reconfigure|
  \item[Tellervo admin user] - these are the admin credentials that you use to log in with in your Tellervo desktop application.  Be default the user is `admin' and the password is `qu3rcu5'.  You should change these the first time you open the Tellervo desktop application by going to \menutwo{Admin}{Change password}.
 \end{description*}
 
@@ -111,7 +113,7 @@ Scroll down passed all the comments, to the bottom of the file.  Add the followi
 
 Make sure you replace IPADDRESS with the IP address of the computer you are trying to connect \emph{from}. This is just one style of pg\_hba.conf entry.  There are many others which allow you to restrict to specific users, computers, networks etc.  See the online PostgreSQL documentation for more details.  Save your changes and exit by doing CTRL+X, then restart the Tellervo server:
 
-\code{sudo corina-server --restart}
+\code{sudo tellervo-server --restart}
 
 You should now be able to access your database through PGAdminIII. To do this open the application and go to \menutwo{File}{Add server}.  Specify your server's IP address is the host field, and your database username and password.
 
@@ -133,13 +135,13 @@ The final, and most advanced method is to use the psql client on your server.  T
 \index{config.php}
 The Tellervo server can be configured using the command line tool that is installed on both the Virtual Appliance and native server installs.  It is the same tool that is run at the end of the native server install, but can be run at any time to reconfigure or test your system.  It must be run with superuser privileges therefore \verb|sudo| is required before the command.  For instance to get help on usage type:
 
-\code{sudo corina-server --help}
+\code{sudo tellervo-server --help}
 
 \begin{wrapfigure}{r}{0.5\textwidth}
   \begin{center}
-    \includegraphics[width=0.48\textwidth]{Images/corina-server-terminal.png}
+    \includegraphics[width=0.48\textwidth]{Images/tellervo-server-terminal.png}
   \end{center}
-  \caption{Example of the output from the corina-server test.}
+  \caption{Example of the output from the tellervo-server test.}
   \label{fig:serverTerminal}
 \end{wrapfigure}
 

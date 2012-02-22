@@ -11,15 +11,15 @@ public class WizardServer extends AbstractWizardPanel {
 
 
 	public WizardServer() {
-		super("Configuring the Corina Server",
-				"The Corina system is made up of two packages: the Corina desktop " +
-				"client that you are using now; and the Corina server.  If you are " +
+		super("Configuring the Tellervo Server",
+				"The Tellervo system is made up of two packages: the Tellervo desktop " +
+				"client that you are using now; and the Tellervo Server.  If you are " +
 				"working in a lab your systems administrator may have already set up " +
-				"the Corina server and given you the URL to connect to.  Alternatively, " +
-				"you may have already installed the Corina server yourself.  If so the " +
+				"the Tellervo Server and given you the URL to connect to.  Alternatively, " +
+				"you may have already installed the Tellervo server yourself.  If so the " +
 				"installation program should have given you the URL.\n\n" +
 				"If you don't have access to a " +
-				"Corina server yet, you should close this wizard, then go to the Corina " +
+				"Tellervo Server yet, you should close this wizard, then go to the Tellervo " +
 				"website and download it.");
 		
 		setLayout(new MigLayout("", "[100px,grow]", "[][120px,grow]"));

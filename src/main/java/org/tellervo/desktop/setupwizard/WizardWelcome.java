@@ -10,9 +10,9 @@ public class WizardWelcome extends AbstractWizardPanel {
 	 * Create the panel.
 	 */
 	public WizardWelcome() {
-		super("Welcome to the Corina setup wizard", 
+		super("Welcome to the Tellervo setup wizard", 
 				"This wizard will take you through the steps that are " +
-				"necessary to configure Corina.  The wizard will automatically " +
+				"necessary to configure Tellervo.  The wizard will automatically " +
 				"use settings that you have previously configured.");
 		
 		

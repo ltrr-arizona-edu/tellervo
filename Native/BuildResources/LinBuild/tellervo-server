@@ -29,7 +29,7 @@ $systemconfig     = $wsbase."systemconfig.php";
 
 
 // Global variables
-$user = "";
+$user = "tellervo";
 $pwd = "";
 $wsurl = "";
 $errorsFound = FALSE;
@@ -732,11 +732,9 @@ function setDBUser()
   }
   else
   {
-      echo "\nCreating a PostgreSQL database user. Note this is a PostgreSQL system user not a user for accessing Tellervo\n";
-      echo "(We recommend the username to be tellervo)\n";
-      echo "    Username : ";
-      $user = fgets(STDIN); 
-      echo "\nEnter a new password.\nPassword should be 8-20 characters, and include numbers, letters, and capitals but no spaces.\n";
+      $user = "tellervo";              
+      echo "\nCreate a PostgreSQL password.  The password should be 8-20 characters, and\n".
+            "include numbers, letters, and capitals but no spaces.\n";
       $pwd = promptForPwd();
   }
 }
@@ -1044,7 +1042,7 @@ function printComplete($forceSuccess=null)
   if($forceSuccess===TRUE)
   {
   	echo "Configuration was successful.  Your Tellervo webservice is now available at:\n";
-  	echo "    - $wsurl"."webservice.php\n\n";
+  	echo "    - $wsurl\n\n";
   	exit(0);
   }
   else if ($forceSuccess===FALSE)
@@ -1056,7 +1054,7 @@ function printComplete($forceSuccess=null)
   else if($errorsFound===FALSE)
   {
   	echo "Configuration was successful.  Your Tellervo webservice is now available at:\n";
-  	echo "    - $wsurl"."webservice.php\n\n";
+  	echo "    - $wsurl\n\n";
   	exit(0);
   }
   else
