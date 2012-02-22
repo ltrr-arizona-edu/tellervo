@@ -36,21 +36,24 @@ public class ReplaceHierarchyCommand implements ICommand {
 	public void execute(MVCEvent argEvent) {
 		
 		try {
+			log.debug("splitOff() called in ReplaceHierarchyCommand");
 	        MVC.splitOff(); // so other mvc events can execute
 		} catch (IllegalThreadException e) {
-		        // this means that the thread that called splitOff() was not an MVC thread, and the next event's won't be blocked anyways.
+				log.error("splitOff() called from non-MVC thread");
 		        e.printStackTrace();
 		} catch (IncorrectThreadException e) {
-		        // this means that this MVC thread is not the main thread, it was already splitOff() previously
-		        e.printStackTrace();
+				log.error("splitOff() called, but this is not the main thread");
+				e.printStackTrace();
 		}
 		
+		log.debug("Retrieving the replacement hierarchy");
 		ReplaceHierarchyEvent event = (ReplaceHierarchyEvent) argEvent;
 			
 		TridasObject newObject   = null;
 		TridasElement newElement = null;
 		TridasSample newSample = null;
 		TridasRadius newRadius = null;
+		TridasMeasurementSeries newMeasurementSeries = null;
 		
 		try{
 		 newObject = getNewHierarchy(event);
@@ -64,6 +67,10 @@ public class ReplaceHierarchyCommand implements ICommand {
 				 if(newSample.isSetRadiuses())
 				 {
 					 newRadius = newSample.getRadiuses().get(0);
+					 if(newRadius.isSetMeasurementSeries())
+					 {
+						 newMeasurementSeries = newRadius.getMeasurementSeries().get(0);
+					 }
 				 }
 			 }
 		 }
@@ -72,77 +79,89 @@ public class ReplaceHierarchyCommand implements ICommand {
 			log.error("Unable to get details of the hierarchy specified");
 			return;
 		}
-		TridasRepresentationTableTreeRow oldrow;
-		TridasRepresentationTableTreeRow newrow;
+	
+		int oldClassDepth = TridasUtils.getDepth(event.currentNode.getUserObject().getClass());
 		
+		DefaultMutableTreeNode oldNode = (DefaultMutableTreeNode)event.currentNode;
 		
-
-
-		int currentClassDepth = TridasUtils.getDepth(event.currentNode.getUserObject().getClass());
+		if(oldClassDepth==TridasUtils.getDepth(TridasMeasurementSeries.class))
+		{
+			if(newMeasurementSeries!=null)
+			{
+				log.debug("Switching measurementSeries node");
+				oldNode = (DefaultMutableTreeNode) this.swapEntity(event, newMeasurementSeries, oldNode).getParent();
+				oldClassDepth--;
+			}
+		}
+		
+		if(oldClassDepth==TridasUtils.getDepth(TridasRadius.class))
+		{
+			if(newRadius!=null)
+			{
+				log.debug("Switching radius node");
+				oldNode = (DefaultMutableTreeNode) this.swapEntity(event, newRadius, oldNode).getParent();
+				oldClassDepth--;
+			}
+		}
+				
+		if(oldClassDepth==TridasUtils.getDepth(TridasSample.class))
+		{
+			if(newSample!=null)
+			{
+				log.debug("Switching sample node");
+				oldNode = (DefaultMutableTreeNode) this.swapEntity(event, newSample, oldNode).getParent();
+				oldClassDepth--;
+			}
+		}
+		
+		if(oldClassDepth==TridasUtils.getDepth(TridasElement.class))
+		{
+			if(newElement!=null)
+			{
+				log.debug("Switching element node");
+				oldNode = (DefaultMutableTreeNode) this.swapEntity(event, newElement, oldNode).getParent();
+				oldClassDepth--;
+			}
+		}
+			
+		if(oldClassDepth==TridasUtils.getDepth(TridasObject.class))
+		{
+			if(newObject!=null)
+			{
+				log.debug("Switching object node");
+				oldNode = (DefaultMutableTreeNode) this.swapEntity(event, newObject, oldNode).getParent();
+				oldClassDepth--;
+			}
+		}
+			
+	}
+	
+	
+	private DefaultMutableTreeNode swapEntity(ReplaceHierarchyEvent event, ITridas newentity, DefaultMutableTreeNode oldnode)
+	{
+		if(newentity.getClass()!=oldnode.getUserObject().getClass())
+		{
+			log.error("Cannot swap nodes of different types");
+			log.error("Old node = "+oldnode.getUserObject().getClass().getName());
+			log.error("New node = "+newentity.getClass().getName());
+		}
+		
+		TridasRepresentationTableTreeRow oldrow = new TridasRepresentationTableTreeRow(oldnode, null);		
+		log.debug("Swapping the "+oldnode.getUserObject().getClass().getName()+ " "
+				+((ITridas)oldnode.getUserObject()).getTitle() 
+				+ " for " + newentity.getClass().getName()+ " "+newentity.getTitle());
+		
 		
 			
-		// Start by swapping the Radius	
-		DefaultMutableTreeNode oldRadiusNode = (DefaultMutableTreeNode)event.currentNode.getParent();
-		oldrow = new TridasRepresentationTableTreeRow(oldRadiusNode, null);
-		
-		log.debug("Swapping radius from "+((ITridas)oldRadiusNode.getUserObject()).getTitle()+" to "+newRadius.getTitle());
-
-		
-		DefaultMutableTreeNode newRadiusNode = new DefaultMutableTreeNode();
-		newRadiusNode.setUserObject(newRadius);
-		newrow = new TridasRepresentationTableTreeRow(newRadiusNode, null);
+		DefaultMutableTreeNode newnode = new DefaultMutableTreeNode();
+		newnode.setUserObject(newentity);
+		TridasRepresentationTableTreeRow newrow = new TridasRepresentationTableTreeRow(newnode, null);
 		
 		ImportSwapEntityEvent swapEvent = new ImportSwapEntityEvent(event.model, newrow, oldrow, false);
+		log.debug("Dispatching the swapEvent for "+ newentity.getClass().getName());
 		swapEvent.dispatch();
+		return newnode;
 		
-		
-		// Then the sample
-		DefaultMutableTreeNode oldSampleNode = (DefaultMutableTreeNode)oldRadiusNode.getParent();
-		oldrow = new TridasRepresentationTableTreeRow(oldSampleNode, null);
-		
-		log.debug("Swapping sample from "+((ITridas)oldSampleNode.getUserObject()).getTitle()+" to "+newSample.getTitle());
-		
-		DefaultMutableTreeNode newSampleNode = new DefaultMutableTreeNode();
-		newSampleNode.setUserObject(newSample);
-		newrow = new TridasRepresentationTableTreeRow(newSampleNode, null);
-		
-		
-		ImportSwapEntityEvent swapEvent2 = new ImportSwapEntityEvent(event.model, newrow, oldrow, false);
-		swapEvent2.dispatch();
-		
-	
-		// Then the element
-		DefaultMutableTreeNode oldElementNode = (DefaultMutableTreeNode)oldSampleNode.getParent();
-		oldrow = new TridasRepresentationTableTreeRow(oldElementNode, null);
-		
-		log.debug("Swapping element from "+((ITridas)oldElementNode.getUserObject()).getTitle()+" to "+newElement.getTitle());
-		
-		DefaultMutableTreeNode newElementNode = new DefaultMutableTreeNode();
-		newElementNode.setUserObject(newElement);
-		newrow = new TridasRepresentationTableTreeRow(newElementNode, null);
-		
-		ImportSwapEntityEvent swapEvent3 = new ImportSwapEntityEvent(event.model, newrow, oldrow, false);
-		swapEvent3.dispatch();
-		
-		
-		// Then the object
-		DefaultMutableTreeNode oldObjectNode = (DefaultMutableTreeNode)oldElementNode.getParent();
-		oldrow = new TridasRepresentationTableTreeRow(oldObjectNode, null);
-		
-		log.debug("Swapping object from "+((ITridas)oldObjectNode.getUserObject()).getTitle()+" to "+newObject.getTitle());
-		
-		DefaultMutableTreeNode newObjectNode = new DefaultMutableTreeNode();
-		newObjectNode.setUserObject(newObject);
-		newrow = new TridasRepresentationTableTreeRow(newObjectNode, null);
-		
-		ImportSwapEntityEvent swapEvent4 = new ImportSwapEntityEvent(event.model, newrow, oldrow, false);
-		swapEvent4.dispatch();
-		
-		// Select the original node
-		/*TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow(event.currentNode, null);	
-		ImportNodeSelectedEvent selectEvent = new ImportNodeSelectedEvent(event.model, row);
-		selectEvent.dispatch();*/
-
 	}
 	
 	/**

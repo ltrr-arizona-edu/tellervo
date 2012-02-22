@@ -45,6 +45,7 @@ import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.hierarchy.ManagementTreeViewPanel;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel;
+import org.tellervo.desktop.io.control.ExpandImportTreeEvent;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.tridasv2.TridasCloner;
 import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetTable;
@@ -409,6 +410,10 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 				this.treepanel.refreshNode((DefaultMutableTreeNode)nodeSelected.getParent());
 			}
 		}
+		
+
+		
+		hasChanged=false;
 	}
 
 	

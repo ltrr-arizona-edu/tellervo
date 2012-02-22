@@ -120,10 +120,8 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	
 	public static enum EntitiesAccepted {
 		SPECIFIED_ENTITY_ONLY,
-		/** Element is senior to Sample for instance*/
-		SPECIFIED_ENTITY_AND_SENIOR,
-		/** Radius is junior to Sample for instance*/
-		SPECIFIED_ENTITY_AND_JUNIOR,
+		SPECIFIED_ENTITY_UP_TO_PROJECT,
+		SPECIFIED_ENTITY_DOWN_TO_SERIES,
 		ALL
 	}
 	
@@ -217,12 +215,12 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	private Boolean isClassEqualOrMoreSeniorThanRequested(Class<? extends ITridas> clazz)
 	{
 		if((entitiesAccepted.equals(EntitiesAccepted.ALL)) || 
-		   (entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_JUNIOR)))
+		   (entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_DOWN_TO_SERIES)))
 		{
 			return true;
 		}
 		else if((entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_ONLY)) || 
-				(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR)))
+				(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_UP_TO_PROJECT)))
 		{
 			return TridasUtils.getDepth(clazz)<=TridasUtils.getDepth(expectedClass);
 		}
@@ -632,11 +630,11 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 
 					String modifier = "";			
 					
-					if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR))
+					if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_UP_TO_PROJECT))
 					{
 						modifier = " (or above)";
 					}
-					else if (entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_JUNIOR))
+					else if (entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_DOWN_TO_SERIES))
 					{
 						modifier = " (or below)";
 					}
@@ -711,7 +709,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 				return false;
 			}
 		}
-		else if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_JUNIOR))
+		else if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_DOWN_TO_SERIES))
 		{
 			Integer e1 = TridasUtils.getDepth((Class<ITridas>) ent.getClass());
 			Integer e2 = TridasUtils.getDepth(expectedClass);
@@ -719,7 +717,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 			return e1.compareTo(e2)>=0;
 			
 		}
-		else if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR))
+		else if(entitiesAccepted.equals(EntitiesAccepted.SPECIFIED_ENTITY_UP_TO_PROJECT))
 		{
 			Integer e1 = TridasUtils.getDepth((Class<ITridas>) ent.getClass());
 			Integer e2 = TridasUtils.getDepth(expectedClass);

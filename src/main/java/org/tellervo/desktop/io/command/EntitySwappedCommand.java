@@ -22,6 +22,8 @@ package org.tellervo.desktop.io.command;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.io.control.ImportNodeSelectedEvent;
 import org.tellervo.desktop.io.control.ImportSwapEntityEvent;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow;
@@ -34,18 +36,20 @@ import com.dmurph.mvc.control.ICommand;
 
 
 public class EntitySwappedCommand implements ICommand {
+	private final static Logger log = LoggerFactory.getLogger(EntitySwappedCommand.class);
 
 	@Override
 	public void execute(MVCEvent argEvent) {
 		
 		try {
+			log.debug("splitOff() called in EntitySwappedCommand");
 	        MVC.splitOff(); // so other mvc events can execute
 		} catch (IllegalThreadException e) {
-		        // this means that the thread that called splitOff() was not an MVC thread, and the next event's won't be blocked anyways.
+				log.error("splitOff() called from non-MVC thread");
 		        e.printStackTrace();
 		} catch (IncorrectThreadException e) {
-		        // this means that this MVC thread is not the main thread, it was already splitOff() previously
-		        e.printStackTrace();
+				log.error("splitOff() called, but this is not the main thread");
+				e.printStackTrace();
 		}
 		
 		ImportSwapEntityEvent event = (ImportSwapEntityEvent) argEvent;

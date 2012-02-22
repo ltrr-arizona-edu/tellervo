@@ -369,3 +369,22 @@ DELETE FROM tblsupportedclient WHERE client = 'Corina WSI';
 INSERT INTO tblsupportedclient (client, minversion) VALUES ('Tellervo WSI', '0.9');
 
 
+--
+-- Name: getvmeasurementresult(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
+--
+
+CREATE OR REPLACE FUNCTION cpgdb.getvmeasurementresult(uuid) RETURNS SETOF public.tblvmeasurementresult
+    LANGUAGE javau
+    AS $$org.tellervo.cpgdb.VMeasurementResultSet.getVMeasurementResultSet$$;
+
+
+--
+-- Name: getvmeasurementresultid(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
+--
+
+CREATE OR REPLACE FUNCTION cpgdb.getvmeasurementresultid(uuid) RETURNS character varying
+    LANGUAGE javau
+    AS $$org.tellervo.cpgdb.Dispatch.GetVMeasurementResult$$;
+
+
+DROP FUNCTION public.mymath(Integer);

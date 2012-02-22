@@ -127,8 +127,6 @@ public class FileSelectedCommand implements ICommand {
 			}
 		}
 			
-		
-	
 		for (TridasMeasurementSeries series: TridasUtils.getMeasurementSeriesFromTridasProject(reader.getProjects()[0]))
 		{
 			if(series.isSetWoodCompleteness())

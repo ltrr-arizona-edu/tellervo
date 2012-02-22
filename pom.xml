@@ -337,6 +337,11 @@
 			<artifactId>swingx</artifactId>
 			<version>1.6.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.ws.commons.axiom</groupId>
+			<artifactId>axiom-jaxen-testsuite</artifactId>
+			<version>1.2.12</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -836,6 +841,7 @@
 						</goals>
 					</execution>
 					
+					
 					<!-- Insert native libraries into MacOSX App file -->
 					 
 					<execution>
@@ -915,7 +921,7 @@
 							      
 							      <jar jarfile="${project.build.directory}/tellervo-pljava.jar"
 								       basedir="${project.build.directory}/classes"
-								       includes="edu/cornell/dendro/cpgdb/** edu/cornell/dendro/tellervo_indexing/**"/>
+								       includes="org/tellervo/cpgdb/** org/tellervo/indexing/**"/>
 							      
 							</tasks>
 						</configuration>

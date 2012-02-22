@@ -88,8 +88,8 @@ public class WSIPermission implements Serializable, Cloneable, CopyTo, Equals, H
     @XmlElement(name = "entity", required = true)
     protected List<WSIPermission.Entity> entities;
     @XmlElements({
-        @XmlElement(name = "securityUser", type = WSISecurityUser.class),
-        @XmlElement(name = "securityGroup", type = WSISecurityGroup.class)
+        @XmlElement(name = "securityGroup", type = WSISecurityGroup.class),
+        @XmlElement(name = "securityUser", type = WSISecurityUser.class)
     })
     protected List<Object> securityUsersAndSecurityGroups;
     @XmlAttribute(name = "decidedBy")
@@ -290,8 +290,8 @@ public class WSIPermission implements Serializable, Cloneable, CopyTo, Equals, H
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link WSISecurityUser }
      * {@link WSISecurityGroup }
+     * {@link WSISecurityUser }
      * 
      * 
      */
@@ -642,8 +642,8 @@ public class WSIPermission implements Serializable, Cloneable, CopyTo, Equals, H
      * 
      * @param securityUsersAndSecurityGroups
      *     allowed object is
-     *     {@link WSISecurityUser }
      *     {@link WSISecurityGroup }
+     *     {@link WSISecurityUser }
      *     
      */
     public void setSecurityUsersAndSecurityGroups(List<Object> securityUsersAndSecurityGroups) {

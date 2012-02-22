@@ -182,6 +182,7 @@ public class BoxLabel extends ReportBase{
 		Paragraph p = new Paragraph();
 		
 		p.add(new Chunk(b.getTitle()+"\n", monsterFont));
+		p.add(new Chunk(App.getLabName(), subTitleFont));
 	
 		//p.add(new Chunk(b.getCurationLocation(), bodyFontLarge));
 				

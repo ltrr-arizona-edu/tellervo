@@ -29,9 +29,11 @@ import org.tellervo.desktop.io.control.ImportEntitySaveEvent;
 import org.tellervo.desktop.io.control.ImportSwapEntityEvent;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow.ImportStatus;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
@@ -95,6 +97,7 @@ public class EntitySaveCommand implements ICommand {
 			entity.setIdentifier(null);
 			
 			resource = getNewAccessorResource(entity, parentEntity, currentEntityType);
+			resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
 			log.debug("Creating new resource of type "+currentEntityType.toString());
 		}
 		else

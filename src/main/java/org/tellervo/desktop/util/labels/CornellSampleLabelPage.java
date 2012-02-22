@@ -41,27 +41,29 @@ public class CornellSampleLabelPage implements LabelPage {
 	}
 
 	public float getLabelWidth() {
-		return 70 * mmpd;
+		return 65 * mmpd;
 	}
 
+	public float getPageTopMargin() {
+		return 1f * mmpd;
+	}
+	
 	public float getPageBottomMargin() {
-		return 0;
+		return 1f * mmpd;
 	}
 
 	public float getPageLeftMargin() {
-		return 0;
+		return 1f * mmpd;
 	}
 
 	public float getPageRightMargin() {
-		return 0;
+		return 1f * mmpd;
 	}
 
 	public Rectangle getPageSize() {
 		return PageSize.LETTER;
 	}
 
-	public float getPageTopMargin() {
-		return 0;
-	}
+
 
 }

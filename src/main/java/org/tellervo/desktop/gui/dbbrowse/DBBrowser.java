@@ -572,6 +572,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     private void setupSearch() {
     	searchPanel = new SearchPanel(new SearchSupport());
     	this.tabbedPane.setComponentAt(1, searchPanel);
+    	this.tabbedPane.setEnabledAt(1, false);
     }
     
     /** 

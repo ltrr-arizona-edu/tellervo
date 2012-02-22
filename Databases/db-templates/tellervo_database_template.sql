@@ -2862,18 +2862,18 @@ SET search_path = cpgdb, pg_catalog;
 -- Name: getvmeasurementresult(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
-CREATE FUNCTION getvmeasurementresult(uuid) RETURNS SETOF public.tblvmeasurementresult
+CREATE OR REPLACE FUNCTION getvmeasurementresult(uuid) RETURNS SETOF public.tblvmeasurementresult
     LANGUAGE javau
-    AS $$edu.cornell.dendro.cpgdb.VMeasurementResultSet.getVMeasurementResultSet$$;
+    AS $$org.tellervo.cpgdb.VMeasurementResultSet.getVMeasurementResultSet$$;
 
 
 --
 -- Name: getvmeasurementresultid(uuid); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
-CREATE FUNCTION getvmeasurementresultid(uuid) RETURNS character varying
+CREATE OR REPLACE FUNCTION getvmeasurementresultid(uuid) RETURNS character varying
     LANGUAGE javau
-    AS $$edu.cornell.dendro.cpgdb.Dispatch.GetVMeasurementResult$$;
+    AS $$org.tellervo.cpgdb.Dispatch.GetVMeasurementResult$$;
 
 
 --

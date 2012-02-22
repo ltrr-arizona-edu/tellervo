@@ -893,7 +893,7 @@ public class ImportView extends JFrame{
 				newParent = TridasEntityChooser.showDialog(this, 
 						"Select entity", 
 						ITridasSeries.class, 
-						EntitiesAccepted.SPECIFIED_ENTITY_AND_SENIOR);
+						EntitiesAccepted.SPECIFIED_ENTITY_UP_TO_PROJECT);
 				
 				log.debug("User wants to set hierarchy of "+ 
 						((ITridas) selectedEntity.getUserObject()).getTitle() +
@@ -930,7 +930,7 @@ public class ImportView extends JFrame{
 	 */
 	private void updateConversionWarningsTable()
 	{
-		/*ConversionWarning[] warnings = model.getConversionWarnings();
+		ConversionWarning[] warnings = model.getConversionWarnings();
 		if(warnings==null) 
 		{
 			vertSplitPane.setDividerLocation(1.0);
@@ -958,7 +958,7 @@ public class ImportView extends JFrame{
 		col.setMinWidth(width); 
 		col.setPreferredWidth(5000);
 		
-		vertSplitPane.setDividerLocation(0.8);*/
+		vertSplitPane.setDividerLocation(0.8);
 	}
 	
 	

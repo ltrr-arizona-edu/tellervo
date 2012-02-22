@@ -61,6 +61,7 @@ public class PDFLabelMaker {
 	private PdfContentByte contentb;
 	private PdfPTable table;
 	private Font labelfont = new Font(Font.HELVETICA, 15f, Font.BOLD);
+	private Font tinyfont = new Font(Font.HELVETICA, 9f);
 	private Integer borderwidth = 1;
 	
 	
@@ -136,6 +137,8 @@ public class PDFLabelMaker {
 		table.setWidths(colwidth);
 		table.setLockedWidth(true);
 		table.getDefaultCell().setPadding(0);
+		table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_MIDDLE);
+		table.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
 		
 
 	}
@@ -147,7 +150,7 @@ public class PDFLabelMaker {
 		cell.setNoWrap(false);
 		cell.setFixedHeight(margins.getLabelHeight());
 			
-		//cell.setHorizontalAlignment(horizontalAlignment);
+		//cell.setHorizontalAlignment(Element.ALIGN_CENTER);
 		//cell.setVerticalAlignment(Element.ALIGN_TOP);
 		
 		if(curX != 0)
@@ -161,6 +164,7 @@ public class PDFLabelMaker {
 		table.addCell(cell);
 		
 		if(curX == nAcross)
+			//table.completeRow();
 			curX = 0;
 	}
 		
@@ -208,7 +212,7 @@ public class PDFLabelMaker {
 			
 			lbcell.setVerticalAlignment(Element.ALIGN_TOP);
 			lbcell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-			Paragraph p = new Paragraph();
+			Phrase p = new Phrase();
 
 			String labelText;
 			TridasGenericField labcodeField = GenericFieldUtils.findField(s, "tellervo.internal.labcodeText");
@@ -220,7 +224,19 @@ public class PDFLabelMaker {
 			
 			//barcode.setFont(null);
 			Image img = barcode.createImageWithBarcode(contentb, Color.black, Color.gray);
-						
+					
+			PdfPCell labcell = new PdfPCell(); 
+			
+			if(App.getLabName()!=null)
+			{
+				labcell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+				labcell.setVerticalAlignment(Element.ALIGN_TOP);
+				Phrase labPhrase = new Phrase(App.getLabName().toUpperCase(), tinyfont);				
+				labcell.addElement(labPhrase);
+			}
+			addCell(labcell);
+			
+			
 			PdfPCell bccell = new PdfPCell();
 			bccell.setHorizontalAlignment(Element.ALIGN_MIDDLE);
 			
@@ -232,7 +248,8 @@ public class PDFLabelMaker {
 			lbcell.addElement(p);
 			addCell(lbcell);
 			
-			addCell(new PdfPCell());
+
+			//addCell(new PdfPCell());
 			
 		/**	PdfPTable tbl = new PdfPTable(2);
 			
