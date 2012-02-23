@@ -175,6 +175,23 @@ function writeHelpOutput($metaHeader)
 	writeIntroOutput($metaHeader);
 }
 
+function writeWelcomeOutput($metaHeader)
+{
+	global $labname; 
+	header('Content-Type: application/xhtml+xml; charset=utf-8');
+	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+	echo "<?xml-stylesheet type=\"text/css\" href=\"css/tellervo.css\"?>";
+	echo "<?xml-stylesheet type=\"text/css\" href=\"css/docbook/driver.css\"?>";
+	echo "<tellervo>\n";
+	echo $metaHeader->asXML();
+	echo "<help>\n";
+	echo "<chapter>Welcome to the $labname Tellervo Webservice</chapter>\n";
+	echo "<para>The webservice appears to be configured correctly and is ready to be used.</para><para>To access the webservice you should use the Tellervo desktop application, point in at this URL and log in with the username and password provided to you by the $labname systems administrator.</para>\n<para>If you have not yet installed Tellervo desktop you can download the application from <ulink url=\"http://www.tellervo.org/download\">http://www.tellervo.org/download</ulink></para>\n";
+	echo "</help>\n";
+	echo "</tellervo>";
+}
+
+
 function writeIntroOutput($metaHeader)
 {
 	header('Content-Type: application/xhtml+xml; charset=utf-8');

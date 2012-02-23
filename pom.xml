@@ -574,9 +574,8 @@
 			</plugin>
 
 			<!--  Create a Windows native executable 
-			      n.b. this creates a raw executable, not an installer. To
-			      create the installer you will need to run the NSIS script 
-			      outside of Maven -->
+			      n.b. this creates a raw executable, not an installer. 
+			      The installer is created with an Ant task -->
 			<plugin>
 				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
 				<artifactId>launch4j-plugin</artifactId>
@@ -636,7 +635,7 @@
 						</fileSet>
 					</additionalResources>
 					<bundleName>Tellervo</bundleName>
-					<zipFile>${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>
+					<!-- <zipFile>${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>-->
 					<mainClass>org.tellervo.gui.Startup</mainClass>
 					<vmOptions>
 					 
@@ -842,32 +841,43 @@
 					</execution>
 					
 					
-					<!-- Insert native libraries into MacOSX App file -->
-					 
+					<!-- Strip duplicate deps from MacOSX bundle, and add native libraries
+					     manual and license files.  Finally zip up and move into binaries folder -->	 
 					<execution>
-						<id>AddLibsToMacOSXApp</id>
-						<phase>package</phase>
-						<configuration>
-							<tasks>
-								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
-									classpathref="maven.plugin.classpath"/>	
-								<trycatch>
-									<try>
-										<zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip" update="true">
-											<zipfileset src="${project.build.finalName}/Tellervo.app" />
-											<zipfileset src="Native/MacBuild/Tellervo Drivers.pkg"/>
-										</zip>
-									</try>
-									<catch>
-										<echo message="Unable to add native libraries to MacOSX binary"/>
-									</catch>
-								</trycatch>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>					
-					</execution>
+					  <id>AddLibsToMacOSXApp</id>
+					  <phase>package</phase>
+					  <configuration>
+						  <tasks>
+							  <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+								  classpathref="maven.plugin.classpath"/>	
+							  <trycatch>
+								  <try>
+									   <delete includeEmptyDirs="true">
+									      <fileset dir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo/" includes="**/*"/>
+									  </delete>
+									  <copy file="${project.build.directory}/${project.build.finalName}.jar" 
+									        todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo/org/tellervo/tellervo/${project.version}"/>
+									  <copy file="${project.build.directory}/classes/MacBuild/Tellervo Drivers.pkg"
+									  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/"/>		
+									  <copy file="${project.build.directory}/classes/Licenses/license.txt"
+									  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/"/>
+									  <copy file="Documentation/tellervo-manual.pdf"
+									  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/"/>	
+									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip" 
+									  		update="false" level="9">
+									      <fileset dir="${project.build.directory}/${project.build.finalName}/Tellervo.app"/>
+									  </zip>
+								  </try>
+								  <catch>
+									  <echo message="Problems building MacOSX bundle"/>
+								  </catch>
+							  </trycatch>
+						  </tasks>
+					  </configuration>
+					  <goals>
+						  <goal>run</goal>
+					  </goals>					
+				  </execution>
 					
 					
 					<!-- Run Makensis to create the windows installers -->

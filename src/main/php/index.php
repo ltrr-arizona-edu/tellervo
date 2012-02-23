@@ -11,7 +11,12 @@
  * *******************************************************************
  */
 
+try{
 require_once("config.php");
+} catch (Exception $e)
+{
+	trigger_error('704'.'Tellervo server configuration file missing.  Contact your systems administrator');
+}
 
 try{
 	require_once("systemconfig.php");
@@ -61,10 +66,18 @@ if(isset($_POST['xmlrequest']))
 }
 else
 {
-	trigger_error('902'.'This webservice expects a POST variable called xmlrequest inside which should be a string representation of your XML request document.  Please see the documentation for detailed information on how to interact with this webservice.', E_USER_ERROR);
-    $myMetaHeader->setRequestType("help");
-    writeHelpOutput($myMetaHeader);
-    die();
+	if($myMetaHeader->getClientName()=='Tellervo WSI')
+	{
+		trigger_error('902'.'This webservice expects a POST variable called xmlrequest inside which should be a string representation of your XML request document.  Please see the documentation for detailed information on how to interact with this webservice.', E_USER_ERROR);
+	    $myMetaHeader->setRequestType("help");
+	    writeHelpOutput($myMetaHeader);
+	    die();
+	}
+	else
+	{
+		writeWelcomeOutput($myMetaHeader);
+		die();
+	}
 }
 
 // If there have been no errors so far go ahead and process the request

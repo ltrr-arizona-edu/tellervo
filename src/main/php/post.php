@@ -4,7 +4,7 @@
 
 
 <html>
-<form name="myform" method="post" action="webservice.php">
+<form name="myform" method="post" action="index.php">
 <br/>
 XML:  <textarea name="xmlrequest" rows="20" cols="80">
 <tellervo>
