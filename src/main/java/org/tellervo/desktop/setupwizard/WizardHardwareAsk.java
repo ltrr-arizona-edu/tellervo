@@ -51,10 +51,12 @@ public class WizardHardwareAsk extends AbstractWizardPanel implements ActionList
 		if(radYes.isSelected())
 		{
 			this.setPageClassToEnableOrDisable(WizardHardwareDo.class, true);
+			this.setPageClassToEnableOrDisable(WizardHardwareTest.class, true);
 		}
 		else
 		{
-			this.setPageClassToEnableOrDisable(WizardHardwareDo.class, false);	
+			this.setPageClassToEnableOrDisable(WizardHardwareDo.class, false);
+			this.setPageClassToEnableOrDisable(WizardHardwareTest.class, false);	
 		}
 		
 	}

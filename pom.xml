@@ -576,7 +576,7 @@
 			<!--  Create a Windows native executable 
 			      n.b. this creates a raw executable, not an installer. 
 			      The installer is created with an Ant task -->
-			<plugin>
+	<!-- 	<plugin>
 				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
 				<artifactId>launch4j-plugin</artifactId>
 				<version>1.5.0.0</version>
@@ -600,7 +600,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>-->
 			
 			<!-- Create a MacOSX native executable 
 			     n.b. on Linux and Windows this will create an *app.zip file
@@ -635,8 +635,8 @@
 						</fileSet>
 					</additionalResources>
 					<bundleName>Tellervo</bundleName>
-					<!-- <zipFile>${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>-->
-					<mainClass>org.tellervo.gui.Startup</mainClass>
+					<zipFile>${project.build.directory}/mac-app.zip</zipFile>
+					<mainClass>org.tellervo.desktop.gui.Startup</mainClass>
 					<vmOptions>
 					 
 					</vmOptions>
@@ -857,15 +857,11 @@
 									  </delete>
 									  <copy file="${project.build.directory}/${project.build.finalName}.jar" 
 									        todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo/org/tellervo/tellervo/${project.version}"/>
-									  <copy file="${project.build.directory}/classes/MacBuild/Tellervo Drivers.pkg"
-									  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/"/>		
-									  <copy file="${project.build.directory}/classes/Licenses/license.txt"
-									  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/"/>
-									  <copy file="Documentation/tellervo-manual.pdf"
-									  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/"/>	
-									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip" 
-									  		update="false" level="9">
-									      <fileset dir="${project.build.directory}/${project.build.finalName}/Tellervo.app"/>
+									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip" update="false" level="9">
+									  		 <fileset dir="${project.build.directory}/classes/MacBuild/" includes="**/*.pkg"/>
+									  		 <fileset dir="${project.build.directory}/classes/Licenses/" includes="**/license.txt"/>
+									  		 <fileset dir="Documentation" includes="**/tellervo-manual.pdf"/>
+									  		 <zipfileset dir="${project.build.directory}/${project.build.finalName}/Tellervo.app" prefix="Tellervo.app"/>
 									  </zip>
 								  </try>
 								  <catch>
@@ -882,7 +878,7 @@
 					
 					<!-- Run Makensis to create the windows installers -->
 				 
-					<execution>
+				<!-- <execution>
 						<id>RunNSIS</id>
 						<phase>package</phase>
 						<configuration>
@@ -938,7 +934,7 @@
 						<goals>
 							<goal>run</goal>
 						</goals>					
-					</execution>
+					</execution>-->
 					
 				</executions>
 				<dependencies>

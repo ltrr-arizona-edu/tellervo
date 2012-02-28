@@ -1,6 +1,7 @@
 package org.tellervo.desktop.setupwizard;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
@@ -9,8 +10,8 @@ public abstract class AbstractWizardPanel extends JPanel {
 	private static final long serialVersionUID = 1L;
 	private String title;
 	private String instructions;
-	private Class<? extends AbstractWizardPanel> disablePageClass = null;
-	private Class<? extends AbstractWizardPanel> enablePageClass = null;
+	private ArrayList<Class<?extends AbstractWizardPanel>> disablePageClassArray = new ArrayList<Class<?extends AbstractWizardPanel>>();
+	private ArrayList<Class<?extends AbstractWizardPanel>> enablePageClassArray= new ArrayList<Class<?extends AbstractWizardPanel>>();
 	
 	public AbstractWizardPanel(String title, String instructions)
 	{
@@ -27,28 +28,32 @@ public abstract class AbstractWizardPanel extends JPanel {
 		return title;
 	}
 	
-	public Class<? extends AbstractWizardPanel> getDisablePageClass()
+	public ArrayList<Class<?extends AbstractWizardPanel>> getDisablePageClassArray()
 	{		
-		return disablePageClass;
+		return disablePageClassArray;
 	}
 	
-	public Class<? extends AbstractWizardPanel> getEnablePageClass()
+	public ArrayList<Class<?extends AbstractWizardPanel>> getEnablePageClassArray()
 	{		
-		return enablePageClass;
+		return enablePageClassArray;
 	}
 	
 	protected void setPageClassToEnableOrDisable(Class<? extends AbstractWizardPanel> clazz, Boolean b)
 	{
+
+		if(disablePageClassArray.contains(clazz)) disablePageClassArray.remove(clazz);
+		if(enablePageClassArray.contains(clazz)) enablePageClassArray.remove(clazz);
+
+		
 		if(b)
 		{
-			enablePageClass = clazz;
-			disablePageClass = null;
+			enablePageClassArray.add(clazz);
 		}
 		else
 		{
-			enablePageClass = null;
-			disablePageClass = clazz;
+			disablePageClassArray.add(clazz);
 		}
+	
 	}
 
 	public void setInstructions(String instructions) {
@@ -59,7 +64,14 @@ public abstract class AbstractWizardPanel extends JPanel {
 		return instructions;
 	}
 	
-	
+	/**
+	 * Function to override if tasks should be performed when page 
+	 * is shown
+	 */
+	public void initialViewTasks()
+	{
+		
+	}
 	
 	
 }

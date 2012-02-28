@@ -27,6 +27,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -41,18 +42,39 @@ import javax.swing.border.EmptyBorder;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.border.BevelBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.setupwizard.SetupWizard;
 import org.tellervo.desktop.ui.Builder;
 
-public class PlatformTestDialog extends JDialog {
-
+public class PlatformTestPanel extends JPanel {
+	private final static Logger log = LoggerFactory.getLogger(PlatformTestPanel.class);
 	private static final long serialVersionUID = 1L;
-	private final JPanel contentPanel = new JPanel();
+	private JPanel contentPanel;
 	private JTextPane txtDataReceived;
 	private JTextPane txtLog;
-	private final AbstractSerialMeasuringDevice device;
+	private AbstractSerialMeasuringDevice device;
 	private TestMeasurePanel panelControls;
 	private JLabel lblInfo;
 	private String startupMessage = "Please attempt to measure a few rings...";
+	private String errorMessage;
+	
+	/**
+	 * Create the dialog.
+	 */
+	public PlatformTestPanel(AbstractSerialMeasuringDevice device) {
+		
+		if(device!=null)
+		{
+			init();
+		}
+	}
+	
+	public PlatformTestPanel()
+	{
+		
+	}
+	
 	
 	
 	public void finish()
@@ -63,30 +85,83 @@ public class PlatformTestDialog extends JDialog {
 			panelControls.dev.close();
 		}
 		
-		dispose();
 	}
 
 	/**
-	 * Create the dialog.
+	 * Set up the device from the preferences
 	 */
-	public PlatformTestDialog(final AbstractSerialMeasuringDevice device) {
-		this.device = device;
-		setModal(true);
-		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+	public void setupDevice()
+	{
+    	// Make sure the device is closed
+    	if(device!=null)
+    	{
+    		device.close();
+    	}
 		
-		this.addWindowListener(new WindowAdapter(){
+		// Set up the measuring device
+		try{
+			device = SerialDeviceSelector.getSelectedDevice(true);
+			device.setPortParamsFromPrefs();
+		} catch (IOException e)
+		{
+			log.warn("Problem setting device from preferences");
+			errorMessage = e.getMessage();
+		}catch (UnsupportedPortParameterException e) 
+		{
+			log.warn("Problem setting device from preferences");
+			errorMessage = e.getMessage();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			log.warn("Problem setting device from preferences");
+			errorMessage = e.getMessage();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			log.warn("Problem setting device from preferences");
+			errorMessage = e.getMessage();
+		}
+		
+		init();
+	}
+	
+	public static void showDialog(AbstractSerialMeasuringDevice device)
+	{
+		final JDialog dialog = new JDialog();
+		final PlatformTestPanel panel = new PlatformTestPanel(device);
+		
+		dialog.setModal(true);
+		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		dialog.setIconImage(Builder.getApplicationIcon());
+		dialog.setTitle("Test Platform Connection");
+		
+		dialog.setLayout(new BorderLayout());
+		dialog.add(panel, BorderLayout.CENTER);
+		dialog.pack();
+		dialog.setVisible(true);
+		
+		dialog.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
-				finish();
+				panel.finish();
+				dialog.dispose();
 			}
 		});
+	}
 		
-		setIconImage(Builder.getApplicationIcon());
-		setTitle("Test Platform Connection");
+	private void init()
+	{
 		
 		setBounds(100, 100, 569, 355);
-		getContentPane().setLayout(new BorderLayout());
+		setLayout(new BorderLayout());
+		contentPanel = new JPanel();
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
+		contentPanel.setOpaque(false);
+		add(contentPanel, BorderLayout.CENTER);
+		
+		if(device==null)
+		{			
+			contentPanel.add( new HardwareErrorPanel(errorMessage));
+			return;
+		}
+
 		contentPanel.setLayout(new MigLayout("", "[428.00px,grow]", "[50.00px,fill][247.00px,grow][74.00px:74.00px:74.00px]"));
 		{
 			JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -207,7 +282,7 @@ public class PlatformTestDialog extends JDialog {
 
 		{
 			JPanel buttonPane = new JPanel();
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+			add(buttonPane, BorderLayout.SOUTH);
 			buttonPane.setLayout(new MigLayout("", "[][][113px,grow][54px]", "[25px]"));
 			{
 				JButton btnRestartTest = new JButton("Restart Test");
@@ -236,9 +311,6 @@ public class PlatformTestDialog extends JDialog {
 				});
 			}
 		}
-		
-		
-		pack();
 	}
 
 	public AbstractSerialMeasuringDevice getDevice() {

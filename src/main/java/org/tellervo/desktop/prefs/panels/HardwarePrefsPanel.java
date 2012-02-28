@@ -46,7 +46,7 @@ import javax.swing.SpinnerNumberModel;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
-import org.tellervo.desktop.hardware.PlatformTestDialog;
+import org.tellervo.desktop.hardware.PlatformTestPanel;
 import org.tellervo.desktop.hardware.SerialDeviceSelector;
 import org.tellervo.desktop.hardware.UnsupportedPortParameterException;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.BaudRate;
@@ -120,6 +120,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		panel_1 = new JPanel();
 		panel.add(panel_1, "cell 1 0 3 1,grow");
 		panel_1.setLayout(new MigLayout("", "[32px][32.00px,grow][147px,fill]", "[25px]"));
+		panel_1.setOpaque(false);
 		cboPlatformType = new JComboBox();
 		panel_1.add(cboPlatformType, "cell 0 0,alignx left,aligny top");
 		
@@ -301,8 +302,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 				
 				try {
 					device.setPortParamsFromPrefs();
-					PlatformTestDialog testConnDialog = new PlatformTestDialog(device);
-					testConnDialog.setVisible(true);
+					PlatformTestPanel.showDialog(device);
 				} catch (UnsupportedPortParameterException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -448,6 +448,11 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		
 
 
+	}
+	
+	public void setTestVisible(Boolean b)
+	{
+		this.btnTestConnection.setVisible(b);
 	}
 	
 	public JComboBox getCboPlatformType() {

@@ -105,6 +105,9 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 			
 		});
 		
+		// Hide the offline mode until it is useful
+		chkDisableWS.setVisible(false);
+		
 		JLabel lblWebservice = new JLabel("URL:");
 		wsPanel.add(lblWebservice, "cell 0 1,alignx trailing,aligny center");
 		

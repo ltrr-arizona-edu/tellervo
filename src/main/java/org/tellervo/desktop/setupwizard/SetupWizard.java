@@ -83,6 +83,7 @@ public class SetupWizard extends JDialog implements ActionListener{
 		pages.add(new WizardServer());
 		pages.add(new WizardHardwareAsk());
 		pages.add(new WizardHardwareDo());
+		pages.add(new WizardHardwareTest());
 		pages.add(new WizardFinish());
 		
 		JDialog dialog = new SetupWizard(null, pages);
@@ -173,7 +174,7 @@ public class SetupWizard extends JDialog implements ActionListener{
 		
 		
 		autoEnableNavButtons();
-		this.setSize(new Dimension(772, 479));
+		this.setSize(new Dimension(800, 530));
 		this.setLocationRelativeTo(parent);
 	}
 	
@@ -216,6 +217,8 @@ public class SetupWizard extends JDialog implements ActionListener{
 		txtInstructions.setText(page.getInstructions());
 		currPageIndex = index;
 		autoEnableNavButtons();
+		
+		page.initialViewTasks();
 		
 		pagePanel.repaint();
 
@@ -269,24 +272,26 @@ public class SetupWizard extends JDialog implements ActionListener{
 		AbstractWizardPanel page = pages.get(currPageIndex);
 				
 		// Remove page from ignored list if requested
-		if(page.getEnablePageClass()!=null)
+		if(page.getEnablePageClassArray().size()>0)
 		{
-			if(ignoredPages.contains(page.getEnablePageClass()))
+			for(Class<? extends AbstractWizardPanel>  ignorePage: page.getEnablePageClassArray())
 			{
-					ignoredPages.remove(page.getEnablePageClass());
+				ignoredPages.remove(ignorePage);
 			}
 		}
 		
 		// Add page to ignored list if requested
-		if(page.getDisablePageClass()!=null)
+		if(page.getDisablePageClassArray().size()>0)
 		{
-			if(!ignoredPages.contains(page.getDisablePageClass()))
+			for(Class<? extends AbstractWizardPanel>  ignorePage: page.getDisablePageClassArray())
 			{
-				ignoredPages.add(page.getDisablePageClass());
+				if(!ignoredPages.contains(ignorePage))
+				{
+						ignoredPages.add(ignorePage);
+				}
 			}
 		}
-
-
+		
 		showPage(currPageIndex+1, Direction.FORWARD);
 
 	}
