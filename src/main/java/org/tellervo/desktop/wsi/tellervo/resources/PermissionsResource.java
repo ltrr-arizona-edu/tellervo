@@ -20,6 +20,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.wsi.tellervo.resources;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class PermissionsResource extends TellervoAssociatedResource<ArrayList<WS
 	 * @param pEntityID
 	 * @param groupOrUser
 	 */
-	public PermissionsResource(PermissionsEntityType pEntityType, String pEntityID, Object groupOrUser) {
+	public PermissionsResource(PermissionsEntityType pEntityType, String pEntityID, Serializable groupOrUser) {
 		super(getXMLName(new WSIPermission()), TellervoRequestType.READ);
 
 		addPermission(pEntityType, pEntityID, groupOrUser);

@@ -1,5 +1,6 @@
 package org.tellervo.desktop.admin.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
@@ -49,7 +50,7 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
     		{
     			if(usrOrGroup instanceof WSISecurityGroup)
     			{
-    				permclone.getSecurityUsersAndSecurityGroups().add(usrOrGroup);
+    				permclone.getSecurityUsersAndSecurityGroups().add((Serializable) usrOrGroup);
     			}
     		}
     		if(permclone.getSecurityUsersAndSecurityGroups().size()>0)

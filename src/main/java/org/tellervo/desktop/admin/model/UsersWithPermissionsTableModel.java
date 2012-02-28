@@ -1,5 +1,6 @@
 package org.tellervo.desktop.admin.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
@@ -76,7 +77,7 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
     		{
     			if(usrOrGroup instanceof WSISecurityUser)
     			{
-    				permclone.getSecurityUsersAndSecurityGroups().add(usrOrGroup);
+    				permclone.getSecurityUsersAndSecurityGroups().add((Serializable) usrOrGroup);
     			}
     		}
     		

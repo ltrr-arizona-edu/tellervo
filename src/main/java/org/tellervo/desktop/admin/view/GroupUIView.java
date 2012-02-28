@@ -57,6 +57,7 @@ import org.tellervo.desktop.wsi.tellervo.resources.PermissionsResource;
 import org.tellervo.desktop.wsi.tellervo.resources.SecurityGroupEntityResource;
 
 import java.awt.FlowLayout;
+import java.io.Serializable;
 
 
 
