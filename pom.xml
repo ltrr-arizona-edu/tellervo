@@ -617,6 +617,7 @@
                     <iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile>
                     <jvmVersion>1.5+</jvmVersion>
                     <bundleName>${project.name}</bundleName>
+                    <javaApplicationStub>Native/BuildResources/MacBuild/JavaApplicationStub</javaApplicationStub>
                     <!-- <zipFile>${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>-->
                 </configuration>
                 <executions>
@@ -718,17 +719,6 @@
 										<filemode>755</filemode>
 									</mapper>
 								</data>
-								<!--  Handling this with Deb dependencies now 
-								<data>
-									<src>Native/Libraries/linux-i586/</src>
-									<type>folder</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/lib/</prefix>
-										<filemode>755</filemode>
-									</mapper>
-								</data>
-								-->
 								<data>
 									<src>src/main/resources/Icons/48x48/tellervo-application.png</src>
 									<type>file</type>
@@ -891,7 +881,7 @@
 					
 					<!-- Run Makensis to create the windows installers -->
 				 
-			 	<!-- <execution>
+			 	    <execution>
 						<id>RunNSIS</id>
 						<phase>package</phase>
 						<configuration>
@@ -911,7 +901,7 @@
 						<goals>
 							<goal>run</goal>
 						</goals>					
-					</execution>-->
+					</execution>
 					
 					<execution>
 						<id>CopyJarFile</id>
