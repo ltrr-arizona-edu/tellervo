@@ -198,6 +198,11 @@ public class TridasEntityProperty extends AbstractProperty {
 			sb.append(c);
 		}
 		
+		if(qname.equals("object.genericFields"))
+		{
+			return "Lab code";
+		}
+		
 		return sb.toString();
 	}
 	
@@ -265,6 +270,12 @@ public class TridasEntityProperty extends AbstractProperty {
 	}
 	
 	public boolean isEditable() {
+		
+		if(qname.equals("object.genericFields"))
+		{
+			return true;
+		}
+		
 		if(isList || readOnly)
 			return false;
 		return true;

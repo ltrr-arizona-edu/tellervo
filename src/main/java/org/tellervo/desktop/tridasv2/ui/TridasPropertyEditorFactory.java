@@ -31,6 +31,7 @@ import java.sql.Date;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDatingReference;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasLocationGeometry;
 
 import com.l2fprod.common.propertysheet.Property;
@@ -59,6 +60,7 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		
 		// Offer text editing window
 		registerEditor(String.class, MemoEditor.class);
+		registerEditor(TridasGenericField.class, TridasObjectGenericFieldEditor.class);
 		
 		registerEditor(org.tridas.schema.Date.class, TridasDateEditor.class);
 	}

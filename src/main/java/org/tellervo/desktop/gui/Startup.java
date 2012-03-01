@@ -109,7 +109,7 @@ public class Startup implements PrivilegedAction {
 			if (url != null) {
 				img = javax.imageio.ImageIO.read(url);
 			}
-			LoginSplash splash = new LoginSplash("Corina", img);
+			LoginSplash splash = new LoginSplash("Tellervo", img);
 			ProgressMeter pm = new ProgressMeter();
 			
 			Dimension d = new Dimension(img.getWidth(), img.getHeight());	

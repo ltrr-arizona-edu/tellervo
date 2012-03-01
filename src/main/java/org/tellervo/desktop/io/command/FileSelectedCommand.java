@@ -110,7 +110,7 @@ public class FileSelectedCommand implements ICommand {
 		{
 			event.model.appendConversionWarning(new ConversionWarning(
 					WarningType.IGNORED, 
-					"Corina does not currently support importing of derived series / chronologies"));
+					"Tellervo does not currently support importing of derived series / chronologies"));
 		}
 		
 		// Add custom Corina warnings for unsupported aspects of TRiDaS
@@ -123,7 +123,8 @@ public class FileSelectedCommand implements ICommand {
 			{
 				event.model.appendConversionWarning(new ConversionWarning(
 						WarningType.IGNORED, 
-						"Corina does not currently support the linkSeries tags in objects"));
+						"Tellervo does not currently support the linkSeries tags in objects",
+						"linkSeries"));
 			}
 		}
 			
@@ -133,7 +134,8 @@ public class FileSelectedCommand implements ICommand {
 			{
 				event.model.appendConversionWarning(new ConversionWarning(
 						WarningType.IGNORED, 
-						"Corina does not support the WoodCompleteness tags in a series, only in the radius"));
+						"Tellervo does not support the WoodCompleteness tags in a series, only in the radius",
+						"woodCompleteness"));
 			}
 			
 			
@@ -170,7 +172,7 @@ public class FileSelectedCommand implements ICommand {
 							default:
 								event.model.appendConversionWarning(new ConversionWarning(
 										WarningType.UNREPRESENTABLE, 
-										"Corina currently only supports whole ring width values"));
+										"Tellervo currently only supports whole ring width values"));
 							}
 						}
 					}
@@ -185,7 +187,7 @@ public class FileSelectedCommand implements ICommand {
 		}
 		} catch (Exception ex)
 		{
-			log.error("Error modifying series to deal with Corina limitations");
+			log.error("Error modifying series to deal with Tellervo limitations");
 			new Bug(ex);
 		}
 		

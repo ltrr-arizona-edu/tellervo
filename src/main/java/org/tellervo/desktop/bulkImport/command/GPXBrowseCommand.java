@@ -28,15 +28,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
 import org.tellervo.desktop.bulkImport.control.GPXBrowse;
 import org.tellervo.desktop.bulkImport.model.IBulkImportSectionModel;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
+import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
+import org.tellervo.desktop.io.DendroReaderFileFilter;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
+import org.tridas.io.TridasIO;
 
+import com.dmurph.mvc.IllegalThreadException;
+import com.dmurph.mvc.IncorrectThreadException;
+import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 import com.dmurph.mvc.model.HashModel;
@@ -48,43 +57,56 @@ public class GPXBrowseCommand implements ICommand {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(MVCEvent argEvent) {
+		
+		try {
+	        MVC.splitOff(); // so other mvc events can execute
+		} catch (IllegalThreadException e) {
+		        // this means that the thread that called splitOff() was not an MVC thread, and the next event's won't be blocked anyways.
+		        e.printStackTrace();
+		} catch (IncorrectThreadException e) {
+		        // this means that this MVC thread is not the main thread, it was already splitOff() previously
+		        e.printStackTrace();
+		}
+		
 		GPXBrowse event = (GPXBrowse) argEvent;
 		HashModel model = event.model;
 		
-		FileDialog dialog  = new FileDialog(new JFrame());
-		dialog.setTitle("Choose GPX File");
-		dialog.setFilenameFilter(new GPXFilenameFilter());
-		dialog.setVisible(true);
-		String curFile;
+		JFileChooser fc = new JFileChooser(App.prefs.getPref(PrefKey.FOLDER_LAST_GPS, null));
+		fc.setFileFilter(new GPXFilenameFilter());
+		int returnVal = fc.showOpenDialog(null);
 
-		if((curFile = dialog.getFile())!=null)
-		{
+	    if (returnVal == JFileChooser.APPROVE_OPTION) {
 			 try {
-				GPXParser parser = new GPXParser(dialog.getDirectory() + curFile);
-				MVCArrayList<GPXWaypoint> list = (MVCArrayList<GPXWaypoint>) model.getProperty(IBulkImportSectionModel.WAYPOINT_LIST);
-				ArrayList<GPXWaypoint> wplist = parser.getWaypoints();
-				Collections.sort(wplist);
-				list.clear();
-				list.addAll(wplist);
-				Collections.sort(list);
-							
-			} catch (FileNotFoundException e) {
-				Alert.error(I18n.getText("error"), I18n.getText("error.fileNotFound"));
-			} catch (IOException e) {
-				Alert.error(I18n.getText("error"), I18n.getText("gis.invalidgpx"));
-			}
-		}
-		
+					GPXParser parser = new GPXParser(fc.getSelectedFile().getAbsolutePath());
+					MVCArrayList<GPXWaypoint> list = (MVCArrayList<GPXWaypoint>) model.getProperty(IBulkImportSectionModel.WAYPOINT_LIST);
+					ArrayList<GPXWaypoint> wplist = parser.getWaypoints();
+					Collections.sort(wplist);
+					list.clear();
+					list.addAll(wplist);
+					Collections.sort(list);
+								
+				} catch (FileNotFoundException e) {
+					Alert.error(I18n.getText("error"), I18n.getText("error.fileNotFound"));
+				} catch (IOException e) {
+					Alert.error(I18n.getText("error"), I18n.getText("gis.invalidgpx"));
+				}     
+	    }
 	}
 
-	public class GPXFilenameFilter implements FilenameFilter
+	public class GPXFilenameFilter extends AbstractDendroReaderFileFilter
 	{
 
-		@Override
-		public boolean accept(File dir, String name) {
-			if(name.endsWith("gpx")) return true;
+		public boolean accept(File file) {
+			if(file.getAbsolutePath().toLowerCase().endsWith("gpx")) return true;
+			
+			if(file.isDirectory()) return true;
 			
 			return false;
+		}
+
+		@Override
+		public String getDescription() {
+			return "GPS Exchange format (*.gpx)";
 		}
 		
 	}

@@ -6,14 +6,16 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.tellervo.desktop.ui.Builder;
-
 import net.miginfocom.swing.MigLayout;
+
+import org.tellervo.desktop.ui.Builder;
+import org.tridas.schema.TridasGenericField;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import com.l2fprod.common.swing.ComponentFactory;
@@ -25,19 +27,18 @@ import com.l2fprod.common.swing.ComponentFactory;
  * @author pwb48
  *
  */
-public class MemoEditor extends AbstractPropertyEditor {
-
-
-	protected String theString;
+public class TridasObjectGenericFieldEditor extends AbstractPropertyEditor {
+	
+	
+	protected ArrayList<TridasGenericField> theFieldList = new ArrayList<TridasGenericField>();
 	protected JTextField textField;
 	private JButton btnEdit;
 	private JButton btnDelete;
 	protected MemoEditorDialog dialog;
 	
-	public MemoEditor()
-	{
-
 	
+	public TridasObjectGenericFieldEditor()
+	{
 		editor = new JPanel();
 		((JPanel)editor).setLayout(new MigLayout("insets 0", "[315.00px,grow,fill][::60px][::60px]", "[0px,0px]"));
 		
@@ -76,9 +77,9 @@ public class MemoEditor extends AbstractPropertyEditor {
 				int id = arg0.getKeyCode();
 				if(id == KeyEvent.VK_ENTER || id == KeyEvent.VK_TAB)
 				{
-					String oldValue = theString;
-					theString = textField.getText();
-					firePropertyChange(oldValue, theString);
+					ArrayList<TridasGenericField> oldValue = theFieldList;
+					setField(buildGenericField(GenericFieldKey.OBJECT_LAB_CODE, GenericFieldDataType.STRING, textField.getText()));
+					firePropertyChange(oldValue, getField());
 				}
 			}
 
@@ -124,18 +125,70 @@ public class MemoEditor extends AbstractPropertyEditor {
 
 	}
 	
+	
+	public static TridasGenericField buildGenericField(GenericFieldKey key, GenericFieldDataType datatype, String value)
+	{
+		TridasGenericField gf = new TridasGenericField();
+		gf.setName(key.getValue());
+		gf.setValue(value);
+		gf.setType(datatype.getValue());
+
+		return gf;
+		
+	}
+	
+	private TridasGenericField getField()
+	{
+		return theFieldList.get(0);
+	}
+	
+	private void setField(TridasGenericField gf)
+	{
+		theFieldList.clear();
+		theFieldList.add(gf);
+	}
+	
+	
 	@Override
 	public Object getValue() {
-		return theString;
+				
+		return getField().getValue();
 	}
 	
 	@Override
 	public void setValue(Object value) {
 
-		String oldValue = theString;
-		theString = (String) value;
-		textField.setText((String) value);
-		firePropertyChange(oldValue, theString);
+		ArrayList<TridasGenericField> oldValue = theFieldList;
+		TridasGenericField newValue = null;
+		
+		if(value instanceof String)
+		{
+			newValue = buildGenericField(GenericFieldKey.OBJECT_LAB_CODE, GenericFieldDataType.STRING, (String) value);
+			
+		}
+		else if (value instanceof ArrayList)
+		{
+			for(Object v2 : (ArrayList<Object>) value)
+			{
+				if(v2 instanceof TridasGenericField)
+				{
+					if(((TridasGenericField) v2).getName().equals(GenericFieldKey.OBJECT_LAB_CODE.getValue()))
+					{
+						newValue = buildGenericField(GenericFieldKey.OBJECT_LAB_CODE, GenericFieldDataType.STRING, ((TridasGenericField)v2).getValue());
+					}
+				}
+			}
+		}
+		
+		
+		setField(newValue);
+		try{
+		textField.setText(getField().getValue());
+		} catch (NullPointerException e)
+		{
+			textField.setText("");
+		}
+		firePropertyChange(oldValue, getField());
 		
 	}
 	
@@ -145,9 +198,64 @@ public class MemoEditor extends AbstractPropertyEditor {
 	
 	private void launchEditDialog()
 	{
-		dialog = new MemoEditorDialog(editor, theString);
+		dialog = new MemoEditorDialog(editor, getField().getValue());
 		if(!dialog.hasResults())return;
 		setValue(dialog.getString());
 		dialog = null;		
 	}
+	
+	
+	
+	/**
+	 * Keys to the commonly used generic field names
+	 * 
+	 * @author pwb48
+	 *
+	 */
+	public enum GenericFieldKey{
+		
+		OBJECT_LAB_CODE("tellervo.objectLabCode");
+			
+		private String key;
+		
+		private GenericFieldKey(String key)
+		{
+			this.key = key;
+		}
+		
+		public String getValue()
+		{
+			return key;
+		}
+	}
+	
+	/**
+	 * XML data type options for GenericFields
+	 * 
+	 * @author pwb48
+	 *
+	 */
+	public enum GenericFieldDataType{
+		
+		STRING("xs:string"),
+		INTEGER("xs:int"),
+		TOKEN("xs:token"),
+		DATE_TIME("xs:datTime"),
+		BOOLEAN("xs:boolean"),
+		DOUBLE("xs:double");
+		
+			
+		private String key;
+		
+		private GenericFieldDataType(String key)
+		{
+			this.key = key;
+		}
+		
+		public String getValue()
+		{
+			return key;
+		}
+	}
+
 }

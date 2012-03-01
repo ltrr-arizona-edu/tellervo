@@ -34,14 +34,24 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasEditProperties;
 import org.tridas.interfaces.NormalTridasVoc;
-import org.tridas.schema.*;
+import org.tridas.schema.BaseSeries;
+import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
 
 
 public class TridasEntityDeriver {
-	
+	private final static Logger log = LoggerFactory.getLogger(TridasEntityDeriver.class);
+
 	private static Set<Class<?>> ignoreClasses = new HashSet<Class<?>>();
 	
 	static {
@@ -54,16 +64,23 @@ public class TridasEntityDeriver {
 		ignoreClasses.add(BaseSeries.class);
 	}
 	
+	private static int buildDerivationList(String entityName, Class<?> clazz,
+			TridasEntityProperty parent, String rootName) {
+		return buildDerivationList(entityName, clazz, parent, rootName, false);
+	}
+	
+	
 	/**
 	 * Builds a PropertyData derivation list
 	 * 
 	 * @param entityName
 	 * @param clazz
 	 * @param parent
+	 * @param ignoreMachineOnlyFlag
 	 * @return the number of direct child properties of clazz
 	 */
 	private static int buildDerivationList(String entityName, Class<?> clazz,
-			TridasEntityProperty parent, String rootName) {
+			TridasEntityProperty parent, String rootName, Boolean ignoreMachineOnlyFlag) {
 		
 		Map<String, TridasEntityProperty> fieldMap = new HashMap<String, TridasEntityProperty>();
 		int nChildren = 0;
@@ -72,8 +89,7 @@ public class TridasEntityDeriver {
 		// get any property names and stick them at the head of the list
 		XmlType type = clazz.getAnnotation(XmlType.class);
 		String[] typeProperties;
-		if (type != null && (typeProperties = type.propOrder()) != null
-				&& typeProperties.length > 0) {
+		if (type != null && (typeProperties = type.propOrder()) != null && typeProperties.length > 0) {
 
 			// load into type properties
 			for (String s : typeProperties) {
@@ -156,26 +172,44 @@ public class TridasEntityDeriver {
 
 				TridasEditProperties classprops = entType.getAnnotation(TridasEditProperties.class);
 
-				// is it machine only? skip it!
-				if((classprops != null && classprops.machineOnly()) || (fieldprops != null && fieldprops.machineOnly()))
-					continue;
 				
-				// how about read only?
-				if((classprops != null && classprops.readOnly()) || (fieldprops != null && fieldprops.readOnly()))
+				
+				/*
+				 * THIS IS A HORRIBLE MULTI-LOCATION KLUDGE FIX
+				 * to show lab codes in objects. 
+				 */
+				if(pd.qname.equals("object.genericFields"))
+				{
+					// Special case for object lab code
 					pd.setReadOnly(true);
+					
+				}		
+				else
+				{
+					// is it machine only? skip it! But only as long as we're not ignoring the machine-only flag
+					if((classprops != null && classprops.machineOnly()) || (fieldprops != null && fieldprops.machineOnly()))
+						continue;
+
+					// how about read only?
+					if((classprops != null && classprops.readOnly()) || (fieldprops != null && fieldprops.readOnly()))
+						pd.setReadOnly(true);
+					
+					// is it marked as editor final?
+					if((classprops != null && classprops.finalType()) || (fieldprops != null && fieldprops.finalType())) 
+						continue;
+				}
 
 				// add type to property list
 				parent.addChildProperty(pd);
 				nChildren++;
 				
-				// is it marked as editor final?
-				if((classprops != null && classprops.finalType()) || (fieldprops != null && fieldprops.finalType())) 
-					continue;
+
 
 				// don't delve any deeper for enums
 				// only delve deeper if it's an XML-annotated class
 				if (entType.isEnum() || 
-						entType.getAnnotation(XmlType.class) == null) {
+						entType.getAnnotation(XmlType.class) == null ||
+						pd.qname.equals("object.genericFields")) {
 					continue;
 				}
 
@@ -183,7 +217,7 @@ public class TridasEntityDeriver {
 				if (entType.equals(clazz))
 					continue;
 
-				buildDerivationList(pd.qname, entType, pd, rootName);
+				buildDerivationList(pd.qname, entType, pd, rootName, ignoreMachineOnlyFlag);
 				
 				// do we have a NormalTridas property?
 				// construct it now, after we've built its child list
@@ -218,7 +252,8 @@ public class TridasEntityDeriver {
 
 		for (Class<?> myClass : classDerivationTree)
 		{
-			buildDerivationList(rootEntityName, myClass, rootEntity, rootEntityName);
+			
+			buildDerivationList(rootEntityName, myClass, rootEntity, rootEntityName, false);
 
 		}
 

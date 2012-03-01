@@ -289,7 +289,7 @@
 		<dependency>
 			<groupId>com.dmurph.mvc</groupId>
 			<artifactId>java-simple-mvc</artifactId>
-			<version>1.4.0.1</version>
+			<version>1.4.1</version>
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>

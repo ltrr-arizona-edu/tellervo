@@ -22,6 +22,9 @@ package org.tellervo.desktop.bulkImport.command;
 
 import org.tellervo.desktop.bulkImport.control.DeleteRowEvent;
 
+import com.dmurph.mvc.IllegalThreadException;
+import com.dmurph.mvc.IncorrectThreadException;
+import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
@@ -30,6 +33,17 @@ public class DeleteRowCommand implements ICommand {
 
 	@Override
 	public void execute(MVCEvent argEvent) {
+		
+		try {
+	        MVC.splitOff(); // so other mvc events can execute
+		} catch (IllegalThreadException e) {
+		        // this means that the thread that called splitOff() was not an MVC thread, and the next event's won't be blocked anyways.
+		        e.printStackTrace();
+		} catch (IncorrectThreadException e) {
+		        // this means that this MVC thread is not the main thread, it was already splitOff() previously
+		        e.printStackTrace();
+		}
+		
 		DeleteRowEvent event = (DeleteRowEvent) argEvent;
 		event.model.getRows().remove((int)event.getValue());
 	}

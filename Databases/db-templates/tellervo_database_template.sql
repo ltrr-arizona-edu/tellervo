@@ -32587,3 +32587,71 @@ CREATE TRIGGER update_radius_rebuildmetacache
   ON tblradius
   FOR EACH ROW
   EXECUTE PROCEDURE cpgdb.rebuildmetacacheforradius();
+  
+  
+  
+  
+  CREATE OR REPLACE FUNCTION cpgdb.getelementsforobjectcode(objectcode character varying)
+  RETURNS SETOF tblelement AS
+$BODY$DECLARE
+  objcode ALIAS FOR $1;
+  query VARCHAR;
+  el tblelement%ROWTYPE;
+BEGIN
+query := 'SELECT tblelement.* 
+	FROM tblelement INNER JOIN tblobject ON (tblelement.objectid = tblobject.objectid)
+	WHERE tblelement.objectid 
+	  IN ( SELECT objectid FROM cpgdb.findobjectdescendantsfromcode('''|| objcode || ''', true))';
+
+FOR el IN EXECUTE query LOOP
+   RETURN NEXT el;
+END LOOP;
+	  
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
+  
+  
+ CREATE OR REPLACE FUNCTION cpgdb.getsamplesforobjectcode(objectcode character varying)
+  RETURNS SETOF tblsample AS
+$BODY$DECLARE
+  objcode ALIAS FOR $1;
+  query VARCHAR;
+  smpl tblsample%ROWTYPE;
+BEGIN
+query := 'SELECT tblsample.* 
+	FROM tblsample WHERE tblsample.elementid IN 
+	(SELECT elementid from cpgdb.getelementsforobjectcode('''||objcode|| '''))';
+
+FOR smpl IN EXECUTE query LOOP
+   RETURN NEXT smpl;
+END LOOP;
+	  
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
+  
+  
+   CREATE OR REPLACE FUNCTION cpgdb.getradiiforobjectcode(objectcode character varying)
+  RETURNS SETOF tblradius AS
+$BODY$DECLARE
+  objcode ALIAS FOR $1;
+  query VARCHAR;
+  rad tblradius%ROWTYPE;
+BEGIN
+query := 'SELECT tblradius.* 
+	FROM tblradius WHERE tblradius.sampleid IN 
+	(SELECT sampleid from cpgdb.getsamplesforobjectcode('''||objcode|| '''))';
+
+FOR rad IN EXECUTE query LOOP
+   RETURN NEXT rad;
+END LOOP;
+	  
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000;
+  
+  
