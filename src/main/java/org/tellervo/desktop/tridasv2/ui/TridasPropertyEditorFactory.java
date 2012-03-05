@@ -60,7 +60,6 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		
 		// Offer text editing window
 		registerEditor(String.class, MemoEditor.class);
-		registerEditor(TridasGenericField.class, TridasObjectGenericFieldEditor.class);
 		
 		registerEditor(org.tridas.schema.Date.class, TridasDateEditor.class);
 	}

@@ -70,9 +70,9 @@ import org.netbeans.swing.outline.OutlineModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.TridasEntityChooser;
-import org.tellervo.desktop.gui.TridasEntityChooser.EntitiesAccepted;
-import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel;
+import org.tellervo.desktop.gui.widgets.TridasEntityPicker;
+import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
+import org.tellervo.desktop.gui.widgets.TridasEntityPicker.EntitiesAccepted;
 import org.tellervo.desktop.io.ConversionWarningTableModel;
 import org.tellervo.desktop.io.LineHighlighter;
 import org.tellervo.desktop.io.control.ExpandImportTreeEvent;
@@ -890,7 +890,7 @@ public class ImportView extends JFrame{
 		if((selectedEntity.getUserObject() instanceof TridasMeasurementSeries))
 		{
  
-				newParent = TridasEntityChooser.showDialog(this, 
+				newParent = TridasEntityPicker.showDialog(glue, 
 						"Select entity", 
 						ITridasSeries.class, 
 						EntitiesAccepted.SPECIFIED_ENTITY_UP_TO_PROJECT);
@@ -902,7 +902,7 @@ public class ImportView extends JFrame{
 		else if((selectedEntity.getUserObject() instanceof TridasSample))
 		{
 			 
-			newParent = TridasEntityChooser.showDialog(this, 
+			newParent = TridasEntityPicker.showDialog(this, 
 					"Select entity", 
 					TridasSample.class, 
 					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);

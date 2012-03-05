@@ -29,6 +29,7 @@ import java.util.Comparator;
 
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -169,13 +170,15 @@ public class ElementView extends AbstractBulkImportView{
 	@Override
 	protected void addListeners() {
 		super.addListeners();
+		final JPanel parent = (JPanel) this;
+		
 		
 		browseGPX.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				ElementModel model = BulkImportModel.getInstance().getElementModel();
-				GPXBrowse event = new GPXBrowse(model);
+				GPXBrowse event = new GPXBrowse(model, parent);
 				event.dispatch();
 				
 				// Show waypoint column

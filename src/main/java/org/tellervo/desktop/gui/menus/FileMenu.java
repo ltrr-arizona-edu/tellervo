@@ -60,6 +60,8 @@ import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.XFrame;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
+import org.tellervo.desktop.gui.widgets.TridasEntityPicker;
+import org.tellervo.desktop.gui.widgets.TridasEntityPicker.EntitiesAccepted;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.io.ExportDialog;
@@ -89,6 +91,7 @@ import org.tridas.io.util.SafeIntYear;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasProject;
+import org.tridas.schema.TridasSample;
 
 
 
@@ -193,7 +196,7 @@ public class FileMenu extends JMenu {
 	}
 
 	public void addNewOpenMenus() {
-				
+		
 		filenew = Builder.makeMenuItem("menus.file.new", true, "filenew.png");
 		filenew.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {

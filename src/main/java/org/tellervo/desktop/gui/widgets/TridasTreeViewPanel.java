@@ -17,7 +17,7 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package org.tellervo.desktop.gui.hierarchy;
+package org.tellervo.desktop.gui.widgets;
 
 import java.awt.BorderLayout;
 import java.awt.Window;
@@ -43,10 +43,12 @@ import javax.swing.tree.TreeSelectionModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.CorinaCodePanel;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
-import org.tellervo.desktop.gui.CorinaCodePanel.ObjectListMode;
+import org.tellervo.desktop.gui.hierarchy.TridasTree;
+import org.tellervo.desktop.gui.hierarchy.TridasTreeCellRenderer;
+import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel_UI;
+import org.tellervo.desktop.gui.widgets.TellervoCodePanel.ObjectListMode;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
@@ -80,7 +82,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	private final static Logger log = LoggerFactory.getLogger(TridasTreeViewPanel.class);
 	private static final long serialVersionUID = 1185669228536105855L;
 	protected TridasTree tree;
-	protected CorinaCodePanel panel;
+	protected TellervoCodePanel panel;
 	protected EventListenerList tridasListeners = new EventListenerList();
 	protected String textForSelectPopup = "Search for associated series";
 	protected Boolean listenersAreCheap = false;
@@ -106,7 +108,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 *   default = Search for associated series
 	 * 
 	 * BaseObjectListMode - Object list mode to use for base objects
-	 * @see org.tellervo.desktop.gui.CorinaCodePanel.ObjectListMode
+	 * @see org.tellervo.desktop.gui.widgets.TellervoCodePanel.ObjectListMode
 	 *   default = Top level only
 	 */
 	public TridasTreeViewPanel()
@@ -139,7 +141,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 */
 	private void setupGui()
 	{
-		panel = new CorinaCodePanel();
+		panel = new TellervoCodePanel();
 		panel.addTridasSelectListener(this);
 		containerPanel.setLayout(new BorderLayout());
 		this.containerPanel.add(panel, BorderLayout.CENTER);	

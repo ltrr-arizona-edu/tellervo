@@ -859,18 +859,22 @@
 						  <tasks>
 							  <taskdef resource="net/sf/antcontrib/antcontrib.properties"
 								  classpathref="maven.plugin.classpath"/>	
-								  <delete includeEmptyDirs="true">
-								      <fileset dir="${project.build.directory}/${project.build.finalName}.app/Contents/Resources/Java/" includes="**/*.jar"/>
-								  </delete>
-								  <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/MacOSX"/>
-								  <copy file="${project.build.directory}/${project.build.finalName}.jar" 
-								        todir="${project.build.directory}/${project.build.finalName}.app/Contents/Resources/Java/"/>
-								  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="false">
-								  		 <fileset dir="Native/BuildResources/MacBuild/NativePackages/" includes="**/*.pkg"/>
-								  		 <fileset dir="${project.build.directory}/classes/Licenses/" includes="**/license.txt"/>
-								  		 <fileset dir="Documentation" includes="**/tellervo-manual.pdf"/>
-								  		 <zipfileset dir="${project.build.directory}/${project.build.finalName}.app" filemode="555" prefix="Tellervo.app"/>
-								  </zip>
+							  <trycatch>
+							      <try>
+									  <delete includeEmptyDirs="true">
+									      <fileset dir="${project.build.directory}/${project.build.finalName}.app/Contents/Resources/Java/" includes="**/*.jar"/>
+									  </delete>
+									  <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/MacOSX"/>
+									  <copy file="${project.build.directory}/${project.build.finalName}.jar" 
+									        todir="${project.build.directory}/${project.build.finalName}.app/Contents/Resources/Java/"/>
+									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="false">
+									  		 <fileset dir="Native/BuildResources/MacBuild/NativePackages/" includes="**/*.pkg"/>
+									  		 <fileset dir="${project.build.directory}/classes/Licenses/" includes="**/license.txt"/>
+									  		 <fileset dir="Documentation" includes="**/tellervo-manual.pdf"/>
+									  		 <zipfileset dir="${project.build.directory}/${project.build.finalName}.app" filemode="555" prefix="Tellervo.app"/>
+									  </zip>
+								  </try>
+							   </trycatch>
 						  </tasks>
 					  </configuration>
 					  <goals>

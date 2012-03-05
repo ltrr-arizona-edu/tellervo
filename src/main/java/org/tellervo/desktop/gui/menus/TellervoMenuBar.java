@@ -46,11 +46,11 @@ import org.tellervo.desktop.platform.Platform;
 // - override addFileMenu() to add a custom file menu (with Export...)
 // - override addEditMenu() to add a custom edit menu (with undo/cut/insert/etc.)
 @SuppressWarnings("serial")
-public class CorinaMenuBar extends JMenuBar {
+public class TellervoMenuBar extends JMenuBar {
 
     private JFrame f; // does this need to be protected?
 
-    public CorinaMenuBar(JFrame f) {
+    public TellervoMenuBar(JFrame f) {
 	this.f = f;
 
 	addFirstMenus();

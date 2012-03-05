@@ -20,6 +20,9 @@
  ******************************************************************************/
 package org.tellervo.desktop.bulkImport.control;
 
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.tracking.ITrackable;
@@ -28,11 +31,13 @@ public class GPXBrowse extends MVCEvent implements ITrackable{
 	
 	private static final long serialVersionUID = 1L;
 	public final HashModel model;
+	public final JPanel parent;
 	
-	public GPXBrowse(HashModel model)
+	public GPXBrowse(HashModel model, JPanel parent)
 	{
 		super(BulkImportController.BROWSE_GPX_FILE);
 		this.model = model;
+		this.parent = parent;
 	}
 
 	@Override

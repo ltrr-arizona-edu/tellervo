@@ -25,9 +25,9 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.gui.Bug;
-import org.tellervo.desktop.gui.CorinaCodePanel;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
+import org.tellervo.desktop.gui.widgets.TellervoCodePanel;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
@@ -58,7 +58,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 	private GISPanel wwMapPanel;
 	private JComboBox cboAddType;
 	private JButton btnAdd;
-	private CorinaCodePanel codePanel;
+	private TellervoCodePanel codePanel;
 	private JLabel lblLabcode;
 	
 	public enum AddLayerType{
@@ -126,7 +126,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 			
 		});
 		
-		codePanel = new CorinaCodePanel(this);
+		codePanel = new TellervoCodePanel(this);
 		codePanel.addTridasSelectListener(this);
 		
 		lblLabcode = new JLabel("Labcode:");

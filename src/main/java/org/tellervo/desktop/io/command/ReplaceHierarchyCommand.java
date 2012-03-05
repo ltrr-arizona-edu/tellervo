@@ -1,6 +1,7 @@
 package org.tellervo.desktop.io.command;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -155,6 +156,7 @@ public class ReplaceHierarchyCommand implements ICommand {
 			
 		DefaultMutableTreeNode newnode = new DefaultMutableTreeNode();
 		newnode.setUserObject(newentity);
+		newnode.setParent((MutableTreeNode) oldnode.getParent());
 		TridasRepresentationTableTreeRow newrow = new TridasRepresentationTableTreeRow(newnode, null);
 		
 		ImportSwapEntityEvent swapEvent = new ImportSwapEntityEvent(event.model, newrow, oldrow, false);

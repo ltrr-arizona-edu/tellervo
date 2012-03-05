@@ -45,10 +45,16 @@ public class TridasObjectRenderer implements ListCellRenderer {
 		panel.add(lblName);	
 	}
 	
+	private Boolean hideTitles = false;
 	private JPanel panel;
 	private JLabel lblCode;
 	private JLabel lblName;
 	private int maximumTitleLength = -1;
+	
+	public void setHideTitles(Boolean b)
+	{
+		hideTitles = b;
+	}
 	
 	public void setMaximumTitleLength(int maximumTitleLength) {
 		this.maximumTitleLength = maximumTitleLength;
@@ -150,6 +156,12 @@ public class TridasObjectRenderer implements ListCellRenderer {
 			Font font = list.getFont();
 			lblCode.setFont(font.deriveFont(Font.BOLD));
 			lblName.setFont(font.deriveFont(font.getSize() - 2.0f));			
+		}
+		
+		
+		if(hideTitles)
+		{
+			lblName.setVisible(false);
 		}
 		
 		return c;

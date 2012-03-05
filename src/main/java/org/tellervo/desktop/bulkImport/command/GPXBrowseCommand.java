@@ -73,7 +73,7 @@ public class GPXBrowseCommand implements ICommand {
 		
 		JFileChooser fc = new JFileChooser(App.prefs.getPref(PrefKey.FOLDER_LAST_GPS, null));
 		fc.setFileFilter(new GPXFilenameFilter());
-		int returnVal = fc.showOpenDialog(null);
+		int returnVal = fc.showOpenDialog(event.parent);
 
 	    if (returnVal == JFileChooser.APPROVE_OPTION) {
 			 try {

@@ -88,12 +88,7 @@ public class ShowColumnWindowCommand implements ICommand {
 		
 		ColumnChooserView view = new ColumnChooserView(model, biModel.getMainView(), event.locationComponent);
 		biModel.setCurrColumnChooser(view);
-		
-		try {
-			MVC.splitOff();
-		}catch (IllegalThreadException e) { e.printStackTrace();}
-		catch (IncorrectThreadException e) { e.printStackTrace();}
-		
+				
 		view.pack();
 		view.setVisible(true);
 	}

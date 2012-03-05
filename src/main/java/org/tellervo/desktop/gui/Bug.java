@@ -51,7 +51,7 @@ import org.tellervo.desktop.util.OKCancel;
  * A dialog for telling the user "You've found a bug!".
  * 
  * <p>
- * This dialog tells the user that a bug in Corina was encountered, and gives
+ * This dialog tells the user that a bug in Tellervo was encountered, and gives
  * the option of showing detailed information (the stack trace, and some info
  * about the OS and JVM).
  * </p>
@@ -141,9 +141,9 @@ public class Bug extends JDialog {
 		textArea.setEditable(false);
 		stackTrace = new JScrollPane(textArea);
 
-		String msgText = "<html>We apologize but an internal error has occurred within Corina and there "
+		String msgText = "<html>We apologize but an internal error has occurred within Tellervo and there "
 						+ "<i>may</i> have been a <br>loss of data.<br><br>"
-						+ "Please contact the Corina developers with details of what you were doing"
+						+ "Please contact the Tellervo developers with details of what you were doing"
 						+ " prior to getting<br> this message by submitting a report.<br>";
 			
 		JPanel message = Layout

@@ -17,7 +17,7 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package org.tellervo.desktop.gui;
+package org.tellervo.desktop.gui.widgets;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -46,24 +46,24 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gui.TridasSelectEvent;
+import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.dbbrowse.TridasObjectRenderer;
-import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel;
-import org.tellervo.schema.TellervoRequestFormat;
-import org.tellervo.schema.SearchOperator;
-import org.tellervo.schema.SearchParameterName;
-import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.labels.ui.TridasListCellRenderer;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
-import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.util.TridasUtils;
-import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
@@ -83,7 +83,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 	
 	private final static Logger log = LoggerFactory.getLogger(TridasEntityChooser.class);
 	private static final long serialVersionUID = 3079094155424090769L;
-	private CorinaCodePanel codePanel;
+	private TellervoCodePanel codePanel;
 	private final Class<? extends ITridas> expectedClass;
 	private final EntitiesAccepted entitiesAccepted;
 	private JButton okButton;
@@ -293,7 +293,7 @@ public class TridasEntityChooser extends JDialog implements ActionListener, Trid
 				panelLabcode = new JPanel();
 				layeredPane.add(panelLabcode, BorderLayout.NORTH);
 				panelLabcode.setLayout(new MigLayout("", "[252px,grow]", "[21.00px]"));
-				codePanel = new CorinaCodePanel(this);
+				codePanel = new TellervoCodePanel(this);
 				panelLabcode.add(codePanel, "cell 0 0,grow");
 				
 				codePanel.addTridasSelectListener(this);

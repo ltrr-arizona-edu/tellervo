@@ -17,7 +17,7 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package org.tellervo.desktop.gui.hierarchy;
+package org.tellervo.desktop.gui.widgets;
 
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -30,8 +30,7 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.tellervo.desktop.admin.view.PermissionByEntityDialog;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.TridasEntityChooser;
-import org.tellervo.desktop.gui.TridasEntityChooser.EntitiesAccepted;
+import org.tellervo.desktop.gui.widgets.TridasEntityPicker.EntitiesAccepted;
 import org.tellervo.schema.EntityType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -75,7 +74,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	 *   default = Search for associated series
 	 * 
 	 * BaseObjectListMode - Object list mode to use for base objects
-	 * @see org.tellervo.desktop.gui.CorinaCodePanel.ObjectListMode
+	 * @see org.tellervo.desktop.gui.widgets.TellervoCodePanel.ObjectListMode
 	 *   default = Top level only
 	 */
 	public ManagementTreeViewPanel()
@@ -257,7 +256,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 			}
 			
 			
-			ITridas newParent = TridasEntityChooser.showDialog(parent, 
+			ITridas newParent = TridasEntityPicker.showDialog(parent, 
 					"Select new parent", 
 					expectedClass, 
 					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
@@ -288,7 +287,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 			ITridas selected = (ITridas) ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent()).getUserObject();
 			Class<? extends ITridas> expectedClass = selected.getClass();
 						
-			ITridas correctEntity = TridasEntityChooser.showDialog(null, 
+			ITridas correctEntity = TridasEntityPicker.showDialog(parent, 
 					"Select correct entity", 
 					expectedClass, 
 					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);

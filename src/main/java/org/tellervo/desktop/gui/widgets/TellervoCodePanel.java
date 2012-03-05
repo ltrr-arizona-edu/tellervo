@@ -17,7 +17,7 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package org.tellervo.desktop.gui;
+package org.tellervo.desktop.gui.widgets;
 
 import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
@@ -33,6 +33,9 @@ import javax.swing.JTextField;
 import javax.swing.event.EventListenerList;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.TridasSelectEvent;
+import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.TridasSelectEvent.TridasSelectType;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.SearchOperator;
@@ -53,6 +56,7 @@ import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
+import net.miginfocom.swing.MigLayout;
 
 
 /**
@@ -63,7 +67,7 @@ import org.tridas.util.TridasObjectEx;
  * @author peterbrewer
  *
  */
-public class CorinaCodePanel extends JPanel implements KeyListener{
+public class TellervoCodePanel extends JPanel implements KeyListener{
 
 	private static final long serialVersionUID = 1514161084317278783L;
 	private EventListenerList tridasListeners = new EventListenerList();
@@ -78,7 +82,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	 * 
 	 * @param parent
 	 */
-	public CorinaCodePanel(JDialog parent)
+	public TellervoCodePanel(JDialog parent)
 	{
 		this.parent = parent;
 		setup();
@@ -90,7 +94,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	 * @param parent
 	 * @param showProgress
 	 */
-	public CorinaCodePanel(JDialog parent, Boolean showProgress)
+	public TellervoCodePanel(JDialog parent, Boolean showProgress)
 	{
 		this.showProgress = showProgress;
 		this.parent = parent;
@@ -100,7 +104,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	/**
 	 * Basic constructor
 	 */
-	public CorinaCodePanel() {
+	public TellervoCodePanel() {
 		parent = new JDialog();
 		setup();
 	}
@@ -110,7 +114,7 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	 * 
 	 * @param showProgress
 	 */
-	public CorinaCodePanel(Boolean showProgress) {
+	public TellervoCodePanel(Boolean showProgress) {
 		this.showProgress = showProgress;
 		parent = new JDialog();
 		setup();
@@ -139,12 +143,12 @@ public class CorinaCodePanel extends JPanel implements KeyListener{
 	private void setup()
 	{	
 		textField = new JTextField();
-	    textField.addKeyListener(this);    
-	    this.setLayout(new BorderLayout());
-	    add(textField, java.awt.BorderLayout.CENTER);
+	    textField.addKeyListener(this);
+	    setLayout(new MigLayout("hidemode 3", "[450px,grow,fill]", "[][14px][grow]"));
+	    add(textField, "cell 0 0,grow");
 	    
 	    progressBar = new JProgressBar();
-	    add(progressBar, BorderLayout.SOUTH);
+	    add(progressBar, "cell 0 1,growx,aligny top");
 	    progressBar.setVisible(false);
 	    textField.requestDefaultFocus();
 	}

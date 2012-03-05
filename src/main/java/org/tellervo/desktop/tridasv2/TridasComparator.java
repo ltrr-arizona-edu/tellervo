@@ -205,7 +205,7 @@ public class TridasComparator implements Comparator<ITridas> {
 		return (compareBehavior != CompareBehavior.CASE_SENSITIVE) ? v1.compareToIgnoreCase(v2) : v1.compareTo(v2);
 	}
 
-	private Integer getEntityLevel(ITridas entity)
+	public static Integer getEntityLevel(ITridas entity)
 	{
 		if(entity instanceof TridasObjectEx || entity instanceof TridasObject)
 		{

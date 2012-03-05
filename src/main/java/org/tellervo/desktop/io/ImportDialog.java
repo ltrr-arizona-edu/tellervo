@@ -56,7 +56,7 @@ import jsyntaxpane.DefaultSyntaxKit;
 import org.apache.commons.lang.WordUtils;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
-import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel;
+import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
 import org.tellervo.desktop.tridasv2.TridasCloner;
 import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetTable;
 import org.tellervo.desktop.tridasv2.ui.TridasPropertyEditorFactory;

@@ -57,7 +57,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
-import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel;
+import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
 import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
