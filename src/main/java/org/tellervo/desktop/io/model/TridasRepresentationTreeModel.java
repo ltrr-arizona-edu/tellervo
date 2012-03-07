@@ -171,30 +171,36 @@ public class TridasRepresentationTreeModel extends DefaultTreeModel implements T
     @Override
     public Object getValueFor(Object node, int column) {
     	DefaultMutableTreeNode dmtnode = (DefaultMutableTreeNode) node; 
-        ITridas entity = (ITridas) dmtnode.getUserObject();
-                
         
-        switch (column) {
-            case 0:
-            	if(entity instanceof TridasProject)
-            	{
-            		return ImportStatus.UNSUPPORTED;
-            	}
-            	else if (entity instanceof ITridas)
-            	{
-            		   		
-            		TridasIdentifier id = entity.getIdentifier();
-            		if(id==null) return ImportStatus.PENDING;
-            		if(!id.isSetDomain()) return ImportStatus.PENDING;
-            		if(!id.isSetValue()) return ImportStatus.PENDING;
-            		if(!id.getDomain().equals(App.domain)) return ImportStatus.PENDING;            
-            		
-            		return ImportStatus.STORED_IN_DATABASE;
-            	}
-                return ImportStatus.UNSUPPORTED;
-            default:
-                assert false;
-        }
+    	try{
+    		ITridas entity = (ITridas) dmtnode.getUserObject();
+    		switch (column) {
+		        case 0:
+		        	if(entity instanceof TridasProject)
+		        	{
+		        		return ImportStatus.UNSUPPORTED;
+		        	}
+		        	else if (entity instanceof ITridas)
+		        	{
+		        		   		
+		        		TridasIdentifier id = entity.getIdentifier();
+		        		if(id==null) return ImportStatus.PENDING;
+		        		if(!id.isSetDomain()) return ImportStatus.PENDING;
+		        		if(!id.isSetValue()) return ImportStatus.PENDING;
+		        		if(!id.getDomain().equals(App.domain)) return ImportStatus.PENDING;            
+		        		
+		        		return ImportStatus.STORED_IN_DATABASE;
+		        	}
+		            return ImportStatus.UNSUPPORTED;
+		        default:
+		            assert false;
+		    }
+    	} catch (Exception e)
+    	{
+    		log.debug("Error grabbing user object from node");
+    	}
+        
+
         return null;
     }
 

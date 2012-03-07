@@ -67,6 +67,7 @@ import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.io.ExportDialog;
 import org.tellervo.desktop.io.WrongFiletypeException;
 import org.tellervo.desktop.io.control.IOController;
+import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -179,9 +180,55 @@ public class FileMenu extends JMenu {
 			
 			fileimport.add(importitem);
 		}
-		
-		//fileimport = Builder.makeMenuItem("menus.file.import", "org.tellervo.desktop.gui.menus.FileMenu.importdbwithtricycle()", "fileimport.png");
 		add(fileimport);
+		
+		
+		JMenu fileimportdataonly = Builder.makeMenu("menus.file.importdataonly", "fileimport.png");
+		
+		for (final String s : TridasIO.getSupportedReadingFormats()) {
+			
+			JMenuItem importitem = new JMenuItem(s);
+
+			importitem.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// Set up file chooser and filters
+					AbstractDendroFileReader reader = TridasIO.getFileReader(s);
+					DendroFileFilter filter = reader.getDendroFileFilter();
+					File lastFolder = null;
+					try{
+						lastFolder = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_READ, null));
+					} catch (Exception e){}
+					
+					JFileChooser fc = new JFileChooser(lastFolder);
+					fc.addChoosableFileFilter(filter);
+					fc.setFileFilter(filter);
+					
+					int returnVal = fc.showOpenDialog(null);
+						
+					// Get details from user
+				    if (returnVal == JFileChooser.APPROVE_OPTION) {
+				        File file = fc.getSelectedFile();
+				        ImportDataOnly importDialog = new ImportDataOnly(f, file, s);
+				        
+						// Remember this folder for next time
+						App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
+					    
+				    } else {
+				    	return;
+				    }
+
+					
+				}
+				
+			});
+			
+			fileimportdataonly.add(importitem);
+		}
+		add(fileimportdataonly);
+		
+		
 		
 		addExportMenus();
 
@@ -494,36 +541,6 @@ public class FileMenu extends JMenu {
 		}
 	}
 	
-	public static void importdbwithtricycle()
-	{
-		// Set up file chooser and filters
-		JFileChooser fc = new JFileChooser();
-		for (String readername : TridasIO.getSupportedReadingFormats())
-		{
-			AbstractDendroReaderFileFilter filter = new DendroReaderFileFilter(readername);
-			fc.addChoosableFileFilter(filter);
-		}
-		int returnVal = fc.showOpenDialog(null);
-			
-		// Get details from user
-		String type = null;
-	    if (returnVal == JFileChooser.APPROVE_OPTION) {
-	        File file = fc.getSelectedFile();
-	        type = fc.getFileFilter().getDescription();
-	        
-	        ImportView importDialog = new ImportView(file, type);
-
-			importDialog.setVisible(true);
-	        
-	 
-		    
-	    } else {
-	    	return;
-	    }
-
-
-	    
-	}
 	
 	public static void importdbwithbarcode(){
 			

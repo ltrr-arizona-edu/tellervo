@@ -13,12 +13,19 @@ import java.util.UUID;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.table.AbstractTableModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.Range;
+import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.io.Metadata;
+import org.tellervo.desktop.io.command.ReplaceHierarchyCommand;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.CorinaWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.EntityType;
@@ -28,6 +35,7 @@ import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.support.XMLDateUtils;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Center;
@@ -35,13 +43,21 @@ import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tridas.io.exceptions.ConversionWarningException;
+import org.tridas.io.util.SafeIntYear;
+import org.tridas.io.util.UnitUtils;
 import org.tridas.schema.NormalTridasMeasuringMethod;
+import org.tridas.schema.NormalTridasUnit;
+import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasMeasuringMethod;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
+import org.tridas.schema.TridasUnit;
+import org.tridas.schema.TridasValue;
+import org.tridas.schema.TridasValues;
 import org.tridas.util.TridasObjectEx;
 
 
@@ -56,6 +72,10 @@ import org.tridas.util.TridasObjectEx;
  * @version $Id$
  */
 public class EditorFactory {
+	
+	private final static Logger log = LoggerFactory.getLogger(EditorFactory.class);
+
+	
 	private EditorFactory() {
 		// don't instantiate!
 	}
@@ -362,6 +382,112 @@ public class EditorFactory {
 		// start the editor
 		new Editor(sample).setVisible(true);
 		
+		container.setCursor(Cursor.getDefaultCursor());
+	}
+	
+	
+	/**
+	 * Bit of a cheat.  This creates a new editor from a derivedSeries pretending
+	 * it's a raw measurement
+	 *  
+	 * @param container
+	 * @param series
+	 */
+	public static void newSeriesFromDerivedSeries(Container container, TridasDerivedSeries series, NormalTridasUnit unitsIfNotSpecified) {
+		
+		TridasMeasurementSeries ms = new TridasMeasurementSeries();
+		
+		ms.setTitle(series.getTitle());
+		if(series.isSetInterpretation())
+		{
+			ms.setInterpretation(series.getInterpretation());
+		}
+		
+		if(series.isSetValues())
+		{
+			ms.setValues(series.getValues());
+		}
+		
+		newSeriesFromMeasurementSeries(container, ms, unitsIfNotSpecified);
+		
+		
+	}
+	
+	/**
+	 * Creates a new editor based upon a measurementSeries
+	 * 
+	 * @param container
+	 * @param series
+	 */
+	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries series, NormalTridasUnit unitsIfNotSpecfied) {
+		
+		container.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+
+		try {				
+			for(int i=0; i < series.getValues().size(); i++)
+			{
+				TridasValues tv = series.getValues().get(i);
+				
+				if(tv.isSetUnit())
+				{
+					if(!tv.getUnit().isSetNormalTridas())
+					{
+						tv.getUnit().setNormalTridas(unitsIfNotSpecfied);
+					}
+				}	
+				else
+				{
+					TridasUnit unit = new TridasUnit();
+					unit.setNormalTridas(unitsIfNotSpecfied);
+					tv.setUnit(unit);
+				}
+				
+				tv = UnitUtils.convertTridasValues(NormalTridasUnit.MICROMETRES, tv, true);
+				series.getValues().set(i,tv);
+			}
+			
+		} catch (NumberFormatException e) {
+			Alert.error("Error", "One or more data values are not numbers.");
+			return;
+		} catch (ConversionWarningException e) {
+			Alert.error("Error", "Error converting units");
+			return;
+		}
+		
+		
+		// make dataset ref, based on our series
+		Sample sample = new Sample(series);
+		
+		sample.setMeta("filename", series.getTitle());
+		sample.setMeta("title", series.getTitle());
+		
+		// Set range from series
+		SafeIntYear startYear = new SafeIntYear(1001);
+		if(series.isSetInterpretation())
+		{
+			if (series.getInterpretation().isSetFirstYear())
+			{
+				 startYear = new SafeIntYear(series.getInterpretation().getFirstYear());
+			}
+		}
+		
+		log.debug("New series has "+series.getValues().get(0).getValues().size()+" values in it");
+		
+		SafeIntYear endYear = startYear.add(series.getValues().get(0).getValues().size()-1);
+		Range rng = new Range(new Year(startYear.toString()), new Year(endYear.toString()));
+		
+		log.debug("New series range is "+rng.toStringWithSpan());
+		sample.setRange(rng);
+
+		sample.setModified();
+		
+		// setup our loader and series identifier
+		CorinaWsiTridasElement.attachNewSample(sample);
+
+		// start the editor
+		Editor ed = new Editor(sample);
+		ed.setVisible(true);
+
 		container.setCursor(Cursor.getDefaultCursor());
 	}
 	

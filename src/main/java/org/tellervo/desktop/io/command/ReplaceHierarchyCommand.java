@@ -37,7 +37,7 @@ public class ReplaceHierarchyCommand implements ICommand {
 	@Override
 	public void execute(MVCEvent argEvent) {
 		
-		/*try {
+		try {
 			log.debug("splitOff() called in ReplaceHierarchyCommand");
 	        MVC.splitOff(); // so other mvc events can execute
 		} catch (IllegalThreadException e) {
@@ -46,7 +46,7 @@ public class ReplaceHierarchyCommand implements ICommand {
 		} catch (IncorrectThreadException e) {
 				log.error("splitOff() called, but this is not the main thread");
 				e.printStackTrace();
-		}*/
+		}
 		
 		log.debug("Retrieving the replacement hierarchy");
 		ReplaceHierarchyEvent event = (ReplaceHierarchyEvent) argEvent;
@@ -161,23 +161,7 @@ public class ReplaceHierarchyCommand implements ICommand {
 		newnode.setUserObject(newentity);
 		
 		TridasRepresentationTableTreeRow newrow = new TridasRepresentationTableTreeRow(newnode, null);
-		
-		/*ImportSwapEntityEvent swapEvent = new ImportSwapEntityEvent(event.model, newrow, oldrow, true);
-		log.debug("Dispatching the swapEvent for "+ newentity.getClass().getName());
-		swapEvent.dispatch();
-		
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		log.debug("Finished sleeping... will now continue");
-			
-		return event.model.getSelectedRow().getDefaultMutableTreeNode();
-		*/
-		
+				
 		// Get the tree node representing the parent of the entity we're replacing
 		DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) oldnode.getParent();
 		
@@ -201,15 +185,7 @@ public class ReplaceHierarchyCommand implements ICommand {
 		
 		// Add new node in its place
 		event.model.getTreeModel().insertNodeInto(newnode, parentNode, newNodeIndex);
-		
-		/*if(event.selectNodeAfterSwap)
-		{
-			// Select the new node
-			TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow(newNode, null);	
-			ImportNodeSelectedEvent event2 = new ImportNodeSelectedEvent(event.model, row);
-			event2.dispatch();
-		}*/
-		
+				
 		log.debug("Completed executing EntitySwappedCommand");
 		
 		return newnode;
