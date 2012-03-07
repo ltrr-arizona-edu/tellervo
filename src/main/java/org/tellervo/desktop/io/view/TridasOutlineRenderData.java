@@ -19,6 +19,8 @@
  ******************************************************************************/
 package org.tellervo.desktop.io.view;
 
+import java.awt.Color;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -109,7 +111,8 @@ public class TridasOutlineRenderData implements RenderDataProvider {
 
     @Override
     public java.awt.Color getForeground(Object o) {
-        return null;
+       
+    	return null;
     }
 
     @Override

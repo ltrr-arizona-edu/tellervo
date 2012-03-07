@@ -22,6 +22,7 @@ package org.tellervo.desktop.io.control;
 import org.tellervo.desktop.io.model.ImportModel;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow;
 
+import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.ObjectEvent;
 
 
@@ -30,6 +31,7 @@ public class ImportSwapEntityEvent extends ObjectEvent<TridasRepresentationTable
 	private static final long serialVersionUID = 1L;
 	public final ImportModel model;
 	public final TridasRepresentationTableTreeRow oldRow;
+	private TridasRepresentationTableTreeRow newRowForReturn;
 	public Boolean selectNodeAfterSwap = true;
 	
 	public ImportSwapEntityEvent(ImportModel model, TridasRepresentationTableTreeRow newRow, TridasRepresentationTableTreeRow oldRow) {
@@ -43,6 +45,21 @@ public class ImportSwapEntityEvent extends ObjectEvent<TridasRepresentationTable
 		this.model = model;
 		this.oldRow = oldRow;
 		this.selectNodeAfterSwap = selectOnCompletion;
+	}
+	
+	public TridasRepresentationTableTreeRow getNewRow()
+	{
+		return newRowForReturn;
+	}
+	
+	/**
+	 * Dispatches the event.  Events are dispatched globally, so make
+	 * sure your key is unique!
+	 */
+	public void dispatch(){
+		
+		
+		super.dispatch();
 	}
 
 }

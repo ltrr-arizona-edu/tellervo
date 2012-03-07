@@ -41,6 +41,8 @@ public class EntitySwappedCommand implements ICommand {
 	@Override
 	public void execute(MVCEvent argEvent) {
 		
+		log.debug("Executing EntitySwappedCommand");
+		
 		try {
 			log.debug("splitOff() called in EntitySwappedCommand");
 	        MVC.splitOff(); // so other mvc events can execute
@@ -92,9 +94,11 @@ public class EntitySwappedCommand implements ICommand {
 			event2.dispatch();
 		}
 		
+		log.debug("Completed executing EntitySwappedCommand");
+		
 	}
 
-	private DefaultMutableTreeNode copySubTree(DefaultMutableTreeNode destNode, DefaultMutableTreeNode srcNode) throws CloneNotSupportedException
+	public static DefaultMutableTreeNode copySubTree(DefaultMutableTreeNode destNode, DefaultMutableTreeNode srcNode) throws CloneNotSupportedException
 	{
 	    if (srcNode == null)
 	    {

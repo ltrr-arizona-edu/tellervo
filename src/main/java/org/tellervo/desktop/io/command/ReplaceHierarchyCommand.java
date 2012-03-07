@@ -5,6 +5,7 @@ import javax.swing.tree.MutableTreeNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.io.control.ImportNodeSelectedEvent;
 import org.tellervo.desktop.io.control.ImportSwapEntityEvent;
 import org.tellervo.desktop.io.control.ReplaceHierarchyEvent;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow;
@@ -36,7 +37,7 @@ public class ReplaceHierarchyCommand implements ICommand {
 	@Override
 	public void execute(MVCEvent argEvent) {
 		
-		try {
+		/*try {
 			log.debug("splitOff() called in ReplaceHierarchyCommand");
 	        MVC.splitOff(); // so other mvc events can execute
 		} catch (IllegalThreadException e) {
@@ -45,7 +46,7 @@ public class ReplaceHierarchyCommand implements ICommand {
 		} catch (IncorrectThreadException e) {
 				log.error("splitOff() called, but this is not the main thread");
 				e.printStackTrace();
-		}
+		}*/
 		
 		log.debug("Retrieving the replacement hierarchy");
 		ReplaceHierarchyEvent event = (ReplaceHierarchyEvent) argEvent;
@@ -130,8 +131,8 @@ public class ReplaceHierarchyCommand implements ICommand {
 			if(newObject!=null)
 			{
 				log.debug("Switching object node");
-				oldNode = (DefaultMutableTreeNode) this.swapEntity(event, newObject, oldNode).getParent();
-				oldClassDepth--;
+				oldNode = (DefaultMutableTreeNode) this.swapEntity(event, newObject, oldNode);
+				//oldClassDepth--;
 			}
 		}
 			
@@ -147,6 +148,8 @@ public class ReplaceHierarchyCommand implements ICommand {
 			log.error("New node = "+newentity.getClass().getName());
 		}
 		
+		
+		
 		TridasRepresentationTableTreeRow oldrow = new TridasRepresentationTableTreeRow(oldnode, null);		
 		log.debug("Swapping the "+oldnode.getUserObject().getClass().getName()+ " "
 				+((ITridas)oldnode.getUserObject()).getTitle() 
@@ -154,17 +157,67 @@ public class ReplaceHierarchyCommand implements ICommand {
 		
 		
 			
-		DefaultMutableTreeNode newnode = new DefaultMutableTreeNode();
+		DefaultMutableTreeNode newnode = (DefaultMutableTreeNode) oldnode.clone();
 		newnode.setUserObject(newentity);
-		newnode.setParent((MutableTreeNode) oldnode.getParent());
+		
 		TridasRepresentationTableTreeRow newrow = new TridasRepresentationTableTreeRow(newnode, null);
 		
-		ImportSwapEntityEvent swapEvent = new ImportSwapEntityEvent(event.model, newrow, oldrow, false);
+		/*ImportSwapEntityEvent swapEvent = new ImportSwapEntityEvent(event.model, newrow, oldrow, true);
 		log.debug("Dispatching the swapEvent for "+ newentity.getClass().getName());
 		swapEvent.dispatch();
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		log.debug("Finished sleeping... will now continue");
+			
+		return event.model.getSelectedRow().getDefaultMutableTreeNode();
+		*/
+		
+		// Get the tree node representing the parent of the entity we're replacing
+		DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) oldnode.getParent();
+		
+		// Calculate the index for the node we're replacing
+		int newNodeIndex = parentNode.getIndex(oldnode);
+		
+		// Loop through the old node cloning across all its children onto the new node
+		// otherwise all the child enties will be lost
+		for(int i=0; i<oldnode.getChildCount(); i++)
+		{
+			try {
+				EntitySwappedCommand.copySubTree(newnode, oldnode);
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		// Go ahead and remove the old node
+		event.model.getTreeModel().removeNodeFromParent(oldnode);
+		
+		// Add new node in its place
+		event.model.getTreeModel().insertNodeInto(newnode, parentNode, newNodeIndex);
+		
+		/*if(event.selectNodeAfterSwap)
+		{
+			// Select the new node
+			TridasRepresentationTableTreeRow row = new TridasRepresentationTableTreeRow(newNode, null);	
+			ImportNodeSelectedEvent event2 = new ImportNodeSelectedEvent(event.model, row);
+			event2.dispatch();
+		}*/
+		
+		log.debug("Completed executing EntitySwappedCommand");
+		
 		return newnode;
 		
+		
 	}
+	
+	
 	
 	/**
 	 * Get a TridasObject populated with children all the way down to Radius or 
@@ -234,5 +287,7 @@ public class ReplaceHierarchyCommand implements ICommand {
 		log.debug("New hierarchy found successfully");
 		return newHierarchy;
 	}
+
+
 
 }

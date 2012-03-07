@@ -65,6 +65,7 @@ public class FileSelectedCommand implements ICommand {
 		FileSelectedEvent event = (FileSelectedEvent) argEvent;
 		try {
 			event.model.setFileToImport(event.file);
+			event.model.setConversionWarnings(null);
 			
 		} catch (IOException e) {
 			Alert.errorLoading(event.file.getAbsolutePath(), e);
