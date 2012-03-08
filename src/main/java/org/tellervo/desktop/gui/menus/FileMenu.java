@@ -111,6 +111,7 @@ public class FileMenu extends JMenu {
 	protected JMenuItem openrecent;
 	protected JMenuItem fileexport;
 	protected JMenuItem fileimport;
+	protected JMenuItem fileimportdataonly;
 	protected JMenuItem bulkentry;
 	protected JMenuItem save;
 	
@@ -180,10 +181,10 @@ public class FileMenu extends JMenu {
 			
 			fileimport.add(importitem);
 		}
-		add(fileimport);
 		
 		
-		JMenu fileimportdataonly = Builder.makeMenu("menus.file.importdataonly", "fileimport.png");
+		
+		fileimportdataonly = Builder.makeMenu("menus.file.importdataonly", "fileimport.png");
 		
 		for (final String s : TridasIO.getSupportedReadingFormats()) {
 			
@@ -227,7 +228,7 @@ public class FileMenu extends JMenu {
 			fileimportdataonly.add(importitem);
 		}
 		add(fileimportdataonly);
-		
+		add(fileimport);
 		
 		
 		addExportMenus();
@@ -830,9 +831,11 @@ public class FileMenu extends JMenu {
 		  logoff.setVisible(App.isLoggedIn());  
 		  logon.setVisible(!App.isLoggedIn());  
 		  fileopen.setEnabled(App.isLoggedIn());
+		  filenew.setEnabled(App.isLoggedIn());
 		  fileopenmulti.setEnabled(App.isLoggedIn());
 		  openrecent.setEnabled(App.isLoggedIn());
 		  fileimport.setEnabled(App.isLoggedIn());
+		  fileimportdataonly.setEnabled(App.isLoggedIn());
 		  fileexport.setEnabled(App.isLoggedIn());
 		  bulkentry.setEnabled(App.isLoggedIn());
 		  save.setEnabled(App.isLoggedIn() && f instanceof SaveableDocument);

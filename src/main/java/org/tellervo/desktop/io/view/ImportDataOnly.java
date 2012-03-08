@@ -5,16 +5,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.ui.Alert;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.TridasIO;
-import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.InvalidDendroFileException;
-import org.tridas.io.exceptions.ConversionWarning.WarningType;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasDerivedSeries;

@@ -440,6 +440,7 @@ public class EditorFactory {
 					TridasUnit unit = new TridasUnit();
 					unit.setNormalTridas(unitsIfNotSpecfied);
 					tv.setUnit(unit);
+					tv.setUnitless(null);
 				}
 				
 				tv = UnitUtils.convertTridasValues(NormalTridasUnit.MICROMETRES, tv, true);

@@ -41,6 +41,7 @@ package org.tellervo.desktop.gui;
 
 // import org.tellervo.desktop.util.JLinedLabel; -- FUTURE
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import javax.swing.JDialog;
@@ -67,7 +68,20 @@ public class ConfirmSave extends JDialog {
     // - frame as param?
     // - javadoc
 
-    public static void showDialog(SaveableDocument doc) {
+    public static void showDialog(SaveableDocument doc)
+    {
+    	if(doc instanceof Component)
+    	{	
+    		showDialog(doc, (Component)doc);
+    	}
+    	else
+    	{
+    		showDialog(doc, null);
+    	}
+    }
+    
+    private static void showDialog(SaveableDocument doc, Component parent) {
+    	
 	// construct a prompt
 	String prompt1 = "Do you want to save the changes you made in";
 	String prompt2 = "the document \"" + doc.getDocumentTitle() + "\"?"; // ack!
@@ -147,6 +161,7 @@ public class ConfirmSave extends JDialog {
         // pack, disable sizing, show
         dlg.pack();
         dlg.setResizable(false);
+        dlg.setLocationRelativeTo(parent);
         dlg.setVisible(true);
     }
 }
