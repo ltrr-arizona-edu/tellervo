@@ -455,7 +455,7 @@ public class LoginDialog extends JDialog {
 		checkCheckboxes();
 	}
 	
-	private String encryptPassword(char[] in) {
+	public static String encryptPassword(char[] in) {
 		StringBuffer out = new StringBuffer();
 
 		for(int i = 0; i < in.length; i++) {

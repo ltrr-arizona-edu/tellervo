@@ -874,6 +874,9 @@
 									  		 <zipfileset dir="${project.build.directory}/${project.build.finalName}.app" filemode="555" prefix="Tellervo.app"/>
 									  </zip>
 								  </try>
+								  <catch>
+								  	<echo>Error finishing off MacOSX bundle!</echo>
+								  </catch>
 							   </trycatch>
 						  </tasks>
 					  </configuration>

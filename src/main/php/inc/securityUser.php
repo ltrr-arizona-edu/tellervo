@@ -362,10 +362,10 @@ class securityUser extends securityUserEntity implements IDBAccessor
                 
                 // Set or unset member groups for this user
                                 
-                //if(count($this->groupArray)>0)
-                //{
-                    $sql = "delete from tblsecurityusermembership where securityuserid=".$this->id;
-                    $result = pg_query($dbconn, $sql);
+                if(count($this->groupArray)>0)
+                {
+            //        $sql = "delete from tblsecurityusermembership where securityuserid=".$this->id;
+             //       $result = pg_query($dbconn, $sql);
 
                     foreach($this->groupArray as $item)
                     {
@@ -373,10 +373,16 @@ class securityUser extends securityUserEntity implements IDBAccessor
                     	{
 	                        $sql = "insert into tblsecurityusermembership (securityuserid, securitygroupid) values ('$this->id', '$item')";
 	                        $firebug->log($sql, "Group membership SQL"); 
-	                        $result = pg_query($dbconn, $sql);
+	                        pg_send_query($dbconn, $sql);
+				$result = pg_get_result($dbconn);
+				if(strpos(pg_result_error($result), "uniq_securityusermembership_userpergroup"))
+				{
+					$firebug->log("Caught uniq_securityusermembership_userpergroup error");
+				}
+				
                     	}
                     }
-                //} 
+                } 
             }
             else
             {

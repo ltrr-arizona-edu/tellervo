@@ -37,6 +37,7 @@ import org.tellervo.desktop.gui.LoginDialog;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSISecurityUser;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -109,7 +110,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
      * 
      * @param asAdmin
      */
-    private void setupGui(Boolean asAdmin)
+    private void setupGui(final Boolean asAdmin)
     {
    	    setLocationRelativeTo(null);
    	    setIconImage(Builder.getApplicationIcon());
@@ -140,14 +141,21 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     		public void actionPerformed(java.awt.event.ActionEvent evt) {
     			
     			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-    			
-    			if(isPasswordCorrect(pwdOld.getPassword()))
+    			Boolean result = isPasswordCorrect(pwdOld.getPassword());
+    			if(result==true)
     			{
     				
     				Boolean success = setPassword(pwdNew.getPassword());
     				
     				if(success) 
     				{
+    					if(asAdmin==false && App.prefs.getPref(PrefKey.PERSONAL_DETAILS_PASSWORD,null)!=null)
+    					{
+    						// Changing users own password and old password is stored in prefs
+    						// We therefore need to update or they'll fail to login next time
+    						App.prefs.setPref(PrefKey.PERSONAL_DETAILS_PASSWORD, LoginDialog.encryptPassword(pwdNew.getPassword()));
+    					}
+    					
     					setCursor(Cursor.getDefaultCursor());
     					closeDialog();
     				}
@@ -157,10 +165,15 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     					Alert.message("error", "Failed to set password");
     				}
     			}
-    			else
+    			else if (result==false)
     			{
 					setCursor(Cursor.getDefaultCursor());
     				Alert.message(I18n.getText("error"), I18n.getText("error.incorrectPassword"));
+    			}
+    			else
+    			{
+    				setCursor(Cursor.getDefaultCursor());
+    				return;
     			}
     		}
         });
@@ -202,7 +215,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	try {
 			dlg.doLogin(null, false);
 		} catch (UserCancelledException e) {
-			return false;
+			return null;
 		}
     	return true;
     }

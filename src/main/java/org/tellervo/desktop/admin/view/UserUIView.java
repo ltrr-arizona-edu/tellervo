@@ -210,6 +210,8 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
         getContentPane().add(lblName, "cell 0 0,alignx right,aligny center");
         
         btnClose = new JButton("Close");
+        btnClose.setActionCommand("close");
+        btnClose.addActionListener(this);
         getContentPane().add(btnClose, "cell 2 6");
 
         pack();
@@ -288,6 +290,10 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 		{
 			SetPasswordUI setpwddialog = new SetPasswordUI(null, user);
 			setpwddialog.setVisible(true);
+		}
+		if(e.getActionCommand().equals("close"))
+		{
+			this.dispose();
 		}
 		
 	}

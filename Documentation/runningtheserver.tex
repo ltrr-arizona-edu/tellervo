@@ -111,7 +111,20 @@ Scroll down passed all the comments, to the bottom of the file.  Add the followi
 %%TODO Check this is the best to suggest
 \code{host  all  all   IPADDRESS/32       md5}
 
-Make sure you replace IPADDRESS with the IP address of the computer you are trying to connect \emph{from}. This is just one style of pg\_hba.conf entry.  There are many others which allow you to restrict to specific users, computers, networks etc.  See the online PostgreSQL documentation for more details.  Save your changes and exit by doing CTRL+X, then restart the Tellervo server:
+Make sure you replace IPADDRESS with the IP address of the computer you are trying to connect \emph{from}. This is just one style of pg\_hba.conf entry.  There are many others which allow you to restrict to specific users, computers, networks etc.  See the online PostgreSQL documentation for more details.  Save your changes and exit by doing CTRL+X.  
+
+Next you need to make sure the PostgreSQL server is listening to requests from other IP addresses.  To do this you need to edit the postgresql.conf file like this:
+
+\code{sudo pico /etc/postgresql/9.1/main/postgresql.conf}
+
+making the following changes:
+
+\begin{description}
+ \item[Old line] - \verb|#listen_addresses = 'localhost'|
+ \item[New line] - \verb|listen_addresses = '*'|
+\end{description}
+
+Make sure you remove the hash character at the beginning of the line.  Save the file and finally restart the Tellervo server:
 
 \code{sudo tellervo-server --restart}
 
