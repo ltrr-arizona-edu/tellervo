@@ -22,6 +22,7 @@ package org.tellervo.desktop.bulkImport.command;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.tellervo.desktop.bulkImport.control.PrintSampleBarcodesEvent;
 import org.tellervo.desktop.bulkImport.model.SampleModel;
@@ -29,6 +30,16 @@ import org.tellervo.desktop.bulkImport.model.SingleSampleModel;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.labels.PDFLabelMaker;
+import org.tellervo.desktop.util.labels.ui.SampleLabelPrintingUI;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.MVCEvent;
@@ -50,25 +61,53 @@ public class PrintBarcodesCommand implements ICommand {
 	public void execute(MVCEvent argEvent) {
 		PrintSampleBarcodesEvent event = (PrintSampleBarcodesEvent) argEvent;
 		
-		ArrayList<TridasSample> printList = new ArrayList<TridasSample>();
+		
 		MVCArrayList<SingleSampleModel> rows = ((SampleModel)event.model).getRows();
 		Boolean warnNotImported = false;
 		
 		// Compile a list of the selected rows that have been imported
+		ArrayList<TridasObject> objList = new ArrayList<TridasObject>();
+		TridasObject[] arr = new TridasObject[0];
+		ArrayList<TridasSample> smpList = new ArrayList<TridasSample>();
 		for(SingleSampleModel row : rows)
 		{
+		
 			if (row.getImported()!=null)
 			{
 				TridasSample sample = new TridasSample();
 				row.populateToTridasSample(sample);
-				printList.add(sample);	
+					
+				// Find all samples for an element 
+		    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
+		    	param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, sample.getIdentifier().getValue().toString());
+
+		    	// we want a sample return here
+				EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
+				resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+				
+				TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+				resource.query();	
+				dialog.setVisible(true);
+				
+				if(!dialog.isSuccessful()) 
+				{ 
+					System.out.println("oopsey doopsey.  Error getting samples");
+					return;
+				}
+				
+				objList.addAll(resource.getAssociatedResult());
+				smpList.add(sample);
 			}
 			else
 			{
 				warnNotImported = true;
 			}
 		}
-				
+		
+		List<TridasSample> sampList = SampleLabelPrintingUI.getSamplesList(objList, arr, smpList);
+		ArrayList<TridasSample> printList = new ArrayList<TridasSample>();
+		printList.addAll(sampList);	
+
 		if(printList.size()>0)
 		{
 			

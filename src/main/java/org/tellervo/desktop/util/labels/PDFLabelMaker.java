@@ -29,6 +29,8 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.ui.Alert;
@@ -63,7 +65,8 @@ public class PDFLabelMaker {
 	private Font labelfont = new Font(Font.HELVETICA, 15f, Font.BOLD);
 	private Font tinyfont = new Font(Font.HELVETICA, 9f);
 	private Integer borderwidth = 1;
-	
+    private final static Logger log = LoggerFactory.getLogger(PDFLabelMaker.class);
+
 	
 	public PDFLabelMaker(LabelPage margins, OutputStream output) throws IOException, DocumentException {
 		this.margins = margins;
@@ -216,6 +219,12 @@ public class PDFLabelMaker {
 
 			String labelText;
 			TridasGenericField labcodeField = GenericFieldUtils.findField(s, "tellervo.internal.labcodeText");
+			
+			if(labcodeField==null)
+			{
+				log.warn("labcode missing from sample.  Can't print!");
+				continue;
+			}
 			labelText = (labcodeField != null) ? labcodeField.getValue() : s.getTitle();
 			
 			p.add(new Chunk(labelText, labelfont));

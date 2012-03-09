@@ -75,7 +75,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		}
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, null);
 		registerProperty(RADIUS_MODEL, PropertyType.READ_ONLY, null);
-		registerProperty(POSSIBLE_ELEMENTS, PropertyType.FINAL, new MVCArrayList<TridasElement>());
+		registerProperty(POSSIBLE_ELEMENTS, PropertyType.READ_WRITE, new MVCArrayList<TridasElement>());
 	}
 	
 	/**

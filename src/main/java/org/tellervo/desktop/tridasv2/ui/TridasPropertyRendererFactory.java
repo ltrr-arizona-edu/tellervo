@@ -31,6 +31,7 @@ import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDating;
 import org.tridas.schema.TridasDatingReference;
 import org.tridas.schema.TridasGenericField;
+import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.Year;
 
@@ -60,6 +61,8 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		
 		// nicely render location geometry
 		super.registerRenderer(TridasLocationGeometry.class, new LocationGeometryRenderer());
+		super.registerRenderer(TridasLocation.class, new TridasLocationRenderer());
+
 		
 		super.registerRenderer(TridasGenericField.class, new TridasObjectGenericFieldRenderer());
 

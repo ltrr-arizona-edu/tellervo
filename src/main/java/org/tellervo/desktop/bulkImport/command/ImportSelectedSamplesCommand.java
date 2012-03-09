@@ -34,10 +34,12 @@ import org.tellervo.desktop.bulkImport.model.SampleModel;
 import org.tellervo.desktop.bulkImport.model.SampleTableModel;
 import org.tellervo.desktop.bulkImport.model.SingleRadiusModel;
 import org.tellervo.desktop.bulkImport.model.SingleSampleModel;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasRadius;
@@ -147,6 +149,8 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			}else{
 				sampleResource = new EntityResource<TridasSample>(origSample, parentObject, TridasSample.class);
 			}
+			sampleResource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
+
 			
 			
 			// set up a dialog...

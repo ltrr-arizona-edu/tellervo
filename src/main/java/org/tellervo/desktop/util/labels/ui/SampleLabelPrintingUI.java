@@ -221,7 +221,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
      * @param returns
      * @return
      */
-    private List<TridasSample> getSamplesList(List<TridasObject> objects, 
+    public static List<TridasSample> getSamplesList(List<TridasObject> objects, 
     		TridasObject[] objsThisLevel, List<TridasSample> returns) {
     	
     	// create this on the fly
