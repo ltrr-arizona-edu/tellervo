@@ -21,11 +21,13 @@ package org.tellervo.desktop.editor;
 
 import java.awt.event.ActionEvent;
 
+import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 import org.tellervo.desktop.graph.BargraphFrame;
 import org.tellervo.desktop.graph.GraphWindow;
+import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.sample.SampleListener;
@@ -53,11 +55,8 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 		sample.addSampleListener(this);
 
 		// plot
-		plot = new JMenuItem(new TellervoAction("menus.graph.activeSeries", "graph.png", 22) {
-			public void actionPerformed(ActionEvent e) {
-				new GraphWindow(sample);
-			}
-		});
+		Action graphSeriesAction = new GraphSeriesAction(sample);
+		plot = new JMenuItem(graphSeriesAction);
 		add(plot);
 
 		// plot elements

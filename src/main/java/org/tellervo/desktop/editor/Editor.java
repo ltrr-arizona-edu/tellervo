@@ -39,6 +39,8 @@
 
 package org.tellervo.desktop.editor;
 
+import gov.nasa.worldwind.layers.MarkerLayer;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -58,6 +60,8 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.AbstractButton;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -72,6 +76,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
@@ -90,6 +95,7 @@ import org.tellervo.desktop.gis.GISPanel;
 import org.tellervo.desktop.gis.GISViewMenu;
 import org.tellervo.desktop.gis.TridasMarkerLayerBuilder;
 import org.tellervo.desktop.graph.BargraphFrame.BargraphPanel;
+import org.tellervo.desktop.graph.GraphToolbar.TitlelessButton;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.FileDialog;
 import org.tellervo.desktop.gui.Layout;
@@ -100,22 +106,27 @@ import org.tellervo.desktop.gui.XFrame;
 import org.tellervo.desktop.gui.menus.AdminMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;
+import org.tellervo.desktop.gui.menus.actions.ExportDataAction;
+import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
+import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
+import org.tellervo.desktop.gui.menus.actions.PrintAction;
+import org.tellervo.desktop.gui.menus.actions.SaveAction;
+import org.tellervo.desktop.gui.menus.actions.TruncateAction;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.hardware.SerialDeviceSelector;
 import org.tellervo.desktop.io.Metadata;
+import org.tellervo.desktop.io.control.IOController;
 import org.tellervo.desktop.platform.Platform;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.prefs.PrefsListener;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.FileElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
-import org.tellervo.schema.SearchOperator;
-import org.tellervo.schema.SearchParameterName;
-import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewer;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel;
 import org.tellervo.desktop.ui.Alert;
@@ -124,14 +135,15 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.OKCancel;
 import org.tellervo.desktop.util.Overwrite;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
-
-import gov.nasa.worldwind.layers.MarkerLayer;
 
 
 public class Editor extends XFrame implements SaveableDocument, PrefsListener,
@@ -149,6 +161,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private SampleDataView dataView; // (a jpanel)
 	protected GISPanel wwMapPanel;
 	private JTabbedPane tabbedPanel;
+	private JToolBar toolbar;
 	
 	// for menus we have to notify...
 	private EditorFileMenu editorFileMenu;
@@ -422,9 +435,58 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 
+	private void initToolbar()
+	{
+		toolbar=  new JToolBar();
+		
+		// File Buttons
+		Action fileOpenAction = new FileOpenAction();
+		AbstractButton fileOpen = new TitlelessButton(fileOpenAction);
+		toolbar.add(fileOpen);
+		
+		Action saveAction = new SaveAction(this);
+		AbstractButton save = new TitlelessButton(saveAction);
+		toolbar.add(save);
+		
+		Action exportAction = new ExportDataAction(IOController.OPEN_EXPORT_WINDOW);
+		AbstractButton fileexport = new TitlelessButton(exportAction);
+		toolbar.add(fileexport);
+		
+		Action printAction = new PrintAction(sample);
+		AbstractButton print = new TitlelessButton(printAction);
+		toolbar.add(print);
+		
+		
+		// Admin Buttons
+		toolbar.addSeparator();
+		Action metadbAction = new MetadatabaseBrowserAction();
+		AbstractButton launchMetadb = new TitlelessButton(metadbAction);
+		toolbar.add(launchMetadb);
+		
+		
+		
+		// Tools Buttons
+		toolbar.addSeparator();
+		Action truncateAction = new TruncateAction(null, sample, this, null);
+		AbstractButton truncate = new TitlelessButton(truncateAction);
+		toolbar.add(truncate);
+		
+		
+		
+		// Graph Buttons
+		toolbar.addSeparator();
+		Action graphSeriesAction = new GraphSeriesAction(sample);
+		AbstractButton graph = new TitlelessButton(graphSeriesAction);
+		toolbar.add(graph);
+		
+
+				
+		getContentPane().add(toolbar, BorderLayout.NORTH);
+	}
+	
 	private void initTabs() {
 		
-		tabbedPanel = new JTabbedPane(SwingConstants.TOP);
+		tabbedPanel = new JTabbedPane(SwingConstants.BOTTOM);
 		getContentPane().add(tabbedPanel, BorderLayout.CENTER);
 		
 		// Fire of display units changed to make sure they are shown correctly to start with
@@ -435,12 +497,12 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// all samples get data and metadata tabs
 		dataView = new SampleDataView(sample);
-		tabbedPanel.add(dataView, I18n.getText("editor.tab_data"));
-		tabbedPanel.add(metaView, I18n.getText("editor.tab_metadata"));
+		tabbedPanel.addTab(I18n.getText("editor.tab_data")+" ", Builder.getIcon("data.png", 16), dataView);
+		tabbedPanel.addTab(I18n.getText("editor.tab_metadata")+" ", Builder.getIcon("database.png", 16), metaView);
 		
 		if(wwMapPanel!=null)
 		{
-			tabbedPanel.add(wwMapPanel, I18n.getText("editor.tab_map"));
+			tabbedPanel.addTab(I18n.getText("editor.tab_map")+" ",Builder.getIcon("maptab.png", 16), wwMapPanel);
 		}
 
 		// wj and elements, if it's summed
@@ -494,7 +556,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
 		MarkerLayer allSites = TridasMarkerLayerBuilder.getMarkerLayerForAllSites();
 		allSites.setEnabled(false);
-		wwMapPanel = new GISPanel(new Dimension(300,300),true, allSites);
+		wwMapPanel = new GISPanel(new Dimension(300,400),true, allSites);
 		
 		try{
 			// First try to add a pin for the TridasElement itself
@@ -619,6 +681,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// title (must be before menubar)
 		updateTitle();
 
+		// Set up the toolbar
+		initToolbar();
+				
 		// put views into notecard-tabbedPanel
 		initTabs();
 
@@ -649,7 +714,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		App.prefs.addPrefsListener(this);
 		// pack, size, and show
 		pack(); // is this needed?
-		setSize(new Dimension(640, 480));
+		setSize(new Dimension(640, 520));
 		// TODO: store window position, X-style ("WIDTHxHEIGHT+LEFT+TOP"), so it always re-appears in the same place.
 		// Q: store the resolution, as well, so the relative position
 		// is the same, or just make sure the absolute is within range?

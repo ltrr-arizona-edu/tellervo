@@ -22,11 +22,13 @@ package org.tellervo.desktop.editor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 
 import org.tellervo.desktop.gis.GISPanel;
 import org.tellervo.desktop.gui.menus.FileMenu;
 import org.tellervo.desktop.io.control.OpenExportEvent;
+import org.tellervo.desktop.manip.TruncateDialog;
 import org.tellervo.desktop.print.SeriesReport;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
@@ -102,3 +104,5 @@ public class EditorFileMenu extends FileMenu {
 		
 	}
 }
+
+

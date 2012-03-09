@@ -105,7 +105,22 @@ public class TridasEntityProperty extends AbstractProperty {
 	}
 
 	public void addChildProperty(TridasEntityProperty property) {
-		childProperties.add(property);
+		addChildProperty(property, null);
+	}
+
+	
+	public void addChildProperty(TridasEntityProperty property, Integer index) {
+		
+		if(index==null)
+		{
+			childProperties.add(property);
+		}
+		else
+		{
+			ArrayList<TridasEntityProperty> temp = (ArrayList<TridasEntityProperty>) childProperties;
+			temp.add(index, property);
+			childProperties = temp;
+		}
 		nChildProperties++;
 		
 		if(!isRootNode)
@@ -117,6 +132,7 @@ public class TridasEntityProperty extends AbstractProperty {
 		}
 	}
 
+	
 	/**
 	 * Replace a property by identity (==).
 	 *  
@@ -200,7 +216,7 @@ public class TridasEntityProperty extends AbstractProperty {
 		
 		if(qname.equals("object.genericFields"))
 		{
-			return "Lab code";
+			return "Code";
 		}
 		
 		return sb.toString();

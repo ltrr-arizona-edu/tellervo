@@ -70,9 +70,10 @@ import org.netbeans.swing.outline.OutlineModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.widgets.TridasEntityPicker;
+import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
+import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel;
 import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
-import org.tellervo.desktop.gui.widgets.TridasEntityPicker.EntitiesAccepted;
+import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.io.ConversionWarningTableModel;
 import org.tellervo.desktop.io.LineHighlighter;
 import org.tellervo.desktop.io.control.ExpandImportTreeEvent;
@@ -890,7 +891,7 @@ public class ImportView extends JFrame{
 		if((selectedEntity.getUserObject() instanceof TridasMeasurementSeries))
 		{
  
-				newParent = TridasEntityPicker.showDialog(glue, 
+				newParent = TridasEntityPickerDialog.pickEntity(glue, 
 						"Select entity", 
 						ITridasSeries.class, 
 						EntitiesAccepted.SPECIFIED_ENTITY_UP_TO_PROJECT);
@@ -902,10 +903,9 @@ public class ImportView extends JFrame{
 		else if((selectedEntity.getUserObject() instanceof TridasSample))
 		{
 			 
-			newParent = TridasEntityPicker.showDialog(this, 
+			newParent = TridasEntityPickerDialog.pickSpecificEntity(this, 
 					"Select entity", 
-					TridasSample.class, 
-					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
+					TridasSample.class);
 			
 			log.debug("User wants to set hierarchy of "+ 
 					((ITridas) selectedEntity.getUserObject()).getTitle() +

@@ -93,7 +93,7 @@ public class GraphToolbar extends JToolBar {
 	/**
 	 * A JButton with no text content
 	 */
-	private static class TitlelessButton extends JButton {
+	public static class TitlelessButton extends JButton {
 		public TitlelessButton(Action action) {
 			super(action);
 		}

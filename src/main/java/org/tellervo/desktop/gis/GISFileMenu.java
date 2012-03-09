@@ -24,6 +24,7 @@ import javax.swing.JPopupMenu;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.menus.FileMenu;
+import org.tellervo.desktop.gui.menus.actions.ExportMapAction;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 
@@ -64,9 +65,7 @@ public class GISFileMenu extends FileMenu {
 		GISPanel panel = ((GISFrame)this.f).wwMapPanel;
 		
         JMenuItem exportmenu = new JMenuItem(I18n.getText("menus.file.exportmapimage"));
-        exportmenu.setIcon(Builder.getIcon("captureimage.png", 22));
-        exportmenu.addActionListener(new ScreenShotAction(panel.wwd));
-        
+        exportmenu.addActionListener(new ExportMapAction(panel));
         add(exportmenu);
 	}
 	

@@ -90,26 +90,10 @@ public class GISFrame extends JFrame {
 		{
 			JPanel container = new JPanel();
 			container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
-            layerPanel = new TellervoLayerPanel(wwMapPanel.getWwd());
-            
-            JButton addLayer = new JButton("Add layer");
-            final GISFrame glue = this;
-            
-            addLayer.addActionListener(new ActionListener(){
+            layerPanel = new TellervoLayerPanel(wwMapPanel.getWwd(), this);
 
-            
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					AddGISDataDialog dialog = new AddGISDataDialog(glue);
-					dialog.setVisible(true);
-					
-				}
-            	
-            });
             container.add(layerPanel);
-            container.add(addLayer);
-            
-            
+
 			splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
 					container, wwMapPanel);
 			getContentPane().add(splitPane, BorderLayout.CENTER);

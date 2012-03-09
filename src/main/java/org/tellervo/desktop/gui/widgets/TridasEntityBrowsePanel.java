@@ -22,7 +22,7 @@ import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.TridasSelectEvent.TridasSelectType;
 import org.tellervo.desktop.gui.dbbrowse.TridasObjectRenderer;
-import org.tellervo.desktop.gui.widgets.TridasEntityPicker.EntitiesAccepted;
+import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.labels.ui.TridasListCellRenderer;
@@ -46,7 +46,7 @@ import org.tridas.util.TridasObjectEx;
 
 import java.awt.Font;
 
-public class TellervoBrowsePickerPanel extends JPanel implements ItemListener{
+public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 
 	private static final long serialVersionUID = 1L;
 	private JComboBox cboObject;
@@ -67,7 +67,7 @@ public class TellervoBrowsePickerPanel extends JPanel implements ItemListener{
 	protected ArrayListModel<ITridasSeries> seriesModel = new ArrayListModel<ITridasSeries>();
 	
 	private EventListenerList tridasListeners = new EventListenerList();
-	private static final Logger log = LoggerFactory.getLogger(TellervoBrowsePickerPanel.class);
+	private static final Logger log = LoggerFactory.getLogger(TridasEntityBrowsePanel.class);
 	private JButton btnSelect;
 	private JLabel lblPrefix;
 	private JButton btnReset;
@@ -75,7 +75,7 @@ public class TellervoBrowsePickerPanel extends JPanel implements ItemListener{
 	private final EntitiesAccepted entitiesAccepted;
 	
 	
-	public TellervoBrowsePickerPanel() {
+	public TridasEntityBrowsePanel() {
 		
 		expectedClass = TridasObject.class;
 		entitiesAccepted = EntitiesAccepted.ALL;
@@ -86,7 +86,7 @@ public class TellervoBrowsePickerPanel extends JPanel implements ItemListener{
 		
 	}
 	
-	public TellervoBrowsePickerPanel(Class<? extends ITridas> expectedClass, EntitiesAccepted entitiesAccepted) {
+	public TridasEntityBrowsePanel(Class<? extends ITridas> expectedClass, EntitiesAccepted entitiesAccepted) {
 		
 		this.expectedClass = expectedClass;
 		this.entitiesAccepted = entitiesAccepted;
@@ -96,8 +96,7 @@ public class TellervoBrowsePickerPanel extends JPanel implements ItemListener{
 		setListenersEnabled(true);
 		
 	}
-	
-	
+		
 	/**
 	 * Add a listener 
 	 * 
@@ -487,7 +486,17 @@ public class TellervoBrowsePickerPanel extends JPanel implements ItemListener{
 
 	}
     
-	private void fireItemSelected()
+	public void setSelectButtonVisible(Boolean b)
+	{
+		btnSelect.setVisible(b);
+	}
+	
+	public void setResetButtonVisible(Boolean b)
+	{
+		btnReset.setVisible(b);
+	}
+	
+	public void fireItemSelected()
 	{
 		ITridas entity = null;
 		

@@ -8,11 +8,10 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.event.EventListenerList;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -21,21 +20,22 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.gui.widgets.TridasEntityBrowsePanel;
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
-import javax.swing.JButton;
 
-public class TridasEntityPicker extends JPanel implements ActionListener, TridasSelectListener{
+public class TridasEntityPickerPanel extends JPanel implements ActionListener, TridasSelectListener{
 
 	private static final long serialVersionUID = 1L;
+	private EventListenerList tridasListeners = new EventListenerList();
 	private TellervoCodePanel codePanel;
 	private JRadioButton radPickByCode;
 	private JRadioButton radPickByHierarchy;
-	private TellervoBrowsePickerPanel browsePanel;
+	private TridasEntityBrowsePanel browsePanel;
 	private Window parent;
-	private static final Logger log = LoggerFactory.getLogger(TridasEntityPicker.class);
+	private static final Logger log = LoggerFactory.getLogger(TridasEntityPickerPanel.class);
 	private ITridas entity;
 	private final Class<? extends ITridas> expectedClass;
 	private final EntitiesAccepted entitiesAccepted;
@@ -52,20 +52,20 @@ public class TridasEntityPicker extends JPanel implements ActionListener, Tridas
 	/**
 	 * Create the panel.
 	 */
-	public TridasEntityPicker(Window parent, Class<? extends ITridas> clazz, EntitiesAccepted acceptabletype){
+	public TridasEntityPickerPanel(Window parent, Class<? extends ITridas> clazz, EntitiesAccepted acceptabletype){
 
 		this.parent = parent;
 		entitiesAccepted = acceptabletype;
 		expectedClass = clazz;
 				
 
-		setLayout(new MigLayout("hidemode 3", "[128px:128px:128px,center][10px,grow,fill]", "[][][][::100px][::100px,grow]"));
+		setLayout(new MigLayout("hidemode 3", "[::128.00,right][10px,grow,fill]", "[][][][::100px][::100px,grow]"));
 		
 		ButtonGroup group = new ButtonGroup();
 		
 		lblIcon = new JLabel("");
 		lblIcon.setIcon(Builder.getIcon("barcodehd.png", 128));
-		add(lblIcon, "cell 0 0 1 5,alignx center,aligny top");
+		add(lblIcon, "cell 0 0 1 5,alignx right,aligny top");
 		
 		lblWarning = new JLabel("");
 		lblWarning.setForeground(Color.RED);
@@ -89,14 +89,66 @@ public class TridasEntityPicker extends JPanel implements ActionListener, Tridas
 		add(codePanel, "cell 1 3,growx");
 		codePanel.addTridasSelectListener(this);
 		
-		browsePanel = new TellervoBrowsePickerPanel(clazz, acceptabletype);
+		browsePanel = new TridasEntityBrowsePanel(clazz, acceptabletype);
 		add(browsePanel, "cell 1 4");
 		browsePanel.addTridasSelectListener(this);
 
 		
 		showHidePanels();
 	}
+	
+	/**
+	 * Hide icon and buttons in browse panel
+	 * 
+	 * @param b
+	 */
+	public void setMinimalGui(Boolean b)
+	{
+		setIconVisible(!b);
+		browsePanel.setSelectButtonVisible(!b);
+		browsePanel.setResetButtonVisible(!b);
+	}
 		
+	
+	/**
+	 * Add a listener 
+	 * 
+	 * @param listener
+	 */
+	public void addTridasSelectListener(TridasSelectListener listener)
+	{
+		tridasListeners.add(TridasSelectListener.class, listener);
+	}
+	
+	/**
+	 * Remove a listener
+	 * @param listener
+	 */
+	public void removeTridasSelectListener(TridasSelectListener listener)
+	{
+		tridasListeners.remove(TridasSelectListener.class, listener);
+	}
+	
+	/**
+	 * Fire a selected entity event
+	 * 
+	 * @param event
+	 */
+	protected void fireTridasSelectListener(TridasSelectEvent event)
+	{
+	     Object[] listeners = tridasListeners.getListenerList();
+	     // loop through each listener and pass on the event if needed
+	     Integer numListeners = listeners.length;
+	     for (int i = 0; i<numListeners; i+=2) 
+	     {
+	          if (listeners[i]==TridasSelectListener.class) 
+	          {
+	               // pass the event to the listeners event dispatch method
+	                ((TridasSelectListener)listeners[i+1]).entitySelected(event);
+	          }            
+	     }
+
+	}
 	
 	/**
 	 * Get the entity specified by the user
@@ -141,40 +193,19 @@ public class TridasEntityPicker extends JPanel implements ActionListener, Tridas
 	}
 	
 		
-	/**
-	 * Show the TridasEntityPicker dialog.  Dialog returns a Tridas entity
-	 * of a type specified by the clazz and acceptableType parameters
-	 * 
-	 * @param parent
-	 * @param title
-	 * @param clazz
-	 * @param acceptabletype
-	 * @return
-	 */
-	public static ITridas showDialog(Window parent, String title,
-			Class<? extends ITridas> clazz, EntitiesAccepted acceptabletype)
+
+
+	public void forceFireEvent()
 	{
-		
-		JDialog dialog = new JDialog();
-		dialog.setTitle("Entity Picker");
-		TridasEntityPicker panel = new TridasEntityPicker(dialog, clazz, acceptabletype);
-		dialog.getContentPane().add(panel);
-		dialog.setIconImage(Builder.getApplicationIcon());
-
-        dialog.setTitle(title);
-        dialog.setModal(true);
-        dialog.setLocationRelativeTo(parent);
-        dialog.pack();
-        
-        
-        dialog.setVisible(true); // blocks until user brings dialog down...
-       	
-
-        return panel.getEntity();
-
+		if(this.radPickByCode.isSelected())
+		{
+			codePanel.forceFireEvent();
+		}
+		else
+		{
+			browsePanel.fireItemSelected();
+		}
 	}
-
-
 
 
 	@Override
@@ -266,12 +297,17 @@ public class TridasEntityPicker extends JPanel implements ActionListener, Tridas
 		return false;
 	}
 	
+	public void setIconVisible(Boolean b)
+	{
+		lblIcon.setVisible(b);
+	}
 	
 	private void returnEntity()
 	{
 
 			if(checkEntityIsValid(entity))
 			{
+				fireTridasSelectListener(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, entity));
 				parent.dispose();
 			}
 			else

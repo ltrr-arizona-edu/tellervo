@@ -204,7 +204,7 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
     /**
      * Interpret the text field as a lab code
      */
-	public void processLabCode()
+	public void forceFireEvent()
 	{
     	fireEventByCorinaCode(textField.getText());
     	textField.setText("");
@@ -427,7 +427,7 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
 	    	// User is typing a lab code
 		    if (e.getKeyCode() == KeyEvent.VK_ENTER)
 		    {
-		    	processLabCode();
+		    	forceFireEvent();
 		    }
    		     
 		    // Enter has not been pressed so user is 

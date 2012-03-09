@@ -22,6 +22,7 @@ package org.tellervo.desktop.gui.menus;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Pageable;
 import java.awt.print.Printable;
@@ -34,12 +35,15 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
@@ -60,8 +64,11 @@ import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.XFrame;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
-import org.tellervo.desktop.gui.widgets.TridasEntityPicker;
-import org.tellervo.desktop.gui.widgets.TridasEntityPicker.EntitiesAccepted;
+import org.tellervo.desktop.gui.menus.actions.ExportDataAction;
+import org.tellervo.desktop.gui.menus.actions.PrintAction;
+import org.tellervo.desktop.gui.menus.actions.SaveAction;
+import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel;
+import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.io.ExportDialog;
@@ -69,6 +76,7 @@ import org.tellervo.desktop.io.WrongFiletypeException;
 import org.tellervo.desktop.io.control.IOController;
 import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.io.view.ImportView;
+import org.tellervo.desktop.manip.TruncateDialog;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.CorinaWsiTridasElement;
@@ -239,7 +247,8 @@ public class FileMenu extends JMenu {
 	}
 	
 	public void addExportMenus(){
-		fileexport = Builder.makeMVCMenuItem("menus.file.export", IOController.OPEN_EXPORT_WINDOW, "fileexport.png");
+		Action exportAction = new ExportDataAction(IOController.OPEN_EXPORT_WINDOW);
+		fileexport = new JMenuItem(exportAction);
 		add(fileexport);
 	}
 
@@ -265,31 +274,7 @@ public class FileMenu extends JMenu {
 	}
 	
 
-	public void addSaveMenu() {
-		save = Builder.makeMenuItem("menus.file.save", true, "filesave.png");
-		
-		// add menuitems, hooked up to |f|
-		save.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// get doc
-				SaveableDocument doc = (SaveableDocument) f;
 
-				// save
-				doc.save();
-
-				// add to the recently opened files list if the user actually saved
-				// also, the user can try to save a document they didn't do anything to. argh.
-				if (doc.isSaved() && doc.getFilename() != null) {
-					if(doc.getSavedDocument() instanceof Sample)
-						OpenRecent.sampleOpened(new SeriesDescriptor((Sample) doc.getSavedDocument()));
-					else
-						OpenRecent.fileOpened(doc.getFilename());
-				}
-			}
-		});
-		
-		add(save);
-	}
 
 	public void addSaveAsMenu() {
 		JMenuItem saveAs = Builder.makeMenuItem("menus.file.saveas");
@@ -744,71 +729,13 @@ public class FileMenu extends JMenu {
 
 	public void addPrintMenu() {
 		// menuitem
-		JMenuItem print = Builder.makeMenuItem("menus.file.print", true, "printer.png");
-
-		if (f instanceof PrintableDocument) {
-			// print
-			print.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					print();
-				}
-			});
-		} else {
-			// dim menuitem
-			print.setEnabled(false);
-		}
-
+		PrintAction printAction = new PrintAction(new Sample());
+		JMenuItem print = new JMenuItem(printAction);
+		print.setEnabled(false);
 		add(print);
 	}
 
-	public void print() {
-		// page setup wasn't run?  do it now.
-		if (printJob == null)
-			printJob = PrinterJob.getPrinterJob();
-		if (pageFormat == null)
-			pageFormat = printJob.pageDialog(pageFormat);
-		if (pageFormat == null)
-			return; // null=cancel
 
-		PrintableDocument doc = (PrintableDocument) f;
-
-		Object p = doc.getPrinter(pageFormat);
-
-		// let the printable object cancel.
-		if (p == null)
-			return;
-
-		if (p instanceof Printable)
-			printJob.setPrintable((Printable) p);
-		else if (p instanceof Pageable)
-			printJob.setPageable((Pageable) p);
-		else
-			new Bug(new IllegalArgumentException(
-					I18n.getText("error.notPrintable")));
-
-		// job title
-		printJob.setJobName(doc.getPrintTitle());
-
-		// ask user options
-		if (!printJob.printDialog())
-			return; // false=cancel
-
-		// print (in background thread)
-		(new Thread() {
-			@Override
-			public void run() {
-				try {
-					printJob.print();
-				} catch (PrinterAbortException pae) {
-					// do nothing, the user already knows
-				} catch (PrinterException pe) {
-					// ***
-					Alert.error(I18n.getText("error.printing"), I18n.getText("error.printing")
-							+ pe.getMessage());
-				}
-			}
-		}).start();
-	}
 
 	  protected void linkModel()
 	  {
@@ -841,4 +768,14 @@ public class FileMenu extends JMenu {
 		  save.setEnabled(App.isLoggedIn() && f instanceof SaveableDocument);
 
 	  }
+	  
+		public void addSaveMenu() {
+			
+			Action saveAction = new SaveAction(f);
+			save = new JMenuItem(saveAction);
+			add(save);
+		}
 }
+
+
+

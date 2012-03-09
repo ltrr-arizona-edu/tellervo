@@ -28,6 +28,8 @@ import java.io.IOException;
 import java.security.AccessControlException;
 import java.security.AccessController;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -36,6 +38,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.cross.CrossdateDialog;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
+import org.tellervo.desktop.gui.menus.actions.TruncateAction;
 import org.tellervo.desktop.index.IndexDialog;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.manip.ReconcileWindow;
@@ -85,12 +88,16 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		sample.addSampleListener(this);
 
 		// truncate
-		truncate = Builder.makeMenuItem("menus.tools.truncate", true, "truncate.png");
+		/*truncate = Builder.makeMenuItem("menus.tools.truncate", true, "truncate.png");
 		truncate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				new TruncateDialog(sample, editor);
 			}
-		});
+		});*/
+		Action truncateAction = new TruncateAction(I18n.getText("menus.tools.truncate"),
+				sample, editor, null);
+		
+		truncate = new JMenuItem(truncateAction);
 		add(truncate);
 
 		// reverse
@@ -316,3 +323,5 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		
 	}
 }
+
+

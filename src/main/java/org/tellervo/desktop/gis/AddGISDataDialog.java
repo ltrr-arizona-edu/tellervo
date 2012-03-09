@@ -1,8 +1,12 @@
 package org.tellervo.desktop.gis;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -28,6 +32,8 @@ import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.widgets.TellervoCodePanel;
+import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel;
+import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
@@ -57,9 +63,9 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 	private GISFrame parent;
 	private GISPanel wwMapPanel;
 	private JComboBox cboAddType;
-	private JButton btnAdd;
-	private TellervoCodePanel codePanel;
-	private JLabel lblLabcode;
+	private JButton btnGo;
+	private JPanel pickerPanelHolder;
+	private TridasEntityPickerPanel pickerPanel;
 	
 	public enum AddLayerType{
 		ALL_OBJECTS("All Corina objects"),
@@ -97,16 +103,16 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 	public AddGISDataDialog(GISFrame parent) {
 		setTitle("Add data layer");		
 		setIconImage(Builder.getApplicationIcon());
-		setModal(true);
+		//setModal(true);
 		
 		
 		this.wwMapPanel = parent.wwMapPanel;
 		this.parent = parent;
-		getContentPane().setLayout(new MigLayout("", "[84.00][65.00px][grow]", "[][][grow][]"));
+		getContentPane().setLayout(new MigLayout("", "[::128px][45.00px][grow]", "[][][grow][]"));
 		
 		JLabel lblIcon = new JLabel("");
-		lblIcon.setIcon(Builder.getIcon("layers.png", 64));		
-		getContentPane().add(lblIcon, "cell 0 0 1 3,alignx center");
+		lblIcon.setIcon(Builder.getIcon("layers.png", 128));		
+		getContentPane().add(lblIcon, "cell 0 0 1 3,alignx center, aligny top");
 		
 		JLabel lblAddLayer = new JLabel("Add:");
 		getContentPane().add(lblAddLayer, "cell 1 0,alignx trailing");
@@ -114,33 +120,31 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 		cboAddType = new JComboBox();
 		
 		cboAddType.setModel(new DefaultComboBoxModel(AddLayerType.values()));
-		getContentPane().add(cboAddType, "cell 2 0,growx");
-		
-		cboAddType.addActionListener(new ActionListener(){
+		getContentPane().add(cboAddType, "cell 2 0,growx");		
+		cboAddType.addItemListener(new ItemListener(){
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void itemStateChanged(ItemEvent arg0) {
 				setGUIForAddType();
 				
 			}
 			
 		});
+				
+		pickerPanelHolder = new JPanel();
+		pickerPanelHolder.setBackground(Color.red);
+		pickerPanelHolder.setLayout(new BorderLayout());
 		
-		codePanel = new TellervoCodePanel(this);
-		codePanel.addTridasSelectListener(this);
-		
-		lblLabcode = new JLabel("Labcode:");
-		getContentPane().add(lblLabcode, "cell 1 1,alignx right");
-		getContentPane().add(codePanel, "cell 2 1,growx");
-		this.setCodePanelVisible(false);
+		getContentPane().add(pickerPanelHolder, "cell 2 1,growx");
+		this.setPickerPanelVisible(false);
 		
 		JPanel buttonPanel = new JPanel();
 		getContentPane().add(buttonPanel, "cell 0 3 3 1,alignx right,growy");
 		
-		btnAdd = new JButton("Add");
-		btnAdd.setActionCommand("add");
-		btnAdd.addActionListener(this);
-		buttonPanel.add(btnAdd);
+		btnGo = new JButton("Add");
+		btnGo.setActionCommand("add");
+		btnGo.addActionListener(this);
+		buttonPanel.add(btnGo);
 		
 		JButton btnCancel = new JButton("Close");
 		btnCancel.setActionCommand("cancel");
@@ -152,34 +156,53 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 	}
 
 	
-	private void setCodePanelVisible(Boolean b)
+	private void setPickerPanelVisible(Boolean b)
 	{
-		lblLabcode.setVisible(b);
-		codePanel.setVisible(b);
+		
+		if(b)
+		{
+			pickerPanelHolder.removeAll();
+			pickerPanelHolder.add(pickerPanel, BorderLayout.CENTER);
+		}
+		
+		pickerPanelHolder.setVisible(b);
 	}
 	
 	private void setGUIForAddType()
 	{
 		AddLayerType selectedType = (AddLayerType) cboAddType.getSelectedItem();
+		
+		// Alter 'go' button text
 		if(selectedType.equals(AddLayerType.SHAPEFILE) ||
 		   selectedType.equals(AddLayerType.KML)
 			)
 		{
-			btnAdd.setText("Browse");
+			btnGo.setText("Browse");
 		}
 		else
 		{
-			btnAdd.setText("Add");
+			btnGo.setText("Add");
 		}
 		
-		if(selectedType.equals(AddLayerType.CORINA_ENTITY) ||
-		   selectedType.equals(AddLayerType.ELEMENTS_FOR_OBJECT))
+		// Show or hide picker panel accordingly
+		if(selectedType.equals(AddLayerType.CORINA_ENTITY))
 		{
-			setCodePanelVisible(true);
+			pickerPanel = new TridasEntityPickerPanel(this, TridasObject.class, EntitiesAccepted.ALL);
+			((TridasEntityPickerPanel) pickerPanel).setMinimalGui(true);
+			((TridasEntityPickerPanel) pickerPanel).addTridasSelectListener(this);
+			
+			setPickerPanelVisible(true);
+		}
+		else if (selectedType.equals(AddLayerType.ELEMENTS_FOR_OBJECT))
+		{
+			pickerPanel = new TridasEntityPickerPanel(this, TridasObject.class, EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
+			((TridasEntityPickerPanel) pickerPanel).setMinimalGui(true);
+			((TridasEntityPickerPanel) pickerPanel).addTridasSelectListener(this);
+			setPickerPanelVisible(true);
 		}
 		else
 		{
-			setCodePanelVisible(false);
+			setPickerPanelVisible(false);
 		}
 	}
 	
@@ -206,7 +229,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 					(cboAddType.getSelectedItem().equals(AddLayerType.ELEMENTS_FOR_OBJECT))
 					)
 			{
-				codePanel.processLabCode();
+				((TridasEntityPickerPanel) pickerPanel).forceFireEvent();
 				
 			}
 			else if (cboAddType.getSelectedItem().equals(AddLayerType.KML))
@@ -214,18 +237,12 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 				 Boolean success = addKMLFile();
 				 if(success) dispose();
 			}
-			
-
-			
 		}
 		else if (event.getActionCommand().equals("cancel"))
 		{
 			dispose();
 		}
 	
-		
-		
-		
 	}
 	
 	private void addITRDBSites()

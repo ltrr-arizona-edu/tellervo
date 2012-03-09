@@ -21,16 +21,20 @@ package org.tellervo.desktop.gui.widgets;
 
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 import org.tellervo.desktop.admin.view.PermissionByEntityDialog;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.widgets.TridasEntityPicker.EntitiesAccepted;
+import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.schema.EntityType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -44,6 +48,7 @@ import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+import org.tridas.util.TridasObjectEx;
 
 
 /**
@@ -53,7 +58,7 @@ import org.tridas.schema.TridasSample;
  * @author peterbrewer
  *
  */
-public class ManagementTreeViewPanel extends TridasTreeViewPanel {
+public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyListener {
 
 	private static final long serialVersionUID = -7973400038586992025L;
     private Window parent;
@@ -80,7 +85,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	public ManagementTreeViewPanel()
 	{
 		super();
-			
+		super.tree.addKeyListener(this);	
 	}
 	
 	/**
@@ -94,6 +99,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 	{
 		super(parent, depth, listenersAreCheap, textForSelectPopup);
 		this.parent = parent;
+		super.tree.addKeyListener(this);
 	}
 	
 	
@@ -250,13 +256,15 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 				expectedClass = TridasElement.class;
 			}
 			else if ((selected.getClass().equals(TridasElement.class)) || 
-					(selected.getClass().equals(TridasObject.class)))
+					(selected.getClass().equals(TridasObject.class)) || 
+					(selected.getClass().equals(TridasObjectEx.class)))
 			{
 				expectedClass = TridasObject.class;
 			}
 			
 			
-			ITridas newParent = TridasEntityPicker.showDialog(parent, 
+			
+			ITridas newParent = TridasEntityPickerDialog.pickEntity(parent, 
 					"Select new parent", 
 					expectedClass, 
 					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
@@ -287,7 +295,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 			ITridas selected = (ITridas) ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent()).getUserObject();
 			Class<? extends ITridas> expectedClass = selected.getClass();
 						
-			ITridas correctEntity = TridasEntityPicker.showDialog(parent, 
+			ITridas correctEntity = TridasEntityPickerDialog.pickEntity(parent, 
 					"Select correct entity", 
 					expectedClass, 
 					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
@@ -349,6 +357,13 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 		else if(node.getUserObject() instanceof TridasObject)
 		{
 			Alert.message("Not implemented", "Moving sub-objects is not yet supported");
+			/*entity = (TridasObject) node.getUserObject();
+			if(newParentEntityID.equals(entity.getIdentifier().getValue()))
+			{
+				Alert.message("Invalid", "You can't move and object into itself!");
+				return;
+			}
+			rsrc = new EntityResource<TridasObject>(entity, newParentEntityID, TridasObject.class);*/				
 		}
 		else
 		{
@@ -457,6 +472,28 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel {
 		
 		return;
 		
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent event) {
+		if(event.getKeyCode()==KeyEvent.VK_F5)
+		{
+			DefaultMutableTreeNode node = ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+			this.refreshNode(node);
+		}
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
 		
 	}
 		

@@ -43,6 +43,7 @@ import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -52,6 +53,7 @@ import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.gis.GISFrame;
 import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
+import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.TellervoAction;
@@ -185,6 +187,7 @@ public class AdminMenu extends JMenu {
 	 	
 	    JMenuItem prosheet = Builder.makeMenuItem("menus.admin.prosheet",
 	            "org.tellervo.desktop.util.labels.ui.PrintingDialog.proSheetPrintingDialog()", "prosheet.png");
+	    prosheet.setEnabled(false);
 	    reportmenu.add(prosheet); 
 	 	add(reportmenu);
 	 }
@@ -238,8 +241,13 @@ public class AdminMenu extends JMenu {
 	    
 	 	add(curationmenu);
 	 	addSeparator();
-		add(Builder.makeMenuItem("menus.admin.metadatabrowser", "org.tellervo.desktop.gui.menus.AdminMenu.metadataBrowser()", "database.png"));
-		add(Builder.makeMenuItem("general.sitemap", "org.tellervo.desktop.gui.menus.AdminMenu.showMap()", "globe.png"));
+	 	
+	 	Action metadbAction = new MetadatabaseBrowserAction();
+	 	JMenuItem metadb = new JMenuItem(metadbAction);
+	 	add(metadb);
+
+	 	
+	 	add(Builder.makeMenuItem("general.sitemap", "org.tellervo.desktop.gui.menus.AdminMenu.showMap()", "globe.png"));
 
 
 	}

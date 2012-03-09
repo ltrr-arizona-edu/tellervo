@@ -183,6 +183,10 @@ public class TridasEntityDeriver {
 					// Special case for object lab code
 					pd.setReadOnly(true);
 					
+					// add type to property list
+					parent.addChildProperty(pd, 1);
+					nChildren++;
+										
 				}		
 				else
 				{
@@ -194,15 +198,17 @@ public class TridasEntityDeriver {
 					if((classprops != null && classprops.readOnly()) || (fieldprops != null && fieldprops.readOnly()))
 						pd.setReadOnly(true);
 					
-					// is it marked as editor final?
-					if((classprops != null && classprops.finalType()) || (fieldprops != null && fieldprops.finalType())) 
-						continue;
+					// add type to property list
+					parent.addChildProperty(pd);
+					nChildren++;
+
 				}
 
-				// add type to property list
-				parent.addChildProperty(pd);
-				nChildren++;
+
 				
+				// is it marked as editor final?
+				if((classprops != null && classprops.finalType()) || (fieldprops != null && fieldprops.finalType())) 
+					continue;
 
 
 				// don't delve any deeper for enums
