@@ -191,8 +191,8 @@ public class ObjectView extends AbstractBulkImportView{
 				event.dispatch();
 				
 				// Show waypoint column
-				ColumnsModifiedEvent ev = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_ADDED, "Waypoint", model.getColumnModel());
-				ev.dispatch();
+				//ColumnsModifiedEvent ev = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_ADDED, "Waypoint", model.getColumnModel());
+				//ev.dispatch();
 			}
 		});
 	}

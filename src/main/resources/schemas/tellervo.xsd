@@ -718,10 +718,10 @@
 						<xs:attribute name="id" type="xs:string" use="optional"/>
 					</xs:complexType>
 				</xs:element>
-				<xs:choice minOccurs="1" maxOccurs="unbounded">
-					<xs:element ref="securityUser"  />
-					<xs:element ref="securityGroup" />	
-				</xs:choice>
+				<!-- <xs:choice minOccurs="1" maxOccurs="unbounded">-->
+					<xs:element ref="securityUser"  minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded"/>	
+				<!-- </xs:choice>-->
 			</xs:sequence>
 			<xs:attribute name="decidedBy" type="xs:string" use="optional"/>
 		</xs:complexType>	

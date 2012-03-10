@@ -395,7 +395,7 @@ public class Prefs extends AbstractSubsystem {
 				// this is the guts of save(), but without the nice error
 				// handling.
 				prefs.store(new FileOutputStream(FILENAME),
-						"Corina user preferences");
+						"Tellervo user preferences");
 				App.isFirstRun = true;
 			} catch (IOException ioe) {
 				errors.append("Error copying preferences file to your home directory: "
@@ -496,7 +496,7 @@ public class Prefs extends AbstractSubsystem {
 				// which
 				// is added to the top of the file.
 				prefs.store(new FileOutputStream(FILENAME),
-						"Corina user preferences");
+						"Tellervo user preferences");
 				return;
 			} catch (IOException ioe) {
 				if (dontWarn)

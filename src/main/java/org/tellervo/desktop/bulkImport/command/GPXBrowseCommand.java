@@ -58,7 +58,7 @@ public class GPXBrowseCommand implements ICommand {
 	@Override
 	public void execute(MVCEvent argEvent) {
 		
-		try {
+		/*try {
 	        MVC.splitOff(); // so other mvc events can execute
 		} catch (IllegalThreadException e) {
 		        // this means that the thread that called splitOff() was not an MVC thread, and the next event's won't be blocked anyways.
@@ -66,7 +66,7 @@ public class GPXBrowseCommand implements ICommand {
 		} catch (IncorrectThreadException e) {
 		        // this means that this MVC thread is not the main thread, it was already splitOff() previously
 		        e.printStackTrace();
-		}
+		}*/
 		
 		GPXBrowse event = (GPXBrowse) argEvent;
 		HashModel model = event.model;

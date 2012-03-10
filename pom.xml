@@ -325,7 +325,7 @@
 		<dependency>
 			<groupId>org.tridas</groupId>
 			<artifactId>tricycle</artifactId>
-			<version>0.2.7-SNAPSHOT</version>
+			<version>0.2.7</version>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>

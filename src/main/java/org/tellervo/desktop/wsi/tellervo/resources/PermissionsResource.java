@@ -116,11 +116,26 @@ public class PermissionsResource extends TellervoAssociatedResource<ArrayList<WS
 		entities.add(entity);
 		
 		perm.setEntities(entities);
-		ArrayList<Object> securityUsersAndSecurityGroups = new ArrayList<Object>();
-		securityUsersAndSecurityGroups.add(groupOrUser);
 		
-		perm.setSecurityUsersAndSecurityGroups(securityUsersAndSecurityGroups);
-		this.perms.add(perm);
+		if(groupOrUser instanceof WSISecurityGroup)
+		{
+			ArrayList<WSISecurityGroup> securityUsersAndSecurityGroups = new ArrayList<WSISecurityGroup>();
+			securityUsersAndSecurityGroups.add((WSISecurityGroup) groupOrUser);
+			
+			perm.setSecurityGroups(securityUsersAndSecurityGroups);
+			this.perms.add(perm);
+		}
+		
+		else if(groupOrUser instanceof WSISecurityUser)
+		{
+			ArrayList<WSISecurityUser> securityUsersAndSecurityGroups = new ArrayList<WSISecurityUser>();
+			securityUsersAndSecurityGroups.add((WSISecurityUser) groupOrUser);
+			
+			perm.setSecurityUsers(securityUsersAndSecurityGroups);
+			this.perms.add(perm);
+		}
+		
+
 	}
 
 	
