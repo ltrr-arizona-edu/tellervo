@@ -116,8 +116,7 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		}	
 		else
 		{
-			Alert.error("Error", "Error searching for permissions info.  Entity provided is not valid.");
-			log.error("Error searching for permissions info.  Entity provided is not valid.");
+			Alert.error("Error", "Permissions information is only available for objects, elements and series");
 			return;
 		}
 		

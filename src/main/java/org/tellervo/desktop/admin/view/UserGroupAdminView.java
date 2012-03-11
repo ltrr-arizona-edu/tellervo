@@ -244,7 +244,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         tblMembers = new javax.swing.JTable();
         
         scrollMembers.setViewportView(tblMembers);
-        getContentPane().setLayout(new MigLayout("", "[473.00px,grow]", "[102.00][250px,grow][25px]"));
+        getContentPane().setLayout(new MigLayout("", "[550.00px,grow]", "[102.00][350px,grow][25px]"));
         
         panelTitle = new JPanel();
         panelTitle.setBackground(Color.WHITE);
@@ -267,7 +267,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         txtDescription = new JTextArea();
         txtDescription.setWrapStyleWord(true);
         txtDescription.setBorder(null);
-        txtDescription.setText("Us the tables below to add, edit and delete users and groups.  You can use the 'tree view' tab to see a hierarchical representation of the groups and users current in the database.");
+        txtDescription.setText("Use the tables below to add, edit and delete users and groups.  You can use the 'tree view' tab to see a hierarchical representation of the groups and users currently in the database.");
         txtDescription.setLineWrap(true);
         txtDescription.setFont(new Font("Dialog", Font.PLAIN, 10));
         txtDescription.setFocusable(false);

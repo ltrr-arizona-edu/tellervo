@@ -302,8 +302,7 @@ public class FileDialog {
 		// add filters
 		addFilters(f);
 
-		// preview component
-		f.setAccessory(new SamplePreview(f));
+
 
 		// make the window a resonable size to see everything
 		Dimension dim = App.prefs.getDimensionPref(SINGLE_DIM_PREF,

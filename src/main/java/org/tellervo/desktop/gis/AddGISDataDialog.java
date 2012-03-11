@@ -68,9 +68,9 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 	private TridasEntityPickerPanel pickerPanel;
 	
 	public enum AddLayerType{
-		ALL_OBJECTS("All Corina objects"),
-		CORINA_ENTITY("Corina entity from database"),
-		ELEMENTS_FOR_OBJECT("Elements from an object"),
+		ALL_OBJECTS("All objects in database"),
+		CORINA_ENTITY("One specific entity from database"),
+		ELEMENTS_FOR_OBJECT("All elements of an object"),
 		ITRDB_SITES("All ITRDB sites"),
 		SHAPEFILE("ESRI Shapefile"),
 		KML("Google Earth KML/KMZ file");

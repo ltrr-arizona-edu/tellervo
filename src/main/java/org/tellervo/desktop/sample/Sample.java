@@ -97,7 +97,7 @@ import org.tridas.schema.TridasVariable;
 // editor(sample) bringstofront the existing editor.
 
 @SuppressWarnings("serial")
-public class Sample extends BaseSample implements Previewable, Graphable, Indexable {
+public class Sample extends BaseSample implements Graphable, Indexable {
 
 	private final static Logger log = LoggerFactory.getLogger(Sample.class);
 	private boolean metadataChanged = true;
@@ -664,31 +664,6 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		modified = true;
 	}
 	
-	/*
-	 // TESTING: single-instance samples (and Sample(String) to become private)
-	 public static Sample getSample(String filename) throws IOException {
-	 // check map
-	 Sample s = null;
-	 if (samples.containsKey(filename)) {
-	 s = (Sample) ((Reference) samples.get(filename)).get();
-	 // BUG: what if what's on disk is newer than what's in memory?
-	 // (if it's ONLY weakly referenced, just update it)
-	 // (if somebody else is viewing it, better ask the user)
-	 }
-	 if (s == null)
-	 s = new Sample(filename);
-	 samples.put(filename, new WeakReference(s));
-	 return s;
-	 // won't this map keep accumulating nulls?  well, probably not many.
-	 // but shouldn't i try to take them out somehow?
-	 }
-	 private static Map samples = new HashMap();
-	 */
-
-	public Preview getPreview() {
-		return new SamplePreview(this);
-	}
-
 	@Override
 	public SampleType getSampleType() {
 		SampleType known = super.getSampleType();
@@ -1088,32 +1063,4 @@ public class Sample extends BaseSample implements Previewable, Graphable, Indexa
 		}
 	};
 
-
-	private static class SamplePreview extends Preview {
-		SamplePreview(Sample s) {
-			title = s.getMeta("title").toString();
-
-			// range -- toStringWithSpan() does "(a - b, n=c)", i want "a - b (n=c)"
-			items.add(s.getRange() + " (n=" + s.getRange().span() + ")");
-
-			// species
-			if (s.hasMeta("species"))
-				items.add(I18n.getText("species") + ": "
-						+ s.getMeta("species"));
-
-			// format
-			items.add(I18n.getText("format") + ": " + s.getMeta("filetype"));
-
-			// indexed, summed
-			if (s.isIndexed())
-				items.add(I18n.getText("indexed"));
-			if (s.isSummed()) {
-				String summedLine = I18n.getText("summed");
-				if (s.getElements() != null)
-					summedLine += " (" + s.getElements().size() + " "
-							+ I18n.getText("elements") + ")";
-				items.add(summedLine);
-			}
-		}
-	}
 }

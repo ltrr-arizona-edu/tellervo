@@ -33,7 +33,6 @@ import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import org.tellervo.desktop.CorinaPermission;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.cross.CrossdateDialog;
@@ -208,15 +207,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 				new RedateDialog(sample, editor).setVisible(true);
 			}
 		});
-		if (System.getSecurityManager() != null) {
-			try {
-				AccessController.checkPermission(new CorinaPermission("redate"));
-			} catch (AccessControlException ace) {
-				ace.printStackTrace();
-				redate.setEnabled(false);
-				redate.setBackground(Color.red.darker().darker());
-			}
-		}
+
 		add(redate);
 		redate.setEnabled(true);
 		redate.setVisible(true);		

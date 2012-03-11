@@ -32,7 +32,9 @@ import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
 import javax.swing.JTextField;
@@ -139,7 +141,11 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
             new String [] {
                 "ID", "Group", "Description", "Member"
             }
-        ) {
+        ) 
+        
+        
+        
+        {
 			@SuppressWarnings("rawtypes")
 			Class[] types = new Class [] {
                 java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Boolean.class
@@ -157,8 +163,8 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
                 return canEdit [columnIndex];
             }
         });
-        scrollPane.setViewportView(tblGroups);
         
+        scrollPane.setViewportView(tblGroups);
         txtDescription = new JTextField();
         txtDescription.setColumns(10);
         
@@ -356,7 +362,18 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 		    	this.chckbxDelete.setSelected(defaultPermissions.isPermissionToDelete());
 		    	this.chckbxDenied.setSelected(defaultPermissions.isPermissionDenied());
 	    	}
-	    	
+
+    		// If this is the Admin group disable changes to most parts of form
+    		this.chkEnabled.setEnabled(!group.getId().equals("1"));
+    		this.txtName.setEditable(!group.getId().equals("1"));
+    		this.txtName.setFocusable(!group.getId().equals("1"));
+    		this.txtDescription.setEditable(!group.getId().equals("1"));
+    		this.txtDescription.setFocusable(!group.getId().equals("1"));
+    		this.chckbxCreate.setEnabled(!group.getId().equals("1"));
+    		this.chckbxRead.setEnabled(!group.getId().equals("1"));
+    		this.chckbxUpdate.setEnabled(!group.getId().equals("1"));
+    		this.chckbxDelete.setEnabled(!group.getId().equals("1"));
+    		this.chckbxDenied.setEnabled(!group.getId().equals("1"));  		
     	}
     	
         // Populate groups list
