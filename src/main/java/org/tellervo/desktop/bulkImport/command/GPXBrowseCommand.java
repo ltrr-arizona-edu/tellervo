@@ -78,6 +78,8 @@ public class GPXBrowseCommand implements ICommand {
 	    if (returnVal == JFileChooser.APPROVE_OPTION) {
 			 try {
 					GPXParser parser = new GPXParser(fc.getSelectedFile().getAbsolutePath());
+					App.prefs.setPref(PrefKey.FOLDER_LAST_GPS, fc.getSelectedFile().getAbsolutePath());
+					
 					MVCArrayList<GPXWaypoint> list = (MVCArrayList<GPXWaypoint>) model.getProperty(IBulkImportSectionModel.WAYPOINT_LIST);
 					ArrayList<GPXWaypoint> wplist = parser.getWaypoints();
 					Collections.sort(wplist);
