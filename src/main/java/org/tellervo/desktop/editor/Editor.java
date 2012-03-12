@@ -556,7 +556,16 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
 		MarkerLayer allSites = TridasMarkerLayerBuilder.getMarkerLayerForAllSites();
 		allSites.setEnabled(false);
-		wwMapPanel = new GISPanel(new Dimension(300,400),true, allSites);
+		
+		try{
+			wwMapPanel = new GISPanel(new Dimension(300,400),true, allSites);
+			
+		} catch (Exception e)
+		{
+			Alert.error("Error", "There was an error initialising the map, most " +
+					"probably to do with 3D graphics drivers");
+			return;
+		}
 		
 		try{
 			// First try to add a pin for the TridasElement itself

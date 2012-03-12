@@ -242,7 +242,7 @@ public class BoxCuration extends javax.swing.JDialog
 		dialog.setVisible(true);
 		if(!dialog.isSuccessful()) 
 		{ 
-			Alert.message("Error", "Error adding sample to box");
+			Alert.error("Error", dialog.getFailException().getMessage());
 			return false;
 		}
     	
@@ -283,7 +283,7 @@ public class BoxCuration extends javax.swing.JDialog
 		
 		if(!dialog.isSuccessful()) 
 		{ 
-			Alert.message("Error", "Error updating box");
+			Alert.error("Error", dialog.getFailException().getMessage());
 			return false;
 		}
 		
@@ -683,6 +683,7 @@ public class BoxCuration extends javax.swing.JDialog
         btnMarkMissing = new javax.swing.JButton();
         
                 txtLastUpdated.setEditable(false);
+                txtLastUpdated.setFocusable(false);
                 
                         lblLastUpdated.setText("Last updated:");
                         
@@ -995,14 +996,14 @@ public class BoxCuration extends javax.swing.JDialog
 					
 					if (!(barcode.uuidType == LabBarcode.Type.BOX))
 					{
-    					Alert.message("Barcode error", "This was not a valid box barcode.");
+    					Alert.error("Barcode error", "This was not a valid box barcode.");
     					return;
 					}
 					    					
 					doBarcodeSearch(barcode);
 					
 				} catch (IllegalArgumentException iae) {
-					Alert.message("Barcode error", "There was a problem with the barcode you scanned:\n"+iae.getMessage());
+					Alert.error("Barcode error", "There was a problem with the barcode you scanned:\n"+iae.getMessage());
 				}	
     		}	
 		}

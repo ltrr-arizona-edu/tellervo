@@ -80,7 +80,7 @@ public class VMeasurementResultSet implements ResultSetHandle {
 	public static ResultSetHandle getVMeasurementResultSet(String VMeasurementID) {
 		
 		System.out.println("getVMeasurementResultSet called with vmid string : "+VMeasurementID);
-		
+		System.out.println("java.class.path now = " + System.getProperties().getProperty("java.class.path", null));
 		return new VMeasurementResultSet(VMeasurementID);
 	}
 }

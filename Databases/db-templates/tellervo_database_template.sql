@@ -31974,6 +31974,7 @@ CREATE OR REPLACE FUNCTION "checkGroupIsDeletable"()
 $BODY$BEGIN
 IF OLD.securitygroupid = 1 THEN 
 	RAISE EXCEPTION 'The administrator group can not be deleted';
+	RETURN NULL;
 END IF;
 RETURN NEW;
 END;$BODY$
@@ -31989,14 +31990,13 @@ CREATE TRIGGER "checkGroupIsDeletable"
 
 
 
-CREATE OR REPLACE FUNCTION enforce_atleastoneadminuser()
+CREATE OR REPLACE FUNCTION enforce_atleastoneadminuserupdate()
   RETURNS trigger AS
 $BODY$DECLARE
  usrrow tblsecurityuser%ROWTYPE;
  grprow int;
  cnt int;
 BEGIN
-
 cnt := 0;
 FOR usrrow IN SELECT * from tblsecurityuser WHERE isactive='t' LOOP
    RAISE NOTICE 'Checking details of user %', usrrow.securityuserid;
@@ -32006,33 +32006,68 @@ FOR usrrow IN SELECT * from tblsecurityuser WHERE isactive='t' LOOP
       END IF;
    END LOOP;   
 END LOOP;
-
 RAISE NOTICE 'Number of remaining admin users is %', cnt;
-
 IF(cnt=0) THEN
 	RAISE EXCEPTION 'Cannot delete the last user with administrative privileges';
+	RETURN NULL;
 END IF;
-
-RETURN old;
-
+RETURN NEW;
 END;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
 ALTER FUNCTION enforce_atleastoneadminuser() OWNER TO tellervo;
 
 CREATE TRIGGER enforce_atleastoneadminuser
-  AFTER UPDATE OR DELETE
+  AFTER UPDATE 
   ON tblsecurityusermembership
   FOR EACH ROW
-  EXECUTE PROCEDURE enforce_atleastoneadminuser();
+  EXECUTE PROCEDURE enforce_atleastoneadminuserupdate();
 
 CREATE TRIGGER enforce_atleastoneadminuser
-  AFTER UPDATE OR DELETE
+  AFTER UPDATE 
   ON tblsecurityuser
   FOR EACH ROW
-  EXECUTE PROCEDURE enforce_atleastoneadminuser();
+  EXECUTE PROCEDURE enforce_atleastoneadminuserupdate();
 
 
+CREATE OR REPLACE FUNCTION enforce_atleastoneadminuserdelete()
+  RETURNS trigger AS
+$BODY$DECLARE
+ usrrow tblsecurityuser%ROWTYPE;
+ grprow int;
+ cnt int;
+BEGIN
+cnt := 0;
+FOR usrrow IN SELECT * from tblsecurityuser WHERE isactive='t' LOOP
+   RAISE NOTICE 'Checking details of user %', usrrow.securityuserid;
+   FOR grprow IN SELECT securitygroupid from cpgdb.getgroupmembership(usrrow.securityuserid) LOOP
+      IF grprow=1 THEN
+         cnt = cnt +1;
+      END IF;
+   END LOOP;   
+END LOOP;
+RAISE NOTICE 'Number of remaining admin users is %', cnt;
+IF(cnt=0) THEN
+	RAISE EXCEPTION 'Cannot delete the last user with administrative privileges';
+	RETURN NULL;
+END IF;
+RETURN OLD;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION enforce_atleastoneadminuser() OWNER TO tellervo;
+
+CREATE TRIGGER enforce_atleastoneadminuserdel
+  BEFORE DELETE 
+  ON tblsecurityusermembership
+  FOR EACH ROW
+  EXECUTE PROCEDURE enforce_atleastoneadminuserdelete();
+
+CREATE TRIGGER enforce_atleastoneadminuserdel
+  BEFORE DELETE 
+  ON tblsecurityuser
+  FOR EACH ROW
+  EXECUTE PROCEDURE enforce_atleastoneadminuserdelete();
 
 DELETE FROM tblsecuritydefault WHERE securitygroupid=1;
 INSERT INTO tblsecuritydefault (securitygroupid, securitypermissionid) VALUES (1,2), (1,3), (1,4), (1,5);
@@ -32041,15 +32076,51 @@ ALTER TABLE tblsecuritydefault
   ADD CONSTRAINT uniq_defaultperm UNIQUE(securitygroupid, securitypermissionid);
 
 
-CREATE OR REPLACE FUNCTION enforce_noadminpermedits()
+CREATE OR REPLACE FUNCTION enforce_noadminpermeditsonupdatecreate()
   RETURNS trigger AS
 $BODY$BEGIN
+IF NEW.securitygroupid=1 THEN
+   RAISE EXCEPTION 'Administrator permissions cannot be changed';
+   RETURN NULL;
+END IF;
+RETURN NEW;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION enforce_noadminpermedits() OWNER TO tellervo;
 
+CREATE TRIGGER enforce_noadminpermedits
+  AFTER INSERT OR UPDATE 
+  ON tblsecuritydefault
+  FOR EACH ROW
+  EXECUTE PROCEDURE enforce_noadminpermeditsonupdatecreate();
+
+CREATE TRIGGER enforce_noadminpermedits
+  AFTER INSERT OR UPDATE 
+  ON tblsecurityobject
+  FOR EACH ROW
+  EXECUTE PROCEDURE enforce_noadminpermeditsonupdatecreate();
+
+CREATE TRIGGER enforce_noadminpermedits
+  AFTER INSERT OR UPDATE 
+  ON tblsecurityelement
+  FOR EACH ROW
+  EXECUTE PROCEDURE enforce_noadminpermeditsonupdatecreate();
+
+CREATE TRIGGER enforce_noadminpermedits
+  AFTER INSERT OR UPDATE 
+  ON tblsecurityvmeasurement
+  FOR EACH ROW
+  EXECUTE PROCEDURE enforce_noadminpermeditsonupdatecreate();
+
+
+CREATE OR REPLACE FUNCTION enforce_noadminpermeditsondelete()
+  RETURNS trigger AS
+$BODY$BEGIN
 IF OLD.securitygroupid=1 THEN
    RAISE EXCEPTION 'Administrator permissions cannot be changed';
-   RETURN OLD;
+   RETURN NULL;
 END IF;
-
 RETURN OLD;
 END;$BODY$
   LANGUAGE plpgsql VOLATILE
@@ -32058,29 +32129,28 @@ ALTER FUNCTION enforce_noadminpermedits() OWNER TO tellervo;
 
 
 CREATE TRIGGER enforce_noadminpermedits
-  BEFORE UPDATE OR DELETE
+  BEFORE DELETE 
   ON tblsecuritydefault
   FOR EACH ROW
-  EXECUTE PROCEDURE enforce_noadminpermedits();
+  EXECUTE PROCEDURE enforce_noadminpermeditsondelete();
 
 CREATE TRIGGER enforce_noadminpermedits
-  BEFORE INSERT OR UPDATE OR DELETE
+  BEFORE DELETE
   ON tblsecurityobject
   FOR EACH ROW
-  EXECUTE PROCEDURE enforce_noadminpermedits();
+  EXECUTE PROCEDURE enforce_noadminpermeditsondelete();
 
 CREATE TRIGGER enforce_noadminpermedits
-  BEFORE INSERT OR UPDATE OR DELETE
+  BEFORE DELETE
   ON tblsecurityelement
   FOR EACH ROW
-  EXECUTE PROCEDURE enforce_noadminpermedits();
+  EXECUTE PROCEDURE enforce_noadminpermeditsondelete();
 
 CREATE TRIGGER enforce_noadminpermedits
-  BEFORE INSERT OR UPDATE OR DELETE
+  BEFORE DELETE
   ON tblsecurityvmeasurement
   FOR EACH ROW
-  EXECUTE PROCEDURE enforce_noadminpermedits();
-
+  EXECUTE PROCEDURE enforce_noadminpermeditsondelete();
 
 
 --
@@ -32654,4 +32724,148 @@ END;$BODY$
   COST 100
   ROWS 1000;
   
+  
+
+CREATE OR REPLACE FUNCTION cpgdb.getgrouppermissionset(_groupids integer[], _permtype character varying, _pid uuid)
+  RETURNS typpermissionset AS
+$BODY$
+DECLARE
+   query varchar;
+   whereClause varchar;
+   objid uuid;
+   res refcursor;
+   perm varchar;
+   vstype varchar;
+   perms typPermissionSet;
+   childPerms typPermissionSet;
+   setSize integer;
+
+   stypes varchar[] := array['vmeasurement','element','object','default'];
+BEGIN
+
+
+   IF NOT (_permtype = ANY(stypes)) THEN
+      RAISE EXCEPTION 'Invalid permission type: %. Should be one of vmeasurement, element, object, default (case matters!).', _permtype;
+   END IF;
+
+   IF _permtype = 'default' THEN
+      whereClause := '';
+   ELSE
+      whereClause := ' WHERE ' || _permType || 'Id = ' ||  '''' || _pid ||'''' ;
+   END IF;
+   
+   query := 'SELECT DISTINCT perm.name FROM tblSecurity' || _permType || ' obj ' ||
+            'INNER JOIN ArrayToRows(ARRAY[' || array_to_string(_groupIDs, ',') || ']) AS membership ON obj.securityGroupID = membership ' ||
+            'INNER JOIN tlkpSecurityPermission perm ON perm.securityPermissionID = obj.securityPermissionID' || whereClause;
+
+
+   OPEN res FOR EXECUTE query;
+   FETCH res INTO perm;
+
+   IF NOT FOUND THEN
+      CLOSE res;
+      
+      IF _permtype = 'vmeasurement' THEN
+         SELECT op.Name,tr.ElementID INTO vstype,objid FROM tblVMeasurement vs 
+            INNER JOIN tlkpVMeasurementOp op ON vs.VMeasurementOpID = op.VMeasurementOpID
+            LEFT JOIN tblMeasurement t1 ON vs.MeasurementID = t1.MeasurementID 
+            LEFT JOIN tblRadius t2 ON t2.RadiusID = t1.RadiusID 
+            LEFT JOIN tblSample t3 on t3.SampleID = t2.SampleID 
+            LEFT JOIN tblElement tr ON tr.ElementID = t3.ElementID
+            WHERE vs.VMeasurementID =   _pid  ;
+
+         IF NOT FOUND THEN
+            RAISE EXCEPTION 'Could not determine security: vmeasurement % -> element does not exist', _pid;
+         END IF;
+
+         IF vstype = 'Direct' THEN
+            perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'element', objid);
+    RETURN perms;
+         ELSE
+            setSize := 0;
+
+            FOR objid IN SELECT MemberVMeasurementID FROM tblVMeasurementGroup WHERE VMeasurementID = _pid  LOOP
+               childPerms := cpgdb.GetGroupPermissionSet(_groupIDs, 'vmeasurement', objid);
+
+               IF setSize = 0 THEN
+                  perms := childperms;
+               ELSE
+                  perms := cpgdb.AndPermissionSets(perms, childPerms);
+               END IF;
+
+               setSize := setSize + 1;
+               
+            END LOOP;
+            RETURN perms;
+         END IF;
+         
+      ELSIF _permType = 'element' THEN
+         SELECT tblelement.objectID INTO objid FROM tblElement
+                WHERE tblElement.elementid = _pid;
+
+         IF NOT FOUND THEN
+            RAISE EXCEPTION 'Could not determine security: element % -> object does not exist', _pid;
+         END IF;
+         
+         perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'object', objid);
+         RETURN perms;
+         
+      ELSIF _permType = 'object' THEN
+         perms := cpgdb.GetGroupPermissionSet(_groupIDs, 'default', 'ae68d6d2-2294-11e1-9c20-4ffbb19115a7'::uuid);
+         RETURN perms;
+
+      ELSE
+ perms.denied := true;
+ perms.canRead := false;
+ perms.canDelete := false;
+ perms.canUpdate := false;
+ perms.canCreate := false;
+ perms.decidedBy := 'No defaults';
+ RETURN perms;
+
+      END IF;
+
+   ELSE
+
+      IF _permType = 'default' THEN
+         perms.decidedBy := 'Database defaults';
+      ELSE
+         perms.decidedBy := 'Permissions overriden at the ' || _permType || ' level';
+      END IF;
+   
+      
+      perms.denied := false;
+      perms.canRead := false;
+      perms.canDelete := false;
+      perms.canUpdate := false;
+      perms.canCreate := false;
+
+      LOOP
+         IF perm = 'No permission' THEN
+     perms.denied = true;
+         ELSIF perm = 'Read' THEN
+            perms.canRead := true;
+         ELSIF perm = 'Create' THEN
+            perms.canCreate := true;
+         ELSIF perm = 'Update' THEN
+            perms.canUpdate := true;
+         ELSIF perm = 'Delete' THEN
+            perms.canDelete := true;
+         END IF; 
+
+         FETCH res INTO perm;
+
+         IF NOT FOUND THEN
+            EXIT; -- at the end of our permission list
+         END IF;
+      END LOOP;
+   END IF;
+   
+   CLOSE res;
+   RETURN perms;
+END;
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION cpgdb.getgrouppermissionset(integer[], character varying, uuid) OWNER TO postgres;
   

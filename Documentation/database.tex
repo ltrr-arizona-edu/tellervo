@@ -70,4 +70,18 @@ Thus, to execute a cpgdb function, you must preface the function name with cpgdb
 \index{PLJava}
 Beyond the standard database functions discussed in section \ref{txt:cpgdbfunctions}, the Tellervo database uses PLJava perform more complex tasks.  PLJava means that we can leaverage the full power of Java to perform calculations and analyses on the database.  
 
+During the standard build process a small jar called \verb|tellervo-pljava.jar| is created.  This contains classes from the packages: \verb|org/tellervo/cpgdb/**| and \verb |org/tellervo/indexing/**|.  This jar is stored within the sqlj schema of the Tellervo database and the classes called as required by Postgres functions.  So unless you make changes to files within these packages, you have no need to worry about PLJava.  If you do need to make changes, then you will need to add the new jar to the database.  To do this you use the pljava functions within Postgres.  
+
+The main calls you need to make are: 
+\code{
+SELECT sqlj.replace_jar('file:///usr/share/tellervo-server/tellervo-pljava.jar', 'tellervo_jar', false);
+SELECT sqlj.set_classpath('cpgdb', 'tellervo_jar');
+}
+ 
+The first replaces the existing jar with the one specified.  PLJava requires a name for the jar to use within the database and so we use `tellervo_jar'.  The second command sets the classpath for the specified schema (the first argument) to the contents of the specified jar (the second argument).  Once you have done this you should be able to call your Java functions from within Postgres.
+
+Please note that if you add dependencies to your classes that are not provided by the standard Java virtual machine these must also be added to the tellervo-pljava.jar.  You can get rather cryptic \verb|java.lang.NoClassDefFoundError| errors which do not necessarily name the additional dependency, but the class from which it is called.
+
+
+
 \end{description}

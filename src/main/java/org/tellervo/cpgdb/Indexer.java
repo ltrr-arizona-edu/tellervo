@@ -30,7 +30,16 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.tellervo.indexing.*;
+import org.tellervo.indexing.CubicSpline;
+import org.tellervo.indexing.Exponential;
+import org.tellervo.indexing.Floating;
+import org.tellervo.indexing.HighPass;
+import org.tellervo.indexing.Horizontal;
+import org.tellervo.indexing.IndexFunction;
+import org.tellervo.indexing.Indexable;
+import org.tellervo.indexing.Polynomial;
+
+
 
 
 public class Indexer extends ReadingResultHolder implements Indexable {

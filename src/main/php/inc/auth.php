@@ -288,13 +288,13 @@ class auth
         $request = "Unknown authentication request";
     }
 
-    if ($this->getID()==NULL) 
+    if ($this->getID()==NULL)
     {
-        $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".pg_escape_string($request)."', '".$_SERVER['REMOTE_ADDR']."', '".pg_escape_string($wsversion)."')";
+        $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".pg_escape_string($request)."', '".pg_escape_string($_SERVER['REMOTE_ADDR'])."', '".pg_escape_string($wsversion)."')";
     }
     else
     {
-        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->getID()."', '".pg_escape_string($request)."', '".$_SERVER['REMOTE_ADDR']."', '".pg_escape_string($wsversion)."')";
+        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->getID()."', '".pg_escape_string($request)."', '".pg_escape_string($_SERVER['REMOTE_ADDR'])."', '".pg_escape_string($wsversion)."')";
     }
 
     pg_send_query($dbconn, $sql);
