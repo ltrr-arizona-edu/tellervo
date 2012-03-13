@@ -1,4 +1,4 @@
-<Directory /var/www/corina-webservice/>
+<Directory /var/www/tellervo/>
                 Options Indexes FollowSymLinks MultiViews
                 AllowOverride None
                 Order allow,deny

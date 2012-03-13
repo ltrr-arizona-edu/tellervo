@@ -62,7 +62,7 @@ public class WSIServerDetails {
 		NO_CONNECTION,
 		MALFORMED_URL,
 		URL_NOT_RESPONDING,
-		URL_NOT_CORINA_WS,
+		URL_NOT_TELLERVO_WS,
 		NOT_CHECKED,
 		TOO_OLD,
 		STATUS_ERROR,
@@ -111,6 +111,7 @@ public class WSIServerDetails {
 		if(!isNetworkConnected)
 		{
 			status = WSIServerStatus.NO_CONNECTION;
+			errMessage = "You do not appear to have a network connection.\nPlease check you network and try again.";
 			return false;
 		}
 		
@@ -162,39 +163,74 @@ public class WSIServerDetails {
 				      }
 				}
 			}
+			else if (response.getStatusLine().getStatusCode() == 403)
+			{
+				errMessage="The webserver (not Tellervo server) reports you do not have permission to access this URL.\nContact your systems administrator.";
+				log.debug(errMessage);
+				status = WSIServerStatus.STATUS_ERROR;
+				return false;
+			}
+			else if (response.getStatusLine().getStatusCode() == 404)
+			{
+				errMessage="Server reports that there is no webservice at this URL.\nPlease check and try again.";
+				log.debug(errMessage);
+				status = WSIServerStatus.URL_NOT_TELLERVO_WS;
+				return false;
+			}
+			else if (response.getStatusLine().getStatusCode() == 407)
+			{
+				errMessage="Proxy authentication is required to access this server.\nCheck your proxy server settings and try again.";
+				log.debug(errMessage);
+				status = WSIServerStatus.STATUS_ERROR;
+				return false;
+			}
+			else if (response.getStatusLine().getStatusCode() >= 500)
+			{
+				errMessage="Internal server error (code "+response.getStatusLine().getStatusCode()+").\nContact your systems administrator";
+				log.debug(errMessage);
+				status = WSIServerStatus.STATUS_ERROR;
+				return false;
+			}
+			else if (response.getStatusLine().getStatusCode() >= 300 && response.getStatusLine().getStatusCode() < 400)
+			{
+				errMessage="Server reports that your request has been redirected to a different URL.\nCheck your URL and try again.";
+				log.debug(errMessage);
+				status = WSIServerStatus.STATUS_ERROR;
+				return false;
+			}
 			else
 			{
-				errMessage="Web service URL is invalid";
+				errMessage="The server is returning an error:\nCode: "+response.getStatusLine().getStatusCode()+"\n"+response.getStatusLine().getReasonPhrase();
 				log.debug(errMessage);
-				status = WSIServerStatus.URL_NOT_RESPONDING;
+				status = WSIServerStatus.STATUS_ERROR;
 				return false;
 			}
 			
 
 	    } catch (ClientProtocolException e) {
-	    	errMessage="Web service URL is invalid";
+	    	errMessage="There was as problem with the HTTP protocol.\nPlease contact the Tellervo developers.";
 			log.debug(errMessage);
-			status = WSIServerStatus.URL_NOT_RESPONDING;
+			status = WSIServerStatus.STATUS_ERROR;
 			return false;
 		} catch (IOException e) {
-			errMessage="Web service URL is invalid";
+			errMessage="There is no response from the server at this URL.\nAre you sure this is the correct address and that\nthe server is turned on and configured correctly?";
 			log.debug(errMessage);
 			status = WSIServerStatus.URL_NOT_RESPONDING;
 			return false;
 		} catch (URISyntaxException e) {
-			errMessage="Web service URL is malformed";
+			errMessage="The web service URL you entered was malformed.\nPlease check for typos and try again.";
 			log.debug(errMessage);
 			status = WSIServerStatus.MALFORMED_URL;
 			return false;
 		} catch (IllegalStateException e){
-			errMessage="Web service URL is malformed";
+			errMessage="This communications protocol is not supported.\nPlease contact your systems administrator.";
 			log.debug(errMessage);
 			status = WSIServerStatus.MALFORMED_URL;
 			return false;			
 		} catch (Exception e) {
-			errMessage="Unable to obtain version information from server: " + e.getLocalizedMessage();
+			errMessage="The URL you specified exists, but does not appear to be a Tellervo webservice.\nPlease check and try again.";
 			log.debug(errMessage);
-			status = WSIServerStatus.URL_NOT_CORINA_WS;
+			status = WSIServerStatus.URL_NOT_TELLERVO_WS;
 			return false;
 		} finally{
 			try {
@@ -205,7 +241,7 @@ public class WSIServerDetails {
 			} catch (IOException e) { }
 		}
 	
-		status = WSIServerStatus.URL_NOT_CORINA_WS;
+		status = WSIServerStatus.URL_NOT_TELLERVO_WS;
 
 		return false;
 	}

@@ -566,9 +566,11 @@ public class LoginDialog extends JDialog {
 		
 		// Check that the server is valid
 		WSIServerDetails serverDetails = new WSIServerDetails();
+		
+			
 		if(!serverDetails.isServerValid())
 		{
-			Alert.error(this, "Incompatible Server", "Server URL is invalid:\n" + serverDetails.getErrorMessage());
+			Alert.error(this, "Server connection error", "Error connecting to server:\n" + serverDetails.getErrorMessage());
 			return;
 					
 		}

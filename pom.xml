@@ -720,7 +720,7 @@
 									</mapper>
 								</data>
 								<data>
-									<src>src/main/resources/Icons/48x48/tellervo-application.png</src>
+									<src>src/main/resources/Icons/256x256/tellervo-application.png</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
@@ -798,7 +798,7 @@
 									<type>directory</type>
 									<mapper>
 										<type>perm</type>
-										<prefix>/var/www/tellervo-webservice</prefix>
+										<prefix>/var/www/tellervo</prefix>
 									</mapper>
 								</data>
 							</dataSet>

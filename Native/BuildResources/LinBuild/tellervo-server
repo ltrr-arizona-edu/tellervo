@@ -11,7 +11,7 @@ if (!isset($argc))
 }
 
 // Static locations of various files 
-$wsbase           = "/var/www/tellervo-webservice/";
+$wsbase           = "/var/www/tellervo/";
 $folderbase       = "/usr/share/tellervo-server/";
 
 $pg_hba_file      = "/etc/postgresql/9.1/main/pg_hba.conf";
@@ -857,7 +857,7 @@ function verifySetup($silent=false)
   global $configfile;
   $runningresult = TRUE;
   
-  require("/var/www/tellervo-webservice/config.php");
+  require("/var/www/tellervo/config.php");
 
   if($silent!=TRUE) echo "\nVerifying Tellervo server setup...\n";
   
