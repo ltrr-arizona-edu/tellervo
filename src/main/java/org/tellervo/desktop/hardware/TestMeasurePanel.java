@@ -23,6 +23,8 @@
  */
 package org.tellervo.desktop.hardware;
 
+import java.awt.Color;
+
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
@@ -48,9 +50,9 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	private final JLabel infoLabel;
 	
 	
-	public TestMeasurePanel(JLabel infoLabel, JTextPane txtLog, JTextPane txtComCheckLog, final AbstractSerialMeasuringDevice device) 
+	public TestMeasurePanel(JLabel infoLabel, JTextPane txtLog, JTextPane txtComCheckLog, final AbstractSerialMeasuringDevice device, Color bgcolor) 
 	{
-		super(device);
+		super(device, bgcolor);
 		
 		this.txt = txtComCheckLog;
 		this.log = txtLog;
@@ -58,7 +60,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 
 		// Hide extra widgets
 		btnQuit.setVisible(false);
-		
+				
 		startCountdown();
 		
 	}

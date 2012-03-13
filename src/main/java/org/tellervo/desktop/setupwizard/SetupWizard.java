@@ -10,6 +10,8 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.ArrayList;
@@ -32,6 +34,7 @@ import org.tellervo.desktop.gui.ProgressMeter;
 import org.tellervo.desktop.gui.XCorina;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.ui.Builder;
+import java.awt.SystemColor;
 
 public class SetupWizard extends JDialog implements ActionListener{
 	
@@ -119,7 +122,7 @@ public class SetupWizard extends JDialog implements ActionListener{
 		mainPanel.setBackground(Color.WHITE);
 		mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 		getContentPane().add(mainPanel, BorderLayout.CENTER);
-		mainPanel.setLayout(new MigLayout("", "[620px,fill]", "[][70px:n,fill][40.00px,grow,fill]"));
+		mainPanel.setLayout(new MigLayout("", "[597.00,grow,fill]", "[][70px:n,fill][40.00px,grow,fill]"));
 		
 		lblTitle = new JLabel("New label");
 		mainPanel.add(lblTitle, "cell 0 0,growx,aligny top");
@@ -132,7 +135,7 @@ public class SetupWizard extends JDialog implements ActionListener{
 		txtInstructions.setWrapStyleWord(true);
 		txtInstructions.setLineWrap(true);
 		txtInstructions.setBorder(new EmptyBorder(5, 5, 5, 5));
-		mainPanel.add(txtInstructions, "cell 0 1");
+		mainPanel.add(txtInstructions, "cell 0 1,growx,wmin 10");
 		
 		pagePanel = new JPanel();
 		pagePanel.setBorder(new EmptyBorder(5, 5, 0, 5));
@@ -164,7 +167,7 @@ public class SetupWizard extends JDialog implements ActionListener{
 		flowLayout.setVgap(0);
 		flowLayout.setHgap(0);
 		leftPanel.setBorder(new EmptyBorder(0, 0, 0, 0));
-		leftPanel.setBackground(Color.WHITE);
+		leftPanel.setBackground(new Color(59, 118, 163));
 		getContentPane().add(leftPanel, BorderLayout.WEST);
 		
 		lblSideImage = new JLabel("");
@@ -172,9 +175,15 @@ public class SetupWizard extends JDialog implements ActionListener{
 		lblSideImage.setIcon(Builder.getImageAsIcon("sidebar.png"));
 		leftPanel.add(lblSideImage);
 		
+		addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+				cleanup();
+			}
+		});
+		
 		
 		autoEnableNavButtons();
-		this.setSize(new Dimension(800, 530));
+		this.setSize(new Dimension(771, 542));
 		this.setLocationRelativeTo(parent);
 	}
 	
@@ -257,6 +266,16 @@ public class SetupWizard extends JDialog implements ActionListener{
 		btnPrevious.setEnabled(!currPageIndex.equals(0));
 	}
 	
+	private void cleanup()
+	{
+		for( AbstractWizardPanel page: pages)
+		{
+			page.finish();
+		}
+		
+		dispose();
+	}
+	
 	/**
 	 * Show this next page in the wizard
 	 */
@@ -265,7 +284,8 @@ public class SetupWizard extends JDialog implements ActionListener{
 		if(currPageIndex.equals(pages.size()-1))
 		{
 			// Last page so dispose
-			dispose();
+			
+			cleanup();
 			return;
 		}
 		
@@ -317,7 +337,7 @@ public class SetupWizard extends JDialog implements ActionListener{
 		}
 		else if (evt.getActionCommand().equals("close"))
 		{
-			dispose();
+			cleanup();
 		}
 		
 	}

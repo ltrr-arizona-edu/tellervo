@@ -302,7 +302,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 				
 				try {
 					device.setPortParamsFromPrefs();
-					PlatformTestPanel.showDialog(device);
+					PlatformTestPanel.showDialog(device, null);
 				} catch (UnsupportedPortParameterException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

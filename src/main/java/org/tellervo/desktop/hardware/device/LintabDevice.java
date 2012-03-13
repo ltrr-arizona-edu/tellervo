@@ -71,6 +71,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	private Boolean fireOnNextValue = false;
 	private String previousFireState = "0";
 	private Boolean resetting = false;
+	private Boolean isInitialized = false;
 	int resetCounter = 0;
 	private final static Logger log = LoggerFactory.getLogger(LintabDevice.class);
 
@@ -123,8 +124,10 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 				try {
 					this.wait(300);
 				} catch (InterruptedException e) {}						
-			}					
-		}				
+			}	
+		}
+		
+		
 	}
 	
 	@Override
@@ -196,6 +199,8 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
                 	
                 }
                 
+                isInitialized = true;
+                
             	// Round up to integer of 1/1000th mm
             	Float fltValue = new Float(strReadPosition);
             	Integer intValue = Math.round(fltValue);
@@ -261,10 +266,12 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	@Override
 	public void zeroMeasurement()
 	{
-
-		String strCommand = "RESET";
-		resetRequestTrack(true);
-		this.sendData(strCommand);
+		if(isInitialized)
+		{
+			String strCommand = "RESET";
+			resetRequestTrack(true);
+			this.sendData(strCommand);
+		}
 	}
 	
 	/**

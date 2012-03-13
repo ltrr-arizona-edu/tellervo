@@ -73,5 +73,8 @@ public abstract class AbstractWizardPanel extends JPanel {
 		
 	}
 	
+	public void finish(){
+		
+	}
 	
 }

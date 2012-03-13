@@ -22,6 +22,7 @@ package org.tellervo.desktop.hardware;
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
+import gnu.io.CommPortOwnershipListener;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
@@ -53,7 +54,7 @@ import org.tellervo.desktop.ui.I18n;
 
 public abstract class AbstractSerialMeasuringDevice
 	implements 
-		SerialPortEventListener, SerialSampleIOListener
+		SerialPortEventListener, SerialSampleIOListener, CommPortOwnershipListener
 {
 
 	private final static Logger log = LoggerFactory.getLogger(AbstractSerialMeasuringDevice.class);
@@ -76,6 +77,7 @@ public abstract class AbstractSerialMeasuringDevice
 	protected Boolean measureCumulatively = false;
 	protected Boolean measureInReverse = true;
 	protected Double correctionMultiplier = 1.0;
+	protected CommPortIdentifier portId;
 	
 	
 	/** The previous measurement position. Used in 
@@ -375,6 +377,21 @@ public abstract class AbstractSerialMeasuringDevice
 		return null;
 	}
 	
+	
+    public void ownershipChange(int type) {
+        switch (type) {
+            case CommPortOwnershipListener.PORT_OWNED:
+                log.debug("Tellervo has successfully taken ownership of the serial port");
+                break;
+            case CommPortOwnershipListener.PORT_UNOWNED:
+            	log.debug("Tellervo has just lost ownership of the serial port");
+                break;
+            case CommPortOwnershipListener.PORT_OWNERSHIP_REQUESTED:
+            	log.debug("Someone is asking for ownership of the serial port");
+                break;
+        }
+    }
+	
 	/**
 	 * Open the port with the specified name.
 	 * 
@@ -388,14 +405,16 @@ public abstract class AbstractSerialMeasuringDevice
 		try	{port.close();}catch( Exception e){};
 		
 		this.portName = portName;
-		CommPortIdentifier portId = null;
+		portId = null;
 		
 		try {
 			// get the port by name.
 			portId = CommPortIdentifier.getPortIdentifier(portName);
 			
+			portId.addPortOwnershipListener(this);
+			
 			// take ownership...
-			CommPort basePort = portId.open("Corina", 1000);
+			CommPort basePort = portId.open("Tellervo", 1000);
 			
 			// it's a serial port. If it's not, something's fubar.
 			if(!(basePort instanceof SerialPort)) {

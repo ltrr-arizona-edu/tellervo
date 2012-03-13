@@ -70,12 +70,25 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	private JLabel txtCurrentPosition;
 	
 	protected AbstractSerialMeasuringDevice dev;
-	private JPanel panel;
+	private JPanel panel = new JPanel();
 	protected JLabel lblMessage;
+	private Color bgcolor = null;
 
+	
+	public MeasurePanel(final AbstractSerialMeasuringDevice device, Color bgcolor)
+	{
+		this.bgcolor = bgcolor;
+		init(device);
+	}
+	
 	public MeasurePanel(final AbstractSerialMeasuringDevice device) {
+		init(device);
+	}
+	
+	private void init(final AbstractSerialMeasuringDevice device)
+	{
 		setBorder(null);
-			
+		this.setBackground(bgcolor);	
 		dev = device;
 		
 		setLayout(new MigLayout("insets 0", "[150px,grow][150,grow][150.00px,grow]", "[][][14.00][][grow,fill]"));
@@ -87,7 +100,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		SoundUtil.playMeasureInitSound();
 
 		
-		panel = new JPanel();
+		panel.setBackground(bgcolor);
 		add(panel, "cell 0 0 3 1,grow");
 		
 		btnQuit = new JButton(I18n.getText("menus.edit.stop_measuring"));
@@ -185,7 +198,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		setLastPositionGuiVisible(device.getMeasureCumulatively());
 		
 	}
-	
+		
 	/**
 	 * Set whether the current position gui should be visible
 	 * 

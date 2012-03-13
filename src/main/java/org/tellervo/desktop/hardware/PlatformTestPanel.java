@@ -50,7 +50,7 @@ import org.tellervo.desktop.ui.Builder;
 public class PlatformTestPanel extends JPanel {
 	private final static Logger log = LoggerFactory.getLogger(PlatformTestPanel.class);
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPanel;
+	private JPanel contentPanel = new JPanel();
 	private JTextPane txtDataReceived;
 	private JTextPane txtLog;
 	private AbstractSerialMeasuringDevice device;
@@ -58,21 +58,27 @@ public class PlatformTestPanel extends JPanel {
 	private JLabel lblInfo;
 	private String startupMessage = "Please attempt to measure a few rings...";
 	private String errorMessage;
+	private final JDialog parent;
+	private Color bgcolor;
 	
 	/**
 	 * Create the dialog.
 	 */
-	public PlatformTestPanel(AbstractSerialMeasuringDevice device) {
-		
-		if(device!=null)
-		{
-			init();
-		}
+	public PlatformTestPanel(JDialog parent, AbstractSerialMeasuringDevice device, Color bgcolor) {
+		this.parent = parent;
+		this.device = device;
+		this.bgcolor = bgcolor;
+		init();
 	}
 	
-	public PlatformTestPanel()
+	/**
+	 * @wbp.parser.constructor
+	 */
+	public PlatformTestPanel(Color bgcolor)
 	{
-		
+		parent = null;
+		this.bgcolor = bgcolor;
+		init();
 	}
 	
 	
@@ -84,6 +90,15 @@ public class PlatformTestPanel extends JPanel {
 			panelControls.cancelCountdown();
 			panelControls.dev.close();
 		}
+		
+		if(parent!=null)
+		{
+			parent.dispose();
+		}
+		
+		try{
+		device.close();
+		} catch (Exception e){}
 		
 	}
 
@@ -99,42 +114,50 @@ public class PlatformTestPanel extends JPanel {
     	}
 		
 		// Set up the measuring device
-		try{
+		try {
 			device = SerialDeviceSelector.getSelectedDevice(true);
+		} catch (IOException e) {
+			log.error("Problem talking to device");
+			errorMessage = e.getMessage();
+		} catch (InstantiationException e) {
+			log.error("Problem talking to device");
+			errorMessage = e.getMessage();
+		} catch (IllegalAccessException e) {
+			log.error("Problem talking to device");
+			errorMessage = e.getMessage();
+		}
+		try{	
 			device.setPortParamsFromPrefs();
 		} catch (IOException e)
 		{
-			log.warn("Problem setting device from preferences");
+			log.error("Problem setting device from preferences");
 			errorMessage = e.getMessage();
 		}catch (UnsupportedPortParameterException e) 
 		{
-			log.warn("Problem setting device from preferences");
+			log.error("Problem setting device from preferences");
 			errorMessage = e.getMessage();
-		} catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			log.warn("Problem setting device from preferences");
-			errorMessage = e.getMessage();
-		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			log.warn("Problem setting device from preferences");
+		
+		} catch (Exception e)
+		{
+			log.error("Problem setting device from preferences");
 			errorMessage = e.getMessage();
 		}
-		
+	
 		init();
 	}
 	
-	public static void showDialog(AbstractSerialMeasuringDevice device)
+	public static void showDialog(AbstractSerialMeasuringDevice device, Color bgcolor)
 	{
 		final JDialog dialog = new JDialog();
-		final PlatformTestPanel panel = new PlatformTestPanel(device);
+		final PlatformTestPanel panel = new PlatformTestPanel(dialog, device, bgcolor);
 		
 		dialog.setModal(true);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.setIconImage(Builder.getApplicationIcon());
 		dialog.setTitle("Test Platform Connection");
 		
-		dialog.setLayout(new BorderLayout());
-		dialog.add(panel, BorderLayout.CENTER);
+		dialog.getContentPane().setLayout(new BorderLayout());
+		dialog.getContentPane().add(panel, BorderLayout.CENTER);
 		dialog.pack();
 		dialog.setVisible(true);
 		
@@ -145,13 +168,23 @@ public class PlatformTestPanel extends JPanel {
 			}
 		});
 	}
-		
+	
+	@Override
+	public void setBackground(Color col)
+	{
+		super.setBackground(col);
+		try{contentPanel.setBackground(col);
+		panelControls.setBackground(col);
+		} catch (NullPointerException e)
+		{}
+	}
+	
 	private void init()
 	{
-		
-		setBounds(100, 100, 569, 355);
+		contentPanel.removeAll();
+		setBounds(100, 100, 665, 355);
 		setLayout(new BorderLayout());
-		contentPanel = new JPanel();
+	
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		contentPanel.setOpaque(false);
 		add(contentPanel, BorderLayout.CENTER);
@@ -169,7 +202,7 @@ public class PlatformTestPanel extends JPanel {
 			{
 				JPanel panelTitle = new JPanel();
 				panelTitle.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-				panelTitle.setBackground(Color.WHITE);
+				panelTitle.setBackground(bgcolor);
 				contentPanel.add(panelTitle, "cell 0 0,growx,aligny top");
 				panelTitle.setLayout(new MigLayout("", "[grow]", "[]"));
 				{
@@ -183,6 +216,7 @@ public class PlatformTestPanel extends JPanel {
 			{
 							{
 								JPanel panelLog = new JPanel();
+								panelLog.setBackground(bgcolor);
 								tabbedPane.addTab("Data Received", null, panelLog, null);
 								panelLog.setLayout(new MigLayout("", "[3px,grow]", "[21px,grow]"));
 								{
@@ -201,6 +235,7 @@ public class PlatformTestPanel extends JPanel {
 							
 				
 							JPanel panelCapabilities = new JPanel();
+							panelCapabilities.setBackground(bgcolor);
 							tabbedPane.addTab("Capabilities", null, panelCapabilities, null);
 							panelCapabilities.setLayout(new MigLayout("", "[][]", "[][][][]"));
 							{
@@ -258,6 +293,7 @@ public class PlatformTestPanel extends JPanel {
 			}
 			{
 				JPanel panelCommLog = new JPanel();
+				panelCommLog.setBackground(bgcolor);
 				tabbedPane.addTab("Communications Log", null, panelCommLog, null);
 				panelCommLog.setLayout(new MigLayout("", "[3px,grow,fill]", "[3px,grow,fill]"));
 				{
@@ -276,24 +312,29 @@ public class PlatformTestPanel extends JPanel {
 			
 		}
 		{
-			panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device);
+			panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device, bgcolor);
 			contentPanel.add(panelControls, "cell 0 2,alignx left,aligny top");
 		}
 
 		{
 			JPanel buttonPane = new JPanel();
+			buttonPane.setBackground(bgcolor);
 			add(buttonPane, BorderLayout.SOUTH);
 			buttonPane.setLayout(new MigLayout("", "[][][113px,grow][54px]", "[25px]"));
 			{
 				JButton btnRestartTest = new JButton("Restart Test");
+				btnRestartTest.setVisible(false);
 				buttonPane.add(btnRestartTest, "cell 0 0");
 				btnRestartTest.addActionListener(new ActionListener(){
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
+						log.debug("Restarting measuring platform test");
 						lblInfo.setText(startupMessage);
 						txtLog.setText("");
 						txtDataReceived.setText("");
+						setupDevice();
+						panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device, bgcolor);
 						panelControls.startCountdown();
 					}
 					
@@ -302,14 +343,20 @@ public class PlatformTestPanel extends JPanel {
 			{
 				JButton okButton = new JButton("Close");
 				buttonPane.add(okButton, "cell 3 0,alignx left,aligny top");
-				getRootPane().setDefaultButton(okButton);
+				//getRootPane().setDefaultButton(okButton);
 				okButton.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
 						finish();
 					}
 				});
+				
+				if(parent==null)
+				{
+					okButton.setVisible(false);
+				}
 			}
+			
 		}
 	}
 

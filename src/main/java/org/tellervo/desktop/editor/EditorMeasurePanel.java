@@ -30,7 +30,7 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 		super(device);
 		editor = myeditor;
 		
-		lblMessage.setText(I18n.getText("editor.measuring.earlywood"));
+		lblMessage.setText("");
 	
 		btnQuit.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
