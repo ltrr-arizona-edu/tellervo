@@ -9,10 +9,10 @@ if [ $1 = 'upgrade' ]; then
    ## so it doesn't get over-written
 
    echo "Upgrading Corina server to a new version" >> /var/log/tellervo-installation.log
-   if [ -e "/var/www/tellervo-webservice/config.php" ];
+   if [ -e "/var/www/tellervo/config.php" ];
    then
      echo "Backing up config.php for reinstatement after the upgrade" >> /var/log/tellervo-installation.log
-     cp /var/www/tellervo-webservice/config.php /tmp/
+     cp /var/www/tellervo/config.php /tmp/
    fi
 
 #elif [ $1 = 'install' ]; then

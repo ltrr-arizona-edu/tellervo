@@ -29,6 +29,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -165,7 +166,15 @@ public class WSIServerDetails {
 			}
 			else if (response.getStatusLine().getStatusCode() == 403)
 			{
-				errMessage="The webserver (not Tellervo server) reports you do not have permission to access this URL.\nContact your systems administrator.";
+				String serverType = "";
+				try
+				{
+					serverType = "("+response.getHeaders("Server")[0].getValue()+ ")";
+				} catch (Exception e){ }
+								
+				errMessage="The webserver "+serverType+" reports you do not have permission to access this URL.\n" +
+						   "This is a problem with the server setup, not your Tellervo username/password.\n" +
+						   "Contact your systems administrator for help.";
 				log.debug(errMessage);
 				status = WSIServerStatus.STATUS_ERROR;
 				return false;

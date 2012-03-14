@@ -56,7 +56,7 @@ if($_SERVER['USER']=='root')
  */
  
 $shortopts = "htrces";
-$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "upgrade-db", "version" );
+$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "upgrade-db", "version","firstrun", "deconfigure");
 $args = getopt($shortopts,$longopts);
 
 // Depending on command line arguments run different functions
@@ -67,6 +67,49 @@ if($args["test"]===false || $args["t"]===false)
 	include($dbsetupfile);
 	$setupsuccessful = verifySetup();
 	printComplete(setupsuccessful);
+}
+else if($args["firstrun"]===false)
+{
+	// Configure server for first run
+	$colors = new Colors();
+	
+	echo $colors->getColoredString("\n\nStep 4 - Setting up the Tellervo database...\n\n", "light_purple");
+	requireRoot();
+	createScriptsFromTemplates();
+	postgresSetup(true);
+	include($configfile);
+	include($dbsetupfile);
+	generateSystemsConfig();
+	include($systemconfig);
+	runDBUpgrades();
+	echo $colors->getColoredString("\n\nStep 5 - Configuring the Apache webservice...\n\n", "light_purple");
+	apacheSetup();
+	echo $colors->getColoredString("\n\nStep 6 - Verifying setup...\n\n", "light_purple");
+	verifySetup();
+	printComplete();
+	exec("sudo $folderbase/firstrun");
+	exit(0);
+}
+else if($args["deconfigure"]===false)
+{
+	if (file_exists("$folderbase/firstrun"))
+	{
+		exec("sudo rm $folderbase/firstrun");
+	}
+	if (file_exists("/tmp/firstrun"))
+	{
+		exec("sudo mv /tmp/firstrun $folderbase");
+	}
+	if (file_exists("$wsbase/config.php"))
+	{
+		exec("sudo rm $wsbase/config.php");
+	}
+	if (file_exists("$wsbase/systemconfig.php"))
+	{
+		exec("sudo rm $wsbase/systemconfig.php");
+	}
+	
+	exit(0);
 }
 else if($args["reconfigure"]===false || $args["r"]===false)
 {
@@ -587,6 +630,9 @@ function createScriptsFromTemplates()
   $response = fgets(STDIN);
   setConfigVariable("%%LABACRONYM%%", trim($response, "\n\r"));   
  
+  // Set timezone from system
+  setConfigVariable("%%TIMEZONE%%", file_get_contents('/etc/timezone')); 
+ 
   echo "\n";
   // Back up pg_hba file if it hasn't been already 
   if(!file_exists($pg_hba_file_orig))
@@ -629,7 +675,7 @@ function setConfigVariable($var, $value)
 /**
  * Interactive script to set up the Postgres database
  */
-function postgresSetup()
+function postgresSetup($quick=false)
 {
   global $logfile;
   global $permsfile; 
@@ -640,10 +686,17 @@ function postgresSetup()
   global $dbtemplate;
   global $credentialsFile;
 
-  // Find out if the user wants a new db
-  echo "Would you like the installer to set up a blank Tellervo database?\n";
-  echo "    [Y]/n  ";
-  $response = fgets(STDIN); 
+  if($quick)
+  {
+  	  $response = "y";
+  }
+  else
+  {
+	  // Find out if the user wants a new db
+	  echo "Would you like the installer to set up a blank Tellervo database?\n";
+	  echo "    [Y]/n  ";
+	  $response = fgets(STDIN);
+  } 
 
    if((trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
    {
@@ -671,7 +724,7 @@ function postgresSetup()
    else
    {  
       // Create a new user or get details of an existing one
-      setDBUser();
+      setDBUser($quick);
 
       // Write to credentials file
       exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile"); 
@@ -714,15 +767,22 @@ function postgresSetup()
  * Set up the database user either by creating a new user or
  * by getting the credentials of an existing one.
  */
-function setDBUser()
+function setDBUser($quick=false)
 {
   global $user;
   global $pwd;
 
-  echo "\n\nWould you like to create a new database user?\n";
-  echo "    [Y]/n  ";
+  if($quick)
+  {
+  	$response = "y";
+  }
+  else
+  {
+	  echo "\n\nWould you like to create a new database user?\n";
+	  echo "    [Y]/n  ";
+	  $response = fgets(STDIN); 
+  }
   
-  $response = fgets(STDIN); 
   if((trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
   {
        echo "\nPlease provide details of a PostgreSQL user with full access to this database...\n";
@@ -733,8 +793,10 @@ function setDBUser()
   else
   {
       $user = "tellervo";              
-      echo "\nCreate a PostgreSQL password.  The password should be 8-20 characters, and\n".
-            "include numbers, letters, and capitals but no spaces.\n";
+      echo "\nCreate a PostgreSQL password.  This password is used internally within the\n";
+      echo   "server and is only required again if you want to access the Tellervo database\n";
+      echo   "directly. The password should be 8-20 characters, and include numbers, letters,\n";
+      echo   "and capitals but no spaces.\n";
       $pwd = promptForPwd();
   }
 }
@@ -779,14 +841,15 @@ function promptForPwd($isCreating=TRUE)
 function apacheSetup()
 {
   global $logfile;
-  echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
+  /*echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
   echo "    [Y]/n  ";
   $response = fgets(STDIN); 
 
   if(trim(strtolower($response))=='n')
   {
      return;
-  }
+  }*/
+  
   echo "\nSetting up webservice...\n";
   exec("ln /usr/share/tellervo-server/tellervo-apache /etc/apache2/sites-enabled/ 2>> $logfile", $response);
   

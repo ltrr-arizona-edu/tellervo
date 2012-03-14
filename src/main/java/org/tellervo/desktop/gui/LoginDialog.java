@@ -545,9 +545,11 @@ public class LoginDialog extends JDialog {
 	private SyncTaskDialog authenticationNotifier;
 	private void performAuthentication(final int recursionLevel) {
 		final JDialog glue = this;
+		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));		
 		
 		// make sure that we're not recursing way too much
 		if(recursionLevel > 5) {
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
 					"Error: Too much recursion. Is there a problem with the server?",
 				    "Could not authenticate",
@@ -570,13 +572,12 @@ public class LoginDialog extends JDialog {
 			
 		if(!serverDetails.isServerValid())
 		{
+			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			Alert.error(this, "Server connection error", "Error connecting to server:\n" + serverDetails.getErrorMessage());
 			return;
 					
 		}
-		
-		
-		this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				
 		// first off, we're busy now.
 		enableDialogButtons(false);
 		

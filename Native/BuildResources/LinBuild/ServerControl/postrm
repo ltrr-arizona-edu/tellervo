@@ -10,9 +10,9 @@ if [ $1 = 'remove' ]; then
    rm /usr/share/tellervo-server/server_credentials
    rm /usr/share/tellervo-server/set_database_permission.sql
    rmdir /usr/share/tellervo-server
-   rm /var/www/tellervo-webservice/config.php
-   rm /var/www/tellervo-webservice/systemconfig.php
-   rmdir /var/www/tellervo-webservice
+   rm /var/www/tellervo/config.php
+   rm /var/www/tellervo/systemconfig.php
+   rmdir /var/www/tellervo
    
    
 elif [ $1 = 'upgrade' ]; then   
@@ -20,7 +20,7 @@ elif [ $1 = 'upgrade' ]; then
     if [ -e "/tmp/config.php" ]
     then
       echo "Reinstating config.php from previous installation" >> /var/log/tellervo-installation.log
-      mv /tmp/config.php /var/www/tellervo-webservice/
+      mv /tmp/config.php /var/www/tellervo/
       echo "Regenerating systemconfig.php" >> /var/log/tellervo-installation.log
       /usr/bin/tellervo-server --sysconfig
       echo "Testing configuration" >> /var/log/tellervo-installation.log

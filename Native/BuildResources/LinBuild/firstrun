@@ -1,0 +1,341 @@
+#!/usr/bin/php
+<?php
+/*
+*   This script is intended to be run the very first time the user 
+*   logs in to the Virtual Server.  It forces them to reset the
+*   sudo password and does various configuration routines which
+*   would normally be set during the OS installation.
+*/
+
+/**
+ * Check this script is being run from the command line
+ */
+if (!isset($argc))
+{
+	writeStdErr("This file should be called from the command line only.");
+	exit(1);
+}
+
+// Global variables
+$user = "tellervo";
+$pwd = "w3l0v3tr33s";
+$colors = new Colors();
+
+exec("reset");
+
+printDivider();
+echo $colors->getColoredString(getTitleString(), "light_purple");
+echo "\n";
+printDivider();
+echo "\n\n\n";
+echo "As this is the first time you have logged in, we need to ask a few questions to\n";
+echo "configure your new system.  Please read each step carefully before proceeding.\n\n";
+echo "When you are prompted for a response the option in square brackets indicates \n";
+echo "the default option.  You can simply press enter to select this. When you are \n";
+echo "offered options on a coloured page, you can use the arrow and enter keys to \n";
+echo "make your choice.\n\n";
+
+
+// This makes sure we have sudo access without further passwords required
+pingSudo();
+
+echo "Press [enter] to continue...";
+$response = fgets(STDIN); 
+
+
+//
+//   STEP 1 - KEYBOARD
+//
+exec("reset");
+echo $colors->getColoredString("\n\nStep 1 - Setting up your keyboard...\n\n", "light_purple");
+echo "The keyboard is currently set to a standard US English layout. You can change\n";
+echo "it here but please note that if you do there will be a little wait (1 min or\n";
+echo "wore while the server rebuilds.\n";
+echo "Would you like to change the keyboard layout now?";
+echo "    [Y]/n  ";
+$response = fgets(STDIN); 
+
+if(!(trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
+{
+	passthru("echo \"dendrochronology\" | sudo -S dpkg-reconfigure keyboard-configuration");
+	exec("reset");
+}
+
+
+//
+//   STEP 2 - TIMEZONE
+//
+exec("reset");
+echo $colors->getColoredString("\n\nStep 2 - Setting the server timezone...\n\n", "light_purple");
+
+  echo "The server timezone is currently set to America/New_York.  Would you like to\nchange it?\n";
+  echo "    [Y]/n  ";
+  $response = fgets(STDIN); 
+
+   if(!(trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
+   {
+   		passthru("sudo dpkg-reconfigure tzdata");
+   		sleep(2);
+   }
+       
+       
+//
+//   STEP 3 - PASSWORD
+//   
+exec("reset");                     
+echo $colors->getColoredString("\n\nStep 3 - Setting your main login password...\n\n", "light_purple");
+echo 
+"This will be the password that you will use in future to log into the server\n".
+"command line rather than the default password you just logged in with.  It is\n".
+"also used when the server needs you to authorise a command, in which case it is\n".
+"often referred to as your 'sudo' password. It should be 8-20 characters, include\n".
+"numbers, letters, and capitals but no spaces.  Please take careful note of it as\n".
+"it cannot easily be recovered if forgotten:\n";
+$pwd = promptForPwd();
+resetTellervoLogin($pwd);
+   
+//
+//   STEP 4 - CONTINUE WITH TELLERVO-SERVER CONFIGURATION
+//
+exec("reset");
+passthru("sudo tellervo-server --firstrun");
+exec("sudo rm /usr/share/tellervo-server/firstrun");
+die();
+
+
+
+function pingSudo()
+{
+/*
+	echo "ping Sudo called";
+	$myFile = "/tmp/chpwd";
+	$fh = fopen($myFile, 'w') or die("can't open temp file");
+	chmod($myFile, 0700); 
+	
+	fwrite($fh, "#!/bin/bash\n");
+	fwrite($fh, "expect << EOF\n");
+    fwrite($fh, "send \"sudo touch /tmp/test\\r\n");
+    fwrite($fh, "expect \"[sudo] password for tellervo:\"\n");
+    fwrite($fh, "send \"dendrochronology\\r\"\n");
+    fwrite($fh, "expect eof;\n");
+    fwrite($fh, "EOF");   
+    fclose($fh);
+	exec($myFile);
+	unlink($myFile);*/
+	
+	exec("echo \"dendrochronology\" | sudo -S touch /tmp/test");
+}
+
+
+/**
+ * END OF SCRIPT BODY
+ */
+
+function resetTellervoLogin($pwd)
+{
+
+	$myFile = "/tmp/chpwd";
+	$fh = fopen($myFile, 'w') or die("can't open temp file");
+	chmod($myFile, 0700); 
+	
+	fwrite($fh, "#!/bin/bash\n");
+	fwrite($fh, "expect << EOF\n");
+	fwrite($fh, "spawn passwd tellervo\n");
+    fwrite($fh, "expect \"Changing password for tellervo\"\n");
+    fwrite($fh, "expect \"(current) UNIX password: \"\n");
+    fwrite($fh, "send \"dendrochronology\\r\"\n");
+    fwrite($fh, "expect \"Enter new UNIX password:\"\n");
+    fwrite($fh, "send \"$pwd\\r\"\n");
+    fwrite($fh, "expect \"Retype new UNIX password:\"\n");
+    fwrite($fh, "send \"$pwd\\r\"\n");
+    fwrite($fh, "expect \"passwd: password updated successfully\"\n");
+    fwrite($fh, "expect eof;\n");
+    fwrite($fh, "EOF");   
+    fclose($fh);
+    
+	exec($myFile);
+	unlink($myFile);
+}
+
+
+function reconfigureKeyboard()
+{
+	passthru("sudo dpkg-reconfigure keyboard-configuration");
+}
+
+function getTitleString()
+{
+
+return "                              WELCOME TO YOUR NEW
+    _______  _______  ___      ___      _______  ______   __   __  _______ 
+   |       ||       ||   |    |   |    |       ||    _ | |  | |  ||       |
+   |_     _||    ___||   |    |   |    |    ___||   | || |  |_|  ||   _   |
+     |   |  |   |___ |   |    |   |    |   |___ |   |_|| |       ||  | |  |
+     |   |  |    ___||   |___ |   |___ |    ___||    __ ||       ||  |_|  |
+     |   |  |   |___ |       ||       ||   |___ |   |  || |     | |       |
+     |___|  |_______||_______||_______||_______||___|  ||  |___|  |_______|
+ 
+                                    SERVER
+";
+}
+
+
+function printDivider()
+{
+    global $colors;
+	echo $colors->getColoredString("********************************************************************************\n", "light_purple");
+}
+
+/**
+ * Interactive script for getting a password.  Checks that the password
+ * is strong and asks for it twice to check for typos.
+ * 
+ * @param $isCreating - if true then prompts are tailored to a new password
+ *                      otherwise they are for getting existing password
+ */
+function promptForPwd($isCreating=TRUE)
+{
+   $pwd1 = prompt_silent("    Password : ");
+   
+   if ((!preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$#", $pwd1) || strpos($pwd1, " ")))
+   {
+     echo "Your password is invalid.  Please try again.\n";
+     return promptForPwd();
+   }
+	
+   if($isCreating===TRUE)
+   {
+	   
+	   $pwd2 = prompt_silent("    Repeat   : ");
+	
+	   if($pwd1!=$pwd2)
+	   {
+	      echo "\nPasswords do not match.  Try again!\n";
+	      return promptForPwd();
+	   }
+
+	   return $pwd1;
+   }
+
+   return $pwd1;
+}
+
+/**
+ * Script for hidding password from console
+ */
+function prompt_silent($prompt = "Enter Password:") {
+  if (preg_match('/^win/i', PHP_OS)) {
+    $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
+    file_put_contents(
+      $vbscript, 'wscript.echo(InputBox("'
+      . addslashes($prompt)
+      . '", "", "password here"))');
+    $command = "cscript //nologo " . escapeshellarg($vbscript);
+    $password = rtrim(shell_exec($command));
+    unlink($vbscript);
+    return $password;
+  } else {
+    $command = "/usr/bin/env bash -c 'echo OK'";
+    if (rtrim(shell_exec($command)) !== 'OK') {
+      trigger_error("Can't invoke bash");
+      return;
+    }
+    $command = "/usr/bin/env bash -c 'read -s -p \""
+      . addslashes($prompt)
+      . "\" mypassword && echo \$mypassword'";
+    $password = rtrim(shell_exec($command));
+    echo "\n";
+    return $password;
+  }
+}
+
+
+/**
+ * Echo a string to the console truncated if longer than $length   
+ */
+function echoTruncatedString($str, $length=70)
+{
+  if(strlen($str)>$length-1)
+  {
+  	$str = substr($str, 0, $length-4 )."... ";
+  }
+  else
+  {
+  	$str = str_pad($str, $length);
+  }
+
+  echo $str;
+
+}
+
+
+
+	/**
+	 * Class for printing colors in a terminal
+	 */
+	class Colors {
+		private $foreground_colors = array();
+		private $background_colors = array();
+ 
+		public function __construct() {
+		// Set up shell colors
+		$this->foreground_colors['black'] = '0;30';
+		$this->foreground_colors['dark_gray'] = '1;30';
+		$this->foreground_colors['blue'] = '0;34';
+		$this->foreground_colors['light_blue'] = '1;34';
+		$this->foreground_colors['green'] = '0;32';
+		$this->foreground_colors['light_green'] = '1;32';
+		$this->foreground_colors['cyan'] = '0;36';
+		$this->foreground_colors['light_cyan'] = '1;36';
+		$this->foreground_colors['red'] = '0;31';
+		$this->foreground_colors['light_red'] = '1;31';
+		$this->foreground_colors['purple'] = '0;35';
+		$this->foreground_colors['light_purple'] = '1;35';
+		$this->foreground_colors['brown'] = '0;33';
+		$this->foreground_colors['yellow'] = '1;33';
+		$this->foreground_colors['light_gray'] = '0;37';
+		$this->foreground_colors['white'] = '1;37';
+ 
+		$this->background_colors['black'] = '40';
+		$this->background_colors['red'] = '41';
+		$this->background_colors['green'] = '42';
+		$this->background_colors['yellow'] = '43';
+		$this->background_colors['blue'] = '44';
+		$this->background_colors['magenta'] = '45';
+		$this->background_colors['cyan'] = '46';
+		$this->background_colors['light_gray'] = '47';
+		}
+ 
+		// Returns colored string
+	public function getColoredString($string, $foreground_color = null, $background_color = null) {
+		$colored_string = "";
+ 
+			// Check if given foreground color found
+		if (isset($this->foreground_colors[$foreground_color])) {
+			$colored_string .= "\033[" . $this->foreground_colors[$foreground_color] . "m";
+		}
+		// Check if given background color found
+		if (isset($this->background_colors[$background_color])) {
+			$colored_string .= "\033[" . $this->background_colors[$background_color] . "m";
+			}
+ 
+			// Add string and end coloring
+		$colored_string .=  $string . "\033[0m";
+ 
+			return $colored_string;
+		}
+ 
+		// Returns all foreground color names
+		public function getForegroundColors() {
+			return array_keys($this->foreground_colors);
+		}
+ 
+		// Returns all background color names
+	public function getBackgroundColors() {
+		return array_keys($this->background_colors);
+	}
+}
+
+
+
+?>

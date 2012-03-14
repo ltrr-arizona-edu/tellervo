@@ -700,7 +700,7 @@
 										<type>perm</type>
 										<prefix>/usr/share/tellervo</prefix>
 									</mapper>
-								</data>
+								</data>							
 								<data>
 									<src>${project.build.directory}/classes/LinBuild/tellervo</src>
 									<type>file</type>
@@ -783,6 +783,15 @@
 									<mapper>
 										<type>perm</type>
 										<prefix>/usr/share/tellervo-server</prefix>
+									</mapper>
+								</data>
+								<data>
+									<src>Native/BuildResources/LinBuild/firstrun</src>
+									<type>file</type>
+									<mapper>
+										<type>perm</type>
+										<prefix>/tmp</prefix>
+										<filemode>777</filemode>
 									</mapper>
 								</data>
 								<data>

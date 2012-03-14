@@ -258,7 +258,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	private void setupTree(List<TridasObjectEx> objList)
 	{
 		// Set up tree
-    	DefaultMutableTreeNode top = new DefaultMutableTreeNode("Tellervo Database");
+    	DefaultMutableTreeNode top = new DefaultMutableTreeNode(App.getLabName()+" Database");
     	if(objList!=null)
     	{
     		addObjectsToTree(top, objList);

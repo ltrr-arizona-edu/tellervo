@@ -44,7 +44,7 @@ $pgport = "5432";
  * WEBSERVER SETTINGS
  */
 // Domain name of the server this software is running on e.g. "dendro.cornell.edu/"
-$domain = "%%IP%%/tellervo-webservice/";
+$domain = "%%IP%%/tellervo/";
 
 // Does the server use https?
 $securehttp = FALSE;
@@ -56,11 +56,9 @@ $debugFlag = FALSE;
 $timingFlag = FALSE;
 
 // Base folder on the server where the webservice is stored
-$baseFolder = "/var/www/tellervo-webservice/";
+$baseFolder = "/var/www/tellervo/";
 
-// Timezone of the server this software is running on.  For options see:
-// http://php.net/manual/en/timezones.php
-$serverTimezone = "America/New_York";
-date_default_timezone_set($serverTimezone); 
+// Timezone of the server this software is running on.  
+date_default_timezone_set("%%TIMEZONE%%");
 
 ?>
