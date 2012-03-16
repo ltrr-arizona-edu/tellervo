@@ -11,7 +11,7 @@ if (!isset($argc))
 }
 
 // Static locations of various files 
-$wsbase           = "/var/www/tellervo/";
+$wsbase           = "/var/www/secure/tellervo/";
 $folderbase       = "/usr/share/tellervo-server/";
 
 $pg_hba_file      = "/etc/postgresql/9.1/main/pg_hba.conf";
@@ -56,10 +56,38 @@ if($_SERVER['USER']=='root')
  */
  
 $shortopts = "htrces";
-$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "upgrade-db", "version","firstrun", "deploy");
+$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "upgrade-db", "version","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:");
 $args = getopt($shortopts,$longopts);
 
 // Depending on command line arguments run different functions
+if($args["add-wms-name"]!=null && $args["add-wms-url"]!=null)
+{
+	$name = $args["add-wms-name"];
+	$url = $args["add-wms-url"];
+	include($configfile);
+	include($dbsetupfile);
+	include($systemconfig);
+	
+	if(file_exists($url))
+	{
+		addWMS($name, $url);
+	}
+	else
+	{
+		echo "The WMS server URL you supplied is not valid";
+		die();
+	}
+	
+	die();
+}
+if($args["del-wms-name"]!=null)
+{
+	include($configfile);
+	include($dbsetupfile);
+	include($systemconfig);
+	delWMS($args["del-wms-name"]);
+	die();
+}
 if($args["test"]===false || $args["t"]===false)
 {
 	// Test configuration
@@ -256,6 +284,67 @@ exit(1);
  * END OF SCRIPT BODY
  */
 
+function delWMS($name)
+{
+
+	global $dbconn;
+		
+	$sql = "DELETE FROM tlkpwmsserver where name='$name';";
+	$dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+	pg_send_query($dbconn, $sql);
+    	$result = pg_get_result($dbconn);
+	$error= pg_result_error($result);
+	if($error)
+	{
+		echo "Failed to delete WMS server from database\n";
+		echo $error."\n";
+
+	}
+	else
+	{
+    		echo "WMS server deleted from database\n";
+    	}   	
+    }
+    else
+    {
+    	die("Unable to connect to PostgreSQL database.\n\n");
+    }
+    
+    return false;
+}
+	
+function addWMS($name, $url)
+{
+	global $dbconn;
+		
+	$sql = "INSERT INTO tlkpwmsserver (name, url) VALUES ('$name', '$url');";
+	$dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+	pg_send_query($dbconn, $sql);
+    	$result = pg_get_result($dbconn);
+	$error= pg_result_error($result);
+	if($error)
+	{
+		echo "Failed to add WMS server to database\n";
+		echo $error."\n";
+
+	}
+	else
+	{
+    		echo "WMS server added to database\n";
+    	}   	
+    }
+    else
+    {
+    	die("Unable to connect to PostgreSQL database.\n\n");
+    }
+    
+    return false;
+}
+
 /**
  * Print the program name and version
  */
@@ -273,7 +362,13 @@ function showHelp($forced=false)
   echo "\n";
   printTitle();
   echo "\nUseage: tellervo-server [<option> ...]\n";
-  echo "Options:\n";
+  echo "e.g:\n";
+  echo "  tellervo-server --configure\n";
+  echo "  tellervo-server --reconfigure\n";
+  echo "  tellervo-server -c\n";
+  echo "  tellervo-server --add-wms-name \"New Server\" --add-wms-url \"http://...\"\n";
+  echo "  tellervo-server --del-wms-name \"Server to delete\"\n";
+  echo "\nOptions:\n";
   echo "  -h, --help         Show this help\n";
   echo "  -t, --test         Run tests on existing setup\n";
   echo "  -c, --configure    Configure server\n";
@@ -284,6 +379,9 @@ function showHelp($forced=false)
   echo "      --restart      Restart the Tellervo server\n";   
   echo "      --upgrade-db   Run database upgrade scripts\n";
   echo "      --version      Show version of Tellervo server that is installed\n";
+  echo "      --add-wms-name Name of a web mapping server to add to database\n";
+  echo "      --add-wms-url  URL of a web mapping server to add to database\n";
+  echo "      --del-wms-name Name of a web mapping server to delete from database\n";
   echo "\n";
   
   if(forced) exit(1);
