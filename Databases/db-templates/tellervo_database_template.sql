@@ -32087,26 +32087,30 @@ RETURN NEW;
 END;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION enforce_noadminpermedits() OWNER TO tellervo;
+ALTER FUNCTION enforce_noadminpermeditsonupdatecreate() OWNER TO tellervo;
 
+DROP TRIGGER enforce_noadminpermedits ON tblsecuritydefault;
 CREATE TRIGGER enforce_noadminpermedits
   AFTER INSERT OR UPDATE 
   ON tblsecuritydefault
   FOR EACH ROW
   EXECUTE PROCEDURE enforce_noadminpermeditsonupdatecreate();
 
+DROP TRIGGER enforce_noadminpermedits ON tblsecurityobject;
 CREATE TRIGGER enforce_noadminpermedits
   AFTER INSERT OR UPDATE 
   ON tblsecurityobject
   FOR EACH ROW
   EXECUTE PROCEDURE enforce_noadminpermeditsonupdatecreate();
 
+DROP TRIGGER enforce_noadminpermedits ON tblsecurityelement;
 CREATE TRIGGER enforce_noadminpermedits
   AFTER INSERT OR UPDATE 
   ON tblsecurityelement
   FOR EACH ROW
   EXECUTE PROCEDURE enforce_noadminpermeditsonupdatecreate();
 
+DROP TRIGGER enforce_noadminpermedits ON tblsecurityvmeasurement;
 CREATE TRIGGER enforce_noadminpermedits
   AFTER INSERT OR UPDATE 
   ON tblsecurityvmeasurement
@@ -32125,28 +32129,28 @@ RETURN OLD;
 END;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION enforce_noadminpermedits() OWNER TO tellervo;
+ALTER FUNCTION enforce_noadminpermeditsondelete() OWNER TO tellervo;
 
 
-CREATE TRIGGER enforce_noadminpermedits
+CREATE TRIGGER enforce_noadminpermeditsdel
   BEFORE DELETE 
   ON tblsecuritydefault
   FOR EACH ROW
   EXECUTE PROCEDURE enforce_noadminpermeditsondelete();
 
-CREATE TRIGGER enforce_noadminpermedits
+CREATE TRIGGER enforce_noadminpermeditsdel
   BEFORE DELETE
   ON tblsecurityobject
   FOR EACH ROW
   EXECUTE PROCEDURE enforce_noadminpermeditsondelete();
 
-CREATE TRIGGER enforce_noadminpermedits
+CREATE TRIGGER enforce_noadminpermeditsdel
   BEFORE DELETE
   ON tblsecurityelement
   FOR EACH ROW
   EXECUTE PROCEDURE enforce_noadminpermeditsondelete();
 
-CREATE TRIGGER enforce_noadminpermedits
+CREATE TRIGGER enforce_noadminpermeditsdel
   BEFORE DELETE
   ON tblsecurityvmeasurement
   FOR EACH ROW
@@ -32309,9 +32313,9 @@ ALTER TABLE tblsecuritydefault
       REFERENCES tblsecuritygroup (securitygroupid) MATCH SIMPLE
       ON UPDATE CASCADE ON DELETE CASCADE;
       
-DROP TRIGGER create_defaultsecurityrecordforgroup ON tblsecuritygroup
+DROP TRIGGER create_defaultsecurityrecordforgroup ON tblsecuritygroup;
 
-DROP FUNCTION "checkGroupIsDeletable"();
+-- DROP FUNCTION "checkGroupIsDeletable"();
 
 CREATE OR REPLACE RULE protectadmin AS
     ON UPDATE TO tblsecuritygroup

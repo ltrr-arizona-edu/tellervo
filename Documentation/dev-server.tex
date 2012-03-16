@@ -180,6 +180,13 @@ As mentioned in section \ref{txt:serverPackage}, the server package is created a
  \item Increment the \verb|<serverversion>| tag in the pom.xml file
  \item Make sure that any upgrades that need to be made to the database are included in a new and unique SQL file stored in Databases/db-upgrade-patches.  Each file from this folder is run by the installer unless it has previously been run.  
  \item If this version of the server needs a particular version of the client then you'll need to set this value in the tblsupportedclient table by including a relevant SQL statement in your db-update-patches script e.g.: \code{UPDATE tblsupportedclient SET minversion='2.13' WHERE client='Tellervo WSI';}
+ \item Run maven package to produce the server deb file.
+ \item Create a clean Ubuntu VirtualBox installation with the user `tellervo' and the password `dendrochronology'
+ \item Install the deb file and dependencies as normal, configuring the server with temporary settings
+ \item Run \verb|sudo tellervo-server --deploy| to remove the temporary settings and set up ready for users first run
+ \item Shutdown the virtual appliance then export.  Add in all the metadata as required.
+ \item Copy the virtual appliance file and the native deb file to the web server for release.  The server PHP code will automatically pick up the extra files and offer them to users.  
+ \item Update the download/index.php file to reflect the `preferred' version choice for users.
  \item TEST!  If users are running this as an upgrade, then we need to ensure this goes smoothly.  Although they are told to backup their database before running we should assume they've ignored the warning and that we are altering precious data. Test both a fresh install and an upgrade from the previous version.
 \end{itemize}
 

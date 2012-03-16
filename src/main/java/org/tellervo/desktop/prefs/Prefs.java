@@ -55,6 +55,7 @@ import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.AbstractSubsystem;
@@ -90,7 +91,7 @@ public class Prefs extends AbstractSubsystem {
 
 	
 	/**
-	 * Enum for all the keys identifying preference types in Corina
+	 * Enum for all the keys identifying preference types in Tellervo
 	 * 
 	 * @author pwb48
 	 *
@@ -148,7 +149,7 @@ public class Prefs extends AbstractSubsystem {
 		EXPORT_FORMAT("tellervo.export.format"),
 		IMPORT_FORMAT("tellervo.import.format"),
 		
-		/** URL for the Corina webservice */
+		/** URL for the Tellervo webservice */
 		WEBSERVICE_URL("tellervo.webservice.url"),
 		WEBSERVICE_DISABLED("tellervo.webservice.disable"),
 		PROXY_TYPE("tellervo.proxy.type"),
@@ -187,17 +188,9 @@ public class Prefs extends AbstractSubsystem {
 	 * synthetic accessor
 	 */
 	protected static boolean dontWarn = false;
+	private String prefsFolder;
+	private String userPrefsFilename;
 
-	/*
-	 * OLD: ~/xtellervo/prefs.properties [win32] ~/.tellervo/prefs.properties [unix]
-	 * ~/Library/Corina/prefs.properties [mac]
-	 * 
-	 * NEW: ~/Corina Preferences [win32] ~/.tellervo [unix]
-	 * ~/Library/Preferences/Corina Preferences [mac]
-	 */
-	private String CORINADIR;
-	private String FILENAME;
-	private String MACHINEFILENAME;
 	/**
 	 * Our internal Properties object in which to save preferences
 	 */
@@ -215,11 +208,124 @@ public class Prefs extends AbstractSubsystem {
 		return "Preferences";
 	}
 
-	// returns the directory for storing Corina-related files...
+	// returns the directory for storing Tellervo-related files...
 	public String getTellervoDir() {
-		return CORINADIR;
+		return prefsFolder;
 	}
 
+	/**
+	 * Migrate old Corina preferences to Tellervo
+	 */
+	private Boolean migrateCorinaToTellervo()
+	{
+		String home = System.getProperty("user.home");
+
+		String corinaUserPrefsFilename;
+		String tellervoUserPrefsFilename;
+		
+		if (!home.endsWith(File.separator))
+			home = home + File.separator;
+
+		if (App.platform.isWindows()) 
+		{			
+			corinaUserPrefsFilename = home + "Application Data" + File.separator + "Corina" + File.separator + "Corina.pref";
+			tellervoUserPrefsFilename  = home + "Application Data" + File.separator + "Tellervo" + File.separator + "Tellervo.pref";
+		} 
+		else if (Platform.isMac()) 
+		{
+			corinaUserPrefsFilename = home + "Library/Corina/Preferences"; 
+			tellervoUserPrefsFilename  = home + "Library/Tellervo/Preferences";
+		} 
+		else 
+		{
+			corinaUserPrefsFilename = home + ".corina/.preferences";
+			tellervoUserPrefsFilename  = home + ".tellervo" + File.separator + ".preferences";
+		}
+		
+		
+		// Do the copy if old exists and new doesn't
+		File oldprefs = new File(corinaUserPrefsFilename);
+		File newprefs = new File(tellervoUserPrefsFilename);
+		if(oldprefs.exists() && !newprefs.exists())
+		{
+			try {
+				FileUtils.copyFile(oldprefs, newprefs);
+				String oldprefcontents = FileUtils.readFileToString(oldprefs, "UTF-8");
+				String newprefcontents = oldprefcontents.replaceAll("corina.", "tellervo.");
+				FileUtils.writeStringToFile(newprefs, newprefcontents, "UTF-8");
+				initPrefFolderLocations();
+				load();
+			} catch (IOException e) {
+				log.error("Failed to migrate Corina preferences to Tellervo");
+			}
+		}
+		else
+		{
+			return false;
+		}
+
+		// Help out Cornelians by updating their WS URL
+		if(App.prefs.getPref(PrefKey.WEBSERVICE_URL, null).equals("https://dendro.cornell.edu/webservice.php"))
+		{
+			App.prefs.setPref(PrefKey.WEBSERVICE_URL, "https://dendro.cornell.edu/tellervo/");
+			log.info("Altered Webservice URL to new Tellervo URL");
+		}
+		
+		
+		return true;
+	}
+	
+	/**
+	 * Set the preferences folder and filename depending on OS
+	 */
+	private void initPrefFolderLocations()
+	{
+		// Get home folder
+		String home = System.getProperty("user.home");
+		if (!home.endsWith(File.separator))
+			home = home + File.separator;
+
+
+		if (App.platform.isWindows()) {
+			String basedir = home;
+
+			// if the Application Data directory exists, use it as our base.
+			if (new File(home + "Application Data").isDirectory())
+				basedir = home + "Application Data" + File.separator;
+
+			// ~/Application Data/Tellervo/
+			// OR ~/Tellervo/, if no Application Data
+			basedir += "Tellervo" + File.separator;
+
+			// if the Tellervo directory doesn't exist, make it.
+			File tellervodir = new File(basedir);
+			if (!tellervodir.exists())
+				tellervodir.mkdir();
+
+			prefsFolder = basedir;
+			userPrefsFilename = basedir + "Tellervo.pref";
+
+		} 
+		else if (Platform.isMac()) 
+		{
+			prefsFolder = home + "Library/Tellervo/";
+			userPrefsFilename = home + "Library/Tellervo/Preferences"; 
+			File basedir = new File(prefsFolder);
+			if (!basedir.exists())
+				basedir.mkdirs();
+		} 
+		else 
+		{
+			// good ol' Linux
+			prefsFolder = home + ".tellervo/";
+			userPrefsFilename = home + ".tellervo/.preferences";
+
+			File basedir = new File(prefsFolder);
+			if (!basedir.exists())
+				basedir.mkdirs();
+		}
+	}
+	
 	/**
 	 * Initializes the preferences system. This should be called upon startup.
 	 */
@@ -227,67 +333,21 @@ public class Prefs extends AbstractSubsystem {
 	public void init() {
 		super.init();
 
-		// NOTE: Platform should have ensured user.home is legit at this point
-		// [ don't have to worry now that platform is explicitly initialized
-		// before
-		// prefs, so we don't have these race conditions.
-		// delete this comment at some point -aaron ]
-		String home = System.getProperty("user.home");
-		if (!home.endsWith(File.separator))
-			home = home + File.separator;
-
-		if (App.platform.isWindows()) {
-			String basedir = home;
-
-			// old location for tellervo preferences exists; migrate it over in
-			// the end.
-			File oldprefs = new File(home + "Corina Preferences");
-
-			// if the Application Data directory exists, use it as our base.
-			if (new File(home + "Application Data").isDirectory())
-				basedir = home + "Application Data" + File.separator;
-
-			// ~/Application Data/Corina/
-			// OR ~/Corina/, if no Application Data
-			basedir += "Corina" + File.separator;
-
-			// if the Corina directory doesn't exist, make it.
-			File tellervodir = new File(basedir);
-			if (!tellervodir.exists())
-				tellervodir.mkdir();
-
-			CORINADIR = basedir;
-			FILENAME = basedir + "Corina.pref";
-			MACHINEFILENAME = "C:\\Corina System Preferences";
-
-			// migrate over the old preferences, if they exist.
-			if (oldprefs.exists()) {
-				oldprefs.renameTo(new File(FILENAME));
-			}
-		} else if (Platform.isMac()) {
-			CORINADIR = home + "Library/Corina/";
-			FILENAME = home + "Library/Corina/Preferences"; // why in prefs?
-															// isn't lib ok?
-			MACHINEFILENAME = "/Library/Preferences/Corina System Preferences";
-
-			File basedir = new File(CORINADIR);
-			if (!basedir.exists())
-				basedir.mkdirs();
-		} else {
-			// plain ol' unix
-			CORINADIR = home + ".tellervo/";
-			FILENAME = home + ".tellervo/.preferences";
-			MACHINEFILENAME = "/etc/tellervo_system_preferences";
-
-			File basedir = new File(CORINADIR);
-			if (!basedir.exists())
-				basedir.mkdirs();
-
+		// Migrate Corina prefs first if necessary
+		Boolean migrated = migrateCorinaToTellervo();
+		if(migrated) 
+		{
+			setInitialized(true);
+			return;
 		}
+		
+		// Initialise the preferences file and folder 
+		initPrefFolderLocations();
 
+		// Initialise the default UI settings
 		initUIDefaults();
 
-		// proceed with loading the preferences
+		// Proceed with loading the preferences
 		try {
 			load();
 		} catch (IOException ioe) {
@@ -342,13 +402,9 @@ public class Prefs extends AbstractSubsystem {
 	 * <ol>
 	 * <li>Load system properties
 	 * <li>Load default properties from class loader resource prefs.properties
-	 * <li>Override with user's properties file (differs by OS; FIXME?)
+	 * <li>Override with user's properties file 
 	 * </ol>
 	 * 
-	 * TODO: System properties should really override the user properties (as
-	 * they are more "immediate"), but we'd have to make sure to only save the
-	 * tellervo properties back out. I /think/ all tellervo properties start with
-	 * 'tellervo' but I'm not sure yet.
 	 */
 	private synchronized void load() throws IOException {
 		// get existing properties
@@ -371,16 +427,8 @@ public class Prefs extends AbstractSubsystem {
 					is.close();
 				}
 			}
-			// RENAME this? ("Default Corina Preferences")
 		} catch (IOException ioe) {
-			errors.append("Error loading Corina's default preferences (bug!).\n");
-		}
-
-		// load machine properties
-		try {
-			defaults.load(new FileInputStream(MACHINEFILENAME));
-		} catch (IOException ioe) {
-			// ignore this; no machine properties is fine.
+			errors.append("Error loading Tellervo's default preferences.\n");
 		}
 
 		// instantiate our properties using the system properties
@@ -388,13 +436,13 @@ public class Prefs extends AbstractSubsystem {
 		prefs = new Properties(defaults);
 
 		try {
-			prefs.load(new FileInputStream(FILENAME));	
+			prefs.load(new FileInputStream(userPrefsFilename));	
 		} catch (FileNotFoundException fnfe) {
 			// user doesn't have a properties file, so we'll give her one!
 			try {
 				// this is the guts of save(), but without the nice error
 				// handling.
-				prefs.store(new FileOutputStream(FILENAME),
+				prefs.store(new FileOutputStream(userPrefsFilename),
 						"Tellervo user preferences");
 				App.isFirstRun = true;
 			} catch (IOException ioe) {
@@ -495,7 +543,7 @@ public class Prefs extends AbstractSubsystem {
 				// -- the second string passed to store() is a comment line
 				// which
 				// is added to the top of the file.
-				prefs.store(new FileOutputStream(FILENAME),
+				prefs.store(new FileOutputStream(userPrefsFilename),
 						"Tellervo user preferences");
 				return;
 			} catch (IOException ioe) {

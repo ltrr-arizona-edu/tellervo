@@ -74,11 +74,11 @@ During the standard build process a small jar called \verb|tellervo-pljava.jar| 
 
 The main calls you need to make are: 
 \code{
-SELECT sqlj.replace_jar('file:///usr/share/tellervo-server/tellervo-pljava.jar', 'tellervo_jar', false);
-SELECT sqlj.set_classpath('cpgdb', 'tellervo_jar');
+SELECT sqlj.replace\_jar('file:///usr/share/tellervo-server/tellervo-pljava.jar', 'tellervo\_jar', false);
+SELECT sqlj.set\_classpath('cpgdb', 'tellervo\_jar');
 }
  
-The first replaces the existing jar with the one specified.  PLJava requires a name for the jar to use within the database and so we use `tellervo_jar'.  The second command sets the classpath for the specified schema (the first argument) to the contents of the specified jar (the second argument).  Once you have done this you should be able to call your Java functions from within Postgres.
+The first replaces the existing jar with the one specified.  PLJava requires a name for the jar to use within the database and so we use `tellervo\_jar'.  The second command sets the classpath for the specified schema (the first argument) to the contents of the specified jar (the second argument).  Once you have done this you should be able to call your Java functions from within Postgres.
 
 Please note that if you add dependencies to your classes that are not provided by the standard Java virtual machine these must also be added to the tellervo-pljava.jar.  You can get rather cryptic \verb|java.lang.NoClassDefFoundError| errors which do not necessarily name the additional dependency, but the class from which it is called.
 

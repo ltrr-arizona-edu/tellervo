@@ -56,7 +56,7 @@ if($_SERVER['USER']=='root')
  */
  
 $shortopts = "htrces";
-$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "upgrade-db", "version","firstrun", "deconfigure");
+$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "upgrade-db", "version","firstrun", "deploy");
 $args = getopt($shortopts,$longopts);
 
 // Depending on command line arguments run different functions
@@ -90,7 +90,7 @@ else if($args["firstrun"]===false)
 	exec("sudo $folderbase/firstrun");
 	exit(0);
 }
-else if($args["deconfigure"]===false)
+else if($args["deploy"]===false)
 {
 	if (file_exists("$folderbase/firstrun"))
 	{
@@ -108,6 +108,15 @@ else if($args["deconfigure"]===false)
 	{
 		exec("sudo rm $wsbase/systemconfig.php");
 	}
+	
+	// Install power interface stuff for clean shutdowns
+	exec("sudo apt-get install acpid");
+	
+	// Remove persistence rules so MAC address reinit doesn't break network
+	exec("sudo rm /etc/udev/rules.d/70-persistent-net.rules");
+	
+	// Make sure firstrun gets run on next login
+	exec("echo \"if [ -f /usr/share/tellervo-server/firstrun ]\nthen\n   /usr/share/tellervo-server/firstrun\nfi\" >> ~/.bashrc");
 	
 	exit(0);
 }

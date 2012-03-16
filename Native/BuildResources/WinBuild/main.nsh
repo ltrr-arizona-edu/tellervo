@@ -61,6 +61,7 @@ SectionEnd
 
 Section -AdditionalIcons
   CreateShortCut "$SMPROGRAMS\Tellervo\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  WriteINIStr "$SMPROGRAMS\Tellervo\Tutorial videos.url" "InternetShortcut" "URL" "http://www.tellervo.org/screencasts/"
 SectionEnd
 
 Section -Post
@@ -97,6 +98,7 @@ Section Uninstall
   Delete "$SMPROGRAMS\Tellervo\Uninstall.lnk"
   Delete "$DESKTOP\Tellervo.lnk"
   Delete "$SMPROGRAMS\Tellervo\Tellervo.lnk"
+  Delete "$SMPROGRAMS\Tellervo\Tutorial videos.url"
 
   RMDir "$SMPROGRAMS\Tellervo"
   RMDir "$INSTDIR"
