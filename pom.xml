@@ -1182,9 +1182,9 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-	<version>0.9.1</version>
 	<issueManagement>
 		<url>https://sourceforge.net/p/tellervo/tickets/</url>
 		<system>Sourceforge.net</system>
 	</issueManagement>
+	<version>1.0</version>
 </project>

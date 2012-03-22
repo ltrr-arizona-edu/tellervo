@@ -141,11 +141,14 @@ else if($args["deploy"]===false)
 	exec("sudo apt-get install acpid");
 	
 	// Remove persistence rules so MAC address reinit doesn't break network
-	exec("sudo rm /etc/udev/rules.d/70-persistent-net.rules");
+	if (file_exists("/etc/udev/rules.d/70-persistent-net.rules"))
+	{
+		exec("sudo rm /etc/udev/rules.d/70-persistent-net.rules");
+	}
 	
 	// Make sure firstrun gets run on next login
-	exec("echo \"if [ -f /usr/share/tellervo-server/firstrun ]\nthen\n   /usr/share/tellervo-server/firstrun\nfi\" >> ~/.bashrc");
-	
+	exec("echo \"\n# Run Tellervo firstrun script if required\nif [ -f /usr/share/tellervo-server/firstrun ]\nthen\n   /usr/share/tellervo-server/firstrun\nfi\" >> ~/.bashrc");
+	exec("history -c");
 	exit(0);
 }
 else if($args["reconfigure"]===false || $args["r"]===false)

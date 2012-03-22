@@ -340,6 +340,16 @@ Images specific to the documentation should be stored in `Documentation/Images',
 
 {\LaTeX} has fantastic cross-referencing and citation functionality built in.  Please follow the lead of the existing documentation!
 
+\section{Recording screencast tutorials}
+One way we are trying to support users is by making clear video screencast tutorials of the major workflows in Tellervo.  I will describe the steps require to use a combination of ffmpeg, x11grab and Pitivi to do this in Linux, but there are many other tools available so if you prefer to use them please be my guest.  I will, however, note that making the tutorials high resolution is extremely important as lower quality video codecs make it very difficult to read screens.  So far I've been unable to use the simple wrapper tools like recordMyDesktop to record at high resolution.
+
+The highest resolution video accepted by Youtube and Vimeo at the time of writing is HD720 (1280$\times$720).  We will therefore work towards recording our tutorials to this level.  By natively recording a section of our desktop of this size we remove the need for shrinking and distoring our video so it is best to ensure all the action goes on within a rectangle of this size.  I've created a desktop wallpaper with these dimensions marked from the upper left hand corner.  
+
+To do the recording we need to install the following:
+
+\code{sudo apt-get install ffmpeg pitivi x264 }
+
+
 
 \section{Making a new release}
 Making a new release should be a relatively quick and simply process, but there are still a few things to remember:
