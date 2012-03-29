@@ -146,10 +146,8 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
 			e.printStackTrace();
 		}
     }
-    
-    
-    
-    // load properties -- messagedialog here is UGLY!
+
+    // Load preferences 
     if (meter != null) {
     	meter.setProgress(2);
       meter.setNote(I18n.getText("login.initPreferences"));

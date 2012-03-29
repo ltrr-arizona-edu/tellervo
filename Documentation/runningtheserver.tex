@@ -57,7 +57,7 @@ Upgrading the server requires you to type a few commands into the Linux command 
 
 The URL of the new file can be obtained from the Tellervo website.  
 
-It would be possible for us to set up an mechanism which server administrators could opt-in to to upgradie Tellervo servers automatically.  We may deploy this in the future, but we'd rather keep the process of upgrading as a conscious decision for the foreseeable future, but especially until we are confident that the upgrade process will not compromise your database.
+It would be possible for us to set up an mechanism which server administrators could opt-in to to upgrade Tellervo servers automatically.  We may deploy this in the future, but we'd rather keep the process of upgrading as a conscious decision for the foreseeable future, but especially until we are confident that the upgrade process will not compromise your database.
 
 
 \section{Graphical Interface to the Virtual Appliance}
@@ -77,7 +77,7 @@ The basic installation of the Tellervo server includes the standard configuratio
 There are a number of default usernames and passwords setup on your server.  If your server is accessible for the internet we strongly advise you to change these defaults and anyone with knowledge of the Tellervo server could access and compromise your machine.
 
 \begin{description*}
- \item[System user] - these are the credentials you use to log in to the command prompt in your Tellervo Virtual Appliance.  By default the user is `tellervo' and the password is `w3l0v3tr33s'.  To change this log in to the command prompt and type \verb|passwd| and follow the instructions.  There is no easy way to recover this password if you loose it.
+ \item[System user] - these are the credentials you use to log in to the command prompt in your Tellervo Virtual Appliance.  By default the user is `tellervo' and the password is `dendrochronology'.  To change this log in to the command prompt and type \verb|passwd| and follow the instructions.  There is no easy way to recover this password if you loose it.
  \item[PostgreSQL database user] - these are the credentials used by the webservice to read and write to the database and are set by the database administrator during the initial configuration of the Tellervo server. You are only ever likely to need this again if you want to directly access the database from a third party tool like PGAdminIII.  You can reset this password from the Tellervo Virtual Appliance command prompt by typing \verb|tellervo-server --reconfigure|
  \item[Tellervo admin user] - these are the admin credentials that you use to log in with in your Tellervo desktop application.  Be default the user is `admin' and the password is `qu3rcu5'.  You should change these the first time you open the Tellervo desktop application by going to \menutwo{Admin}{Change password}.
 \end{description*}

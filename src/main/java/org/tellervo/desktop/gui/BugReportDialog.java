@@ -31,6 +31,8 @@ import javax.swing.JOptionPane;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.BugReport;
 import org.tellervo.desktop.util.Center;
@@ -44,10 +46,12 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 	private JDialog dialog;
 	
 	public BugReportDialog(Window parent, BugReport report) {
+		
+		try{
 		this.report = report;
 
-		txtEmailAddress.setText(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_EMAIL, ""));
-		
+		new TextComponentWrapper(txtEmailAddress, PrefKey.PERSONAL_DETAILS_EMAIL.getValue(), "");
+				
 		DocumentHolder[] docs = report.getDocuments().toArray(new DocumentHolder[0]);
 		lstAttachments.setListData(docs);
 
@@ -55,7 +59,7 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 		
 		pbProgress.setMaximum(100);
 		pbProgress.setValue(50);
-		txtProgressLabel.setText("Waiting for user input...");
+		txtProgressLabel.setText("");
 
 		// JDialog constructor fails when parent is a null dialog (!@#)
 		if(parent instanceof Dialog)
@@ -74,11 +78,18 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 		txtComments.requestFocus();
 		
 		dialog.setVisible(true);
+		} catch (Exception e)
+		{
+			Alert.error("Bug bug!", "How embarrassing! There was a bug creating the bug report!");
+		}
 	}
 
 	public void actionPerformed(ActionEvent e) {
 		String email = txtEmailAddress.getText();
 		String comments = txtComments.getText();
+		
+		
+		
 		
 		// attach stuff to the bug report...
 		if(email.length() > 0) {

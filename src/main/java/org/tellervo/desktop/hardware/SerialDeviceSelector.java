@@ -34,6 +34,7 @@ import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.PortParity;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.StopBits;
 import org.tellervo.desktop.hardware.device.EveIODevice;
 import org.tellervo.desktop.hardware.device.GenericASCIIDevice;
+import org.tellervo.desktop.hardware.device.HeidenhainND287;
 import org.tellervo.desktop.hardware.device.LintabDevice;
 import org.tellervo.desktop.hardware.device.Microcode2;
 import org.tellervo.desktop.hardware.device.QC10Device;
@@ -56,6 +57,7 @@ public class SerialDeviceSelector {
 		registerDevice(LintabDevice.class);
 		registerDevice(QC10Device.class);
 		registerDevice(GenericASCIIDevice.class);
+		registerDevice(HeidenhainND287.class);
 		registerDevice(QC1100.class);
 		registerDevice(Microcode2.class);
 	}

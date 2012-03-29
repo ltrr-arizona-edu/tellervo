@@ -353,10 +353,24 @@
 	
 		<!-- Create launch scripts for Linux builds with correct version number -->
 		<resources>
-		  	<resource>
-		  		<directory>src/main/resources</directory>
-		  		<filtering>true</filtering>
-		  	</resource>
+		
+		      <resource>
+		        <!-- Do not alter log4j.xml file -->
+		        <directory>src/main/resources</directory>
+		        <filtering>false</filtering>
+		        <includes>
+		          <include>**/log4j.xml</include>
+		        </includes>
+		      </resource>
+		      <resource>
+		        <!-- Replace placeholders in other files -->
+		        <directory>src/main/resources</directory>
+		        <filtering>true</filtering>
+		        <excludes>
+		          <exclude>**/*.xml</exclude>
+		        </excludes>
+		      </resource>
+	
 		    <resource>
 		  		<directory>Native/BuildResources/</directory>
 		  		<filtering>true</filtering>
@@ -1186,5 +1200,5 @@
 		<url>https://sourceforge.net/p/tellervo/tickets/</url>
 		<system>Sourceforge.net</system>
 	</issueManagement>
-	<version>1.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 </project>

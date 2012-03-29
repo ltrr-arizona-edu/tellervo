@@ -55,6 +55,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
+import org.tellervo.desktop.prefs.wrappers.WSURLComponentWrapper;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -221,7 +222,7 @@ public class LoginDialog extends JDialog {
 			gbc_serverUrl.gridy = 3;
 			contentPanel.add(serverUrl, gbc_serverUrl);
 			serverUrl.setColumns(10);
-			new TextComponentWrapper(serverUrl, "tellervo.webservice.url", null);
+			new WSURLComponentWrapper(serverUrl, "tellervo.webservice.url", null);
 		}
 		{
 			wsurlLock = new JToggleButton("");

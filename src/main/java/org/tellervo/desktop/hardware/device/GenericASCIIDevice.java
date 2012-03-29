@@ -25,13 +25,16 @@ import java.io.InputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.hardware.SerialSampleIOEvent;
 
 import gnu.io.SerialPortEvent;
 
 public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
-
+	
+	private final static Logger log = LoggerFactory.getLogger(GenericASCIIDevice.class);
 	private static final int EVE_ENQ = 5;
 		
 	@Override
@@ -54,6 +57,10 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 
 	@Override
 	protected void doInitialize() throws IOException {
+		
+		log.debug("Initalising Generic ASCII device");
+		
+		
 		openPort();
 		boolean waiting_for_init = true;
 		int tryCount = 0;
@@ -63,24 +70,26 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 				if(getState() == PortState.WAITING_FOR_ACK) {
 					
 					if(tryCount++ == 25) {
+						log.debug("Platform init tries exhausted; giving up.");
 						fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Failed to initialize reader device.");
-						System.out.println("init tries exhausted; giving up.");
 						break;
 					}
 					
 					try {
-						System.out.println("Initializing reader, try " + tryCount + "...");
+						log.debug("Initializing reader, try " + tryCount + "...");
 						fireSerialSampleEvent(this, SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
 						getPort().getOutputStream().write(EVE_ENQ);
 					}
 					catch (IOException e) {	}
 				} else {
+					log.debug("Platform init complete.");
 					waiting_for_init = false;
 					continue;
 				}
 				
 				// no response yet.. wait.
 				try {
+					log.debug("No response yet from device.  Waiting...");
 					this.wait(300);
 				} catch (InterruptedException e) {}						
 			}					

@@ -296,7 +296,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 		} catch (IllegalStateException ex)
 		{
 			throw new IOException("Webservice URL must be a full URL qualified with a communications protocol.\n" +
-				"Corina currently supports http:// and https://.");	
+				"Tellervo currently supports http:// and https://.");	
 		}
 		
 		catch (ResponseProcessingException rspe) {

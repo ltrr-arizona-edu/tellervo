@@ -43,10 +43,16 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.wsi.WSIServerDetails.WSIServerStatus;
 
 public class JaxbResponseHandler<T> implements ResponseHandler<T> {
 	/** The JAXB context to unmarshall from */
 	private JAXBContext context;
+	
+	private static final Logger log = LoggerFactory.getLogger(WSIServerDetails.class);
+
 	
 	/** The class that we're unmarshalling to */
 	private Class<T> returnClass;
@@ -77,11 +83,12 @@ public class JaxbResponseHandler<T> implements ResponseHandler<T> {
     public T handleResponse(final HttpResponse response)
             throws HttpResponseException, IOException {
         StatusLine statusLine = response.getStatusLine();
+        
         if (statusLine.getStatusCode() >= 300) {
             throw new HttpResponseException(statusLine.getStatusCode(),
                     statusLine.getReasonPhrase());
         }
-        
+	
         HttpEntity entity = response.getEntity();
         return entity == null ? null : toDocument(entity, null);
     }

@@ -33,7 +33,7 @@ import javax.swing.text.JTextComponent;
  */
 
 public class TextComponentWrapper extends PrefWrapper<String> implements FocusListener {
-	private JTextComponent field;
+	protected JTextComponent field;
 	
 	public TextComponentWrapper(JTextComponent field, String prefName, String defaultValue) {
 		super(prefName, defaultValue, String.class);

@@ -834,11 +834,16 @@ public abstract class AbstractSerialMeasuringDevice
 		catch (Exception e) {
 			// driver not installed...
 			log.error(e.toString());
+			App.prefs.setPref(PrefKey.SERIAL_LIBRARY_PRESENT, "Driver not installed");
+			return false;
 		}
 		catch (Error e) {
 			// native interface not installed...
 			log.error(e.toString());
+			App.prefs.setPref(PrefKey.SERIAL_LIBRARY_PRESENT, "Java native interface not installed");
+			return false;
 		}
+		App.prefs.setPref(PrefKey.SERIAL_LIBRARY_PRESENT, "true");
 		return hscResult;
 	}
 	
@@ -872,7 +877,12 @@ public abstract class AbstractSerialMeasuringDevice
 			receiver.receiverUpdateStatus("Error reading the previous sample!");
 		}
 		if(sse.getType() == SerialSampleIOEvent.ERROR) {
-			receiver.receiverUpdateStatus((String) sse.getValue());
+			try{
+			receiver.receiverUpdateStatus(sse.getValue().toString());
+			} catch (NullPointerException e)
+			{
+				receiver.receiverUpdateStatus("null");
+			}
 		}
 		else if(sse.getType() == SerialSampleIOEvent.INITIALIZING_EVENT) {
 			receiver.receiverUpdateStatus("Initializing reader (try "+ sse.getValue() +")");

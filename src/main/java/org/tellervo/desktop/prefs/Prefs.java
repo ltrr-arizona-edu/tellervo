@@ -114,6 +114,7 @@ public class Prefs extends AbstractSubsystem {
 		
 		/** Boolean indicating whether OpenGL failed on last attempt*/
 		OPENGL_FAILED("opengl.failed"),
+		OPENGL_LIBRARY_PRESENT("opengl.librarypresent"),
 		SERIAL_DEVICE("tellervo.serial.measuring.device"),
 		SERIAL_PORT("tellervo.serialsampleio.port"),
 		SERIAL_DATABITS("tellervo.port.databits"),
@@ -125,6 +126,7 @@ public class Prefs extends AbstractSubsystem {
 		SERIAL_MEASURE_CUMULATIVELY("tellervo.serial.measurecumulatively"),
 		SERIAL_MEASURE_IN_REVERSE("tellervo.serial.measurereverse"),
 		SERIAL_MULTIPLIER("tellervo.serial.multiplier"),
+		SERIAL_LIBRARY_PRESENT("tellervo.serial.librarypresent"),
 		
 		STATS_FORMAT_TSCORE("tellervo.cross.tscore.format"),
 		STATS_FORMAT_RVALUE("tellervo.cross.rvalue.format"),

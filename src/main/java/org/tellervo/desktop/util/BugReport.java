@@ -52,6 +52,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Build;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 
 
@@ -62,6 +63,7 @@ public class BugReport {
 
 	private String fromEmail;
 	private String comments;
+
 	
 	/**
 	 * Create a bug report from this throwable
@@ -72,6 +74,19 @@ public class BugReport {
 		
 		addCompressedLogHistory();
 		fromEmail = comments = null;		
+	}
+	
+	public Boolean getIsAnonymous()
+	{
+		
+		if(this.fromEmail!=null && this.fromEmail!="[unknown]")
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 	
 	public void setFromEmail(String fromEmail) {
@@ -130,7 +145,7 @@ public class BugReport {
 		try{
 			  // Open the file that is the first 
 			  // command line parameter
-			  FileInputStream fstream = new FileInputStream(System.getProperty("user.home")
+			  FileInputStream fstream = new FileInputStream(System.getProperty("java.io.tmpdir")
 						+File.separator+"tellervo-submission.log" );
 			  // Get the object of DataInputStream
 			  in = new DataInputStream(fstream);
@@ -173,7 +188,7 @@ public class BugReport {
 		buf.append("\n");
 		
 		buf.append("   System user: " + System.getProperty("user.name") + "\n");
-		buf.append("   Corina user: " + tellervouser+"\n"); 
+		buf.append("   Tellervo user: " + tellervouser+"\n"); 
 		buf.append("   Home: " + System.getProperty("user.home") + "\n");
 		buf.append("   Language: " + System.getProperty("user.language") + "\n");
 		buf.append("   Region: " + System.getProperty("user.region") + "\n");
@@ -202,7 +217,7 @@ public class BugReport {
 		buf.append("\n");
 
 		// time/date/version of build
-		buf.append("Corina\n");
+		buf.append("Tellervo\n");
 		buf.append("   Version " + Build.VERSION + "\n");
 		buf.append("   Built at " + Build.TIMESTAMP + "\n");
 
@@ -262,6 +277,13 @@ public class BugReport {
 		DateFormat date = DateFormat.getDateInstance(DateFormat.LONG);
 		DateFormat time = DateFormat.getTimeInstance(DateFormat.LONG);
 		buf.append("\n");
+		
+		buf.append("Native libraries\n");
+		buf.append("   RXTX serial library present : "+App.prefs.getPref(PrefKey.SERIAL_LIBRARY_PRESENT, "undetermined")+"\n");
+		buf.append("   OpenGL libraries present : "+App.prefs.getPref(PrefKey.OPENGL_LIBRARY_PRESENT, "undetermined")+"\n");
+		
+	
+		buf.append("\n");
 		buf.append("Bug report generated: " + date.format(now) + " at "
 				+ time.format(now) + "\n");
 		return buf.toString();
@@ -296,28 +318,34 @@ public class BugReport {
 		public String toString() { return filename; }
 	}
 	
-	//// web code to submit bug report
+	/*
+	 * Sends the error to the developers by supplying details to a PHP webpage on the 
+	 * Tellervo server.  
+	 */
 	public boolean submit() {
 		try {
 			DefaultHttpClient client = new DefaultHttpClient();
-			HttpPost post = new HttpPost("https://dendro.cornell.edu/bug/submit.php");
+			HttpPost post = new HttpPost("http://www.tellervo.org/bug/submit.php");
 			MultipartEntity postEntity = new MultipartEntity();
 			
 
 
 			
 			// add our required parts
-			postEntity.addPart("username", new StringBody(getUserName()));
 			if(Build.VERSION!=null)	postEntity.addPart("version", new StringBody(Build.VERSION));
 			postEntity.addPart("timestamp", new StringBody(Build.TIMESTAMP));
 			postEntity.addPart("error", new StringBody(toString()));
 			postEntity.addPart("sysinfo", new StringBody(getSystemInfo()));
 			postEntity.addPart("stacktrace", new StringBody(getStackTrace(bug)));
-			postEntity.addPart("userinfo", new StringBody(getUserInfo()));
+			
+			if(!getIsAnonymous())
+			{
+				postEntity.addPart("username", new StringBody(getUserName()));
+				postEntity.addPart("userinfo", new StringBody(getUserInfo()));
+				if(fromEmail != null)
+					postEntity.addPart("replyto", new StringBody(fromEmail));
+			}
 
-
-			if(fromEmail != null)
-				postEntity.addPart("replyto", new StringBody(fromEmail));
 			if(comments != null)
 				postEntity.addPart("comments", new StringBody(comments));
 
@@ -349,7 +377,7 @@ public class BugReport {
 			
 			Alert.error("Bug report submitted", "<html>" + result);
 		} catch (Exception e) {
-			Alert.error("Error submitting bug report", "There was a problem submitting your bug report. \nPlease email the Corina developers directly");
+			Alert.error("Error submitting bug report", "There was a problem submitting your bug report. \nPlease email the Tellervo developers directly");
 			return false;
 		}
 		

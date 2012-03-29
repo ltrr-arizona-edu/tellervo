@@ -44,6 +44,7 @@ import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.RadioButtonWrapper;
 import org.tellervo.desktop.prefs.wrappers.SpinnerWrapper;
 import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
+import org.tellervo.desktop.prefs.wrappers.WSURLComponentWrapper;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.WSIServerDetails;
@@ -279,7 +280,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		});
 		
 		// networking - server & smtp
-		new TextComponentWrapper(txtWSURL, "tellervo.webservice.url", null);
+		new WSURLComponentWrapper(txtWSURL, "tellervo.webservice.url", null);
 		originalURL = txtWSURL.getText();
 	}
 	
