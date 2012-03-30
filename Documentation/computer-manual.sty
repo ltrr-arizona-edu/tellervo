@@ -11,6 +11,7 @@
 \usepackage{amssymb}
 \usepackage{rotating}
 
+
 \RequirePackage{multicol}
 \RequirePackage{booktabs}
 \RequirePackage{longtable}
@@ -86,6 +87,14 @@ keepaspectratio]{Images/tellervo-cover.png}%
 \makeatother \clearpage{\pagestyle{plain}\cleardoublepage}
 
 
+\lstdefinelanguage{tellervo}
+{morekeywords={[1]tellervo,[2]request},
+sensitive=false,
+morecomment=[l]{//},
+morecomment=[s]{/*}{*/},
+morestring=[b]",
+}
+
 
 %% Set up code listings
 \lstset{ %
@@ -93,6 +102,7 @@ basicstyle=\footnotesize,
 numbers=left, 
 numberstyle=\tiny,
 breaklines=true, 
+keywordstyle=\color{red},
 frame=single,
 showspaces=false,               % show spaces adding particular underscores
 showstringspaces=false,         % underline spaces within strings

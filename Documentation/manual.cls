@@ -62,6 +62,7 @@
 \RequirePackage{marvosym}
 
 \RequirePackage{amssymb}
+\RequirePackage{moreverb}
 
 
 %% Define colours
@@ -76,6 +77,7 @@
 \newcommand{\info}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{0.9\textwidth}{\includegraphics[width=3mm]{Images/info.png} #1}}}\end{center}}
 \newcommand{\tip}[1]{\begin{center}{\fcolorbox{dgrey}{lgrey}{\parbox{0.9\textwidth}{\includegraphics[width=3mm]{Images/idea.png} #1}}}\end{center}}
 \newcommand{\code}[1]{\begin{center}{\colorbox{lgrey}{\parbox{0.9\textwidth}{\includegraphics[width=3mm]{Images/code.png}\hspace{5mm}\texttt{#1}}}}\end{center}}
+%\newcommand{\code}[1]{\begin{center}{\colorbox{lgrey}{\parbox{0.9\textwidth}{\includegraphics[width=3mm]{Images/code.png}\hspace{5mm}{#1}}}}\end{center}}
 
 %% Define commands for typesetting menu entries
 \newcommand{\menutwo}[2]{\emph{#1 {\color{dgreen}\MVRightarrow}\ #2}}

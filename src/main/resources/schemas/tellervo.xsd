@@ -11,6 +11,9 @@
 %		TYPES
 %%%%%%%%%%%%%% -->
 	<xs:simpleType name="searchReturnObject">
+		<xs:annotation>
+			<xs:documentation>Type of entity the client would like to search for</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="sample" />
 			<xs:enumeration value="object" />
@@ -24,6 +27,9 @@
 	</xs:simpleType>
 	
 	<xs:simpleType name="entityType">
+		<xs:annotation>
+			<xs:documentation>Type of entity</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="project"/>
 			<xs:enumeration value="object"/>
@@ -68,19 +74,26 @@
 	</xs:simpleType>
 
 	<xs:simpleType name="tellervoRequestFormat">
+		<xs:annotation>
+			<xs:documentation>The level of detail required from the server.  Note that a comprehensive request will take longer to serve
+			than a minimal request so should only be used when necessary</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="standard"/>
-			<xs:enumeration value="summary"/>
-			<xs:enumeration value="comprehensive"/>
 			<xs:enumeration value="minimal"/>
+			<xs:enumeration value="summary"/>
+			<xs:enumeration value="standard"/>
+			<xs:enumeration value="comprehensive"/>
 		</xs:restriction>
 	</xs:simpleType>
 
 	<xs:simpleType name="tellervoRequestStatus">
+		<xs:annotation>
+			<xs:documentation>Status of the request returned by the server</xs:documentation>
+		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="OK"/>
-			<xs:enumeration value="Warning"/>
 			<xs:enumeration value="Notice"/>
+			<xs:enumeration value="Warning"/>
 			<xs:enumeration value="Error"/>
 		</xs:restriction>
 	</xs:simpleType>
@@ -276,9 +289,21 @@
 					</xs:element>
 				</xs:choice>
 			</xs:sequence>
-			<xs:attribute name="returnObject" type="searchReturnObject"/>
-			<xs:attribute name="limit" type="signedInt" />
-			<xs:attribute name="skip" type="signedInt" />
+			<xs:attribute name="returnObject" type="searchReturnObject">
+				<xs:annotation>
+					<xs:documentation>The object the should be returned by the search</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="limit" type="signedInt">
+				<xs:annotation>
+					<xs:documentation>Limit the number of items returned. Used in combination with 'skip' to implement record paging</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="skip" type="signedInt">
+				<xs:annotation>
+					<xs:documentation>Number of records to skip. Used in combination with 'limit' to implement record paging </xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 			<xs:attribute name="includeChildren" type="xs:boolean" />
 		</xs:complexType>
 	</xs:element>
@@ -288,12 +313,38 @@
 %%%%%%%%%%%%%% -->
 	<xs:element name="authenticate">
 		<xs:complexType>
-			<xs:attribute name="username" type="xs:string" />
-			<xs:attribute name="password" type="xs:string" />
-			<xs:attribute name="cnonce" type="xs:string" />
-			<xs:attribute name="snonce" type="xs:string" />
-			<xs:attribute name="hash" type="xs:string" />
-			<xs:attribute name="seq" type="xs:string" />
+			<xs:attribute name="username" type="xs:string" >
+				<xs:annotation>
+					<xs:documentation>The username of the user attempting to login</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="password" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Password of the user attempting to login.  Note this is only used for plainlogin requests and is deemed very insecure
+					as the value is passed in plain text over the network.  Please use the hash and associated attributes as part of a securelogin 
+					instead</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="cnonce" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Client-produced nonce.  This should be a random string which is used within the hash</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="snonce" type="xs:string" >
+				<xs:annotation>
+					<xs:documentation>Server-produced nonce.  This is obtained from the server following a nonce request</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="hash" type="xs:string" >
+				<xs:annotation>
+					<xs:documentation>An MD5 hash of: username:md5hashofpassword:snonce:cnonce</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			<xs:attribute name="seq" type="xs:string" >
+				<xs:annotation>
+					<xs:documentation>Sequence value provided by the server along with the server nonce</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
 		</xs:complexType>
 	</xs:element>
 	<!--
@@ -311,9 +362,16 @@
 %		REQUEST
 %%%%%%%%%%%%%% -->
 	<xs:element name="request">
+		<xs:annotation>
+			<xs:documentation>This is the base tag containing the actual request</xs:documentation>
+		</xs:annotation>
 		<xs:complexType>
 			<xs:choice>
-				<xs:element ref="searchParams" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="searchParams" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>List of search parameters</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element ref="authenticate" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="entity" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:sequence>
@@ -354,11 +412,30 @@
 	<xs:element name="header">
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="securityUser" minOccurs="0" maxOccurs="1"/>
-				<xs:element name="webserviceVersion" type="xs:string"/>
-				<xs:element name="clientVersion" type="xs:string"/>
-				<xs:element name="requestDate" type="xs:dateTime"/>
+				<xs:element ref="securityUser" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>The user that made the request</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="webserviceVersion" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The version of the webservice that served this response</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="clientVersion" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>Version details of the client that made the request</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="requestDate" type="xs:dateTime">
+					<xs:annotation>
+						<xs:documentation>Date and time the request was made</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 				<xs:element name="queryTime">
+					<xs:annotation>
+						<xs:documentation>Length of time it took to serve the request</xs:documentation>
+					</xs:annotation>
 					<xs:complexType>
 						<xs:simpleContent>
 							<xs:extension base="xs:double">
@@ -373,20 +450,44 @@
 						</xs:simpleContent>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="requestUrl" type="xs:string"/>
-				<xs:element name="requestType" type="tellervoRequestType"/>
-				<xs:element name="status" type="tellervoRequestStatus"/>
-				<xs:element ref="message" minOccurs="0" maxOccurs="unbounded"/>
-                                <xs:element name="timing" minOccurs="0" maxOccurs="unbounded">
-                                        <xs:complexType>
-                                                <xs:simpleContent>
-                                                        <xs:extension base="xs:string">
-                                                                <xs:attribute name="label" type="xs:string"/>
-                                                        </xs:extension>
-                                                </xs:simpleContent>
-                                        </xs:complexType>
-                                </xs:element>
-				<xs:element ref="nonce" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="requestUrl" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>The URL used when making the request</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="requestType" type="tellervoRequestType">
+					<xs:annotation>
+						<xs:documentation>The type of request that was made e.g. create, read, update, delete, securelogin etc</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element name="status" type="tellervoRequestStatus">
+					<xs:annotation>
+						<xs:documentation>Status of the response</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+				<xs:element ref="message" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation>Information, warning or error messages associated with the request</xs:documentation>
+					</xs:annotation>
+				</xs:element>
+                <xs:element name="timing" minOccurs="0" maxOccurs="unbounded">
+                	<xs:annotation>
+                		<xs:documentation>Label and time stamps used primarily for debugging purposes to help identify 
+                			performance bottlenecks during various stages of the query</xs:documentation>
+                	</xs:annotation>
+                        <xs:complexType>
+                                <xs:simpleContent>
+                                        <xs:extension base="xs:string">
+                                                <xs:attribute name="label" type="xs:string"/>
+                                        </xs:extension>
+                                </xs:simpleContent>
+                        </xs:complexType>
+                </xs:element>
+				<xs:element ref="nonce" minOccurs="0" maxOccurs="1">
+					<xs:annotation>
+						<xs:documentation>A cryptographic nonce provided by the server to enable the client to perform a secure login</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -718,10 +819,10 @@
 						<xs:attribute name="id" type="xs:string" use="optional"/>
 					</xs:complexType>
 				</xs:element>
-				<!-- <xs:choice minOccurs="1" maxOccurs="unbounded">-->
-					<xs:element ref="securityUser"  minOccurs="0" maxOccurs="unbounded"/>
-					<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded"/>	
-				<!-- </xs:choice>-->
+				<xs:choice minOccurs="1" maxOccurs="unbounded">
+					<xs:element ref="securityUser"  />
+					<xs:element ref="securityGroup" />	
+				</xs:choice>
 			</xs:sequence>
 			<xs:attribute name="decidedBy" type="xs:string" use="optional"/>
 		</xs:complexType>	

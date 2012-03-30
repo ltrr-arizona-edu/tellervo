@@ -138,8 +138,8 @@
 
 		<!-- 3D Mapping library -->		
 		<dependency>
-			<groupId>gov.nasa</groupId>
-			<artifactId>worldwindjava</artifactId>
+			<groupId>gov.nasa.worldwind</groupId>
+			<artifactId>worldwind</artifactId>
 			<version>0.6.874.15796</version>			
 		</dependency>
 		    

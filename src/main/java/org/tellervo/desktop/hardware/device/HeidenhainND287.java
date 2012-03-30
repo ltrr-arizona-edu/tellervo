@@ -34,12 +34,14 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.hardware.SerialSampleIOEvent;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.DataDirection;
+import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.PortState;
 
 
 
 
-public class HeidenhainND287 extends GenericASCIIDevice {
+public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 	private final static Logger log = LoggerFactory.getLogger(HeidenhainND287.class);
+	private static final int EVE_ENQ = 5;
 
 	@Override
 	public String toString() {
@@ -74,7 +76,7 @@ public class HeidenhainND287 extends GenericASCIIDevice {
 
 	@Override
 	public Boolean isLineFeedEditable() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -123,26 +125,41 @@ public class HeidenhainND287 extends GenericASCIIDevice {
 			    StringBuffer readBuffer = new StringBuffer();
 			    int intReadFromPort;
 			    int charcount = 0;
-			    
+			    int errcount = 0;
+			    int exitcounter = 0;
 		    	//Read from port into buffer while not LF or CR
-		    	while (1==1)
+		    	while (exitcounter==0)
 		    	{
+		    		
+		    		if(errcount>20)
+		    		{
+						fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, "Port timed out");
+						return;
+		    		}
+		    		
 		    		charcount++;
 		    		intReadFromPort=input.read();
 		    		log.debug("Raw int value (#"+charcount+") from port: "+intReadFromPort+ " = " + (char) intReadFromPort);
 
-					//Ignore CR (13), LF (10), SP (40) and STX (2)
+					//Ignore CR (13), LF (10), SP (32) and STX (2)
 		    		if(intReadFromPort==10)  
 		    		{
 		    			log.debug("Reached LF - breaking");
 		    			break;
 		    		}
+		    		else if (intReadFromPort==21)
+		    		{
+		    			log.debug("NAK received - breaking");
+						fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, "NAK");
+						return;		    			
+		    		
+		    		}
 		    		else if (intReadFromPort==13)
 		    		{
 		    			log.debug("Reached CR - breaking");
-		    			break;
+		    			exitcounter++;
 		    		}
-		    		else if (intReadFromPort==40)
+		    		else if (intReadFromPort==32)
 		    		{
 		    			log.debug("Ignoring SP");
 		    		}
@@ -152,9 +169,8 @@ public class HeidenhainND287 extends GenericASCIIDevice {
 		    		}
 		    		else if (intReadFromPort==-1)
 		    		{
-		    			log.debug("Port timeout -1");
-						//fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
-						//return;
+		    			errcount++;
+		    			log.debug("Port timeout - "+errcount);
 		    		}
 		    		else if (intReadFromPort<43 && intReadFromPort>57)
 		    		{
@@ -170,9 +186,16 @@ public class HeidenhainND287 extends GenericASCIIDevice {
 			    	
                 String strReadBuffer = readBuffer.toString().trim();
                 
+                // Skip if line is empty
+                if(strReadBuffer==null || !(strReadBuffer.length()>0))
+                {
+                	return;
+                }
+                
+                
                 log.debug("Port read complete. Value = "+strReadBuffer);
                 
-                fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
+                //fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
  	
 
              	// Round up to micron integers
@@ -191,25 +214,19 @@ public class HeidenhainND287 extends GenericASCIIDevice {
 		    		setPreviousPosition(cumValue);
 		    	}
 		    	
-		    	if(intValue>0)
-		    	{	    	
-			    	// Fire event
-		    		log.debug("Firing SerialSampleIOEvent with value = "+intValue);
-			    	fireSerialSampleEvent(this, SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
-		    	}
-		    	else
-		    	{
-		    		// Fire bad event as value is a negative number
-		    		log.debug("Firing bad SerialSampleIOEvent because value = "+intValue);
-		    		fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
-		    	}
+    	
+		    	// Fire event
+	    		log.debug("Firing SerialSampleIOEvent with value = "+intValue);
+		    	fireSerialSampleEvent(this, SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+		    
+	
 			    							
 
 			}
 			catch (Exception e2) {
 				log.error("Exception caught during serialEvent");
 				log.error("Message: "+e2.getMessage());
-				log.error("Source: "+e.getSource().toString());
+				
 				//log.debug("Stacktrace", e2.getStackTrace());
 				
 				fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error reading from serial port");
@@ -225,17 +242,47 @@ public class HeidenhainND287 extends GenericASCIIDevice {
 		}
 	}
 	
-	@Override
 	protected void doInitialize() throws IOException {
-		//super.doInitialize();
-		log.debug("Initalising Heidenhain ND 286 device");
+		
+		log.debug("Initalising Heidenhain");
+		
+		
 		openPort();
-		/*sendRequest("\u001b"+"A0000"); //Output of device identification
-		sendRequest("\u001b"+"A0800"); //Output of status bar
-		sendRequest("\u001b"+"A0900"); //Output of status indicators*/
+		boolean waiting_for_init = true;
+		int tryCount = 0;
+		
+		while(waiting_for_init) {
+			synchronized(this) {
+				if(getState() == PortState.WAITING_FOR_ACK) {
+					
+					if(tryCount++ == 25) {
+						log.debug("Platform init tries exhausted; giving up.");
+						fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Failed to initialize reader device.");
+						break;
+					}
+					
+					try {
+						log.debug("Initializing reader, try " + tryCount + "...");
+						fireSerialSampleEvent(this, SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
+						getPort().getOutputStream().write(EVE_ENQ);
+					}
+					catch (IOException e) {	}
+				} else {
+					log.debug("Platform init complete.");
+					waiting_for_init = false;
+					continue;
+				}
+				
+				// no response yet.. wait.
+				try {
+					log.debug("No response yet from device.  Waiting...");
+					this.wait(300);
+				} catch (InterruptedException e) {}						
+			}					
+		}				
 	}
 	
-	@Override
+
 	protected void sendRequest(String strCommand)
 	{
 		log.debug("Sending command to Heidenhain device: "+strCommand);		
@@ -266,14 +313,60 @@ public class HeidenhainND287 extends GenericASCIIDevice {
 	{
 		log.debug("Sending request to zero device");
 		//sendRequest("F0001");
-		//sendRequest("\u001b"+"T0000"); // 0
-		//sendRequest("\u001b"+"T0104"); // <enter>
+		sendRequest("\u001b"+"T0000"+"\u0013"); // 0
+		try {
+			synchronized(this)
+			{
+				this.wait(500);
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		sendRequest("\u001b"+"T0104"+"\u0013"); // <enter>
+		
+		// <ESC>S0000<CR>  - reset position display
+		setPreviousPosition(0);
+	}
+	
+	public void reboot()
+	{
+		byte[] barr = new byte[] {27, 83, 48, 48, 48, 48, 13};
+		String value = new String(barr);
+		sendRequest(value);
 	}
 	
 	@Override
 	public void requestMeasurement() {
 		log.debug("Sending request for measurement");
-		sendRequest("\u0002"); //Output of current position
+	     
+		// <ESC>A0200<CR>  - current position
+		//byte[] barr = new byte[] {27, 65, 48, 50, 48, 48};
 		
+		byte[] barr = new byte[] {2};
+		String value = new String(barr);
+		sendRequest(value); //Output of current position
+		
+		//sendRequest("\u001b"+"A0200");
+		
+	}
+
+	@Override
+	public Boolean isCorrectionFactorEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isReverseMeasureCapable() {
+		
+		return false;
+	}
+
+
+	@Override
+	public Boolean isCurrentValueCapable() {
+		
+		return false;
 	}
 }
