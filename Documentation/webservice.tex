@@ -43,16 +43,9 @@ The general layout of the request file is as follows:
 
 \begin{itemize}
  \item \textbf{Line 1} contains the XML declaration and tells the server that we're using UTF-8 character encoding.  This is the only encoding currently supported.
- \item \textbf{Line 2} starts the root tag and defines the namespaces used by Tellervo.  The default namespace is the Tellervo schema itself, but it also refers to the TRiDaS, GML and XLink namespaces that Tellervo also makes use of.  Note that the default namespace may also be clarified with like the others as is used in a number of the examples that follow.  Only the namespaces that are used in the request are necessary though so if you're not referring to coordinate information for instance, you can safely leave out the GML namespace declaration.
+ \item \textbf{Line 2} starts the root tag and defines the namespaces used by Tellervo.  In this example the default namespace is the Tellervo schema itself, but it also refers to the TRiDaS, GML and XLink namespaces that Tellervo also makes use of. See section \ref{txt:Namespaces} for more details.
  \item \textbf{Line 3} begins the request tag which contains the request itself. 
 \end{itemize}
-
-
-
-
-
-
- 
 
 When you send such a request XML document to the Tellervo server the typical response returned is structured as follows:
 
@@ -69,6 +62,46 @@ When you send such a request XML document to the Tellervo server the typical res
 \end{lstlisting}
 
 The header contains standard information about the request and also includes error and warning messages.  The content tag contains the actual data being returned.
+
+\subsection{Namespaces}
+\index{Namespaces}
+\index{XML!Namespaces}
+\label{txt:Namespaces}
+
+For newcomers to XML, namespaces and their definition can be quite confusing. Namespaces are used in XML to enable us to incorporate multiple schemas within the same XML file.  
+
+In the case of Tellervo, that means we can use entities defined in both TRiDaS (to describe dendro data) as well as for instance GML (to describe location information).  Rather than reinvent the wheel, we use established standards like GML so that we can leave the experts in each field to handle their own datastands.  We need a method of clarifying which schema each entity in the XML file is referring to and for that we use namespaces.  
+
+Namespaces are typically defined in the root tag of the XML file using the attribute `xmlns'.  Multiple namespaces can be described by adding prefix definitions.  For example \lstinline$xmlns:tridas='http://www.tridas.org/1.2.2'$ means that any tag prefixed by `tridas:' in the XML document refers to an entry in the TRiDaS schema.  Namespaces are URIs and are typically URLs.  There is quite often documentation about the schema at the namespace URL, but this is not necessarily the case.  Information is certainly not retrieved from this location.  The namespace just needs to be unique and must match what is defined by the schema.  The prefix itself though can be whatever you want.  If you have just a few prefixes, then it is common to just use a single character prefix, perhaps `t' for TRiDaS to keep the file small.  Some people prefer to be more explict though and using longer prefixes to ensure there are no confusions.  Table \ref{tbl:namespaces} lists the namespaces used by Tellervo.
+
+
+\begin{table}
+\label{tbl:namespaces}
+\begin{center}
+\begin{tabular}{ll}
+
+\toprule
+Schema & Namespace \\
+\midrule
+Tellervo & http://www.tellervo.org/schema/1.0\\
+TRiDaS & http://www.tridas.org/1.2.2\\
+GML & http://www.opengis.net/gml\\
+XLink & http://www.w3.org/1999/xlink\\
+\bottomrule
+\end{tabular}
+\caption{The namespaces used in the Tellervo schema}
+\end{center}
+\end{table}
+
+
+If the majority of your XML file contains tags from one namespace, with just a handful of tags from another, you may prefer to define a default namespace.  In this case all tags from the default namespace do not require prefixes.  The following namespace declarations are therefore all valid and equivalent:
+
+\begin{itemize}
+ \item \lstinline$<tellervo xmlns="http://www.tellervo.org/schema/1.0" xmlns:gml="http://www.opengis.net/gml" $ \\ 
+  \lstinline$xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.2.2">$
+ \item \lstinline$<t:tellervo xmlns:t="http://www.tellervo.org/schema/1.0" xmlns:gml="http://www.opengis.net/gml" $ \\   \lstinline$xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:tridas="http://www.tridas.org/1.2.2">$
+ \item \lstinline$<tellervo xmlns="http://www.tellervo.org/schema/1.0" xmlns:g="http://www.opengis.net/gml" $ \\   \lstinline$xmlns:x="http://www.w3.org/1999/xlink" xmlns:t="http://www.tridas.org/1.2.2">$
+\end{itemize}
 
 
 
@@ -151,11 +184,19 @@ The method for reading records from the Tellervo database is largely the same fo
 The entity type is one of: project; object; element; sample; radius; measurementSeries; derivedSeries; box; securityUser; or securityGroup.  The id attribute should be the database identifier for the entity you would like to read.  In Tellervo these are typically a UUID like this: 339d8ea6-7448-11e1-ad85-9b6d022add7a.  The format attribute should be one of: minimal; summary; standard; or comprehensive depending on how much detail you require about the entity.  Keep in mind that a comprehensive request is likely to take much longer to fulfill than a minimal request so it's best for your user, if you use the simplest request that fulfills your need.
 
 
-
-
-
-
 \section{Deleting records}
+
+The method for deleting records in Tellervo is very similar to reading records.  You simply use the request type `delete' and specify the entity type and id.  The basic template for a delete request looks like this:
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="UTF-8"?>
+<c:tellervo xmlns:c="http://www.tellervo.org/schema/1.0">
+  <c:request type="delete">
+    <c:entity type=" " id=" " />
+  </c:request>
+</c:tellervo>
+\end{lstlisting}
+
 
 
 \section{Creating records}
