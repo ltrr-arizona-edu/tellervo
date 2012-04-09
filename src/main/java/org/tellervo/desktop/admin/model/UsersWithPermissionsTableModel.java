@@ -71,17 +71,17 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
 
     		
     		WSIPermission permclone = (WSIPermission) perm.clone();
-    		permclone.getSecurityUsers().clear();
+    		permclone.getSecurityUsersAndSecurityGroups().clear();
     		
-    		for(WSISecurityUser usrOrGroup : perm.getSecurityUsers())
+    		for(Object usrOrGroup : perm.getSecurityUsersAndSecurityGroups())
     		{
     			if(usrOrGroup instanceof WSISecurityUser)
     			{
-    				permclone.getSecurityUsers().add(usrOrGroup);
+    				permclone.getSecurityUsersAndSecurityGroups().add(usrOrGroup);
     			}
     		}
     		
-    		if(permclone.getSecurityUsers().size()>0)
+    		if(permclone.getSecurityUsersAndSecurityGroups().size()>0)
     		{
     			userList.add(permclone);
     		}
@@ -134,7 +134,7 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
 
     	WSISecurityUser usr = null;
 		for(WSISecurityUser u: userDictionary){
-			WSISecurityUser userorgroup = permission.getSecurityUsers().get(0);
+			WSISecurityUser userorgroup = (WSISecurityUser) permission.getSecurityUsersAndSecurityGroups().get(0);
 			
 
 			if((userorgroup).getId().equals(u.getId())) usr = u;
@@ -160,7 +160,7 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
 	{
 		WSIPermission perm = getWSIPermissionAt(rowind);
 		
-		return (WSISecurityUser) perm.getSecurityUsers().get(0);
+		return (WSISecurityUser) perm.getSecurityUsersAndSecurityGroups().get(0);
 	}
 	
 

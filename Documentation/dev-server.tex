@@ -12,6 +12,39 @@ The Tellervo webservice is written entirely in PHP.  Like the Desktop Client, th
 
 Before making any changes to the webservice you will need to understand its architecture first.  Chapter \ref{txt:webserviceSpec} contains details of the communications specification.
 
+\subsection{Creating new series}
+
+Due to the complications arising from the virtual measurement concept, creating new series in Tellervo is necessarily more complicated than any other of the TRiDaS entities.  The workflow required to create a new series is illustrated in figure \ref{fig:creatingNewMSeries}.
+
+\begin{figure}[hbtp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{Images/CreatingNewMSeriesWorkflow.pdf}
+  \caption{Illustration of the steps that happen during the creation of a new measurement series. The stages are presented top to bottom in the approximate order in which they are executed.  The majority of the processing is done as a result of the database function createnewvmeasurement() being called by the webservice.}
+  \label{fig:creatingNewMSeries}
+\end{figure}
+
+\begin{figure}[hbtp]
+  \centering
+  %\includegraphics[width=0.8\textwidth]{Images/EditingMSeriesWorkflow.pdf}
+  \caption{Illustration of the steps that happen during the alteration of an existing measurement series. The stages are presented top to bottom in the approximate order in which they are executed.}
+  \label{fig:editingNewMSeries}
+\end{figure}
+
+\begin{figure}[hbtp]
+  \centering
+  \includegraphics[width=0.8\textwidth]{Images/CreatingNewDSeriesWorkflow.pdf}
+  \caption{Illustration of the steps that happen during the creation of a new derived series. The stages are presented top to bottom in the approximate order in which they are executed.  Depending on the type of derived series being created, a different database function is called to finish the new vmeasurement.}
+  \label{fig:creatingNewMSeries}
+\end{figure}
+
+\begin{figure}[hbtp]
+  \centering
+  %\includegraphics[width=0.8\textwidth]{Images/EditingDSeriesWorkflow.pdf}
+  \caption{Illustration of the steps that happen during the alteration of an existing derived series. The stages are presented top to bottom in the approximate order in which they are executed. Note that presently it is not possible to alter the parameters of a derived series.}
+  \label{fig:editingNewMSeries}
+\end{figure}
+
+
 
 \section{Server package}
 \label{txt:serverPackage}

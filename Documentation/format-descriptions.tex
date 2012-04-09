@@ -224,7 +224,7 @@ Other name(s)      	 & SYLPHE\\
 Type      	 	 & Text file\\
 Extension(s)      	 & txt\\
 Read/write support     	 & Read and write\\
-Reference implementation & \\
+Reference implementation & Not known\\
 Data / metadata      	 & Data and some structured metadata\\
 Calendar type		 & Gregorian\\
 Absolute dating support	 & Yes\\
@@ -308,7 +308,7 @@ Format name     	 & CATRAS\\
 Other name(s)      	 & None known\\
 Type      	 	 & Binary\\
 Extension(s)      	 & cat\\
-Read/write support     	 & Read only\\
+Read/write support     	 & Read and write\\
 Reference implementation & CATRAS\\
 Data / metadata      	 & Data and some structured metadata\\
 Calendar type		 & Gregorian\\
@@ -326,7 +326,9 @@ Original designer	 & Roland Aniol \\
 \section{Background}
 The CATRAS format \citep{catras} is the only known binary dendro data format. As such it can't be read by a simple text editor, and can't be imported by spreadsheet or database programs. The format was designed by Roland Aniol for use in his program of the same name. The binary nature of the format means the files are typically much smaller than text files containing similar data. The closed nature of the format originally meant that users were tied to the application.  The fact that users can't manually edit the file means that the validity of files is not a problem like it is with most other dendro formats.
 
-CATRAS is a closed format with no documentation. The format was originally decoded in the early 1990's and permission was granted by Aniol for a converter to be included in Henri Grissino-Mayer's CONVERT5 application on the condition that the format remained closed source. Subsequently others have independently released application and code that can read ring-width data from CATRAS files to a greater or lesser extent.
+The format was originally decoded in the early 1990's and permission was granted by Aniol for a converter to be included in Henri Grissino-Mayer's CONVERT5 application. Subsequently others have independently released application and code that can read CATRAS files to a greater or lesser extent. 
+
+Following its original release in 1983, CATRAS was updated several times, the most recent version (v4.42) was released in 2010. The code in DendroFileIOLib is based in part on Matlab, Fortran and C code of Ronald Visser, Henri Grissino-Mayer and Ian Tyers. 
 
 \section{Reading byte code}
 
@@ -334,7 +336,7 @@ Reading byte code is more complicated than reading text files. Each byte is 8-bi
 
 \subsection{Strings} Some of the bytes in CATRAS files contain character information. In this case each byte represents a letter. In java an array of bytes can be directly decoded into a string. 
 
-\subsection{Integers} As a byte can only represent 256 values, whenever an integer is required, CATRAS stores them as byte pairs. Each byte pair consists of a least significant byte (LSB) and a most significant byte (MSB). The order that they appear in files typically varies between platforms and is known as 'endianness'. As CATRAS solely runs of Microsoft (x86) processors we can safely assume that all CATRAS files will be using little-endian (i.e. LSB MSB). The counting in a byte pair therefore works as follows: 
+\subsection{Integers} As a byte can only represent 256 values, whenever an integer is required it is stored as a byte pair. Each byte pair consists of a least significant byte (LSB) and a most significant byte (MSB). The order that they appear in files typically varies between platforms and is known as 'endianness'. As CATRAS solely runs on Microsoft (x86) processors we can safely assume that all CATRAS files will be using little-endian (i.e. LSB MSB). The counting in a byte pair therefore works as follows: 
 
 \begin{table*}[htbp]
 \begin{center}
@@ -342,10 +344,10 @@ Reading byte code is more complicated than reading text files. Each byte is 8-bi
   \toprule
 Value & LSB & MSB\\
 \midrule
-0 & 0 & 0\\
 1 & 1 & 0\\
+2 & 2 & 0\\
+3 & 3 & 0\\
 \dots & \dots & \dots\\
-255 & 255 & 0\\
 256 & 0 & 1\\
 257 & 1 & 1\\
 258 & 2 & 1\\
@@ -355,85 +357,167 @@ Value & LSB & MSB\\
 \end{center}
 \end{table*}
 
-A byte pair can therefore store 256x256=65536 values (more than enough for most number fields). Matters are complicated though by the need to store negative numbers. In CATRAS pairs with an MSB<=128 are positive, while pairs with an MSB ranging from 255 to 128 (counting backwards) represent negative values:
+A byte pair can therefore store 256x256=65536 values (more than enough for most number fields). 
 
-\begin{table*}[htbp]
+\subsection{Real numbers}
+
+Statistical values--such as arithmetic mean, standard deviation, first-order autocorrelation, and mean sensitivity--are given for all the ring widths and optionally for the ring widths in a restricted part of the series. The real numbers are given in standard format defined by the IEEE 754 Standard for Floating-Point Arithmetic.
+
+\subsection{Categories}
+
+Categories are typically recorded as single bytes as most categories have just a few possible values. They can therefore be conceptualized as being integers where 0=first option, 1=second option etc. The exception to this is for species because there are more than 256 species. In this case, a byte pair is used in exactly the same way as described for integers above. The only problem for species is that the codes are unique to each laboratory and refer to values enumerated in a separate '.wnm' file. Without this dictionary the species code is of little use. 
+
+\subsection{Dates}
+The date of the creation of the series and the date of the last amendment to the series are stored as three single bytes each, one for day, one for month, and one for year. The year is stored with an offset of 1900. Therefore numbers from 1 to 100 belong to the 20th century (calendar year 1901 to 2000) and numbers from 101 to 200 belong to the 21th century (calendar year 2001 to 2100). 
+
+\section{Metadata}
+
+The first 128 bytes contain the file header information and the remainder of the file contains the ring-width data and sample depth data (if series is a chronology). If a series is only partly suitable for further analysis then this indicated in bytes 49--52. The quality code at position 58 is an overall rating for the series. This helps to exclude poor series from analyses other than dating. 
+
+\begin{table}[htbp]
 \begin{center}
-\begin{tabular*}{5cm}{@{\extracolsep{\fill}} r r r }
+\begin{tabular*}{\textwidth}{r c l p{8cm} }
   \toprule
-Value & LSB & MSB\\
+Bytes & Data type & Field & Description \\
 \midrule
--1 & 255 & 255 \\
--2 & 254 & 255 \\
--3 & 253 & 255 \\
--4 & 252 & 255 \\
-\dots & \dots & \dots\\
+1--32	& C & Series name & \\
+33--40 & C &  Series code. & Must be upper case and match file name. \\
+41--44 & C &File extension & \\
+45--46 & I & Series length & \\
+47--48 & I & Sapwood length &\\
+49--50 & I & First valid ring & Used if a portion of the series is unreliable \\
+51--52 & I & Last valid ring & Used if a portion of the series is unreliable \\
+53       & B & Scope & 1=pith; 2=waldkante; 3=pith to waldkante; 4=bark; 5=pith to bark \\
+54       & B & State of last ring & 0=last ring complete; 1=last ring only early wood \\
+55--56 & I & First ring & Calendar year of first ring: 0=not dated; <0=B.C.; >0=A.D. \\
+57       & B &  & Number of valid characters in series name\\
+58       & B & Quality code& 0=not known; 1=very good \ldots 5=uncertain \\
+59--60 & I & Species code & Requires an associated catras.wnm file \\
+61--63 & D & Creation date & DMY, Y offset 1900 \\
+64--66 & D & Last updated & DMY, Y offset 1900 \\
+67       & B & Real number format & normally 1=IEEE \\
+68       & B & Type of series & 0=ring widths; 1=early wood widths; 2=late wood widths\\
+69--81 &  &  & Reserved \\
+82       & C & Special sources & A=averaged; D=digitized; E=extern; H=manual input \\
+83       & B & Protection & 0=no protection; 1=not to be deleted; 2=not to be amended \\
+84       & B & File type & 0=raw; 1=tree curve; 2=chronology \\
+85--88 & C & Creator & Initials of creator\\
+\midrule
+\multicolumn{4}{l}{\textit{Statistics for total series}} \\
+89--92 & R & &Arithmetic mean  \\
+93--95 & R & &Standard deviation  \\
+96--100 & R & &First-order autocorrelation \\
+101--104 & R & &Mean sensitivity  \\
+105--106 & I & &Number of rings for mean  \\
+107--108 & I & &Number of rings for autocorrelation  \\
+\midrule
+\multicolumn{4}{l}{\textit{Statistics for restricted part of series}} \\
+109--112 & R & &Arithmetic mean  \\
+113--116 & R & &Standard deviation  \\
+117--120 & R & &First-order autocorrelation \\
+121--124 & R & &Mean sensitivity  \\
+125--126 & I & &Number of rings for mean  \\
+127--128 & I & &Number of rings for autocorrelation  \\
+\bottomrule
+\end{tabular*}
+\end{center}
+\label{tbl:catrasMetadata}
+\caption{Summary of the metadata portion of CATRAS files.  Data types are: strings (C); integers (I); real numbers (R); binary categories (B); and dates (D).  Bytes 89--128 contain descriptive statistics for the file.  Bytes 89--108 concern the entire series, and bytes 109--128 a subset of the series where some poor quality data (defined in bytes 49--52) have been excluded.}
+\end{table}
+
+
+%\begin{itemize*}
+%\item 1-32 - Series name
+%\item  33-40 - Series code
+%\item  41-44 - File extension
+%\item  45-46 - Series length
+%\item  47-48 - Sapwood length
+%\item  49-50 - Start year
+%\item  51-52 - End year
+%\item  53 - 1=pith 2=waldkante 3=pith to waldkante
+%\item  54 - 1 = ew only last ring
+%\item  55-56 - Start year
+%\item  59-60 species also needs a catras.wnm file
+%\item  61-63 - Creation date
+%\item  64-66 - Amended date
+%\item  67 - Sapwood
+%\item  68 - 1=valid stats
+%\item  69-75 - dated?
+%\item  84 - 0=raw 1=treecurve 2=chronology
+%\item  85-86 - User id
+%\item  89-92 - Average width
+%\item  93-95 - Standard deviation
+%\item  96-100 - Autocorrelation
+%\item  101-104 - Sensitivity 
+%\end{itemize*}
+
+
+\section{Data}
+
+The remaining bytes in the file contain the actual data values stored as integer byte pairs. All data are stored in multiples of 128 bytes. If the number of data bytes given in the header at position 45--46 is not a multiple of 128 the file is padded with extra bytes accordingly. Padded bytes should be ignored. 
+
+\subsection{Ring widths}
+
+Ring widths are stored in hundredths of a millimetre in the same order as the tree had been grown. When working with archaeological or geological wood it might occur that a particular ring is damaged and therefore its width cannot be determined precisely. To indicate that fact and to exclude this particular ring from further calculations its measured width is stored negative. In the CATRAS program a negative ring width will be taken into account neither in the calculation of tree curves and chronologies nor in the statistics or in comparisons with other series.
+
+\subsection{Chronologies}
+
+Chronology files are indicated at position 84 in the file header and contain additional data in respect to raw data files. After the block of ring width data three additional data blocks follow. Firstly the number of ring widths averaged at a particular position follows (the sample depth). Then the number of series with the same trend between subsequent ring widths at a particular position follows. Then the number of series with the opposite trend between subsequent ring widths at a particular position follows. All data blocks are stored in multiples of 128 bytes. If the number of data bytes given in the header at position 45-46 is not a multiple of 128 each block is padded with extra bytes accordingly. Padded bytes should be ignored. 
+
+
+
+\index{File formats!CATRAS|)}
+
+
+\chapter{Cracow Binary Format}
+\index{File formats!Cracow|(}
+\begin{table*}[htbp]
+\label{summary:csv}
+\begin{center}
+\begin{tabular*}{15cm}{ l @{\extracolsep{\fill}} p{9cm} }
+  \toprule
+
+Format name     	 & Cracow Binary Format\\
+Other name(s)      	 & Cracow \\
+Type      	 	 & Binary file\\
+Extension(s)      	 & AVR and AVS\\
+Read/write support     	 & Read  \\
+Reference implementation & Unknown\\
+Data / metadata      	 & Data only\\
+Calendar type		 & n/a\\
+Absolute dating support	 & No\\
+Undated series support   & Yes\\
+Relative dating support  & No\\
+Multi series support	 & No\\
+Original designer	 & Unknown\\
+
 \bottomrule
 \end{tabular*}
 \end{center}
 \end{table*}
 
+\section{Description}
 
-\subsection{Categories}
+This is a binary format used primarily in Polish labs (e.g. AGH-UST in Cracow,
+Universities in Szczecin, Torun and Katowice).  It is a simple data-only format with no support for calendars or dating.  There are two types of file (AVR and AVS) but the format for them is identical, the only difference being that the AVR extension indicates the file is a measurement series file and AVS extension indicates a chronology file.
 
-Categories are typically recorded as single bytes as most categories have just a few possible values. They can therefore be conceptualised as being integers where 0=first option, 1=second option etc. The exception to this is for species because there are more than 256 species. In this case, a byte pair is used in exactly the same way as described for integers above. The only problem for species is that the codes are unique to each laboratory and refer to values enumerated in a separate '.wnm' file. Without this dictionary the species code is of little use. 
+The file begins with a six character header:
 
-\subsection{Dates}
+\begin{enumerate*}
+ \item Zero
+ \item Ring number where sapwood begins
+ \item Zero
+ \item Ring number where sapwood ends (also length of sample)
+ \item Zero
+ \item Zero
+\end{enumerate*}
 
-Dates are stored as three single bytes, one for day, one for month, one for year. With only 256 values available for 'year', all dates are stored with 2 digit years e.g. 25/12/84. When reading CATRAS files all years >70 are therefore treated as 20th century, whereas years <70 are treated as 21st century. This is an arbitrary decision for use in this library as CATRAS does not care either way. 
+If there is no sapwood recorded, then bytes 2 and 4 will both be zero.  The zero bytes at positions 1, 3, 5 and 6 can be used as a signature to check the file is in Cracow format.
 
-\section{Metadata}
-
-The first 128 bytes contain the file header information and the remainder of the file contains the ring-width data and sample depth data. Our current understanding of the header bytes is as follows but I'm not convinced that these are all correct. Deciphering these requires painstaking work because we must try to ascertain how each byte is being used (e.g. as a byte pair, single byte or as a string): 
-
-\begin{itemize*}
- \item 1-32 - Series name
-\item  33-40 - Series code
-\item  41-44 - File extension
-\item  45-46 - Series length
-\item  47-48 - Sapwood length
-\item  49-50 - Start year
-\item  51-52 - End year
-\item  53 - 1=pith 2=waldkante 3=pith to waldkante
-\item  54 - 1 = ew only last ring
-\item  55-56 - Start year
-\item  59-60 species also needs a catras.wnm file
-\item  61-63 - Creation date
-\item  64-66 - Amended date
-\item  67 - Sapwood
-\item  68 - 1=valid stats
-\item  69-75 - dated?
-\item  84 - 0=raw 1=treecurve 2=chronology
-\item  85-86 - User id
-\item  89-92 - Average width
-\item  93-95 - Standard deviation
-\item  96-100 - Autocorrelation
-\item  101-104 - Sensitivity 
-\end{itemize*}
+Following the six header bytes, there comes the ring width values.   Each ring value is stored in two bytes, the second containing the values from 0 to 99 and the first contains the values >100.  For instance the ring value 345 would be stored in two values, 3 and 45.  
 
 
-\section{Data}
-
-The remaining bytes in the file contain the actual data values stored as integer byte pairs. It appears that older version of CATRAS included one or more padding values of -1. These values should be ignored. The end of the data values are indicated by a stop value of 999.
-
-Following the ring-width data values there are 42 bytes of unknown meaning. These are then followed by byte pairs representing the counts/sample depth for each ring if the series is a chronology. 
-
-\section{Unknown bytes}
-There are a number of bytes in both the header and data sections that are are unaccounted for and are therefore likely to contain data that we are ignoring. For this reason although we could attempt to create CATRAS files from what we know we can't be sure they would be valid: 
-
-\begin{itemize*}
- \item Header
-   \begin{itemize*}
-   \item 57-58
-   \item 69-82
-   \item 105-128
-   \end{itemize*}
-  \item Data
-   \begin{itemize*}
-    \item 0-42 following end of data marker    
-   \end{itemize*}
-\end{itemize*}
-\index{File formats!CATRAS|)}
+\index{File formats!Cracow|)}
 
 \chapter{Comma Separated Values}
 \index{File formats!CSV|(}
@@ -472,7 +556,7 @@ Support for CSV files in TRiCYCLE is limited to a particular layout of data.  Th
 \begin{itemize*}
  \item Row 1 - Header names for each column
  \item Column A - Year values
- \item Column B+ - One column for each series containing values in millimetres. Cells are left empty if no data is available for a series because it does not extend to a particular year. Data must be continuous for each series, so missing/unmeasured rings should be included as zero.
+ \item Column B+ - One column for each series containing data values. Cells are left empty if no data is available for a series because it does not extend to a particular year. Data must be continuous for each series, so missing/unmeasured rings should be included as zero.
 \end{itemize*}
 
 \newpage
@@ -639,7 +723,7 @@ G:\DATA\TRB\TRB1B.REC
   \toprule
 
 Format name     	 & DendroDB \\
-Other name(s)      	 & \\
+Other name(s)      	 & None known\\
 Type      	 	 & Text file\\
 Extension(s)      	 & dat \\
 Read/write support     	 & Read only\\
@@ -713,7 +797,7 @@ Tree Core Year Latewood width
 Format name     	 & Heidelberg\\
 Other name(s)      	 & TSAP, FH\\
 Type      	 	 & Text file\\
-Extension(s)      	 & .fh\\
+Extension(s)      	 & fh\\
 Read/write support     	 & Read and write\\
 Reference implementation & TSAP-Win\\
 Data / metadata      	 & Data and extensible metadata\\
@@ -968,6 +1052,140 @@ DATA:Double
 \index{File formats!Heidelberg|)}
 
 
+\chapter{KINSYS-KS}
+\index{File formats!KINSYS|(}
+\begin{table*}[htbp]
+\label{summary:kinsys}
+\begin{center}
+\begin{tabular*}{15cm}{ l @{\extracolsep{\fill}} p{9cm} }
+  \toprule
+
+Format name     	 & KINSYS-KS \\
+Other name(s)      	 & KINSYS, KINSYS/KS-Sauvala, MIT \\
+Type      	 	 & Text file \\
+Extension(s)      	 & .MIT \\
+Read/write support     	 & Read \\
+Reference implementation & KINSYS-KS \\
+Data / metadata      	 & Data and structured metadata \\
+Calendar type		 & Gregorian \\
+Absolute dating support	 & Yes \\
+Undated series support   & No \\
+Relative dating support  & No \\
+Multi series support	 & Yes \\
+Original designer	 & Unknown \\
+
+\bottomrule
+\end{tabular*}
+\end{center}
+\end{table*}
+
+
+\section{Description}
+The KINSYS-KS format was designed for use with the application of the same name at the Finnish Forest Research Institute -- Metla.  The format is for raw measurement series and contains both data and structured metadata.  The primary focus of the metadata fields included are for forestry sampling.
+
+The format allows for multiple data series within a single file, with each series beginning with a 14 line header, followed by multiple data lines, and finishing with the line \verb|*** DATA END ***|.  
+
+The first line of the header contains the date and time the file was created.  All subsequent header lines are numbered \#0, \#1, \#2 etc and contain one or more metadata fields delimited with a backslash as shown below:
+
+\begin{itemize*}
+ \item Measurement timestamp
+ \item \#0 - Project code / Project name / Responsible person
+ \item \#1 - Sampling date
+ \item \#2 - Ycoord / Xcoord / Elevation 
+ \item \#3 - Experiment / Period of measurement / Location
+ \item \#4 - Plot / Subplot
+ \item \#5 - Measurement series code / ID Code
+ \item \#6 - Tree species code
+ \item \#7 - Last measurement year / Subsample code
+ \item \#8 - Incomplete growth / estimated age increase / Last ring type
+ \item \#9 - Sampling azimuth / measurement direction / Sample height / Sample height code
+ \item \#10 - User defined parameters
+ \item \#11 - Number of tree rings in sample / Data type / Columns / Number of decimals
+ \item \#12 - Number of tree rings measured
+\end{itemize*}
+
+The meanings and formats of these fields are as follows:
+
+\begin{description*}
+ \item[Measurement timestamp] - This is the date and time that the file was created.  It is in the format dd-mm-yy hh:mm:ss
+ \item[Project code] - Administrative code for the project
+ \item[Project name] - Administrative name for the project
+ \item[Responsible person] - Person responsible for the project
+ \item[Sampling date] - Date the sample was taken formated dd.mm.yy
+ \item[Ycoord] - Y coordinate of the location of the site in Finnish KKJ Uniform Grid coordinates
+ \item[Xcoord]- X coordinate of the location of the site in Finnish KKJ Uniform Grid coordinates
+ \item[Elevation] - Elevation of the site in metres
+ \item[Experiment] - 
+ \item[Period of measurement] - 
+ \item[Location] - Name of site
+ \item[Plot] - Code number for the plot being sampled
+ \item[Subplot] - Code number of the sub-plot being sampled
+ \item[Measurement series code] - Code for the measurement series
+ \item[ID Code] - 
+ \item[Tree species code] - Species code using either the ITRDB or VMI Finnish National Forest Inventory schemes
+ \item[Last measurement year] - Calendar year for the last measurement 
+ \item[Subsample code] - Code for if the sample is broken into pieces - marked a,b,c etc.  `x' marks a problematic samples where there are difficulties in analysis
+ \item[Incomplete growth] - If the last incomplete growth ring is measured that this is set to `1', otherwise it is `0'
+ \item[Estimated age increase] - Estimate for the number of tree-rings between the birth of the tree and the pith at the sample height.  Taken from VMI correction tables produced on a site and regional basis
+ \item[Last ring type] - If the last incomplete ring is earlywood then this is marked as '1', otherwise it is marked as `2'
+ \item[Sampling azimuth] - Either a letter code for the radii measured, or an angle in degrees of the azimuth along the measurement radius
+ \item[Measurement direction] - Pith-to-bark = 0, Bark-to-pith = 1
+ \item[Sample height] - Height at which sample was taken
+ \item[Height code] - 
+ \item[User defined parameters] - Free-text information
+ \item[Number of tree rings in sample] - Number of rings in sample including those not measured.  If all rings were measured then this is indicated with a full-stop
+ \item[Data type] - Coded as: 90=ring-width, 91=height shoots, 92=volume growths, 93=earlywood, 94=latewood.  Defaults to 90=ring-width.
+ \item[Column with] - Number of digits the data is stored in. Default=3.
+ \item[Number of decimals] - Number of decimal places the values are stored in.  Default=2;
+ \item[Number of tree rings measured] - Number of rings that have been measured.
+\end{description*}
+
+\section{Example file}
+
+\begin{lstlisting}
+30-05-09 11:09:05
+# 0 Project Index/Timonen
+# 1 30.05.2009
+# 2 4905692/7596282/365
+# 3 100//Kalmankaltio
+# 4 110/1
+# 5 19/6787
+# 6 1
+# 7 2008
+# 8 0
+# 9 a
+# 10 Fire scars
+# 11 .
+# 12 25
+57
+57
+74
+76
+57
+51
+59
+90
+82
+95
+67
+78
+99
+79
+87
+112
+87
+88
+81
+77
+94
+110
+81
+108
+129
+*** DATA END ***
+\end{lstlisting}
+
+
 \chapter{Microsoft Excel 97/2000/XP}
 \index{File formats!Microsoft Excel 97/2000/XP|(}
 \index{File formats!Binary Interchange Format|see{Microsoft Excel 97/2000/XP}}
@@ -1004,7 +1222,7 @@ Although Excel files can contain multiple sheets in a workbook, only the first s
 \begin{itemize*}
  \item Row 1 - Header names for each column
  \item Column A - Year values
- \item Column B+ - One column for each series containing values in millimetres. Cells are left empty if no data is available for a series because it does not extend to a particular year. Data must be continuous for each series, so missing/unmeasured rings should be included as zero.
+ \item Column B+ - One column for each series containing data values. Cells are left empty if no data is available for a series because it does not extend to a particular year. Data must be continuous for each series, so missing/unmeasured rings should be included as zero.
 \end{itemize*}
 
 \section{Example file}
@@ -1052,7 +1270,7 @@ The layout of the data sheet should be just as for the Excel 97/2000/XP format:
 \begin{itemize*}
  \item Row 1 - Header names for each column
  \item Column A - Year values
- \item Column B+ - One column for each series containing values in millimetres. Cells are left empty if no data is available for a series because it does not extend to a particular year. Data must be continuous for each series, so missing/unmeasured rings should be included as zero.
+ \item Column B+ - One column for each series containing data values. Cells are left empty if no data is available for a series because it does not extend to a particular year. Data must be continuous for each series, so missing/unmeasured rings should be included as zero.
 \end{itemize*}
 
 See the screenshot in the Microsoft Excel 97/2000/XP format to see how an example of how the spreadsheet should look.
@@ -1150,7 +1368,7 @@ Support for ODF spreadsheets in TRiCYCLE is necessarily limited to a particular 
 \begin{itemize*}
  \item Row 1 - Header names for each column
  \item Column A - Year values
- \item Column B+ - One column for each series containing values in millimetres. Cells are left empty if no data is available for a series because it does not extend to a particular year. Data must be continuous for each series, so missing/unmeasured rings should be included as zero.
+ \item Column B+ - One column for each series containing data values. Cells are left empty if no data is available for a series because it does not extend to a particular year. Data must be continuous for each series, so missing/unmeasured rings should be included as zero.
 \end{itemize*}
 
 Please see the Excel section for a screenshot of how an ODF spreadsheet should look.
@@ -1276,8 +1494,8 @@ Reference implementation & PAST4\\
 Data / metadata      	 & Data and some structured metadata\\
 Calendar type		 & Gregorian\\
 Absolute dating support	 & Yes\\
-Undated series support   & \\
-Relative dating support  & \\
+Undated series support   & No \\
+Relative dating support  & No \\
 Multi series support	 & Yes\\
 Original designer	 & Bernhard Knibbe \\
 
@@ -1454,7 +1672,7 @@ PAST4 contains an option for enabling/disabling the year 0 but it does not recor
 Format name     	 & Sheffield\\
 Other name(s)      	 & D Format\\
 Type      	 	 & Text file\\
-Extension(s)      	 & .d\\
+Extension(s)      	 & d\\
 Read/write support     	 & Read and write\\
 Reference implementation & Dendro for Windows\\
 Data / metadata      	 & Data and some structured metadata\\
@@ -1609,7 +1827,7 @@ Other name(s)      	 & Instrument format\\
 Type      	 	 & Text file\\
 Extension(s)      	 & txt\\
 Read/write support     	 & Read and write\\
-Reference implementation & \\
+Reference implementation & Not known\\
 Data / metadata      	 & Data only\\
 Calendar type		 & n/a\\
 Absolute dating support	 & No\\
@@ -1863,7 +2081,7 @@ For a full description of the standard see \citet{tridas}.
 Format name     	 & TRIMS\\
 Other name(s)      	 & None known\\
 Type      	 	 & Text file\\
-Extension(s)      	 & .rw\\
+Extension(s)      	 & rw\\
 Read/write support     	 & Read and write\\
 Reference implementation & \\
 Data / metadata      	 & Data only\\
@@ -2195,7 +2413,7 @@ The example below therefore means there are 26 data values per line each consist
 Format name     	 & VFormat\\
 Other name(s)      	 & OJ Format\\
 Type      	 	 & Text file\\
-Extension(s)      	 & Various depending on data type but commonly .!oj\\
+Extension(s)      	 & Various depending on data type but commonly !oj\\
 Read/write support     	 & Read and write\\
 Reference implementation & VFormat\\
 Data / metadata      	 & Data with some structure metadata\\
@@ -2323,7 +2541,7 @@ G1101050.!OJ/S20105_0.!OJ/_
   \toprule
 
 Format name     	 & WinDENDRO\\
-Other name(s)      	 & \\
+Other name(s)      	 & None known\\
 Type      	 	 & Text file\\
 Extension(s)      	 & txt\\
 Read/write support     	 & Read only\\

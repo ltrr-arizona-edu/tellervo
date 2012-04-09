@@ -1,11 +1,16 @@
 \chapter{Webservice specifications}
 \label{txt:webserviceSpec}
 
-The Tellervo database is accessed solely through the webservice interface.  A webservice is an interface designed to be accessed by programs that send requests and receive responses.  Tellervo uses a style of HTTP+POX (Plain Old XML) to send and receive requests via a HTTP POST.  In simple terms the Tellervo client sends an XML document that describes the request via POST to the Tellervo server.  The server then reads the XML request, performs the request and then compiles the information that has been requested, finally returning the information to the client as another XML document.  The syntax of the XML document containing the request and response is determined by the Tellervo XML schema and makes heavy use of the TRiDaS XML schema for describing dendrochronological entities.
-
-The Tellervo schema is the final authority on what is allowed in a request or response so if you find a conflict between this documentation and the schema then it is most likely because the documentation is out-of-date, or it's simply incorrect.  As you become familiar with the schema you'll probably find it easier to refer to it rather than this documentation to understand what is expecting.
-
 This chapter outlines the basic syntax required for talking to the Tellero webservice and is largely aimed at developers who want to create new clients to interact with the Tellervo server.
+
+The Tellervo database is accessed solely through the webservice interface.  A webservice is an interface designed to be accessed by programs that send requests and receive responses.  Tellervo uses a style of HTTP+POX (Plain Old XML) to send and receive requests via an HTTP POST.  In simple terms the Tellervo client sends an XML document that describes the request via POST to the Tellervo server.  The server then reads the XML request, performs the request and then compiles the information that has been requested, finally returning the information to the client as another XML document.  The syntax of the XML document containing the request and response is determined by the Tellervo XML schema and makes heavy use of the TRiDaS XML schema for describing dendrochronological entities.
+
+The Tellervo schema is the final authority on what is allowed in a request or response so if you find a conflict between this documentation and the schema then it is most likely because the documentation is out-of-date, or it's simply incorrect.  As you become familiar with the schema you'll probably find it easier to refer to it rather than this documentation to understand what is expected.
+
+  
+
+
+\tip{One of the best ways of understanding the structure of requests and reponses is to use the XML monitor in the Tellervo Help menu to view the documents being sent and received by the Tellervo client. }
 
 \section{Basics of sending requests}
 The webservice accepts requests via the POST mechanism of HTTP.  The simplest way to understand this is to think of this as a standard webpage.  If you add the following HTML code to a webpage it will give you a simple form.  If you type your XML request document into the form and click submit the Tellervo server will respond with an XML document containing the answer to your query.
@@ -104,15 +109,38 @@ If the majority of your XML file contains tags from one namespace, with just a h
 \end{itemize}
 
 
+\subsection{Errors and warnings}
+\label{txt:errorsandwarnings}
+The webservice uses two tags within the header section of the return document to inform about errors and warnings.  These tags are the status and message tags.  The status tag can be set to: OK; Notice; Warning; or Error.  
+
+When there is an error, the message tag includes a code attribute along with the actual error message.  The list of possible error codes is provided in appendix \ref{txt:errorcodes}.  An example of a typical error response is shown below:
+
+\begin{lstlisting}
+<?xml version="1.0" encoding="UTF-8"?>
+<c:tellervo xmlns:c="http://www.tellervo.org/schema/1.0">
+  <c:header>
+    <c:securityUser id="1" username="admin" firstName="Admin" lastName="user" />
+    <c:webserviceVersion>1.1.0</c:webserviceVersion>
+    <c:clientVersion>Tellervo WSI null (httpcore 4.1; HttpClient 4.1.1; ts null.${revisionnum})</c:clientVersion>
+    <c:requestDate>2012-04-02T15:01:59-04:00</c:requestDate>
+    <c:queryTime unit="seconds">0.07</c:queryTime>
+    <c:requestUrl>/tellervo/</c:requestUrl>
+    <c:requestType>delete</c:requestType>
+    <c:status>Error</c:status>
+    <c:message code="907">Foreign key violation.  You must delete all entities associated with an object before deleting the object itself.</c:message>
+  </c:header>
+</c:tellervo>
+\end{lstlisting}
+
 
 \section{Authentication requests}
-
+\index{Authentication}
 There are two methods for authenticating yourself against the Tellervo server: plain and secure.  We \emph{strongly} recommend you use the secure method as the user name and password are sent in plain text over the internet when using the plain method.  This goes against so much of the hard work we've put in to making the system secure.  It is quite likely that we will disable the plain authentication method by default in the future.  For now it will be left in place as it makes testing new clients much easier.  
 
 For further details and discussion about the authentication design please see section \ref{txt:authentication}, page \pageref{txt:authentication}.
 
 \subsection{Plain authentication}
-
+\index{Authentication!Plain}
 If you \emph{still} want to go ahead and use plain authentication despite all the risks, then this is how you do it.
 
 \begin{lstlisting}
@@ -125,7 +153,7 @@ If you \emph{still} want to go ahead and use plain authentication despite all th
 \end{lstlisting}
 
 \subsection{Secure authentication}
-
+\index{Authentication!Secure}
 Although this is much more secure, it is also somewhat more complicated because it involves a challenge and response scheme using cryptographic nonces and hashes.  
 
 The first step is for the client to request a nonce from the server.  This is done as follows:
@@ -151,10 +179,10 @@ The returned document will include a nonce header tag like this: \lstinline$<c:n
 The authenticate attributes are filled as follows.  The username is simply the username for a user with permission to access the Tellervo server.  The cnonce (client nonce) is a random string of your choosing that is used in the hash.  The snonce (server nonce) is the nonce you've just obtained from the server.  The seq (sequence) is the value also obtained from the server.  Finally the hash is an MD5 hash of ``username:md5hashofpassword:snonce:cnonce''.  If all is well the server will respond with the details of the person that is logging in.
 
 \subsection{Cookies and sessions}
-
+\index{Cookies}
 The webservice uses a session cookie so that the user doesn't need to authenticate with each request.  The cookie lasts for up to 30 minutes of inactivity, after which point the server will request the user to re-authenticate before it will serve a request.  Any client attempting to access the Tellervo server will therefore need to handle cookies and be ready to respond to requests to re-authenticate.  
 
-If a session does time out, a request to the server will result in an response with the header containing an error status with code `102' (see appendix \ref{txt:errorcodes}) and the nonce tag ready for the client to re-authenticate.  
+If a session does time out, a request to the server will result in an response with the header containing an error status with code `102' (see section \ref{txt:errorsandwarnings} and appendix \ref{txt:errorcodes}) and the nonce tag ready for the client to re-authenticate.  
 
 \subsection{Logout}
 
@@ -197,58 +225,52 @@ The method for deleting records in Tellervo is very similar to reading records. 
 </c:tellervo>
 \end{lstlisting}
 
+Cascading deletes are not permitted in Tellervom therefore only entities that are not used by other entities in the database can be deleted.  For example, you cannot delete an object which has elements associated, you would need to delete in the elements first.  Attempts to delete an entity which still has associated records will cause the webservice to return a `907-Foreign key violation' error.
+
 
 
 \section{Creating records}
 
+New records are are typically created by passing a TRiDaS representation of the entity you'd like to create inside a `create' request.  The basic template of a create request looks like this:
 
+\begin{lstlisting}
+<?xml version="1.0" encoding="UTF-8"?>
+<tellervo xmlns="http://www.tellervo.org/schema/1.0" xmlns:tridas="http://www.tridas.org/1.2.2">
+  <request type="create" parentEntityID=" ">
+    <tridas:sample>
+      ...
+    </tridas:sample>
+  </request>
+</tellervo>
+\end{lstlisting}
 
+The request tag should include the parentEntityID attribute with the ID of the parent entity in the database e.g.\ the TRiDaS element to which a sample belongs for instance.  Please note that there are a number of mandatory fields for each TRiDaS entity.  These must be populated otherwise the webservice will return a `902-Missing user parameter' error.
 
-
-
-\subsection{Creating new series}
-
-Due to the complications arising from the virtual measurement concept, creating new series in Tellervo is necessarily more complicated than any other of the TRiDaS entities.  The workflow required to create a new series is illustrated in figure \ref{fig:creatingNewMSeries}.
-
-\begin{figure}[hbtp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{Images/CreatingNewMSeriesWorkflow.pdf}
-  \caption{Illustration of the steps that happen during the creation of a new measurement series. The stages are presented top to bottom in the approximate order in which they are executed.  The majority of the processing is done as a result of the database function createnewvmeasurement() being called by the webservice.}
-  \label{fig:creatingNewMSeries}
-\end{figure}
-
-\begin{figure}[hbtp]
-  \centering
-  %\includegraphics[width=0.8\textwidth]{Images/EditingMSeriesWorkflow.pdf}
-  \caption{Illustration of the steps that happen during the alteration of an existing measurement series. The stages are presented top to bottom in the approximate order in which they are executed.}
-  \label{fig:editingNewMSeries}
-\end{figure}
-
-\begin{figure}[hbtp]
-  \centering
-  \includegraphics[width=0.8\textwidth]{Images/CreatingNewDSeriesWorkflow.pdf}
-  \caption{Illustration of the steps that happen during the creation of a new derived series. The stages are presented top to bottom in the approximate order in which they are executed.  Depending on the type of derived series being created, a different database function is called to finish the new vmeasurement.}
-  \label{fig:creatingNewMSeries}
-\end{figure}
-
-\begin{figure}[hbtp]
-  \centering
-  %\includegraphics[width=0.8\textwidth]{Images/EditingDSeriesWorkflow.pdf}
-  \caption{Illustration of the steps that happen during the alteration of an existing derived series. The stages are presented top to bottom in the approximate order in which they are executed. Note that presently it is not possible to alter the parameters of a derived series.}
-  \label{fig:editingNewMSeries}
-\end{figure}
-
+In addition to handling the standard TRiDaS project, object, element, sample, radius, measurementSeries, derivedSeries entities, the Tellervo webservice can also create some Tellervo specific records.  These are securityUser, securityGroup, box and permission.  How to create and alter permissions records is described in more detail in section \ref{txt:wsperms} as they are more complicated, but securityUser, securityGroup and boxes are handled in the same way as TRiDaS entities.
 
 
 \section{Updating records}
 
+Updating existing records in Tellervo is done in much the same way as creating records.  The basic template is as follows:
 
+\begin{lstlisting}
+<?xml version="1.0" encoding="UTF-8"?>
+<c:tellervo xmlns:c="http://www.tellervo.org/schema/1.0" xmlns:tridas="http://www.tridas.org/1.2.2">
+  <c:request type="update">
+    <tridas:element>
+      ...
+    </tridas:element>
+  </c:request>
+</c:tellervo>
+\end{lstlisting}
+
+The main difference is that you \emph{must} specify the TRiDaS \lstinline$<identifier>$ tag containing the ID of the record you are trying to update. 
 
 
 \section{Reading and setting permissions}
+\label{txt:wsperms}
 \index{Developing!Permissions}
 \index{Permissions}
-
 
 
 
@@ -284,8 +306,8 @@ Due to the complications arising from the virtual measurement concept, creating 
       <permissionToUpdate>false</permissionToUpdate>
       <permissionToDelete>false</permissionToDelete>
       <entity type="object" id="136a70a6-566b-546b-a3ae-c48cb046e4cd"/>
-      <securityUser id="1"/>
-      <securityUser id="3"/>
+      <securityGroup id="1"/>
+      <securityGroup id="3"/>
   </permission>
 </request>
 \end{lstlisting}
@@ -295,7 +317,7 @@ Due to the complications arising from the virtual measurement concept, creating 
 <request type="delete">
   <permission>
       <entity type="object" id="136a70a6-566b-546b-a3ae-c48cb046e4cd"/>
-      <securityUser id="1"/>
+      <securityGroup id="1"/>
   </permission>
 </request>
 \end{lstlisting}

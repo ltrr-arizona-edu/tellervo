@@ -1,6 +1,5 @@
 package org.tellervo.desktop.admin.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
@@ -8,14 +7,12 @@ import javax.swing.table.AbstractTableModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.schema.WSIPermission;
-import org.tellervo.schema.WSISecurityGroup;
-import org.tellervo.schema.WSISecurityUser;
-import org.tellervo.schema.WSIPermission.Entity;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.PermissionsResource;
+import org.tellervo.schema.WSIPermission;
+import org.tellervo.schema.WSISecurityGroup;
 
 
 public class GroupsWithPermissionsTableModel extends AbstractTableModel {
@@ -44,16 +41,15 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
     	for(WSIPermission perm : list)
     	{
     		WSIPermission permclone = (WSIPermission) perm.clone();
-    		permclone.getSecurityUsers().clear();
-    		permclone.getSecurityGroups().clear();
+    		permclone.getSecurityUsersAndSecurityGroups().clear();
     		
-    		for(WSISecurityGroup usrOrGroup : perm.getSecurityGroups())
+    		for(Object usrOrGroup : perm.getSecurityUsersAndSecurityGroups())
     		{
 
-    			permclone.getSecurityGroups().add(usrOrGroup);
+    			permclone.getSecurityUsersAndSecurityGroups().add(usrOrGroup);
     			
     		}
-    		if(permclone.getSecurityGroups().size()>0)
+    		if(permclone.getSecurityUsersAndSecurityGroups().size()>0)
     		{
     			groupList.add(permclone);
     		}
@@ -137,7 +133,7 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 
     	WSISecurityGroup grp = null;
 		for(WSISecurityGroup u: groupDictionary){
-			WSISecurityGroup userorgroup = permission.getSecurityGroups().get(0);
+			WSISecurityGroup userorgroup = (WSISecurityGroup) permission.getSecurityUsersAndSecurityGroups().get(0);
 			
 			if((userorgroup).getId().equals(u.getId())) grp = u;
 			
@@ -240,7 +236,7 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 	{
 		WSIPermission perm = getWSIPermissionAt(rowind);
 		
-		return (WSISecurityGroup) perm.getSecurityGroups().get(0);
+		return (WSISecurityGroup) perm.getSecurityUsersAndSecurityGroups().get(0);
 	}
 	
 

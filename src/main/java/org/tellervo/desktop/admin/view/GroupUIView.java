@@ -430,9 +430,9 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 			{
 				WSISecurityGroup res = rsrc.getAssociatedResult();
 				
-				ArrayList<WSISecurityGroup> securityGroups = new ArrayList<WSISecurityGroup>();
+				ArrayList<Object> securityGroups = new ArrayList<Object>();
 				securityGroups.add(res);
-				defaultPermissions.setSecurityGroups(securityGroups);
+				defaultPermissions.setSecurityUsersAndSecurityGroups(securityGroups);
 			}
 			else
 			{
