@@ -3,7 +3,11 @@
 	<classpathentry excluding="**/edu/cornell/dendro/webservice/*" kind="src" output="target/classes" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/generated"/>
 	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources"/>
-	<classpathentry excluding="**" kind="src" output="target/classes" path="Native/BuildResources"/>
+	<classpathentry excluding="**" kind="src" output="target/classes" path="Native/BuildResources">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="tellervo-desktop/Native/Libraries/linux-i586"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="src" output="target/test-classes" path="src/test/java"/>
 	<classpathentry excluding="**" kind="src" output="target/test-classes" path="src/test/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>

@@ -19,7 +19,10 @@
  ******************************************************************************/
 package org.tellervo.desktop.editor;
 
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasUnit;
 
 
@@ -27,21 +30,39 @@ public class UnitAwareDecadalModel extends DecadalModel {
 
 
 	private static final long serialVersionUID = 1L;
-	private NormalTridasUnit displayUnits = NormalTridasUnit.HUNDREDTH_MM;
+	private NormalTridasUnit displayUnits = NormalTridasUnit.MICROMETRES;
 	
 	public UnitAwareDecadalModel() {
-	
+		setDisplayUnits(null);
 	}
 
 	public UnitAwareDecadalModel(Sample s) {
 		super(s);
-		// TODO Auto-generated constructor stub
+		setDisplayUnits(null);
 	}
 
+	/**
+	 * Set the display units.  If unit=null then the units from
+	 * the preferences will be used defaulting to microns if 
+	 * no preference is set.
+	 * 
+	 * @param unit
+	 */
 	public void setDisplayUnits(NormalTridasUnit unit)
 	{
-		displayUnits = unit;
-		
+		if(unit==null)
+		{
+			try{
+				String strunit = App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.name().toString());
+				unit = TridasUtils.getUnitFromName(strunit);
+			} catch (Exception e)
+			{
+				unit = NormalTridasUnit.MICROMETRES;
+			}
+		}
+
+		displayUnits = unit;	
+		this.fireTableDataChanged();
 	}
 	
 	public NormalTridasUnit getDisplayUnits()
@@ -77,7 +98,22 @@ public class UnitAwareDecadalModel extends DecadalModel {
 					{
 						// No units so leave values as they are
 					}
-					
+					else if (displayUnits.equals(NormalTridasUnit.MILLIMETRES))
+					{
+						val = val.doubleValue() / 1000;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
+					{
+						val = val.intValue() / 100;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
+					{
+						val = val.intValue() / 50;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
+					{
+						val = val.intValue() / 20;
+					}
 					else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 					{
 						val = val.intValue() / 10;
@@ -114,8 +150,28 @@ public class UnitAwareDecadalModel extends DecadalModel {
 				}
 				
 				if(ewval!=null) 
-				{				
-					if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+				{		
+					if (s.getTridasUnits()==null)
+					{
+						// No units so leave values as they are
+					}
+					else if (displayUnits.equals(NormalTridasUnit.MILLIMETRES))
+					{
+						strval+= ewval / 1000;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
+					{
+						strval+= ewval / 100;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
+					{
+						strval+= ewval / 50;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
+					{
+						strval+= ewval / 20;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 					{
 						strval+= ewval / 10;
 					}
@@ -135,7 +191,27 @@ public class UnitAwareDecadalModel extends DecadalModel {
 				strval+="/";
 					
 				if(lwval!=null) 
-				{				
+				{	
+					if (s.getTridasUnits()==null)
+					{
+						// No units so leave values as they are
+					}
+					else if (displayUnits.equals(NormalTridasUnit.MILLIMETRES))
+					{
+						strval+= lwval / 1000;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
+					{
+						strval+= lwval / 100;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
+					{
+						strval+= lwval / 50;
+					}
+					else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
+					{
+						strval+= lwval / 20;
+					}
 					if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 					{
 						strval+= lwval / 10;
@@ -177,7 +253,8 @@ public class UnitAwareDecadalModel extends DecadalModel {
 		{
 			Number val = null;
 			try{
-				val = (((Number) (value)).intValue());
+				
+				val = (Number) value;
 			} catch (Exception e)
 			{
 				// Not a number so forget about units and just use the super class
@@ -186,9 +263,26 @@ public class UnitAwareDecadalModel extends DecadalModel {
 			
 			if(val!=null) 
 			{
+				if (displayUnits.equals(NormalTridasUnit.MILLIMETRES))
+				{
+					val = val.doubleValue() * 1000;
+				}
+				else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
+				{
+					val = val.doubleValue() * 100;
+				}
+				else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
+				{
+					val = val.doubleValue() * 50;
+				}
+				else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
+				{
+					val = val.doubleValue() * 20;
+				}
+				
 				if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 				{
-					val = val.intValue() * 10;
+					val = val.doubleValue() * 10;
 				}
 				else if (displayUnits.equals(NormalTridasUnit.MICROMETRES))
 				{

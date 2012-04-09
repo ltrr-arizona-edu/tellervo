@@ -131,18 +131,6 @@ public class SampleDataView extends JPanel implements SampleListener,
 	// (for Editor)
 	public void stopEditing(boolean disableFutureEdits) {
 		
-		/*
-		 * This "old way" looks like quite a kludge. 
-		 * How about we tell the table to stop editing, instead of jamming
-		 * keystrokes into it's queue? - lucas
-		 * 
-		  // strategy: if editing, fire an VK_ENTER keytype event at the table
-		  // (that also solves the "user typed the number and shouldn't lose that data" problem)
-		  if (myTable.isEditing())
-			  myTable.dispatchEvent(new KeyEvent(this, KeyEvent.KEY_PRESSED,
-				  	System.currentTimeMillis(), 0, KeyEvent.VK_ENTER));
-		*/
-		
 		int row = myTable.getEditingRow();
 		int col = myTable.getEditingColumn();
 		if (row != -1 && col != -1) {
@@ -759,7 +747,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		
 		if (myModel instanceof UnitAwareDecadalModel)
 		{
-			String pref = App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.HUNDREDTH_MM.value().toString());
+			String pref = App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.name().toString());
 
 			
 			((UnitAwareDecadalModel) myModel).setDisplayUnits(NormalTridasUnit.valueOf(pref));

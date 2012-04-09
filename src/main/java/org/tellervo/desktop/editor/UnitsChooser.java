@@ -101,7 +101,7 @@ public class UnitsChooser extends JLabel implements SampleListener {
 	    });
 
 		// which one?  read from prefs
-		String pref = App.prefs.getPref(PrefKey.DISPLAY_UNITS, null);
+		String pref = App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.name());
 		if (pref != null) {
 		    for (int i=0; i<unit.length; i++) {
 				if (pref.equals(unit_keys[i])) {
@@ -131,6 +131,14 @@ public class UnitsChooser extends JLabel implements SampleListener {
     // messy stuff
     //
     private String unit_keys[] = new String[] {
+    		
+    		// Need to handle doubles rather than integers for this to work
+    		// Also locale settings for decimal formats
+    		//NormalTridasUnit.MILLIMETRES.name(),
+    		
+    		NormalTridasUnit.TENTH_MM.name(),
+    		NormalTridasUnit.TWENTIETH_MM.name(),
+    		NormalTridasUnit.FIFTIETH_MM.name(),
     		NormalTridasUnit.HUNDREDTH_MM.name(),
     		NormalTridasUnit.MICROMETRES.name()
     };

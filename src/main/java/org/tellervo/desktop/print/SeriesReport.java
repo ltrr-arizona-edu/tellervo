@@ -91,7 +91,7 @@ public class SeriesReport extends ReportBase {
 		
 	private void generateSeriesReport(OutputStream output) {
 	
-		displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.HUNDREDTH_MM.value().toString()));
+		displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.name().toString()));
 
 		try {
 		

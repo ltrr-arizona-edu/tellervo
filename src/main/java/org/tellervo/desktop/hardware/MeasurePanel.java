@@ -43,6 +43,7 @@ import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.SoundUtil;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasUnit;
 
 
@@ -370,7 +371,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		NormalTridasUnit displayUnits = NormalTridasUnit.MICROMETRES;
 		
 		try{
-			displayUnits = NormalTridasUnit.fromValue(App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.value().toString()));
+			displayUnits = TridasUtils.getUnitFromName(App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.name().toString()));
 		} catch (Exception e)
 		{
 			//log.error("unable to determine preferred units");	
@@ -383,6 +384,18 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 		{
 			txtCurrentPosition.setText(String.valueOf(value/10));	
+		}
+		else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
+		{
+			txtCurrentPosition.setText(String.valueOf(value/20));
+		}
+		else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
+		{
+			txtCurrentPosition.setText(String.valueOf(value/50));
+		}
+		else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
+		{
+			txtCurrentPosition.setText(String.valueOf(value/100));
 		}
 		else
 		{

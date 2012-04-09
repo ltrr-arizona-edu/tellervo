@@ -489,7 +489,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		tabbedPanel = new JTabbedPane(SwingConstants.BOTTOM);
 		getContentPane().add(tabbedPanel, BorderLayout.CENTER);
 		
-		// Fire of display units changed to make sure they are shown correctly to start with
+		// Fire off display units changed to make sure they are shown correctly to start with
 		sample.fireDisplayUnitsChanged();
 		
 		// start fresh

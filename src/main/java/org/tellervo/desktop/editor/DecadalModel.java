@@ -363,14 +363,15 @@ public class DecadalModel extends AbstractTableModel {
 		}
 
 		// Convert the cell value into one or two Integers depending on type
-		Integer intValue = null;
-		Integer intValue2 = null;
+		Number value1 = null;
+		Number value2 = null;
 		if ((value instanceof String) && ((String) value).length() > 0) 
 		{
 			// A string could be;
 			// 1) 44/55 style for EW/LW 
-			// 2) Plain number
-			// 3) Dodgy string
+			// 2) Plain integer
+			// 3) Plain double
+			// 4) Dodgy string
 			
 			String strvalue = ((String)value).trim();
 			if (strvalue.matches("^[0-9]*/[0-9]*"))
@@ -381,11 +382,17 @@ public class DecadalModel extends AbstractTableModel {
 				
 				try {
 					// Option 2
-					intValue = Integer.parseInt(widthparts[0]);
-					intValue2 = Integer.parseInt(widthparts[1]);
-				} catch (NumberFormatException nfe) {
-					// Option 3
-					return;
+					value1 = Integer.parseInt(widthparts[0]);
+					value2 = Integer.parseInt(widthparts[1]);
+				} catch (NumberFormatException nfe) {	
+					try{
+						// Option 3
+						value1 = Double.parseDouble(widthparts[0]);
+						value2 = Double.parseDouble(widthparts[1]);
+					} catch (NumberFormatException nfe2) {
+						// Option 4
+						return;
+					}
 				} catch (Exception e) {
 					new Bug(e);
 					return;
@@ -396,10 +403,15 @@ public class DecadalModel extends AbstractTableModel {
 			{
 				try {
 					// Option 2
-					intValue = Integer.parseInt(strvalue);
+					value1 = Integer.parseInt(strvalue);
 				} catch (NumberFormatException nfe) {
-					// Option 3
-					return;
+					try{
+						// Option 3
+						value1 = Double.parseDouble(strvalue);
+					} catch (NumberFormatException nfe2) {
+						// Option 4
+						return;
+					}
 				} catch (Exception e) {
 					new Bug(e);
 					return;
@@ -408,18 +420,22 @@ public class DecadalModel extends AbstractTableModel {
 		}
 		else if(value instanceof Integer) 
 		{
-			intValue = (Integer) value;
+			value1 = (Integer) value;
+		}
+		else if(value instanceof Double) 
+		{
+			value1 = (Double) value;
 		}
 		else if(value == null)
 		{
-			intValue = null;
+			value1 = null;
 		}
 		else if(value instanceof EWLWValue)
 		{
-			intValue = ((EWLWValue) value).getEarlywoodValue().intValue();
-			intValue2 = ((EWLWValue) value).getLatewoodValue().intValue();
+			value1 = ((EWLWValue) value).getEarlywoodValue().intValue();
+			value2 = ((EWLWValue) value).getLatewoodValue().intValue();
 			
-			if(intValue==null || intValue2==null)
+			if(value1==null || value2==null)
 			{
 				log.debug("Ignoring data input value because one or both values of EW/LW is null");
 				return;
@@ -447,28 +463,28 @@ public class DecadalModel extends AbstractTableModel {
 		if (bigger) {	
 			// Adding extra value to end of <values> 
 			
-			if(intValue == null) return;
+			if(value1 == null) return;
 			
 			if(MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.RING_WIDTH))
 			{
-				s.getRingWidthData().add(intValue);
+				s.getRingWidthData().add(value1);
 			}
 			else if (MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.EARLYWOOD_WIDTH))
 			{
-				s.getEarlywoodWidthData().add(intValue);
+				s.getEarlywoodWidthData().add(value1);
 				s.getLatewoodWidthData().add(0);
 				s.recalculateRingWidths();
 			}
 			else if (MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.LATEWOOD_WIDTH))
 			{
 				s.getEarlywoodWidthData().add(0);
-				s.getLatewoodWidthData().add(intValue);
+				s.getLatewoodWidthData().add(value1);
 				s.recalculateRingWidths();
 			}
 			else if (MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH))
 			{
-				s.getEarlywoodWidthData().add(intValue);
-				s.getLatewoodWidthData().add(intValue2);
+				s.getEarlywoodWidthData().add(value1);
+				s.getLatewoodWidthData().add(value2);
 				s.recalculateRingWidths();
 			}
 			else
@@ -486,22 +502,22 @@ public class DecadalModel extends AbstractTableModel {
 			
 			if(MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.RING_WIDTH))
 			{
-				s.getRingWidthData().set(y.diff(s.getRange().getStart()), intValue);
+				s.getRingWidthData().set(y.diff(s.getRange().getStart()), value1);
 			}
 			else if(MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.EARLYWOOD_WIDTH))
 			{
-				s.getEarlywoodWidthData().set(y.diff(s.getRange().getStart()), intValue);
+				s.getEarlywoodWidthData().set(y.diff(s.getRange().getStart()), value1);
 				s.recalculateRingWidths();
 			}
 			else if(MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.LATEWOOD_WIDTH))
 			{
-				s.getLatewoodWidthData().set(y.diff(s.getRange().getStart()), intValue);
+				s.getLatewoodWidthData().set(y.diff(s.getRange().getStart()), value1);
 				s.recalculateRingWidths();
 			}
 			else if(MeasurementVariable.getPreferredVariable(s).equals(MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH))
 			{
-				s.getEarlywoodWidthData().set(y.diff(s.getRange().getStart()), intValue);
-				s.getLatewoodWidthData().set(y.diff(s.getRange().getStart()), intValue2);
+				s.getEarlywoodWidthData().set(y.diff(s.getRange().getStart()), value1);
+				s.getLatewoodWidthData().set(y.diff(s.getRange().getStart()), value2);
 				s.recalculateRingWidths();
 			}	
 			
@@ -522,11 +538,11 @@ public class DecadalModel extends AbstractTableModel {
 		// Add undoable
 		if (value == null || value.toString().length() == 0) return; // better to use collapsing undo-edits -- solves both problems
 		
-		final Integer glue = intValue;
+		final Number glue = value1;
 		s.postEdit(new AbstractUndoableEdit() {
 			private static final long serialVersionUID = 1L;
 			
-			private Integer newVal = glue;
+			private Number newVal = glue;
 			private boolean grew = bigger; // BIGGER IS ALWAYS FALSE HERE -- LASTVAL PROBLEM!
 
 			@Override

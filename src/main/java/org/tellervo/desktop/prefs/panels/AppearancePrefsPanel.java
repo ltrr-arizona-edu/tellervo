@@ -138,13 +138,13 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 		
 		
 	    String unit_keys[] = new String[] {
-	    		NormalTridasUnit.HUNDREDTH_MM.toString(),
-	    		NormalTridasUnit.MICROMETRES.toString()
+	    		NormalTridasUnit.HUNDREDTH_MM.name().toString(),
+	    		NormalTridasUnit.MICROMETRES.name().toString()
 	    };
 		
 		new FormatWrapper(cboDisplayUnits, 
 				PrefKey.DISPLAY_UNITS, 
-				NormalTridasUnit.HUNDREDTH_MM.toString(), 
+				NormalTridasUnit.MICROMETRES.name().toString(), 
 				unit_keys);
 		
 		JComboBox cboTextColor = new JComboBox();

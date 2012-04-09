@@ -142,14 +142,7 @@ public class StatusBar extends JPanel
 
 	// get ring value 
 	String strRingWidthValue = sample.getRingWidthData().get(i).toString();
-/*	if (sample.hasCount())
-	    strRingWidthValue += " [" + sample.getCount().get(i) + "]";
-	if (sample.hasWeiserjahre())
-	    strRingWidthValue += " " + Weiserjahre.toString(sample, i);
-*/
-	// set modeline
-	widthLabel.setText(I18n.getText("editor.year")+ ": " + y.toString() + " = " + strRingWidthValue);
-	
+	widthLabel.setText(I18n.getText("editor.year")+ ": " + y.toString() + " = " + strRingWidthValue+"\u03BCm");
     }
 
     // if i set it to "", it would have no height, either.  force it
