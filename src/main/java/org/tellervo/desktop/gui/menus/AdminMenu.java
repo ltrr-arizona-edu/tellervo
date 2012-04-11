@@ -55,6 +55,7 @@ import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
 import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.ui.I18n;
@@ -247,8 +248,10 @@ public class AdminMenu extends JMenu {
 	 	add(metadb);
 
 	 	
-	 	add(Builder.makeMenuItem("general.sitemap", "org.tellervo.desktop.gui.menus.AdminMenu.showMap()", "globe.png"));
-
+	 	JMenuItem showMap = Builder.makeMenuItem("general.sitemap", "org.tellervo.desktop.gui.menus.AdminMenu.showMap()", "globe.png");
+	 	add(showMap);
+	 	// Disable if OpenGL support is screen
+	 	showMap.setEnabled(!App.prefs.getBooleanPref(PrefKey.OPENGL_FAILED, false));	 	
 
 	}
     
@@ -258,9 +261,10 @@ public class AdminMenu extends JMenu {
 	}
 	
 	public static void showMap(){
-				
+			
 		GISFrame map = new GISFrame(false);
 		map.setVisible(true);
+
     
 		
 	}

@@ -57,6 +57,7 @@ import javax.swing.JPanel;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.ui.Alert;
 import org.tridas.interfaces.ITridas;
 
 /**
@@ -92,44 +93,59 @@ public class GISPanel extends JPanel implements SelectListener{
         public GISPanel(Dimension canvasSize, boolean includeStatusBar, MarkerLayer ly)
         {
         	super(new BorderLayout());
+        
         	
-        	if(App.prefs.getBooleanPref(PrefKey.OPENGL_FAILED, false))
-        	{
-        		wwd=null;
-        		failedReq();
-        		return;
-        	}
-        	            
-        	setupGui(canvasSize, includeStatusBar);
-        	addLayer(ly);
+        	try{
+	        	if(App.prefs.getBooleanPref(PrefKey.OPENGL_FAILED, false))
+	        	{
+	        		wwd=null;
+	        		failedReq();
+	        		return;
+	        	}
+	        	            
+	        	setupGui(canvasSize, includeStatusBar);
+	        	addLayer(ly);
+	        	
+	            this.annotationLayer = new RenderableLayer();
+	            annotationLayer.setName("Popup information");
+	            ApplicationTemplate.insertBeforePlacenames(this.getWwd(), this.annotationLayer);
+	
+	        	this.getWwd().addSelectListener(this);
+	        	            
+	            // Create and install the view controls layer and register a controller for it with the World Window.
+	            ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
+	            viewControlsLayer.setPosition(AVKey.NORTHEAST);
+	            ApplicationTemplate.insertBeforeCompass(getWwd(), viewControlsLayer);
+	            viewControlsLayer.setLayout(AVKey.VERTICAL);
+	            this.getWwd().addSelectListener(new ViewControlsSelectListener(this.getWwd(), viewControlsLayer));
+	            
+	            CompassLayer compass = (CompassLayer) this.getWwd().getModel().getLayers().getLayerByName("Compass");
+	            compass.setPosition(AVKey.SOUTHEAST);
+	            compass.setLocationOffset(new Vec4(0, 20));
+	            
+	            WorldMapLayer overview = (WorldMapLayer) this.getWwd().getModel().getLayers().getLayerByName("World Map");
+	            overview.setPosition(AVKey.SOUTHWEST);
+	            overview.setResizeBehavior(AVKey.RESIZE_STRETCH);
+	            
+	            ScalebarLayer scale = (ScalebarLayer) this.getWwd().getModel().getLayers().getLayerByName("Scale bar");
+	            
+	
+	        	overview.setEnabled(isMiniMap);
+	        	compass.setEnabled(isMiniMap);
+	        	scale.setEnabled(isMiniMap);
         	
-            this.annotationLayer = new RenderableLayer();
-            annotationLayer.setName("Popup information");
-            ApplicationTemplate.insertBeforePlacenames(this.getWwd(), this.annotationLayer);
-
-        	this.getWwd().addSelectListener(this);
-        	            
-            // Create and install the view controls layer and register a controller for it with the World Window.
-            ViewControlsLayer viewControlsLayer = new ViewControlsLayer();
-            viewControlsLayer.setPosition(AVKey.NORTHEAST);
-            ApplicationTemplate.insertBeforeCompass(getWwd(), viewControlsLayer);
-            viewControlsLayer.setLayout(AVKey.VERTICAL);
-            this.getWwd().addSelectListener(new ViewControlsSelectListener(this.getWwd(), viewControlsLayer));
-            
-            CompassLayer compass = (CompassLayer) this.getWwd().getModel().getLayers().getLayerByName("Compass");
-            compass.setPosition(AVKey.SOUTHEAST);
-            compass.setLocationOffset(new Vec4(0, 20));
-            
-            WorldMapLayer overview = (WorldMapLayer) this.getWwd().getModel().getLayers().getLayerByName("World Map");
-            overview.setPosition(AVKey.SOUTHWEST);
-            overview.setResizeBehavior(AVKey.RESIZE_STRETCH);
-            
-            ScalebarLayer scale = (ScalebarLayer) this.getWwd().getModel().getLayers().getLayerByName("Scale bar");
-            
-
-        	overview.setEnabled(isMiniMap);
-        	compass.setEnabled(isMiniMap);
-        	scale.setEnabled(isMiniMap);
+			} catch (UnsatisfiedLinkError e)
+			{
+				Alert.error("Critical Error", 
+						"There has been a fatal error accessing native 3D graphics libraries\n" +
+						"on your computer.\n\n" +
+						"The most common cause is because you are running a 32 bit version\n" +
+						"of Tellervo on a 64 bit version of Java (or vice versa). Alternatively\n" +
+						"there may have been a problem with the installer. The 3D mapping\n" +
+						"functionality in Tellervo will now be disabled.\n\n" +
+						"Please see the manual or contact the developers for more information.");
+				App.prefs.setBooleanPref(PrefKey.OPENGL_FAILED, true);
+			}
 
         }
 

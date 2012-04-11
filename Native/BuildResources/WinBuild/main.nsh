@@ -12,6 +12,8 @@
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
 
+!include "EnvVarUpdate.nsh"
+
 ; MUI Settings
 !define MUI_ABORTWARNING
 !define MUI_ICON "../../../src/main/resources/Icons/tellervo-install.ico"
@@ -57,6 +59,7 @@ Section "MainSection" SEC01
   File "..\..\..\Native\Libraries\${PLATFORM}\jogl_awt.dll"
   File "..\..\..\Native\Libraries\${PLATFORM}\jogl_cg.dll"
   File "..\..\..\Native\Libraries\${PLATFORM}\rxtxSerial.dll"
+  ${EnvVarUpdate} $0 "CLASSPATH" "A" "HKLM" "$INSTDIR\jogl.jar" ; Append  
 SectionEnd
 
 Section -AdditionalIcons
@@ -105,5 +108,7 @@ Section Uninstall
 
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+    
+  ${un.EnvVarUpdate} $0 "CLASSPATH" "R" "HKLM" "$INSTDIR\jogl.jar"      ; Remove path of latest rev 
   SetAutoClose true
 SectionEnd
