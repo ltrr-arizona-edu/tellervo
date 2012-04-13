@@ -14,7 +14,7 @@
 function getHelpDocbook($page)
 {
 	//    header('Content-Type: application/xhtml+xml; charset=utf-8');
-	global $domain;
+	/*global $domain;
 	global $wikiManualBaseUrl;
 
 	$filename = $wikiManualBaseUrl."/WebserviceDocs-".$page."?action=format&mimetype=xml/docbook";
@@ -26,6 +26,9 @@ function getHelpDocbook($page)
 	// Remove para tags from lists cos it stuffs things up
 	$xml = str_replace("<listitem><para>", "<listitem>", $xml);
 	$xml = str_replace("</para></listitem>", "</listitem>", $xml);
+	*/
+
+	$xml = "<para></para>";
 
 	// Return XML
 	return $xml;

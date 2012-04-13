@@ -409,7 +409,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		if ($paramsClass->getVersion()!=NULL)				$this->setVersion($paramsClass->getVersion());
 		
 		// Interpretation fields
-		if ($paramsClass->getFirstYear()!=NULL)            	$this->setFirstYear($paramsClass->getFirstYear());
+			$this->setFirstYear($paramsClass->getFirstYear());
 		if ($paramsClass->getProvenance()!=NULL)			$this->setProvenance($paramsClass->getProvenance());
 		
 		// Value fields
@@ -1265,7 +1265,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		{
 			$xml.= "<tridas:interpretation>\n";	
 			if($this->dating->getValue()!=NULL)			$xml.= "<tridas:dating type=\"".$this->dating->getValue()."\" />";
-			if($this->getFirstYear()!=NULL)				$xml.= "<tridas:firstYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getFirstYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getFirstYear())."</tridas:firstYear>\n";
+							$xml.= "<tridas:firstYear suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getFirstYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getFirstYear())."</tridas:firstYear>\n";
 			if($this->getMasterVMeasurementID()!=NULL)	$xml.= "<tridas:datingReference>\n<tridas:linkSeries>\n<tridas:identifier domain=\"$domain\">".$this->getMasterVMeasurementID()."</tridas:identifier>\n</tridas:linkSeries>\n</tridas:datingReference>\n";
 			if($this->getSproutYear()!=NULL)			$xml.= "<tridas:pithYear certainty=\"".$this->getSproutYearCertainty()."\" suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getSproutYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getSproutYear())."</tridas:pithYear>\n";
 			if($this->getDeathYear()!=NULL)				$xml.= "<tridas:deathYear certainty=\"".$this->getDeathYearCertainty()."\" suffix=\"".dateHelper::getGregorianSuffixFromSignedYear($this->getDeathYear())."\">".dateHelper::getGregorianYearNumberFromSignedYear($this->getDeathYear())."</tridas:deathYear>\n";
@@ -1311,7 +1311,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		}
 		else
 		{
-			if($this->getFirstYear()==NULL)
+			if($this->getFirstYear()==NULL && $this->getFirstYear()!==0)
 			{
 				$this->setErrorMessage(667, "First year missing from absolute or absolute with error series (this is a ".$this->dating->getValue()." series).  You shouldn't have been able to get this far!");
 				return false;
@@ -1615,7 +1615,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						$sql = "insert into tblmeasurement  (  ";
 						if(isset($this->parentEntityArray[0]))              $sql.= "radiusid, ";
 						if($this->getIsReconciled()!=NULL)    				$sql.= "isreconciled, ";
-						if($this->getFirstYear())				            $sql.= "startyear, ";
+										            $sql.= "startyear, ";
 						if(isset($this->analyst))					        $sql.= "measuredbyid, ";
 						if($this->dating->getID()!=NULL)
 						{
@@ -1632,7 +1632,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						$sql.=") values (";
 						if(isset($this->parentEntityArray[0]))              $sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
 						if($this->getIsReconciled()!=NULL)    				$sql.= "'".dbHelper::formatBool($this->getIsReconciled(), 'english')."', ";
-						if($this->getFirstYear())				            $sql.= "'".pg_escape_string($this->getFirstYear())."', ";
+										            $sql.= "'".pg_escape_string($this->getFirstYear())."', ";
 						if(isset($this->analyst))					        $sql.= "'".pg_escape_string($this->analyst->getID())."', ";
 						if($this->dating->getID()!=NULL)
 						{
@@ -1830,7 +1830,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						$updateSQL2.= "UPDATE tblmeasurement SET ";
 						if(isset($this->parentEntityArray[0]))            			$updateSQL2.= "radiusid = '".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
 						if($this->getIsReconciled()!=NULL)        					$updateSQL2.= "isreconciled='".dbHelper::formatBool($this->getIsReconciled(),'pg')."', ";
-						if($this->getFirstYear()!=NULL)           					$updateSQL2.= "startyear = ".pg_escape_string($this->getFirstYear()).", ";
+						           					$updateSQL2.= "startyear = ".pg_escape_string($this->getFirstYear()).", ";
 						if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = ".pg_escape_string($this->analyst->getID()).", ";
 						//if($this->dating->getID()!=NULL)        					$updateSQL2.= "datingtypeid = ".pg_escape_string($this->dating->getID()).", ";
 						if($this->dating->getDatingErrorPositive()!=NULL) 			$updateSQL2.= "datingerrorpositive = ".pg_escape_string($this->dating->getDatingErrorPositive()).", ";
@@ -1878,7 +1878,9 @@ class measurement extends measurementEntity implements IDBAccessor
 					if($this->version!=NULL)						$updateSQL.= "version= '".pg_escape_string($this->version)."', ";
 					$updateSQL = substr($updateSQL, 0 , -2);
 					$updateSQL.= " WHERE vmeasurementid='".$this->getID()."'; ";					
-					
+				
+					$firebug->log(array("begin;", $deleteSQL, $insertSQL, $updateSQL2, $updateSQL ), "VMeasurement Transaction SQL");
+	
 					// Perform query using transactions so that if anything goes wrong we can roll back
 					$transaction = array("begin;", $deleteSQL, $insertSQL, $updateSQL2, $updateSQL );
 					

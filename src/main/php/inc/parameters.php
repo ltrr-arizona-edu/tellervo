@@ -1184,7 +1184,12 @@ class measurementParameters extends measurementEntity implements IParams
 			   			case "firstYear": 
 			   				// Special case.  If the series is 'direct' then user may be redating in place
 			   				// Kludgey and gross.
-			   				if($this->getVMeasurementOp()=="Direct") $this->setFirstYear($interpTag->nodeValue);
+			   				if($this->getVMeasurementOp()=="Direct")
+							{
+								$yearwithsuff = $interpTag->nodeValue.$interpTag->getAttribute("suffix");
+								$firebug->log(dateHelper::getSignedYearFromYearWithSuffix($yearwithsuff, "astronomical"), "First Year in parameters");
+								$this->setFirstYear(dateHelper::getSignedYearFromYearWithSuffix($yearwithsuff, "astronomical"));
+							}
 			   				break;
 			   			case "pithYear": break;
 			   			case "deathYear":  break;

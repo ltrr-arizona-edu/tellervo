@@ -60,9 +60,15 @@ class xmlHelper
 
 class dateHelper
 {
+	static public function getAstronomicalIntFromYearWithSuffix($yearwithsuffix)
+	{
+		
+	}
+
+
 	static public function getGregorianSuffixFromSignedYear($year)
 	{
-		if($year==NULL) return NULL;
+		if($year===NULL && $year!==0) return NULL;
 
 		if($year>0) 
 		{
@@ -99,6 +105,17 @@ class dateHelper
 		}
 	}
 	
+	static public function getAstronomicalYearFromBPYear($yearbp, $includesuffix=true)
+	{
+		global $firebug;
+		$firebug->log("getAstronomicalYearFromBPYear called");
+
+		if((strtolower(substr($yearbp, -2)))=='bp') $yearbp = substr($yearbp, 0, -2); 	
+				
+		return 1950 - $yearbp;
+		
+	}
+	
 	static public function getBPYearFromGregorianYear($year, $includesuffix=true)
 	{
 		$inyear = substr($year, 0, -2);
@@ -127,11 +144,19 @@ class dateHelper
 	
 	static public function getSignedYearFromYearWithSuffix($yearwithsuffix, $outputformat="gregorian")
 	{
+		global $firebug;
+
 		$suffix = strtolower(substr($yearwithsuffix, -2));
 		$year = (int) substr($yearwithsuffix, 0, -2);
+
+		$firebug->log($year, "Year value being converted");
+		$firebug->log($suffix, "Suffix of year being converted");
+
+
 		
-		if($outputformat="gregorian")
+		if($outputformat=="gregorian")
 		{
+			$firebug->log("Outputing as gregorian year");
 			switch($suffix)
 			{
 				case "bc": return 0 - $year;
@@ -140,13 +165,25 @@ class dateHelper
 				default: trigger_error("910"."Year supplied to getSignedYearFromYearWithSuffix() contained an unknown suffix", E_USER_ERROR);
 			}
 		}
-		elseif($outputformat="bp")
+		elseif($outputformat=="bp")
 		{
+			$firebug->log("Outputing as BP year");
 			switch($suffix)
 			{
 				case "bc": return dateHelper::getBPYearFromGregorianYear($yearwithsuffix, false);
 				case "ad": return dateHelper::getBPYearFromGregorianYear($yearwithsuffix, false);
 				case "bp": return $year;
+				default: trigger_error("910"."Year supplied to getSignedYearFromYearWithSuffix() contained an unknown suffix", E_USER_ERROR);
+			}			
+		}
+		elseif($outputformat=="astronomical")
+		{
+			$firebug->log("Outputing as astronomical year");
+			switch($suffix)
+			{
+				case "bc": return 1 - $year;
+				case "ad": return $year;
+				case "bp": return dateHelper::getAstronomicalYearFromBPYear($year, false);
 				default: trigger_error("910"."Year supplied to getSignedYearFromYearWithSuffix() contained an unknown suffix", E_USER_ERROR);
 			}			
 		}
