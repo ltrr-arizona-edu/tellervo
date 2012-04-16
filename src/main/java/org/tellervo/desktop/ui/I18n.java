@@ -41,15 +41,20 @@
 package org.tellervo.desktop.ui;
 
 import java.util.Enumeration;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
 import java.util.ResourceBundle;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.platform.Platform;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.util.StringUtils;
 
 
@@ -291,10 +296,26 @@ public class I18n {
 	// the resource bundle to use
 	private final static ResourceBundle msg;
 
+
 	static {
 		ResourceBundle bundle;
 		try {
-			bundle = ResourceBundle.getBundle("Translations/TextBundle");
+			
+			// Grab overriding language prefs if available
+			String country = App.prefs.getPref(PrefKey.LOCALE_COUNTRY_CODE, "xxx");
+			String language = App.prefs.getPref(PrefKey.LOCALE_LANGUAGE_CODE, "xxx");
+			
+			if(country.equals("xxx") || language.equals("xxx"))
+			{
+				// No prefs specified so just go with the default from the system
+				bundle = ResourceBundle.getBundle("Translations/TextBundle");
+			}
+			else
+			{
+				// Prefs specified so use these instead
+				bundle = ResourceBundle.getBundle("Translations/TextBundle", new Locale(language, country));
+			}
+			
 		} catch (MissingResourceException mre) {
 			try {
 				bundle = ResourceBundle.getBundle("Translations/TextBundle");
@@ -345,4 +366,124 @@ public class I18n {
 		
 		return text;
 	}
+	
+	/**
+	 * Get the TellervoLocale using the country and language codes.  If Tellervo 
+	 * doesn't support the requested country/language, then the default Tellervo
+	 * locale is returned.
+	 * 
+	 * @param country
+	 * @param language
+	 * @return
+	 */
+	public static TellervoLocale getTellervoLocale(String country, String language)
+	{
+		for(TellervoLocale loc : TellervoLocale.values())
+		{
+			if(loc.getCountryCode().equals(country) && loc.getLanguageCode().equals(language))
+			{
+				return loc;
+			}
+		}
+		return getPreferredTellervoLocale(true);
+	}
+	
+	/**
+	 * Get the TelleroLocale from the preferences, or if none is specified
+	 * get the default.
+	 * 
+	 * @param fallback - if true then return default Locale if all else fails
+	 * @return
+	 */
+	public static TellervoLocale getPreferredTellervoLocale(Boolean fallback)
+	{
+		
+		Locale defloc = Locale.getDefault();
+		String country = defloc.getCountry();
+		String language = defloc.getLanguage();
+		
+		for(TellervoLocale loc : TellervoLocale.values())
+		{
+			if(loc.getCountryCode().equals(country) && loc.getLanguageCode().equals(language))
+			{
+				return loc;
+			}
+		}
+		
+		if(fallback)
+		{
+			// Preferred locale not found or not supported so use US English instead
+			return TellervoLocale.ENGLISH_US;
+		}
+		else
+		{
+			return null;
+		}
+
+	}
+		
+	
+	/**
+	 * Locale enum for supported country/languages 
+	 * 
+	 * @author pwb48
+	 *
+	 */
+	public enum TellervoLocale{
+		GERMAN        ("Deutsch",      "de", "DE" ), 
+		ENGLISH_PROPER("English (UK)", "en", "GB" ),
+		ENGLISH_US    ("English (US)", "en", "US"),
+		FRENCH        ("Français",     "fr", "FR"),
+		DUTCH         ("Nederlands",   "nl", "NL"),
+		POLISH        ("Polski",       "pl", "PL"),
+		TURKISH       ("Türk",         "tr", "TR");
+		
+		
+		private String country;
+		private String language;
+		private String name;
+
+		
+		private TellervoLocale(String name, String language, String country)
+		{
+			this.name = name;
+			this.country  = country;
+			this.language = language;
+		}
+		
+		public String getName()
+		{
+			return name;
+		}
+		
+		public String toString()
+		{
+			return getName();
+		}
+		
+		public String getCountryCode()
+		{
+			return country;
+		
+		}
+		
+		public String getLanguageCode()
+		{
+			return language;
+		}
+		
+		public Locale getLocale()
+		{
+			Locale locale = new Locale(language, country);
+			return locale;	
+		}
+		
+		public Icon getFlag()
+		{
+			return Builder.getIcon(country+".png", 16);
+		}
+		
+
+		
+	};
 }

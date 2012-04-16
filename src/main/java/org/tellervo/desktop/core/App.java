@@ -23,6 +23,7 @@ package org.tellervo.desktop.core;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,6 @@ import org.tellervo.desktop.nativelib.NativeLibWrapper;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.PreferencesDialog;
 import org.tellervo.desktop.prefs.Prefs;
-import org.tellervo.desktop.prefs.WizardDialog;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.schema.WSIConfiguration;
@@ -49,6 +49,7 @@ import org.tellervo.schema.WSISecurityGroup;
 import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.setupwizard.SetupWizard;
 import org.tellervo.desktop.tridasv2.TridasObjectList;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ListUtil;
 import org.tellervo.desktop.wsi.tellervo.TellervoWsiAccessor;
@@ -393,20 +394,62 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
 		prefsDialog.refreshPages();
 	}
 	
-	/**
-	 * Run the setup wizard interface
-	 */
-	public static void runWizard()
+	
+	public static void restartApplication()
 	{
-		new WizardDialog(prefsDialog);
+		
+		
+	  final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+	  File currentJar = null;
+	  try {
+		currentJar = new File(App.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	  System.out.println("restartApplication for currentJar "+currentJar.getPath());
+	
+	  final ArrayList<String> command = new ArrayList<String>();
+	  
+	  /* is it a jar file? */
+	  if(currentJar.getPath().endsWith(".jar"))
+	  {
+		  command.add(javaBin);
+		  command.add("-jar");
+		  command.add(currentJar.getPath());
+	  }
+	  else if(currentJar.getPath().endsWith(".exe") || currentJar.getPath().endsWith(".app"))
+	  {
+		  command.add(currentJar.getPath());
+	  }
+	  else 
+	  {
+		  Alert.error("Error", "Unable to restart application. Please restart manually!");
+		  return;
+	  }
+
+	  /* Build command: java -jar application.jar */
+	  
+	  System.out.println("Run following command to restart application"+ command);
+	  
+	  final ProcessBuilder builder = new ProcessBuilder(command);
+	  try {
+		builder.start();
+		} catch (IOException e) {
+			Alert.error("Error", "Unable to restart application. Please restart manually!");
+			e.printStackTrace();
+		}
+	  System.exit(0);
 	}
+
   	
 	/**
 	 * Restart Corina programmatically
 	 * 
 	 * @throws Exception
 	 */
-	public static void restartApplication() throws Exception
+	public static void restartApplication2() throws Exception
 	{
 	       try {
 	            // java binary

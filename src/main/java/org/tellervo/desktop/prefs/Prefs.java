@@ -98,6 +98,9 @@ public class Prefs extends AbstractSubsystem {
 	 */
 	public enum PrefKey{
 		
+		LOCALE_LANGUAGE_CODE("tellervo.locale.language"),
+		LOCALE_COUNTRY_CODE("tellervo.locale.country"),
+		
 		EDIT_FOREGROUND("tellervo.edit.foreground"),
 		EDIT_BACKGROUND("tellervo.edit.background"),
 		EDIT_FONT("tellervo.edit.font"),

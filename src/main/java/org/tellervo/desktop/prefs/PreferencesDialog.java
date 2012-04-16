@@ -168,7 +168,7 @@ public class PreferencesDialog extends JDialog {
 
 							int n = JOptionPane.showConfirmDialog(
 								    null,
-								    "You will need to restart Corina for the new web service URL to take effect.\n" +
+								    "You will need to restart Tellervo for the new web service URL to take effect.\n" +
 								    "Would you like to restart now?  Any unsaved changes will be lost.",
 								    "Restart required",
 								    JOptionPane.YES_NO_CANCEL_OPTION);
@@ -179,7 +179,7 @@ public class PreferencesDialog extends JDialog {
 									App.restartApplication();
 								} catch (Exception e1) {
 									Alert.message("Manual restart required", 
-									"Unable to restart Corina automatically.  Please restart manually!");
+									"Unable to restart Tellervo automatically.  Please restart manually!");
 								}
 							}
 							else if (n == JOptionPane.CANCEL_OPTION)
@@ -187,7 +187,34 @@ public class PreferencesDialog extends JDialog {
 								return;
 							}	
 						}
-							
+						
+						AppearancePrefsPanel appearancePrefsPanel = (AppearancePrefsPanel) getPreferencesPage(AppearancePrefsPanel.class);
+						if(appearancePrefsPanel==null) return;						
+						
+						if(appearancePrefsPanel.hasLocaleChanged())
+						{
+							int n = JOptionPane.showConfirmDialog(
+								    null,
+								    "You will need to restart Tellervo for the new language to take effect.\n" +
+								    "Would you like to restart now?  Any unsaved changes will be lost.",
+								    "Restart required",
+								    JOptionPane.YES_NO_CANCEL_OPTION);
+
+							if(n == JOptionPane.YES_OPTION)
+							{
+								try {
+									App.restartApplication();
+								} catch (Exception e1) {
+									Alert.message("Manual restart required", 
+									"Unable to restart Tellervo automatically.  Please restart manually!");
+								}
+							}
+							else if (n == JOptionPane.CANCEL_OPTION)
+							{
+								return;
+							}	
+						}
+
 						// Hide the dialog (don't close it)
 						setVisible(false);						
 					}

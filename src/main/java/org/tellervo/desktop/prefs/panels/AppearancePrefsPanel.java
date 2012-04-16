@@ -19,11 +19,11 @@
  ******************************************************************************/
 package org.tellervo.desktop.prefs.panels;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -34,6 +34,7 @@ import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.components.UIDefaultsComponent;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
@@ -41,6 +42,7 @@ import org.tellervo.desktop.prefs.wrappers.ColorComboBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.FontButtonWrapper;
 import org.tellervo.desktop.prefs.wrappers.FormatWrapper;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.ui.I18n.TellervoLocale;
 import org.tridas.schema.NormalTridasUnit;
 
 
@@ -48,7 +50,12 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 
 
 	private static final long serialVersionUID = 1L;
-
+	private JComboBox cboLocale;
+	private TellervoLocale originalLocale;
+	
+	
+	
+	
 	/**
 	 * Create the panel.
 	 */
@@ -57,7 +64,9 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 				"appearance.png", 
 				"Change how your Corina interface should appear",
 				parent);
-		setLayout(new MigLayout("", "[450px,grow,fill][grow]", "[147.00px,fill][fill][grow,fill]"));
+		setLayout(new MigLayout("", "[111.00px,fill][grow]", "[101.00px,fill][grow,fill]"));
+		
+		originalLocale = I18n.getPreferredTellervoLocale(false);		
 		
 		JPanel panelEditor = new JPanel();
 		panelEditor.setBorder(new TitledBorder(null, "Editor panel", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
@@ -131,9 +140,35 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 		
 		JPanel panelGeneral = new JPanel();
 		panelGeneral.setBorder(new TitledBorder(null, "General", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
-		add(panelGeneral, "cell 0 2 2 1,grow");
-		panelGeneral.setLayout(new BorderLayout(0, 0));
-		panelGeneral.add(new UIDefaultsComponent());
+		add(panelGeneral, "cell 0 1 2 1,grow");
+		panelGeneral.setLayout(new MigLayout("", "[149.00px][grow]", "[][191px,grow]"));
+		
+		JLabel lblLanguage = new JLabel("Language:");
+		panelGeneral.add(lblLanguage, "cell 0 0");
+		
+		cboLocale = new JComboBox();
+		panelGeneral.add(cboLocale, "cell 1 0");
+		cboLocale.setModel(new DefaultComboBoxModel(I18n.TellervoLocale.values()));
+
+		String country = App.prefs.getPref(PrefKey.LOCALE_COUNTRY_CODE, "xxx");
+		String language = App.prefs.getPref(PrefKey.LOCALE_LANGUAGE_CODE, "xxx");
+		
+		TellervoLocale loc = I18n.getTellervoLocale(country, language);
+		cboLocale.setSelectedItem(loc);
+		cboLocale.setRenderer(new LocaleComboRenderer());
+		
+		cboLocale.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				TellervoLocale selloc = (TellervoLocale) cboLocale.getSelectedItem();
+				App.prefs.setPref(PrefKey.LOCALE_COUNTRY_CODE, selloc.getCountryCode());
+				App.prefs.setPref(PrefKey.LOCALE_LANGUAGE_CODE, selloc.getLanguageCode());
+			}
+			
+		});
+		
+		panelGeneral.add(new UIDefaultsComponent(), "cell 0 1 2 1,grow");
 		
 		
 		
@@ -157,6 +192,16 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 	public void refresh() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public boolean hasLocaleChanged() {
+
+		if(originalLocale.equals(cboLocale.getSelectedItem()))
+		{
+			return false;
+		}
+		
+		return true;
 	}
 
 }

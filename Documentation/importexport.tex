@@ -1,6 +1,6 @@
 \chapter{Importing and exporting}
 \label{txt:importExport}
-Importing and exporting of dendro data in Tellervo is provided through the TRiCYCLE libraries.  TRiCYCLE is a universal dendro data conversion application for converting back and forth between 22 supported data formats \citep{tricycle}.  The open source libraries that provide the functionality to TRiCYCLE are incorporated directly into Tellervo providing support for all these formats.  
+Importing and exporting of dendro data in Tellervo is provided through the TRiCYCLE libraries.  TRiCYCLE is a universal dendro data conversion application for converting back and forth between 24 supported data formats \citep{tricycle}.  The open source libraries that provide the functionality to TRiCYCLE are incorporated directly into Tellervo providing support for all these formats.  
 
 \begin{table*}[htbp]
 \centering
@@ -8,20 +8,21 @@ Importing and exporting of dendro data in Tellervo is provided through the TRiCY
 \index{File formats}
 \begin{tabular*}{0.8\textwidth}{ll}
 \toprule
-Belfast Apple & ODF Spreadsheet \\
-Belfast Archive & Oxford \\
-Besancon (including SYLPHE variants) &   PAST4\\
-CATRAS & Sheffield D-Format (Dendro for Windows)\\
+Belfast Apple & Nottingham \\
+Belfast Archive & ODF Spreadsheet \\
+Besancon (including SYLPHE variants) &   Oxford\\
+CATRAS & PAST4\\
+Cracow Binary Format & Sheffield D-Format (Dendro for Windows)\\
 Comma delimited text files (CSV) &  Topham \\
-Tellervo Legacy &  TRiDaS\\
+Corina Legacy &  TRiDaS\\
 DendroDB & TRIMS\\
 Heidelberg (TSAP-Win) &  Tucson (RWL and CRN)\\
-Microsoft Excel 97/2000/XP& Tucson Compact\\
-Microsoft Excel 2007 & VFormat\\
-Nottingham &  WinDENDRO\\
+KINSYS-KS & Tucson Compact\\
+Microsoft Excel 97/2000/XP & VFormat \\
+Microsoft Excel 2007 & WinDENDRO\\
 \bottomrule
 \end{tabular*}
-\caption{List of the twenty-two formats supported by Tellervo. See appendices \ref{txt:fileFormatsStart}--\ref{txt:fileFormatsLast} (pages \pageref{txt:fileFormatsStart}--\pageref{txt:fileFormatsEnd}) for full descriptions.}
+\caption{List of the twenty-four formats supported by Tellervo. See appendices \ref{txt:fileFormatsStart}--\ref{txt:fileFormatsLast} (pages \pageref{txt:fileFormatsStart}--\pageref{txt:fileFormatsEnd}) for full descriptions.}
 \end{table*}
 
 
@@ -112,14 +113,27 @@ out files, Tellervo will use the default line feed for the operating system you 
 choose a platform specific character set. For instance if you run Tellervo on Windows and choose a
 MacRoman writing charset, Tellervo will use Mac style line feeds.
 
-
 \section{Importing data}
 \index{Import}
-Importing data into Tellervo is an unavoidably long-winded task.  For dendro applications that do not manage the underlying data and metadata, the task of opening up legacy data files is much simpler.  In Tellervo, however, we are more fastidious about our data.  Importing legacy data files is not just a matter of reading the ring width values, but also interpreting the metadata so that it is standardized, clean and matches our high data integrity standards.  As you can imagine, this comes at the price, although definitely a price worth paying!  Before continuing, you need to have a basic understanding of the TRiDaS data model.  See chapter \ref{txt:metadata} (page \pageref{txt:metadata}) for more information.
+The first and simplest method for importating existing data into Tellervo is using the simple \menutwo{File}{Import data} menu.  This allows you to read in the raw ring width data values from existing files without taking any notice of associated metadata.  This option is suitable if the format you are importing is a data-only format, or if the file doesn't contain a meaningful amount of metadata.
+
+\warn{The Tellervo system is currently limited to reading in raw data files.  It does not allow for reading in of chronology files as these contain a more complex level of metadata.  Support for chronology files will be included in a later release.}
+
+Import the data by going to \menutwo{File}{Import data} and then choose the format that your file is in.  If you are unsure, you can use appendices \ref{txt:fileFormatsStart}--\ref{txt:fileFormatsLast} (pages \pageref{txt:fileFormatsStart}--\pageref{txt:fileFormatsEnd}) to help you.  You may also like to download TRiCYCLE\footnote{TRiCYCLE is available from \url{http://www.tridas.org/tricycle}} which includes a file identification tool in the help menu.
+
+If your file does not explicity indicate what units the measurements are in, a dialog box will ask you to specify.  Once you have done this, a standard data editor window will appear with your data in it.  If the file you import contains multiple series, you will have a separate windows for each series.  If you then go to the metadata tab you will notice that none of the metadata have been set.  Before you can save to the database, you will need to sequentially go through the object, element, sample, radius and series tabs and either choose an existing entry from the database, or create a new record if the particular entry is not already represented.  
+
+
+\section{Importing data and metadata}
+\index{Import}
+
+The second import method in Tellervo imports both data and metadata into the Tellervo database.  Unfortunately, this is an unavoidably long-winded task.  For dendro applications that do not manage the underlying data and metadata, the task of opening up legacy data files is much simpler.  In Tellervo, however, we are more fastidious about our information.  Importing legacy data files is not just a matter of reading the ring width values, but also interpreting the metadata so that it is standardized, clean and matches our high data integrity standards.  As you can imagine, this comes at the price, although definitely a price worth paying!  Before continuing, you need to have a basic understanding of the TRiDaS data model.  See chapter \ref{txt:metadata} (page \pageref{txt:metadata}) for more information.
+
+
 
 
 \subsection{The import dialog}
-You can launch the import dialog by going to \menutwo{File}{Import} and then choosing the format that your file is in.  If you are unsure, you can use appendices \ref{txt:fileFormatsStart}--\ref{txt:fileFormatsLast} (pages \pageref{txt:fileFormatsStart}--\pageref{txt:fileFormatsEnd}) to help you.  You may also like to download TRiCYCLE\footnote{TRiCYCLE is available from \url{http://www.tridas.org/tricycle}} which includes a file identification tool in it's help menu.
+You can launch the import dialog by going to \menutwo{File}{Import data and metadata} and then choosing the format that your file is in. 
 
 \begin{figure}[htbp]
   \centering
@@ -144,12 +158,14 @@ First of all, click the most senior entity in the TRiDaS hierarchy on the left w
 \subsection{Importing when entities are not in the database}
 If you are importing a file that contains entities that you \emph{don't} already have stored in your database, then you will need to clean them up and save them.   Select the most senior entity that needs to be imported in the TRiDaS hierarchy panel.  The metadata gleaned by Tellervo from the legacy file will be previewed in the metadata panel on the right.  Next, click the `lock' icon at the bottom of the metadata panel and the metadata will become editable.  You will then need to spend some time filling out and cleaning up the metadata for this entity.  
 
-An important part of the import process is the standardization of the metadata.  Take for instance the example of the taxon.  Most legacy files have some method for indicating what species a file is about, but most do so by allowing the user to type in a free text field.  The TRiCYCLE libraries that Tellervo uses are able to read such fields but the red oak (\textit{Quercus rubra}) may be represented in many ways: oak, red oak, Oak, \textit{Quercus}, \textit{Quercus} sp., \textit{Quercus rubra}, QUER etc, not to mention the scientific synonyms for the species e.g. \textit{Quercus acerifolia}, \textit{Quercus ambigua}, \textit{Quercus angulizana} to name but a few.  Many users would know that these represent the same species, but if you were to query your database for Quercus rubra, you would miss records stored under the other names.  It is therefore essential to standardize them to a single dictionary of terms.  In the case of species names, Tellervo use the Catalogue of Life \citep{col}.  There are a number of similar enumerated metadata fields in Tellervo, each indicated by a pull down menu.  When importing, these fields will be populated with the non-normalized term read by Tellervo, but to successfully import the entity into the database, you will need to choose the corresponding `controlled vocabulary' term from the pull down menu.  
+An important part of the import process is the standardization of the metadata.  Take for instance the example of the taxon.  Most legacy files have some method for indicating what species a file is about, but most do so by allowing the user to type in a free text field.  The TRiCYCLE libraries that Tellervo uses are able to read such fields but the red oak (\textit{Quercus rubra}) may be represented in many ways: oak, red oak, Oak, \textit{Quercus}, \textit{Quercus} sp., \textit{Quercus rubra}, QUER etc, not to mention the scientific synonyms for the species e.g. \textit{Quercus acerifolia}, \textit{Quercus ambigua}, \textit{Quercus angulizana} to name but a few.  Many users would know that these represent the same species, but if you were to query your database for \textit{Quercus rubra}, you would miss records stored under the other names.  It is therefore essential to standardize them to a single dictionary of terms.  In the case of species names, Tellervo use the Catalogue of Life \citep{col}.  There are a number of similar enumerated metadata fields in Tellervo, each indicated by a pull down menu.  When importing, these fields will be populated with the non-normalized term read by Tellervo, but to successfully import the entity into the database, you will need to choose the corresponding `controlled vocabulary' term from the pull down menu.  
 
 Once you have cleaned and normalized your metadata, you need to press the `Save changes' button to upload the entity into the database.  You will be provided with an error message if you have missed any mandatory fields, or if you have not normalized all the data to terms stored in the Tellervo dictionaries.  Once you have successfully saved the entity, the TRiDaS hierarchy on the left will be updated so the status reads `Stored in database'.  You will then need to work your way through the remaining entities to finish importing the file.
 
 \subsection{Speeding up the process}
 Manually choosing the relevant entry for each entity is quite a frustrating and time consuming task.  When importing a file containing multiple series, the task is compounded by the fact that Tellervo will often place the series into separate hierarchies.  Unfortunately, many legacy file formats do not contain enough information to enable Tellervo to determine whether they are from the same or different objects.  To be on the safe side, Tellervo therefore places them in separate `unknown' objects.  Rather that manually specifying the correct object repeatedly, you can use the `merge objects' button to do this for you.  You need then only pick the correct object from the database once.
+
+Another method for improving your efficiency is to use the 
 
 
 
