@@ -196,6 +196,14 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 
 	public boolean hasLocaleChanged() {
 
+		if(originalLocale==null)
+		{
+			if(cboLocale.getSelectedItem() != null)
+			{
+				return true;
+			}
+		}
+		
 		if(originalLocale.equals(cboLocale.getSelectedItem()))
 		{
 			return false;
