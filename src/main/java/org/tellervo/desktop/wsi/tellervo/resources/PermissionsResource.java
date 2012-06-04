@@ -58,7 +58,7 @@ public class PermissionsResource extends TellervoAssociatedResource<ArrayList<WS
 	 * @param pEntityID
 	 * @param groupOrUser
 	 */
-	public PermissionsResource(PermissionsEntityType pEntityType, String pEntityID, Serializable groupOrUser) {
+	public PermissionsResource(PermissionsEntityType pEntityType, String pEntityID, Object groupOrUser) {
 		super(getXMLName(new WSIPermission()), TellervoRequestType.READ);
 
 		addPermission(pEntityType, pEntityID, groupOrUser);

@@ -45,7 +45,7 @@ public abstract class TellervoAction extends AbstractAction {
 	private static final long serialVersionUID = 1L;
 
 	/** This allows us to gracefully handle booleans */
-	protected static final String CORINA_SELECTED_KEY = "tellervo.selected";
+	protected static final String TELLERVO_SELECTED_KEY = "tellervo.selected";
 	
 	/** This is only available in 1.6, but we want it, so use it in 1.5 where it just gets ignored :) */
 	protected static final String KLUDGE_DISPLAYED_MNEMONIC_INDEX_KEY = "SwingDisplayedMnemonicIndexKey";
@@ -163,11 +163,11 @@ public abstract class TellervoAction extends AbstractAction {
 			// set the default value
 			if(defaultValue != null) {
 				button.setSelected(defaultValue);
-				TellervoAction.this.putValue(CORINA_SELECTED_KEY, defaultValue);
+				TellervoAction.this.putValue(TELLERVO_SELECTED_KEY, defaultValue);
 			}
-			else if((defaultValue = (Boolean) TellervoAction.this.getValue(CORINA_SELECTED_KEY)) == null)
+			else if((defaultValue = (Boolean) TellervoAction.this.getValue(TELLERVO_SELECTED_KEY)) == null)
 				// well, use the button's value then
-				TellervoAction.this.putValue(CORINA_SELECTED_KEY, button.isSelected());
+				TellervoAction.this.putValue(TELLERVO_SELECTED_KEY, button.isSelected());
 			else
 				// ok, use the action's value then!
 				button.setSelected(defaultValue);
@@ -180,7 +180,7 @@ public abstract class TellervoAction extends AbstractAction {
 		// called when the Action's value changes
 		public void propertyChange(PropertyChangeEvent evt) {
 			// only care about our special selection event
-			if(!CORINA_SELECTED_KEY.equals(evt.getPropertyName()))
+			if(!TELLERVO_SELECTED_KEY.equals(evt.getPropertyName()))
 				return;
 			
 			Boolean selected = (Boolean) evt.getNewValue();
@@ -198,7 +198,7 @@ public abstract class TellervoAction extends AbstractAction {
 		public void itemStateChanged(ItemEvent e) {
 			Boolean selected = (e.getStateChange() == ItemEvent.SELECTED);
 			
-			TellervoAction.this.putValue(CORINA_SELECTED_KEY, selected);
+			TellervoAction.this.putValue(TELLERVO_SELECTED_KEY, selected);
 			
 			// notify our superclass
 			if(lastValue != selected) {

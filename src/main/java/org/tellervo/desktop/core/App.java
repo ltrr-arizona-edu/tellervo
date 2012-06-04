@@ -39,6 +39,7 @@ import org.tellervo.desktop.gui.LoginSplash;
 import org.tellervo.desktop.gui.ProgressMeter;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.nativelib.NativeLibWrapper;
+import org.tellervo.desktop.platform.Macintosh;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.PreferencesDialog;
 import org.tellervo.desktop.prefs.Prefs;
@@ -103,20 +104,25 @@ public class App{
 
 public static synchronized void init() {
 	
-	App.platform = new Platform();
-    App.platform.init();
+	 log.debug("initializing App");
     prefs = new Prefs();
     prefs.init();
 	
-    log.debug("initializing App");
+	App.platform = new Platform();
+    App.platform.init();
     
+    
+	// Set up mac menubar
+	Macintosh.configureMenus();
+
+       
     appmodel = new AppModel();
     
     logviewer = new Log4JViewer();
     logviewer.setVisible(false);
     
     SysOutOverSLF4J.sendSystemOutAndErrToSLF4J();
-    
+        
 }
 
 

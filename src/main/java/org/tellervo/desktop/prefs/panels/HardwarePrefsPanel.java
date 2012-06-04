@@ -60,8 +60,15 @@ import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.DoubleSpinnerWrapper;
 import org.tellervo.desktop.prefs.wrappers.FormatWrapper;
 import org.tellervo.desktop.ui.Alert;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ArrayListModel;
+import javax.swing.UIManager;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+import java.awt.Font;
+import java.awt.BorderLayout;
+import javax.swing.border.LineBorder;
 
 @SuppressWarnings("serial")
 public class HardwarePrefsPanel extends AbstractPreferencesPanel{
@@ -94,7 +101,11 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	private JCheckBox chkReverseMeasuring;
 	private JLabel lblReverseMeasuring;
 	private JSpinner spnMultiply;
-	private JLabel lblCorrectionFactor;
+	private JLabel lblMultiply;
+	private JPanel panelWarn;
+	private JPanel panel_3;
+	private JLabel label;
+	private JTextArea txtWarning;
 
 	
 	
@@ -111,14 +122,38 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		
 		panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Measuring Platform", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
-		add(panel, "cell 0 0,grow");
-		panel.setLayout(new MigLayout("", "[][grow][][grow]", "[][15:15.00:15.00][][][][][][]"));
+		add(panel, "cell 0 0,grow, hidemode 2");
+		panel.setLayout(new MigLayout("", "[75.00,grow][grow][][grow]", "[grow][][][][][][][]"));
+		
+		panelWarn = new JPanel();
+		panelWarn.setBorder(new LineBorder(new Color(221,221,225)));
+		panelWarn.setBackground(new Color(251,251,200));
+		panel.add(panelWarn, "cell 0 0 4 1,grow, hidemode 2");
+		panelWarn.setLayout(new MigLayout("", "[49.00][grow]", "[29.00,grow]"));
+		
+		panel_3 = new JPanel();
+		panel_3.setBackground(new Color(251,251,200));
+		panelWarn.add(panel_3, "cell 0 0,grow");
+		
+		label = new JLabel();
+		label.setIcon(Builder.getIcon("warning.png", 48));
+		panel_3.add(label);
+		
+		txtWarning = new JTextArea();
+		txtWarning.setWrapStyleWord(true);
+		txtWarning.setText("The native libraries required by Tellervo to interface with the serial port cannot be found.  Please check your installation and contact the Tellervo developers for more information.");
+		txtWarning.setLineWrap(true);
+		txtWarning.setFont(new Font("Dialog", Font.PLAIN, 12));
+		txtWarning.setEditable(false);
+		txtWarning.setBorder(new EmptyBorder(5, 5, 5, 5));
+		txtWarning.setBackground((Color) null);
+		panelWarn.add(txtWarning, "cell 1 0,growx,wmin 10");
 		
 		lblPlatformType = new JLabel("Type:");
-		panel.add(lblPlatformType, "cell 0 0,alignx trailing");	
+		panel.add(lblPlatformType, "cell 0 1,alignx trailing");	
 		
 		panel_1 = new JPanel();
-		panel.add(panel_1, "cell 1 0 3 1,grow");
+		panel.add(panel_1, "cell 1 1 3 1,grow");
 		panel_1.setLayout(new MigLayout("", "[32px][32.00px,grow][147px,fill]", "[25px]"));
 		panel_1.setOpaque(false);
 		cboPlatformType = new JComboBox();
@@ -152,7 +187,13 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		panel.add(lblPort, "cell 0 2,alignx trailing");
 		cboPort = new JComboBox();
 		panel.add(cboPort, "cell 1 2,alignx left");
-		setupCOMPort();
+		
+		if (AbstractSerialMeasuringDevice.hasSerialCapability()) 
+		{
+			setupCOMPort();
+		}
+
+		
 		
 		lblDataBits = new JLabel("Data bits / Word length:");
 		panel.add(lblDataBits, "cell 2 2,alignx trailing");
@@ -199,8 +240,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     			App.prefs.getPref(PrefKey.SERIAL_PARITY, "None"), 
     			PortParity.allValuesAsArray());
     	
-    	lblCorrectionFactor = new JLabel("Data multiplication factor:");
-    	panel.add(lblCorrectionFactor, "cell 2 4,alignx right");
+    	lblMultiply = new JLabel("Data multiplication factor:");
+    	panel.add(lblMultiply, "cell 2 4,alignx right");
     	
     	
         double min = -1000.00;  
@@ -319,6 +360,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     	okToUseDefaults = true;
     	
 	}
+
 	
 	public Boolean isReadyToTestConnection()
 	{
@@ -381,6 +423,26 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 					btnTestConnection.setEnabled(isReadyToTestConnection());
 				}
 			});
+			
+			panelWarn.setVisible(false);
+
+		}
+		else
+		{
+			panelWarn.setVisible(true);
+			cboBaud.setEnabled(false);
+			cboParity.setEnabled(false);
+			cboFlowControl.setEnabled(false);
+			cboDatabits.setEnabled(false);
+			cboStopbits.setEnabled(false);
+			cboLineFeed.setEnabled(false);
+			cboPort.setEnabled(false);
+			btnTestConnection.setEnabled(false);
+			chkReverseMeasuring.setEnabled(false);
+			spnMultiply.setEnabled(false);
+			cboPlatformType.setEnabled(false);
+			btnDefaults.setEnabled(false);
+			chkReverseMeasuring.setEnabled(false);
 		}
 
 	}
@@ -393,20 +455,59 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	{
 		AbstractSerialMeasuringDevice device;
 		
+		
+		if (!AbstractSerialMeasuringDevice.hasSerialCapability())
+		{
+			lblPlatformType.setEnabled(false);
+			cboPlatformType.setEnabled(false);
+			lblPort.setEnabled(false);
+			cboPort.setEnabled(false);
+			lblBaud.setEnabled(false);
+			cboBaud.setEnabled(false);
+			lblParity.setEnabled(false);
+			cboParity.setEnabled(false);
+			lblStopBits.setEnabled(false);
+			cboStopbits.setEnabled(false);
+			lblLineFeed.setEnabled(false);
+			cboLineFeed.setEnabled(false);
+			
+			lblDataBits.setEnabled(false);
+			cboDatabits.setEnabled(false);
+			lblFlowControl.setEnabled(false);
+			cboFlowControl.setEnabled(false);
+			
+			lblMultiply.setEnabled(false);
+			spnMultiply.setEnabled(false);
+			lblMeasureCumulatively.setEnabled(false);
+			chkMeasureCumulatively.setEnabled(false);
+			lblReverseMeasuring.setEnabled(false);
+			chkReverseMeasuring.setEnabled(false);
+			
+			btnTestConnection.setEnabled(false);
+			btnDefaults.setEnabled(false);
+			
+			
+
+			return;
+		}
+		
 		// Set up the measuring device
 		try {
 			device = SerialDeviceSelector.getSelectedDevice(false);
 		} catch (Exception e) {
+			cboPort.setEnabled(false);
 			cboBaud.setEnabled(false);
 			cboParity.setEnabled(false);
-			cboFlowControl.setEnabled(false);
-			cboDatabits.setEnabled(false);
 			cboStopbits.setEnabled(false);
 			cboLineFeed.setEnabled(false);
-			cboPort.setEnabled(false);
-			btnTestConnection.setEnabled(false);
-			chkReverseMeasuring.setEnabled(false);
+			
+			cboDatabits.setEnabled(false);
+			cboFlowControl.setEnabled(false);
 			spnMultiply.setEnabled(false);
+			chkMeasureCumulatively.setEnabled(false);
+			chkReverseMeasuring.setEnabled(false);
+			
+			btnTestConnection.setEnabled(false);
 			return;
 		} 
 		
@@ -446,7 +547,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			
 		}
 		
-
+		
 
 	}
 	

@@ -58,7 +58,7 @@ public class ToggleableActionGroup implements PropertyChangeListener {
 
 	public synchronized void propertyChange(PropertyChangeEvent evt) {
 		// only care about our selection key!
-		if(!TellervoAction.CORINA_SELECTED_KEY.equals(evt.getPropertyName()))
+		if(!TellervoAction.TELLERVO_SELECTED_KEY.equals(evt.getPropertyName()))
 			return;
 		
 		// ignore any infinite-loop causing events (uuurgh!)
@@ -76,7 +76,7 @@ public class ToggleableActionGroup implements PropertyChangeListener {
 		try {
 			for(TellervoAction action : actions) {
 				if(!action.equals(evt.getSource()))
-					action.putValue(TellervoAction.CORINA_SELECTED_KEY, false);
+					action.putValue(TellervoAction.TELLERVO_SELECTED_KEY, false);
 			}
 		} finally {
 			// make sure this gets called even if things go fishy above

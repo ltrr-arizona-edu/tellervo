@@ -289,8 +289,7 @@ public class GroupUIView extends javax.swing.JDialog implements ActionListener, 
 		
 		// Query db 
     	
-		PermissionsResource resource = new PermissionsResource(PermissionsEntityType.DEFAULT,
-				null, group);
+		PermissionsResource resource = new PermissionsResource(PermissionsEntityType.DEFAULT, null, group);
 		
 
 		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);

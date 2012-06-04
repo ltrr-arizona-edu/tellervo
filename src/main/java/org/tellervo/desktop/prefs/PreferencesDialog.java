@@ -229,7 +229,7 @@ public class PreferencesDialog extends JDialog {
 		pack();
 
 		setLocationRelativeTo(null); 
-		setSize(new Dimension(770, 560));
+		setSize(new Dimension(769, 567));
 	}
 	
 	private void hideAllPages()

@@ -104,10 +104,11 @@ public class Platform extends AbstractSubsystem {
 				log.error("Error setting system look and feel class", e);
 			}
 		
-		// set up mac menubar
-		Macintosh.configureMenus();
+
 
 		setInitialized(true);
+		
+
 	}
 
 	@Override

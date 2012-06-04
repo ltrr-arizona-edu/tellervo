@@ -35,7 +35,7 @@ public abstract class ToggleableAction extends TellervoAction {
 	public ToggleableAction(String key, boolean toggleValue, Icon icon) {
 		super(key, icon);
 		
-		putValue(CORINA_SELECTED_KEY, toggleValue);
+		putValue(TELLERVO_SELECTED_KEY, toggleValue);
 	}
 
 	/**
@@ -48,7 +48,7 @@ public abstract class ToggleableAction extends TellervoAction {
 	public ToggleableAction(String key, boolean toggleValue, String iconName, String iconPackageName, int iconSize) {
 		super(key, iconName, iconPackageName, iconSize);
 		
-		putValue(CORINA_SELECTED_KEY, toggleValue);
+		putValue(TELLERVO_SELECTED_KEY, toggleValue);
 	}
 
 	/**
@@ -59,7 +59,7 @@ public abstract class ToggleableAction extends TellervoAction {
 	public ToggleableAction(String key, boolean toggleValue, String iconName, int iconSize) {
 		super(key, iconName, iconSize);
 		
-		putValue(CORINA_SELECTED_KEY, toggleValue);
+		putValue(TELLERVO_SELECTED_KEY, toggleValue);
 	}
 
 	/**
@@ -69,14 +69,14 @@ public abstract class ToggleableAction extends TellervoAction {
 	public ToggleableAction(String key, boolean toggleValue) {
 		super(key);
 		
-		putValue(CORINA_SELECTED_KEY, toggleValue);
+		putValue(TELLERVO_SELECTED_KEY, toggleValue);
 	}
 
 	/**
 	 * Override and force actionPerformed to use togglePerformed instead
 	 */
 	public final void actionPerformed(ActionEvent ae) {
-		togglePerformed(ae, (Boolean) getValue(CORINA_SELECTED_KEY));
+		togglePerformed(ae, (Boolean) getValue(TELLERVO_SELECTED_KEY));
 	}
 	
 	/**

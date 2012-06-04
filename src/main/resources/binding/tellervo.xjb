@@ -15,7 +15,7 @@
 				enableFailFastCheck="true"
 				typesafeEnumBase="xs:string xs:int xs:long xs:short xs:double xs:float"
 				typesafeEnumMemberName="generateName">
-			<jaxb:serializable uid="1001"/>
+			<!--<jaxb:serializable uid="1001"/>-->
 			<xjc:simple />
 			<xjc:treatRestrictionLikeNewType />	
 			<xjc:javaType name="java.lang.Integer" xmlType="xs:int" adapter="org.tridas.adapters.IntegerAdapter" />

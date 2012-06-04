@@ -144,9 +144,9 @@ public class ToggleableBoundAction<T> extends ToggleableAction implements Proper
 
 			log.debug(property.getName() + " changed: " + value);
 
-			if(!value.equals(getValue(CORINA_SELECTED_KEY)))
+			if(!value.equals(getValue(TELLERVO_SELECTED_KEY)))
 				// this will trigger the change in the button
-				putValue(CORINA_SELECTED_KEY, value);
+				putValue(TELLERVO_SELECTED_KEY, value);
 		}
 	}
 

@@ -278,10 +278,16 @@ public class BugReport {
 		DateFormat time = DateFormat.getTimeInstance(DateFormat.LONG);
 		buf.append("\n");
 		
-		buf.append("Native libraries\n");
-		buf.append("   RXTX serial library present : "+App.prefs.getPref(PrefKey.SERIAL_LIBRARY_PRESENT, "undetermined")+"\n");
-		buf.append("   OpenGL libraries present : "+App.prefs.getPref(PrefKey.OPENGL_LIBRARY_PRESENT, "undetermined")+"\n");
-		
+		if(App.prefs !=null)
+		{
+			buf.append("Native libraries\n");
+			buf.append("   RXTX serial library present : "+App.prefs.getPref(PrefKey.SERIAL_LIBRARY_PRESENT, "undetermined")+"\n");
+			buf.append("   OpenGL libraries present : "+App.prefs.getPref(PrefKey.OPENGL_LIBRARY_PRESENT, "undetermined")+"\n");
+		}
+		else
+		{
+			buf.append("Prefs not yet instantiated");
+		}
 	
 		buf.append("\n");
 		buf.append("Bug report generated: " + date.format(now) + " at "

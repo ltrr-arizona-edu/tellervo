@@ -575,8 +575,9 @@ public class LoginDialog extends JDialog {
 		{
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			Alert.error(this, "Server connection error", "Error connecting to server:\n" + serverDetails.getErrorMessage());
-			return;
-					
+			App.prefs.setBooleanPref(PrefKey.AUTO_LOGIN, false);
+			this.setVisible(true);
+			return;	
 		}
 				
 		// first off, we're busy now.
