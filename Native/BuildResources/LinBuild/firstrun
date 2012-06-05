@@ -39,6 +39,7 @@ echo "make your choice.\n\n";
 // This makes sure we have sudo access without further passwords required
 pingSudo();
 
+echo "";
 echo "Press [enter] to continue...";
 $response = fgets(STDIN); 
 
@@ -123,7 +124,7 @@ function pingSudo()
 	exec($myFile);
 	unlink($myFile);*/
 	
-	exec("echo \"dendrochronology\" | sudo -S touch /tmp/test");
+	exec("echo \"dendrochronology\" | sudo -S touch /tmp/test >> /dev/null");
 }
 
 

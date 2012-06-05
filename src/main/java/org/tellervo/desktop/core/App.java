@@ -105,12 +105,12 @@ public class App{
 public static synchronized void init() {
 	
 	 log.debug("initializing App");
-    prefs = new Prefs();
-    prefs.init();
+
 	
 	App.platform = new Platform();
     App.platform.init();
-    
+    prefs = new Prefs();
+    prefs.init();
     
 	// Set up mac menubar
 	Macintosh.configureMenus();
