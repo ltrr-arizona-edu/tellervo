@@ -70,23 +70,23 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	private JLabel txtLastPosition;
 	private JLabel txtCurrentPosition;
 	
-	protected AbstractSerialMeasuringDevice dev;
+	protected AbstractMeasuringDevice dev;
 	private JPanel panel = new JPanel();
 	protected JLabel lblMessage;
 	private Color bgcolor = null;
 
 	
-	public MeasurePanel(final AbstractSerialMeasuringDevice device, Color bgcolor)
+	public MeasurePanel(final AbstractMeasuringDevice device, Color bgcolor)
 	{
 		this.bgcolor = bgcolor;
 		init(device);
 	}
 	
-	public MeasurePanel(final AbstractSerialMeasuringDevice device) {
+	public MeasurePanel(final AbstractMeasuringDevice device) {
 		init(device);
 	}
 	
-	private void init(final AbstractSerialMeasuringDevice device)
+	private void init(final AbstractMeasuringDevice device)
 	{
 		setBorder(null);
 		this.setBackground(bgcolor);	

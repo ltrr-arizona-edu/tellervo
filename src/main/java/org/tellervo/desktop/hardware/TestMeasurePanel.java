@@ -28,10 +28,10 @@ import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
 
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasurePanel;
 import org.tellervo.desktop.hardware.MeasurementReceiver;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.DataDirection;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 import org.tellervo.desktop.ui.I18n;
 import org.tridas.io.util.StringUtils;
 
@@ -50,7 +50,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	private final JLabel infoLabel;
 	
 	
-	public TestMeasurePanel(JLabel infoLabel, JTextPane txtLog, JTextPane txtComCheckLog, final AbstractSerialMeasuringDevice device, Color bgcolor) 
+	public TestMeasurePanel(JLabel infoLabel, JTextPane txtLog, JTextPane txtComCheckLog, final AbstractMeasuringDevice device, Color bgcolor) 
 	{
 		super(device, bgcolor);
 		

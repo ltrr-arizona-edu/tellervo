@@ -26,12 +26,12 @@ import java.util.Collections;
 import java.util.HashMap;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.BaudRate;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.DataBits;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.FlowControl;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.LineFeed;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.PortParity;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.StopBits;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.BaudRate;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataBits;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.FlowControl;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.LineFeed;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.PortParity;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.StopBits;
 import org.tellervo.desktop.hardware.device.EveIODevice;
 import org.tellervo.desktop.hardware.device.GenericASCIIDevice;
 import org.tellervo.desktop.hardware.device.HeidenhainND287;
@@ -39,15 +39,16 @@ import org.tellervo.desktop.hardware.device.LintabDevice;
 import org.tellervo.desktop.hardware.device.Microcode2;
 import org.tellervo.desktop.hardware.device.QC10Device;
 import org.tellervo.desktop.hardware.device.QC1100;
+import org.tellervo.desktop.hardware.device.UParSerDevice;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 
 
-public class SerialDeviceSelector {
+public class MeasuringDeviceSelector {
 		
 	/** Device map */
-	private static final HashMap<String, Class<?extends AbstractSerialMeasuringDevice>> deviceMap = 
-		new HashMap<String, Class<?extends AbstractSerialMeasuringDevice>>();
+	private static final HashMap<String, Class<?extends AbstractMeasuringDevice>> deviceMap = 
+		new HashMap<String, Class<?extends AbstractMeasuringDevice>>();
 
 	private static final String none = "[none]";
 	
@@ -60,6 +61,7 @@ public class SerialDeviceSelector {
 		registerDevice(HeidenhainND287.class);
 		registerDevice(QC1100.class);
 		registerDevice(Microcode2.class);
+		registerDevice(UParSerDevice.class);
 	}
 	
 	/**
@@ -67,9 +69,9 @@ public class SerialDeviceSelector {
 	 * @param measuringDevice
 	 */
 	public synchronized static void registerDevice(
-			Class<? extends AbstractSerialMeasuringDevice> measuringDevice) {
+			Class<? extends AbstractMeasuringDevice> measuringDevice) {
 		
-		AbstractSerialMeasuringDevice dev = null;
+		AbstractMeasuringDevice dev = null;
 		try{
 			dev = measuringDevice.newInstance();			
 		} catch (InstantiationException e) {
@@ -120,13 +122,13 @@ public class SerialDeviceSelector {
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
 	 */
-	public static AbstractSerialMeasuringDevice getSelectedDevice(Boolean doInitialize) throws IOException, InstantiationException, IllegalAccessException
+	public static AbstractMeasuringDevice getSelectedDevice(Boolean doInitialize) throws IOException, InstantiationException, IllegalAccessException
 	{
 		String selectedDevice = App.prefs.getPref(PrefKey.SERIAL_DEVICE, null);
 		String portName = App.prefs.getPref(PrefKey.SERIAL_PORT, "COM1");
-		AbstractSerialMeasuringDevice device = null;
+		AbstractMeasuringDevice device = null;
 
-		if(selectedDevice==null || selectedDevice.equals(SerialDeviceSelector.none))
+		if(selectedDevice==null || selectedDevice.equals(MeasuringDeviceSelector.none))
 		{
 			throw new IOException("You haven't set up your measuring platform yet!");
 		}

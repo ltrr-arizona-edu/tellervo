@@ -20,7 +20,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.hardware;
 
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.DataDirection;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 
 public interface MeasurementReceiver {
 	public void receiverUpdateStatus(String status); 

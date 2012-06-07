@@ -8,10 +8,10 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import org.tellervo.desktop.Year;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasurePanel;
 import org.tellervo.desktop.hardware.MeasurementReceiver;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.DataDirection;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 import org.tellervo.desktop.ui.I18n;
 
 
@@ -26,7 +26,7 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 	private Integer cachedValue= null;
 	
 	@SuppressWarnings("serial")
-	public EditorMeasurePanel(Editor myeditor, final AbstractSerialMeasuringDevice device) {
+	public EditorMeasurePanel(Editor myeditor, final AbstractMeasuringDevice device) {
 		super(device);
 		editor = myeditor;
 		

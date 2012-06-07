@@ -53,7 +53,7 @@ public class PlatformTestPanel extends JPanel {
 	private JPanel contentPanel = new JPanel();
 	private JTextPane txtDataReceived;
 	private JTextPane txtLog;
-	private AbstractSerialMeasuringDevice device;
+	private AbstractMeasuringDevice device;
 	private TestMeasurePanel panelControls;
 	private JLabel lblInfo;
 	private String startupMessage = "Please attempt to measure a few rings...";
@@ -64,7 +64,7 @@ public class PlatformTestPanel extends JPanel {
 	/**
 	 * Create the dialog.
 	 */
-	public PlatformTestPanel(JDialog parent, AbstractSerialMeasuringDevice device, Color bgcolor) {
+	public PlatformTestPanel(JDialog parent, AbstractMeasuringDevice device, Color bgcolor) {
 		this.parent = parent;
 		this.device = device;
 		this.bgcolor = bgcolor;
@@ -115,7 +115,7 @@ public class PlatformTestPanel extends JPanel {
 		
 		// Set up the measuring device
 		try {
-			device = SerialDeviceSelector.getSelectedDevice(true);
+			device = MeasuringDeviceSelector.getSelectedDevice(true);
 		} catch (IOException e) {
 			log.error("Problem talking to device");
 			errorMessage = e.getMessage();
@@ -146,7 +146,7 @@ public class PlatformTestPanel extends JPanel {
 		init();
 	}
 	
-	public static void showDialog(AbstractSerialMeasuringDevice device, Color bgcolor)
+	public static void showDialog(AbstractMeasuringDevice device, Color bgcolor)
 	{
 		final JDialog dialog = new JDialog();
 		final PlatformTestPanel panel = new PlatformTestPanel(dialog, device, bgcolor);
@@ -360,7 +360,7 @@ public class PlatformTestPanel extends JPanel {
 		}
 	}
 
-	public AbstractSerialMeasuringDevice getDevice() {
+	public AbstractMeasuringDevice getDevice() {
 		return device;
 	}
 

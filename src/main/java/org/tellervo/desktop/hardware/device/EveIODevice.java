@@ -23,8 +23,9 @@ package org.tellervo.desktop.hardware.device;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
-import org.tellervo.desktop.hardware.SerialSampleIOEvent;
+import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 
 import gnu.io.SerialPortEvent;
 
@@ -71,16 +72,16 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 				if(getState() == PortState.WAITING_FOR_ACK) {
 					
 					if(tryCount++ == 25) {
-						fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Failed to initialize reader device.");
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Failed to initialize reader device.");
 						System.out.println("init tries exhausted; giving up.");
 						break;
 					}
 					
 					try {
 						System.out.println("Initializing reader, try " + tryCount + "...");
-						fireSerialSampleEvent(this, SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
 						
-						getPort().getOutputStream().write(EVE_ENQ);
+						getSerialPort().getOutputStream().write(EVE_ENQ);
 					}
 					catch (IOException e) {	}
 				} else {
@@ -101,11 +102,11 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 			InputStream input;
 			
 			try {
-				input = getPort().getInputStream();
+				input = getSerialPort().getInputStream();
 			}
 			catch (IOException ioe) {
 				// uh.. ?
-				fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error getting serial port input stream");
+				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error getting serial port input stream");
 
 				return;
 			}
@@ -115,7 +116,7 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 				{
 				case WAITING_FOR_ACK: {
 					int val = input.read();
-					fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, String.valueOf(val), DataDirection.RECEIVED);
+					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, String.valueOf(val), DataDirection.RECEIVED);
 					if(val == EVE_ACK) {
 						System.out.println("Received ACK from device, leaving initialize mode");
 						
@@ -133,7 +134,7 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 						// dump any input we have...
 						while(input.read() != -1);
 						
-						fireSerialSampleEvent(this, SerialSampleIOEvent.INITIALIZED_EVENT, null);
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.INITIALIZED_EVENT, null);
 					}
 					else {
 						System.out.println("Received " + val + "while waiting for ACK");
@@ -150,10 +151,10 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 					if(((counter = input.read()) == -1) ||
 							((valuehi = input.read()) == -1) ||
 							((valuelo = input.read()) == -1)) {
-						fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, null);
 						return;
 					}
-					fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, String.valueOf(counter)+
+					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, String.valueOf(counter)+
 							String.valueOf(valuehi)+
 							String.valueOf(valuelo), DataDirection.RECEIVED);
 
@@ -169,7 +170,7 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 					// Convert from 1/100th mm to our default units = microns
 					value = value * 10;
 					
-					fireSerialSampleEvent(this, SerialSampleIOEvent.NEW_SAMPLE_EVENT, new Integer(value));					
+					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.NEW_SAMPLE_EVENT, new Integer(value));					
 				}
 				break;
 				
@@ -178,7 +179,7 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 				}
 			}
 			catch (IOException ioe) {
-				fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error reading from serial port");
+				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port");
 			}
 			
 		}		

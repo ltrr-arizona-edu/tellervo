@@ -20,7 +20,7 @@ public class UnsupportedPortParameterException extends Exception {
 	@Override
 	public String getMessage()
 	{
-		return "Value of '"+value+ "' is unsupported for the serial port parameter '"+parameter+"'";
+		return "Value of '"+value+ "' is unsupported for the port parameter '"+parameter+"'";
 	}
 	
 }

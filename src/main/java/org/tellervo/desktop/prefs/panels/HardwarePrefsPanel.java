@@ -45,16 +45,19 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.hardware.AbstractHIDMeasuringDevice;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.hardware.PlatformTestPanel;
-import org.tellervo.desktop.hardware.SerialDeviceSelector;
+import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
 import org.tellervo.desktop.hardware.UnsupportedPortParameterException;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.BaudRate;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.DataBits;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.FlowControl;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.LineFeed;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.PortParity;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.StopBits;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.BaudRate;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataBits;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DeviceProtocol;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.FlowControl;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.LineFeed;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.PortParity;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.StopBits;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.DoubleSpinnerWrapper;
@@ -72,7 +75,7 @@ import javax.swing.border.LineBorder;
 
 @SuppressWarnings("serial")
 public class HardwarePrefsPanel extends AbstractPreferencesPanel{
-	private AbstractSerialMeasuringDevice device;
+	private AbstractMeasuringDevice device;
 	private JPanel panel;
 	private JPanel panelBarcode;
 	private JCheckBox chkDisableBarcodes;
@@ -163,7 +166,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		new FormatWrapper(cboPlatformType, 
 				PrefKey.SERIAL_DEVICE, 
 				App.prefs.getPref(PrefKey.SERIAL_DEVICE, "[none]"), 
-				SerialDeviceSelector.getAvailableDevicesNames());
+				MeasuringDeviceSelector.getAvailableDevicesNames());
 		
     	cboPlatformType.addItemListener(new ItemListener(){
 				@Override
@@ -327,7 +330,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 				
 				// Set up the measuring device
 				try{
-					device = SerialDeviceSelector.getSelectedDevice(true);	
+					device = MeasuringDeviceSelector.getSelectedDevice(true);	
 				} catch (IOException e)
 				{
 					Alert.error(I18n.getText("error"), 
@@ -364,16 +367,27 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	
 	public Boolean isReadyToTestConnection()
 	{
-		if(cboPort.getModel().getSize()==0) return false;
-		if(cboPort.getSelectedItem()==null) return false;
-		if(cboPort.getSelectedItem().toString().equals("<choose a serial port>")) return false;
-		
-		if(cboPlatformType.getSelectedItem()==null) return false;
-		if(cboPlatformType.getSelectedItem().toString().equals("[none]")) return false;
-		
-		for(String platformname : SerialDeviceSelector.getAvailableDevicesNames())
+		if(device.getDeviceProtocol().equals(DeviceProtocol.SERIAL))
 		{
-			if(platformname.equals(cboPlatformType.getSelectedItem().toString())) return true;
+	
+			if(cboPort.getModel().getSize()==0) return false;
+			if(cboPort.getSelectedItem()==null) return false;
+			if(cboPort.getSelectedItem().toString().equals("<choose a serial port>")) return false;
+			
+			if(cboPlatformType.getSelectedItem()==null) return false;
+			if(cboPlatformType.getSelectedItem().toString().equals("[none]")) return false;
+			
+			for(String platformname : MeasuringDeviceSelector.getAvailableDevicesNames())
+			{
+				if(platformname.equals(cboPlatformType.getSelectedItem().toString())) return true;
+			}
+		}
+		else if (device.getDeviceProtocol().equals(DeviceProtocol.HID_USB))
+		{
+			if(((AbstractHIDMeasuringDevice)device).isDevicePresent())
+			{
+				return true;
+			}
 		}
 
 		return false;
@@ -397,7 +411,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		if (AbstractSerialMeasuringDevice.hasSerialCapability()) {
 	
 			// first, enumerate all the ports.
-			Vector<String> comportlist = AbstractSerialMeasuringDevice.enumeratePorts();
+			Vector<String> comportlist = AbstractSerialMeasuringDevice.enumerateSerialPorts();
 	
 			// do we have a COM port selected that's not in the list? (ugh!)
 			String curport = App.prefs.getPref(PrefKey.SERIAL_PORT, null);
@@ -453,9 +467,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	 */
 	private void setGuiEnabledByPlatformType(Boolean useDefaults)
 	{
-		AbstractSerialMeasuringDevice device;
-		
-		
+						
 		if (!AbstractSerialMeasuringDevice.hasSerialCapability())
 		{
 			lblPlatformType.setEnabled(false);
@@ -493,7 +505,9 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		
 		// Set up the measuring device
 		try {
-			device = SerialDeviceSelector.getSelectedDevice(false);
+			device = MeasuringDeviceSelector.getSelectedDevice(false);
+			
+
 		} catch (Exception e) {
 			cboPort.setEnabled(false);
 			cboBaud.setEnabled(false);
@@ -511,7 +525,18 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			return;
 		} 
 		
-		cboPort.setEnabled(true);
+		// Set GUI depending on protocol type
+		if(device.getDeviceProtocol().equals(DeviceProtocol.SERIAL))
+		{
+			cboPort.setEnabled(true);
+			btnDefaults.setEnabled(true);
+		}
+		else if(device.getDeviceProtocol().equals(DeviceProtocol.HID_USB))
+		{
+			cboPort.setEnabled(false);
+			btnDefaults.setEnabled(false);
+		}
+		
 		btnTestConnection.setEnabled(true);
 		
 		cboBaud.setEnabled(device.isBaudEditable());

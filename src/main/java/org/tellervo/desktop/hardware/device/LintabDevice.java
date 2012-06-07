@@ -28,8 +28,9 @@ import java.io.OutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.admin.model.GroupsWithPermissionsTableModel;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
-import org.tellervo.desktop.hardware.SerialSampleIOEvent;
+import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 
 import gnu.io.SerialPortEvent;
 
@@ -104,15 +105,15 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 				if(getState() == PortState.WAITING_FOR_ACK) {
 					
 					if(tryCount++ == 25) {
-						fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Failed to initialize reader device.");
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Failed to initialize reader device.");
 						System.out.println("init tries exhausted; giving up.");
 						break;
 					}
 					
 					try {
 						System.out.println("Initializing reader, try " + tryCount + "...");
-						fireSerialSampleEvent(this, SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
-						getPort().getOutputStream().write(EVE_ENQ);
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
+						getSerialPort().getOutputStream().write(EVE_ENQ);
 					}
 					catch (IOException e) {	}
 				} else {
@@ -136,7 +137,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 			InputStream input;
 			
 			try {
-				input = getPort().getInputStream();
+				input = getSerialPort().getInputStream();
 				
 	    
 			    StringBuffer readBuffer = new StringBuffer();
@@ -156,7 +157,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 			    		
 			    		//If a timeout then show bad sample
 						if(intReadFromPort == -1) {
-							fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
+							fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, null);
 							return;
 						}
 
@@ -165,7 +166,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 			    	}
 
                 String strReadBuffer = readBuffer.toString();
-                fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, String.valueOf(strReadBuffer), DataDirection.RECEIVED);
+                fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, String.valueOf(strReadBuffer), DataDirection.RECEIVED);
                
                 // Ignore "0;10" data as this is a side-effect of Lintab's hardware button
                 if (strReadBuffer.equals("0;10")) return;
@@ -218,7 +219,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
                 if( strReadBuffer.endsWith(";10") || fireOnNextValue) 
                 {
                 	fireOnNextValue = false;
-                	fireSerialSampleEvent(this, SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+                	fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
                 	zeroMeasurement();
                 }
                 else if( strReadBuffer.endsWith(";01") || strReadBuffer.endsWith(";11")) 
@@ -228,12 +229,12 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
                 else
                 {
                 	// Not recording this value just updating current value counter
-                	fireSerialSampleEvent(this, SerialSampleIOEvent.UPDATED_CURRENT_VALUE_EVENT, intValue);
+                	fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.UPDATED_CURRENT_VALUE_EVENT, intValue);
                 }
 							
 			}
 			catch (IOException ioe) {
-				fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error reading from serial port");
+				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port");
 
 			}   	
 		}
@@ -298,15 +299,15 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 
     	try {
     		
-	    output = getPort().getOutputStream();
+	    output = getSerialPort().getOutputStream();
 	    OutputStream outToPort=new DataOutputStream(output);
 	    byte[] command = strCommand.getBytes();
 	    outToPort.write(command);
-	    fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, strCommand, DataDirection.SENT);
+	    fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strCommand, DataDirection.SENT);
 	    
     	}
     	catch (IOException ioe) {
-			fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error writing to serial port", DataDirection.SENT);
+			fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error writing to serial port", DataDirection.SENT);
     	}	
 	}
 

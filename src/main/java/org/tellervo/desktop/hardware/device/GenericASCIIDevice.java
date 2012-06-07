@@ -27,8 +27,9 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
-import org.tellervo.desktop.hardware.SerialSampleIOEvent;
+import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 
 import gnu.io.SerialPortEvent;
 
@@ -71,14 +72,14 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 					
 					if(tryCount++ == 25) {
 						log.debug("Platform init tries exhausted; giving up.");
-						fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Failed to initialize reader device.");
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Failed to initialize reader device.");
 						break;
 					}
 					
 					try {
 						log.debug("Initializing reader, try " + tryCount + "...");
-						fireSerialSampleEvent(this, SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
-						getPort().getOutputStream().write(EVE_ENQ);
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
+						getSerialPort().getOutputStream().write(EVE_ENQ);
 					}
 					catch (IOException e) {	}
 				} else {
@@ -101,7 +102,7 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 			InputStream input;
 			
 			try {
-				input = getPort().getInputStream();
+				input = getSerialPort().getInputStream();
 	    
 			    StringBuffer readBuffer = new StringBuffer();
 			    int intReadFromPort;
@@ -109,7 +110,7 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 			    	while ((intReadFromPort=input.read()) != 10){
 			    		//If a timeout then show bad sample
 						if(intReadFromPort == -1) {
-							fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
+							fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, null);
 							return;
 
 						}
@@ -121,7 +122,7 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 			    	}
 
                 String strReadBuffer = readBuffer.toString();
-                fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
+                fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
  	
 		    	// Raw data is in mm like "2.575"
                 // Strip label or units if present
@@ -133,7 +134,7 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 				}
 				else
 				{
-					fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Invalid value from device");
+					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Invalid value from device");
 
 				}
                 
@@ -153,18 +154,18 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 		    	if(intValue>0)
 		    	{	    	
 			    	// Fire event
-			    	fireSerialSampleEvent(this, SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+			    	fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
 		    	}
 		    	else
 		    	{
 		    		// Fire bad event as value is a negative number
-		    		fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, null);
+		    		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, null);
 		    	}
 			    							
 
 			}
 			catch (Exception ioe) {
-				fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error reading from serial port");
+				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port");
 
 			}   	
 			 

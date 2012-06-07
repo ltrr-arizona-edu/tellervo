@@ -113,8 +113,8 @@ import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
 import org.tellervo.desktop.gui.menus.actions.PrintAction;
 import org.tellervo.desktop.gui.menus.actions.SaveAction;
 import org.tellervo.desktop.gui.menus.actions.TruncateAction;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
-import org.tellervo.desktop.hardware.SerialDeviceSelector;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
+import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.io.control.IOController;
 import org.tellervo.desktop.platform.Platform;
@@ -936,9 +936,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// ok, start measuring, if we can!
 		
 		// Set up the measuring device
-		AbstractSerialMeasuringDevice device;
+		AbstractMeasuringDevice device;
 		try {
-			device = SerialDeviceSelector.getSelectedDevice(true);
+			device = MeasuringDeviceSelector.getSelectedDevice(true);
 			device.setPortParamsFromPrefs();
 		}
 		catch (Exception ioe) {

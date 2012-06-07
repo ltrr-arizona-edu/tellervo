@@ -22,8 +22,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.tellervo.desktop.Year;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
-import org.tellervo.desktop.hardware.SerialDeviceSelector;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
+import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
@@ -40,7 +40,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog {
 	private int yearIndex;
 	private ArrayList<AMeasurement> measurements;
 	private Integer finalValue;
-	private AbstractSerialMeasuringDevice dev;
+	private AbstractMeasuringDevice dev;
 	
 	/** Creates new form ReconcileMeasureDialog */
 	public ReconcileMeasureDialog(java.awt.Frame parent, boolean modal, Sample src, Sample ref, Year year) {
@@ -75,7 +75,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog {
 	private void initMeasuringDevice()
 	{
 		try {
-			dev = SerialDeviceSelector.getSelectedDevice(true);
+			dev = MeasuringDeviceSelector.getSelectedDevice(true);
 			dev.setMeasurementReceiver(this.panelMeasure);
 			devStatus.setText("Initialized");
 		}

@@ -3,10 +3,10 @@
  */
 package org.tellervo.desktop.manip;
 
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasurePanel;
 import org.tellervo.desktop.hardware.MeasurementReceiver;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.DataDirection;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 
 
 /**
@@ -18,7 +18,7 @@ public class ReconcileMeasurePanel extends MeasurePanel implements MeasurementRe
 	private static final long serialVersionUID = 1L;
 	private ReconcileMeasureDialog rmd;
 
-	public ReconcileMeasurePanel(ReconcileMeasureDialog rmd, final AbstractSerialMeasuringDevice device) 
+	public ReconcileMeasurePanel(ReconcileMeasureDialog rmd, final AbstractMeasuringDevice device) 
 	{
 		super(device);
 		this.rmd = rmd;

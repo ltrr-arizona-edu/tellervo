@@ -22,10 +22,10 @@ package org.tellervo.desktop.hardware;
 
 import java.util.EventObject;
 
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.DataDirection;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 
 
-public class SerialSampleIOEvent extends EventObject {
+public class MeasuringSampleIOEvent extends EventObject {
 	
 	private static final long serialVersionUID = -6055117055932450549L;
 
@@ -53,14 +53,14 @@ public class SerialSampleIOEvent extends EventObject {
 	private Object value;
 	private DataDirection dir = DataDirection.RECEIVED;
 	
-	public SerialSampleIOEvent(Object source, int type, Object value){
+	public MeasuringSampleIOEvent(Object source, int type, Object value){
 		super(source);
 		
 		this.type = type;
 		this.value = value;
 	}
 	
-	public SerialSampleIOEvent(Object source, int type, Object value, DataDirection dir) {
+	public MeasuringSampleIOEvent(Object source, int type, Object value, DataDirection dir) {
 		super(source);
 		
 		this.type = type;

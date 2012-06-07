@@ -29,8 +29,8 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gis.GrfxWarning;
 import org.tellervo.desktop.gis.WMSTableModel;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
-import org.tellervo.desktop.hardware.SerialDeviceSelector;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
+import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
 import org.tellervo.desktop.hardware.TestMeasurePanel;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.panels.HardwarePrefsPanel;
@@ -51,7 +51,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 	final JFileChooser fc = new JFileChooser();
 	WMSTableModel wmsModel = new WMSTableModel();
 	GrfxWarning warn = new GrfxWarning();
-	AbstractSerialMeasuringDevice device;
+	AbstractMeasuringDevice device;
 	protected HardwarePrefsPanel hpp;
 	
     /** Creates new form Ui_PreferencesPanel */
@@ -82,7 +82,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
     	new FormatWrapper(hpp.getCboPlatformType(), 
     			PrefKey.SERIAL_DEVICE, 
     			App.prefs.getPref(PrefKey.SERIAL_DEVICE, "[none]"), 
-    			SerialDeviceSelector.getAvailableDevicesNames());
+    			MeasuringDeviceSelector.getAvailableDevicesNames());
         
         panelMeasureHolder = new JPanel();
         
@@ -168,7 +168,7 @@ public class Ui_PreferencesPanel extends javax.swing.JPanel implements ActionLis
 
 		// Set up the measuring device
 		try{
-			device = SerialDeviceSelector.getSelectedDevice(true);	
+			device = MeasuringDeviceSelector.getSelectedDevice(true);	
 		} catch (IOException e)
 		{
 			Alert.error(I18n.getText("error"), 

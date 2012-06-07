@@ -68,6 +68,7 @@ import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.menus.EditMenu;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.io.TwoColumn;
 import org.tellervo.desktop.io.WrongFiletypeException;

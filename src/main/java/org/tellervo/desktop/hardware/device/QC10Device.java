@@ -23,7 +23,7 @@ package org.tellervo.desktop.hardware.device;
 import java.io.DataOutputStream;
 import java.io.OutputStream;
 
-import org.tellervo.desktop.hardware.SerialSampleIOEvent;
+import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 
 
 
@@ -91,17 +91,17 @@ public class QC10Device extends GenericASCIIDevice {
 
     	try {
     		
-	    output = getPort().getOutputStream();
+	    output = getSerialPort().getOutputStream();
 	    OutputStream outToPort=new DataOutputStream(output); 
 	    
 	    byte[] command = (strCommand+lineFeed.toCommandString()).getBytes();
 	    outToPort.write(command);
-        fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, strCommand, DataDirection.SENT);
+        fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strCommand, DataDirection.SENT);
 
 	    
     	}
     	catch (Exception ioe) {
-			fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error sending command to serial port");
+			fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error sending command to serial port");
 
     	}	
 	}

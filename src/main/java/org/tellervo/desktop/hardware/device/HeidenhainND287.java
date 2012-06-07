@@ -31,10 +31,11 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
-import org.tellervo.desktop.hardware.SerialSampleIOEvent;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.DataDirection;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice.PortState;
+import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.PortState;
 
 
 
@@ -120,7 +121,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 			InputStream input;
 			
 			try {
-				input = getPort().getInputStream();
+				input = getSerialPort().getInputStream();
 	    
 			    StringBuffer readBuffer = new StringBuffer();
 			    int intReadFromPort;
@@ -133,7 +134,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 		    		
 		    		if(errcount>20)
 		    		{
-						fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, "Port timed out");
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Port timed out");
 						return;
 		    		}
 		    		
@@ -150,7 +151,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 		    		else if (intReadFromPort==21)
 		    		{
 		    			log.debug("NAK received - breaking");
-						fireSerialSampleEvent(this, SerialSampleIOEvent.BAD_SAMPLE_EVENT, "NAK");
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "NAK");
 						return;		    			
 		    		
 		    		}
@@ -217,7 +218,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
     	
 		    	// Fire event
 	    		log.debug("Firing SerialSampleIOEvent with value = "+intValue);
-		    	fireSerialSampleEvent(this, SerialSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+		    	fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
 		    
 	
 			    							
@@ -229,7 +230,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 				
 				//log.debug("Stacktrace", e2.getStackTrace());
 				
-				fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error reading from serial port");
+				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port");
 
 			}  
 			 
@@ -257,14 +258,14 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 					
 					if(tryCount++ == 25) {
 						log.debug("Platform init tries exhausted; giving up.");
-						fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Failed to initialize reader device.");
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Failed to initialize reader device.");
 						break;
 					}
 					
 					try {
 						log.debug("Initializing reader, try " + tryCount + "...");
-						fireSerialSampleEvent(this, SerialSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
-						getPort().getOutputStream().write(EVE_ENQ);
+						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
+						getSerialPort().getOutputStream().write(EVE_ENQ);
 					}
 					catch (IOException e) {	}
 				} else {
@@ -292,17 +293,17 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 
     	try {
     		
-	    output = getPort().getOutputStream();
+	    output = getSerialPort().getOutputStream();
 	    OutputStream outToPort=new DataOutputStream(output); 
 	    
 	    byte[] command = (strCommand+lineFeed.toCommandString()).getBytes();
 	    outToPort.write(command);
-        fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, strCommand, DataDirection.SENT);
+        fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strCommand, DataDirection.SENT);
 
 	    
     	}
     	catch (Exception ioe) {
-			fireSerialSampleEvent(this, SerialSampleIOEvent.ERROR, "Error sending command to serial port");
+			fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error sending command to serial port");
 
     	}	
 	}
