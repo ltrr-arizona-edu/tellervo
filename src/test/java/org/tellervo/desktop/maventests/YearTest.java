@@ -117,7 +117,7 @@ public class YearTest extends TestCase {
     //
     // testing MetadataTemplate.java
     //
-	public void testMetadataLoad() {
+	/*public void testMetadataLoad() {
 		Iterator<?> i = MetadataTemplate.getFields();
 		assertTrue(i != null);
 		int n = 0;
@@ -126,5 +126,5 @@ public class YearTest extends TestCase {
 		    n++;
 		}
 		assertTrue(n >= 1);
-    }
+    }*/
 }

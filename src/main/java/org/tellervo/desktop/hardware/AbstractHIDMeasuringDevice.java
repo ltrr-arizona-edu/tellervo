@@ -34,12 +34,7 @@ public abstract class AbstractHIDMeasuringDevice extends
 	 */
 	public Boolean isDevicePresent()
 	{
-		if(port==null)
-		{
-			return false;
-		}
-		
-		return true;
+		return false;
 		
 	}
 	

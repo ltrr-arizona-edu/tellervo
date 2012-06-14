@@ -49,9 +49,6 @@ public abstract class AbstractMeasuringDevice
 {
 
 	protected final static Logger log = LoggerFactory.getLogger(AbstractMeasuringDevice.class);
-
-	/** The actual port we're operating on */
-	protected Object port;
 	
 	/** The state our serial port is in */
 	protected PortState state;	
@@ -270,23 +267,7 @@ public abstract class AbstractMeasuringDevice
 	 */
 	public abstract void setPortParamsFromPrefs() throws UnsupportedPortParameterException, IOException;
 
-	
-	/**
-	 * Get the actual port
-	 * 
-	 * @return
-	 */
-	protected final Object getPort() {
-		if(port!=null)
-		{
-			return port;
-		}
-		else
-		{
-			log.error("Port is null!");
-			return null;
-		}
-	}
+
 	
 	public String getPortName()
 	{

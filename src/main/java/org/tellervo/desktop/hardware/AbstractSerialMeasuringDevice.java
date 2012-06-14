@@ -2,7 +2,6 @@ package org.tellervo.desktop.hardware;
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
-import gnu.io.CommPortOwnershipListener;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
@@ -15,13 +14,6 @@ import java.util.TooManyListenersException;
 import java.util.Vector;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.BaudRate;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataBits;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.FlowControl;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.LineFeed;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.PortParity;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.StopBits;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.UnitMultiplier;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
@@ -32,8 +24,11 @@ import org.tellervo.desktop.ui.I18n;
  */
 public abstract class AbstractSerialMeasuringDevice extends
 		AbstractMeasuringDevice implements 
-		SerialPortEventListener, CommPortOwnershipListener{
+		SerialPortEventListener{
 
+	/** The actual serial port we're operating on */
+	private SerialPort port;
+	
 	/**
 	 * Create a new serial measuring device, but do not open. Typically for 
 	 * informational uses only. Port state is set to 'DIE' as if it had 
@@ -335,7 +330,7 @@ public abstract class AbstractSerialMeasuringDevice extends
 	 * @return
 	 * @throws IOException
 	 */
-	public Object openPort(String portName) throws IOException {
+	public SerialPort openPort(String portName) throws IOException {
 		
 		// Make sure the port is closed
 		try	{((SerialPort) port).close();}catch( Exception e){};
@@ -347,7 +342,7 @@ public abstract class AbstractSerialMeasuringDevice extends
 			// get the port by name.
 			portId = CommPortIdentifier.getPortIdentifier(portName);
 			
-			portId.addPortOwnershipListener(this);
+			//portId.addPortOwnershipListener(this);
 			
 			// take ownership...
 			CommPort basePort = portId.open("Tellervo", 1000);
@@ -357,27 +352,27 @@ public abstract class AbstractSerialMeasuringDevice extends
 				throw new IOException(I18n.getText("preferences.hardware.unsupportedporttype"));
 			}
 			
-			SerialPort serPort = (SerialPort) basePort;
+			port = (SerialPort) basePort;
 			
 			// defaults to 9600 8N1, no flow control...
-			serPort.setSerialPortParams(getBaud(),
+			port.setSerialPortParams(getBaud(),
 								     getDataBits().toInt(),
 								     getStopBits().toInt(),
 								     getParity().toInt());
 			
-			serPort.setFlowControlMode(getFlowControl().toInt());
+			port.setFlowControlMode(getFlowControl().toInt());
 
 			// set up our event listener
-			serPort.addEventListener(this);
-			serPort.notifyOnDataAvailable(true);
+			port.addEventListener(this);
+			port.notifyOnDataAvailable(true);
 			
 			// time out after 500ms when reading...
-			serPort.enableReceiveTimeout(500);
+			port.enableReceiveTimeout(500);
 			
 			//dataOutStream = new BufferedOutputStream((port.getOutputStream()));
 			
 			state = PortState.NORMAL;
-			return serPort;
+			return port;
 		}
 		catch (NoSuchPortException e) {
 			throw new IOException(I18n.getText("preferences.hardware.portdoesntexist"));
@@ -389,6 +384,7 @@ public abstract class AbstractSerialMeasuringDevice extends
 			{
 				throw new IOException(I18n.getText("preferences.hardware.portinuse", "Unknown"));
 			}
+			
 		}
 		catch (UnsupportedCommOperationException e) {
 			// something is broken??
@@ -398,8 +394,7 @@ public abstract class AbstractSerialMeasuringDevice extends
 			// uh... we just made it. and set the listener.  something is broken.
 			throw new IOException("Unable to open port: TooManyListenersException\n"+e.getLocalizedMessage());
 		}
-		
-		
+
 	}
 
 }
