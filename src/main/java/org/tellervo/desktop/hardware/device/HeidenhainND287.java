@@ -26,16 +26,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.PortState;
 
 
 
@@ -57,9 +52,9 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 		log.debug("Setting Heidenhain default port parameters");
 		baudRate = BaudRate.B_9600;
 		dataBits = DataBits.DATABITS_7;
-		stopBits = StopBits.STOPBITS_2;
+		stopBits = StopBits.STOPBITS_1;
 		parity = PortParity.EVEN;
-		flowControl = FlowControl.NONE;
+		flowControl = FlowControl.RTSCTS_IN;
 		lineFeed = LineFeed.CRLF;
 		unitMultiplier = UnitMultiplier.TIMES_1000;
 	}
@@ -77,7 +72,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 
 	@Override
 	public Boolean isLineFeedEditable() {
-		return true;
+		return false;
 	}
 
 	@Override
@@ -92,7 +87,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 	
 	@Override
 	public Boolean isFlowControlEditable(){
-		return true;
+		return false;
 	}
 
 	@Override
@@ -115,7 +110,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 	@Override
 	public void serialEvent(SerialPortEvent e) {
 		
-		log.debug("Received serial port event (type "+e.getEventType()+")");
+		//log.debug("Received serial port event (type "+e.getEventType()+")");
 		
 		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			InputStream input;
@@ -132,37 +127,37 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 		    	while (exitcounter==0)
 		    	{
 		    		
-		    		if(errcount>20)
+		    		/*if(errcount>20)
 		    		{
 						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Port timed out");
 						return;
-		    		}
+		    		}*/
 		    		
 		    		charcount++;
 		    		intReadFromPort=input.read();
-		    		log.debug("Raw int value (#"+charcount+") from port: "+intReadFromPort+ " = " + (char) intReadFromPort);
+		    		//log.debug("Raw int value (#"+charcount+") from port: "+intReadFromPort+ " = " + (char) intReadFromPort);
 
 					//Ignore CR (13), LF (10), SP (32) and STX (2)
 		    		if(intReadFromPort==10)  
 		    		{
-		    			log.debug("Reached LF - breaking");
+		    			//log.debug("Reached LF - breaking");
 		    			break;
 		    		}
 		    		else if (intReadFromPort==21)
 		    		{
-		    			log.debug("NAK received - breaking");
+		    			//log.debug("NAK received - breaking");
 						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "NAK");
 						return;		    			
 		    		
 		    		}
 		    		else if (intReadFromPort==13)
 		    		{
-		    			log.debug("Reached CR - breaking");
+		    			//log.debug("Reached CR - breaking");
 		    			exitcounter++;
 		    		}
 		    		else if (intReadFromPort==32)
 		    		{
-		    			log.debug("Ignoring SP");
+		    			//log.debug("Ignoring SP");
 		    		}
 		    		else if (intReadFromPort==2)
 		    		{
@@ -171,11 +166,12 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 		    		else if (intReadFromPort==-1)
 		    		{
 		    			errcount++;
-		    			log.debug("Port timeout - "+errcount);
+		    			exitcounter++;
+		    			//log.debug("Port timeout - "+errcount);
 		    		}
 		    		else if (intReadFromPort<43 && intReadFromPort>57)
 		    		{
-		    			log.debug("Ignoring non-digit value ("+intReadFromPort+")= " + (char) intReadFromPort);
+		    			//log.debug("Ignoring non-digit value ("+intReadFromPort+")= " + (char) intReadFromPort);
 		    		}
 		    		else
 		    		{
@@ -194,30 +190,30 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
                 }
                 
                 
-                log.debug("Port read complete. Value = "+strReadBuffer);
+                //log.debug("Port read complete. Value = "+strReadBuffer);
                 
-                //fireSerialSampleEvent(this, SerialSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
+                fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
  	
 
              	// Round up to micron integers
 		    	Float fltValue = new Float(strReadBuffer) * unitMultiplier.toFloat();
-		    	log.debug("Float value = "+fltValue);
+		    	//log.debug("Float value = "+fltValue);
 		    	Integer intValue = Math.round(fltValue);
-		    	log.debug("Integer value = "+intValue);
+		    	//log.debug("Integer value = "+intValue);
 		    	
 		    	// Do calculation if working in cumulative mode
 		    	if(this.measureCumulatively)
 		    	{
-		    		log.debug("Measuring cumulatively so doing calcs");
+		    		//log.debug("Measuring cumulatively so doing calcs");
 		    		Integer cumValue = intValue;
 		    		intValue = intValue - getPreviousPosition();
-		    		log.debug("New integer value = "+intValue);
+		    		//log.debug("New integer value = "+intValue);
 		    		setPreviousPosition(cumValue);
 		    	}
 		    	
     	
 		    	// Fire event
-	    		log.debug("Firing SerialSampleIOEvent with value = "+intValue);
+	    		//log.debug("Firing SerialSampleIOEvent with value = "+intValue);
 		    	fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
 		    
 	
@@ -286,7 +282,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 
 	protected void sendRequest(String strCommand)
 	{
-		log.debug("Sending command to Heidenhain device: "+strCommand);		
+		//log.debug("Sending command to Heidenhain device: "+strCommand);		
 		
 		OutputStream output;
 
@@ -312,9 +308,9 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 	@Override
 	public void zeroMeasurement()
 	{
-		log.debug("Sending request to zero device");
+		//log.debug("Sending request to zero device");
 		//sendRequest("F0001");
-		sendRequest("\u001b"+"T0000"+"\u0013"); // 0
+		sendRequest("\u001b"+"T0000"+"\r"); // 0
 		try {
 			synchronized(this)
 			{
@@ -325,7 +321,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 			e.printStackTrace();
 		}
 		
-		sendRequest("\u001b"+"T0104"+"\u0013"); // <enter>
+		sendRequest("\u001b"+"T0104"+"\r"); // <enter>
 		
 		// <ESC>S0000<CR>  - reset position display
 		setPreviousPosition(0);
@@ -340,16 +336,19 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 	
 	@Override
 	public void requestMeasurement() {
-		log.debug("Sending request for measurement");
+		//log.debug("Sending request for measurement");
 	     
-		// <ESC>A0200<CR>  - current position
-		//byte[] barr = new byte[] {27, 65, 48, 50, 48, 48};
-		
-		byte[] barr = new byte[] {2};
-		String value = new String(barr);
-		sendRequest(value); //Output of current position
-		
-		//sendRequest("\u001b"+"A0200");
+		sendRequest("\u001b"+"F0002"+"\r"); 
+		try {
+			synchronized(this)
+			{
+				this.wait(500);
+			}
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
 		
 	}
 
