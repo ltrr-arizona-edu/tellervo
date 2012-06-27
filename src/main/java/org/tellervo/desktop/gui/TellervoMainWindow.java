@@ -64,6 +64,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.tellervo.desktop.core.App;
@@ -74,6 +75,7 @@ import org.tellervo.desktop.gui.menus.FileMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.platform.Platform;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ListUtil;
@@ -305,6 +307,25 @@ public class TellervoMainWindow extends JFrame {
 	// shutdown
 	// REFACTOR: wouldn't startup.java (renamed, perhaps) be a better place for this?)
 	public static void quit() {
+		
+		// Confirm with user if on Mac as they may be expecting this will simply minimise instead.
+		if (Platform.isMac())
+		{
+			
+			int n = JOptionPane.showConfirmDialog (
+				    App.mainWindow,
+				    "Are you sure you want to close Tellervo?",
+				    "Confirm",
+				    JOptionPane.YES_NO_OPTION,
+				    JOptionPane.QUESTION_MESSAGE,
+				    Builder.getIcon("info.png", 64));
+			if(n==JOptionPane.NO_OPTION || n==JOptionPane.CANCEL_OPTION)
+			{
+				throw new IllegalStateException();
+			}
+		}
+			
+		
 		// close all windows, asking the user
 		Frame f[] = Frame.getFrames();
 		for (int i = 0; i < f.length; i++) {
@@ -331,11 +352,6 @@ public class TellervoMainWindow extends JFrame {
 		if (n == 0)
 			System.exit(0);
 
-		// for Mac OS: by
-		// http://developer.apple.com/techpubs/macosx/Java/Reference/Java/com/apple/mrj/MRJQuitHandler.html#handleQuit()
-		// throw IllegalStateException to prevent the quit
-		if (Platform.isMac())
-			throw new IllegalStateException();
 	}
 
 }
