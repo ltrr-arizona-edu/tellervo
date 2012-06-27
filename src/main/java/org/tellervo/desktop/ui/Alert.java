@@ -27,6 +27,7 @@ import java.io.IOException;
 import javax.swing.Icon;
 import javax.swing.JOptionPane;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.platform.Platform;
 
 
@@ -39,11 +40,11 @@ public class Alert {
 
     // extracted error-dialog code
     public static void error(String title, String text) {
-	JOptionPane.showMessageDialog(null, // ??  no parent -- is this ok?
+	JOptionPane.showMessageDialog(App.mainWindow, 
 				      text,
 				      maybeTitle(title),
 				      JOptionPane.ERROR_MESSAGE,
-				      treeIcon);
+				      errorIcon);
     }
     
     public static void error(Window parent, String title, String text) {
@@ -51,15 +52,16 @@ public class Alert {
     				      text,
     				      maybeTitle(title),
     				      JOptionPane.ERROR_MESSAGE,
-    				      treeIcon);
+    				      errorIcon);
         }
 
     // extracted error-dialog code
     public static void message(String title, String text) {
-	JOptionPane.showMessageDialog(null, // ??  no parent -- is this ok?
+	JOptionPane.showMessageDialog(App.mainWindow, // ??  no parent -- is this ok?
 				      text,
 				      maybeTitle(title),
-				      JOptionPane.INFORMATION_MESSAGE);
+				      JOptionPane.INFORMATION_MESSAGE,
+				      infoIcon);
     }
     
     
@@ -67,7 +69,8 @@ public class Alert {
     	JOptionPane.showMessageDialog(parent, 
     				      text,
     				      maybeTitle(title),
-    				      JOptionPane.INFORMATION_MESSAGE);
+    				      JOptionPane.INFORMATION_MESSAGE,
+    				      infoIcon);
         }
     
     /*
@@ -115,6 +118,7 @@ public class Alert {
     }
 
     // icon for dialogs
-    private final static Icon treeIcon = Builder.getIcon("tellervo-application.png", 64); // WAS: Tree-64x64.png
- 
+    private final static Icon errorIcon = Builder.getIcon("error.png", 64); 
+    private final static Icon infoIcon = Builder.getIcon("info.png", 64); 
+
 }

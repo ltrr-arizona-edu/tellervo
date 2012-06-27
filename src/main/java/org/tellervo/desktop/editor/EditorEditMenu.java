@@ -261,8 +261,8 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		addDelete();
 		addInsertYears();
 
-		if (AbstractSerialMeasuringDevice.hasSerialCapability()
-				&& App.prefs.getPref(PrefKey.SERIAL_PORT, null) != null) {
+		if (AbstractSerialMeasuringDevice.hasMeasuringDeviceCapability())
+		{
 			addSeparator();
 			addMeasure();
 		}

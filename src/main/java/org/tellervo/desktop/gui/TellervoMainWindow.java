@@ -66,6 +66,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.gui.menus.AdminMenu;
 import org.tellervo.desktop.gui.menus.EditMenu;
@@ -78,7 +79,7 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ListUtil;
 
 
-public class XCorina extends JFrame {
+public class TellervoMainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -136,21 +137,19 @@ public class XCorina extends JFrame {
 
 	// SINGLETON.
 	// show the toplevel, or throw an exception if there already is one.
-	public static void showCorinaWindow() {
-		if (_self == null) {
-			_self = new XCorina();
+	public static void showMainWindow() {
+		if (App.mainWindow == null) {
+			App.mainWindow = new TellervoMainWindow();
 		} else {
 			throw new RuntimeException("There can be only one!");
 		}
 	}
 
-	private static XCorina _self = null;
-
-	private XCorina() {
+	private TellervoMainWindow() {
 		// there can be only one
-		if (_self != null)
+		if (App.mainWindow != null)
 			throw new RuntimeException("There can be only one!");
-		_self = this;
+		App.mainWindow = this;
 
 		// boilerplate
 		setTitle(I18n.getText("about.Tellervo"));
@@ -296,6 +295,7 @@ public class XCorina extends JFrame {
 		importSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				FileMenu.importdbwithbarcode();
+				
 			}
 		});
 
@@ -313,7 +313,7 @@ public class XCorina extends JFrame {
 				continue;
 
 			// skip me
-			if (f[i] instanceof XCorina)
+			if (f[i] instanceof TellervoMainWindow)
 				continue;
 
 			if (f[i] instanceof XFrame)
@@ -326,7 +326,7 @@ public class XCorina extends JFrame {
 		int n = 0;
 		f = Frame.getFrames();
 		for (int i = 0; i < f.length; i++)
-			if (f[i].isVisible() && !(f[i] instanceof XCorina))
+			if (f[i].isVisible() && !(f[i] instanceof TellervoMainWindow))
 				n++;
 		if (n == 0)
 			System.exit(0);

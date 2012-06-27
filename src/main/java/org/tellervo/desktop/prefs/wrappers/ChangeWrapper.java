@@ -22,6 +22,8 @@ package org.tellervo.desktop.prefs.wrappers;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+
 /**
  * A prefwrapper around an Change (e.g., jcombobox, jcheckbox); implements ChangeListener
  * 
@@ -33,15 +35,15 @@ import javax.swing.event.ChangeListener;
  */
 
 public abstract class ChangeWrapper<OBJTYPE> extends PrefWrapper<OBJTYPE> implements ChangeListener {
-	public ChangeWrapper(String prefName, Object defaultValue, Class<?> baseClass) {
+	public ChangeWrapper(PrefKey prefName, Object defaultValue, Class<?> baseClass) {
 		super(prefName, defaultValue, baseClass);
 	}
 
-	public ChangeWrapper(String prefName, Object defaultValue) {
+	public ChangeWrapper(PrefKey prefName, Object defaultValue) {
 		super(prefName, defaultValue);
 	}
 
-	public ChangeWrapper(String prefName) {
+	public ChangeWrapper(PrefKey prefName) {
 		super(prefName);
 	}
 

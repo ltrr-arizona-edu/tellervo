@@ -71,7 +71,7 @@ import org.tellervo.desktop.ui.Builder;
  * <h2>Left to do</h2>
  * <ul>
  * <li>extract Bootstrap, which will make testing much easier (Startup =
- * Bootstrap + new XCorina())
+ * Bootstrap + new TellervoMainWindow())
  * </ul>
  * 
  * @author Ken Harris &lt;kbh7 <i style="color: gray">at </i> cornell <i
@@ -126,7 +126,7 @@ public class Startup implements PrivilegedAction {
 			// monitor.close();
 			// let's go...
 
-			XCorina.showCorinaWindow();
+			TellervoMainWindow.showMainWindow();
 		} catch (Throwable t) {
 			new Bug(t);
 		}
@@ -169,7 +169,7 @@ public class Startup implements PrivilegedAction {
 
 	/**
 	 * The <code>main()</code> method that sets all of Corina in motion. Loads
-	 * system and user preferences, and instantiates an XCorina object.
+	 * system and user preferences, and instantiates an TellervoMainWindow object.
 	 * 
 	 * @param args
 	 *            command-line arguments; ignored

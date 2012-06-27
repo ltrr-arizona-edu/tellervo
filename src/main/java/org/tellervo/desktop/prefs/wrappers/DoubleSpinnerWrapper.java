@@ -26,15 +26,10 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 
 public class DoubleSpinnerWrapper extends ChangeWrapper<Double> {
-	public DoubleSpinnerWrapper(JSpinner spinner, String prefName, Double defaultValue) {
-		super(prefName, defaultValue, Double.class);
-		
-		spinner.setValue(getValue());
-		spinner.addChangeListener(this);
-	}
+
 
 	public DoubleSpinnerWrapper(JSpinner spinner, PrefKey key, Double defaultValue) {
-		super(key.getValue(), defaultValue, Double.class);
+		super(key, defaultValue, Double.class);
 		
 		spinner.setValue(getValue());
 		spinner.addChangeListener(this);

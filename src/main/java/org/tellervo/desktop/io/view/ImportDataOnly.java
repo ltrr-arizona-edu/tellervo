@@ -6,14 +6,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileFilter;
 
 import org.tellervo.desktop.editor.EditorFactory;
+import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
+import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.ui.Alert;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasUnit;
+import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasValues;
@@ -22,11 +26,30 @@ public class ImportDataOnly extends Object {
 
 	private static final long serialVersionUID = 1L;
 	private final Window parent;
+	private Boolean warnedAboutUnspecifiedVar = false;
 	
 	public ImportDataOnly(Window parent, File file, String fileType)
 	{
 		this.parent = parent;
 		parseFile(file, fileType);
+	}
+	
+	public ImportDataOnly(Window parent, File file, DendroReaderFileFilter filetypefilter) throws Exception
+	{
+		this.parent = parent;
+		
+		for (String readername : TridasIO.getSupportedReadingFormats())
+		{
+			AbstractDendroReaderFileFilter filter = new DendroReaderFileFilter(readername);
+			if(filter.getDescription().equals(filetypefilter.getDescription()))
+			{
+				parseFile(file, filter.getDescription());
+				return;
+			}
+		}
+		
+		throw new Exception("Unsupported dendro data file type.  Do not know "+filetypefilter.toString());
+		
 	}
 	
 	
@@ -163,7 +186,24 @@ public class ImportDataOnly extends Object {
 		}
 
 		for(TridasMeasurementSeries series : seriesList)
-		{			
+		{		
+			// Check if series contain data of unknown or unsupported variables
+			for(TridasValues grp : series.getValues())
+			{
+				if(!grp.getVariable().isSetNormalTridas())
+				{
+					if(!grp.getVariable().isSetNormalStd() || !grp.getVariable().getNormalStd().equals("Tellervo"))
+					{
+						if(!this.warnedAboutUnspecifiedVar)
+						{
+							Alert.error("Error", "The measurement variable was not specified in input file. \nAssuming data are standard ring widths.");
+						}
+						this.warnedAboutUnspecifiedVar = true;
+						grp.getVariable().setNormalTridas(NormalTridasVariable.RING_WIDTH);
+					}
+				}
+			}
+			
 			EditorFactory.newSeriesFromMeasurementSeries(parent, series, unitsIfNotSpecified);
 		}
 	}

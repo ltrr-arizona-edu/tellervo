@@ -50,7 +50,7 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 		try{
 		this.report = report;
 
-		new TextComponentWrapper(txtEmailAddress, PrefKey.PERSONAL_DETAILS_EMAIL.getValue(), "");
+		new TextComponentWrapper(txtEmailAddress, PrefKey.PERSONAL_DETAILS_EMAIL, "");
 				
 		DocumentHolder[] docs = report.getDocuments().toArray(new DocumentHolder[0]);
 		lstAttachments.setListData(docs);

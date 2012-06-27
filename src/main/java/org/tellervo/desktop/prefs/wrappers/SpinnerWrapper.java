@@ -22,8 +22,10 @@ package org.tellervo.desktop.prefs.wrappers;
 import javax.swing.JSpinner;
 import javax.swing.event.ChangeEvent;
 
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+
 public class SpinnerWrapper extends ChangeWrapper<Integer> {
-	public SpinnerWrapper(JSpinner spinner, String prefName, Integer defaultValue) {
+	public SpinnerWrapper(JSpinner spinner, PrefKey prefName, Integer defaultValue) {
 		super(prefName, defaultValue, Integer.class);
 		
 		spinner.setValue(getValue());

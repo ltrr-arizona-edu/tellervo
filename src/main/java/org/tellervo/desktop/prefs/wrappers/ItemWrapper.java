@@ -22,6 +22,8 @@ package org.tellervo.desktop.prefs.wrappers;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+
 /**
  * A prefwrapper around an item (e.g., jcombobox, jcheckbox); implements ItemListener
  * 
@@ -33,15 +35,15 @@ import java.awt.event.ItemListener;
  */
 
 public abstract class ItemWrapper<OBJTYPE> extends PrefWrapper<OBJTYPE> implements ItemListener {
-	public ItemWrapper(String prefName, Object defaultValue, Class<?> baseClass) {
+	public ItemWrapper(PrefKey prefName, Object defaultValue, Class<?> baseClass) {
 		super(prefName, defaultValue, baseClass);
 	}
 
-	public ItemWrapper(String prefName, Object defaultValue) {
+	public ItemWrapper(PrefKey prefName, Object defaultValue) {
 		super(prefName, defaultValue);
 	}
 
-	public ItemWrapper(String prefName) {
+	public ItemWrapper(PrefKey prefName) {
 		super(prefName);
 	}
 

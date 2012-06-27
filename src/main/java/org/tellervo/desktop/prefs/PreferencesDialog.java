@@ -167,7 +167,7 @@ public class PreferencesDialog extends JDialog {
 							if(wsok.equals(false)) return;							
 
 							int n = JOptionPane.showConfirmDialog(
-								    null,
+								    App.mainWindow,
 								    "You will need to restart Tellervo for the new web service URL to take effect.\n" +
 								    "Would you like to restart now?  Any unsaved changes will be lost.",
 								    "Restart required",
@@ -194,7 +194,7 @@ public class PreferencesDialog extends JDialog {
 						if(appearancePrefsPanel.hasLocaleChanged())
 						{
 							int n = JOptionPane.showConfirmDialog(
-								    null,
+									App.mainWindow,
 								    "You will need to restart Tellervo for the new language to take effect.\n" +
 								    "Would you like to restart now?  Any unsaved changes will be lost.",
 								    "Restart required",

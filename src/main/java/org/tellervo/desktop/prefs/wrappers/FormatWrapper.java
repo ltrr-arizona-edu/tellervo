@@ -32,25 +32,14 @@ public class FormatWrapper extends ItemWrapper<String> {
 	
 	String[] formats;
 	
-	@Deprecated
-	public FormatWrapper(JComboBox cbo, String prefName, Object defaultValue) {
-		super(prefName, defaultValue, String.class);
-		initFormats(cbo);
-	}
-	
-	@Deprecated
-	public FormatWrapper(JComboBox cbo, String prefName, Object defaultValue, String[]values) {
-		super(prefName, defaultValue, String.class);
-		initGeneric(cbo, values);
-	}
 	
 	public FormatWrapper(JComboBox cbo, PrefKey key, Object defaultValue, String[]values) {
-		super(key.getValue(), defaultValue, String.class);
+		super(key, defaultValue, String.class);
 		initGeneric(cbo, values);
 	}
 	
 	public FormatWrapper(JComboBox cbo, PrefKey key, Object defaultValue) {
-		super(key.getValue(), defaultValue, String.class);
+		super(key, defaultValue, String.class);
 		initFormats(cbo);
 	}
 	

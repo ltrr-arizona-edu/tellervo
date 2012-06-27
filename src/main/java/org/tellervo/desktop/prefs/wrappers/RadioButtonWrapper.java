@@ -23,9 +23,11 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JRadioButton;
 
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+
 public class RadioButtonWrapper extends ActionWrapper<String> {
 
-	public RadioButtonWrapper(JRadioButton buttons[], String prefName, Object defaultValue) {
+	public RadioButtonWrapper(JRadioButton buttons[], PrefKey prefName, Object defaultValue) {
 		super(prefName, defaultValue, String.class);
 
 		String selectedValue = getValue();

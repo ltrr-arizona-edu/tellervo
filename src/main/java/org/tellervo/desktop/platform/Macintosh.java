@@ -45,7 +45,7 @@ import java.lang.reflect.Proxy;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Bug;
-import org.tellervo.desktop.gui.XCorina;
+import org.tellervo.desktop.gui.TellervoMainWindow;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.ui.TellervoAction;
 
@@ -70,7 +70,7 @@ public class Macintosh {
 	   Preferences, and Quit menu items.
 
 	   <p>"About" calls "new AboutBox()".  Preferences calls
-	   "PrefsDialog.showPreferences()".  Quit calls "XCorina.quit();
+	   "PrefsDialog.showPreferences()".  Quit calls "TellervoMainWindow.quit();
 	   System.exit(0);".</p>
 
 	   <p>If this system is not a Mac, does nothing.</p>
@@ -94,7 +94,7 @@ public class Macintosh {
 			// and "quit"
 			Macintosh.registerQuitHandler(new Runnable() {
 				public void run() {
-					XCorina.quit();
+					TellervoMainWindow.quit();
 					System.exit(0);
 				}
 			});

@@ -320,7 +320,7 @@
 		<dependency>
 			<groupId>org.tridas</groupId>
 			<artifactId>dendrofileio</artifactId>
-			<version>1.0.5-SNAPSHOT</version>
+			<version>1.0.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.tridas</groupId>

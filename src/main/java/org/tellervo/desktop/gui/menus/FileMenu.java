@@ -44,6 +44,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
+import javax.swing.filechooser.FileFilter;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
@@ -314,7 +315,7 @@ public class FileMenu extends JMenu {
 	}
 
 	public void addCloseMenu() {
-		JMenuItem close = Builder.makeMenuItem("menus.file.close", false, "fileclose.png");
+		JMenuItem close = Builder.makeMenuItem("menus.file.close", true, "fileclose.png");
 		close.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				// call close() on XFrame (asks for confirmation), else dispose().
@@ -387,7 +388,7 @@ public class FileMenu extends JMenu {
 		
 		// Add exit button if not on Mac
 		if (!Platform.isMac()) {
-			add(Builder.makeMenuItem("menus.file.quit", "org.tellervo.desktop.gui.XCorina.quit()", "exit.png"));
+			add(Builder.makeMenuItem("menus.file.quit", "org.tellervo.desktop.gui.TellervoMainWindow.quit()", "exit.png"));
 		}
 		
 	}
@@ -554,6 +555,36 @@ public class FileMenu extends JMenu {
 		int returnVal = fc.showOpenDialog(null);
 			
 
+
+		
+		// Get details from user
+	    if (returnVal == JFileChooser.APPROVE_OPTION) {
+	        File file = fc.getSelectedFile();
+	        DendroReaderFileFilter filter = (DendroReaderFileFilter) fc.getFileFilter();
+	        
+
+	        
+	        try {
+				ImportDataOnly importDialog = new ImportDataOnly(null, file, filter);
+				// Remember this folder for next time
+				App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
+				
+			} catch (Exception e) {
+				Alert.error("Error", e.getMessage());
+			}
+	        
+
+		    
+	    } else {
+	    	return;
+	    }
+		
+		
+		
+		
+		
+		
+		
 		
 		// Get details from user
 		String fullFilename = null;
@@ -584,140 +615,9 @@ public class FileMenu extends JMenu {
 					.substring(fullFilename.lastIndexOf(".") + 1));
 		}
 		
-		// Load file
-		try {
-			reader.loadFile(fullFilename);
-		} catch (IOException e1) {
-			System.out.println(e1.toString());
-			e1.printStackTrace();
-			Alert.error("Error", e1.getLocalizedMessage());
-			return;
-		} catch (InvalidDendroFileException e) {
-			System.out.println(e.toString());
-			e.printStackTrace();
-			Alert.error("Error", e.getLocalizedMessage());
-			return;
-		}
-		
-		// Extract project
-		TridasProject project = reader.getProjects()[0];	
-		ArrayList<TridasMeasurementSeries> seriesList = TridasUtils.getMeasurementSeriesFromTridasProject(project);
-		
-		if(seriesList.size()==0) 
-		{
-			Alert.error("Error", "No series in file");
-			return;
-		}
-		else if (seriesList.size()!=1)
-		{
-			Alert.error("Error", "Only able to import 'unstacked' files'");
-			return;
-		}
-		TridasMeasurementSeries series = seriesList.get(0);
-		
-		// make dataset ref, based on our series
-		Sample sample = new Sample(series);
-		
-		// Set range from series
-		SafeIntYear startYear = new SafeIntYear(1001);
-		if(series.isSetInterpretation())
-		{
-			if (series.getInterpretation().isSetFirstYear())
-			{
-				 startYear = new SafeIntYear(series.getInterpretation().getFirstYear());
-			}
-		}
-		SafeIntYear endYear = startYear.add(series.getValues().get(0).getValues().size());
-		Range rng = new Range(new Year(startYear.toString()), new Year(endYear.toString()));
-		sample.setRange(rng);
-		
-		// Set filename
-		sample.setMeta("filename", fullFilename);
-		
-		// setup our loader and series identifier
-		CorinaWsiTridasElement.attachNewSample(sample);
-		
-
-		final JDialog dialog = new JDialog();
-		final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
-		
-		dialog.setContentPane(barcodeUI);
-		dialog.setResizable(false);
-		dialog.pack();
-		dialog.setModal(true);
-		Center.center(dialog);
-		dialog.setVisible(true);
-		BarcodeDialogResult result = barcodeUI.getResult();
-
-		if(!result.barcodeScanSuccessful())
-		{
-			// start the import dialog with no barcode info   
-		    ImportFrame importdialog = new ImportFrame(sample);
-		    importdialog.setVisible(true);			
-		}
-		else{
-			// start the import dialog with barcode info 
-		    ImportFrame importdialog = new ImportFrame(sample, result);
-		    importdialog.setVisible(true);
-		}
-		
-		
 		
 	}
 	
-	public static void importdbwithbarcodeold(){
-		String filename = "";
-		
-		try {
-			filename = FileDialog.showSingle(I18n.getText("menus.file.import"), I18n.getText("menus.file.import"));
-			// get filename, and load
-			Element e = ElementFactory.createElement(filename);
-		    Sample s = e.load();
-		    
-			final JDialog dialog = new JDialog();
-			final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
-			
-			dialog.setContentPane(barcodeUI);
-			dialog.setResizable(false);
-			dialog.pack();
-			dialog.setModal(true);
-			Center.center(dialog);
-			dialog.setVisible(true);
-			BarcodeDialogResult result = barcodeUI.getResult();
-
-			if(!result.barcodeScanSuccessful())
-			{
-				// start the import dialog with no barcode info   
-			    ImportFrame importdialog = new ImportFrame(s);
-			    importdialog.setVisible(true);
-			}
-			else{
-				// start the import dialog with barcode info 
-			    ImportFrame importdialog = new ImportFrame(s, result);
-			    importdialog.setVisible(true);
-			}
-			
-			
-		    
-		} catch (UserCancelledException uce) {
-			// do nothing
-		} catch (WrongFiletypeException wfte) {
-			Alert.error(I18n.getText("error.cantOpenFile"), I18n.getText("error.cantOpenFile") + ":\n"
-					+ I18n.getText("error.fileTypeNotRecognized"));
-		} catch (IOException ioe) {
-			// BUG: this should never happen.  loading is so fast, it'll get displayed
-			// in the preview component, and if it can't be loaded, "ok" should be dimmed.
-			// (is that possible with jfilechooser?)
-			Alert.error(I18n.getText("error.cantOpenFile"), I18n.getText("error.cantOpenFile") + ":\n"
-					+ ioe.getMessage());
-			// (so why not use Bug.bug()?)
-		}
-	}
-	
-
-
-
-
 	public void pageSetup() {
 		// make printer job, if none exists yet
 		if (printJob == null)

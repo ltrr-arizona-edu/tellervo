@@ -37,6 +37,7 @@ import org.tellervo.desktop.gui.Log4JViewer;
 import org.tellervo.desktop.gui.LoginDialog;
 import org.tellervo.desktop.gui.LoginSplash;
 import org.tellervo.desktop.gui.ProgressMeter;
+import org.tellervo.desktop.gui.TellervoMainWindow;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.nativelib.NativeLibWrapper;
 import org.tellervo.desktop.platform.Macintosh;
@@ -88,6 +89,7 @@ public class App{
   private static PreferencesDialog prefsDialog;
   public static AppModel appmodel;
   private static Log4JViewer logviewer;
+  public static TellervoMainWindow mainWindow = null;
   
   
   public static Boolean isFirstRun = false;

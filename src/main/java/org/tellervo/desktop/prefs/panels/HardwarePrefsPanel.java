@@ -287,7 +287,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		
 		chkDisableBarcodes = new JCheckBox("Disable support for barcode scanner");
 		panelBarcode.add(chkDisableBarcodes, "cell 0 0");
-		new CheckBoxWrapper(chkDisableBarcodes, "tellervo.barcodes.disable", false );
+		new CheckBoxWrapper(chkDisableBarcodes, PrefKey.BARCODES_DISABLED, false );
 		
 		lblMeasureCumulatively = new JLabel("Measure cumulatively:");
 		panel.add(lblMeasureCumulatively, "cell 2 5,alignx trailing");
@@ -367,6 +367,8 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	
 	public Boolean isReadyToTestConnection()
 	{
+		if(device==null) return false;
+		
 		if(device.getDeviceProtocol().equals(DeviceProtocol.SERIAL))
 		{
 	
@@ -468,7 +470,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	private void setGuiEnabledByPlatformType(Boolean useDefaults)
 	{
 						
-		if (!AbstractSerialMeasuringDevice.hasSerialCapability())
+		if (!AbstractSerialMeasuringDevice.hasMeasuringDeviceCapability())
 		{
 			lblPlatformType.setEnabled(false);
 			cboPlatformType.setEnabled(false);

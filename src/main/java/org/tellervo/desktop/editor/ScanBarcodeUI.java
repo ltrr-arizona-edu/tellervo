@@ -25,6 +25,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JDialog;
 
 import org.tellervo.desktop.editor.EditorFactory.BarcodeDialogResult;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -56,7 +57,7 @@ public class ScanBarcodeUI extends javax.swing.JPanel {
         add(jLabel1, "cell 2 0,growx,aligny top");
         add(btnManual, "cell 2 2,alignx center,aligny top");
         
-        new CheckBoxWrapper(chkAlwaysManual, "tellervo.barcodes.disable", false );
+        new CheckBoxWrapper(chkAlwaysManual, PrefKey.BARCODES_DISABLED, false );
         
         result = new BarcodeDialogResult(parent);
 

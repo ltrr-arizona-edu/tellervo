@@ -22,6 +22,8 @@ package org.tellervo.desktop.prefs.wrappers;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+
 /**
  * A prefwrapper around an Action (e.g., jcombobox, jcheckbox); implements ActionListener
  * 
@@ -33,15 +35,15 @@ import java.awt.event.ActionListener;
  */
 
 public abstract class ActionWrapper<OBJTYPE> extends PrefWrapper<OBJTYPE> implements ActionListener {
-	public ActionWrapper(String prefName, Object defaultValue, Class<?> baseClass) {
+	public ActionWrapper(PrefKey prefName, Object defaultValue, Class<?> baseClass) {
 		super(prefName, defaultValue, baseClass);
 	}
 
-	public ActionWrapper(String prefName, Object defaultValue) {
+	public ActionWrapper(PrefKey prefName, Object defaultValue) {
 		super(prefName, defaultValue);
 	}
 
-	public ActionWrapper(String prefName) {
+	public ActionWrapper(PrefKey prefName) {
 		super(prefName);
 	}
 

@@ -26,6 +26,8 @@ import java.awt.event.KeyEvent;
 
 import javax.swing.text.JTextComponent;
 
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+
 /**
  * Wraps a JTextField that contains a string; updates pref when focus lost
  * 
@@ -35,7 +37,7 @@ import javax.swing.text.JTextComponent;
 public class TextComponentWrapper extends PrefWrapper<String> implements FocusListener {
 	protected JTextComponent field;
 	
-	public TextComponentWrapper(JTextComponent field, String prefName, String defaultValue) {
+	public TextComponentWrapper(JTextComponent field, PrefKey prefName, String defaultValue) {
 		super(prefName, defaultValue, String.class);
 		
 		this.field = field;

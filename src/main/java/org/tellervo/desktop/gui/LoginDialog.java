@@ -55,7 +55,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
-import org.tellervo.desktop.prefs.wrappers.WSURLComponentWrapper;
+import org.tellervo.desktop.prefs.wrappers.URLComponentWrapper;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -65,6 +65,7 @@ import org.tellervo.desktop.wsi.WSIServerDetails;
 import org.tellervo.desktop.wsi.tellervo.WebInterfaceCode;
 import org.tellervo.desktop.wsi.tellervo.WebInterfaceException;
 import org.tellervo.desktop.wsi.tellervo.resources.AuthenticateResource;
+import javax.swing.JComboBox;
 
 
 public class LoginDialog extends JDialog {
@@ -73,7 +74,7 @@ public class LoginDialog extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JTextField username;
 	private JPasswordField password;
-	private JTextField serverUrl;
+	private JComboBox serverUrl;
 	private JCheckBox rememberUsername;
 	private JCheckBox rememberPassword;
 	private JCheckBox autoLogin;
@@ -214,15 +215,16 @@ public class LoginDialog extends JDialog {
 			}
 		}
 		{
-			serverUrl = new JTextField();
+			serverUrl = new JComboBox();
+			serverUrl.setEditable(true);
 			GridBagConstraints gbc_serverUrl = new GridBagConstraints();
 			gbc_serverUrl.fill = GridBagConstraints.HORIZONTAL;
 			gbc_serverUrl.insets = new Insets(0, 0, 5, 5);
 			gbc_serverUrl.gridx = 2;
 			gbc_serverUrl.gridy = 3;
 			contentPanel.add(serverUrl, gbc_serverUrl);
-			serverUrl.setColumns(10);
-			new WSURLComponentWrapper(serverUrl, "tellervo.webservice.url", null);
+			
+			new URLComponentWrapper(serverUrl, PrefKey.WEBSERVICE_URL, null, PrefKey.WEBSERVICE_URL_OTHERS);
 		}
 		{
 			wsurlLock = new JToggleButton("");
@@ -249,12 +251,16 @@ public class LoginDialog extends JDialog {
 			wsurlLock.setContentAreaFilled(false);
 			
 			// Lock URL if its already filled
-			if(serverUrl.getText().trim().length()>0)
-			{
-				setURLEnabled(false);
-			}
-			else
-			{
+			try{
+				if(serverUrl.getSelectedItem().toString().trim().length()>0)
+				{
+					setURLEnabled(false);
+				}
+				else
+				{
+					setURLEnabled(true);
+				}
+			} catch (Exception e){
 				setURLEnabled(true);
 			}
 		}

@@ -24,6 +24,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 
 /**
@@ -39,7 +40,7 @@ import org.tellervo.desktop.core.App;
  */
 
 public abstract class PrefWrapper<OBJTYPE> {
-	private String prefName;
+	protected PrefKey prefName;
 	private Object prefValue;
 	private Object defaultValue;
 	private Class<?> baseClass;
@@ -51,8 +52,8 @@ public abstract class PrefWrapper<OBJTYPE> {
 	 * wrapping the specified type
 	 * @param prefname
 	 */
-	public PrefWrapper(String prefName, Object defaultValue, Class<?> baseClass) {
-		this.prefName = prefName;
+	public PrefWrapper(PrefKey prefName, Object defaultValue, Class<?> baseClass) {
+		this.setPrefName(prefName);
 		this.baseClass = baseClass;
 		this.defaultValue = defaultValue;
 		
@@ -64,7 +65,7 @@ public abstract class PrefWrapper<OBJTYPE> {
 	 * Shortcut for creating a string-based pref
 	 * @param prefName
 	 */
-	public PrefWrapper(String prefName, Object defaultValue) {
+	public PrefWrapper(PrefKey prefName, Object defaultValue) {
 		this(prefName, defaultValue, String.class);
 	}
 	
@@ -72,7 +73,7 @@ public abstract class PrefWrapper<OBJTYPE> {
 	 * Shortcut for creating a string-based pref with no default
 	 * @param prefName
 	 */
-	public PrefWrapper(String prefName) {
+	public PrefWrapper(PrefKey prefName) {
 		this(prefName, null, String.class);
 	}
 	
@@ -118,45 +119,53 @@ public abstract class PrefWrapper<OBJTYPE> {
 			return;
 		
 		if(prefValue == null) {
-			App.prefs.removePref(prefName);
+			App.prefs.removePref(getPrefName());
 			valueModified = false;
 			return;
 		}
 		
 		if(baseClass == String.class)
-			App.prefs.setPref(prefName, (String) prefValue);
+			App.prefs.setPref(getPrefName(), (String) prefValue);
 		else if(baseClass == Font.class)
-			App.prefs.setFontPref(prefName, (Font) prefValue);
+			App.prefs.setFontPref(getPrefName(), (Font) prefValue);
 		else if(baseClass == Integer.class)
-			App.prefs.setIntPref(prefName, (Integer) prefValue);
+			App.prefs.setIntPref(getPrefName(), (Integer) prefValue);
 		else if(baseClass == Dimension.class)
-			App.prefs.setDimensionPref(prefName, (Dimension) prefValue);
+			App.prefs.setDimensionPref(getPrefName(), (Dimension) prefValue);
 		else if(baseClass == Color.class)
-			App.prefs.setColorPref(prefName, (Color) prefValue);
+			App.prefs.setColorPref(getPrefName(), (Color) prefValue);
 		else if(baseClass == Boolean.class)
-			App.prefs.setBooleanPref(prefName, (Boolean) prefValue);
+			App.prefs.setBooleanPref(getPrefName(), (Boolean) prefValue);
 		else if(baseClass == Double.class)
-			App.prefs.setDoublePref(prefName, (Double) prefValue);
+			App.prefs.setDoublePref(getPrefName(), (Double) prefValue);
 		
 		valueModified = false;
 	}
 	
 	private void load() {
 		if(baseClass == String.class)
-			prefValue = App.prefs.getPref(prefName, (String) defaultValue);
+			prefValue = App.prefs.getPref(getPrefName(), (String) defaultValue);
 		else if(baseClass == Font.class) 
-			prefValue = App.prefs.getFontPref(prefName, (Font) defaultValue);
+			prefValue = App.prefs.getFontPref(getPrefName(), (Font) defaultValue);
 		else if(baseClass == Integer.class)
-			prefValue = App.prefs.getIntPref(prefName, (Integer) defaultValue);
+			prefValue = App.prefs.getIntPref(getPrefName(), (Integer) defaultValue);
 		else if(baseClass == Dimension.class) 
-			prefValue = App.prefs.getDimensionPref(prefName, (Dimension) defaultValue); 
+			prefValue = App.prefs.getDimensionPref(getPrefName(), (Dimension) defaultValue); 
 		else if(baseClass == Color.class)
-			prefValue = App.prefs.getColorPref(prefName, (Color) defaultValue);
+			prefValue = App.prefs.getColorPref(getPrefName(), (Color) defaultValue);
 		else if(baseClass == Boolean.class)
-			prefValue = App.prefs.getBooleanPref(prefName, (Boolean) defaultValue);
+			prefValue = App.prefs.getBooleanPref(getPrefName(), (Boolean) defaultValue);
 		else if(baseClass == Double.class)
-			prefValue = App.prefs.getDoublePref(prefName, (Double) defaultValue);
+			prefValue = App.prefs.getDoublePref(getPrefName(), (Double) defaultValue);
 		else
 			throw new IllegalArgumentException("I don't know how to load a pref for type " + baseClass);
+	}
+
+	public void setPrefName(PrefKey prefName) {
+		this.prefName = prefName;
+	}
+
+	public PrefKey getPrefName() {
+		return prefName;
 	}
 }

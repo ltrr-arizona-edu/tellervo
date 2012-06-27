@@ -28,6 +28,7 @@ import java.awt.event.ItemListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -40,11 +41,12 @@ import javax.swing.border.TitledBorder;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.RadioButtonWrapper;
 import org.tellervo.desktop.prefs.wrappers.SpinnerWrapper;
 import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
-import org.tellervo.desktop.prefs.wrappers.WSURLComponentWrapper;
+import org.tellervo.desktop.prefs.wrappers.URLComponentWrapper;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.WSIServerDetails;
@@ -57,7 +59,7 @@ import net.miginfocom.swing.MigLayout;
 public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 
 	private static final long serialVersionUID = 1L;
-	private JTextField txtWSURL;
+	private JComboBox cboWSURL;
 	private JTextField txtHTTPProxyUrl;
 	private JTextField txtHTTPSProxyUrl;
 	private JRadioButton btnDefaultProxy;
@@ -76,6 +78,8 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	private JPanel proxyPanel;
 	private MigLayout layout;
 	private JButton btnTest;
+	private JButton btnClearHistory;
+	private URLComponentWrapper cboWrapper;
 	
 	/**
 	 * Create the panel.
@@ -112,9 +116,10 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		JLabel lblWebservice = new JLabel("URL:");
 		wsPanel.add(lblWebservice, "cell 0 1,alignx trailing,aligny center");
 		
-		txtWSURL = new JTextField();
-		wsPanel.add(txtWSURL, "flowx,cell 1 1,growx");
-		txtWSURL.setColumns(10);
+		cboWSURL = new JComboBox();
+		wsPanel.add(cboWSURL, "flowx,cell 1 1,growx");
+		//txtWSURL.setColumns(10);
+		cboWSURL.setEditable(true);
 		
 		btnForceDictionaryReload = new JButton("Force Dictionary Reload");
 
@@ -135,7 +140,21 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 			}
 			
 		});
+		
+		btnClearHistory = new JButton("Clear History");
+		btnClearHistory.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				App.prefs.setArrayListPref(PrefKey.WEBSERVICE_URL_OTHERS, null);
+				cboWrapper.clearHistory();
+			}
+			
+			
+		});
+		wsPanel.add(btnClearHistory, "flowx,cell 1 2");
 		wsPanel.add(btnForceDictionaryReload, "cell 1 2,alignx right");
+		
 		
 		btnTest = new JButton("Test");
 		btnTest.addActionListener(new ActionListener(){
@@ -226,7 +245,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	
 	private void pingComponents()
 	{
-		txtWSURL.setEnabled(!chkDisableWS.isSelected());
+		cboWSURL.setEnabled(!chkDisableWS.isSelected());
 		btnForceDictionaryReload.setEnabled(!chkDisableWS.isSelected());
 	}
 	
@@ -263,13 +282,13 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		btnManualProxy.setActionCommand("manual");
 		btnNoProxy.setActionCommand("direct");
 
-		new TextComponentWrapper(txtHTTPProxyUrl, "tellervo.proxy.http", null);
-		new SpinnerWrapper(spnHTTPProxyPort, "tellervo.proxy.http_port", 80);
-		new TextComponentWrapper(txtHTTPSProxyUrl, "tellervo.proxy.https", null);
-		new SpinnerWrapper(spnHTTPSProxyPort, "tellervo.proxy.https_port", 443);
+		new TextComponentWrapper(txtHTTPProxyUrl, PrefKey.PROXY_HTTP, null);
+		new SpinnerWrapper(spnHTTPProxyPort, PrefKey.PROXY_PORT_HTTP, 80);
+		new TextComponentWrapper(txtHTTPSProxyUrl, PrefKey.PROXY_HTTPS, null);
+		new SpinnerWrapper(spnHTTPSProxyPort, PrefKey.PROXY_PORT_HTTPS, 443);
 		new RadioButtonWrapper(new JRadioButton[] { btnDefaultProxy, btnManualProxy, btnNoProxy }, 
-				"tellervo.proxy.type", "default");
-		new CheckBoxWrapper(chkDisableWS, "tellervo.webservice.disable", false );
+				PrefKey.PROXY_TYPE, "default");
+		new CheckBoxWrapper(chkDisableWS, PrefKey.WEBSERVICE_DISABLED, false );
 	
 		// manual proxy button behavior
 		setEnableProxy(btnManualProxy.isSelected());
@@ -280,8 +299,14 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		});
 		
 		// networking - server & smtp
-		new WSURLComponentWrapper(txtWSURL, "tellervo.webservice.url", null);
-		originalURL = txtWSURL.getText();
+		cboWrapper = new URLComponentWrapper(cboWSURL, PrefKey.WEBSERVICE_URL, null, PrefKey.WEBSERVICE_URL_OTHERS);
+		
+		try{
+			originalURL = cboWSURL.getSelectedItem().toString();
+		} catch (Exception e)
+		{
+			
+		}
 	}
 	
 	private void setEnableProxy(boolean isEnabled) {
@@ -297,11 +322,22 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	
 	public Boolean hasWSURLChanged()
 	{
-		if(!originalURL.equalsIgnoreCase(txtWSURL.getText()))
-		{
-			originalURL = txtWSURL.getText();
-			return true;
+		try{
+			String newURL = null;
+			try{
+				newURL = cboWSURL.getSelectedItem().toString();
+			} catch (Exception e)
+			{
+				
+			}
+			
+			if(!originalURL.equalsIgnoreCase(newURL))
+			{
+				originalURL = newURL;
+				return true;
+			}
 		}
+		catch (Exception e){}
 		
 		return false;
 	}

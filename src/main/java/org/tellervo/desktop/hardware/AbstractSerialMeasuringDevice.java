@@ -80,7 +80,49 @@ public abstract class AbstractSerialMeasuringDevice extends
 	private static boolean hscResult = false;
 	
 	/**
-	 * Check whether this OS has serial capablities
+	 * Returns true if there is a USB measuring device attached or
+	 * if all serial libraries are present and port set so that it 
+	 * has the *potential* to talk to serial devices.  As we can't 
+	 * poll serial devices there is no way to be sure if they are 
+	 * present or not.
+	 * 
+	 * @return
+	 */
+	public static boolean hasMeasuringDeviceCapability()
+	{
+		if(hasSerialCapability() && App.prefs.getPref(PrefKey.SERIAL_PORT, null) != null)
+		{
+			return true;
+		}
+		else if (hasUSBDevicesPresent())
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	/**
+	 * Returns true if a USB measuring device known to Tellervo
+	 * is present
+	 * 
+	 * @return
+	 */
+	public static boolean hasUSBDevicesPresent()
+	{
+		for(String devname : MeasuringDeviceSelector.getAvailableDevicesNames())
+		{
+			
+		}
+		
+		
+		return false;
+	}
+	
+	/**
+	 * Check whether this OS has serial capabilities.  
 	 * 
 	 * @return 
 	 */

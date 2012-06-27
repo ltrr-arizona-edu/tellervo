@@ -421,7 +421,7 @@ public class EditorFactory {
 	 */
 	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries series, NormalTridasUnit unitsIfNotSpecfied) {
 		
-		container.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		if(container!=null) container.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 		try {				
 			for(int i=0; i < series.getValues().size(); i++)
@@ -493,7 +493,7 @@ public class EditorFactory {
 		Editor ed = new Editor(sample);
 		ed.setVisible(true);
 
-		container.setCursor(Cursor.getDefaultCursor());
+		if(container!=null) container.setCursor(Cursor.getDefaultCursor());
 	}
 	
 

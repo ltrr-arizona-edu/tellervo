@@ -31,7 +31,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.LoginSplash;
 import org.tellervo.desktop.gui.ProgressMeter;
-import org.tellervo.desktop.gui.XCorina;
+import org.tellervo.desktop.gui.TellervoMainWindow;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.ui.Builder;
 import java.awt.SystemColor;

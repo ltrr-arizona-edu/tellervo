@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -88,7 +89,7 @@ public class Prefs extends AbstractSubsystem {
 	// sample editor
 
 	private final static Logger log = LoggerFactory.getLogger(Prefs.class);
-
+	private static String ARRAY_DELIMITER = ";";
 	
 	/**
 	 * Enum for all the keys identifying preference types in Tellervo
@@ -156,6 +157,7 @@ public class Prefs extends AbstractSubsystem {
 		
 		/** URL for the Tellervo webservice */
 		WEBSERVICE_URL("tellervo.webservice.url"),
+		WEBSERVICE_URL_OTHERS("tellervo.webservice.url.others"),
 		WEBSERVICE_DISABLED("tellervo.webservice.disable"),
 		PROXY_TYPE("tellervo.proxy.type"),
 		PROXY_PORT_HTTP("tellervo.proxy.http_port"),
@@ -844,8 +846,78 @@ public class Prefs extends AbstractSubsystem {
 			return deflt;
 		}
 	}
+		
+	public ArrayList<String> getArrayListPref(PrefKey key, ArrayList<String> deflt)
+	{
+		String value = prefs.getProperty(key.getValue());
+		if(value == null)
+		{
+			return deflt;
+		}
+		
+		String[] values = value.split(ARRAY_DELIMITER);
+		
+		ArrayList<String> arrlist = new ArrayList<String>();
+		
+		for(String  v : values)
+		{
+			arrlist.add(v);
+		}
+		
+		if (values.length>0)
+		{
+			return arrlist;
+		}
+		
+		return deflt;
+		
+	}
 	
 	
+	public void addToArrayListPref(PrefKey selectedKey, PrefKey optionsKey, String str)
+	{
+		this.setPref(selectedKey, str);
+		
+		
+		ArrayList<String> arr = getArrayListPref(optionsKey, null);
+		if(arr==null) arr = new ArrayList<String>();
+		
+		if(arr.contains(str)) 	return;
+		
+		arr.add(str);
+		setArrayListPref(optionsKey, arr);
+	}
+	
+	/**
+	 * Set the value of a preference
+	 * 
+	 * @param key
+	 * @param value
+	 */
+	public void setArrayListPref(PrefKey key, ArrayList<String> values)
+	{
+		String pref = key.getValue();
+		String arrAsStr = "";
+				
+		// support removing via set(null)
+		if(values == null)
+		{
+			prefs.remove(pref);
+		}
+		else
+		{
+			
+			for(String value : values)
+			{
+				arrAsStr += value + ARRAY_DELIMITER;
+			}
+			prefs.setProperty(pref, arrAsStr);
+		}
+
+		save();
+		firePrefChanged(pref);
+	}
+		
 	/**
 	 * Method for getting the boolean value of a preference
 	 * @param key
