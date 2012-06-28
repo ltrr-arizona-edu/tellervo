@@ -28,6 +28,8 @@ public class LoginFocusTraversalPolicy extends FocusTraversalPolicy {
 		
 		if(!order.contains(comp)) return null;
 		
+		if(comp.equals(getLastComponent(arg0))) return getFirstComponent(arg0);
+		
 		Iterator<Component> iterator = order.iterator();
 		
 		while(iterator.hasNext())
@@ -52,8 +54,18 @@ public class LoginFocusTraversalPolicy extends FocusTraversalPolicy {
 
 	@Override
 	public Component getComponentBefore(Container arg0, Component comp) {
-		// TODO Auto-generated method stub
-		return null;
+		if(!order.contains(comp)) return null;
+
+		if(comp.equals(getLastComponent(arg0))) return order.get(order.size()-2);
+		if(comp.equals(getFirstComponent(arg0))) return getLastComponent(arg0);
+		
+		Component previous = getFirstComponent(arg0);
+		for(Component c : order)
+		{
+			if(c.equals(comp)) return previous;
+		}
+		
+		return defaultComponent;
 	}
 
 	@Override
@@ -64,13 +76,12 @@ public class LoginFocusTraversalPolicy extends FocusTraversalPolicy {
 	@Override
 	public Component getFirstComponent(Container arg0) {
 
-		return defaultComponent;
+		return order.get(0);
 	}
 
 	@Override
 	public Component getLastComponent(Container arg0) {
-		// TODO Auto-generated method stub
-		return null;
+		return order.get(order.size()-1);
 	}
 
 }

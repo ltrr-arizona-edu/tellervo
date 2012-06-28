@@ -51,6 +51,8 @@ import javax.swing.JTextField;
 import javax.swing.JToggleButton;
 import javax.swing.border.EmptyBorder;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -65,10 +67,14 @@ import org.tellervo.desktop.wsi.WSIServerDetails;
 import org.tellervo.desktop.wsi.tellervo.WebInterfaceCode;
 import org.tellervo.desktop.wsi.tellervo.WebInterfaceException;
 import org.tellervo.desktop.wsi.tellervo.resources.AuthenticateResource;
+import org.tridas.io.defaults.values.GenericDefaultValue;
+
 import javax.swing.JComboBox;
 
 
 public class LoginDialog extends JDialog {
+
+	private static final Logger log = LoggerFactory.getLogger(LoginDialog.class);
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
@@ -329,6 +335,25 @@ public class LoginDialog extends JDialog {
 		focusPolicy = new LoginFocusTraversalPolicy(order);
 		setFocusTraversalPolicy(focusPolicy);		
 		
+		if(username.getText().length()>0 && password.getPassword().toString().length()>0)
+		{
+			focusPolicy.setDefaultComponent(loginButton);
+			log.debug("Setting default focus to loginButton");
+		}
+		else if (username.getText()==null || username.getText().length()==0)
+		{
+			focusPolicy.setDefaultComponent(username);
+			log.debug("Setting default focus to username field");
+		}
+		else if (password.getPassword()==null)
+		{
+			focusPolicy.setDefaultComponent(password);
+			log.debug("Setting default focus to password field");
+		}
+		
+		
+		focusPolicy.defaultComponent.requestFocusInWindow();
+		
 		// finally, make it so when we press enter we choose to log in
 		getRootPane().setDefaultButton(loginButton);
 		setLocationRelativeTo(null);
@@ -435,7 +460,7 @@ public class LoginDialog extends JDialog {
 		
 		
 		// remember the username? load it.
-		if(App.prefs.getBooleanPref(PrefKey.REMEMBER_USERNAME, true)) {
+		if(App.prefs.getBooleanPref(PrefKey.REMEMBER_USERNAME, false)) {
 			rememberUsername.setSelected(true);
 			username.setText(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, ""));		
 			focusPolicy.setDefaultComponent(password);
