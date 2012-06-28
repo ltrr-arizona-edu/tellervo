@@ -23,7 +23,9 @@ package org.tellervo.desktop.bulkImport.command;
 import java.util.ArrayList;
 
 import org.tellervo.desktop.bulkImport.control.CopySelectedRowsEvent;
+import org.tellervo.desktop.bulkImport.model.AbstractBulkImportTableModel;
 import org.tellervo.desktop.bulkImport.model.IBulkImportSingleRowModel;
+import org.tellervo.desktop.bulkImport.model.ObjectTableModel;
 
 import com.dmurph.mvc.ICloneable;
 import com.dmurph.mvc.IllegalThreadException;
@@ -62,8 +64,12 @@ public class CopySelectedRowsCommand implements ICommand {
 		ArrayList<Object> cloned = new ArrayList<Object>(selected.size());
 		
 		for(IBulkImportSingleRowModel hm : selected){
-			ICloneable newRow = event.model.createRowInstance();
+			IBulkImportSingleRowModel newRow = event.model.createRowInstance();
 			newRow.cloneFrom(hm);
+			
+			AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
+			otm.setSelected(newRow, false);
+			
 			cloned.add(newRow);
 		}
 		

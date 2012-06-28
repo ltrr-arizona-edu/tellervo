@@ -21,6 +21,8 @@
 package org.tellervo.desktop.bulkImport.command;
 
 import org.tellervo.desktop.bulkImport.control.AddRowEvent;
+import org.tellervo.desktop.bulkImport.model.AbstractBulkImportTableModel;
+import org.tellervo.desktop.bulkImport.model.IBulkImportSingleRowModel;
 
 import com.dmurph.mvc.IllegalThreadException;
 import com.dmurph.mvc.IncorrectThreadException;
@@ -55,7 +57,12 @@ public class AddRowCommand implements ICommand {
 		
 		AddRowEvent event = (AddRowEvent) argEvent;
 		MVCArrayList<Object> rows = (MVCArrayList<Object>) event.model.getRows();
-		rows.add(event.model.createRowInstance());
+		IBulkImportSingleRowModel newrow = event.model.createRowInstance();
+		
+		try{AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
+		otm.setSelected(newrow, false);
+		} catch (Exception e){}
+		rows.add(newrow);
 	}
 	
 }

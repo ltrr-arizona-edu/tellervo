@@ -40,6 +40,7 @@ import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.components.table.DynamicJComboBox;
 import org.tellervo.desktop.components.table.DynamicKeySelectionManager;
+import org.tellervo.desktop.components.table.StringCellEditor;
 import org.tellervo.desktop.components.table.TridasElementRenderer;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.components.table.WSIBoxRenderer;
@@ -79,6 +80,9 @@ public class SampleView  extends AbstractBulkImportView{
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void setupTableCells(JTable argTable) {
+		
+		argTable.setDefaultEditor(String.class, new StringCellEditor());
+
 		argTable.setDefaultEditor(WSISampleTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("sampleTypeDictionary")));
 		argTable.setDefaultRenderer(WSISampleTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		

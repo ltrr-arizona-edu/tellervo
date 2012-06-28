@@ -44,6 +44,7 @@ import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.components.table.DynamicJComboBox;
 import org.tellervo.desktop.components.table.DynamicKeySelectionManager;
+import org.tellervo.desktop.components.table.StringCellEditor;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
@@ -75,6 +76,9 @@ public class ObjectView extends AbstractBulkImportView{
 	@SuppressWarnings("serial")
 	@Override
 	protected void setupTableCells(JTable argTable) {
+		
+		argTable.setDefaultEditor(String.class, new StringCellEditor());
+		
 		argTable.setDefaultEditor(WSIObjectTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("objectTypeDictionary")));
 		argTable.setDefaultRenderer(WSIObjectTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
