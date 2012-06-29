@@ -227,7 +227,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 
 		// set title
-		myFrame.setTitle(title + scorePostpend + " - " + Build.VERSION + " " + Build.TIMESTAMP);
+		myFrame.setTitle(title + scorePostpend + " - " + Build.getCompleteVersionNumber());
 		
 		if(myFrame instanceof GraphWindow) {
 			((GraphWindow)myFrame).panelSelectionChanged();

@@ -45,6 +45,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.editor.ScanBarcodeUI;
 import org.tellervo.desktop.editor.EditorFactory.BarcodeDialogResult;
+import org.tellervo.desktop.gui.widgets.AutoCompletion;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.EntityType;
 import org.tellervo.schema.SearchOperator;
@@ -336,6 +337,7 @@ public class BoxCuration extends javax.swing.JDialog
     	cboBox.setModel(boxModel);
     	cboBox.setRenderer(tlcr);
     	cboBox.setEditable(false);
+
 	
     	// Key Listeners
     	this.txtName.addKeyListener(this);
@@ -763,6 +765,8 @@ public class BoxCuration extends javax.swing.JDialog
         getContentPane().add(cboBox, "cell 1 1,growx,aligny top");
         getContentPane().add(btnCreateNewBox, "cell 2 1 2 1,alignx right,aligny top");
 
+        
+        
         pack();
     }// </editor-fold>//GEN-END:initComponents
         

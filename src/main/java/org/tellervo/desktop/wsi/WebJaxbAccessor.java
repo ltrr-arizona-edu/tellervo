@@ -248,8 +248,8 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			// load cookies
 			client.setCookieStore(WSCookieStoreHandler.getCookieStore().toCookieStore());
 			
-			req.setHeader("User-Agent", "Tellervo WSI " + Build.VERSION + 
-					" (" + clientModuleVersion + "; ts " + Build.COMPLETE_VERSION_NUMBER +")");
+			req.setHeader("User-Agent", "Tellervo WSI " + Build.getUTF8Version() + 
+					" (" + clientModuleVersion + "; ts " + Build.getCompleteVersionNumber() +")");
 			
 			// are we using https? should we allow self-signed certs?
 			if(url.getScheme().equals("https"))

@@ -791,7 +791,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		}
 
 		// frame title
-		setTitle("Bargraph" + " - " + Build.VERSION + " " + Build.TIMESTAMP);
+		setTitle("Bargraph" + " - " + Build.getCompleteVersionNumber());
 
 		// create panel
 		bgp = new BargraphPanel();

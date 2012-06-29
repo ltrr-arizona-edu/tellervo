@@ -21,6 +21,13 @@
 package org.tellervo.desktop;
 
 import java.io.*;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Properties;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
 public class Build {
     // don't instantiate me
@@ -43,53 +50,73 @@ public class Build {
      */
     public final static String REVISION_NUMBER = loadRevisionNumber();
 
-    public final static String COMPLETE_VERSION_NUMBER = loadCompleteVersionNumber();
+    public final static String COMPLETE_VERSION_NUMBER = getCompleteVersionNumber();
 
 
-    // read the first line of the text file "Timestamp", included in
-    // this jar, and return it
-    private static String loadTimestamp() {
-	try {
-	    ClassLoader cl = org.tellervo.desktop.Build.class.getClassLoader();
-	    InputStream is = cl.getResourceAsStream("Timestamp");
-      if (is != null) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-	      try {
-   	      return br.readLine();
-        } finally {
-          br.close();
-        }
-      }
-	} catch (IOException ioe) {
-	    new org.tellervo.desktop.gui.Bug(ioe);
-	}
 
-	return "Unknown";
+    private static String loadTimestamp() 
+    {
+    	String timestamp = "Unknown";
+    	Enumeration<?> resEnum;
+    	try {
+    		resEnum = Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME);
+    		while (resEnum.hasMoreElements()) {
+    			try {
+    				URL url = (URL)resEnum.nextElement();
+    				InputStream is = url.openStream();
+    				if (is != null) {
+    					Manifest manifest = new Manifest(is);
+    					Attributes mainAttribs = manifest.getMainAttributes();
+    					timestamp = mainAttribs.getValue("Implementation-Build-Timestamp");
+    					if(timestamp != null  && timestamp.length()>0) {
+    						return timestamp;
+    					}
+    				}
+    			}
+    			catch (Exception e) {
+    				// Silently ignore wrong manifests on classpath?
+    			}
+    		}
+    	} catch (IOException e1) {
+    		// Silently ignore wrong manifests on classpath?
+    	}
+    	return "Unknown";
     }
     
       
-    // read the first line of the text file "Revision", included in
-    // this jar, and return it
-    private static String loadRevisionNumber() {
-	try {
-	    ClassLoader cl = org.tellervo.desktop.Build.class.getClassLoader();
-	    InputStream is = cl.getResourceAsStream("Revision");
-      if (is != null) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-	      try {
-   	      return br.readLine();
-        } finally {
-          br.close();
-        }
-      }
-	} catch (IOException ioe) {
-	    new org.tellervo.desktop.gui.Bug(ioe);
-	}
-
-	return "Unknown";
+    @SuppressWarnings("rawtypes")
+	private static String loadRevisionNumber()
+    {
+    	String revision = "Unknown";
+    	Enumeration resEnum;
+    	try {
+    		resEnum = Thread.currentThread().getContextClassLoader().getResources(JarFile.MANIFEST_NAME);
+    		while (resEnum.hasMoreElements()) {
+    			try {
+    				URL url = (URL)resEnum.nextElement();
+    				InputStream is = url.openStream();
+    				if (is != null) {
+    					Manifest manifest = new Manifest(is);
+    					Attributes mainAttribs = manifest.getMainAttributes();
+    					revision = mainAttribs.getValue("Implementation-Build");
+    					if(revision != null  && revision.length()>0) {
+    						return revision;
+    					}
+    				}
+    			}
+    			catch (Exception e) {
+    				// Silently ignore wrong manifests on classpath?
+    			}
+    		}
+    	} catch (IOException e1) {
+    		// Silently ignore wrong manifests on classpath?
+    	}
+    	return "Unknown";
     }
     
-    private static String loadCompleteVersionNumber(){
+    
+    public final static String getCompleteVersionNumber()
+    {
     	
     	if(Build.REVISION_NUMBER!="Unknown")
     	{
@@ -101,9 +128,33 @@ public class Build {
     	}
 
     }
-
+    
+    public final static String getUTF8Version()
+    {
+    	if(Build.VERSION==null)
+    	{
+    		return "DEV. SNAPSHOT";
+    	}
+  
+    	return Build.VERSION;
+    }
+    
+    public final static String getVersion()
+    {
+    	if(Build.VERSION==null)
+    	{
+    		return "development";
+    	}
+    	
+    	if(Build.VERSION.contains("-SNAPSHOT"))
+    	{
+    		return Build.VERSION.replace("-SNAPSHOT", "\u03B2");
+    	}
+    	return Build.VERSION;
+    }
+    
     /** Version string. */
-    public final static String VERSION = Build.class.getPackage().getImplementationVersion(); // beta
+    private final static String VERSION = Build.class.getPackage().getImplementationVersion(); // beta
 
     /** Year (for copyright). */
     public final static String YEAR = "2001-2012";

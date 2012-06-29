@@ -25,6 +25,7 @@ package org.tellervo.desktop.gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.image.BufferedImage;
 
@@ -33,8 +34,13 @@ import javax.swing.JLabel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
+import org.tellervo.desktop.Build;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.ProgressMeter.ProgressEvent;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.Center;
+
+import javax.swing.JPanel;
 
 
 /**
@@ -45,6 +51,7 @@ public class Splash extends JDialog implements ProgressMeter.ProgressListener {
 	private JProgressBar progress = new JProgressBar();
 	private JLabel label = new JLabel();
 	protected Container progressPanel;
+	private final JPanel clearPanel = new JPanel();
 
 	public Splash() {
 		this(null, null);
@@ -59,6 +66,10 @@ public class Splash extends JDialog implements ProgressMeter.ProgressListener {
 	}
 
 	public Splash(String title, BufferedImage img) {
+		
+		String version = "version "+Build.getVersion();
+	
+		this.setIconImage(Builder.getApplicationIcon());
 		
 		setUndecorated(true);
 
@@ -82,6 +93,18 @@ public class Splash extends JDialog implements ProgressMeter.ProgressListener {
 		
 		
 		getContentPane().add(progressPanel, BorderLayout.SOUTH);	
+		clearPanel.setBackground(Color.PINK);
+		
+		content.add(clearPanel, BorderLayout.CENTER);
+		clearPanel.setLayout(null);
+		
+		JLabel lblVersion = new JLabel(version);
+		lblVersion.setForeground(Color.white);
+		lblVersion.setBounds(175,110, 90,110);
+		clearPanel.add(lblVersion);
+		
+		
+		
 		pack();
 				
 		/* really? this behavior sucks! 

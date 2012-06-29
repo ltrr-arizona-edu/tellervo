@@ -40,6 +40,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JSeparator;
 import java.awt.Color;
 import javax.swing.border.EtchedBorder;
+import javax.swing.JTabbedPane;
 
 
 /*
@@ -98,7 +99,7 @@ public class AboutBox extends javax.swing.JDialog {
 
         // Build strings
         String strVersion = MessageFormat.format(I18n.getText("about.version"),
-                new Object[] { Build.VERSION });
+                new Object[] {Build.getVersion() });
         String strTimestamp = MessageFormat.format(I18n.getText("about.timestamp"),
                 new Object[] { Build.TIMESTAMP });
         String strRevision = MessageFormat.format(I18n.getText("about.revision"),
@@ -161,6 +162,7 @@ public class AboutBox extends javax.swing.JDialog {
     private void initComponents() {
 
         tabbedPane = new javax.swing.JTabbedPane();
+        tabbedPane.setTabPlacement(JTabbedPane.BOTTOM);
         panelAbout = new javax.swing.JPanel();
         panelSummary = new javax.swing.JPanel();
         lblTellervo = new javax.swing.JLabel();
@@ -174,7 +176,7 @@ public class AboutBox extends javax.swing.JDialog {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        lblTellervo.setFont(new java.awt.Font("Lucida Grande", 1, 18));
+        lblTellervo.setFont(new Font("Dialog", Font.BOLD, 20));
         lblTellervo.setText("Tellervo");
 
         lblVersion.setFont(new java.awt.Font("Lucida Grande", 0, 10));
@@ -186,40 +188,13 @@ public class AboutBox extends javax.swing.JDialog {
         lblRevision = new JLabel("Revision:");
         lblRevision.setFont(new Font("Lucida Grande", Font.PLAIN, 10));
 
-        GroupLayout gl_panelSummary = new GroupLayout(panelSummary);
-        gl_panelSummary.setVerticalGroup(
-        	gl_panelSummary.createParallelGroup(Alignment.LEADING)
-        		.addGroup(gl_panelSummary.createSequentialGroup()
-        			.addGap(24)
-        			.addComponent(lblTellervo)
-        			.addGap(18)
-        			.addComponent(lblVersion)
-        			.addPreferredGap(ComponentPlacement.RELATED)
-        			.addComponent(lblCompiledAt, GroupLayout.PREFERRED_SIZE, 13, GroupLayout.PREFERRED_SIZE)
-        			.addPreferredGap(ComponentPlacement.RELATED)
-        			.addComponent(lblRevision)
-        			.addContainerGap(10, Short.MAX_VALUE))
-        );
-        gl_panelSummary.setHorizontalGroup(
-        	gl_panelSummary.createParallelGroup(Alignment.LEADING)
-        		.addGroup(gl_panelSummary.createSequentialGroup()
-        			.addGap(51)
-        			.addGroup(gl_panelSummary.createParallelGroup(Alignment.LEADING)
-        				.addComponent(lblRevision)
-        				.addComponent(lblCompiledAt)
-        				.addComponent(lblVersion)
-        				.addComponent(lblTellervo))
-        			.addContainerGap(164, Short.MAX_VALUE))
-        );
-        panelSummary.setLayout(gl_panelSummary);
-
         txtCopyright.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
         txtCopyright.setEditable(false);
         txtCopyright.setFont(new java.awt.Font("Lucida Grande", 0, 8));
         txtCopyright.setOpaque(false);
 
         tabbedPane.addTab("About", panelAbout);
-        panelAbout.setLayout(new MigLayout("", "[128px][48.00px][274px]", "[grow][128px][18px,grow][100px]"));
+        panelAbout.setLayout(new MigLayout("", "[128px][48.00px][274px]", "[25.00][128px][26.00][100px,fill]"));
         seperator = new javax.swing.JSeparator();
         
                 seperator.setBackground(new java.awt.Color(255, 255, 255));
@@ -231,6 +206,11 @@ public class AboutBox extends javax.swing.JDialog {
         panelAbout.add(txtCopyright, "cell 0 3 3 1,growx,aligny top");
         panelAbout.add(lblIcon, "cell 0 1 2 1,grow");
         panelAbout.add(panelSummary, "cell 2 1,grow");
+        panelSummary.setLayout(new MigLayout("", "[][85px,grow,fill]", "[][22px][13px][13px][17.00][13px][grow]"));
+        panelSummary.add(lblRevision, "cell 1 3,alignx left,aligny top");
+        panelSummary.add(lblCompiledAt, "cell 1 5,alignx left,aligny top");
+        panelSummary.add(lblVersion, "cell 1 2,alignx left,aligny top");
+        panelSummary.add(lblTellervo, "cell 1 1,alignx right,aligny top");
 
         scrollPane.setFont(new java.awt.Font("Courier", 0, 9));
 

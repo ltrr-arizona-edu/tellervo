@@ -1,40 +1,30 @@
 package org.tellervo.desktop.setupwizard;
 
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.image.BufferedImage;
-import java.net.URL;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
-import java.awt.Font;
-import java.awt.Color;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.Bug;
-import org.tellervo.desktop.gui.LoginSplash;
-import org.tellervo.desktop.gui.ProgressMeter;
-import org.tellervo.desktop.gui.TellervoMainWindow;
-import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.ui.Builder;
-import java.awt.SystemColor;
 
 public class SetupWizard extends JDialog implements ActionListener{
 	

@@ -109,8 +109,8 @@
 		</developer>
 	</developers>
 	<scm>
-		<connection>scm:svn://svn.code.sf.net/p/tellervo/code-0/trunk</connection>
-		<developerConnection>scm:svn+ssh://svn.code.sf.net/p/tellervo/code-0/trunk</developerConnection>
+		<connection>scm:svn:http://svn.code.sf.net/p/tellervo/code-0/trunk</connection>
+		<developerConnection>scm:svn:http://svn.code.sf.net/p/tellervo/code-0/trunk</developerConnection>
 		<url>http://www.tellervo.org</url>
 	</scm>
 	<properties>
@@ -379,6 +379,26 @@
 		
 	
 		<plugins>
+		
+		    <!-- Check the code is up-to-date and grab SVN version number -->
+			<plugin>
+			  <groupId>org.codehaus.mojo</groupId>
+			  <artifactId>buildnumber-maven-plugin</artifactId>
+			  <executions>
+			    <execution>
+			      <phase>validate</phase>
+			      <goals>
+			        <goal>create</goal>
+			      </goals>
+			    </execution>
+			  </executions>
+			  <configuration>
+			    <doCheck>true</doCheck>
+			    <doUpdate>true</doUpdate>
+			  </configuration>
+			</plugin>
+		
+		
 			<!-- JAXB -->
 			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -520,6 +540,10 @@
 		          <manifest>
 		            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 		          </manifest>
+		            <manifestEntries>
+		              <Implementation-Build>${buildNumber}</Implementation-Build>
+		              <Implementation-Build-Timestamp>${maven.build.timestamp}</Implementation-Build-Timestamp>
+		            </manifestEntries>
 		        </archive>
 		      </configuration>
 		    </plugin>
@@ -841,9 +865,10 @@
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
-
+				  
 		          <execution>
-		            <phase>package</phase>
+		            <id>GetRevisionNumber</id>
+		            <phase>build</phase>
 		            <configuration>
 		              <tasks>
 							<exec outputproperty="revisionnum" executable="svnversion"/>

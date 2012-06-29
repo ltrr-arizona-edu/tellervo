@@ -97,7 +97,7 @@ public class TextWindow extends JFrame {
         a.setFont(new Font("monospaced", oldFont.getStyle(), oldFont.getSize()));
 
 	setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-	setTitle(filename + " - " + Build.VERSION + " " + Build.TIMESTAMP);
+	setTitle(filename + " - " + Build.getCompleteVersionNumber());
 	setSize(640, 480);
 	setVisible(true);
     }

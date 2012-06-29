@@ -537,8 +537,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		setTitle(sample.toString() + 
 				((st != null) ? (" [" + st + "]") : "") +
 				" - " +
-				Build.VERSION + " " +
-				Build.TIMESTAMP);
+				Build.getCompleteVersionNumber());
 	}
 
 

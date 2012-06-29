@@ -218,7 +218,7 @@ public class BugReport {
 
 		// time/date/version of build
 		buf.append("Tellervo\n");
-		buf.append("   Version " + Build.VERSION + "\n");
+		buf.append("   Version " + Build.getVersion() + "\n");
 		buf.append("   Built at " + Build.TIMESTAMP + "\n");
 
 		// properties of the OS
@@ -338,7 +338,7 @@ public class BugReport {
 
 			
 			// add our required parts
-			if(Build.VERSION!=null)	postEntity.addPart("version", new StringBody(Build.VERSION));
+			if(Build.getVersion()!=null)	postEntity.addPart("version", new StringBody(Build.getVersion()));
 			postEntity.addPart("timestamp", new StringBody(Build.TIMESTAMP));
 			postEntity.addPart("error", new StringBody(toString()));
 			postEntity.addPart("sysinfo", new StringBody(getSystemInfo()));

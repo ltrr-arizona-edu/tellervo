@@ -20,23 +20,28 @@
  ******************************************************************************/
 package org.tellervo.desktop.core;
 
+import gov.nasa.worldwind.util.Logging;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.URISyntaxException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.MissingResourceException;
 
 import javax.media.opengl.GLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.Build;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gui.Log4JViewer;
 import org.tellervo.desktop.gui.LoginDialog;
-import org.tellervo.desktop.gui.LoginSplash;
 import org.tellervo.desktop.gui.ProgressMeter;
+import org.tellervo.desktop.gui.Splash;
 import org.tellervo.desktop.gui.TellervoMainWindow;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.nativelib.NativeLibWrapper;
@@ -45,22 +50,16 @@ import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.PreferencesDialog;
 import org.tellervo.desktop.prefs.Prefs;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.sample.Sample;
-import org.tellervo.schema.WSIConfiguration;
-import org.tellervo.schema.WSISecurityGroup;
-import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.setupwizard.SetupWizard;
 import org.tellervo.desktop.tridasv2.TridasObjectList;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.util.ListUtil;
 import org.tellervo.desktop.wsi.tellervo.TellervoWsiAccessor;
+import org.tellervo.schema.WSIConfiguration;
+import org.tellervo.schema.WSISecurityUser;
 import org.tridas.io.TridasIO;
 
-import com.dmurph.mvc.MVC;
-
 import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
-import gov.nasa.worldwind.util.Logging;
 
 /**
  * Contextual state of the app; holds references to all "subsystems".
@@ -128,7 +127,7 @@ public static synchronized void init() {
 }
 
 
-public static synchronized void init(ProgressMeter meter, LoginSplash splash) 
+public static synchronized void init(ProgressMeter meter, Splash splash) 
 {
     App.init();
     
@@ -588,4 +587,5 @@ public static synchronized void init(ProgressMeter meter, LoginSplash splash)
 		return "";
 		
 	}
+	
 }
