@@ -394,7 +394,7 @@
 			  </executions>
 			  <configuration>
 			    <doCheck>false</doCheck>
-			    <doUpdate>true</doUpdate>
+			    <doUpdate>false</doUpdate>
 			  </configuration>
 			</plugin>
 		
@@ -864,20 +864,6 @@
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
 				  
-		          <execution>
-		            <id>GetRevisionNumber</id>
-		            <phase>build</phase>
-		            <configuration>
-		              <tasks>
-							<exec outputproperty="revisionnum" executable="svnversion"/>
-		              </tasks>
-		            </configuration>
-		            <goals>
-		              <goal>run</goal>
-		            </goals>
-		          </execution>
-				
-				
 				
 					<!-- Delete the duplicate TRiDaS and GML 
 					classes produced by JAXB when creating the Tellervo classes. -->
@@ -907,9 +893,9 @@
 					  <id>AddLibsToMacOSXApp</id>
 					  <phase>package</phase>
 					  <configuration>
-						  <tasks>
-							  <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath"/>	
-
+					  	<tasks>
+						  <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+							  classpathref="maven.plugin.classpath"/>	
 								  <delete includeEmptyDirs="true">
 								      <fileset dir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/" includes="**/*.jar"/>
 								  </delete>
@@ -922,8 +908,7 @@
 								  		 <fileset dir="Documentation" includes="**/tellervo-manual.pdf"/>
 								  		 <zipfileset dir="${project.build.directory}/${project.build.finalName}.app" filemode="555" prefix="Tellervo.app"/>
 								  </zip>
-
-						  </tasks>
+						  </tasks>	  
 					  </configuration>
 					  <goals>
 						  <goal>run</goal>
@@ -932,22 +917,32 @@
 					
 					
 					<!-- Run Makensis to create the windows installers -->
-				 
 			 	    <execution>
 						<id>RunNSIS</id>
 						<phase>package</phase>
 						<configuration>
 							<tasks>
-								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
-									classpathref="maven.plugin.classpath"/>
-							      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Windows"/>
-							      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Windows64"/>
-							      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
-							        <arg value="nsis-32bit.nsi"/>  
-							      </exec>  
-							      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
-							        <arg value="nsis-64bit.nsi"/>  
-							      </exec>  
+								<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath"/>
+								<trycatch>
+							    <try>
+								      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Windows"/>
+								      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Windows64"/>
+								      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
+								        <arg value="nsis-32bit.nsi"/>  
+								      </exec>  
+								      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
+								        <arg value="nsis-64bit.nsi"/>  
+								      </exec>  
+								 </try>
+								 <catch>
+								    <echo>**********************************************</echo>
+								    <echo> UNABLE TO COMPLETE THIS TASK                 </echo>
+								 	<echo> makensis is not available on this computer   </echo>
+								 	<echo> Windows installer package will not be created</echo>
+								 	<echo>**********************************************</echo>
+								 	<sleep seconds="5"/>
+								 </catch>
+								 </trycatch>
 							</tasks>
 						</configuration>
 						<goals>
