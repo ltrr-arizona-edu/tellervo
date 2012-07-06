@@ -393,7 +393,7 @@
 			    </execution>
 			  </executions>
 			  <configuration>
-			    <doCheck>true</doCheck>
+			    <doCheck>false</doCheck>
 			    <doUpdate>true</doUpdate>
 			  </configuration>
 			</plugin>
@@ -651,17 +651,16 @@
 			          on Linux and Windows computers the App will not include
 			          the Apple integration portions therefore they will have
 			          an ugly menu bar. -->
-			 <plugin>
+			<plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>osxappbundle-maven-plugin</artifactId>
-                <version>1.0-alpha-1</version>
+                <version>1.0-alpha-2</version>
                 <configuration>
                     <mainClass>org.tellervo.desktop.gui.Startup</mainClass>
                     <iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile>
                     <jvmVersion>1.5+</jvmVersion>
                     <bundleName>${project.name}</bundleName>
                     <javaApplicationStub>Native/BuildResources/MacBuild/JavaApplicationStub</javaApplicationStub>
-                    <!-- <zipFile>${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}-app.zip</zipFile>-->
                 </configuration>
                 <executions>
                     <execution>
@@ -673,7 +672,7 @@
                </executions>
            </plugin>
            
-           <!-- 
+            <!-- 
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>osxappbundle-maven-plugin</artifactId>
@@ -702,7 +701,6 @@
 					<bundleName>Tellervo</bundleName>
 					<zipFile>${project.build.directory}/mac-app.zip</zipFile>
 					<mainClass>org.tellervo.desktop.gui.Startup</mainClass>
-					<dictionaryFile>${project.build.directory}/classes/MacBuild/Info.plist</dictionaryFile>
 					<jvmVersion>1.5+</jvmVersion>
 					<iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile>
 					<javaApplicationStub>${project.build.directory}/classes/MacBuild/JavaApplicationStub</javaApplicationStub>
@@ -715,8 +713,8 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
-			-->
+			</plugin>-->
+			
 			
 			<!--  Create a Linux Ubuntu debian native installer -->
 			<plugin>
@@ -910,27 +908,21 @@
 					  <phase>package</phase>
 					  <configuration>
 						  <tasks>
-							  <taskdef resource="net/sf/antcontrib/antcontrib.properties"
-								  classpathref="maven.plugin.classpath"/>	
-							  <trycatch>
-							      <try>
-									  <delete includeEmptyDirs="true">
-									      <fileset dir="${project.build.directory}/${project.build.finalName}.app/Contents/Resources/Java/" includes="**/*.jar"/>
-									  </delete>
-									  <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/MacOSX"/>
-									  <copy file="${project.build.directory}/${project.build.finalName}.jar" 
-									        todir="${project.build.directory}/${project.build.finalName}.app/Contents/Resources/Java/"/>
-									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="false">
-									  		 <fileset dir="Native/BuildResources/MacBuild/NativePackages/" includes="**/*.pkg"/>
-									  		 <fileset dir="${project.build.directory}/classes/Licenses/" includes="**/license.txt"/>
-									  		 <fileset dir="Documentation" includes="**/tellervo-manual.pdf"/>
-									  		 <zipfileset dir="${project.build.directory}/${project.build.finalName}.app" filemode="555" prefix="Tellervo.app"/>
-									  </zip>
-								  </try>
-								  <catch>
-								  	<echo>Error finishing off MacOSX bundle!</echo>
-								  </catch>
-							   </trycatch>
+							  <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath"/>	
+
+								  <delete includeEmptyDirs="true">
+								      <fileset dir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/" includes="**/*.jar"/>
+								  </delete>
+								  <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/MacOSX"/>
+								  <copy file="${project.build.directory}/${project.build.finalName}.jar" 
+								        todir="${project.build.directory}/${project.build.finalName}.app/Contents/Resources/Java/"/>
+								  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="false">
+								  		 <fileset dir="Native/BuildResources/MacBuild/NativePackages/" includes="**/*.pkg"/>
+								  		 <fileset dir="${project.build.directory}/classes/Licenses/" includes="**/license.txt"/>
+								  		 <fileset dir="Documentation" includes="**/tellervo-manual.pdf"/>
+								  		 <zipfileset dir="${project.build.directory}/${project.build.finalName}.app" filemode="555" prefix="Tellervo.app"/>
+								  </zip>
+
 						  </tasks>
 					  </configuration>
 					  <goals>

@@ -39,6 +39,7 @@
 
 package org.tellervo.desktop.gui;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
@@ -63,10 +64,12 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.tellervo.desktop.Build;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.gui.menus.AdminMenu;
@@ -191,6 +194,14 @@ public class TellervoMainWindow extends JFrame {
 		panel.setSize(d);
 		
 		addQuickLinkButtons(panel, d);
+		
+		String version = "version "+Build.getVersion();
+		JLabel lblVersion = new JLabel(version);
+		lblVersion.setForeground(Color.white);
+		lblVersion.setBounds(195,83, 90,110);
+		panel.add(lblVersion);
+		
+		
 		
 		setContentPane(panel);
 
