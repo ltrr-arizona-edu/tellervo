@@ -75,10 +75,6 @@ public class Splash extends JDialog implements ProgressMeter.ProgressListener {
 
 		// make the content pane
 		ImagePanel content = new ImagePanel(img, ImagePanel.ACTUAL);
-
-		//content.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-		//content.setLayout(new BorderLayout());
-		//content.setBackground(Color.white);
 	
 		setContentPane(content);
 				
@@ -89,9 +85,7 @@ public class Splash extends JDialog implements ProgressMeter.ProgressListener {
 		progressPanel.add(label);	
 		progressPanel.add(progress);
 		label.setVisible(false);
-		
-		
-		
+
 		getContentPane().add(progressPanel, BorderLayout.SOUTH);	
 		clearPanel.setBackground(Color.PINK);
 		
@@ -102,31 +96,7 @@ public class Splash extends JDialog implements ProgressMeter.ProgressListener {
 		lblVersion.setForeground(Color.white);
 		lblVersion.setBounds(175,110, 90,110);
 		clearPanel.add(lblVersion);
-		
-		
-		
-		pack();
-				
-		/* really? this behavior sucks! 
-		window.addMouseListener(new MouseListener() {
-			public void mouseClicked(MouseEvent me) {
-				window.dispose();
-			}
-
-			public void mousePressed(MouseEvent me) { 
-			}
-
-			public void mouseReleased(MouseEvent me) {
-			}
-
-			public void mouseEntered(MouseEvent me) { 
-			}
-
-			public void mouseExited(MouseEvent me) { 
-			}
-		});
-		*/
-		
+		pack();		
 		setLocationRelativeTo(null);
 	}
 

@@ -941,7 +941,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 			entity = entities.get(0);
 		} catch (IndexOutOfBoundsException e)
 		{
-			Alert.message(parent, "No matches", "No matches for this code");
+			Alert.message("No matches", "No matches for this code");
 			return;
 		}
 		

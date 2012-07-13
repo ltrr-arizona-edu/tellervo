@@ -266,6 +266,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         );
 
         tabbedPane.addTab("Search", searchPanel);
+        tabbedPane.addTab("Search2", staticSearchPanel);
 
         listTableSplit.setLeftComponent(tabbedPane);
 
@@ -410,6 +411,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     protected javax.swing.JPanel panelBottomButtons;
     protected javax.swing.JPanel panelRibbon;
     protected javax.swing.JPanel searchPanel;
+    protected javax.swing.JPanel staticSearchPanel;
     protected javax.swing.JTabbedPane tabbedPane;
     protected javax.swing.JPanel workArea;
     // End of variables declaration//GEN-END:variables

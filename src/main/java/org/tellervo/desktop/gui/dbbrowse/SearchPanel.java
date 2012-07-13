@@ -5,8 +5,6 @@ package org.tellervo.desktop.gui.dbbrowse;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -22,12 +20,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import net.miginfocom.swing.MigLayout;
+
 import org.tellervo.desktop.sample.ElementList;
-import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.wsi.ResourceEvent;
 import org.tellervo.desktop.wsi.ResourceEventListener;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
+import org.tellervo.schema.SearchReturnObject;
 
 
 /**
@@ -63,13 +63,13 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 		// create a synchronized map for our results
 		searchCacheMap = Collections.synchronizedMap(new HashMap<SearchParameters, ElementList>());		
 		
-		panel = new JPanel(new GridBagLayout());
+		panel = new JPanel();
 		
 		// make our list of search parameters
 		parameters = new ArrayList<SearchParameterPanel>();
 		
 		// make our 'add' button...
-		addButton = new JButton("Add");
+		addButton = new JButton("Add another criteria");
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				addSearch();
@@ -78,7 +78,7 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 		
 		// justify our content to the top of our panel...
 		JPanel dummy = new JPanel(new BorderLayout());
-		dummy.add(panel, BorderLayout.NORTH);
+		dummy.add(panel, BorderLayout.CENTER);
 		
 		setViewportView(dummy);
 		
@@ -101,7 +101,7 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 		// delete the layout
 		panel.removeAll();
 
-		GridBagConstraints c = new GridBagConstraints();
+		/*GridBagConstraints c = new GridBagConstraints();
 		
 		c.gridx = 0;
 		c.gridy = 0;
@@ -115,7 +115,22 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 		
 		c.anchor = GridBagConstraints.LINE_START;
 		panel.add(addButton, c);
+		*/
 		
+		panel.setLayout(new MigLayout("", "[grow,fill]", "[]"));
+		
+		// now, add everything to our layout
+		for(int i=0; i<parameters.size(); i++)
+		{
+			String operator = "AND";
+			if(i==0) operator = "";
+			SearchParameterPanel searchPanel = parameters.get(i);
+			searchPanel.setParameterOperator(operator);
+			panel.add(searchPanel, "cell 0 "+i);
+		}
+		
+		panel.add(addButton, "cell 0 "+parameters.size());
+					
 		// revalidate our panel, we changed the layout
 		panel.revalidate();		
 	}

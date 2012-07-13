@@ -19,13 +19,16 @@
  ******************************************************************************/
 package org.tellervo.desktop.gui.dbbrowse;
 
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.Color;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.LineBorder;
+
+import net.miginfocom.swing.MigLayout;
 
 public class SearchParameterPanel_UI_2 extends JPanel {
 	private static final long serialVersionUID = 1L;
@@ -34,52 +37,39 @@ public class SearchParameterPanel_UI_2 extends JPanel {
     protected JComboBox cboSearchOperator;
     protected JTextField txtSearchText;
     protected JButton btnRemove;
+    private JLabel lblParameterOperator;
     
     public SearchParameterPanel_UI_2() {
+    	setBorder(new LineBorder(Color.DARK_GRAY, 1, true));
+    	setBackground(Color.LIGHT_GRAY);
+ 
     	initComponents();
     }
     
-    private void initComponents() {
-    	cboSearchField = new JComboBox();
-    	
-    	// some dummy field to make it default width
-    	cboSearchField.setPrototypeDisplayValue("Series datingErrorPositive");
-    	
-    	cboSearchOperator = new JComboBox();
-    	txtSearchText = new JTextField();
+	public void setParameterOperator(String operator)
+	{
+		lblParameterOperator.setText(operator);
+	}
     
-    	btnRemove = new JButton();
-    	
-    	//
-    	// [search param] | [operator] | [remove] 
-    	// ----------------------------------------
-    	// [ search value............]
-    	//
-    	
-    	setLayout(new GridBagLayout());
-    	GridBagConstraints c = new GridBagConstraints();
-    	
-    	c.anchor = GridBagConstraints.LINE_START;
-    	c.gridx = 0;
-    	c.gridy = 0;
-    	c.weightx = 0.7;
-    	c.fill = GridBagConstraints.HORIZONTAL;
-    	add(cboSearchField, c);
-    	
-    	c.weightx = 0.3;
-    	c.gridx++;
-    	add(cboSearchOperator, c);
-    	
-    	c.gridy++;
-    	c.gridx = 0;
-    	c.gridwidth = 2;
-    	add(txtSearchText, c);
-    	
-    	c.anchor = GridBagConstraints.FIRST_LINE_END;
-    	c.fill = GridBagConstraints.NONE;
-    	c.weightx = 0;
-    	c.gridx = 2;
-    	c.gridy = 0;
-    	add(btnRemove, c);
+    private void initComponents() {
+  
+		setLayout(new MigLayout("", "[][31px,grow,fill][][]", "[24px,top][]"));
+		
+		lblParameterOperator = new JLabel("AND");
+		add(lblParameterOperator, "cell 0 0,alignx trailing,aligny center");
+		
+		cboSearchField = new JComboBox();
+		add(cboSearchField, "cell 1 0,alignx left,aligny top");
+		
+		cboSearchOperator = new JComboBox();
+		add(cboSearchOperator, "cell 2 0,growx");
+		
+		btnRemove = new JButton("");
+		add(btnRemove, "cell 3 0");
+		
+		txtSearchText = new JTextField();
+		add(txtSearchText, "cell 1 1 2 1,growx");
+		txtSearchText.setColumns(10);
+		
     }
 }

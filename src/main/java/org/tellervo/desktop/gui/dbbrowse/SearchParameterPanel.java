@@ -12,6 +12,7 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -78,11 +79,22 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 		// lazily do so
 		if(paramsArray == null) {
 			// get a cloned copy of the list of values (from enum)
-			paramsArray = SearchParameterName.values();
+			//paramsArray = SearchParameterName.values();
 			// make a list wrapping the array
-			List<SearchParameterName> paramsList = Arrays.asList(paramsArray); 
+			//List<SearchParameterName> paramsList = Arrays.asList(paramsArray); 
 			// sort it ...
-			Collections.sort(paramsList, new SearchParameterSorter());
+			//Collections.sort(paramsList, new SearchParameterSorter());
+			
+			ArrayList<SearchParameterName> paramsList = new ArrayList<SearchParameterName>();
+			paramsList.add(SearchParameterName.ANYPARENTOBJECTCODE);
+			paramsList.add(SearchParameterName.ELEMENTCODE);
+			paramsList.add(SearchParameterName.SAMPLECODE);
+			paramsList.add(SearchParameterName.RADIUSCODE);
+			paramsList.add(SearchParameterName.SERIESCODE);
+			paramsList.add(SearchParameterName.RADIUSNUMBERSAPWOODRINGS);
+
+			paramsArray = paramsList.toArray(new SearchParameterName[paramsList.size()]);
+
 		}
 		
 		invalidColor = ColorUtils.blend(getBackground(), .7f, Color.red, .3f);
@@ -213,28 +225,19 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 			
 			// get xml value for search parameter name
 			if(value instanceof SearchParameterName) {
-				String s = ((SearchParameterName)value).value();
+				
+				
+				
+				String s = SearchParameterHumaniser.getHumanisedName((SearchParameterName)value);
+				
+				if(s==null)
+				{	
+					s = ((SearchParameterName)value).value();
+				}
 				
 				value = s;
 				setToolTipText(s);
 				
-				// kludgy hack for making the list look nicer
-				// TODO: Annotate the xml list
-				for(String prefix : paramPrefixes) {
-					if(s.startsWith(prefix)) {
-						StringBuffer sb = new StringBuffer();
-						
-						// Turn objectblahid -> Object blahid
-						sb.append(Character.toUpperCase(prefix.charAt(0)));
-						sb.append(prefix.substring(1));
-						sb.append(" ");
-						sb.append(s.substring(prefix.length()));
-						
-						// done, break out of loop
-						value = sb.toString();
-						break;
-					}
-				}
 			}
 			else if(value instanceof SearchOperator) {
 				setToolTipText(value.toString());

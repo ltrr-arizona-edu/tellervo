@@ -28,6 +28,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
@@ -57,6 +59,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
+import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
 import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
@@ -101,6 +104,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     private int minimumSelectedElements = 1;
     
     private SearchPanel searchPanel;
+    private StaticSearchPanel searchPanel2;
     
     
     /**
@@ -572,7 +576,12 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     private void setupSearch() {
     	searchPanel = new SearchPanel(new SearchSupport());
     	this.tabbedPane.setComponentAt(1, searchPanel);
-    	this.tabbedPane.setEnabledAt(1, false);
+    	
+    	searchPanel2 = new StaticSearchPanel(new SearchSupport());
+    	
+    	this.tabbedPane.setComponentAt(2, searchPanel2);
+    	
+    	//this.tabbedPane.setEnabledAt(1, false);
     }
     
     /** 
@@ -1244,6 +1253,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 	private class SearchSupport implements SearchResultManager, ChangeListener {
 		private final JLabel searchInfoLabel;
 		private JProgressBar progressBar;
+		private JDialog progressDialog;
 
 		public SearchSupport() {
 			searchInfoLabel = new JLabel();
@@ -1252,7 +1262,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			searchInfoLabel.setForeground(Color.DARK_GRAY);
 			searchInfoLabel.setFont(font);
 			searchInfoLabel.setOpaque(false);
-			searchInfoLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+			searchInfoLabel.setAlignmentX(JLabel.LEFT_ALIGNMENT);
 			searchInfoLabel.setAlignmentY(JLabel.TOP_ALIGNMENT);
 			
 			DBBrowser.this.tabbedPane.addChangeListener(this);
@@ -1260,25 +1270,76 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 
 		private void showProgressbar(boolean shouldShow) {
 			if (shouldShow == false) {
-				if(progressBar != null) {
-					progressBar.setVisible(false);
-					getLayeredPane().remove(progressBar);
-					getLayeredPane().validate();
-					progressBar = null;
+				if(progressDialog != null) {
+					progressDialog.dispose();
 				}
 				return;
 			}
-
-			boolean add = true;
-			if(progressBar == null) {
-				progressBar = new JProgressBar();
-				progressBar.setIndeterminate(true);
-				progressBar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
-			}
-			else
-				add = false;
 			
-			Point workPt = workArea.getLocation();
+			
+			if(progressDialog != null) {
+				progressDialog.setVisible(true);
+				return;
+			}
+
+			progressBar = new JProgressBar();
+			progressBar.setIndeterminate(true);
+			progressBar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+
+
+			progressDialog = new JDialog();
+			progressDialog.setLayout(new BorderLayout());
+			progressDialog.setModal(true);
+			progressDialog.setTitle("Please wait...");
+			progressDialog.setUndecorated(true);
+			progressDialog.setResizable(false);
+			progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+			progressDialog.add(progressBar, BorderLayout.CENTER);
+			progressDialog.pack();
+			progressDialog.setLocationRelativeTo(DBBrowser.this);
+			
+			final SearchSupport glue = this;
+			progressBar.addMouseListener(new MouseListener(){
+
+				@Override
+				public void mouseClicked(MouseEvent arg0) {
+					Object[] options = new String[] { "Abort", "Continue" };
+					int ret = JOptionPane.showOptionDialog(progressBar, 
+							"Would you like to abort the search?", 
+							"Abort?", 
+							JOptionPane.YES_NO_OPTION, 
+							JOptionPane.QUESTION_MESSAGE, null, 
+							options, options[1]);
+					
+					if(ret == 0) {
+						DBBrowser.this.searchPanel.cancelSearch();
+						showProgressbar(false);
+						showSearchLabel(false);
+					}
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent arg0) {
+				}
+
+				@Override
+				public void mouseExited(MouseEvent arg0) {
+				}
+
+				@Override
+				public void mousePressed(MouseEvent arg0) {
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent arg0) {
+				}
+				
+			});
+			
+			progressDialog.setVisible(true);
+
+			
+			/*Point workPt = workArea.getLocation();
 			workPt = SwingUtilities.convertPoint(workArea, workPt, null);
 			progressBar.setBounds(workPt.x, workPt.y + 100, 
 					searchInfoLabel.getPreferredSize().width, progressBar.getPreferredSize().height);
@@ -1286,7 +1347,9 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			if(add) {
 				getLayeredPane().add(progressBar, new Integer(JLayeredPane.POPUP_LAYER - 1), -1);
 				getLayeredPane().validate();
-			}
+			}*/
+			
+			
 		}
 		
 		/**
@@ -1321,8 +1384,11 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 				showSearchLabel(false);
 				showProgressbar(false);
 			} else {
+				showSearchLabel(false);
 				searchInfoLabel.setText(I18n.getText("error.noResults"));
+				((ElementListTableModel) tblAvailMeas.getModel()).setElements(null);
 				showProgressbar(false);
+				Alert.message("No matches", "There are no matches");
 			}
 		}
 
@@ -1330,7 +1396,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			System.out.println("SEARCH STARTING");
 			searchInfoLabel.setText(I18n.getText("dbbrowser.searching"));
 			showProgressbar(true);
-			showSearchLabel(true);
+			showSearchLabel(false);
 		}
 
 		public void stateChanged(ChangeEvent e) {

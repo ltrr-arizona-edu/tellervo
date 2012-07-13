@@ -101,7 +101,13 @@ public class ElementListTableModel extends AbstractTableModel {
 	}
 
 	public int getRowCount() {
-		return elements.size();
+		
+		if(elements!=null)
+		{
+			return elements.size();
+		}
+		
+		return 0;
 	}
 	
 	public Object getColumnValueForElement(Element e, int columnIndex) {
