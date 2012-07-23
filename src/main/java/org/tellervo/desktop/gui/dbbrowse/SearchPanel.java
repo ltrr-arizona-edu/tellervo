@@ -43,14 +43,13 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 	/** A list of search panels we have */
 	private final List<SearchParameterPanel> parameters;
 	
-	/** The vertical glue we stick at the bottom of our box */
-	private final JButton addButton;
-
 	/** The search in progress, or null if no search is in progress */
 	private SeriesSearchResource searchResource;
 	
 	/** A map for search results */
 	private Map<SearchParameters, ElementList> searchCacheMap;
+	
+	private final SearchButtonPanel butPanel = new SearchButtonPanel();
 	
 	/** The thing that cares about our results */
 	private final SearchResultManager manager;
@@ -69,23 +68,23 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 		parameters = new ArrayList<SearchParameterPanel>();
 		
 		// make our 'add' button...
-		addButton = new JButton("Add another criteria");
-		addButton.addActionListener(new ActionListener() {
+	/*	btnAddSearchCriteria = new JButton("Add another criteria");
+		btnAddSearchCriteria.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				addSearch();
+				addSearchCriteria();
 			}
-		});
-		
+		});*/
+				
 		// justify our content to the top of our panel...
 		JPanel dummy = new JPanel(new BorderLayout());
 		dummy.add(panel, BorderLayout.CENTER);
 		
 		setViewportView(dummy);
 		
-		addSearch();
+		addSearchCriteria();
 	}
 	
-	private void addSearch() {		
+	private void addSearchCriteria() {		
 		// create a new panel and add it to our list
 		SearchParameterPanel newParameter = new SearchParameterPanel();
 		parameters.add(newParameter);
@@ -129,7 +128,21 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 			panel.add(searchPanel, "cell 0 "+i);
 		}
 		
-		panel.add(addButton, "cell 0 "+parameters.size());
+		
+		butPanel.btnAddAnotherCriteria.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				addSearchCriteria();
+			}
+		});
+		
+		butPanel.btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				rebuildQuery();
+			}
+		});
+		
+		
+		panel.add(butPanel, "cell 0 "+parameters.size());
 					
 		// revalidate our panel, we changed the layout
 		panel.revalidate();		
@@ -141,6 +154,10 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 	private void rebuildQuery() {
 		SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
 
+		// Set paging parameters
+		search.setLimit((Integer) butPanel.spnLimit.getValue());
+		search.setSkip((Integer) butPanel.spnSkip.getValue());
+		
 		// don't include children
 		search.setIncludeChildren(false);
 		
@@ -214,19 +231,19 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 				rebuild();
 			}
 			
-			rebuildQuery();
+			//rebuildQuery();
 			return;
 		}
 		
 		// rebuild when params get invalid
 		if(SearchParameterPanel.PARAMETER_VALID_PROPERTY.equals(evt.getPropertyName())) {
 			if((Boolean) evt.getNewValue() == false)
-				rebuildQuery();
+				//rebuildQuery();
 			return;
 		}
 		
 		// rebuild if properties change!
-		rebuildQuery();
+		//rebuildQuery();
 	}
 
 	public void cancelSearch() {
