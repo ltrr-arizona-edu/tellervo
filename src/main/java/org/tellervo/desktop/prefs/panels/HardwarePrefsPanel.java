@@ -470,7 +470,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	private void setGuiEnabledByPlatformType(Boolean useDefaults)
 	{
 						
-		if (!AbstractSerialMeasuringDevice.hasMeasuringDeviceCapability())
+		if (!AbstractSerialMeasuringDevice.hasSerialCapability())
 		{
 			lblPlatformType.setEnabled(false);
 			cboPlatformType.setEnabled(false);
@@ -499,11 +499,13 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			
 			btnTestConnection.setEnabled(false);
 			btnDefaults.setEnabled(false);
-			
+			panelWarn.setVisible(true);
 			
 
 			return;
 		}
+		
+		panelWarn.setVisible(false);
 		
 		// Set up the measuring device
 		try {
