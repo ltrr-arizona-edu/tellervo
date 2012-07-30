@@ -16,16 +16,22 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.sample.ElementList;
+import org.tellervo.desktop.wsi.Resource;
 import org.tellervo.desktop.wsi.ResourceEvent;
 import org.tellervo.desktop.wsi.ResourceEventListener;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 import org.tellervo.schema.SearchReturnObject;
 
@@ -36,6 +42,9 @@ import org.tellervo.schema.SearchReturnObject;
  */
 public class SearchPanel extends JScrollPane implements PropertyChangeListener, ResourceEventListener {
 	private static final long serialVersionUID = 1L;
+	private final static Logger log = LoggerFactory.getLogger(SearchPanel.class);
+
+	private final JDialog parent;
 	
 	/** Our actual panel */
 	private final JPanel panel;
@@ -49,16 +58,31 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 	/** A map for search results */
 	private Map<SearchParameters, ElementList> searchCacheMap;
 	
-	private final SearchButtonPanel butPanel = new SearchButtonPanel();
+	private final SearchButtonPanel butPanel;
 	
 	/** The thing that cares about our results */
 	private final SearchResultManager manager;
 	
-	public SearchPanel(SearchResultManager manager) {
+	public SearchPanel(SearchResultManager manager, JDialog parent) {
 		super(null, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
 
+		this.parent = parent;
 		this.manager = manager;
-
+		butPanel = new SearchButtonPanel();
+		
+		butPanel.btnAddAnotherCriteria.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+					addSearchCriteria();
+			}
+		});
+		
+		butPanel.btnSearch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+					rebuildQuery();
+			}
+		});
+		
+		
 		// create a synchronized map for our results
 		searchCacheMap = Collections.synchronizedMap(new HashMap<SearchParameters, ElementList>());		
 		
@@ -127,21 +151,7 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 			searchPanel.setParameterOperator(operator);
 			panel.add(searchPanel, "cell 0 "+i);
 		}
-		
-		
-		butPanel.btnAddAnotherCriteria.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				addSearchCriteria();
-			}
-		});
-		
-		butPanel.btnSearch.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				rebuildQuery();
-			}
-		});
-		
-		
+				
 		panel.add(butPanel, "cell 0 "+parameters.size());
 					
 		// revalidate our panel, we changed the layout
@@ -178,10 +188,12 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 	
 	/**
 	 * Start a search on the given parameters
-	 * If one already exists, it is cancelled (unless it's the same search)
+	 * If one already exists, it is canceled (unless it's the same search)
 	 * @param params
 	 */
 	private void startSearch(SearchParameters params) {
+		log.debug("Start search");
+		
 		// we already have a search resource?
 		if(searchResource != null) {
 			// the parameters are the same? don't search again
@@ -189,14 +201,17 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 				return;
 			
 			// abort the current query, being careful to not do this if we're in the process of getting results
+			log.debug("Query already underway, so aborting");
 			synchronized(this) {
 				searchResource.removeResourceEventListener(this);
 				searchResource.abortQuery();
 				searchResource = null;
 			}
 		}
+		
 
 		// notify we have a new search
+		log.debug("Notifying manager that search is starting");
 		manager.notifySearchStarting();
 		
 		// check to see if we already have this search
@@ -214,6 +229,21 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 		// start the query...
 		searchResource.addResourceEventListener(this);
 		searchResource.query();
+		
+		TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(parent, searchResource);
+		dlg.setVisible(true);
+		
+		if(!dlg.isSuccessful()) 
+		{
+			log.debug("Search failed");
+			// Search failed
+			return;
+		}
+		else
+		{
+			log.debug("Search successful");
+		}
+		
 	}
 	
 	public void propertyChange(PropertyChangeEvent evt) {
@@ -259,6 +289,9 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 	}
 	
 	public void resourceChanged(final ResourceEvent re) {
+		
+		log.debug("Resource changed");
+		
 		SeriesSearchResource resource = (SeriesSearchResource) re.getSource();
 		
 		// ignore if this info comes from a resource we don't care about
@@ -268,6 +301,9 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 		}
 		
 		if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_FAILED) {
+			
+			log.debug("RESOURCE_QUERY_FAILED");
+			
 			// get rid of the search resource
 			synchronized(this) {
 				searchResource = null;
@@ -289,6 +325,9 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 		}
 		
 		if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_COMPLETE) {
+			
+			log.debug("RESOURCE_QUERY_COMPLETE");
+			
 			// get rid of the search resource
 			synchronized(this) {
 				searchResource = null;
@@ -297,8 +336,11 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 			final ElementList elements = resource.getAssociatedResult();
 			
 			// store the result (getAssociatedResult must return a value)
-			searchCacheMap.put(resource.getSearchParameters(), elements);
-			
+
+			synchronized (searchCacheMap){
+				searchCacheMap.put(resource.getSearchParameters(), elements);	
+			}
+				
 			// run this in the UI thread
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {

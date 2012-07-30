@@ -59,7 +59,6 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
-import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
 import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
@@ -104,7 +103,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     private int minimumSelectedElements = 1;
     
     private SearchPanel searchPanel;
-    private StaticSearchPanel searchPanel2;
+    //private StaticSearchPanel searchPanel2;
     
     
     /**
@@ -574,12 +573,12 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
      * 
      */
     private void setupSearch() {
-    	searchPanel = new SearchPanel(new SearchSupport());
+    	searchPanel = new SearchPanel(new SearchSupport(), this);
     	this.tabbedPane.setComponentAt(1, searchPanel);
     	
-    	searchPanel2 = new StaticSearchPanel(new SearchSupport());
+    	//searchPanel2 = new StaticSearchPanel(new SearchSupport());
     	
-    	this.tabbedPane.setComponentAt(2, searchPanel2);
+    	//this.tabbedPane.setComponentAt(2, searchPanel2);
     	
     	//this.tabbedPane.setEnabledAt(1, false);
     }
@@ -1251,129 +1250,12 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 	 * @author Lucas Madar
 	 */
 	private class SearchSupport implements SearchResultManager, ChangeListener {
-		private final JLabel searchInfoLabel;
-		private JProgressBar progressBar;
-		private JDialog progressDialog;
 
 		public SearchSupport() {
-			searchInfoLabel = new JLabel();
-			
-			Font font = tblAvailMeas.getFont().deriveFont(36f);
-			searchInfoLabel.setForeground(Color.DARK_GRAY);
-			searchInfoLabel.setFont(font);
-			searchInfoLabel.setOpaque(false);
-			searchInfoLabel.setAlignmentX(JLabel.LEFT_ALIGNMENT);
-			searchInfoLabel.setAlignmentY(JLabel.TOP_ALIGNMENT);
 			
 			DBBrowser.this.tabbedPane.addChangeListener(this);
 		}
 
-		private void showProgressbar(boolean shouldShow) {
-			if (shouldShow == false) {
-				if(progressDialog != null) {
-					progressDialog.dispose();
-				}
-				return;
-			}
-			
-			
-			if(progressDialog != null) {
-				progressDialog.setVisible(true);
-				return;
-			}
-
-			progressBar = new JProgressBar();
-			progressBar.setIndeterminate(true);
-			progressBar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
-
-
-			progressDialog = new JDialog();
-			progressDialog.setLayout(new BorderLayout());
-			progressDialog.setModal(true);
-			progressDialog.setTitle("Please wait...");
-			progressDialog.setUndecorated(true);
-			progressDialog.setResizable(false);
-			progressDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-			progressDialog.add(progressBar, BorderLayout.CENTER);
-			progressDialog.pack();
-			progressDialog.setLocationRelativeTo(DBBrowser.this);
-			
-			final SearchSupport glue = this;
-			progressBar.addMouseListener(new MouseListener(){
-
-				@Override
-				public void mouseClicked(MouseEvent arg0) {
-					Object[] options = new String[] { "Abort", "Continue" };
-					int ret = JOptionPane.showOptionDialog(progressBar, 
-							"Would you like to abort the search?", 
-							"Abort?", 
-							JOptionPane.YES_NO_OPTION, 
-							JOptionPane.QUESTION_MESSAGE, null, 
-							options, options[1]);
-					
-					if(ret == 0) {
-						DBBrowser.this.searchPanel.cancelSearch();
-						showProgressbar(false);
-						showSearchLabel(false);
-					}
-				}
-
-				@Override
-				public void mouseEntered(MouseEvent arg0) {
-				}
-
-				@Override
-				public void mouseExited(MouseEvent arg0) {
-				}
-
-				@Override
-				public void mousePressed(MouseEvent arg0) {
-				}
-
-				@Override
-				public void mouseReleased(MouseEvent arg0) {
-				}
-				
-			});
-			
-			progressDialog.setVisible(true);
-
-			
-			/*Point workPt = workArea.getLocation();
-			workPt = SwingUtilities.convertPoint(workArea, workPt, null);
-			progressBar.setBounds(workPt.x, workPt.y + 100, 
-					searchInfoLabel.getPreferredSize().width, progressBar.getPreferredSize().height);
-			
-			if(add) {
-				getLayeredPane().add(progressBar, new Integer(JLayeredPane.POPUP_LAYER - 1), -1);
-				getLayeredPane().validate();
-			}*/
-			
-			
-		}
-		
-		/**
-		 * Show the search label (or not...)
-		 * @param shouldShow
-		 * @param hasProgress
-		 */
-		private void showSearchLabel(boolean shouldShow) {
-			if (shouldShow == false) {
-				searchInfoLabel.setVisible(false);
-				getLayeredPane().remove(searchInfoLabel);
-				getLayeredPane().validate();
-				return;
-			}
-
-			Point workPt = workArea.getLocation();
-			workPt = SwingUtilities.convertPoint(workArea, workPt, null);
-			searchInfoLabel.setBounds(workPt.x, workPt.y, workArea.getWidth(), 100);
-			searchInfoLabel.setVisible(true);
-
-			getLayeredPane().add(searchInfoLabel,
-					new Integer(JLayeredPane.POPUP_LAYER - 1), 0);
-			getLayeredPane().validate();
-		}
 
 		public void notifySearchFinished(ElementList elements) {
 			tblAvailMeas.setEnabled(true);
@@ -1381,22 +1263,18 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			if (elements != null && !elements.isEmpty()) {
 				((ElementListTableModel) tblAvailMeas.getModel()).setElements(elements);
 				availableSorter.reSort();
-				showSearchLabel(false);
-				showProgressbar(false);
+
 			} else {
-				showSearchLabel(false);
-				searchInfoLabel.setText(I18n.getText("error.noResults"));
+
 				((ElementListTableModel) tblAvailMeas.getModel()).setElements(null);
-				showProgressbar(false);
+
 				Alert.message("No matches", "There are no matches");
 			}
 		}
 
 		public void notifySearchStarting() {
 			System.out.println("SEARCH STARTING");
-			searchInfoLabel.setText(I18n.getText("dbbrowser.searching"));
-			showProgressbar(true);
-			showSearchLabel(false);
+
 		}
 
 		public void stateChanged(ChangeEvent e) {
@@ -1404,8 +1282,6 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			
 			if(index == 0) {
 				DBBrowser.this.searchPanel.cancelSearch();
-				showProgressbar(false);
-				showSearchLabel(false);
 			}
 		}
 	}

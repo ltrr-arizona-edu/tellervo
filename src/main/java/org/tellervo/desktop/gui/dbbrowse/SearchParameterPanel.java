@@ -24,7 +24,9 @@ import javax.swing.JList;
 
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.WSIBox;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.ColorUtils;
 
 
@@ -92,6 +94,13 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 			paramsList.add(SearchParameterName.RADIUSCODE);
 			paramsList.add(SearchParameterName.SERIESCODE);
 			paramsList.add(SearchParameterName.RADIUSNUMBERSAPWOODRINGS);
+			paramsList.add(SearchParameterName.ELEMENTDESCRIPTION);
+			paramsList.add(SearchParameterName.ELEMENTDIAMETER);
+			paramsList.add(SearchParameterName.ELEMENTHEIGHT);
+			paramsList.add(SearchParameterName.ELEMENTDEPTH);
+			paramsList.add(SearchParameterName.ELEMENTWIDTH);
+			paramsList.add(SearchParameterName.ELEMENTGENUSNAME);
+			paramsList.add(SearchParameterName.ELEMENTFAMILYNAME);
 
 			paramsArray = paramsList.toArray(new SearchParameterName[paramsList.size()]);
 
@@ -122,6 +131,17 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 		cboSearchField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SearchParameterName name = getParameterName();
+				
+				// set up the search operator combo, default to '='
+				ArrayListModel<SearchOperator> model = new ArrayListModel<SearchOperator>(SearchParameterHumaniser.getValuesParameterType(name));
+
+				cboSearchOperator.setModel(model);
+				cboSearchOperator.setRenderer(new SearchComboRenderer());
+				cboSearchOperator.getModel().setSelectedItem(SearchOperator.EQUALS);
+				lastSearchOperator = SearchOperator.EQUALS;
+				
+				cboSearchOperator.setModel(model);
+				
 				properties.firePropertyChange(PARAMETER_NAME_PROPERTY, lastSearchParameter, name);
 				lastSearchParameter = name;
 				
@@ -133,7 +153,7 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 		cboSearchOperator.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				SearchOperator op = getOperator();
-				
+								
 				properties.firePropertyChange(PARAMETER_OPERATOR_PROPERTY, lastSearchOperator, op);
 				lastSearchOperator = op;
 
@@ -174,16 +194,23 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 	 */
 	private void setupContent() {
 		// set up the search parameter combo, default to "Choose..."
-		DefaultComboBoxModel model = new DefaultComboBoxModel(paramsArray);
-		model.insertElementAt(CHOOSE_ITEM, 0);
+		
+		ArrayList<SearchParameterName> paramsArrayList = new ArrayList(Arrays.asList(paramsArray));
+		
+		Collections.sort(paramsArrayList, new SearchParameterSorter());
+
+		paramsArrayList.add(0, null);
+		ArrayListModel<SearchParameterName> model = new ArrayListModel<SearchParameterName>(paramsArrayList);
+
 		cboSearchField.setModel(model);
 		cboSearchField.setRenderer(new SearchComboRenderer());
+		
 		cboSearchField.getModel().setSelectedItem(CHOOSE_ITEM);
 		lastSearchParameter = null;
 		
 		// set up the search operator combo, default to '='
-		model = new DefaultComboBoxModel(SearchOperator.values());
-		cboSearchOperator.setModel(model);
+		ArrayListModel<SearchOperator> model2 = new ArrayListModel<SearchOperator>(SearchParameterHumaniser.getValuesParameterType(SearchParameterName.OBJECTCODE));
+		cboSearchOperator.setModel(model2);
 		cboSearchOperator.setRenderer(new SearchComboRenderer());
 		cboSearchOperator.getModel().setSelectedItem(SearchOperator.EQUALS);
 		lastSearchOperator = SearchOperator.EQUALS;
@@ -205,7 +232,12 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 	private static class SearchParameterSorter implements Comparator<SearchParameterName> {
 		public int compare(SearchParameterName o1, SearchParameterName o2) {
 			// compare the xml values, not the enum values
-			return o1.value().compareToIgnoreCase(o2.value());
+			//return o1.value().compareToIgnoreCase(o2.value());
+			
+			String o1str = SearchParameterHumaniser.getHumanisedName(o1);
+			String o2str = SearchParameterHumaniser.getHumanisedName(o2);
+			
+			return o1str.compareToIgnoreCase(o2str);
 		}		
 	}
 

@@ -19,7 +19,6 @@
  ******************************************************************************/
 package org.tellervo.desktop.gui.widgets;
 
-import java.awt.BorderLayout;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
@@ -32,35 +31,36 @@ import javax.swing.JProgressBar;
 import javax.swing.JTextField;
 import javax.swing.event.EventListenerList;
 
+import net.miginfocom.swing.MigLayout;
+
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
-import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.TridasSelectEvent.TridasSelectType;
-import org.tellervo.schema.TellervoRequestFormat;
-import org.tellervo.schema.SearchOperator;
-import org.tellervo.schema.SearchParameterName;
-import org.tellervo.schema.SearchReturnObject;
-import org.tellervo.schema.WSIBox;
+import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.SoundUtil;
 import org.tellervo.desktop.util.labels.LabBarcode;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
-import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.WSIBox;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
-import net.miginfocom.swing.MigLayout;
 
 
 /**
- * CorinaCodePanel is a jpanel containing a text field that accepts and interprets
+ * TellervoCodePanel is a jpanel containing a text field that accepts and interprets
  * barcodes and labcodes.  It fires events for TridasListeners to listen for the 
  * specified entities.
  * 

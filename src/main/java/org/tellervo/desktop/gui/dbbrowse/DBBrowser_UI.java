@@ -237,7 +237,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         mainPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         listTableSplit.setBorder(null);
-        listTableSplit.setDividerLocation(300);
+        listTableSplit.setDividerLocation(480);
         listTableSplit.setDividerSize(11);
         listTableSplit.setOneTouchExpandable(true);
 
@@ -266,7 +266,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
         );
 
         tabbedPane.addTab("Search", searchPanel);
-        tabbedPane.addTab("Search2", staticSearchPanel);
+        //tabbedPane.addTab("Search2", staticSearchPanel);
 
         listTableSplit.setLeftComponent(tabbedPane);
 
