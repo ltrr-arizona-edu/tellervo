@@ -408,8 +408,28 @@ class measurement extends measurementEntity implements IDBAccessor
 		if ($paramsClass->getAuthor()!=NULL)				$this->setAuthor($paramsClass->getAuthor(TRUE));
 		if ($paramsClass->getVersion()!=NULL)				$this->setVersion($paramsClass->getVersion());
 		
+		$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
 		// Interpretation fields
+		if($paramsClass->getFirstYear()!=NULL)
+		{
 			$this->setFirstYear($paramsClass->getFirstYear());
+		}
+		else
+		{
+			if($this->dating->getValue()=='relative' || $this->dating->getValue()=="")
+			{
+				$firebug->log("This is a relatively dated series");	
+
+				$this->setFirstYear("1001");
+			}
+			else
+			{
+				$firebug->log("This is a unknown dated series");	
+
+				$this->setFirstYear("1001");
+			
+			}
+		}
 		if ($paramsClass->getProvenance()!=NULL)			$this->setProvenance($paramsClass->getProvenance());
 		
 		// Value fields
@@ -429,7 +449,6 @@ class measurement extends measurementEntity implements IDBAccessor
 
 		// Only read dating type from user if doing a redate
 		if (($paramsClass->getVMeasurementOp()=='Redate') && ($paramsClass->dating->getValue()!=NULL))
-															$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
 		
 															//if ($paramsClass->dating->getDatingErrorPositive()!=NULL) $this->dating->setDatingErrors($paramsClass->dating->getDatingErrorPositive(), $paramsClass->dating->getDatingErrorNegative());
 
@@ -1305,7 +1324,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		 
 		
 		// Initially set yearvalue to 1001 default
-		if ($this->dating->getValue()=='Relative')
+		if (($this->dating->getValue()=='relative') )
 		{
 			$yearvalue = 1001;
 		}
