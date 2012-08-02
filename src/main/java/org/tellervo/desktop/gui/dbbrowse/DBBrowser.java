@@ -382,7 +382,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			
 			if(elements.size()==0)
 			{
-				Alert.message(I18n.getText("error"), I18n.getText("error.noRecordsFound"));
+				Alert.message(null, I18n.getText("error"), I18n.getText("error.noRecordsFound"));
 				return false;
 			}
 			else

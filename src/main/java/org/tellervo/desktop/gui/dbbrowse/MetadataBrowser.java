@@ -95,7 +95,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 	/** The lock/unlock button for making changes to the currently selected entity */
 	private JToggleButton editEntity;
 	/** Text associated with lock/unlock button */
-	private JLabel editEntityText;
+	private JLabel editEntityText; 
 	/** The save button when unlocked */
 	private JButton editEntitySave;
 	/** The cancel button when unlocked */
@@ -220,7 +220,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		{
 			if(!warnLosingChanges())
 			{
-				
+				return;
 			}
 		}
 
@@ -273,14 +273,15 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		editEntity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!editEntity.isSelected() && hasChanged) {
-					if(!warnLosingChanges()) {
+					/*if(!warnLosingChanges()) {
 						editEntity.setSelected(true);
 						return;
 					}
 					else {
 						editEntity.setSelected(false);
 						hasChanged = false;
-					}
+					}*/
+					doSave();
 				}
 				enableEditing(editEntity.isSelected());
 			}			
@@ -555,6 +556,22 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		}
 		
 		Object n;
+		
+		try{
+		log.debug("oldval: "+evt.getOldValue().toString());
+		log.debug("newval: "+evt.getNewValue().toString());
+		} catch (NullPointerException e)
+		{
+			
+		}
+		
+		if(evt.getOldValue()!=null)
+		{
+			if(evt.getOldValue().toString().contains("SystemColorProxy"))
+			{
+				return;
+			}
+		}
 		
 		if(evt.getOldValue() == null && (n = evt.getNewValue()) != null && n.toString().equals(""))
 		{
