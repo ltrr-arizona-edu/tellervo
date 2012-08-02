@@ -4,7 +4,6 @@
 package org.tellervo.desktop.gui.dbbrowse;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,20 +14,13 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-
-import org.tellervo.schema.SearchOperator;
-import org.tellervo.schema.SearchParameterName;
-import org.tellervo.schema.WSIBox;
+import org.tellervo.desktop.gui.widgets.AutoCompletion;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.ColorUtils;
-
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
 
 /**
  * @author Lucas Madar
@@ -41,7 +33,7 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 	private final static String CHOOSE_ITEM = "Choose one...";
 
 	/** A sorted array of our search parameters */
-	private static SearchParameterName[] paramsArray;
+	private static SearchParameterNameEx[] paramsArray;
 	
 	/** A list of parameter prefixes, for sorting */
 	private static String paramPrefixes[] = {
@@ -64,7 +56,7 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 	/** Support a propertyChangeListener */
 	private final PropertyChangeSupport properties;
 	
-	private SearchParameterName lastSearchParameter;
+	private SearchParameterNameEx lastSearchParameter;
 	private SearchOperator lastSearchOperator;
 	private String lastValue;
 	
@@ -80,29 +72,35 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 		// If the parameters list hasn't been created,
 		// lazily do so
 		if(paramsArray == null) {
-			// get a cloned copy of the list of values (from enum)
-			//paramsArray = SearchParameterName.values();
-			// make a list wrapping the array
-			//List<SearchParameterName> paramsList = Arrays.asList(paramsArray); 
-			// sort it ...
-			//Collections.sort(paramsList, new SearchParameterSorter());
 			
-			ArrayList<SearchParameterName> paramsList = new ArrayList<SearchParameterName>();
-			paramsList.add(SearchParameterName.ANYPARENTOBJECTCODE);
-			paramsList.add(SearchParameterName.ELEMENTCODE);
-			paramsList.add(SearchParameterName.SAMPLECODE);
-			paramsList.add(SearchParameterName.RADIUSCODE);
-			paramsList.add(SearchParameterName.SERIESCODE);
-			paramsList.add(SearchParameterName.RADIUSNUMBERSAPWOODRINGS);
-			paramsList.add(SearchParameterName.ELEMENTDESCRIPTION);
-			paramsList.add(SearchParameterName.ELEMENTDIAMETER);
-			paramsList.add(SearchParameterName.ELEMENTHEIGHT);
-			paramsList.add(SearchParameterName.ELEMENTDEPTH);
-			paramsList.add(SearchParameterName.ELEMENTWIDTH);
-			paramsList.add(SearchParameterName.ELEMENTGENUSNAME);
-			paramsList.add(SearchParameterName.ELEMENTFAMILYNAME);
+			ArrayList<SearchParameterNameEx> paramsList = new ArrayList<SearchParameterNameEx>();
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.ANYPARENTOBJECTCODE));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.OBJECTDESCRIPTION));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.OBJECTTITLE));
+			
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTCODE));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTDESCRIPTION));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTDIAMETER));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTHEIGHT));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTDEPTH));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTWIDTH));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTORIGINALTAXONNAME));
+			//paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTGENUSNAME));
+			//paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTFAMILYNAME));
+			//paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTORDERNAME));
+			
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.SAMPLECODE));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.SAMPLEDESCRIPTION));
+			
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.RADIUSCODE));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.RADIUSNUMBERSAPWOODRINGS));
 
-			paramsArray = paramsList.toArray(new SearchParameterName[paramsList.size()]);
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESCODE));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESANALYST));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESFIRSTYEAR));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESVALUECOUNT));
+
+			paramsArray = paramsList.toArray(new SearchParameterNameEx[paramsList.size()]);
 
 		}
 		
@@ -113,6 +111,14 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 		setupActions();
 	}
 	
+	public void remove()
+	{
+		boolean oldRemoved = removed;
+		removed = true;
+		
+		properties.firePropertyChange(PARAMETER_REMOVED_PROPERTY, oldRemoved, removed);
+	}
+	
 	/**
 	 * Set up any actions for our buttons, etc
 	 */
@@ -120,31 +126,34 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 		// fire event on remove
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				boolean oldRemoved = removed;
-				removed = true;
-				
-				properties.firePropertyChange(PARAMETER_REMOVED_PROPERTY, oldRemoved, removed);
+				remove();
 			}
 		});
 		
 		// fire event on change of search property
 		cboSearchField.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				SearchParameterName name = getParameterName();
+				SearchParameterNameEx name = (SearchParameterNameEx) cboSearchField.getSelectedItem();
 				
 				// set up the search operator combo, default to '='
-				ArrayListModel<SearchOperator> model = new ArrayListModel<SearchOperator>(SearchParameterHumaniser.getValuesParameterType(name));
+				ArrayListModel<SearchOperatorEx> model = new ArrayListModel<SearchOperatorEx>(name.getPossibleOperators());
 
 				cboSearchOperator.setModel(model);
-				cboSearchOperator.setRenderer(new SearchComboRenderer());
-				cboSearchOperator.getModel().setSelectedItem(SearchOperator.EQUALS);
+				for(int i =0; i<model.size(); i++)
+				{
+					if(model.get(i).getSearchOperator().equals(SearchOperator.EQUALS))
+					{
+						cboSearchOperator.setSelectedIndex(i);
+					}
+				}
+
 				lastSearchOperator = SearchOperator.EQUALS;
 				
 				cboSearchOperator.setModel(model);
 				
 				properties.firePropertyChange(PARAMETER_NAME_PROPERTY, lastSearchParameter, name);
 				lastSearchParameter = name;
-				
+								
 				checkValid();
 			}
 		});
@@ -195,23 +204,19 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 	private void setupContent() {
 		// set up the search parameter combo, default to "Choose..."
 		
-		ArrayList<SearchParameterName> paramsArrayList = new ArrayList(Arrays.asList(paramsArray));
+		ArrayList<SearchParameterNameEx> paramsArrayList = new ArrayList(Arrays.asList(paramsArray));
 		
-		Collections.sort(paramsArrayList, new SearchParameterSorter());
-
-		paramsArrayList.add(0, null);
-		ArrayListModel<SearchParameterName> model = new ArrayListModel<SearchParameterName>(paramsArrayList);
+		Collections.sort(paramsArrayList);
+		ArrayListModel<SearchParameterNameEx> model = new ArrayListModel<SearchParameterNameEx>(paramsArrayList);
 
 		cboSearchField.setModel(model);
-		cboSearchField.setRenderer(new SearchComboRenderer());
-		
-		cboSearchField.getModel().setSelectedItem(CHOOSE_ITEM);
+		cboSearchField.setSelectedItem(null);
+		AutoCompletion.enable(cboSearchField);
 		lastSearchParameter = null;
 		
 		// set up the search operator combo, default to '='
-		ArrayListModel<SearchOperator> model2 = new ArrayListModel<SearchOperator>(SearchParameterHumaniser.getValuesParameterType(SearchParameterName.OBJECTCODE));
+		ArrayListModel<SearchOperatorEx> model2 = new ArrayListModel<SearchOperatorEx>(new SearchParameterNameEx(SearchParameterName.OBJECTCODE).getPossibleOperators());
 		cboSearchOperator.setModel(model2);
-		cboSearchOperator.setRenderer(new SearchComboRenderer());
 		cboSearchOperator.getModel().setSelectedItem(SearchOperator.EQUALS);
 		lastSearchOperator = SearchOperator.EQUALS;
 		
@@ -225,64 +230,6 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 		btnRemove.setFocusable(false); // can't focus on me, must click		
 	}
 	
-	/**
-	 * Simple Comparator for sorting param array by xml name, not enum name
-	 * @author Lucas Madar
-	 */
-	private static class SearchParameterSorter implements Comparator<SearchParameterName> {
-		public int compare(SearchParameterName o1, SearchParameterName o2) {
-			// compare the xml values, not the enum values
-			//return o1.value().compareToIgnoreCase(o2.value());
-			
-			String o1str = SearchParameterHumaniser.getHumanisedName(o1);
-			String o2str = SearchParameterHumaniser.getHumanisedName(o2);
-			
-			return o1str.compareToIgnoreCase(o2str);
-		}		
-	}
-
-	/**
-	 * Simple ListCellRenderer for each combo box item, using xml value, etc...
-	 * @author Lucas Madar
-	 */
-	private static class SearchComboRenderer extends DefaultListCellRenderer {
-		private static final long serialVersionUID = 1L;
-
-		/* (non-Javadoc)
-		 * @see javax.swing.DefaultListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
-		 */
-		@Override
-		public Component getListCellRendererComponent(JList list, Object value,
-				int index, boolean isSelected, boolean cellHasFocus) {
-			
-			// get xml value for search parameter name
-			if(value instanceof SearchParameterName) {
-				
-				
-				
-				String s = SearchParameterHumaniser.getHumanisedName((SearchParameterName)value);
-				
-				if(s==null)
-				{	
-					s = ((SearchParameterName)value).value();
-				}
-				
-				value = s;
-				setToolTipText(s);
-				
-			}
-			else if(value instanceof SearchOperator) {
-				setToolTipText(value.toString());
-				value = ((SearchOperator)value).value();
-			}
-			else {		
-				setToolTipText(null);
-			}
-			
-			return super.getListCellRendererComponent(list, value, index, isSelected,
-					cellHasFocus);
-		}
-	}
 	
 	/**
 	 * Check if an event changed our validity, and if it did, notify
@@ -310,8 +257,8 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 	public SearchParameterName getParameterName() {
 		Object o = cboSearchField.getSelectedItem();
 		
-		if(o instanceof SearchParameterName)
-			return (SearchParameterName) o;
+		if(o instanceof SearchParameterNameEx)
+			return ((SearchParameterNameEx)o).getSearchParameterName();
 		
 		return null;
 	}
@@ -321,7 +268,9 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 	 * @return the enum value
 	 */
 	public SearchOperator getOperator() {
-		return (SearchOperator) cboSearchOperator.getSelectedItem();
+	
+		if(cboSearchOperator.getSelectedItem()==null) return null;
+		return ((SearchOperatorEx) cboSearchOperator.getSelectedItem()).getSearchOperator();
 	}
 	
 	/**
@@ -345,7 +294,7 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 	 * @return true if this is a valid search parameter (fields filled in)
 	 */
 	public boolean isDataValid() {
-		return (getParameterName() != null) && (getValue() != null);
+		return (getParameterName() != null) && (getValue() != null) && (getOperator() !=null);
 	}
 	
 	/**

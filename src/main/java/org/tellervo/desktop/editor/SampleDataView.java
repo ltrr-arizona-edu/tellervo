@@ -105,7 +105,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 	
 	private Sample mySample;
 
-	private StatusBar statusBar;
+	private EditorStatusBar statusBar;
 	public JTable myTable;
 
 	protected TableModel myModel;
@@ -258,7 +258,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		add(sp, BorderLayout.CENTER);
-		statusBar = new StatusBar(myTable, mySample);
+		statusBar = new EditorStatusBar(myTable, mySample);
 		add(statusBar, BorderLayout.SOUTH);
 		
 		initPrefs();

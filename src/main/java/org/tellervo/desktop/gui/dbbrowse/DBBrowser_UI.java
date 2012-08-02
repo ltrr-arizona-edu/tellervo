@@ -420,50 +420,18 @@ public class DBBrowser_UI extends javax.swing.JDialog {
 		super();
 	}
 
-	public DBBrowser_UI(Frame owner) throws HeadlessException {
-		super(owner);
-	}
 
 	public DBBrowser_UI(Dialog owner) throws HeadlessException {
 		super(owner);
-	}
-
-	public DBBrowser_UI(Frame owner, boolean modal) throws HeadlessException {
-		super(owner, modal);
-	}
-
-	public DBBrowser_UI(Frame owner, String title) throws HeadlessException {
-		super(owner, title);
 	}
 
 	public DBBrowser_UI(Dialog owner, boolean modal) throws HeadlessException {
 		super(owner, modal);
 	}
 
-	public DBBrowser_UI(Dialog owner, String title) throws HeadlessException {
-		super(owner, title);
+	
+	public DBBrowser_UI(Frame owner, boolean modal) throws HeadlessException {
+		super(owner, modal);
 	}
-
-	public DBBrowser_UI(Frame owner, String title, boolean modal)
-			throws HeadlessException {
-		super(owner, title, modal);
-	}
-
-	public DBBrowser_UI(Dialog owner, String title, boolean modal)
-			throws HeadlessException {
-		super(owner, title, modal);
-	}
-
-	public DBBrowser_UI(Frame owner, String title, boolean modal,
-			GraphicsConfiguration gc) {
-		super(owner, title, modal, gc);
-	}
-
-	public DBBrowser_UI(Dialog owner, String title, boolean modal,
-			GraphicsConfiguration gc) throws HeadlessException {
-		super(owner, title, modal, gc);
-	}
-
-
     
 }

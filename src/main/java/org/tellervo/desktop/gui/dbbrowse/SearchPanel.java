@@ -40,10 +40,10 @@ import org.tellervo.schema.SearchReturnObject;
  * @author Lucas Madar
  *
  */
-public class SearchPanel extends JScrollPane implements PropertyChangeListener, ResourceEventListener {
+public class SearchPanel extends JPanel implements PropertyChangeListener, ResourceEventListener {
 	private static final long serialVersionUID = 1L;
 	private final static Logger log = LoggerFactory.getLogger(SearchPanel.class);
-
+	private JScrollPane scroll;
 	private final JDialog parent;
 	
 	/** Our actual panel */
@@ -64,11 +64,14 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 	private final SearchResultManager manager;
 	
 	public SearchPanel(SearchResultManager manager, JDialog parent) {
-		super(null, VERTICAL_SCROLLBAR_ALWAYS, HORIZONTAL_SCROLLBAR_NEVER);
+		scroll = new JScrollPane();
+		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
 		this.parent = parent;
 		this.manager = manager;
 		butPanel = new SearchButtonPanel();
+		butPanel.setBorder(null);
 		
 		butPanel.btnAddAnotherCriteria.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -79,6 +82,15 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 		butPanel.btnSearch.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 					rebuildQuery();
+			}
+		});
+		
+		butPanel.btnReset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+					log.debug("Removing existing criteria");
+					parameters.clear();
+					parameters.add(new SearchParameterPanel());
+					rebuild();
 			}
 		});
 		
@@ -100,10 +112,13 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 		});*/
 				
 		// justify our content to the top of our panel...
-		JPanel dummy = new JPanel(new BorderLayout());
-		dummy.add(panel, BorderLayout.CENTER);
 		
-		setViewportView(dummy);
+		scroll.add(panel);
+		
+		this.setLayout(new BorderLayout());
+		this.add(scroll, BorderLayout.CENTER);
+		this.add(butPanel, BorderLayout.SOUTH);
+		scroll.setViewportView(panel);
 		
 		addSearchCriteria();
 	}
@@ -152,10 +167,11 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 			panel.add(searchPanel, "cell 0 "+i);
 		}
 				
-		panel.add(butPanel, "cell 0 "+parameters.size());
+		
 					
 		// revalidate our panel, we changed the layout
 		panel.revalidate();		
+		panel.repaint();
 	}
 	
 	/**
@@ -173,7 +189,7 @@ public class SearchPanel extends JScrollPane implements PropertyChangeListener, 
 		
 		for(SearchParameterPanel searchPanel : parameters) {
 			if(!searchPanel.isDataValid())
-				return;
+				continue;
 			
 			search.addSearchConstraint(searchPanel.getParameterName(), searchPanel.getOperator(), 
 					searchPanel.getValue());

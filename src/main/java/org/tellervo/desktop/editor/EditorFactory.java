@@ -380,7 +380,9 @@ public class EditorFactory {
 		CorinaWsiTridasElement.attachNewSample(sample);
 
 		// start the editor
-		new Editor(sample).setVisible(true);
+		Editor ed = new Editor(sample);
+		ed.setVisible(true);
+		ed.setDefaultFocus();
 		
 		container.setCursor(Cursor.getDefaultCursor());
 	}

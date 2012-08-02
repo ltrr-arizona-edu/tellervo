@@ -155,7 +155,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private JTable wjTable;
 	private JPanel wjPanel;
 	private EditorMeasurePanel measurePanel = null;
-	private JComponent metaView;
+	private TridasMetadataPanel metaView;
 	private ComponentViewer componentsPanel = null;
 	private BargraphPanel bargraphPanel = null;
 	private SampleDataView dataView; // (a jpanel)
@@ -422,7 +422,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED),
 				BorderLayout.CENTER);
-		wjPanel.add(new StatusBar(wjTable, sample), BorderLayout.SOUTH);
+		wjPanel.add(new EditorStatusBar(wjTable, sample), BorderLayout.SOUTH);
 	}
 
 	private void initMetaView() {
@@ -1039,5 +1039,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	public void measurementVariableChanged(SampleEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void setDefaultFocus()
+	{
+		this.tabbedPanel.setSelectedIndex(1);
+
 	}
 }

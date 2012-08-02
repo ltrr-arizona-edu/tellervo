@@ -23,33 +23,28 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
-import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
-import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
@@ -64,19 +59,19 @@ import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.schema.SearchOperator;
-import org.tellervo.schema.SearchParameterName;
-import org.tellervo.schema.SearchReturnObject;
-import org.tellervo.schema.WSIBox;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.PopupListener;
 import org.tellervo.desktop.util.labels.LabBarcode;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.WSIBox;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
@@ -106,13 +101,12 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     //private StaticSearchPanel searchPanel2;
     
     
-    /**
-     * @wbp.parser.constructor
-     */
+
     public DBBrowser(java.awt.Frame parent, boolean modal) {
     	this(parent, modal, false);	
     }
        
+
     /** Creates new form as child of Frame */    
     public DBBrowser(java.awt.Frame parent, boolean modal, boolean openMulti) {
         super(parent, modal);
@@ -131,6 +125,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
      * @param parent - parent dialog
      * @param modal - should it be modal?
      * @see DBBrowser(parent, modal, openMulti)
+     * @wbp.parser.constructor
      */
     public DBBrowser(java.awt.Dialog parent, boolean modal) {
     	this(parent, modal, false);
@@ -665,6 +660,10 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			// easy; create a single scroll pane and jam it into the panel!
 			workArea.setLayout(new BorderLayout());
     		workArea.add(new JScrollPane(tblAvailMeas), BorderLayout.CENTER);
+    		
+    		JTableStatusBar statusPanel = new JTableStatusBar(tblAvailMeas);
+    		
+    		workArea.add(statusPanel, BorderLayout.SOUTH);
 
     		// Selecting buttons not required for single selection mode
 			btnSelectAll.setVisible(false);

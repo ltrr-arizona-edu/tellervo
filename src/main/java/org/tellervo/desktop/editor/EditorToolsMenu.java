@@ -119,6 +119,10 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		reconcile = Builder.makeMenuItem("menus.tools.reconcile", true, "reconcile.png");
 		reconcile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				// Make sure we stop measuring first
+				editor.stopMeasuring();
+								
 				DBBrowser browser = new DBBrowser(editor, true, false);
 
 				// select the site we're in

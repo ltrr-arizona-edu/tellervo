@@ -28,6 +28,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
+import org.tellervo.desktop.gui.widgets.AutoCompletion;
+
 import net.miginfocom.swing.MigLayout;
 
 public class SearchParameterPanel_UI_2 extends JPanel {
@@ -59,6 +61,7 @@ public class SearchParameterPanel_UI_2 extends JPanel {
 		add(lblParameterOperator, "cell 0 0,alignx trailing,aligny center");
 		
 		cboSearchField = new JComboBox();
+		AutoCompletion.enable(cboSearchField);
 		add(cboSearchField, "cell 1 0,alignx left,aligny top");
 		
 		cboSearchOperator = new JComboBox();

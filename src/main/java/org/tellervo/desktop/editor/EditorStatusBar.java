@@ -75,7 +75,7 @@ import org.tellervo.desktop.ui.I18n;
    @version $Id$
 */
 @SuppressWarnings("serial")
-public class StatusBar extends JPanel
+public class EditorStatusBar extends JPanel
                    implements ListSelectionListener, TableColumnModelListener {
 
 /*
@@ -105,6 +105,9 @@ public class StatusBar extends JPanel
     // the sample to get data values from
     private Sample sample;
     
+    // if i set it to "", it would have no height, either.  force it
+    // to have normal line height by making this a non-empty string.
+    private static final String EMPTY = " ";
 
 
     /** Update the modeline, when a selection change occurs.  The
@@ -117,45 +120,42 @@ public class StatusBar extends JPanel
 	which means year 1001 is selected, and has an average value of
 	52 for 3 samples; 2 are increasing in size, and 1 is
 	decreasing. */
-    private void update() {
-	// get the point
-	int row = table.getSelectedRow();
-	int col = table.getSelectedColumn();
+    private void update() 
+    {
+		// get the point
+		int row = table.getSelectedRow();
+		int col = table.getSelectedColumn();
+	
+		// bail out if not on data
+		if (col<1 || col>10) {
+		    widthLabel.setText(EMPTY);
+		    return;
+		}
+	
+		// get year from (row,col)
+		Year y = ((DecadalModel) table.getModel()).getYear(row, col);
+	
+		// get index from year
+		int i = y.diff(sample.getRange().getStart());
 
-	// bail out if not on data
-	if (col<1 || col>10) {
-	    widthLabel.setText(EMPTY);
-	    return;
+		// bail out if out of range
+		if (i<0 || i>=sample.getRingWidthData().size()) {
+			widthLabel.setText(EMPTY);
+		    return;
+		}
+
+		// get ring value 
+		String strRingWidthValue = sample.getRingWidthData().get(i).toString();
+		widthLabel.setText(I18n.getText("editor.year")+ ": " + y.toString() + " = " + strRingWidthValue+"\u03BCm");
 	}
-
-	// get year from (row,col)
-	Year y = ((DecadalModel) table.getModel()).getYear(row, col);
-
-	// get index from year
-	int i = y.diff(sample.getRange().getStart());
-
-	// bail out if out of range
-	if (i<0 || i>=sample.getRingWidthData().size()) {
-		widthLabel.setText(EMPTY);
-	    return;
-	}
-
-	// get ring value 
-	String strRingWidthValue = sample.getRingWidthData().get(i).toString();
-	widthLabel.setText(I18n.getText("editor.year")+ ": " + y.toString() + " = " + strRingWidthValue+"\u03BCm");
-    }
-
-    // if i set it to "", it would have no height, either.  force it
-    // to have normal line height by making this a non-empty string.
-    private static final String EMPTY = " ";
 
     // row-change
     public void valueChanged(ListSelectionEvent e) {
-	// wait until it stops
-	if (e.getValueIsAdjusting())
-	    return;
-
-	update();
+		// wait until it stops
+		if (e.getValueIsAdjusting())
+		    return;
+	
+		update();
     }
 
     public void columnAdded(TableColumnModelEvent e) { }
@@ -165,65 +165,61 @@ public class StatusBar extends JPanel
 
     // column-change
     public void columnSelectionChanged(ListSelectionEvent e) {
-	// wait until it stops
-	if (e.getValueIsAdjusting())
-	    return;
-
-	update();
+		// wait until it stops
+		if (e.getValueIsAdjusting())
+		    return;
+	
+		update();
     }
 
-    /** Create a new Modeline, for a given data table and sample.
+    /** Create a new status bar, for a given data table and sample.
 	@param table data table to watch for selection changes
 	@param sample sample to get data values 
      * @wbp.parser.constructor*/
-    public StatusBar(JTable table, Sample sample) {
-	// copy refs
-	this.sample = sample;
-	this.table = table;
-
-	// add myself as a listener
-	table.getSelectionModel().addListSelectionListener(this);
-	table.getColumnModel().addColumnModelListener(this);
-	// BUG: if data changes (how can this happen?), might need to change text.
-	// so add myself as a samplelistener, too.
-
-	// Width label
-	widthLabel = new JLabel();
-	//widthLabel.setBorder(BorderFactory.createEtchedBorder());
+    public EditorStatusBar(JTable table, Sample sample) 
+    {
+		// copy refs
+		this.sample = sample;
+		this.table = table;
 	
-	// Stats, like mean sensitivity
-	stats = new Statistics(sample);
-	//stats.setBorder(BorderFactory.createEtchedBorder());
+		// add myself as a listener
+		table.getSelectionModel().addListSelectionListener(this);
+		table.getColumnModel().addColumnModelListener(this);
+		// BUG: if data changes (how can this happen?), might need to change text.
+		// so add myself as a samplelistener, too.
 	
-	// Units 
-	units = new UnitsChooser(sample);
+		// Width label
+		widthLabel = new JLabel();
+		//widthLabel.setBorder(BorderFactory.createEtchedBorder());
+		
+		// Stats, like mean sensitivity
+		stats = new Statistics(sample);
+		//stats.setBorder(BorderFactory.createEtchedBorder());
+		
+		// Units 
+		units = new UnitsChooser(sample);
+		
+		variableChooser = new VariableChooser(sample);
+		
+		// initial text
+		update();
 	
-	variableChooser = new VariableChooser(sample);
-	
-	// initial text
-	update();
-
-	// pack stuff
-	setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
-	setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-	add(Box.createHorizontalStrut(2));
-	// add(icon);
-	// add(Box.createHorizontalStrut(4));
-	add(variableChooser);
-	add(new JLabel("  |  "));
-	add(units);
-	add(new JLabel("  |  "));
-	add(widthLabel);
-	add(new JLabel("  |  "));
-	add(Box.createHorizontalGlue());
-	add(new JLabel("  |  "));
-	add(stats);
-	add(Box.createHorizontalStrut(2));
+		// pack stuff
+		setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
+		setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		add(Box.createHorizontalStrut(2));
+		// add(icon);
+		// add(Box.createHorizontalStrut(4));
+		add(variableChooser);
+		add(new JLabel("  |  "));
+		add(units);
+		add(new JLabel("  |  "));
+		add(widthLabel);
+		add(new JLabel("  |  "));
+		add(Box.createHorizontalGlue());
+		add(new JLabel("  |  "));
+		add(stats);
+		add(Box.createHorizontalStrut(2));
     }
 
-    // here's a modeline for elements panels
-    public StatusBar(ElementsPanel ep) {
-	// what it'll do: "%d samples, %d KB", or "%d of %d samples selected, %d of %d KB"
-	// -> it'll need a list selection listener
-    }
 }
