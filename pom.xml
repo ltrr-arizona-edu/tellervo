@@ -897,27 +897,38 @@
 						  <taskdef resource="net/sf/antcontrib/antcontrib.properties"
 							  classpathref="maven.plugin.classpath"/>	
 								  
-								  <!-- Create the binary folder to hold the MacOSX package -->
-								  <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/MacOSX"/>
-								  
-								  <!-- Delete the seperate dependencies as they are included in the Tellervo jar -->
-								  <delete dir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo"/>
-								  				
-								  <!-- Copy in to our build folder the Tellervo jar -->				
-								  <copy file="${project.build.directory}/${project.build.finalName}.jar"		
-								  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/"/>		
-								  								  
-								  <!-- Create the app.zip file from our build folder -->								  
-								  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="false">
-								  	<fileset dir="${project.build.directory}/${project.build.finalName}" includes="Tellervo.app/**"/>
-								  </zip>
-								  
-								  <!-- Add license, manual and native package into the root of the zip -->
-								  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="true">
-								  	     <fileset dir="Native/BuildResources/MacBuild/NativePackages/" includes="**/*.pkg"/>
-								  		 <fileset dir="${project.build.directory}/classes/Licenses/" includes="**/license.txt"/>
-								  		 <fileset dir="Documentation" includes="**/tellervo-manual.pdf"/>
-								  </zip>
+								  <trycatch>  
+								  <try>
+									  <!-- Create the binary folder to hold the MacOSX package -->
+									  <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/MacOSX"/>
+									  
+									  <!-- Delete the seperate dependencies as they are included in the Tellervo jar -->
+									  <delete dir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo"/>
+									  				
+									  <!-- Copy in to our build folder the Tellervo jar -->				
+									  <copy file="${project.build.directory}/${project.build.finalName}.jar"		
+									  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/"/>		
+									  								  
+									  <!-- Create the app.zip file from our build folder -->								  
+									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="false">
+									  	<fileset dir="${project.build.directory}/${project.build.finalName}" includes="Tellervo.app/**"/>
+									  </zip>
+									  
+									  <!-- Add license, manual and native package into the root of the zip -->
+									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="true">
+									  	     <fileset dir="Native/BuildResources/MacBuild/NativePackages/" includes="**/*.pkg"/>
+									  		 <fileset dir="${project.build.directory}/classes/Licenses/" includes="**/license.txt"/>
+									  		 <fileset dir="Documentation" includes="**/tellervo-manual.pdf"/>
+									  </zip>
+								  </try>
+								  <catch>
+									<echo>*********************************</echo>
+								    <echo> UNABLE TO COMPLETE THIS TASK    </echo>
+								 	<echo> Error building MacOSX pacakage  </echo>
+								 	<echo>*********************************</echo>
+								 	<sleep seconds="5"/>
+								  </catch>
+								  </trycatch>
 						  </tasks>	  
 					  </configuration>
 					  <goals>
@@ -1222,5 +1233,5 @@
 		<url>https://sourceforge.net/p/tellervo/tickets/</url>
 		<system>Sourceforge.net</system>
 	</issueManagement>
-	<version>1.0.1-SNAPSHOT</version>
+	<version>1.0.1</version>
 </project>
