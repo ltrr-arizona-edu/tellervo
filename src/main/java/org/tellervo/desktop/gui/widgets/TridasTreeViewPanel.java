@@ -112,6 +112,58 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 * @see org.tellervo.desktop.gui.widgets.TellervoCodePanel.ObjectListMode
 	 *   default = Top level only
 	 */
+	public TridasTreeViewPanel(Boolean setupTree)
+	{
+		setupGui();
+		if(setupTree)
+		{
+			setupTree(null);
+		}
+			
+	}
+	
+	/**
+	 * Complete constructor for tree view panel.  
+	 * 
+	 * @param depth - @see #setTreeDepth(TreeDepth)
+	 * @param listenersAreCheap - @see #setListenersAreCheap(Boolean)
+	 * @param textForSelectPopup - @see #setTextForSelectPopup(String)
+	 */
+	public TridasTreeViewPanel(Window parent, TreeDepth depth, Boolean listenersAreCheap, 
+			String textForSelectPopup, Boolean setupTree)
+	{
+		this.parent = parent;
+		setupGui();
+		if(setupTree)
+		{
+			setupTree(null);
+			setTreeDepth(depth);
+		}
+		setListenersAreCheap(listenersAreCheap);
+		setTextForSelectPopup(textForSelectPopup);
+	}
+	
+	
+	/**
+	 * Basic constructor for tree view panel used in the context of searching
+	 * for series.  Defaults are:
+	 * 
+	 * TreeDepth - Depth beyond which the tree will not expand 
+	 * @see #setTreeDepth(TreeDepth) 
+	 *   default = radius 
+	 * 
+	 * ListenersAreCheap - Are the attached listeners computationally cheap?
+	 * @see #setListenersAreCheap(Boolean)
+	 *   default = false
+	 *  
+	 * TextForSelectPopup - Text to display in popup menu when selecting entity
+	 * @see #setTextForSelectPopup(String)
+	 *   default = Search for associated series
+	 * 
+	 * BaseObjectListMode - Object list mode to use for base objects
+	 * @see org.tellervo.desktop.gui.widgets.TellervoCodePanel.ObjectListMode
+	 *   default = Top level only
+	 */
 	public TridasTreeViewPanel()
 	{
 		setupGui();
@@ -258,6 +310,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 */
 	private void setupTree(List<TridasObjectEx> objList)
 	{
+		log.debug("starting to set up tree");
 		// Set up tree
     	DefaultMutableTreeNode top = new DefaultMutableTreeNode(App.getLabName()+" Database");
     	if(objList!=null)
@@ -358,6 +411,8 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         
         ToolTipManager.sharedInstance().registerComponent(tree);
     	treeScrollPane.setViewportView(tree);
+    	
+    	log.debug("Finished setting up tree");
 	}
 		
 	
@@ -431,12 +486,13 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     {
     	DefaultMutableTreeNode objectNode = null;
 
-        
+        log.debug("Beginning to loop through object list and adding to tree in order");
         for(TridasObjectEx object : objectList)
         {
             objectNode = new DefaultMutableTreeNode(object);   
             addTridasNodeInOrder(thetree, top, objectNode);
         }
+        log.debug("Finished adding objects to tree in order");
     }
     
     /**
@@ -446,6 +502,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
      */
     protected void addObjectsToTree(TridasTree thetree, DefaultMutableTreeNode parentNode)
     {
+    	log.debug("Starting to get object list from dictionary");
     	List<TridasObjectEx> objectList = null;
     	
     	if(this.baseObjectListMode==ObjectListMode.TOP_LEVEL_ONLY)
@@ -464,6 +521,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	{
     		objectList = App.tridasObjects.getObjectList();
     	}
+    	log.debug("Finished getting object list from dictionary");
     	
     	addObjectsToTree(thetree, parentNode, objectList);
     }
@@ -481,7 +539,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	
     	ITridas entityToAdd = (ITridas)nodeToAdd.getUserObject();
     	
-    	TridasComparator comparator = new TridasComparator(TridasComparator.Type.SENIOR_ENTITIES_THEN_LAB_CODE_THEN_TITLES, 
+    	TridasComparator comparator = new TridasComparator(TridasComparator.Type.SENIOR_ENTITIES_THEN_TITLES, 
 				TridasComparator.NullBehavior.NULLS_LAST, 
 				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
    

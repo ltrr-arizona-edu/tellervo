@@ -101,7 +101,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 	 */
 	public ManagementTreeViewPanel()
 	{
-		super();
+		super(false);
 		setupMultiTree(null);
 		super.tree.addKeyListener(this);	
 		
@@ -116,7 +116,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 	 */
 	public ManagementTreeViewPanel(Window parent, TreeDepth depth, Boolean listenersAreCheap, String textForSelectPopup)
 	{
-		super();
+		super(false);
 		setupMultiTree(null);
 		setTreeDepth(depth);
 		setListenersAreCheap(listenersAreCheap);
@@ -231,6 +231,8 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 	 */
 	private void setupMultiTree(List<TridasObjectEx> objList)
 	{
+		log.debug("Setting up multi-tree");
+		
 		// Set up tree
     	DefaultMutableTreeNode top = new DefaultMutableTreeNode(App.getLabName()+" Database");
     	if(objList!=null)
@@ -384,6 +386,8 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
         
         ToolTipManager.sharedInstance().registerComponent(tree);
     	treeScrollPane.setViewportView(tree);
+    	
+    	log.debug("Finished setting up multi-tree");
 	}
 	
 	/**

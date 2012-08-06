@@ -49,7 +49,8 @@ public class TridasComparator implements Comparator<ITridas> {
 		SITE_CODES_THEN_TITLES,
 		TITLES, 
 		LAB_CODE_THEN_TITLES,
-		SENIOR_ENTITIES_THEN_LAB_CODE_THEN_TITLES
+		SENIOR_ENTITIES_THEN_LAB_CODE_THEN_TITLES,
+		SENIOR_ENTITIES_THEN_TITLES
 	}
 
 	public enum CompareBehavior {
@@ -108,6 +109,19 @@ public class TridasComparator implements Comparator<ITridas> {
 			
 			// Set to LAB_CODE_THEN_TITLES from now on
 			comparatorType = Type.LAB_CODE_THEN_TITLES;
+		}
+		
+		case SENIOR_ENTITIES_THEN_TITLES:
+		{
+			if(!o1.getClass().equals(o2.getClass()))
+			{
+				Integer o1level = TridasComparator.getEntityLevel(o1);
+				Integer o2level = TridasComparator.getEntityLevel(o2);
+				return o1level.compareTo(o2level);
+			}
+			
+			// Set to LAB_CODE_THEN_TITLES from now on
+			comparatorType = Type.TITLES;
 		}
 		
 		case SITE_CODES_THEN_TITLES: {
