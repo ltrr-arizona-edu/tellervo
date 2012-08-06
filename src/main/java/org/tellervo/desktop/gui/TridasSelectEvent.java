@@ -179,11 +179,11 @@ public class TridasSelectEvent extends AWTEvent {
 	 * 
 	 * @return
 	 */	
-	public ITridas getEntity() throws Exception 
+	public ITridas getEntity() throws TridasSelectException 
 	{
 		if(multiSelector)
 		{
-			 throw new Exception("This event has multiple selections use getEntityList() instead");		 
+			 throw new TridasSelectException("This event has multiple selections use getEntityList() instead");		 
 		}
 		
 		if(entityList==null)

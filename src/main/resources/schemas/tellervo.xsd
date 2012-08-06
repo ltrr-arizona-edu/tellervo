@@ -716,6 +716,13 @@
 		</xs:complexType>
 	</xs:element>
 	
+	<xs:element name="tagDictionary">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	
 <!--
 	%%%%%%%%%%%%%%
@@ -903,4 +910,22 @@
 		</xs:complexType>
 	</xs:element>
 		
+	<!--
+		%%%%%%%%%%%%%%
+		% TAG
+		%%%%%%%%%%%%%% -->
+	
+	<xs:element name="tag">
+		<xs:annotation>
+			<xs:documentation>
+				A tag for marking an entity to assist with management and chronology building
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:token" use="optional" />
+			<xs:attribute name="name" type="xs:string" use="optional"/>
+			<xs:attribute name="ownerID" type="xs:token" use="optional"/>
+			<xs:attribute name="isPersonal" type="xs:boolean" use="optional"/>	
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

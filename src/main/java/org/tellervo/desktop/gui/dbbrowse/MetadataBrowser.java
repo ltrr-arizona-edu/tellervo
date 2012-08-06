@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
+import org.tellervo.desktop.gui.TridasSelectException;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.widgets.ManagementTreeViewPanel;
 import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
@@ -533,13 +534,11 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 			{
 				this.setEntity(entity, TridasDerivedSeries.class);
 			}
-			
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+
+		} catch (TridasSelectException e2)
+		{
+			// Ignore
+		}		
 		
 	}
 

@@ -101,8 +101,8 @@ public class TridasComparator implements Comparator<ITridas> {
 		{
 			if(!o1.getClass().equals(o2.getClass()))
 			{
-				Integer o1level = this.getEntityLevel(o1);
-				Integer o2level = this.getEntityLevel(o2);
+				Integer o1level = TridasComparator.getEntityLevel(o1);
+				Integer o2level = TridasComparator.getEntityLevel(o2);
 				return o1level.compareTo(o2level);
 			}
 			
@@ -115,23 +115,33 @@ public class TridasComparator implements Comparator<ITridas> {
 				TridasObjectEx t1 = (TridasObjectEx) o1;
 				
 				v1 = t1.hasLabCode() ? t1.getLabCode() : t1.getTitle();
-			}
-			else
-				v1 = o1.getTitle();
-			
-			if(o2 instanceof TridasObjectEx) {
-				TridasObjectEx t2 = (TridasObjectEx) o2;
 				
-				v2 = t2.hasLabCode() ? t2.getLabCode() : t2.getTitle();
+				if(o2 instanceof TridasObjectEx) {
+					TridasObjectEx t2 = (TridasObjectEx) o2;
+					
+					v2 = t2.hasLabCode() ? t2.getLabCode() : t2.getTitle();
+				}
+				else
+				{
+					v2 = o2.getTitle();
+				}
+				
 			}
 			else
+			{
+				v1 = o1.getTitle();
 				v2 = o2.getTitle();
-			
-			break;
+			}			
 		}
 		
 		case LAB_CODE_THEN_TITLES: {
-			if(o1 instanceof TridasSample){
+			
+			if(o1 instanceof TridasObjectEx) {
+				TridasObjectEx t1 = (TridasObjectEx) o1;
+				
+				v1 = t1.hasLabCode() ? t1.getLabCode() : t1.getTitle();
+			}
+			else if(o1 instanceof TridasSample){
 				TridasSample s1 = (TridasSample) o1;
 				try{
 				v1 = GenericFieldUtils.findField(s1, "tellervo.internal.labcodeText").getValue().toString();
@@ -144,7 +154,12 @@ public class TridasComparator implements Comparator<ITridas> {
 				v1 =o1.getTitle();
 			}
 			
-			if(o2 instanceof TridasSample){
+			if(o2 instanceof TridasObjectEx) {
+				TridasObjectEx t2 = (TridasObjectEx) o2;
+				
+				v2 = t2.hasLabCode() ? t2.getLabCode() : t2.getTitle();
+			}
+			else if(o2 instanceof TridasSample){
 				TridasSample s2 = (TridasSample) o2;
 				try{
 				v2 = GenericFieldUtils.findField(s2, "tellervo.internal.labcodeText").getValue().toString();
