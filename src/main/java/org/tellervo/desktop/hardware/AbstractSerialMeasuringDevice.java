@@ -13,6 +13,8 @@ import java.util.Enumeration;
 import java.util.TooManyListenersException;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
@@ -25,6 +27,9 @@ import org.tellervo.desktop.ui.I18n;
 public abstract class AbstractSerialMeasuringDevice extends
 		AbstractMeasuringDevice implements 
 		SerialPortEventListener{
+	
+	protected final static Logger log = LoggerFactory.getLogger(AbstractSerialMeasuringDevice.class);
+
 
 	/** The actual serial port we're operating on */
 	private SerialPort port;
@@ -175,7 +180,7 @@ public abstract class AbstractSerialMeasuringDevice extends
 		parity = PortParity.NONE;
 		flowControl = FlowControl.NONE;
 		lineFeed = LineFeed.NONE;
-		unitMultiplier = UnitMultiplier.ZERO;
+		unitMultiplier = UnitMultiplier.TIMES_1;
 		
 	}
 	
@@ -258,8 +263,13 @@ public abstract class AbstractSerialMeasuringDevice extends
 		
 		state = PortState.DIE;
 		finishInitialize();
-		
-		((SerialPort) port).close();
+		try {
+			finalize();
+		} catch (Throwable e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		port = null;
 	}
 	

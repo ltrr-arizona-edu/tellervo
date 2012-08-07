@@ -151,6 +151,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 		}
 		
 		// now we actually create the models
+		int i=0;
 		for(IBulkImportSingleRowModel srm : selected){
 			SingleElementModel som = (SingleElementModel) srm;
 			TridasElement origElement = new TridasElement();
@@ -173,7 +174,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 			
 			// set up a dialog...
 			Window parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
-			TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parentWindow, resource);
+			TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(parentWindow, resource, i, selected.size());
 			
 			resource.query();
 			dialog.setVisible(true);
@@ -207,6 +208,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 				model.getElementModel().getImportedList().add(resource.getAssociatedResult());
 			}
 		}
+		i++;
 //		
 //		// finally, update the combo boxes in the table to the new options
 //		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(emodel.getImportedDynamicComboBoxKey(), emodel.getImportedListStrings());

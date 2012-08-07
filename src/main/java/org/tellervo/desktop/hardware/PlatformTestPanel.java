@@ -23,6 +23,7 @@ package org.tellervo.desktop.hardware;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -45,6 +46,7 @@ import javax.swing.border.BevelBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.setupwizard.SetupWizard;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 
 public class PlatformTestPanel extends JPanel {
@@ -146,27 +148,27 @@ public class PlatformTestPanel extends JPanel {
 		init();
 	}
 	
-	public static void showDialog(AbstractMeasuringDevice device, Color bgcolor)
+	public static void showDialog(AbstractMeasuringDevice device, Color bgcolor, Window parent)
 	{
-		final JDialog dialog = new JDialog();
+		JDialog dialog = new JDialog();
 		final PlatformTestPanel panel = new PlatformTestPanel(dialog, device, bgcolor);
 		
 		dialog.setModal(true);
-		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.setIconImage(Builder.getApplicationIcon());
 		dialog.setTitle("Test Platform Connection");
+		dialog.addWindowListener(new WindowAdapter(){
+			public void windowClosing(WindowEvent e){
+				panel.finish();
+			}
+		});
 		
 		dialog.getContentPane().setLayout(new BorderLayout());
 		dialog.getContentPane().add(panel, BorderLayout.CENTER);
 		dialog.pack();
+		dialog.setLocationRelativeTo(parent);
 		dialog.setVisible(true);
 		
-		dialog.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e){
-				panel.finish();
-				dialog.dispose();
-			}
-		});
+
 	}
 	
 	@Override

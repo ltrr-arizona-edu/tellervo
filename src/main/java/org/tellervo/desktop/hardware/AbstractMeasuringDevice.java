@@ -61,9 +61,9 @@ public abstract class AbstractMeasuringDevice
 	protected PortParity parity = PortParity.EVEN;
 	protected LineFeed lineFeed = LineFeed.NONE;
 	protected FlowControl flowControl = FlowControl.NONE;
-	protected UnitMultiplier unitMultiplier = UnitMultiplier.ZERO;
+	protected UnitMultiplier unitMultiplier = UnitMultiplier.TIMES_1;
 	protected Boolean measureCumulatively = false;
-	protected Boolean measureInReverse = true;
+	protected Boolean measureInReverse = false;
 	protected Double correctionMultiplier = 1.0;
 	protected CommPortIdentifier portId;
 	private final DeviceProtocol protocol;
@@ -108,6 +108,8 @@ public abstract class AbstractMeasuringDevice
 	 * @throws IOException
 	 */
 	public abstract Object openPort() throws IOException;
+	
+	public abstract boolean doesInitialize();
 	
 	/**
 	 * Get the type of communications protocol that this device
@@ -202,18 +204,21 @@ public abstract class AbstractMeasuringDevice
 			throw new IOException("Initializing in an invalid state!");
 		
 
-		initializeThread = new Thread( new Runnable() {
-			public void run() {
-				try {
-					doInitialize();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		if(doesInitialize())
+		{
+			initializeThread = new Thread( new Runnable() {
+				public void run() {
+					try {
+						log.debug("Starting the initialize() thread");
+						doInitialize();
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-			}
-		} );
-		initializeThread.start();
-	
+			} );
+			initializeThread.start();
+		}
 		
 	}
 
@@ -612,6 +617,13 @@ public abstract class AbstractMeasuringDevice
 	 * Notify the receiver of an event
 	 */
 	public void measuringSampleIONotify(MeasuringSampleIOEvent sse) {
+		
+		if(receiver==null)
+		{
+			log.error("Measurement receiver is null");
+			return;
+		}
+		
 		if(sse.getType() == MeasuringSampleIOEvent.BAD_SAMPLE_EVENT) {
 			receiver.receiverUpdateStatus("Error reading the previous sample!");
 		}
@@ -889,7 +901,7 @@ public abstract class AbstractMeasuringDevice
 	}
 	
 	public enum UnitMultiplier{
-		ZERO(0.0f),
+		TIMES_1(1.0f),
 		TIMES_10(10.0f),
 		TIMES_100(100.0f),
 		TIMES_1000(1000.0f),
@@ -911,9 +923,9 @@ public abstract class AbstractMeasuringDevice
 		
 		public String toString()
 		{
-			if(this.equals(UnitMultiplier.ZERO))
+			if(this.equals(UnitMultiplier.TIMES_1))
 			{	
-				return "\u00D70";
+				return "\u00D71";
 			}
 			else if(this.equals(UnitMultiplier.TIMES_10))
 			{

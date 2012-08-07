@@ -67,23 +67,27 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 
 	public void startCountdown()
 	{
+		String header  = "********************************\n";
+		       header += "Starting measuring platform test\n";
+		       header += "********************************\n" ;
+		       header += "Platform type: "+super.dev.toString()+"\n";
+		       header += "Port         : "+super.dev.getPortName()+"\n";
+		       header += "Baud rate    : "+super.dev.getBaud()+"\n";
+		       header += "Data bits    : "+super.dev.getDataBits()+"\n";
+		       header += "Stop bits    : "+super.dev.getStopBits()+"\n";
+		       header += "Parity       : "+super.dev.getParity()+"\n";
+		       header += "Flow control : "+super.dev.getFlowControl()+"\n";
+		       header += "Line feed    : "+super.dev.getLineFeed()+"\n";
+		       header += "Cumulative   : "+super.dev.getMeasureCumulatively()+"\n";
+		       header += "********************************\n";
+		
+		log.setText(header);
+		
 		java.util.Timer timer = new java.util.Timer();
 		task = new TimeoutTask(infoLabel, this.lblMessage, this);
 		timer.scheduleAtFixedRate(task, 0, 1000);
 		
-		log.setText(log.getText()+"********************************\n");
-		log.setText(log.getText()+"Starting measuring platform test\n");
-		log.setText(log.getText()+"********************************\n");
-		log.setText(log.getText()+"Platform type: "+super.dev.toString()+"\n");
-		log.setText(log.getText()+"Port         : "+super.dev.getPortName()+"\n");
-		log.setText(log.getText()+"Baud rate    : "+super.dev.getBaud()+"\n");
-		log.setText(log.getText()+"Data bits    : "+super.dev.getDataBits()+"\n");
-		log.setText(log.getText()+"Stop bits    : "+super.dev.getStopBits()+"\n");
-		log.setText(log.getText()+"Parity       : "+super.dev.getParity()+"\n");
-		log.setText(log.getText()+"Flow control : "+super.dev.getFlowControl()+"\n");
-		log.setText(log.getText()+"Line feed    : "+super.dev.getLineFeed()+"\n");
-		log.setText(log.getText()+"Cumulative   : "+super.dev.getMeasureCumulatively()+"\n");
-		log.setText(log.getText()+"********************************\n");
+
 	}
 	
 	public void cancelCountdown()

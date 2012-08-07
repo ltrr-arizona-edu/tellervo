@@ -21,10 +21,28 @@
 package org.tellervo.desktop.hardware;
 
 import java.applet.AudioClip;
+import java.awt.AWTException;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Font;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.PointerInfo;
+import java.awt.Rectangle;
+import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -42,13 +60,17 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.util.MultiMonitorRobot;
 import org.tellervo.desktop.util.SoundUtil;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasUnit;
 
+import javax.swing.JToggleButton;
+import javax.swing.JTextArea;
 
 
-public abstract class MeasurePanel extends JPanel implements MeasurementReceiver {
+
+public abstract class MeasurePanel extends JPanel implements MeasurementReceiver, KeyListener, MouseListener, MouseMotionListener{
 
 	private static final long serialVersionUID = 1L;
 	private final static Logger log = LoggerFactory.getLogger(MeasurePanel.class);
@@ -74,7 +96,10 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	private JPanel panel = new JPanel();
 	protected JLabel lblMessage;
 	private Color bgcolor = null;
+	private JToggleButton btnMouseTrigger;
+	private JTextArea txtMouseTriggerInfo;
 
+	private Point mousePoint;
 	
 	public MeasurePanel(final AbstractMeasuringDevice device, Color bgcolor)
 	{
@@ -82,6 +107,9 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		init(device);
 	}
 	
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public MeasurePanel(final AbstractMeasuringDevice device) {
 		init(device);
 	}
@@ -92,7 +120,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		this.setBackground(bgcolor);	
 		dev = device;
 		
-		setLayout(new MigLayout("insets 0", "[150px,grow][150,grow][150.00px,grow]", "[][][14.00][][grow,fill]"));
+		setLayout(new MigLayout("insets 0", "[150px,grow][150,grow][150.00px,grow]", "[][][14.00][][44.00,top][grow]"));
 		
 		measure_one = SoundUtil.getMeasureSound();
 		measure_dec = SoundUtil.getMeasureDecadeSound();
@@ -103,6 +131,19 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		
 		panel.setBackground(bgcolor);
 		add(panel, "cell 0 0 3 1,grow");
+		
+		btnMouseTrigger = new JToggleButton(I18n.getText("measuring.mousetrigger.enable"));
+		panel.add(btnMouseTrigger);
+		btnMouseTrigger.setIcon(Builder.getIcon("mouse.png", 22));
+		btnMouseTrigger.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				btnMouseTrigger.setSelected(btnMouseTrigger.isSelected());
+				toggleMouseTrigger(btnMouseTrigger.isSelected());
+				
+			}
+		});
 		
 		btnQuit = new JButton(I18n.getText("menus.edit.stop_measuring"));
 		btnQuit.setIcon(Builder.getIcon("stop.png", 22));
@@ -171,8 +212,20 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		
 		lblMessage = new JLabel("");
 		add(lblMessage, "cell 0 3 3 1");
-			
 		
+		txtMouseTriggerInfo = new JTextArea();
+		txtMouseTriggerInfo.setBackground(new Color(0,0,0,0));
+		txtMouseTriggerInfo.setOpaque(false);
+		txtMouseTriggerInfo.setWrapStyleWord(true);
+		txtMouseTriggerInfo.setEditable(false);
+		txtMouseTriggerInfo.setLineWrap(true);
+		txtMouseTriggerInfo.setText("Mouse trigger is currently turned off.  Turn on the mouse trigger to use the mouse button to record new measurements.");
+		add(txtMouseTriggerInfo, "cell 1 4 2 1,growx,aligny top");
+		
+		btnMouseTrigger.addMouseListener(this);
+		btnMouseTrigger.addKeyListener(this);
+		btnMouseTrigger.addMouseMotionListener(this);
+				
 		// Set the device to zero to start with	
 		if(dev!=null)
 		{
@@ -200,6 +253,39 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		
 	}
 		
+	private void toggleMouseTrigger(boolean selected) {
+		
+		
+		if(selected)
+		{
+			btnMouseTrigger.setText(I18n.getText("measuring.mousetrigger.ison"));
+			
+			PointerInfo a = MouseInfo.getPointerInfo();
+			mousePoint = a.getLocation();
+			
+		
+			// Transparent 16 x 16 pixel cursor image.
+			Image cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
+	
+			// Create a new blank cursor.
+			Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(
+			    cursorImg, new Point(), "blank cursor");
+	
+			setCursor(blankCursor);
+		
+		}
+		
+		else
+		{
+			btnMouseTrigger.setText(I18n.getText("measuring.mousetrigger.enable"));
+			setCursor(Cursor.getDefaultCursor());
+		}
+		
+
+		
+	}
+	
+	
 	/**
 	 * Set whether the current position gui should be visible
 	 * 
@@ -420,6 +506,96 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	public void setDefaultFocus()
 	{
 		btnRecord.requestFocusInWindow();
+	}
+	
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		if(e.getKeyCode() == KeyEvent.VK_ESCAPE)
+		{
+			log.debug("Escape pressed");
+			if(btnMouseTrigger.isSelected())
+			{
+				toggleMouseTrigger(false);
+			}
+		}
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		
+		if(this.btnMouseTrigger.isSelected())
+		{
+			arg0.consume();
+			
+			if(arg0.getButton() == MouseEvent.BUTTON1)
+			{
+				log.debug("Left click");
+				
+			}
+			if(arg0.getButton() == MouseEvent.BUTTON2)
+			{
+				log.debug("Right click");
+				
+			}
+		}
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+			
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+
+
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+    public void mouseMoved(MouseEvent event) {
+    	moveMouseBackToButton();
+    }
+
+    public void mouseDragged(MouseEvent e) {
+    	 moveMouseBackToButton();
+    }
+
+	private void moveMouseBackToButton()
+	{
+		if(this.btnMouseTrigger.isSelected())
+		{
+			if(mousePoint!=null)
+			{
+				MultiMonitorRobot.moveMouseToVirtualCoords(mousePoint);
+			}
+		}
 	}
 }
 
