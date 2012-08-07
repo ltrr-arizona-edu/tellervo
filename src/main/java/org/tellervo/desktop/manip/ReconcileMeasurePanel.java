@@ -20,7 +20,7 @@ public class ReconcileMeasurePanel extends MeasurePanel implements MeasurementRe
 
 	public ReconcileMeasurePanel(ReconcileMeasureDialog rmd, final AbstractMeasuringDevice device) 
 	{
-		super(device);
+		super(device, rmd);
 		this.rmd = rmd;
 			
 		// Hide extra widgets

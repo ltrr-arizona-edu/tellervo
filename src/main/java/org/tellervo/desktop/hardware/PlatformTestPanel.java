@@ -314,7 +314,7 @@ public class PlatformTestPanel extends JPanel {
 			
 		}
 		{
-			panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device, bgcolor);
+			panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device, bgcolor, parent);
 			contentPanel.add(panelControls, "cell 0 2,alignx left,aligny top");
 		}
 
@@ -336,7 +336,7 @@ public class PlatformTestPanel extends JPanel {
 						txtLog.setText("");
 						txtDataReceived.setText("");
 						setupDevice();
-						panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device, bgcolor);
+						panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device, bgcolor, parent);
 						panelControls.startCountdown();
 					}
 					

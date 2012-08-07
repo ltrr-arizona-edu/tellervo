@@ -24,6 +24,7 @@
 package org.tellervo.desktop.hardware;
 
 import java.awt.Color;
+import java.awt.Window;
 
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
@@ -50,9 +51,9 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	private final JLabel infoLabel;
 	
 	
-	public TestMeasurePanel(JLabel infoLabel, JTextPane txtLog, JTextPane txtComCheckLog, final AbstractMeasuringDevice device, Color bgcolor) 
+	public TestMeasurePanel(JLabel infoLabel, JTextPane txtLog, JTextPane txtComCheckLog, final AbstractMeasuringDevice device, Color bgcolor, Window parent) 
 	{
-		super(device, bgcolor);
+		super(device, bgcolor, parent);
 		
 		this.txt = txtComCheckLog;
 		this.log = txtLog;
@@ -84,7 +85,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		log.setText(header);
 		
 		java.util.Timer timer = new java.util.Timer();
-		task = new TimeoutTask(infoLabel, this.lblMessage, this);
+		task = new TimeoutTask(infoLabel, this);
 		timer.scheduleAtFixedRate(task, 0, 1000);
 		
 
@@ -130,14 +131,12 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	
 	class TimeoutTask extends java.util.TimerTask
 	{
-		private JLabel label;
 		private Integer countdown =11;
 		private final JLabel infoLabel;
 		TestMeasurePanel parent;
 		
-		TimeoutTask(JLabel infoLabel, JLabel label, TestMeasurePanel parent)
+		TimeoutTask(JLabel infoLabel, TestMeasurePanel parent)
 		{
-			this.label = label;
 			this.parent = parent;
 			this.infoLabel = infoLabel;
 		}
@@ -148,7 +147,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 			{
 				setLastValue(null);
 				infoLabel.setText(I18n.getText("preferences.hardware.nodatareceived"));
-				parent.lblMessage.setText("");
+				setMessageText("");
 				this.cancel();
 				//parent.setVisible(false);
 				return;
@@ -156,7 +155,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 			
 			countdown--;
 			
-			parent.lblMessage.setText(I18n.getText("preferences.hardware.timeremaining")+": "+countdown);
+			setMessageText(I18n.getText("preferences.hardware.timeremaining")+": "+countdown);
 			
 			
 		}

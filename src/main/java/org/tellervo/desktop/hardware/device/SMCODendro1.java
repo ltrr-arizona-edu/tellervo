@@ -113,9 +113,8 @@ public class SMCODendro1 extends GenericASCIIDevice {
 	protected void doInitialize() throws IOException {
 		
 		log.debug("Initalising SMCO Dendro 1 device");
-		
 		openPort();
-				
+		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.INITIALIZED_EVENT, null);
 	}
 	
 	@Override
@@ -269,10 +268,15 @@ public class SMCODendro1 extends GenericASCIIDevice {
 			    	// Fire event
 			    	fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
 		    	}
+		    	else if (intValue==0)
+		    	{
+		    		// Fire bad event as value is a negative number
+		    		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Value was zero so it has been ignored");
+		    	}
 		    	else
 		    	{
 		    		// Fire bad event as value is a negative number
-		    		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, null);
+		    		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Value was negative so it has been ignored");
 		    	}
 			    							
 

@@ -625,7 +625,7 @@ public abstract class AbstractMeasuringDevice
 		}
 		
 		if(sse.getType() == MeasuringSampleIOEvent.BAD_SAMPLE_EVENT) {
-			receiver.receiverUpdateStatus("Error reading the previous sample!");
+			receiver.receiverUpdateStatus("Error reading the previous sample. "+sse.getValue());
 		}
 		if(sse.getType() == MeasuringSampleIOEvent.ERROR) {
 			try{
@@ -643,10 +643,12 @@ public abstract class AbstractMeasuringDevice
 		}
 		else if(sse.getType() == MeasuringSampleIOEvent.NEW_SAMPLE_EVENT) {
  			Integer value = (Integer) sse.getValue();
+ 			receiver.receiverUpdateStatus("");
 			receiver.receiverNewMeasurement(value);
 		}
 		else if(sse.getType() == MeasuringSampleIOEvent.UPDATED_CURRENT_VALUE_EVENT) {
 			Integer value = (Integer) sse.getValue();
+			receiver.receiverUpdateStatus("");
 			receiver.receiverUpdateCurrentValue(value);
 		}
 		else if(sse.getType() == MeasuringSampleIOEvent.RAW_DATA){

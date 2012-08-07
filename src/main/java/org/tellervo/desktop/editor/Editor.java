@@ -722,12 +722,12 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		App.prefs.addPrefsListener(this);
 		// pack, size, and show
 		pack(); // is this needed?
-		setSize(new Dimension(640, 520));
+		setSize(new Dimension(700, 520));
 		// TODO: store window position, X-style ("WIDTHxHEIGHT+LEFT+TOP"), so it always re-appears in the same place.
 		// Q: store the resolution, as well, so the relative position
 		// is the same, or just make sure the absolute is within range?
 		// i can store the position either in a ;WINDOW field, or beyond the ~author line.
-		Center.center(this);
+		setLocationRelativeTo(App.mainWindow);
 		setVisible(true);
 
 		/*
@@ -954,9 +954,32 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		editorEditMenu.setMeasuring(true);
 		dataView.enableEditing(false);
 		
+		// Make sure the size is sensible
+		Integer w;
+		Integer h;
+		if(getSize().getWidth()<700)
+		{	
+			w = 700;
+		}
+		else
+		{
+			w = (int) getSize().getWidth();
+		}
+		if(getSize().getHeight()<650)
+		{
+			h = 650;
+		}
+		else
+		{
+			h = (int) getSize().getHeight();
+		}
+		
 		// add the measure panel...
 		measurePanel = new EditorMeasurePanel(this, device);
 		add(measurePanel, BorderLayout.SOUTH);
+		
+		setSize(w,h);		
+		
 		getContentPane().validate();
 		getContentPane().repaint();
 		measurePanel.setDefaultFocus();

@@ -332,7 +332,7 @@ public class EditorFactory {
 			dialog.setResizable(false);
 			dialog.pack();
 			dialog.setModal(true);
-			Center.center(dialog);
+			dialog.setLocationRelativeTo(App.mainWindow);
 			dialog.setVisible(true);
 			result = barcodeUI.getResult();
 	
