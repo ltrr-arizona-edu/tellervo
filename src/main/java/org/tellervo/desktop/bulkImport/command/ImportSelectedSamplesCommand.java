@@ -131,7 +131,9 @@ public class ImportSelectedSamplesCommand implements ICommand {
 		}
 		
 		// now we actually create the models
-		for(IBulkImportSingleRowModel srm : selected){
+		int i=0;
+		for(IBulkImportSingleRowModel srm : selected)
+		{
 			SingleSampleModel som = (SingleSampleModel) srm;
 			TridasSample origSample = new TridasSample();
 			
@@ -155,7 +157,7 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			
 			// set up a dialog...
 			Window parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
-			TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parentWindow, sampleResource);
+			TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(parentWindow, sampleResource, i, selected.size());
 			
 			sampleResource.query();
 			dialog.setVisible(true);
@@ -222,6 +224,7 @@ public class ImportSelectedSamplesCommand implements ICommand {
 				som.getRadiusModel().setDirty(false);
 				tmodel.setSelected(som, false);
 			}
+			i++;
 		}
 	}
 }

@@ -256,7 +256,7 @@ public class AdminMenu extends JMenu {
 	}
     
 	public static void metadataBrowser(){
-		MetadataBrowser dialog = new MetadataBrowser(null, false);
+		MetadataBrowser dialog = new MetadataBrowser(App.mainWindow, false);
 		dialog.setVisible(true);
 	}
 	

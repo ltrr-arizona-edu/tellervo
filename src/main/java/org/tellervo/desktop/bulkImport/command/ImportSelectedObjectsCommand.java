@@ -134,6 +134,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		}
 		
 		// now we actually create the models
+		int i=0;
 		for(IBulkImportSingleRowModel srm : selected){
 			SingleObjectModel som = (SingleObjectModel) srm;
 			TridasObjectEx origObject = new TridasObjectEx();
@@ -159,7 +160,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			
 			// set up a dialog...
 			Window parentWindow = SwingUtilities.getWindowAncestor(model.getMainView());
-			TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parentWindow, resource);
+			TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(parentWindow, resource, i, selected.size());
 			
 			resource.query();
 			dialog.setVisible(true);
@@ -194,6 +195,8 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				model.getObjectModel().getImportedList().add(resource.getAssociatedResult());
 				App.tridasObjects.addTridasObject(resource.getAssociatedResult());
 			}
+			
+			i++;
 		}
 		
 		// finally, update the combo boxes in the table to the new options

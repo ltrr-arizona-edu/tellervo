@@ -181,20 +181,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
        
         
         // Set size of window to 1024x700 or full screen whichever is the smaller
-        int width;
-        int height;
-        if(this.getToolkit().getScreenSize().width<1024){
-        	width = this.getToolkit().getScreenSize().width;
-        }
-        else{
-        	width = 1024;
-        }
-        if(this.getToolkit().getScreenSize().height<700){
-        	height = this.getToolkit().getScreenSize().height;
-        }
-        else{
-        	height = 700;
-        }        
+        int width=this.getToolkit().getScreenSize().width-10;
+        int height = this.getToolkit().getScreenSize().height-40; 
         this.setSize(width, height);
         Center.center(this);
         

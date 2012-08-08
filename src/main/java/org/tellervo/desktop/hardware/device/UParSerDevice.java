@@ -10,6 +10,11 @@ public class UParSerDevice extends AbstractHIDMeasuringDevice {
 	public String toString() {
 		return "SCIEM uParSer";
 	}
+	
+	@Override
+	public boolean doesInitialize() {
+		return false;
+	}
 
 	@Override
 	public void requestMeasurement() {

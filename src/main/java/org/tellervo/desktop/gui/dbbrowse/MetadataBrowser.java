@@ -20,6 +20,7 @@
 package org.tellervo.desktop.gui.dbbrowse;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,13 +28,16 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -42,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
+import org.tellervo.desktop.gui.TridasSelectException;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.widgets.ManagementTreeViewPanel;
 import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
@@ -116,8 +121,36 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
         this.parent = parent;
         initComponents();
         setupGui();
+       
+      /*  JDialog progress = new JDialog();
+        progress.setModal(true);
+        progress.setTitle("Please wait...");
+        progress.setUndecorated(true);
+        progress.setResizable(false);
+        progress.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        progress.setLayout(new BorderLayout());
+        JProgressBar progressBar = new JProgressBar();
+	    progressBar.setIndeterminate(true);
+	    progressBar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
+	    progress.add(progressBar, BorderLayout.CENTER);
+	    progress.pack();
+	    progress.setLocationRelativeTo(parent);
+	    progress.setVisible(true);
+	   	*/    
+	    setupTree();
         pack();
+        //progress.setVisible(false);
+        //setVisible(true);
         
+    }
+    
+    public void setupTree()
+    {
+    	treepanel = new ManagementTreeViewPanel(((Window) this), TreeDepth.SERIES, true, "View metadata");
+    	//treepanel.setObjectList(ObjectListMode.TOP_LEVEL_ONLY);
+    	treepanel.addTridasSelectListener(this);
+    	
+    	leftPane.add(treepanel, BorderLayout.CENTER);
     }
     
     /**
@@ -125,12 +158,6 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
      */
     public void setupGui()
     {
-    	// Set up tree panel    		
-    	
-    	treepanel = new ManagementTreeViewPanel(((Window) this), TreeDepth.SERIES, true, "View metadata");
-    	//treepanel.setObjectList(ObjectListMode.TOP_LEVEL_ONLY);
-    	treepanel.addTridasSelectListener(this);
-    	leftPane.add(treepanel, BorderLayout.CENTER);
     	
     	// Set up metadata panel
 		JPanel mainPanel = new JPanel();  
@@ -404,11 +431,11 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		{
 			if(nodeSelected.getParent().equals(nodeSelected.getRoot()))
 			{
-				this.treepanel.refreshNode(nodeSelected);
+				((TridasTreeViewPanel) treepanel).refreshNode(nodeSelected);
 			}
 			else
 			{
-				this.treepanel.refreshNode((DefaultMutableTreeNode)nodeSelected.getParent());
+				((TridasTreeViewPanel) treepanel).refreshNode((DefaultMutableTreeNode)nodeSelected.getParent());
 			}
 		}
 		
@@ -533,13 +560,11 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 			{
 				this.setEntity(entity, TridasDerivedSeries.class);
 			}
-			
-			
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+
+		} catch (TridasSelectException e2)
+		{
+			// Ignore
+		}		
 		
 	}
 

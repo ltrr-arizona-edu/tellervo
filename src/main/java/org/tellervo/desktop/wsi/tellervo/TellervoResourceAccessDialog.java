@@ -54,6 +54,58 @@ public class TellervoResourceAccessDialog extends JDialog implements ResourceEve
 	private JProgressBar progressBar;
 	private Boolean runInBackground = false;
 	private Component parent;
+	private Integer currentProgress = null;
+	private Integer totalProgress = null;
+	
+	/**
+	 * Construct an access dialog with no owner parent (not preferable)
+	 * @param resource
+	 */
+	public TellervoResourceAccessDialog(TellervoResource resource, Integer progress, Integer totalProgress) {
+		super();
+		initialize(resource);
+		setProgress(progress, totalProgress);
+	}
+
+	/**
+	 * Construct an access dialog as a parent of a dialog
+	 * @param dialog
+	 * @param resource
+	 */
+	public TellervoResourceAccessDialog(Dialog dialog, TellervoResource resource, Integer progress, Integer totalProgress) {
+		super(dialog);
+		parent = dialog;
+		initialize(resource);
+		setProgress(progress, totalProgress);
+
+	}
+
+	/**
+	 * Construct an access dialog as a parent of a frame
+	 * 
+	 * @param frame
+	 * @param resource
+	 */
+	public TellervoResourceAccessDialog(Frame frame, TellervoResource resource, Integer progress, Integer totalProgress) {
+		super(frame);
+		parent = frame;
+		initialize(resource);
+		setProgress(progress, totalProgress);
+	}
+
+	/**
+	 * Construct an access dialog as a parent of a frame
+	 * 
+	 * @param frame
+	 * @param resource
+	 */
+	public TellervoResourceAccessDialog(Window window, TellervoResource resource, Integer progress, Integer totalProgress) {
+		super(window);
+		parent = window;
+		initialize(resource);
+		setProgress(progress, totalProgress);
+	}
+	
 	
 	/**
 	 * Construct an access dialog with no owner parent (not preferable)
@@ -88,6 +140,23 @@ public class TellervoResourceAccessDialog extends JDialog implements ResourceEve
 		initialize(resource);
 	}
 
+	public void setProgress(Integer current, Integer whole)
+	{
+		this.currentProgress = current;
+		this.totalProgress = whole;
+		
+		if(current!=null && whole!=null && current<=whole && current>=0 && whole>0)
+		{
+			progressBar.setIndeterminate(false);
+			progressBar.setMaximum(totalProgress);
+			progressBar.setValue(currentProgress);
+		}
+		else
+		{
+			progressBar.setIndeterminate(true);
+		}
+	}
+	
 	/**
 	 * Convenience method that allows ease of use for dialogs OR frames
 	 * 
@@ -123,7 +192,10 @@ public class TellervoResourceAccessDialog extends JDialog implements ResourceEve
 		list.setVisibleRowCount(10);
 	    list.setBorder(BorderFactory.createTitledBorder("Status"));
 	    progressBar = new JProgressBar();
+	    
+
 	    progressBar.setIndeterminate(true);
+	    
 	    progressBar.setBorder(BorderFactory.createLineBorder(Color.BLACK, 4));
 	    
 	    final TellervoResourceAccessDialog glue = this;
@@ -178,7 +250,15 @@ public class TellervoResourceAccessDialog extends JDialog implements ResourceEve
 		// Finish up
 		pack();
 	    //setSize(300, 200);
-	    Center.center(this);
+		
+		if(parent!=null)
+		{
+			this.setLocationRelativeTo(parent);
+		}
+		else
+		{
+			Center.center(this);
+		}
 		
 	}
 	

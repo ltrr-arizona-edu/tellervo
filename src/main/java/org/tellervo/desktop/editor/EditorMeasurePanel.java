@@ -27,10 +27,10 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 	
 	@SuppressWarnings("serial")
 	public EditorMeasurePanel(Editor myeditor, final AbstractMeasuringDevice device) {
-		super(device);
+		super(device, myeditor);
 		editor = myeditor;
 		
-		lblMessage.setText("");
+		setMessageText("");
 	
 		btnQuit.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
@@ -57,7 +57,7 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 			if (cachedValue==null)
 			{
 				cachedValue = value.intValue();
-				lblMessage.setText(I18n.getText("editor.measuring.latewood"));
+				setMessageText(I18n.getText("editor.measuring.latewood"));
 				setLastMeasurementIndicators(value);
 				return;
 			}
@@ -65,7 +65,7 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 			{
 				y = editor.measured(cachedValue, value.intValue());
 				cachedValue = null;
-				lblMessage.setText(I18n.getText("editor.measuring.earlywood"));
+				setMessageText(I18n.getText("editor.measuring.earlywood"));
 			}
 		}
 		else

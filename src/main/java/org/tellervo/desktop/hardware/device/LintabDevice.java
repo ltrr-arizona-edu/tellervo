@@ -85,8 +85,9 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 		parity = PortParity.NONE;
 		flowControl = FlowControl.NONE;
 		lineFeed = LineFeed.NONE;
-		unitMultiplier = UnitMultiplier.ZERO;
+		unitMultiplier = UnitMultiplier.TIMES_1;
 		this.correctionMultiplier = 1.0;
+		this.measureInReverse = true;
 	}
 	
 	@Override
@@ -95,40 +96,8 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	}
 
 	@Override
-	protected void doInitialize() throws IOException {
-		openPort();
-		boolean waiting_for_init = true;
-		int tryCount = 0;
-		
-		while(waiting_for_init) {
-			synchronized(this) {
-				if(getState() == PortState.WAITING_FOR_ACK) {
-					
-					if(tryCount++ == 25) {
-						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Failed to initialize reader device.");
-						System.out.println("init tries exhausted; giving up.");
-						break;
-					}
-					
-					try {
-						System.out.println("Initializing reader, try " + tryCount + "...");
-						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
-						getSerialPort().getOutputStream().write(EVE_ENQ);
-					}
-					catch (IOException e) {	}
-				} else {
-					waiting_for_init = false;
-					continue;
-				}
-				
-				// no response yet.. wait.
-				try {
-					this.wait(300);
-				} catch (InterruptedException e) {}						
-			}	
-		}
-		
-		
+	public boolean doesInitialize() {
+		return false;
 	}
 	
 	@Override
@@ -207,7 +176,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
             	Integer intValue = Math.round(fltValue);
             	
             	// Inverse if reverse measuring mode is on
-            	if(this.getReverseMeasuring())
+            	if(getReverseMeasuring())
             	{
             		intValue = 0 - intValue;
             	}

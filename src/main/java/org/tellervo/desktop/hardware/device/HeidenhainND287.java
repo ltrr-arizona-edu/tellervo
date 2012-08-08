@@ -369,4 +369,9 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 		
 		return false;
 	}
+	
+	@Override
+	public boolean doesInitialize() {
+		return false;
+	}
 }

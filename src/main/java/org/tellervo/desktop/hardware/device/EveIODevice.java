@@ -268,4 +268,9 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 	public Boolean isCorrectionFactorEditable() {
 		return false;
 	}
+	
+	@Override
+	public boolean doesInitialize() {
+		return true;
+	}
 }

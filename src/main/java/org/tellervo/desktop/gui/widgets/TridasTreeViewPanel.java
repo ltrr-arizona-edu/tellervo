@@ -32,6 +32,7 @@ import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.JTree;
 import javax.swing.ToolTipManager;
 import javax.swing.event.EventListenerList;
 import javax.swing.text.Position;
@@ -90,6 +91,58 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	protected ObjectListMode baseObjectListMode = ObjectListMode.TOP_LEVEL_ONLY;
 	protected Boolean derivedVisible = false;
 	private Window parent = null;
+	
+	/**
+	 * Basic constructor for tree view panel used in the context of searching
+	 * for series.  Defaults are:
+	 * 
+	 * TreeDepth - Depth beyond which the tree will not expand 
+	 * @see #setTreeDepth(TreeDepth) 
+	 *   default = radius 
+	 * 
+	 * ListenersAreCheap - Are the attached listeners computationally cheap?
+	 * @see #setListenersAreCheap(Boolean)
+	 *   default = false
+	 *  
+	 * TextForSelectPopup - Text to display in popup menu when selecting entity
+	 * @see #setTextForSelectPopup(String)
+	 *   default = Search for associated series
+	 * 
+	 * BaseObjectListMode - Object list mode to use for base objects
+	 * @see org.tellervo.desktop.gui.widgets.TellervoCodePanel.ObjectListMode
+	 *   default = Top level only
+	 */
+	public TridasTreeViewPanel(Boolean setupTree)
+	{
+		setupGui();
+		if(setupTree)
+		{
+			setupTree(null);
+		}
+			
+	}
+	
+	/**
+	 * Complete constructor for tree view panel.  
+	 * 
+	 * @param depth - @see #setTreeDepth(TreeDepth)
+	 * @param listenersAreCheap - @see #setListenersAreCheap(Boolean)
+	 * @param textForSelectPopup - @see #setTextForSelectPopup(String)
+	 */
+	public TridasTreeViewPanel(Window parent, TreeDepth depth, Boolean listenersAreCheap, 
+			String textForSelectPopup, Boolean setupTree)
+	{
+		this.parent = parent;
+		setupGui();
+		if(setupTree)
+		{
+			setupTree(null);
+			setTreeDepth(depth);
+		}
+		setListenersAreCheap(listenersAreCheap);
+		setTextForSelectPopup(textForSelectPopup);
+	}
+	
 	
 	/**
 	 * Basic constructor for tree view panel used in the context of searching
@@ -257,15 +310,16 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 */
 	private void setupTree(List<TridasObjectEx> objList)
 	{
+		log.debug("starting to set up tree");
 		// Set up tree
     	DefaultMutableTreeNode top = new DefaultMutableTreeNode(App.getLabName()+" Database");
     	if(objList!=null)
     	{
-    		addObjectsToTree(top, objList);
+    		addObjectsToTree(tree, top, objList);
     	}
     	else
     	{
-    		addObjectsToTree(top);
+    		addObjectsToTree(tree, top);
     	}
     	tree = new TridasTree(top);
     	tree.setCellRenderer(new TridasTreeCellRenderer());
@@ -279,7 +333,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         	
         	@Override
         	public void mouseClicked(MouseEvent e) { 
-				
+				        		
         		TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
 				tree.setSelectionPath(selPath);
 				
@@ -293,7 +347,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 					        	// Double left click event so expand entity
 				        		expandEntity((DefaultMutableTreeNode) selPath.getLastPathComponent());
 				            }
-				        	else
+				        	else 
 				        	{
 					        	// Listeners are cheap so do select on single left click
 					        	DefaultMutableTreeNode node1 = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
@@ -329,6 +383,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 				log.trace("showPopup called");
 				int selRow = tree.getRowForLocation(e.getX(), e.getY());
 				TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+				
 				tree.setSelectionPath(selPath);
 				
 				if(selRow==-1) return;
@@ -350,18 +405,18 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	        	{
 	        		// Show menu with expand branch enabled
 	        		showPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), node.getUserObject().getClass(), true);
-	        	}
-		        
-
-				
-				
+	        	}				
 			}
         });
         
         ToolTipManager.sharedInstance().registerComponent(tree);
     	treeScrollPane.setViewportView(tree);
+    	
+    	log.debug("Finished setting up tree");
 	}
 		
+	
+
 	
 	/**
 	 * Set up the popup menu 
@@ -427,16 +482,17 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 * 
 	 * @param top
 	 */
-	private void addObjectsToTree(DefaultMutableTreeNode top, List<TridasObjectEx> objectList)
+	protected void addObjectsToTree(TridasTree thetree, DefaultMutableTreeNode top, List<TridasObjectEx> objectList)
     {
     	DefaultMutableTreeNode objectNode = null;
 
-        
+        log.debug("Beginning to loop through object list and adding to tree in order");
         for(TridasObjectEx object : objectList)
         {
             objectNode = new DefaultMutableTreeNode(object);   
-            addTridasNodeInOrder(tree, top, objectNode);
+            addTridasNodeInOrder(thetree, top, objectNode);
         }
+        log.debug("Finished adding objects to tree in order");
     }
     
     /**
@@ -444,8 +500,9 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
      * 
      * @param parentNode - node to which the objects should be added
      */
-    private void addObjectsToTree(DefaultMutableTreeNode parentNode)
+    protected void addObjectsToTree(TridasTree thetree, DefaultMutableTreeNode parentNode)
     {
+    	log.debug("Starting to get object list from dictionary");
     	List<TridasObjectEx> objectList = null;
     	
     	if(this.baseObjectListMode==ObjectListMode.TOP_LEVEL_ONLY)
@@ -464,8 +521,9 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	{
     		objectList = App.tridasObjects.getObjectList();
     	}
+    	log.debug("Finished getting object list from dictionary");
     	
-    	addObjectsToTree(parentNode, objectList);
+    	addObjectsToTree(thetree, parentNode, objectList);
     }
     
     /**
@@ -475,13 +533,13 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
      * @param parent
      * @param nodeToAdd
      */
-    private void addTridasNodeInOrder(TridasTree theTree, DefaultMutableTreeNode parent, DefaultMutableTreeNode nodeToAdd)
+    protected void addTridasNodeInOrder(TridasTree theTree, DefaultMutableTreeNode parent, DefaultMutableTreeNode nodeToAdd)
     {
     	Integer insertPos = null;
     	
     	ITridas entityToAdd = (ITridas)nodeToAdd.getUserObject();
     	
-    	TridasComparator comparator = new TridasComparator(TridasComparator.Type.SENIOR_ENTITIES_THEN_LAB_CODE_THEN_TITLES, 
+    	TridasComparator comparator = new TridasComparator(TridasComparator.Type.SENIOR_ENTITIES_THEN_TITLES, 
 				TridasComparator.NullBehavior.NULLS_LAST, 
 				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
    
@@ -502,7 +560,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	}
     	
     	// Add node to Tree
-    	if(tree==null || parent.getChildCount()==0)
+    	if(theTree==null || parent.getChildCount()==0)
     	{
     		// First node to be added to parent
     		parent.add(nodeToAdd);
@@ -728,7 +786,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 * @param y
 	 * @param expandEnabled
 	 */
-	private void showPopupMenu(JComponent source, int x, int y, Class<?> clazz, boolean expandEnabled)
+	void showPopupMenu(JComponent source, int x, int y, Class<?> clazz, boolean expandEnabled)
 	{
 		log.trace("Go ahead and show popup! as x="+x+", y="+y+", class="+clazz+", expandEnabled="+expandEnabled);
 		JPopupMenu popupMenu = initPopupMenu(expandEnabled, clazz);

@@ -20,7 +20,10 @@
 package org.tellervo.desktop.gui.hierarchy;
 
 import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
 
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasGenericField;
@@ -33,6 +36,7 @@ public class TridasTree extends JTree {
 	
 	public TridasTree(DefaultMutableTreeNode top) {
 		super(top);
+		
 	}
  
 	
@@ -40,8 +44,7 @@ public class TridasTree extends JTree {
 			boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
 	
-		return "blah";
-	
+		return value.toString();
 		
 	}
 	

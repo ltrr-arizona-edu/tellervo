@@ -24,8 +24,10 @@
 package org.tellervo.desktop.hardware;
 
 import java.awt.Color;
+import java.awt.Window;
 
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
@@ -47,12 +49,12 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	private final JTextPane txt;
 	private final JTextPane log;
 	private TimeoutTask task;
-	private final JLabel infoLabel;
+	private final JTextArea infoLabel;
 	
 	
-	public TestMeasurePanel(JLabel infoLabel, JTextPane txtLog, JTextPane txtComCheckLog, final AbstractMeasuringDevice device, Color bgcolor) 
+	public TestMeasurePanel(JTextArea infoLabel, JTextPane txtLog, JTextPane txtComCheckLog, final AbstractMeasuringDevice device, Color bgcolor, Window parent) 
 	{
-		super(device, bgcolor);
+		super(device, bgcolor, parent);
 		
 		this.txt = txtComCheckLog;
 		this.log = txtLog;
@@ -65,25 +67,44 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		
 	}
 
+	@Override
+	protected void updateInfoText()
+	{
+		if(btnMouseTrigger.isSelected())
+		{
+			btnMouseTrigger.setText(I18n.getText("measuring.mousetrigger.ison"));
+			infoLabel.setText(measureMessage+"\n\n"+I18n.getText("menus.edit.measuremode.mousetriggerinfo.on"));
+		}
+		else
+		{
+			btnMouseTrigger.setText(I18n.getText("measuring.mousetrigger.enable"));
+			infoLabel.setText(measureMessage);
+		}		
+	}
+	
 	public void startCountdown()
 	{
+		String header  = "********************************\n";
+		       header += "Starting measuring platform test\n";
+		       header += "********************************\n" ;
+		       header += "Platform type: "+super.dev.toString()+"\n";
+		       header += "Port         : "+super.dev.getPortName()+"\n";
+		       header += "Baud rate    : "+super.dev.getBaud()+"\n";
+		       header += "Data bits    : "+super.dev.getDataBits()+"\n";
+		       header += "Stop bits    : "+super.dev.getStopBits()+"\n";
+		       header += "Parity       : "+super.dev.getParity()+"\n";
+		       header += "Flow control : "+super.dev.getFlowControl()+"\n";
+		       header += "Line feed    : "+super.dev.getLineFeed()+"\n";
+		       header += "Cumulative   : "+super.dev.getMeasureCumulatively()+"\n";
+		       header += "********************************\n";
+		
+		log.setText(header);
+		
 		java.util.Timer timer = new java.util.Timer();
-		task = new TimeoutTask(infoLabel, this.lblMessage, this);
+		task = new TimeoutTask(this);
 		timer.scheduleAtFixedRate(task, 0, 1000);
 		
-		log.setText(log.getText()+"********************************\n");
-		log.setText(log.getText()+"Starting measuring platform test\n");
-		log.setText(log.getText()+"********************************\n");
-		log.setText(log.getText()+"Platform type: "+super.dev.toString()+"\n");
-		log.setText(log.getText()+"Port         : "+super.dev.getPortName()+"\n");
-		log.setText(log.getText()+"Baud rate    : "+super.dev.getBaud()+"\n");
-		log.setText(log.getText()+"Data bits    : "+super.dev.getDataBits()+"\n");
-		log.setText(log.getText()+"Stop bits    : "+super.dev.getStopBits()+"\n");
-		log.setText(log.getText()+"Parity       : "+super.dev.getParity()+"\n");
-		log.setText(log.getText()+"Flow control : "+super.dev.getFlowControl()+"\n");
-		log.setText(log.getText()+"Line feed    : "+super.dev.getLineFeed()+"\n");
-		log.setText(log.getText()+"Cumulative   : "+super.dev.getMeasureCumulatively()+"\n");
-		log.setText(log.getText()+"********************************\n");
+
 	}
 	
 	public void cancelCountdown()
@@ -111,7 +132,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		}
 				
 		txt.setText(txt.getText()+value+"μm\n");
-		infoLabel.setText("Success!  Data received from platform");
+		setMessageText("Success!  Data received from platform");
 	}
 		
 	@Override
@@ -126,16 +147,12 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	
 	class TimeoutTask extends java.util.TimerTask
 	{
-		private JLabel label;
 		private Integer countdown =11;
-		private final JLabel infoLabel;
 		TestMeasurePanel parent;
 		
-		TimeoutTask(JLabel infoLabel, JLabel label, TestMeasurePanel parent)
+		TimeoutTask(TestMeasurePanel parent)
 		{
-			this.label = label;
 			this.parent = parent;
-			this.infoLabel = infoLabel;
 		}
 		
 		@Override
@@ -143,16 +160,14 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 			if(countdown==1)
 			{
 				setLastValue(null);
-				infoLabel.setText(I18n.getText("preferences.hardware.nodatareceived"));
-				parent.lblMessage.setText("");
-				this.cancel();
-				//parent.setVisible(false);
+				setMessageText(I18n.getText("preferences.hardware.nodatareceived"));
+				cancel();
 				return;
 			}
 			
 			countdown--;
 			
-			parent.lblMessage.setText(I18n.getText("preferences.hardware.timeremaining")+": "+countdown);
+			setMessageText("Please try to measure a few rings..." + I18n.getText("preferences.hardware.timeremaining")+": "+countdown);
 			
 			
 		}

@@ -69,6 +69,7 @@ public class PrintBarcodesCommand implements ICommand {
 		ArrayList<TridasObject> objList = new ArrayList<TridasObject>();
 		TridasObject[] arr = new TridasObject[0];
 		ArrayList<TridasSample> smpList = new ArrayList<TridasSample>();
+		int i=0;
 		for(SingleSampleModel row : rows)
 		{
 		
@@ -85,13 +86,13 @@ public class PrintBarcodesCommand implements ICommand {
 				EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
 				resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
 				
-				TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+				TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource, i, rows.size());
 				resource.query();	
 				dialog.setVisible(true);
 				
 				if(!dialog.isSuccessful()) 
 				{ 
-					System.out.println("oopsey doopsey.  Error getting samples");
+					System.out.println("Error getting samples");
 					return;
 				}
 				
@@ -102,6 +103,8 @@ public class PrintBarcodesCommand implements ICommand {
 			{
 				warnNotImported = true;
 			}
+			
+			i++;
 		}
 		
 		List<TridasSample> sampList = SampleLabelPrintingUI.getSamplesList(objList, arr, smpList);

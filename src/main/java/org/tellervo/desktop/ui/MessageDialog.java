@@ -120,7 +120,8 @@ public class MessageDialog extends JDialog {
 				textArea.setFont(new Font("Dialog", Font.PLAIN, 12));
 				textArea.setEditable(false);
 				textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
-				textArea.setBackground((Color) null);
+				textArea.setOpaque(false);
+				textArea.setBackground(new Color(0,0,0,0));
 				
 				panel.add(textArea, "cell 0 0,growx,wmin 10");
 			}

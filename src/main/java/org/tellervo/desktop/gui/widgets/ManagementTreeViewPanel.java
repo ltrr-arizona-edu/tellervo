@@ -23,21 +23,34 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
+import javax.swing.ToolTipManager;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.admin.view.PermissionByEntityDialog;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gui.hierarchy.TridasTree;
+import org.tellervo.desktop.gui.hierarchy.TridasTreeCellRenderer;
+import org.tellervo.desktop.gui.widgets.TellervoCodePanel.ObjectListMode;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.schema.EntityType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.util.PopupListener;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.interfaces.ITridas;
@@ -60,6 +73,10 @@ import org.tridas.util.TridasObjectEx;
  */
 public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyListener {
 
+	private final static Logger log = LoggerFactory.getLogger(ManagementTreeViewPanel.class);
+	protected ObjectListMode baseObjectListMode = ObjectListMode.TOP_LEVEL_ONLY;
+	
+	
 	private static final long serialVersionUID = -7973400038586992025L;
     private Window parent;
 	/**
@@ -84,8 +101,10 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 	 */
 	public ManagementTreeViewPanel()
 	{
-		super();
+		super(false);
+		setupMultiTree(null);
 		super.tree.addKeyListener(this);	
+		
 	}
 	
 	/**
@@ -97,17 +116,17 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 	 */
 	public ManagementTreeViewPanel(Window parent, TreeDepth depth, Boolean listenersAreCheap, String textForSelectPopup)
 	{
-		super(parent, depth, listenersAreCheap, textForSelectPopup);
+		super(false);
+		setupMultiTree(null);
+		setTreeDepth(depth);
+		setListenersAreCheap(listenersAreCheap);
+		setTextForSelectPopup(textForSelectPopup);
 		this.parent = parent;
 		super.tree.addKeyListener(this);
 	}
 	
 	
-	/**
-	 * Set up the popup menu 
-	 */
-	@Override
-	protected JPopupMenu initPopupMenu(boolean expandEnabled, Class<?> clazz)
+	protected JPopupMenu initMultiSelectPopupMenu(Class<?> clazz, Boolean expandEnabled, Boolean ismulti)
 	{
 		String className = ManagementTreeViewPanel.getFriendlyClassName(clazz);
 		Boolean isTridas = false;
@@ -122,19 +141,23 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
         
         if(isTridas)
         {
+		  	Boolean adm = App.isAdmin;
+        	
 	        // Expand 
 	        menuItem = new JMenuItem("Expand branch");
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("expand");
-	       	menuItem.setEnabled(expandEnabled);
 	        menuItem.setIcon(Builder.getIcon("view_tree.png", 16));
+	        menuItem.setEnabled(expandEnabled && !ismulti);
 	        popup.add(menuItem);
+	       	   
 	        
 	        // Select
 	        menuItem = new JMenuItem(this.textForSelectPopup);
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("select");
 	        menuItem.setIcon(Builder.getIcon("select.png", 16));
+	        menuItem.setEnabled(!ismulti);
 	        popup.add(menuItem);
 	        popup.addSeparator();
 	        
@@ -143,23 +166,32 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("delete");
 	        menuItem.setIcon(Builder.getIcon("cancel.png", 16));
+	        menuItem.setEnabled(!ismulti);
 	        popup.add(menuItem);
 	        
-		  	Boolean adm = App.isAdmin;
+
 	        
 	        // Reassign
 	        menuItem = new JMenuItem("Reassign to another parent");
 	        menuItem.addActionListener(this);
-	        menuItem.setActionCommand("reassign");
 	        menuItem.setEnabled(adm);
 	        menuItem.setIcon(Builder.getIcon("newparent.png", 16));
 	        popup.add(menuItem);
+		  	if(ismulti)
+		  	{
+		        menuItem.setActionCommand("reassignmulti");
+		  	}
+		  	else
+		  	{
+		        menuItem.setActionCommand("reassign");
+		  	}
+
 	        
 	        // Merge
 	        menuItem = new JMenuItem("Merge with another record");
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("merge");
-	        menuItem.setEnabled(adm);
+	        menuItem.setEnabled(adm && !ismulti);
 	        menuItem.setIcon(Builder.getIcon("merge.png", 16));
 	        popup.add(menuItem);
 
@@ -168,7 +200,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 	        menuItem = new JMenuItem("View permissions");
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("permissions");
-	        menuItem.setEnabled(adm);
+	        menuItem.setEnabled(adm && !ismulti);
 	        menuItem.setIcon(Builder.getIcon("trafficlight.png", 16));
 	        popup.add(menuItem);
 	        
@@ -181,14 +213,199 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
         menuItem.addActionListener(this);
         menuItem.setActionCommand("refresh");
         menuItem.setIcon(Builder.getIcon("reload.png", 16));
+        menuItem.setEnabled(!ismulti);
         popup.add(menuItem);
         
         popup.setOpaque(true);
         popup.setLightWeightPopupEnabled(false);
 		return popup;
-
 	}
+			
+	
+	/**
+	 * Set up the tree.  If objectList is passed then this is used
+	 * as the base nodes of the tree, otherwise the objects specified
+	 * by baseObjectListMode are used.
+	 * 
+	 * @param objList
+	 */
+	private void setupMultiTree(List<TridasObjectEx> objList)
+	{
+		log.debug("Setting up multi-tree");
+		
+		// Set up tree
+    	DefaultMutableTreeNode top = new DefaultMutableTreeNode(App.getLabName()+" Database");
+    	if(objList!=null)
+    	{
+    		addObjectsToTree(this.tree, top, objList);
+    	}
+    	else
+    	{
+    		addObjectsToTree(this.tree, top);
+    	}
+    	tree = new TridasTree(top);
+    	tree.setCellRenderer(new TridasTreeCellRenderer());
+        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);        
+        tree.setRootVisible(true);
+        tree.setShowsRootHandles(true);
+		log.debug("Adding mouse listener...");
 
+        tree.addMouseListener(new PopupListener() {
+			
+        	
+        	@Override
+        	public void mouseClicked(MouseEvent e) { 
+				
+        		String modifiers = MouseEvent.getMouseModifiersText(e.getModifiers());
+        		if(modifiers.contains("Shift") || modifiers.contains("Ctrl"))
+        		{
+        			// User is selecting multiple nodes so we ignore 
+        			return;
+        		}
+        		
+        		try{
+        			if(tree.getSelectionPaths().length>1)
+	        		{
+	        			// User is part way through selecting multiple nodes so ignore
+	        			return;
+	        		}
+        		} catch (Exception e2)
+        		{
+        			return;
+        		}
+        		
+        		TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+				tree.setSelectionPath(selPath);
+				
+				if(listenersAreCheap)
+				{
+			        if ( e.getButton()== MouseEvent.BUTTON1)
+			        {
+			        	try{
+				        	if(e.getClickCount()>1)
+				            {
+					        	// Double left click event so expand entity
+				        		expandEntity((DefaultMutableTreeNode) selPath.getLastPathComponent());
+				            }
+				        	else 
+				        	{
+					        	// Listeners are cheap so do select on single left click
+					        	DefaultMutableTreeNode node1 = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
+					        	doSelectEntity(node1);
+				        	} 
+			        	}catch (NullPointerException ex)
+		        		{
+		        			// Don't worry - probably just clicked on a handle not a node
+		        		}
+			        }
+		        }
+				else
+				{
+	        		if ( e.getButton()== MouseEvent.BUTTON1)
+	                {
+	                	if(e.getClickCount()>1)
+	                    {
+	                		// Select on double left click
+	        	        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent();
+	        	        	doSelectEntity(node); 	
+	                    }
+	                	else
+	                	{
+	                		// Listeners are expensive so don't do anything on single left click
+	                	}
+	                }
+				}
+        	}
+        	
+        	@Override
+			public void showPopup(MouseEvent e) 
+			{
+				log.trace("showPopup called");
+		
+				TreePath[] selPaths = tree.getSelectionModel().getSelectionPaths();
+
+		        ArrayList<DefaultMutableTreeNode> nodeList = new ArrayList<DefaultMutableTreeNode>();
+		        for(TreePath tp : selPaths)
+		        {
+		        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) tp.getLastPathComponent();
+		        	nodeList.add(node);
+		        }
+		        	
+		        log.debug("Number of nodes in list: "+nodeList.size());
+		        
+		        if(nodeList.size()==1)
+		        {
+		        	// Same as original code as only 1 thing is picked
+		        	
+		        	DefaultMutableTreeNode node = nodeList.get(0);
+		        	
+		        	// Only enabled the expand option if we're not too deep.
+		        	if( ((node.getUserObject() instanceof TridasObject)  && (depth.getDepth()<= TreeDepth.OBJECT .getDepth())) || 
+		        		((node.getUserObject() instanceof TridasElement) && (depth.getDepth()<= TreeDepth.ELEMENT.getDepth())) ||
+		        		((node.getUserObject() instanceof TridasSample)  && (depth.getDepth()<= TreeDepth.SAMPLE .getDepth())) ||
+		        		((node.getUserObject() instanceof TridasRadius)  && (depth.getDepth()<= TreeDepth.RADIUS .getDepth())) ||
+		        		((node.getUserObject() instanceof TridasElement) && (depth.getDepth()<= TreeDepth.ELEMENT.getDepth())) 
+		        	   )
+		        	{
+		        		showMultiPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), node.getUserObject().getClass(), false, false);
+		        	}
+		        	else
+		        	{
+		        		// Show menu with expand branch enabled
+		        		showMultiPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), node.getUserObject().getClass(), true, false);
+		        	}
+		        }
+		        else if (nodeList.size()==0)
+		        {
+		        	return;
+		        }
+		        else
+		        {
+		        	Class clazz = nodeList.get(0).getUserObject().getClass();
+		        	
+		        	for(DefaultMutableTreeNode nde: nodeList)
+		        	{
+		        		if(!nde.getUserObject().getClass().equals(clazz))
+		        		{
+		        			// different classes so can't do anything
+		        			log.debug("Cant handle nodes of different classes");
+		            		TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+		    				tree.setSelectionPath(selPath);
+		        			return;
+		        		}
+		        	}
+		        	
+	        		showMultiPopupMenu((JComponent) e.getSource(), e.getX(), e.getY(), nodeList.get(0).getUserObject().getClass(), false, true);
+
+		        }
+		        	
+				
+				
+			}
+        });
+        
+        ToolTipManager.sharedInstance().registerComponent(tree);
+    	treeScrollPane.setViewportView(tree);
+    	
+    	log.debug("Finished setting up multi-tree");
+	}
+	
+	/**
+	 * Display a popup menu with the expand button enabled or disabled
+	 * 
+	 * @param source
+	 * @param x
+	 * @param y
+	 * @param expandEnabled
+	 */
+	void showMultiPopupMenu(JComponent source, int x, int y, Class<?> clazz, boolean expandEnabled, boolean ismulti)
+	{
+		
+		JPopupMenu popupMenu = initMultiSelectPopupMenu(clazz, expandEnabled, ismulti);
+
+		popupMenu.show(source, x, y);
+	}
+	
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -275,6 +492,77 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 			
 		}
 		
+		else if (e.getActionCommand().equals("reassignmulti"))
+		{
+			Object[] options = {"OK",
+            "Cancel"};
+			int ret = JOptionPane.showOptionDialog(getParent(), 
+					"Are you sure you want to move these to another parent?\n"+
+					"Changes will also impact all subordinate entities so \n"+
+					"only continue if you know what you're doing!", 
+					"Confirm move", 
+					JOptionPane.YES_NO_OPTION, 
+					JOptionPane.WARNING_MESSAGE, null, options, options[1]);
+			
+			if(ret != JOptionPane.YES_OPTION)
+			{
+				return;
+			}	
+			
+			
+			TreePath[] selPaths = tree.getSelectionModel().getSelectionPaths();
+
+	        ArrayList<DefaultMutableTreeNode> nodeList = new ArrayList<DefaultMutableTreeNode>();
+	        ArrayList<ITridas> tridasList = new ArrayList<ITridas>();
+
+	        for(TreePath tp : selPaths)
+	        {
+	        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) tp.getLastPathComponent();
+	        	nodeList.add(node);
+	        	tridasList.add((ITridas) node.getUserObject());
+	        }
+			
+			ITridas selected = tridasList.get(0);
+
+	        
+			Class<? extends ITridas> expectedClass = ITridas.class;
+			
+			if((selected.getClass().equals(TridasMeasurementSeries.class)) || 
+					(selected.getClass().equals(TridasDerivedSeries.class)))
+			{
+				expectedClass = TridasRadius.class;
+			}
+			else if (selected.getClass().equals(TridasRadius.class))
+			{
+				expectedClass = TridasSample.class;
+			}
+			else if (selected.getClass().equals(TridasSample.class))
+			{
+				expectedClass = TridasElement.class;
+			}
+			else if ((selected.getClass().equals(TridasElement.class)) || 
+					(selected.getClass().equals(TridasObject.class)) || 
+					(selected.getClass().equals(TridasObjectEx.class)))
+			{
+				expectedClass = TridasObject.class;
+			}
+			
+			
+			
+			ITridas newParent = TridasEntityPickerDialog.pickEntity(parent, 
+					"Select new parent", 
+					expectedClass, 
+					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
+
+			// Actually do the reassign	
+			for(int i=0; i<nodeList.size(); i++)
+			{
+				DefaultMutableTreeNode node = nodeList.get(i);
+				reassignEntity(node, newParent, i, nodeList.size());
+			}
+			
+		}
+		
 		else if (e.getActionCommand().equals("merge"))
 		{
 			Object[] options = {"OK",
@@ -314,13 +602,14 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 		}
 	}
 	
-	/**
-	 * Remove the specified node from the tree
-	 * 
-	 * @param node
-	 */
 	@SuppressWarnings("unchecked")
 	private void reassignEntity(DefaultMutableTreeNode node, ITridas newParent)
+	{
+		reassignEntity(node, newParent, null, null);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void reassignEntity(DefaultMutableTreeNode node, ITridas newParent, Integer currentProgress, Integer totalProgress)
 	{	
 		ITridas entity = null;
 		EntityResource rsrc = null;
@@ -371,7 +660,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 		}
 		
 		// Do query
-		TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(rsrc);
+		TellervoResourceAccessDialog accdialog = new TellervoResourceAccessDialog(parent, rsrc, currentProgress, totalProgress);
 		rsrc.query();
 		accdialog.setVisible(true);
 		
@@ -399,6 +688,9 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 		
 		return;
 	}
+	
+	
+	
 	
 	@SuppressWarnings("unchecked")
 	private void mergeEntity(DefaultMutableTreeNode node, ITridas correctEntity)

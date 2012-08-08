@@ -99,6 +99,8 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESANALYST));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESFIRSTYEAR));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESVALUECOUNT));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESDATINGTYPE));
+
 
 			paramsArray = paramsList.toArray(new SearchParameterNameEx[paramsList.size()]);
 

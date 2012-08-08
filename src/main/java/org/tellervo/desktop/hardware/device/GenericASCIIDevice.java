@@ -255,4 +255,9 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 		return false;
 	}
 
+	@Override
+	public boolean doesInitialize() {
+		return false;
+	}
+
 }
