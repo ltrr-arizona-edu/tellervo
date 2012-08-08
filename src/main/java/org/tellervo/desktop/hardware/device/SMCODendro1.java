@@ -7,11 +7,12 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.Build;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
-import org.tridas.io.gui.App;
 import org.tridas.io.util.StringUtils;
 
 /**
@@ -122,48 +123,52 @@ public class SMCODendro1 extends GenericASCIIDevice {
 		return true;
 	}
 	
+	@Override
 	protected void finalize() throws Throwable 
 	{
-		log.debug("FINALIZING");
-		String cmd = "<e  disconnected  >";
-		sendRequest(cmd);
+		sendMessage("disconnected");
 		super.finalize();
 	}
 	
-	
+	@Override
 	public SerialPort openPort(String portName) throws IOException {
 		
 		SerialPort port = super.openPort(portName);
-		
-		sendMessage("Tellervo v"+App.getBuildVersion());
-		
+		String version = Build.getVersion();
+		version = version.replace("\u03B2", "b");
+		sendMessage("Tellervo v"+version);
 		return port;
 	}
 	
+	/**
+	 * Send a message to be displayed on the device screen.  Value is 
+	 * truncated to 16 chars, otherwise it is centered.
+	 * 
+	 * @param message
+	 */
 	private void sendMessage(String message)
-	{
+	{		
 		if(message.length()>16)
 		{
-			message.substring(0, 15);
+			log.debug("Message length = "+message.length()+" so truncating");
+			message = message.substring(0, 15);
 		}
 		else if(message.length()<16)
 		{
 			Integer spacesRequired = 16-message.length();
-			
 			if((spacesRequired % 2) == 0)
 			{
-				message = StringUtils.leftPad(message, spacesRequired/2);
-				message = StringUtils.rightPad(message, spacesRequired/2);
+				message = StringUtils.leftPad(message, 16-(spacesRequired/2));
+				message = StringUtils.rightPad(message, 16);
 			}
 			else
 			{
-				message = StringUtils.leftPad(message, (spacesRequired+1/2));
-				message = StringUtils.rightPad(message,(spacesRequired-1/2));
+				message = StringUtils.leftPad(message, (16-(spacesRequired+1)/2));
+				message = StringUtils.rightPad(message,16);
 			}
 		}
 		
-		String cmd ="<e"+message+">";
-		sendRequest(cmd);
+		sendRequest("<e"+message+">");
 	}
 	
 	/**
@@ -206,6 +211,7 @@ public class SMCODendro1 extends GenericASCIIDevice {
     	}	
 	}
 
+	@Override
 	public void serialEvent(SerialPortEvent e) {
 		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			InputStream input;

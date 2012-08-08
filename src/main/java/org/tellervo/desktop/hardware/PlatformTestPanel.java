@@ -36,6 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.border.EmptyBorder;
@@ -45,8 +46,6 @@ import javax.swing.border.BevelBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.setupwizard.SetupWizard;
-import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 
 public class PlatformTestPanel extends JPanel {
@@ -57,7 +56,7 @@ public class PlatformTestPanel extends JPanel {
 	private JTextPane txtLog;
 	private AbstractMeasuringDevice device;
 	private TestMeasurePanel panelControls;
-	private JLabel lblInfo;
+	private JTextArea lblInfo;
 	private String startupMessage = "Please attempt to measure a few rings...";
 	private String errorMessage;
 	private final JDialog parent;
@@ -165,11 +164,14 @@ public class PlatformTestPanel extends JPanel {
 		dialog.getContentPane().setLayout(new BorderLayout());
 		dialog.getContentPane().add(panel, BorderLayout.CENTER);
 		dialog.pack();
+		dialog.setSize(450, 500);
 		dialog.setLocationRelativeTo(parent);
 		dialog.setVisible(true);
 		
 
 	}
+	
+	
 	
 	@Override
 	public void setBackground(Color col)
@@ -184,7 +186,6 @@ public class PlatformTestPanel extends JPanel {
 	private void init()
 	{
 		contentPanel.removeAll();
-		setBounds(100, 100, 665, 355);
 		setLayout(new BorderLayout());
 	
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -197,21 +198,31 @@ public class PlatformTestPanel extends JPanel {
 			return;
 		}
 
-		contentPanel.setLayout(new MigLayout("", "[428.00px,grow]", "[50.00px,fill][247.00px,grow][74.00px:74.00px:74.00px]"));
+		contentPanel.setLayout(new MigLayout("", "[428.00px,grow]", "[75.00px,grow,fill][247.00px,grow][74.00px:74.00px:74.00px]"));
 		{
 			JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 			contentPanel.add(tabbedPane, "cell 0 1,grow");
 			{
 				JPanel panelTitle = new JPanel();
 				panelTitle.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-				panelTitle.setBackground(bgcolor);
+				panelTitle.setBackground(Color.WHITE);
 				contentPanel.add(panelTitle, "cell 0 0,growx,aligny top");
-				panelTitle.setLayout(new MigLayout("", "[grow]", "[]"));
+				panelTitle.setLayout(new MigLayout("", "[grow]", "[75px,top]"));
 				{
-					lblInfo = new JLabel(startupMessage);
+					JLabel lblIcon = new JLabel("");
+					lblIcon.setIcon(Builder.getIcon("documentinfo.png", 22));
+					panelTitle.add(lblIcon, "flowx,cell 0 0,aligny top");
+				}
+				{
+					lblInfo = new JTextArea(startupMessage);
+					lblInfo.setWrapStyleWord(true);
+					lblInfo.setLineWrap(true);
+					lblInfo.setEditable(false);
+					lblInfo.setFocusable(false);
+					lblInfo.setBorder(null);
 					lblInfo.setFont(new Font("Dialog", Font.PLAIN, 11));
-					panelTitle.add(lblInfo, "cell 0 0");
-					lblInfo.setIcon(Builder.getIcon("documentinfo.png", 22));
+					panelTitle.add(lblInfo, "cell 0 0,growx,wmin 10");
+	
 				}
 			}
 			
@@ -360,10 +371,10 @@ public class PlatformTestPanel extends JPanel {
 			}
 			
 		}
+
 	}
 
 	public AbstractMeasuringDevice getDevice() {
 		return device;
 	}
-
 }

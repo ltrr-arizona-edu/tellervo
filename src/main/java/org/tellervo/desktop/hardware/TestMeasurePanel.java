@@ -27,6 +27,7 @@ import java.awt.Color;
 import java.awt.Window;
 
 import javax.swing.JLabel;
+import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
@@ -48,10 +49,10 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	private final JTextPane txt;
 	private final JTextPane log;
 	private TimeoutTask task;
-	private final JLabel infoLabel;
+	private final JTextArea infoLabel;
 	
 	
-	public TestMeasurePanel(JLabel infoLabel, JTextPane txtLog, JTextPane txtComCheckLog, final AbstractMeasuringDevice device, Color bgcolor, Window parent) 
+	public TestMeasurePanel(JTextArea infoLabel, JTextPane txtLog, JTextPane txtComCheckLog, final AbstractMeasuringDevice device, Color bgcolor, Window parent) 
 	{
 		super(device, bgcolor, parent);
 		
@@ -66,6 +67,21 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		
 	}
 
+	@Override
+	protected void updateInfoText()
+	{
+		if(btnMouseTrigger.isSelected())
+		{
+			btnMouseTrigger.setText(I18n.getText("measuring.mousetrigger.ison"));
+			infoLabel.setText(measureMessage+"\n\n"+I18n.getText("menus.edit.measuremode.mousetriggerinfo.on"));
+		}
+		else
+		{
+			btnMouseTrigger.setText(I18n.getText("measuring.mousetrigger.enable"));
+			infoLabel.setText(measureMessage);
+		}		
+	}
+	
 	public void startCountdown()
 	{
 		String header  = "********************************\n";
@@ -85,7 +101,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		log.setText(header);
 		
 		java.util.Timer timer = new java.util.Timer();
-		task = new TimeoutTask(infoLabel, this);
+		task = new TimeoutTask(this);
 		timer.scheduleAtFixedRate(task, 0, 1000);
 		
 
@@ -116,7 +132,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		}
 				
 		txt.setText(txt.getText()+value+"μm\n");
-		infoLabel.setText("Success!  Data received from platform");
+		setMessageText("Success!  Data received from platform");
 	}
 		
 	@Override
@@ -132,13 +148,11 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	class TimeoutTask extends java.util.TimerTask
 	{
 		private Integer countdown =11;
-		private final JLabel infoLabel;
 		TestMeasurePanel parent;
 		
-		TimeoutTask(JLabel infoLabel, TestMeasurePanel parent)
+		TimeoutTask(TestMeasurePanel parent)
 		{
 			this.parent = parent;
-			this.infoLabel = infoLabel;
 		}
 		
 		@Override
@@ -146,16 +160,14 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 			if(countdown==1)
 			{
 				setLastValue(null);
-				infoLabel.setText(I18n.getText("preferences.hardware.nodatareceived"));
-				setMessageText("");
-				this.cancel();
-				//parent.setVisible(false);
+				setMessageText(I18n.getText("preferences.hardware.nodatareceived"));
+				cancel();
 				return;
 			}
 			
 			countdown--;
 			
-			setMessageText(I18n.getText("preferences.hardware.timeremaining")+": "+countdown);
+			setMessageText("Please try to measure a few rings..." + I18n.getText("preferences.hardware.timeremaining")+": "+countdown);
 			
 			
 		}

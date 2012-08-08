@@ -100,7 +100,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	protected AbstractMeasuringDevice dev;
 	private JPanel panel = new JPanel();
 	private Color bgcolor = null;
-	private JToggleButton btnMouseTrigger;
+	protected JToggleButton btnMouseTrigger;
 	private JTextArea txtMouseTriggerInfo;
 
 	private Point mousePoint;
@@ -109,14 +109,14 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	private Color parentBGColor;
 	private JPanel panelInfo;
 	private JLabel lblInfoIcon;
-	private String measureMessage = "";
+	protected String measureMessage = "";
 	private JScrollPane scrollPane;
 	
 	public MeasurePanel(final AbstractMeasuringDevice device, Color bgcolor, Window parent)
 	{
 		this.bgcolor = bgcolor;
 		this.parent = parent;
-		parentBGColor = parent.getBackground();
+		
 		init(device);
 	}
 	
@@ -325,12 +325,10 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		// Hide any displays that aren't supported
 		setCurrentPositionGuiVisible(device.isCurrentValueCapable());
 		setLastPositionGuiVisible(device.getMeasureCumulatively());
-		
-		parent.pack();
-		
+				
 	}
 	
-	private void updateInfoText()
+	protected void updateInfoText()
 	{
 		if(btnMouseTrigger.isSelected())
 		{
