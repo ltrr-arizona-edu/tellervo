@@ -71,7 +71,7 @@ class geometry
 		   
 		   if($tag->hasAttribute("srsName"))
 		   {
-		   		if($tag->getAttribute("srsName")!="EPSG:4326")
+                if(($tag->getAttribute("srsName")!="EPSG:4326") && ($tag->getAttribute("srsName")!="urn:ogc:def:crs:EPSG::4326"))
 		   		{
 		   			trigger_error("104"."This webservice currently only supports GML data supplied in the EPSG:4326 coordinate system", E_USER_ERROR);
 		   			return false;

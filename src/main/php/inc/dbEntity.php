@@ -3376,8 +3376,8 @@ class measurementEntity extends dbEntity
 
 		global $dbconn;
 		
-		$sql = "select vwq.* from cpgdb.findObjectAncestors('$juniorObjectID', true) oa JOIN vwTblObject vwq ON oa.objectid=vwq.objectid";
-		    
+        $sql = "select vwq.* from cpgdb.findObjectAncestors('$juniorObjectID', true) oa JOIN vwTblObject vwq ON oa.objectid=vwq.objectid ORDER BY parentobjectid";
+				    
 		$dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {	         
