@@ -62,12 +62,12 @@ public class AppearancePrefsPanel extends AbstractPreferencesPanel {
 	public AppearancePrefsPanel(final JDialog parent) {
 		super(I18n.getText("preferences.appearance"), 
 				"appearance.png", 
-				"Change how your Corina interface should appear",
+				"Change how your Tellervo interface should appear",
 				parent);
 		setLayout(new MigLayout("", "[111.00px,fill][grow]", "[101.00px,fill][grow,fill]"));
-		
-		originalLocale = I18n.getPreferredTellervoLocale(false);		
-		
+
+		originalLocale = I18n.getPreferredTellervoLocale(false);
+	
 		JPanel panelEditor = new JPanel();
 		panelEditor.setBorder(new TitledBorder(null, "Editor panel", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panelEditor, "cell 0 0,alignx center,aligny center");

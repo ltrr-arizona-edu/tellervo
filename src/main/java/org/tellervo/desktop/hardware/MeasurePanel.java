@@ -22,34 +22,29 @@ package org.tellervo.desktop.hardware;
 
 import java.applet.AudioClip;
 import java.awt.AWTEvent;
-import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.PointerInfo;
-import java.awt.Rectangle;
-import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.AWTEventListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JToggleButton;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
@@ -59,7 +54,6 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gis.ITRDBMarkerLayerBuilder;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -69,13 +63,8 @@ import org.tellervo.desktop.util.SoundUtil;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasUnit;
 
-import javax.swing.JToggleButton;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
 
-
-public abstract class MeasurePanel extends JPanel implements MeasurementReceiver{
+public abstract class MeasurePanel extends JPanel implements MeasurementReceiver, AWTEventListener{
 
 	private static final long serialVersionUID = 1L;
 	private final static Logger log = LoggerFactory.getLogger(MeasurePanel.class);
@@ -249,56 +238,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		
 		
 		long eventMask = AWTEvent.MOUSE_EVENT_MASK + AWTEvent.KEY_EVENT_MASK + AWTEvent.MOUSE_MOTION_EVENT_MASK;
-		Toolkit.getDefaultToolkit().addAWTEventListener( new AWTEventListener()
-		{
-		    public void eventDispatched(AWTEvent e)
-		    {
-		    	if(e instanceof KeyEvent)
-		    	{
-					if(((KeyEvent)e).getKeyCode() == KeyEvent.VK_ESCAPE)
-					{
-						log.debug("Escape pressed");
-						if(btnMouseTrigger.isSelected())
-						{
-							// Escape pressed so cancel mouse trigger
-							toggleMouseTrigger(false);
-						}
-					}
-					
-					((KeyEvent) e).consume();
-		    	}
-				else if (e instanceof MouseEvent)
-				{
-					if(btnMouseTrigger.isSelected())
-					{
-						MouseEvent me = (MouseEvent) e;
-						if(me.getID()==MouseEvent.MOUSE_CLICKED)
-						{
-							if(me.getButton() == MouseEvent.BUTTON1)
-							{
-								// Left click
-								dev.requestMeasurement();	
-								updateInfoText();
-							}
-							if(me.getButton() == MouseEvent.BUTTON3)
-							{
-								// Right click
-								dev.zeroMeasurement();	
-								updateInfoText();
-							}
-						}
-						else if (me.getID()==MouseEvent.MOUSE_MOVED || me.getID()==MouseEvent.MOUSE_DRAGGED)
-						{
-							// Mouse was moved, so move it back
-							moveMouseBackToButton();
-						}
-						
-						me.consume();
-					}
-				}
-		    }
-		}, eventMask);
-		
+		Toolkit.getDefaultToolkit().addAWTEventListener(this, eventMask);		
 
 		// Set the device to zero to start with	
 		if(dev!=null)
@@ -544,6 +484,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	
 	public void cleanup() {
 		dev.close();
+		Toolkit.getDefaultToolkit().removeAWTEventListener(this);
 	}
 
 	@Override
@@ -614,6 +555,56 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 			}
 		}
 	}
+	
+	
+	
+	 public void eventDispatched(AWTEvent e)
+	    {
+	    	if(e instanceof KeyEvent)
+	    	{
+				if(((KeyEvent)e).getKeyCode() == KeyEvent.VK_ESCAPE)
+				{
+					log.debug("Escape pressed");
+					if(btnMouseTrigger.isSelected())
+					{
+						// Escape pressed so cancel mouse trigger
+						toggleMouseTrigger(false);
+					}
+				}
+				
+				((KeyEvent) e).consume();
+	    	}
+			else if (e instanceof MouseEvent)
+			{
+				if(btnMouseTrigger.isSelected())
+				{
+					MouseEvent me = (MouseEvent) e;
+					if(me.getID()==MouseEvent.MOUSE_CLICKED)
+					{
+						if(me.getButton() == MouseEvent.BUTTON1)
+						{
+							// Left click
+							dev.requestMeasurement();	
+							updateInfoText();
+						}
+						if(me.getButton() == MouseEvent.BUTTON3)
+						{
+							// Right click
+							dev.zeroMeasurement();	
+							updateInfoText();
+						}
+					}
+					else if (me.getID()==MouseEvent.MOUSE_MOVED || me.getID()==MouseEvent.MOUSE_DRAGGED)
+					{
+						// Mouse was moved, so move it back
+						moveMouseBackToButton();
+					}
+					
+					me.consume();
+				}
+			}
+	    }
+	
 }
 
 

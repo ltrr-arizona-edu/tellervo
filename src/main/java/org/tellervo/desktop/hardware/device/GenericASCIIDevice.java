@@ -142,6 +142,9 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
              	// Round up to micron integers
 		    	Float fltValue = new Float(strReadBuffer) * unitMultiplier.toFloat();
 		    	Integer intValue = Math.round(fltValue);
+				
+		    	// Handle any correction factor
+		    	intValue = getCorrectedValue(intValue);
 		    	
 		    	// Do calculation if working in cumulative mode
 		    	if(this.measureCumulatively)

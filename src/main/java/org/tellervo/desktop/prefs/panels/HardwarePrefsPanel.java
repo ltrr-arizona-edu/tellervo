@@ -243,7 +243,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     			App.prefs.getPref(PrefKey.SERIAL_PARITY, "None"), 
     			PortParity.allValuesAsArray());
     	
-    	lblMultiply = new JLabel("Data multiplication factor:");
+    	lblMultiply = new JLabel("Correction factor:");
     	panel.add(lblMultiply, "cell 2 4,alignx right");
     	
     	
@@ -252,7 +252,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
         double max = 1000.00;  
         double stepSize = 0.01;  
         SpinnerNumberModel model = new SpinnerNumberModel(value, min, max, stepSize);  
-        spnMultiply = new JSpinner(model);  
+        spnMultiply = new JSpinner(new SpinnerNumberModel(1.0, 0.0, 1000.0, 1.0));  
         JSpinner.NumberEditor editor = (JSpinner.NumberEditor)spnMultiply.getEditor();  
         DecimalFormat format = editor.getFormat();  
         format.setMinimumFractionDigits(2);  

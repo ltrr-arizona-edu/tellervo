@@ -459,7 +459,7 @@ public class FileMenu extends JMenu {
 	}
 	
 	public static void opendb(boolean multi) {
-		DBBrowser browser = new DBBrowser((Frame) null, true, multi);
+		DBBrowser browser = new DBBrowser(App.mainWindow, true, multi);
 		
 		browser.setVisible(true);
 		

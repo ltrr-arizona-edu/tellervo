@@ -1146,7 +1146,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		$xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
 		$xml.= $this->getIdentifierXML();
 		
-		if($this->getComments()!=NULL)	$xml.= "<tridas:comments>".pg_escape_string($this->getComments())."</tridas:comments>\n";
+		if($this->getComments()!=NULL)	$xml.= "<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
 		if($this->getBirthDate()!=NULL)	$xml.= "<tridas:derivationDate>".pg_escape_string($this->getBirthDate())."</tridas:derivationDate>\n";	
 
 		if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".dbhelper::escapeXMLChars($this->vmeasurementOp->getValue())."</tridas:type>\n";

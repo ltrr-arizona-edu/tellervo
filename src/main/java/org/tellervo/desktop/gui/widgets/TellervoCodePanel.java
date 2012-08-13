@@ -226,7 +226,7 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
 		// Return if empty
 		if(labcodestr.length()==0) return;
 				  
-		// Remove the "C-" from beginning if present
+		// Remove the lab acronym part (e.g. "C-")  from beginning if present
 		String prefix = App.getLabCodePrefix();
 		if(labcodestr.length()>2)
 		{

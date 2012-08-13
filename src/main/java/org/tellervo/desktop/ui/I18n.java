@@ -397,11 +397,11 @@ public class I18n {
 	 */
 	public static TellervoLocale getPreferredTellervoLocale(Boolean fallback)
 	{
-		
-		Locale defloc = Locale.getDefault();
-		String country = defloc.getCountry();
-		String language = defloc.getLanguage();
-		
+
+		// First try to get a locale from the preferences values
+		String country = App.prefs.getPref(PrefKey.LOCALE_COUNTRY_CODE, "xxx");
+		String language = App.prefs.getPref(PrefKey.LOCALE_LANGUAGE_CODE, "xxx");
+		TellervoLocale prefLocale = I18n.getTellervoLocale(country, language);
 		for(TellervoLocale loc : TellervoLocale.values())
 		{
 			if(loc.getCountryCode().equals(country) && loc.getLanguageCode().equals(language))
@@ -410,6 +410,21 @@ public class I18n {
 			}
 		}
 		
+		// Couldn't find locale from prefs, so try system default instead
+		Locale defloc = Locale.getDefault();
+		country = defloc.getCountry();
+		language = defloc.getLanguage();
+
+		for(TellervoLocale loc : TellervoLocale.values())
+		{
+			if(loc.getCountryCode().equals(country) && loc.getLanguageCode().equals(language))
+			{
+				return loc;
+			}
+		}
+		
+		// Still no luck
+		// In fallback is true then send US English		
 		if(fallback)
 		{
 			// Preferred locale not found or not supported so use US English instead

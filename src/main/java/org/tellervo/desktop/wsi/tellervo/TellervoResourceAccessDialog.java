@@ -106,6 +106,18 @@ public class TellervoResourceAccessDialog extends JDialog implements ResourceEve
 		setProgress(progress, totalProgress);
 	}
 	
+	/**
+	 * Construct an access dialog as a parent of a frame
+	 * 
+	 * @param window
+	 * @param resource
+	 */
+	public TellervoResourceAccessDialog(Window window, TellervoResource resource) {
+		super(window);
+		parent = window;
+		initialize(resource);
+	}
+	
 	
 	/**
 	 * Construct an access dialog with no owner parent (not preferable)

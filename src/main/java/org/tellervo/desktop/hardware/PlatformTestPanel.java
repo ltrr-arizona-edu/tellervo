@@ -89,7 +89,7 @@ public class PlatformTestPanel extends JPanel {
 		if(panelControls!=null)
 		{
 			panelControls.cancelCountdown();
-			panelControls.dev.close();
+			panelControls.cleanup();
 		}
 		
 		if(parent!=null)

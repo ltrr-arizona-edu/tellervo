@@ -181,8 +181,8 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
             		intValue = 0 - intValue;
             	}
             	
-            	// Apply correction factor
-            	intValue = (int) (intValue * this.correctionMultiplier);
+		    	// Handle any correction factor
+		    	intValue = getCorrectedValue(intValue);
             	                
 		    	//Only process the data if the add button is set and the reset button is not set.
                 if( strReadBuffer.endsWith(";10") || fireOnNextValue) 

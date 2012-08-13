@@ -106,7 +106,7 @@ public class SMCODendro1 extends GenericASCIIDevice {
 	
 	@Override
 	public Boolean isCorrectionFactorEditable() {
-		return false;
+		return true;
 	}
 
 	
@@ -252,6 +252,9 @@ public class SMCODendro1 extends GenericASCIIDevice {
              	// Convert to micron integers
 		    	Float fltValue = new Float(strReadBuffer) * unitMultiplier.toFloat();
 		    	Integer intValue = Math.round(fltValue);
+		    	
+		    	// Handle any correction factor
+		    	intValue = getCorrectedValue(intValue);
 		    	
             	// Inverse if reverse measuring mode is on
             	if(getReverseMeasuring())

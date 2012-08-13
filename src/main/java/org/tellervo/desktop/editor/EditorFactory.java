@@ -105,10 +105,10 @@ public class EditorFactory {
 		}
 		
 		/**
-		 * Populate the given Corina sample from the information we acquired
+		 * Populate the given Tellervo sample from the information we acquired
 		 * @param s
 		 */
-		public void populateCorinaSample(Sample s) {
+		public void populateTellervoSample(Sample s) {
 			LabCode labcode = new LabCode();
 			
 			if(object != null) {
@@ -373,7 +373,7 @@ public class EditorFactory {
 		// attach anything we loaded in the above dialog
 		if(result!=null)
 		{
-			result.populateCorinaSample(sample);
+			result.populateTellervoSample(sample);
 		}
 		
 		// setup our loader and series identifier

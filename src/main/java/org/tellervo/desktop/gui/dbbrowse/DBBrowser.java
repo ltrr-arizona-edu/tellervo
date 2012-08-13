@@ -26,7 +26,11 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -50,6 +54,8 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
@@ -73,6 +79,7 @@ import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.WSIBox;
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -87,20 +94,18 @@ import org.tridas.util.TridasObjectEx;
  */
 public class DBBrowser extends DBBrowser_UI implements ElementListManager, TridasSelectListener {
 	private static final long serialVersionUID = 1L;
-	
+	private final static Logger log = LoggerFactory.getLogger(DBBrowser.class);
+
 	private ElementListTableSorter availableSorter;
 	private ElementListTableSorter chosenSorter;
 	private TableRowSorter<ElementListTableModel> rowFilter;
-	private TridasTreeViewPanel treepanel;
+	protected TridasTreeViewPanel treepanel;
 	
 	private ElementList selectedElements;
     private boolean isMultiDialog;
     private int minimumSelectedElements = 1;
     
     private SearchPanel searchPanel;
-    //private StaticSearchPanel searchPanel2;
-    
-    
 
     public DBBrowser(java.awt.Frame parent, boolean modal) {
     	this(parent, modal, false);	
@@ -343,10 +348,22 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 
         	}
     	}
+    	else if (entity instanceof TridasElement)
+    	{
+    		param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
+    	}    	
     	else if (entity instanceof TridasSample)
     	{
     		param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
     	}
+    	else if (entity instanceof TridasRadius)
+    	{
+    		param.addSearchConstraint(SearchParameterName.RADIUSID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
+    	}   
+    	else if (entity instanceof ITridasSeries)
+    	{
+    		param.addSearchConstraint(SearchParameterName.SERIESID, SearchOperator.EQUALS, entity.getIdentifier().getValue());
+    	}   
     	else
     	{
     		return false;
@@ -548,6 +565,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 //				((BrowseListMode) cboBrowseBy.getSelectedItem()).name());
     	
     	returnStatus = RET_OK;
+    	
+    	this.cacheSettings();
     	return true;
     }
     
@@ -817,7 +836,18 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     
     private void setupTree(){
     	
-    	treepanel = new TridasTreeViewPanel();
+    	try{
+    		this.loadTreePanel();
+    	} catch (Exception e)
+    	{
+    		
+    	}
+    	
+    	if(treepanel==null)
+    	{
+    		treepanel = new TridasTreeViewPanel();
+    	}
+    	
     	treepanel.addTridasSelectListener(this);
     	browsePanel.setLayout(new BorderLayout());
     	this.browsePanel.add(treepanel, BorderLayout.CENTER);
@@ -1278,8 +1308,6 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 	public void entitySelected(TridasSelectEvent event) {
 		ITridas entity;
 		
-
-		
 		try {
 			entity = event.getEntityList().get(0);
 			if(entity instanceof WSIBox)
@@ -1293,6 +1321,47 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			e.printStackTrace();
 		}
 		
+	}
+	
+	private void cacheSettings()
+	{
+	     FileOutputStream fos = null;
+	     ObjectOutputStream out = null;
+	     try
+	     {
+	       fos = new FileOutputStream("/tmp/treepanel");
+	       out = new ObjectOutputStream(fos);
+	       out.writeObject(this.treepanel);
+	       out.close();
+	     }
+	     catch(IOException ex)
+	     {
+				log.debug("Unable to cache tree panel");
+
+	     }
+	}
+	
+	private void loadTreePanel()
+	{
+		String filename = "/tmp/treepanel";
+		
+		FileInputStream fis = null;
+		ObjectInputStream in = null;
+		try
+		{
+			fis = new FileInputStream(filename);
+			in = new ObjectInputStream(fis);
+		    treepanel = (TridasTreeViewPanel)in.readObject();
+		    in.close();
+		}
+		catch(IOException ex)
+		{
+			log.debug("IOException when trying to load tree panel cache");
+		}
+		catch(ClassNotFoundException ex)
+		{
+			log.debug("ClassNotFoundException when trying to load tree panel cache");
+		}
 	}
 	
 

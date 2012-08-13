@@ -5,6 +5,7 @@ package org.tellervo.desktop.gui.dbbrowse;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -37,6 +38,9 @@ import org.tellervo.schema.SearchReturnObject;
 
 
 /**
+ * A JPanel for building searches for TRiDaS entities based on one or more parameters
+ * 
+ * 
  * @author Lucas Madar
  *
  */
@@ -44,7 +48,7 @@ public class SearchPanel extends JPanel implements PropertyChangeListener, Resou
 	private static final long serialVersionUID = 1L;
 	private final static Logger log = LoggerFactory.getLogger(SearchPanel.class);
 	private JScrollPane scroll;
-	private final JDialog parent;
+	private final Window parent;
 	
 	/** Our actual panel */
 	private final JPanel panel;
@@ -63,7 +67,7 @@ public class SearchPanel extends JPanel implements PropertyChangeListener, Resou
 	/** The thing that cares about our results */
 	private final SearchResultManager manager;
 	
-	public SearchPanel(SearchResultManager manager, JDialog parent) {
+	public SearchPanel(SearchResultManager manager, Window parent) {
 		scroll = new JScrollPane();
 		scroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		scroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);

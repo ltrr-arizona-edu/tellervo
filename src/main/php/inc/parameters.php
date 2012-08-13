@@ -1247,7 +1247,13 @@ class measurementParameters extends measurementEntity implements IParams
 		   				
 		   		}
 		   		break;
-		   			   		
+
+            case "woodCompleteness":
+    	        // Ignore for now, as we expect this in radius instead.  
+	            // TODO!
+                break;
+		   		
+		   		
 		   	case "values":
 		   		
 		   		// In a <values> group tag

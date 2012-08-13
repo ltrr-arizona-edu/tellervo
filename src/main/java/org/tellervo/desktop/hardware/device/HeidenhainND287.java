@@ -201,6 +201,10 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 		    	Integer intValue = Math.round(fltValue);
 		    	//log.debug("Integer value = "+intValue);
 		    	
+		    	// Handle any correction factor
+		    	intValue = getCorrectedValue(intValue);
+		    	
+		    	
 		    	// Do calculation if working in cumulative mode
 		    	if(this.measureCumulatively)
 		    	{

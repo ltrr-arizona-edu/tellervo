@@ -44,6 +44,7 @@ import org.tellervo.desktop.gui.ProgressMeter;
 import org.tellervo.desktop.gui.Splash;
 import org.tellervo.desktop.gui.TellervoMainWindow;
 import org.tellervo.desktop.gui.UserCancelledException;
+import org.tellervo.desktop.gui.dbbrowse.DBBrowserSettings;
 import org.tellervo.desktop.nativelib.NativeLibWrapper;
 import org.tellervo.desktop.platform.Macintosh;
 import org.tellervo.desktop.platform.Platform;
@@ -74,8 +75,9 @@ public class App{
    * e.g 1.1.1
    */
   public static final String earliestServerVersionSupported = "1.0.5";
-
+  
   public static final String SUN_JAVA_COMMAND = "sun.java.command";
+  
   public static Prefs prefs;
   public static Platform platform;
   public static Logging logging;
@@ -89,6 +91,7 @@ public class App{
   public static AppModel appmodel;
   private static Log4JViewer logviewer;
   public static TellervoMainWindow mainWindow = null;
+  public static DBBrowserSettings dbBrowserSettings;
   
   
   public static Boolean isFirstRun = false;

@@ -26,16 +26,12 @@ import gnu.io.SerialPort;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 
 /**
@@ -922,7 +918,7 @@ public abstract class AbstractMeasuringDevice
 		{
 			return br;
 		}
-		
+				
 		public String toString()
 		{
 			if(this.equals(UnitMultiplier.TIMES_1))
@@ -1070,5 +1066,10 @@ public abstract class AbstractMeasuringDevice
 	}
 	
 
+	protected Integer getCorrectedValue(Integer val)
+	{
+		return (int) (val * this.correctionMultiplier);
+		
+	}
 	
 }

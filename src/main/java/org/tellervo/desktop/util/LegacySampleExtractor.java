@@ -87,7 +87,7 @@ public class LegacySampleExtractor {
 		
 		
 		this.barcodeSupplied = true;
-		result.populateCorinaSample(s);
+		result.populateTellervoSample(s);
 		this.s = s;
 		extractFromFilename();		
 		

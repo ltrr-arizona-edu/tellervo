@@ -168,7 +168,10 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 					value = ((256 * valuehi) + valuelo);
 					
 					// Convert from 1/100th mm to our default units = microns
-					value = value * 10;
+					value = (int) (value * this.unitMultiplier.toFloat());
+					
+					// Handle any correction factor
+					value = getCorrectedValue(value);
 					
 					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.NEW_SAMPLE_EVENT, new Integer(value));					
 				}

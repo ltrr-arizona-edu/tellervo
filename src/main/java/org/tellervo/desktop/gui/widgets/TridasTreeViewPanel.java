@@ -1006,16 +1006,16 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		
 		if(entity instanceof TridasObject)
 		{
+			// Entity is an object so highlight in tree
 			TridasObjectEx object = (TridasObjectEx) entity;
 					
-			
 			TreePath path = tree.getNextMatch(GenericFieldUtils.findField(object, "tellervo.objectLabCode").getValue().toString(), 0, Position.Bias.Forward);
 			tree.setSelectionPath(path);
 			tree.scrollPathToVisible(path);
-			
-			this.fireTridasSelectListener(event);
 		}
-		else if (entity instanceof ITridas)
+		
+		// Go ahead and fire selection
+		if (entity instanceof ITridas)
 		{
 			this.fireTridasSelectListener(event);
 		}
