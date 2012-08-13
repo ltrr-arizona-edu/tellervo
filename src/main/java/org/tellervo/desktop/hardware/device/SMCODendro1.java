@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Build;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
+import org.tellervo.desktop.ui.I18n;
 import org.tridas.io.util.StringUtils;
 
 /**
@@ -126,7 +127,7 @@ public class SMCODendro1 extends GenericASCIIDevice {
 	@Override
 	protected void finalize() throws Throwable 
 	{
-		sendMessage("disconnected");
+		sendMessage(I18n.getText("preferences.hardware.disconnected"));
 		super.finalize();
 	}
 	
@@ -156,16 +157,8 @@ public class SMCODendro1 extends GenericASCIIDevice {
 		else if(message.length()<16)
 		{
 			Integer spacesRequired = 16-message.length();
-			if((spacesRequired % 2) == 0)
-			{
-				message = StringUtils.leftPad(message, 16-(spacesRequired/2));
-				message = StringUtils.rightPad(message, 16);
-			}
-			else
-			{
-				message = StringUtils.leftPad(message, (16-(spacesRequired+1)/2));
-				message = StringUtils.rightPad(message,16);
-			}
+			message = StringUtils.leftPad(message, 16-(spacesRequired/2));
+			message = StringUtils.rightPad(message,16);
 		}
 		
 		sendRequest("<e"+message+">");

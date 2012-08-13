@@ -385,35 +385,23 @@ public class I18n {
 				return loc;
 			}
 		}
-		return getPreferredTellervoLocale(true);
+		return getDefaultTellervoLocale(true);
 	}
 	
+	
 	/**
-	 * Get the TelleroLocale from the preferences, or if none is specified
-	 * get the default.
+	 * Get the default locale for the system.  If the systems locale is not supported
+	 * 'fallback' determines if Tellervo's default locale (US English) should be 
+	 * returned.
 	 * 
-	 * @param fallback - if true then return default Locale if all else fails
+	 * @param fallback
 	 * @return
 	 */
-	public static TellervoLocale getPreferredTellervoLocale(Boolean fallback)
+	public static TellervoLocale getDefaultTellervoLocale(Boolean fallback)
 	{
-
-		// First try to get a locale from the preferences values
-		String country = App.prefs.getPref(PrefKey.LOCALE_COUNTRY_CODE, "xxx");
-		String language = App.prefs.getPref(PrefKey.LOCALE_LANGUAGE_CODE, "xxx");
-		TellervoLocale prefLocale = I18n.getTellervoLocale(country, language);
-		for(TellervoLocale loc : TellervoLocale.values())
-		{
-			if(loc.getCountryCode().equals(country) && loc.getLanguageCode().equals(language))
-			{
-				return loc;
-			}
-		}
-		
-		// Couldn't find locale from prefs, so try system default instead
 		Locale defloc = Locale.getDefault();
-		country = defloc.getCountry();
-		language = defloc.getLanguage();
+		String country = defloc.getCountry();
+		String language = defloc.getLanguage();
 
 		for(TellervoLocale loc : TellervoLocale.values())
 		{
@@ -434,7 +422,32 @@ public class I18n {
 		{
 			return null;
 		}
+	}
+	
+	
+	/**
+	 * Get the TelleroLocale from the preferences, or if none is specified
+	 * get the default.
+	 * 
+	 * @param fallback - if true then return default Locale if all else fails
+	 * @return
+	 */
+	public static TellervoLocale getPreferredTellervoLocale(Boolean fallback)
+	{
 
+		// First try to get a locale from the preferences values
+		String country = App.prefs.getPref(PrefKey.LOCALE_COUNTRY_CODE, "xxx");
+		String language = App.prefs.getPref(PrefKey.LOCALE_LANGUAGE_CODE, "xxx");
+		for(TellervoLocale loc : TellervoLocale.values())
+		{
+			if(loc.getCountryCode().equals(country) && loc.getLanguageCode().equals(language))
+			{
+				return loc;
+			}
+		}
+		
+		// Couldn't find locale from prefs, so try system default instead
+		return getDefaultTellervoLocale(fallback);
 	}
 		
 	

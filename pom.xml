@@ -907,11 +907,11 @@
 									  				
 									  <!-- Copy in to our build folder the Tellervo jar -->				
 									  <copy file="${project.build.directory}/${project.build.finalName}.jar"		
-									  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/"/>		
-									  								  
-									  <!-- Create the app.zip file from our build folder -->								  
+									  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo/org/tellervo/tellervo/${project.version}/"/>		
+									  										  
+									  <!-- Create the app.zip file from our build folder.  555 filemode required for executing-->								  
 									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="false">
-									  	<fileset dir="${project.build.directory}/${project.build.finalName}" includes="Tellervo.app/**"/>
+									  	<zipfileset filemode="555" dir="${project.build.directory}/${project.build.finalName}" includes="Tellervo.app/**"/>
 									  </zip>
 									  
 									  <!-- Add license, manual and native package into the root of the zip -->
