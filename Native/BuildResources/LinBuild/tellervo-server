@@ -11,7 +11,7 @@ if (!isset($argc))
 }
 
 // Static locations of various files 
-$wsbase           = "/var/www/secure/tellervo/";
+$wsbase           = "/var/www/tellervo/";
 $folderbase       = "/usr/share/tellervo-server/";
 
 $pg_hba_file      = "/etc/postgresql/9.1/main/pg_hba.conf";
@@ -56,7 +56,7 @@ if($_SERVER['USER']=='root')
  */
  
 $shortopts = "htrces";
-$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "upgrade-db", "version","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:");
+$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "upgrade-db", "version","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info");
 $args = getopt($shortopts,$longopts);
 
 // Depending on command line arguments run different functions
@@ -120,13 +120,12 @@ else if($args["firstrun"]===false)
 }
 else if($args["deploy"]===false)
 {
+	requireRoot();
+	
+	echo "Deleting any existing config files...\n\n";
 	if (file_exists("$folderbase/firstrun"))
 	{
 		exec("sudo rm $folderbase/firstrun");
-	}
-	if (file_exists("/tmp/firstrun"))
-	{
-		exec("sudo mv /tmp/firstrun $folderbase");
 	}
 	if (file_exists("$wsbase/config.php"))
 	{
@@ -136,19 +135,45 @@ else if($args["deploy"]===false)
 	{
 		exec("sudo rm $wsbase/systemconfig.php");
 	}
+	if (file_exists("/etc/update-motd.d/50-landscape-sysinfo"))
+	{
+		exec("sudo rm /etc/update-motd.d/50-landscape-sysinfo");
+	}
+	if (file_exists("/etc/update-motd.d/10-help-text"))
+	{
+		exec("sudo rm /etc/update-motd.d/10-help-text");
+	}
+	if (file_exists("/etc/update-motd.d/91-release-upgrade"))
+	{
+		exec("sudo rm /etc/update-motd.d/91-release-upgrade");
+	}
 	
-	// Install power interface stuff for clean shutdowns
-	exec("sudo apt-get install acpid");
+	echo "Add Tellervo version to message of the day...\n\n";
+	$cmd="echo \"\ntellervo-server --info\" >> /etc/update-motd.d/00-header";
+	exec($cmd);
 	
-	// Remove persistence rules so MAC address reinit doesn't break network
+	echo "Move first run script into place...\n\n";
+	if (file_exists("/tmp/firstrun"))
+	{
+		exec("sudo mv /tmp/firstrun $folderbase");
+	}
+	
+	echo "Installing power interface stuff for clean shutdowns...\n\n";
+	exec("apt-get -q -y install acpid");
+	
+	echo "Remove persistence rules so MAC address reinit doesn't break network...\n\n";
 	if (file_exists("/etc/udev/rules.d/70-persistent-net.rules"))
 	{
 		exec("sudo rm /etc/udev/rules.d/70-persistent-net.rules");
 	}
 	
-	// Make sure firstrun gets run on next login
+	echo "Make sure firstrun gets run on next login...\n\n";
 	exec("echo \"\n# Run Tellervo firstrun script if required\nif [ -f /usr/share/tellervo-server/firstrun ]\nthen\n   /usr/share/tellervo-server/firstrun\nfi\" >> ~/.bashrc");
-	exec("history -c");
+	//exec("su - tellervo -c `history -c`");
+	echo "\n\n";
+	echo "All pre-deployment steps have been completed\n\n";
+	echo "Now shut down this VM, export and release into the wild.\n";
+	echo "--- BUT FIRST RUN ---\nhistory -c \n\n";
 	exit(0);
 }
 else if($args["reconfigure"]===false || $args["r"]===false)
@@ -275,6 +300,15 @@ else if ($args["version"]===false)
 	printTitle();
 	echoTruncatedString("Tellervo Database", 20);
 	echo " - version ".getTellervoDBVersion()."\n";
+	echo "\n";
+	exit(0);
+}
+else if ($args["info"]===false)
+{
+	include($configfile);
+	include($dbsetupfile);
+	echo "\n";
+	printTitle();
 	echo "\n";
 	exit(0);
 }
@@ -1067,7 +1101,15 @@ function verifySetup($silent=false)
 		echoTruncatedString("    - Checking webservice is accessible:");
 		if(fopen($wsurl, "r"))
 		{
-		    printResult(TRUE);
+			if(getIP()=="127.0.0.1")
+			{
+				printResult(FALSE);
+				$runningresult = FALSE;
+			}
+			else
+			{
+		    	printResult(TRUE);
+		    }
 		}
 		else
 		{

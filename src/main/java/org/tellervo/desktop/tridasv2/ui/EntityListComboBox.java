@@ -60,7 +60,7 @@ public class EntityListComboBox extends ComboBoxFilterable {
 		}
 	}
 	
-	public final static Object NEW_ITEM = new IrrelevantEntity("New...");
+	public final static Object NEW_ITEM = new IrrelevantEntity(" ");
 	public final static Object SEPARATOR_ITEM = new IrrelevantEntity("------");
 	
 	public EntityListComboBox(List<? extends ITridas> entities) {
@@ -161,7 +161,7 @@ public class EntityListComboBox extends ComboBoxFilterable {
 			
 			if (NEW_ITEM == value) {
 				setFont(list.getFont().deriveFont(Font.BOLD));
-				setText("New ...");
+				setText("[-select-]");
 				return this;
 			}
 			

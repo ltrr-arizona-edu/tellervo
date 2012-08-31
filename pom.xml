@@ -117,7 +117,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>HH:mm dd-MMM-yyyy</maven.build.timestamp.format>
     	<timestamp>${maven.build.timestamp}</timestamp>
-    	<serverversion>1.1.0</serverversion>
+    	<serverversion>1.1.1</serverversion>
 	</properties>
 
 	<!--  Repository to deploy to.  When deploying make sure your .m2/settings.xml
@@ -352,32 +352,29 @@
 	<build>
 	
 		<!-- Create launch scripts for Linux builds with correct version number -->
-		<resources>
-		
-		      <resource>
-		        <!-- Do not alter log4j.xml file -->
-		        <directory>src/main/resources</directory>
-		        <filtering>false</filtering>
-		        <includes>
-		          <include>**/log4j.xml</include>
-		        </includes>
-		      </resource>
-		      <resource>
-		        <!-- Replace placeholders in other files -->
+	    <resources>
+			  <resource>
 		        <directory>src/main/resources</directory>
 		        <filtering>true</filtering>
 		        <excludes>
 		          <exclude>**/*.xml</exclude>
+		          <exclude>**/*.wav</exclude>
 		        </excludes>
 		      </resource>
-	
-		    <resource>
+		      <resource>
 		  		<directory>Native/BuildResources/</directory>
 		  		<filtering>true</filtering>
-		  	</resource>
+		  	  </resource>
+		      <resource>
+		        <directory>src/main/resources</directory>
+		        <filtering>false</filtering>
+		        <includes>
+		          <include>**/log4j.xml</include>
+		          <include>**/*.wav</include>
+		        </includes>
+		      </resource>
 		</resources>
-		
-	
+
 		<plugins>
 		
 		    <!-- Check the code is up-to-date and grab SVN version number -->

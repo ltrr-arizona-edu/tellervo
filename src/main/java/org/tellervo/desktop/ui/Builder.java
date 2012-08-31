@@ -23,9 +23,11 @@ package org.tellervo.desktop.ui;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.StringTokenizer;
 
 import javax.swing.AbstractAction;
@@ -419,6 +421,13 @@ public class Builder {
 	private final static ClassLoader cl = org.tellervo.desktop.ui.Builder.class.getClassLoader();
 
 
+	public static URL getResourceFile(String name)
+	{
+		java.net.URL url = cl.getResource("Sounds/"+name);
+		return url;
+		
+	}
+	
 	// ----------------------------------------
 	/*
 	 REFACTOR!

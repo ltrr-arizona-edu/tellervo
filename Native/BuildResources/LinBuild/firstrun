@@ -39,9 +39,23 @@ echo "make your choice.\n\n";
 // This makes sure we have sudo access without further passwords required
 pingSudo();
 
-echo "";
+echo "\n\n";
 echo "Press [enter] to continue...";
 $response = fgets(STDIN); 
+
+exec("ifconfig $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
+$ipadd = $response[0];
+
+// Check that the server is not using a localhost for IP
+if(stripos($ipadd, "127.0.0", 0) === 0)
+{
+	exec("reset");
+    echo "The network card on your virtual server is reporting that it's IP address is\n";
+    echo $ipadd." (localhost) rather than an externally accessible address.  This means\n";
+    echo "that your Tellervo server will not be accessible to other computers.\n\n";
+    echo "Please contact the Tellervo developers for support and advice.";
+    die();
+}
 
 
 //

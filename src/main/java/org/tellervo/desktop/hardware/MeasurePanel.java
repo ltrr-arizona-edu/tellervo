@@ -38,6 +38,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
+import javax.sound.sampled.Clip;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -70,9 +71,9 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	private final static Logger log = LoggerFactory.getLogger(MeasurePanel.class);
 
 	/* audioclips to play... */
-	protected AudioClip measure_one;
-	protected AudioClip measure_dec;
-	protected AudioClip measure_error;
+	protected Clip measure_one;
+	protected Clip measure_dec;
+	protected Clip measure_error;
 	
 	protected JButton btnReset;
 	protected JButton btnRecord;
@@ -125,11 +126,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		dev = device;
 		
 		setLayout(new MigLayout("insets 0", "[150px,grow][150,grow][150.00px,grow]", "[][][14.00][80px:80px,grow,fill]"));
-		
-		measure_one = SoundUtil.getMeasureSound();
-		measure_dec = SoundUtil.getMeasureDecadeSound();
-		measure_error = SoundUtil.getMeasureErrorSound();
-		
+				
 		SoundUtil.playMeasureInitSound();
 
 		
@@ -444,7 +441,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		{
 			// Value was zero so must be an error
 			if(measure_error != null)
-				measure_error.play();
+				SoundUtil.playMeasureErrorSound();
 			
 			this.txtLastValue.setText("Err: 0 "+micron());
 
@@ -454,7 +451,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		{
 			// Value was over 5cm so warn user
 			if(measure_error != null)
-				measure_error.play();
+				SoundUtil.playMeasureErrorSound();
 			
 			Alert.message("Warning", "This measurement was over 5cm so it will be disregarded!");
 			
@@ -467,7 +464,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		{
 			// Value was negative so warn user
 			if(measure_error != null)
-				measure_error.play();
+				SoundUtil.playMeasureErrorSound();
 			
 			Alert.message("Warning", "This measurement was negative so it will be disregarded!");
 			

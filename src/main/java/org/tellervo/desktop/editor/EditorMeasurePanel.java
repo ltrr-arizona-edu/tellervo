@@ -13,6 +13,7 @@ import org.tellervo.desktop.hardware.MeasurePanel;
 import org.tellervo.desktop.hardware.MeasurementReceiver;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.util.SoundUtil;
 
 
 /**
@@ -75,10 +76,10 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 		
 		if(y.column() == 0) {
 			if(measure_dec != null)
-				measure_dec.play();
+				SoundUtil.playMeasureDecadeSound();
 		} else {
 			if(measure_one != null)
-				measure_one.play();				
+				SoundUtil.playMeasureDecadeSound();				
 		}
 		
 		setLastMeasurementIndicators(value);

@@ -129,6 +129,7 @@ import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewer;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel;
+import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -1068,5 +1069,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	{
 		this.tabbedPanel.setSelectedIndex(1);
 
+	}
+	
+	public void showPage(EditType type)
+	{
+		metaView.showPage(type);
 	}
 }

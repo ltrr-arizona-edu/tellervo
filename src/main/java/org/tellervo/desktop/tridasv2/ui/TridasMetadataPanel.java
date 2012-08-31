@@ -21,6 +21,8 @@
 package org.tellervo.desktop.tridasv2.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Window;
@@ -30,6 +32,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.AbstractAction;
@@ -123,8 +126,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private JLabel topLabel;
 	private EntityListComboBox cboTopChooser;
 	private ChoiceComboBoxActionListener topChooserListener;
-	private JButton btnChange;
-	private JButton btnCancelChange;
+	private JButton btnSelectEntity;
+	private JButton btnRevert;
+	private JButton btnNewEntity;
 	/** true if combo box is enabled for changing, false otherwise */
 	private boolean changingTop;
 	private static final String CHANGE_STATE = I18n.getText("general.change");
@@ -139,6 +143,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	/** The cancel button when unlocked */
 	private JButton btnEditEntityCancel;
 
+	
+	private ButtonGroup entityButtons;
+	
 	/**
 	 * Constructor: Wrap around the given sample
 	 * 
@@ -253,7 +260,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// but only if something else doesn't disable it first
 		if(cboTopChooser.isEnabled())
 			cboTopChooser.setEnabled(!enabled);
-		btnChange.setEnabled(!enabled);
+		btnSelectEntity.setEnabled(!enabled);
 		
 		// show/hide our buttons
 		btnEditEntitySave.setEnabled(true);
@@ -271,21 +278,26 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		////////// TOP BAR
 		topLabel = new JLabel(I18n.getText("general.initializing"));
 		cboTopChooser = new EntityListComboBox();
-		btnChange = new JButton(CHANGE_STATE);
-		btnCancelChange = new JButton(I18n.getText("general.revert"));
+		btnSelectEntity = new JButton(CHANGE_STATE);
+		btnRevert = new JButton(I18n.getText("general.revert"));
+		btnNewEntity = new JButton("New");
 		panelTopBar.add(topLabel);
 		panelTopBar.add(Box.createHorizontalStrut(6));
 		panelTopBar.add(cboTopChooser);
 		panelTopBar.add(Box.createHorizontalStrut(6));
-		panelTopBar.add(btnChange);
+		panelTopBar.add(btnSelectEntity);
 		panelTopBar.add(Box.createHorizontalStrut(6));
-		panelTopBar.add(btnCancelChange);
+		panelTopBar.add(btnNewEntity);
+		panelTopBar.add(Box.createHorizontalStrut(6));
+		panelTopBar.add(btnRevert);
 		panelTopBar.add(Box.createHorizontalGlue());
 		panelTopBar.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
 		
 		changingTop = false;
-		btnCancelChange.setVisible(false);
-		btnChange.addActionListener(new ActionListener() {
+		btnRevert.setVisible(false);
+		btnNewEntity.setVisible(false);
+		
+		btnSelectEntity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(changingTop)
 					chooseButtonPressed();
@@ -295,7 +307,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			}
 		});
 		
-		btnCancelChange.addActionListener(new ActionListener() {
+		btnRevert.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				changingTop = false;
 				
@@ -306,11 +318,24 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				
 				btnEditEntity.setEnabled(!changingTop);
 				cboTopChooser.setEnabled(changingTop);
-				btnChange.setText(changingTop ? OK_STATE : CHANGE_STATE);
-				btnCancelChange.setVisible(changingTop);
+				btnSelectEntity.setText(changingTop ? OK_STATE : CHANGE_STATE);
+				btnRevert.setVisible(changingTop);
+				btnNewEntity.setVisible(changingTop);
 			}			
 		});
 		
+		btnNewEntity.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				selectInCombo(null);
+				
+				if(changingTop)
+					chooseButtonPressed();
+				else
+					changeButtonPressed();
+			}
+			
+		});
 
 		topChooserListener = new ChoiceComboBoxActionListener(this);
 		cboTopChooser.addActionListener(topChooserListener);
@@ -379,8 +404,9 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// disable/enable editing
 		btnEditEntity.setEnabled(!changingTop);
 		cboTopChooser.setEnabled(changingTop);
-		btnChange.setText(changingTop ? OK_STATE : CHANGE_STATE);
-		btnCancelChange.setVisible(changingTop);		
+		btnSelectEntity.setText(changingTop ? OK_STATE : CHANGE_STATE);
+		btnRevert.setVisible(changingTop);	
+		btnNewEntity.setVisible(changingTop);
 	}
 	
 	/**
@@ -911,6 +937,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private void selectInCombo(ITridas entity) {
 		// disable actionListener firing when we change combobox selection
 		topChooserListener.setEnabled(false);
+		btnNewEntity.setVisible(false);
 		
 		try {
 			if (entity == null) {
@@ -935,6 +962,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			handleComboSelection(false);
 			// re-enable combo box actionlistener firing
 			topChooserListener.setEnabled(true);
+			btnNewEntity.setVisible(true);
+
 		}
 	}
 
@@ -1018,7 +1047,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				return;				
 			}
 			
-			btnCancelChange.doClick();
+			btnRevert.doClick();
 		}
 		
 		// clear off any overlay text we might have
@@ -1038,7 +1067,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// handle top bar
 		if(currentMode == EditType.DERIVED_SERIES || currentMode == EditType.MEASUREMENT_SERIES) {
 			cboTopChooser.setVisible(false);
-			btnChange.setVisible(false);
+			btnSelectEntity.setVisible(false);
 			topLabel.setText(I18n.getText("metadata.for")+ " " + currentMode.getTitle() + " " + sample.getMetaString(Metadata.TITLE));
 			topLabel.setLabelFor(null);
 		}
@@ -1071,15 +1100,15 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			topLabel.setText(I18n.getText("metadata.for")+ " " + currentMode.getTitle() + prefix);
 			topLabel.setLabelFor(cboTopChooser);
 			
-			btnChange.setVisible(true);
-			btnChange.setEnabled(true);
+			btnSelectEntity.setVisible(true);
+			btnSelectEntity.setEnabled(true);
 			cboTopChooser.setEnabled(false);				
 			
 			populateComboAndSelect(false);
 			
 			// if don't have this entity, enable the list by default
 			if(currentMode.getEntity(sample) == null)
-				btnChange.doClick();
+				btnSelectEntity.doClick();
 		}		
 		
 		// by default, disable editing except on series
@@ -1118,12 +1147,14 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	 * @param type
 	 * @return
 	 */
-	private AbstractButton addButton(final EditType type) {
+	private AbstractButton createButton(final EditType type) {
  		Action action = new AbstractAction(type.getTitle(), type.getIcon()) {
 			public void actionPerformed(ActionEvent e) {				
 				buttonAction(type);
 			}
 		};
+		
+
 		
 		JToggleButton button = new JToggleButton(action);
 		type.associateButton(button);
@@ -1141,12 +1172,12 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		buttonBar.setUI(new BlueishButtonBarUI());
 		
 		AbstractButton button;
-		ButtonGroup buttons = new ButtonGroup();
+		entityButtons = new ButtonGroup();
 
 		// special case for derived series
 		if(isDerived) {
-			button = addButton(EditType.DERIVED_SERIES);
-			buttons.add(button);
+			button = createButton(EditType.DERIVED_SERIES);
+			entityButtons.add(button);
 			buttonBar.add(button);
 			button.doClick();
 		}
@@ -1156,8 +1187,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				if(t == EditType.DERIVED_SERIES)
 					continue;
 			
-				button = addButton(t);
-				buttons.add(button);
+				button = createButton(t);
+				entityButtons.add(button);
 				buttonBar.add(button);
 
 				// start on measurement series
@@ -1453,5 +1484,24 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 			throw new IllegalStateException("Property changed with null mode??");
 
 		currentMode.propertyChanged();
+	}
+	
+
+	public void showPage(EditType type)
+	{
+		
+		for (Enumeration<AbstractButton> e = entityButtons.getElements() ; e.hasMoreElements() ;) 
+		{
+			JToggleButton btn = (JToggleButton) e.nextElement();
+			if(btn.getText().equals(type.getTitle()))
+			{
+				btn.setSelected(true);
+				buttonAction(type);
+				return;
+			}
+		}
+
+
+		
 	}
 }

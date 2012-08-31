@@ -1,7 +1,8 @@
 package org.tellervo.desktop.util;
 
-import java.applet.Applet;
-import java.applet.AudioClip;
+import java.io.File;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,123 +16,72 @@ import org.tridas.schema.TridasObject;
  */
 public class SoundUtil {
 	private final static Logger log = LoggerFactory.getLogger(SoundUtil.class);
-
-	/**
-	 * Play the specified AudioClip
-	 * 
-	 * @param beep
-	 */
-	public static void playAudioClip(AudioClip beep)
-	{
-		if(beep != null)
-		{
-			beep.play();
-		}
-	}
 	
     /**
      * Play a beep for when barcode reader has scanned a barcode
      */
-    public static void playBarcodeBeep(){
-    	AudioClip beep = getSoundFromResources("checkout.wav");
-		if(beep != null)
-			beep.play();
-
-    }
-    
-    /**
-     * Get a sound associated with a measurement
-     * 
-     * @return
-     */
-    public static AudioClip getMeasureSound()
-    {
-    	return getSoundFromResources("meas1.wav");
+    public static void playBarcodeBeep(){   	
+    	playSoundFileFromResources("barcodeScan.wav");
     }
     
     /**
      * Play a sound associated with a measurement
      */
     public static void playMeasureSound(){	
-    	SoundUtil.playAudioClip(getMeasureSound());
+    	playSoundFileFromResources("measureRing.wav");
     }
-    
-    /**
-     * Get the sound associated with the measurement of the 
-     * 10th ring in a sequence.
-     * 
-     * @return
-     */
-    public static AudioClip getMeasureDecadeSound()
-    {
-    	return getSoundFromResources("measdec.wav");
-    }
-    
+
     /**
      * Play the sound associated with the measurement of the 
      * 10th ring in a sequence.
      */
     public static void playMeasureDecadeSound(){
-    	SoundUtil.playAudioClip(getMeasureDecadeSound());
-    }
-    
-    /**
-     * Get the sound associated with a measurement error
-     * 
-     * @return
-     */
-    public static AudioClip getMeasureErrorSound()
-    {
-    	return getSoundFromResources("measerr.wav");
+    	playSoundFileFromResources("measureDecade.wav");
     }
     
     /**
      * Play the sound associated with a measurement error
      */
     public static void playMeasureErrorSound(){
-    	SoundUtil.playAudioClip(getMeasureErrorSound());
+    	playSoundFileFromResources("measureError.wav");
     }
-    
-    /**
-     * Get the sound associated with the measuring platform
-     * initializing
-     * 
-     * @return
-     */
-    public static AudioClip getMeasureInitSound()
-    {
-    	return getSoundFromResources("measinit.wav");
-    }
-    
+
     /**
      * Play the sound associated with the measuring platform
      * initializing
      */
-    public static void playMeasureInitSound()
-    {
-    	SoundUtil.playAudioClip(getMeasureInitSound());
-    }
-        
-    /**
-     * Get the sound for the specified filename from the Sound resources folder
-     * 
-     * @param str
-     * @return
-     */
-    private static AudioClip getSoundFromResources(String str)
-    {
-    	AudioClip beep;
-		try {	
-			// play this to indicate measuring is on...
-			beep = Applet.newAudioClip(TridasObject.class.getClassLoader().getResource("Sounds/"+str));
-			return beep;
-		} catch (Exception ae) { 
-			log.debug("Failed to get the requested sound file");
-			log.debug(ae.getMessage());
-		}
-		
-		return null;
+    public static void playMeasureInitSound(){
+    	playSoundFileFromResources("initPlatform.wav");
     }
     
-    	
+    /**
+     * Play a sound from the Sounds resources folder by name (including ext)
+     * 
+     * @param file
+     */
+    public static void playSoundFileFromResources(String file)
+    {
+    	URL f = TridasObject.class.getClassLoader().getResource("Sounds/"+file);
+    	try {
+			new ClipPlayer(new File(f.toURI()), 1);
+		} catch (Exception e) {
+			log.error("unable to play sound file : "+file);
+			e.printStackTrace();
+		}
+    }
+    
+    /**
+     * Play a sound file
+     * 
+     * @param file
+     */
+    public static void playSoundFile(File file)
+    {
+    	try {
+			new ClipPlayer(file, 1);
+		} catch (Exception e) {
+			log.error("unable to play sound file : "+file);
+			e.printStackTrace();
+		}
+    }
 }

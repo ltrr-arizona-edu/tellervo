@@ -35,6 +35,7 @@ import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.support.XMLDateUtils;
+import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -385,6 +386,8 @@ public class EditorFactory {
 		ed.setDefaultFocus();
 		
 		container.setCursor(Cursor.getDefaultCursor());
+		
+		ed.showPage(EditType.OBJECT);
 	}
 	
 	
