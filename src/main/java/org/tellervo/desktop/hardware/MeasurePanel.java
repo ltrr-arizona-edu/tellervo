@@ -20,7 +20,6 @@
  ******************************************************************************/
 package org.tellervo.desktop.hardware;
 
-import java.applet.AudioClip;
 import java.awt.AWTEvent;
 import java.awt.Color;
 import java.awt.Cursor;
@@ -69,11 +68,6 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 
 	private static final long serialVersionUID = 1L;
 	private final static Logger log = LoggerFactory.getLogger(MeasurePanel.class);
-
-	/* audioclips to play... */
-	protected Clip measure_one;
-	protected Clip measure_dec;
-	protected Clip measure_error;
 	
 	protected JButton btnReset;
 	protected JButton btnRecord;
@@ -440,8 +434,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		if(value.intValue() == 0) 
 		{
 			// Value was zero so must be an error
-			if(measure_error != null)
-				SoundUtil.playMeasureErrorSound();
+			SoundUtil.playMeasureErrorSound();
 			
 			this.txtLastValue.setText("Err: 0 "+micron());
 
@@ -450,8 +443,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		else if (value.intValue() >= 50000)
 		{
 			// Value was over 5cm so warn user
-			if(measure_error != null)
-				SoundUtil.playMeasureErrorSound();
+			SoundUtil.playMeasureErrorSound();
 			
 			Alert.message("Warning", "This measurement was over 5cm so it will be disregarded!");
 			
@@ -463,8 +455,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		else if (value.intValue() < 0)
 		{
 			// Value was negative so warn user
-			if(measure_error != null)
-				SoundUtil.playMeasureErrorSound();
+			SoundUtil.playMeasureErrorSound();
 			
 			Alert.message("Warning", "This measurement was negative so it will be disregarded!");
 			

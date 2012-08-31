@@ -30,7 +30,7 @@ import javax.swing.ListCellRenderer;
  * @author Lucas Madar
  */
 
-public interface ComboBoxItemRenderer extends ListCellRenderer {
+public interface ComboBoxItemRenderer {
 	/**
 	 * Change the value of the component displayed
 	 * 

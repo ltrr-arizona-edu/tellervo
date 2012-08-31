@@ -74,12 +74,12 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 			y = editor.measured(value.intValue());
 		}
 		
-		if(y.column() == 0) {
-			if(measure_dec != null)
-				SoundUtil.playMeasureDecadeSound();
-		} else {
-			if(measure_one != null)
-				SoundUtil.playMeasureDecadeSound();				
+		if(y.column() == 0) 
+		{
+			SoundUtil.playMeasureDecadeSound();
+		} else 
+		{
+			SoundUtil.playMeasureSound();				
 		}
 		
 		setLastMeasurementIndicators(value);

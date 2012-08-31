@@ -78,7 +78,7 @@ public class SoundUtil {
     public static void playSoundFile(File file)
     {
     	try {
-			new ClipPlayer(file, 1);
+			new ClipPlayer(file, 0);
 		} catch (Exception e) {
 			log.error("unable to play sound file : "+file);
 			e.printStackTrace();

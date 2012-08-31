@@ -111,9 +111,9 @@ implements LineListener
 	/*
 	 *	The clip will be played nLoopCount + 1 times.
 	 */
-	public ClipPlayer(File clipFile2, int nLoopCount)
+	public ClipPlayer(File clipFile, int nLoopCount)
 	{
-		File clipFile = new File("/home/pwb48/dev/java5/tellervo-desktop/target/classes/Sounds/measinit.wav");
+	
 		AudioInputStream	audioInputStream = null;
 		try
 		{
