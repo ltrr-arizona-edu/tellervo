@@ -37,7 +37,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
-import javax.sound.sampled.Clip;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -46,7 +45,6 @@ import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
-import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
 
 import net.miginfocom.swing.MigLayout;
@@ -58,10 +56,13 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.util.FontUtil;
 import org.tellervo.desktop.util.MultiMonitorRobot;
 import org.tellervo.desktop.util.SoundUtil;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasUnit;
+import javax.swing.border.TitledBorder;
+import javax.swing.border.EtchedBorder;
 
 
 public abstract class MeasurePanel extends JPanel implements MeasurementReceiver, AWTEventListener{
@@ -82,10 +83,9 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	private JLabel txtCurrentPosition;
 	
 	protected AbstractMeasuringDevice dev;
-	private JPanel panel = new JPanel();
 	private Color bgcolor = null;
 	protected JToggleButton btnMouseTrigger;
-	private JTextArea txtMouseTriggerInfo;
+	private JTextArea txtInfoMessage;
 
 	private Point mousePoint;
 	
@@ -95,6 +95,12 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	private JLabel lblInfoIcon;
 	protected String measureMessage = "";
 	private JScrollPane scrollPane;
+	
+	private JPanel panelButtons;
+	private JPanel panelLastPosition;
+	private JPanel panelCurrentPosition;
+	private JPanel panelLastValue;
+	private Color lcdBlueColor = new Color(5, 116, 255);
 	
 	public MeasurePanel(final AbstractMeasuringDevice device, Color bgcolor, Window parent)
 	{
@@ -115,99 +121,16 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	
 	private void init(final AbstractMeasuringDevice device)
 	{
-		setBorder(null);
+		setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Measuring Controls", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		this.setBackground(bgcolor);	
 		dev = device;
 		
-		setLayout(new MigLayout("insets 0", "[150px,grow][150,grow][150.00px,grow]", "[][][14.00][80px:80px,grow,fill]"));
+		setLayout(new MigLayout("insets 0", "[160px:160px:160px][160px:160px:160px][grow][250:250:250px]", "[80px:80px,grow,fill][55.00px:55.00px:55.00px][55.00]"));
 				
 		SoundUtil.playMeasureInitSound();
-
-		
-		panel.setBackground(bgcolor);
-		add(panel, "cell 0 0 3 1,grow");
-		
-		btnMouseTrigger = new JToggleButton(I18n.getText("measuring.mousetrigger.enable"));
-		panel.add(btnMouseTrigger);
-		btnMouseTrigger.setFocusable(false);
-		btnMouseTrigger.setIcon(Builder.getIcon("mouse.png", 22));
-		btnMouseTrigger.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				//btnMouseTrigger.setSelected(btnMouseTrigger.isSelected());
-				toggleMouseTrigger(btnMouseTrigger.isSelected());
-				
-			}
-		});
-		
-		btnQuit = new JButton(I18n.getText("menus.edit.stop_measuring"));
-		btnQuit.setIcon(Builder.getIcon("stop.png", 22));
-		panel.add(btnQuit);
-		
-				
-				btnReset = new JButton("Zero");
-				btnReset.setIcon(Builder.getIcon("zero.png", 22));
-				panel.add(btnReset);
-				
-				btnRecord = new JButton("Record");
-				btnRecord.setIcon(Builder.getIcon("record.png", 22));
-				panel.add(btnRecord);
-				btnRecord.addActionListener(new ActionListener() {
-					
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						dev.requestMeasurement();	
-					}
-				});
-				btnReset.addActionListener(new ActionListener() {
-					
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						dev.zeroMeasurement();
-						
-					}
-				});
-		
-		txtLastPosition = new JLabel();
-		txtLastPosition.setFont(new Font("Synchro LET", Font.BOLD, 20));
-		txtLastPosition.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtLastPosition.setText("-");
-		txtLastPosition.setBackground(Color.WHITE);
-		txtLastPosition.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		add(txtLastPosition, "cell 0 1,growx");
-		
-		txtLastValue = new JLabel();	
-		txtLastValue.setFont(new Font("Synchro LET", Font.BOLD, 20));
-		txtLastValue.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtLastValue.setText("-");
-		txtLastValue.setBackground(Color.WHITE);
-		txtLastValue.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		add(txtLastValue, "cell 1 1,growx");
-		
-		txtCurrentPosition = new JLabel();
-		txtCurrentPosition.setFont(new Font("Synchro LET", Font.BOLD, 20));
-		txtCurrentPosition.setHorizontalAlignment(SwingConstants.RIGHT);
-		txtCurrentPosition.setText("-");
-		txtCurrentPosition.setBackground(Color.WHITE);
-		txtCurrentPosition.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		add(txtCurrentPosition, "cell 2 1,growx");
-		
-		
-		lblLastPosition = new JLabel("Previous position");
-		lblLastPosition.setFont(new Font("Dialog", Font.BOLD, 8));
-		add(lblLastPosition, "cell 0 2,alignx right,aligny center");
-		
-		lblLastValue = new JLabel("Previous measurement");
-		lblLastValue.setFont(new Font("Dialog", Font.BOLD, 8));
-		add(lblLastValue, "cell 1 2,alignx right");
-		
-		lblCurrentPosition = new JLabel("Current position:");
-		lblCurrentPosition.setFont(new Font("Dialog", Font.BOLD, 8));
-		add(lblCurrentPosition, "cell 2 2,alignx right");
 		
 		panelInfo = new JPanel();
-		add(panelInfo, "cell 0 3 3 1,growx,wmin 10");
+		add(panelInfo, "cell 0 0 4 1,growx,wmin 10");
 		panelInfo.setLayout(new MigLayout("", "[30px:30px:30px,center][126.00px,grow,fill]", "[grow]"));
 		
 		lblInfoIcon = new JLabel("");
@@ -218,18 +141,128 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		panelInfo.add(scrollPane, "cell 1 0,grow");
 		
-		txtMouseTriggerInfo = new JTextArea();
-		scrollPane.setViewportView(txtMouseTriggerInfo);
-		txtMouseTriggerInfo.setBorder(new LineBorder(Color.GRAY));
-		txtMouseTriggerInfo.setBackground(Color.WHITE);
-		txtMouseTriggerInfo.setWrapStyleWord(true);
-		txtMouseTriggerInfo.setEditable(false);
-		txtMouseTriggerInfo.setLineWrap(true);
-		txtMouseTriggerInfo.setText(I18n.getText("menus.edit.measuremode.mousetriggerinfo.off"));
+		txtInfoMessage = new JTextArea();
+		scrollPane.setViewportView(txtInfoMessage);
+		txtInfoMessage.setBorder(new LineBorder(Color.GRAY));
+		txtInfoMessage.setBackground(Color.WHITE);
+		txtInfoMessage.setWrapStyleWord(true);
+		txtInfoMessage.setEditable(false);
+		txtInfoMessage.setLineWrap(true);
+		
 		
 		
 		long eventMask = AWTEvent.MOUSE_EVENT_MASK + AWTEvent.KEY_EVENT_MASK + AWTEvent.MOUSE_MOTION_EVENT_MASK;
 		Toolkit.getDefaultToolkit().addAWTEventListener(this, eventMask);		
+				
+				panelLastPosition = new JPanel();
+				panelLastPosition.setBorder(null);
+				add(panelLastPosition, "cell 0 1,grow");
+				panelLastPosition.setBackground(Color.BLACK);
+				panelLastPosition.setLayout(new MigLayout("novisualpadding", "[19px,grow,fill]", "[29.00px,grow,fill][]"));
+				
+				txtLastPosition = new JLabel();
+				panelLastPosition.add(txtLastPosition, "cell 0 0,alignx left,aligny top");
+				txtLastPosition.setFont(FontUtil.getFontFromResources("Digitaldream.ttf", 25, Font.PLAIN));
+				txtLastPosition.setForeground(lcdBlueColor);
+				txtLastPosition.setHorizontalAlignment(SwingConstants.RIGHT);
+				txtLastPosition.setText("-");
+				txtLastPosition.setBackground(Color.WHITE);
+				txtLastPosition.setBorder(null);
+				
+				
+				lblLastPosition = new JLabel("Previous cumulative position ("+micron()+")");
+				lblLastPosition.setForeground(Color.LIGHT_GRAY);
+				panelLastPosition.add(lblLastPosition, "cell 0 1");
+				lblLastPosition.setFont(new Font("Dialog", Font.PLAIN, 8));
+				
+				panelLastValue = new JPanel();
+				panelLastValue.setBackground(Color.BLACK);
+				add(panelLastValue, "cell 1 1,grow");
+				panelLastValue.setLayout(new MigLayout("", "[19px,grow,fill]", "[24px,grow,fill][]"));
+				
+				txtLastValue = new JLabel();
+				panelLastValue.add(txtLastValue, "cell 0 0,alignx left,aligny top");
+				
+				
+						
+						txtLastValue.setFont(FontUtil.getFontFromResources("Digitaldream.ttf", 25, Font.PLAIN));
+						txtLastValue.setForeground(lcdBlueColor);
+						txtLastValue.setHorizontalAlignment(SwingConstants.RIGHT);
+						txtLastValue.setText("-");
+						txtLastValue.setBackground(Color.WHITE);
+						txtLastValue.setBorder(null);
+						
+						lblLastValue = new JLabel("Previous measurement ("+micron()+")");
+						lblLastValue.setForeground(Color.LIGHT_GRAY);
+						panelLastValue.add(lblLastValue, "cell 0 1");
+						lblLastValue.setFont(new Font("Dialog", Font.PLAIN, 8));
+				
+				panelButtons = new JPanel();
+				add(panelButtons, "cell 3 1 1 2,grow");
+				panelButtons.setLayout(new MigLayout("", "[105.00,grow,fill][grow,fill]", "[][][65.00,grow,fill]"));
+				
+				btnMouseTrigger = new JToggleButton(I18n.getText("measuring.mousetrigger.enable"));
+				panelButtons.add(btnMouseTrigger, "cell 0 0 2 1,growx");
+				btnMouseTrigger.setFocusable(false);
+				btnMouseTrigger.setIcon(Builder.getIcon("mouse.png", 22));
+				
+				btnQuit = new JButton(I18n.getText("menus.edit.stop_measuring"));
+				panelButtons.add(btnQuit, "cell 0 1 2 1,growx");
+				btnQuit.setIcon(Builder.getIcon("stop.png", 22));
+				
+						
+						btnReset = new JButton("Zero");
+						panelButtons.add(btnReset, "cell 0 2");
+						btnReset.setIcon(Builder.getIcon("zero.png", 22));
+						
+						btnRecord = new JButton("Record");
+						panelButtons.add(btnRecord, "cell 1 2");
+						btnRecord.setIcon(Builder.getIcon("record.png", 22));
+						btnRecord.addActionListener(new ActionListener() {
+							
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								dev.requestMeasurement();	
+							}
+						});
+						btnReset.addActionListener(new ActionListener() {
+							
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								dev.zeroMeasurement();
+								setLastPosition(0);
+								
+							}
+						});
+						btnMouseTrigger.addActionListener(new ActionListener(){
+
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								//btnMouseTrigger.setSelected(btnMouseTrigger.isSelected());
+								toggleMouseTrigger(btnMouseTrigger.isSelected());
+								
+							}
+						});
+				
+				panelCurrentPosition = new JPanel();
+				panelCurrentPosition.setBackground(Color.BLACK);
+				add(panelCurrentPosition, "cell 0 2 2 1,grow");
+				panelCurrentPosition.setLayout(new MigLayout("", "[150][150.00px,grow]", "[58.00,grow,fill][]"));
+				
+				txtCurrentPosition = new JLabel();
+				txtCurrentPosition.setText("-");
+				panelCurrentPosition.add(txtCurrentPosition, "cell 1 0 1 2,growx");
+				txtCurrentPosition.setFont(FontUtil.getFontFromResources("Digitaldream.ttf", 40, Font.PLAIN));
+				txtCurrentPosition.setForeground(lcdBlueColor);
+				txtCurrentPosition.setHorizontalAlignment(SwingConstants.RIGHT);
+				txtCurrentPosition.setBackground(Color.WHITE);
+				txtCurrentPosition.setBorder(null);
+				
+				lblCurrentPosition = new JLabel("Live position ("+micron()+")");
+				lblCurrentPosition.setForeground(Color.LIGHT_GRAY);
+				panelCurrentPosition.add(lblCurrentPosition, "cell 0 1");
+				lblCurrentPosition.setFont(new Font("Dialog", Font.PLAIN, 8));
+				setCurrentPosition(null);
 
 		// Set the device to zero to start with	
 		if(dev!=null)
@@ -256,20 +289,26 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		// Hide any displays that aren't supported
 		setCurrentPositionGuiVisible(device.isCurrentValueCapable());
 		setLastPositionGuiVisible(device.getMeasureCumulatively());
-				
+		
+		this.setMessageText("Ready to measure...");	
 	}
 	
 	protected void updateInfoText()
 	{
-		if(btnMouseTrigger.isSelected())
+		try{
+			if(btnMouseTrigger.isSelected())
+			{
+				btnMouseTrigger.setText(I18n.getText("measuring.mousetrigger.ison"));
+				txtInfoMessage.setText(I18n.getText("menus.edit.measuremode.mousetriggerinfo.on")+"\n\n"+measureMessage);
+			}
+			else
+			{
+				btnMouseTrigger.setText(I18n.getText("measuring.mousetrigger.enable"));
+				txtInfoMessage.setText(measureMessage);
+			}
+		} catch (Exception e)
 		{
-			btnMouseTrigger.setText(I18n.getText("measuring.mousetrigger.ison"));
-			txtMouseTriggerInfo.setText(I18n.getText("menus.edit.measuremode.mousetriggerinfo.on")+"\n\n"+measureMessage);
-		}
-		else
-		{
-			btnMouseTrigger.setText(I18n.getText("measuring.mousetrigger.enable"));
-			txtMouseTriggerInfo.setText(I18n.getText("menus.edit.measuremode.mousetriggerinfo.off")+"\n\n"+measureMessage);
+			
 		}
 	}
 	
@@ -315,8 +354,12 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	 */
 	public void setCurrentPositionGuiVisible(Boolean b)
 	{
-		txtCurrentPosition.setVisible(b);
-		lblCurrentPosition.setVisible(b);
+		txtCurrentPosition.setVisible(true);
+		lblCurrentPosition.setVisible(true);
+		if(b==false)
+		{
+			setCurrentPosition(null);
+		}
 	}
 	
 	/**
@@ -326,8 +369,13 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	 */
 	public void setLastPositionGuiVisible(Boolean b)
 	{
-		txtLastPosition.setVisible(b);
-		lblLastPosition.setVisible(b);
+		//txtLastPosition.setVisible(b);
+		//lblLastPosition.setVisible(b);
+		if(b==false)
+		{
+			setLastPosition(null);
+		}
+		
 	}
 	
 	/**
@@ -337,8 +385,12 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	 */
 	public void setLastValueGuiVisible(Boolean b)
 	{
-		txtLastValue.setVisible(b);
-		lblLastValue.setVisible(b);	
+		//txtLastValue.setVisible(b);
+		//lblLastValue.setVisible(b);
+		if(b==false)
+		{
+			setLastValue(null);
+		}
 	}
 		
 	/**
@@ -348,21 +400,16 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	 */
 	public void setCurrentPosition(Integer i)
 	{
+		
 		if(i==null)
 		{
-			txtCurrentPosition.setText("-");
-		}
-		else if (i.equals(0))
-		{
-			txtCurrentPosition.setText("Err: 0 "+micron());
-		}
-		else if (i < 0)
-		{
-			txtCurrentPosition.setText("Err: negative: "+i+" "+micron());
+			log.debug("Setting current position to: N/A");
+			txtCurrentPosition.setText("N/A");
 		}
 		else
 		{
-			txtCurrentPosition.setText(i+" "+micron());
+			log.debug("Setting current position to: "+i);
+			txtCurrentPosition.setText(i+"");
 		}
 	}
 	
@@ -373,21 +420,18 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	 */
 	public void setLastPosition(Integer i)
 	{
+		
+		
 		if(i==null)
 		{
-			txtLastPosition.setText("-");
-		}
-		else if (i.equals(0))
-		{
-			txtLastPosition.setText("Err: 0 "+micron());
-		}
-		else if (i < 0)
-		{
-			txtLastPosition.setText("Err: negative: "+i+" "+micron());
+			txtLastPosition.setText("N/A");
 		}
 		else
 		{
-			txtLastPosition.setText(i+" "+micron());
+			if(this.dev.getMeasureCumulatively())
+			{
+				txtLastPosition.setText(i+"");
+			}
 		}
 	}
 	
@@ -400,19 +444,11 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	{
 		if(i==null)
 		{
-			txtLastValue.setText("-");
-		}
-		else if (i.equals(0))
-		{
-			txtLastValue.setText("Err: 0 "+micron());
-		}
-		else if (i < 0)
-		{
-			txtLastValue.setText("Err: negative: "+i+" "+micron());
+			txtLastValue.setText("N/A");
 		}
 		else
 		{
-			txtLastValue.setText(i+" "+micron());
+			txtLastValue.setText(i+"");
 		}
 	}
 	
@@ -435,19 +471,19 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		{
 			// Value was zero so must be an error
 			SoundUtil.playMeasureErrorSound();
-			
-			this.txtLastValue.setText("Err: 0 "+micron());
+			Alert.message("Warning", "This measurement was 0cm so it will be disregarded.\nRight click on cell to insert missing ring.");
+			this.txtLastValue.setText("Error");
 
 			return false;
 		}
-		else if (value.intValue() >= 50000)
+		else if (value.intValue() >= 5000)
 		{
 			// Value was over 5cm so warn user
 			SoundUtil.playMeasureErrorSound();
 			
-			Alert.message("Warning", "This measurement was over 5cm so it will be disregarded!");
+			Alert.message("Warning", "This measurement was over 5cm so it will be disregarded");
 			
-			lblLastPosition.setText("Error: too big: " + value +" "+micron());
+			this.txtLastValue.setText("Error");
 
 			return false;
 			
@@ -457,9 +493,9 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 			// Value was negative so warn user
 			SoundUtil.playMeasureErrorSound();
 			
-			Alert.message("Warning", "This measurement was negative so it will be disregarded!");
+			Alert.message("Warning", "This measurement was negative so it will be disregarded");
 			
-			lblLastPosition.setText("Error: negative: " + value +" " + micron());
+			this.txtLastValue.setText("Error");
 
 			return false;
 			
@@ -488,31 +524,30 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 			//log.error("unable to determine preferred units");	
 		}
 		
-		if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
+		/*if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
 		{
-			txtCurrentPosition.setText(String.valueOf(value)+" "+micron());	
+			setCurrentPosition(value);	
 		}
 		else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 		{
-			txtCurrentPosition.setText(String.valueOf(value/10));	
+			setCurrentPosition(value/10);	
 		}
 		else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
 		{
-			txtCurrentPosition.setText(String.valueOf(value/20));
+			setCurrentPosition(value/20);	
 		}
 		else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
 		{
-			txtCurrentPosition.setText(String.valueOf(value/50));
+			setCurrentPosition(value/50);	
 		}
 		else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
 		{
-			txtCurrentPosition.setText(String.valueOf(value/100));
+			setCurrentPosition(value/100);	
 		}
 		else
-		{
-			txtCurrentPosition.setText(String.valueOf(value));	
-
-		}
+		{*/
+			setCurrentPosition(value);	
+		//}
 	}
 	
 	/**

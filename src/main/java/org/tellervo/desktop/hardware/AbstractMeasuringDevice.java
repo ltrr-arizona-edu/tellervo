@@ -32,6 +32,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.util.SoundUtil;
 
 
 /**
@@ -616,14 +617,16 @@ public abstract class AbstractMeasuringDevice
 		
 		if(receiver==null)
 		{
-			log.error("Measurement receiver is null");
+			log.debug("Measurement receiver is null");
 			return;
 		}
 		
 		if(sse.getType() == MeasuringSampleIOEvent.BAD_SAMPLE_EVENT) {
-			receiver.receiverUpdateStatus("Error reading the previous sample. "+sse.getValue());
+			receiver.receiverUpdateStatus("Error reading value from device. "+sse.getValue());
+			SoundUtil.playMeasureErrorSound();
 		}
 		if(sse.getType() == MeasuringSampleIOEvent.ERROR) {
+			SoundUtil.playMeasureErrorSound();
 			try{
 			receiver.receiverUpdateStatus(sse.getValue().toString());
 			} catch (NullPointerException e)
@@ -635,7 +638,7 @@ public abstract class AbstractMeasuringDevice
 			receiver.receiverUpdateStatus("Initializing reader (try "+ sse.getValue() +")");
 		}
 		else if(sse.getType() == MeasuringSampleIOEvent.INITIALIZED_EVENT) {
-			receiver.receiverUpdateStatus("Initialized; ready to read measurements.");
+			receiver.receiverUpdateStatus("Initialized; ready to read sample.");
 		}
 		else if(sse.getType() == MeasuringSampleIOEvent.NEW_SAMPLE_EVENT) {
  			Integer value = (Integer) sse.getValue();

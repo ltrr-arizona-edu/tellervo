@@ -1,11 +1,15 @@
 package org.tellervo.desktop.util;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tridas.schema.TridasObject;
 
 /**
@@ -16,6 +20,7 @@ import org.tridas.schema.TridasObject;
  */
 public class SoundUtil {
 	private final static Logger log = LoggerFactory.getLogger(SoundUtil.class);
+	private final static ClassLoader cl = org.tellervo.desktop.ui.Builder.class.getClassLoader();
 	
     /**
      * Play a beep for when barcode reader has scanned a barcode
@@ -61,9 +66,12 @@ public class SoundUtil {
      */
     public static void playSoundFileFromResources(String file)
     {
-    	URL f = TridasObject.class.getClassLoader().getResource("Sounds/"+file);
+    	if(App.prefs.getBooleanPref(PrefKey.SOUND_ENABLED, true)==false) return;
+    	
     	try {
-			new ClipPlayer(new File(f.toURI()), 1);
+    		InputStream myStream = new BufferedInputStream(cl.getResourceAsStream("Sounds/"+file));
+    		new ClipPlayer(myStream).start();
+    		 
 		} catch (Exception e) {
 			log.error("unable to play sound file : "+file);
 			e.printStackTrace();
@@ -77,8 +85,10 @@ public class SoundUtil {
      */
     public static void playSoundFile(File file)
     {
+    	if(App.prefs.getBooleanPref(PrefKey.SOUND_ENABLED, true)==false) return;
+    	
     	try {
-			new ClipPlayer(file, 0);
+			new ClipPlayer(file).start();
 		} catch (Exception e) {
 			log.error("unable to play sound file : "+file);
 			e.printStackTrace();

@@ -263,7 +263,7 @@ public class SMCODendro1 extends GenericASCIIDevice {
 		    		setPreviousPosition(cumValue);
 		    	}
 		    	
-		    	log.debug("Processed int value = "+intValue);
+		    	//log.debug("Processed int value = "+intValue);
 
 		    	if(intValue>0)
 		    	{	    	

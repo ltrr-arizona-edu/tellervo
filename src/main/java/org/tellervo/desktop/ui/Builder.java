@@ -272,11 +272,14 @@ public class Builder {
 		java.net.URL url = cl.getResource(getIconURL(name, packagename, size));
 		
 		if (url != null)
+		{
 			return new ImageIcon(url);
+		}
 		else
+		{
 			log.warn("Unabled to find icon "+name+".  Replacing with the 'missing icon' icon.");
 			return getMissingIcon(size);
-		
+		}
 		
 	}	
 	

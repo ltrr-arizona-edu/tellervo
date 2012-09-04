@@ -172,7 +172,9 @@ public class Prefs extends AbstractSubsystem {
 		FOLDER_DATA("tellervo.dir.data"),
 		FOLDER_LAST_READ("tellervo.dir.lastimport"),
 		FOLDER_LAST_SAVE("tellervo.dir.lastsave"),
-		FOLDER_LAST_GPS("tellervo.dir.lastgps");
+		FOLDER_LAST_GPS("tellervo.dir.lastgps"),
+		
+		SOUND_ENABLED("tellervo.sound.enabled");
 		
 		
 		

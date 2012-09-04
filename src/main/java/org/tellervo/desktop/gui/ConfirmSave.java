@@ -39,34 +39,17 @@
 
 package org.tellervo.desktop.gui;
 
-// import org.tellervo.desktop.util.JLinedLabel; -- FUTURE
-
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.event.ActionEvent;
+
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.BorderFactory;
-import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 
-import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.util.OKCancel;
+import org.tellervo.desktop.ui.I18n;
+
 
 @SuppressWarnings("serial")
 public class ConfirmSave extends JDialog {
-    // don't instantiate me
-    private ConfirmSave() { }
-
-    // todo:
-    // - move to gui.util?
-    // - (more) i18n
-    // - frame as param?
-    // - javadoc
 
     public static void showDialog(SaveableDocument doc)
     {
@@ -81,87 +64,38 @@ public class ConfirmSave extends JDialog {
     }
     
     private static void showDialog(SaveableDocument doc, Component parent) {
-    	
-	// construct a prompt
-	String prompt1 = "Do you want to save the changes you made in";
-	String prompt2 = "the document \"" + doc.getDocumentTitle() + "\"?"; // ack!
-	// String prompt3 = "Your changes will be lost if you don't save them.";  (smaller?)
- // REFACTOR: create a multi-line jlabel, and make this a messageformat
+    	    	
+		Object[] options = {I18n.getText("general.save"),
+				I18n.getText("general.discard"),
+                I18n.getText("general.cancel")};
 
-	// dialog
-	final JDialog dlg = new JDialog((JFrame) doc, true);
-	dlg.setTitle("Save Changes?");
-	final JFrame glue = (JFrame) doc;
-
-	// center it in its frame -- doesn't quite work (?)
-	Dimension docsize = ((JFrame) doc).getSize();
-	Dimension size = dlg.getSize(); // dialog size
-	dlg.setLocationRelativeTo((JFrame) doc); // this is the default, right?
-	dlg.setLocation(docsize.width/2 - size.width/2, docsize.height/2 - size.height/2);// REFACTOR: move this code to Center.java!
-
-	// button: dont save
-	JButton dontSave = Builder.makeButton("general.dont_save"); // dispose
-	dontSave.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // close me
-		    dlg.dispose();
-
-		    // close document
-		    glue.dispose();
+		int n = JOptionPane.showOptionDialog(parent, 
+			"The series \""+ doc.getDocumentTitle() + "\" has been modified.\nDo you want to save your changes?",
+			"Save changes?",
+			JOptionPane.YES_NO_CANCEL_OPTION,
+			JOptionPane.QUESTION_MESSAGE,
+			null,
+			options,
+			options[0]);
+		
+		if(n==JOptionPane.CANCEL_OPTION)
+		{
+			return;
 		}
-	    });
-
-	// button: cancel
-	JButton cancel = Builder.makeButton("general.cancel");
-	cancel.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // just close me
-		    dlg.dispose();
+		
+		if(n==JOptionPane.NO_OPTION)
+		{
+			((JFrame) doc).dispose();
 		}
-	    });
-
-	// button: save
-	JButton save = Builder.makeButton("general.saveChanges"); // save, dispose
-	save.addActionListener(new AbstractAction() {
-		public void actionPerformed(ActionEvent e) {
-		    // close me
-		    dlg.dispose();
-
+		
+		if(n==JOptionPane.YES_OPTION)
+		{
 		    // save, then close document
-		    ((SaveableDocument) glue).save();
+		    doc.save();
 		    
 		    // only close the dialog if they actually went through with the save
-		    if(((SaveableDocument) glue).isSaved())
-		    	glue.dispose();
+		    if(doc.isSaved())  	((JFrame) doc).dispose();
 		}
-	    });
-
-        // text chunk
-	JPanel text = new JPanel();
-        text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
-	// text.add(new JLinedLabel(prompt1 + "\n" + prompt2)); // doesn't work yet: jlinedlabel centers everything
-	text.add(new JLabel(prompt1));
-	text.add(new JLabel(prompt2));
-        text.add(Box.createVerticalStrut(10));
-	// REFACTOR: just say text = Layout.boxLayoutY(prompt1, prompt2, Box.createV(10))
-
-        // layout/buttons: left-to-right
-	JPanel buttons = Layout.buttonLayout(dontSave, null, cancel, save);
-
-        // layout: box (top-to-bottom)
-	JPanel cont = Layout.borderLayout(null,
-					  null, text, null,
-					  buttons);
-        cont.setBorder(BorderFactory.createEmptyBorder(15, 24, 20, 24)); // FIXME: too big!
-        dlg.setContentPane(cont);
-
-        // ret/esc
-        OKCancel.addKeyboardDefaults(save);
-
-        // pack, disable sizing, show
-        dlg.pack();
-        dlg.setResizable(false);
-        dlg.setLocationRelativeTo(parent);
-        dlg.setVisible(true);
     }
+    	
 }

@@ -68,7 +68,7 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 				
 		super(I18n.getText("preferences.mapping"), 
 				"map.png", 
-				"Manage the Web Mapping Services available within Corina",
+				"Manage the Web Mapping Services available within Tellervo",
 				parent);
 		
 		

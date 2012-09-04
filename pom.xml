@@ -359,6 +359,7 @@
 		        <excludes>
 		          <exclude>**/*.xml</exclude>
 		          <exclude>**/*.wav</exclude>
+		          <exclude>**/*.ttf</exclude>
 		        </excludes>
 		      </resource>
 		      <resource>
@@ -371,6 +372,7 @@
 		        <includes>
 		          <include>**/log4j.xml</include>
 		          <include>**/*.wav</include>
+		          <include>**/*.ttf</include>
 		        </includes>
 		      </resource>
 		</resources>

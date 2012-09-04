@@ -47,6 +47,7 @@ import org.tellervo.desktop.prefs.panels.AppearancePrefsPanel;
 import org.tellervo.desktop.prefs.panels.HardwarePrefsPanel;
 import org.tellervo.desktop.prefs.panels.MappingPrefsPanel;
 import org.tellervo.desktop.prefs.panels.NetworkPrefsPanel;
+import org.tellervo.desktop.prefs.panels.SoundPrefsPanel;
 import org.tellervo.desktop.prefs.panels.StatsPrefsPanel;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -86,6 +87,7 @@ public class PreferencesDialog extends JDialog {
 		registerPreferencesPage(new StatsPrefsPanel(this));
 		registerPreferencesPage(new AppearancePrefsPanel(this));
 		registerPreferencesPage(new MappingPrefsPanel(this));
+		registerPreferencesPage(new SoundPrefsPanel(this));
 
 		
 		setIconImage(Builder.getApplicationIcon());
@@ -229,7 +231,7 @@ public class PreferencesDialog extends JDialog {
 		pack();
 
 		setLocationRelativeTo(null); 
-		setSize(new Dimension(769, 567));
+		setSize(new Dimension(769, 620));
 	}
 	
 	private void hideAllPages()
