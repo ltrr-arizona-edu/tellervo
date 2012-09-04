@@ -2,6 +2,7 @@ package org.tellervo.desktop.util;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -26,14 +27,32 @@ public class SoundUtil {
      * Play a beep for when barcode reader has scanned a barcode
      */
     public static void playBarcodeBeep(){   	
-    	playSoundFileFromResources("barcodeScan.wav");
+    	
+    	if(App.prefs.getPref(PrefKey.SOUND_BARCODE_FILE, null) == null || App.prefs.getBooleanPref(PrefKey.SOUND_USE_SYSTEM_DEFAULTS, false))
+    	{
+    		playSoundFileFromResources("barcodeScan.wav");
+    	}
+    	else
+    	{
+    		playSoundFile(new File(App.prefs.getPref(PrefKey.SOUND_BARCODE_FILE, null)));
+    	}
+
     }
     
     /**
      * Play a sound associated with a measurement
      */
     public static void playMeasureSound(){	
-    	playSoundFileFromResources("measureRing.wav");
+    	
+    	if(App.prefs.getPref(PrefKey.SOUND_MEASURE_RING_FILE, null) == null || App.prefs.getBooleanPref(PrefKey.SOUND_USE_SYSTEM_DEFAULTS, false))
+    	{
+    		playSoundFileFromResources("measureRing.wav");
+    	}
+    	else
+    	{
+    		playSoundFile(new File(App.prefs.getPref(PrefKey.SOUND_MEASURE_RING_FILE, null)));
+    	}
+
     }
 
     /**
@@ -41,14 +60,31 @@ public class SoundUtil {
      * 10th ring in a sequence.
      */
     public static void playMeasureDecadeSound(){
-    	playSoundFileFromResources("measureDecade.wav");
+    	
+    	if(App.prefs.getPref(PrefKey.SOUND_MEASURE_DECADE_FILE, null) == null || App.prefs.getBooleanPref(PrefKey.SOUND_USE_SYSTEM_DEFAULTS, false))
+    	{
+    		playSoundFileFromResources("measureDecade.wav");
+    	}
+    	else
+    	{
+    		playSoundFile(new File(App.prefs.getPref(PrefKey.SOUND_MEASURE_DECADE_FILE, null)));
+    	}
+
     }
     
     /**
      * Play the sound associated with a measurement error
      */
     public static void playMeasureErrorSound(){
-    	playSoundFileFromResources("measureError.wav");
+    	
+    	if(App.prefs.getPref(PrefKey.SOUND_MEASURE_ERROR_FILE, null) == null || App.prefs.getBooleanPref(PrefKey.SOUND_USE_SYSTEM_DEFAULTS, false))
+    	{
+    		playSoundFileFromResources("measureError.wav");
+    	}
+    	else
+    	{
+    		playSoundFile(new File(App.prefs.getPref(PrefKey.SOUND_MEASURE_ERROR_FILE, null)));
+    	}
     }
 
     /**
@@ -56,7 +92,15 @@ public class SoundUtil {
      * initializing
      */
     public static void playMeasureInitSound(){
-    	playSoundFileFromResources("initPlatform.wav");
+    	
+    	if(App.prefs.getPref(PrefKey.SOUND_PLATFORM_INIT_FILE, null) == null || App.prefs.getBooleanPref(PrefKey.SOUND_USE_SYSTEM_DEFAULTS, false))
+    	{
+    		playSoundFileFromResources("initPlatform.wav");
+    	}
+    	else
+    	{
+    		playSoundFile(new File(App.prefs.getPref(PrefKey.SOUND_PLATFORM_INIT_FILE, null)));
+    	}
     }
     
     /**
@@ -94,4 +138,6 @@ public class SoundUtil {
 			e.printStackTrace();
 		}
     }
+    
+
 }

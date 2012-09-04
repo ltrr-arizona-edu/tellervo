@@ -174,7 +174,14 @@ public class Prefs extends AbstractSubsystem {
 		FOLDER_LAST_SAVE("tellervo.dir.lastsave"),
 		FOLDER_LAST_GPS("tellervo.dir.lastgps"),
 		
-		SOUND_ENABLED("tellervo.sound.enabled");
+		SOUND_PLATFORM_INIT_FILE("tellervo.sound.platforminit"),
+		SOUND_MEASURE_RING_FILE("tellervo.sound.measure"),
+		SOUND_MEASURE_DECADE_FILE("tellervo.sound.decade"),
+		SOUND_MEASURE_ERROR_FILE("tellervo.sound.error"),
+		SOUND_BARCODE_FILE("tellervo.sound.barcodescan"),
+		SOUND_USE_SYSTEM_DEFAULTS("tellervo.sound.usedefaults"),
+		SOUND_ENABLED("tellervo.sound.enabled"),
+		SOUND_LAST_FOLDER("tellervo.sound.lastfolder");
 		
 		
 		
