@@ -1,6 +1,7 @@
 package org.tellervo.desktop.prefs.panels;
 
 import java.awt.FileDialog;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -11,8 +12,10 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ExtensionFileFilter;
+import org.tellervo.desktop.util.SoundUtil;
 
 import javax.swing.JLabel;
 import net.miginfocom.swing.MigLayout;
@@ -41,6 +44,11 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 	private JButton btnBrowsePlatformInit;
 	private JButton btnBrowseMeasurementError;
 	private JButton btnBrowseBarcodeScanned;
+	private JButton btnPlayPlatformInit;
+	private JButton btnPlayRingMeasured;
+	private JButton btnPlayDecadeMeasured;
+	private JButton btnPlayMeasurementError;
+	private JButton btnPlayBarcodeScanned;
 	
 	
 	public SoundPrefsPanel(final JDialog parent) {
@@ -53,13 +61,13 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Sound system", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		add(panel, "cell 0 0,grow");
-		panel.setLayout(new MigLayout("", "[][165.00,grow][]", "[center][][36.00][][][][][][]"));
+		panel.setLayout(new MigLayout("", "[][34.00][158.00,grow][]", "[center][][36.00][][][][][][]"));
 		
 		JLabel lblEnableSoundsIn = new JLabel("Enable sounds in Tellervo:");
 		panel.add(lblEnableSoundsIn, "cell 0 0,alignx right,aligny center");
 		
 		chkEnableSoundSystem = new JCheckBox("");
-		panel.add(chkEnableSoundSystem, "cell 1 0 2 1,aligny center");
+		panel.add(chkEnableSoundSystem, "cell 1 0 3 1,aligny center");
 		chkEnableSoundSystem.setSelected(true);
 		
 		JLabel lblNewLabel = new JLabel("Use system defaults:");
@@ -67,7 +75,7 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 		
 		chkUseSystemDefaults = new JCheckBox("");
 		chkUseSystemDefaults.setSelected(true);
-		panel.add(chkUseSystemDefaults, "cell 1 1");
+		panel.add(chkUseSystemDefaults, "cell 1 1 2 1");
 		chkUseSystemDefaults.addActionListener(new ActionListener(){
 
 			@Override
@@ -77,90 +85,148 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 			
 		});
 		
+		// Platform init
 		JLabel lblPlatformInit = new JLabel("Platform initalization:");
 		panel.add(lblPlatformInit, "cell 0 3,alignx trailing");
-		
+		btnPlayPlatformInit = new JButton("");
+		btnPlayPlatformInit.setIcon(Builder.getIcon("play.png", 16));
+		btnPlayPlatformInit.setMargin(new Insets(1, 1, 1, 1));
+		btnPlayPlatformInit.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SoundUtil.playMeasureInitSound();
+			}	
+		});
+		panel.add(btnPlayPlatformInit, "cell 1 3");
 		txtPlatformInit = new JTextField();
-		panel.add(txtPlatformInit, "cell 1 3,growx");
+		panel.add(txtPlatformInit, "cell 2 3,growx");
 		txtPlatformInit.setColumns(10);
-		
-		btnBrowsePlatformInit = new JButton("...");
-		panel.add(btnBrowsePlatformInit, "cell 2 3");
-
+		btnBrowsePlatformInit = new JButton("");
+		btnBrowsePlatformInit.setIcon(Builder.getIcon("open.png", 16));
+		btnBrowsePlatformInit.setMargin(new Insets(1, 1, 1, 1));
 		btnBrowsePlatformInit.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				txtPlatformInit.setText(getFileChooserFilename());
+				String file = getFileChooserFilename();
+				if(file!=null)	txtPlatformInit.setText(file);
 			}
 		});
+		panel.add(btnBrowsePlatformInit, "cell 3 3");
 		
+		
+		// Ring Measured
 		JLabel lblRingMeasured = new JLabel("Ring measured:");
 		panel.add(lblRingMeasured, "cell 0 4,alignx trailing");
-		
+		btnPlayRingMeasured = new JButton("");
+		btnPlayRingMeasured.setMargin(new Insets(1, 1, 1, 1));
+		btnPlayRingMeasured.setIcon(Builder.getIcon("play.png", 16));
+		btnPlayRingMeasured.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SoundUtil.playMeasureSound();
+			}	
+		});
+		panel.add(btnPlayRingMeasured, "cell 1 4");
 		txtRingMeasured = new JTextField();
-		panel.add(txtRingMeasured, "cell 1 4,growx");
+		panel.add(txtRingMeasured, "cell 2 4,growx");
 		txtRingMeasured.setColumns(10);
-		
-		btnBrowseRingMeasured = new JButton("...");
-		panel.add(btnBrowseRingMeasured, "cell 2 4");
-		
+		btnBrowseRingMeasured = new JButton("");
+		btnBrowseRingMeasured.setIcon(Builder.getIcon("open.png", 16));
+		btnBrowseRingMeasured.setMargin(new Insets(1, 1, 1, 1));
+		panel.add(btnBrowseRingMeasured, "cell 3 4");
 		btnBrowseRingMeasured.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				txtRingMeasured.setText(getFileChooserFilename());
+				String file = getFileChooserFilename();
+				if(file!=null)	txtRingMeasured.setText(file);
 			}
 		});
 		
+		// Decade Measured
 		JLabel lblDecadeMeasured = new JLabel("Decade measured:");
 		panel.add(lblDecadeMeasured, "cell 0 5,alignx trailing");
-		
+		btnPlayDecadeMeasured = new JButton("");
+		btnPlayDecadeMeasured.setMargin(new Insets(1, 1, 1, 1));
+		btnPlayDecadeMeasured.setIcon(Builder.getIcon("play.png", 16));
+		btnPlayDecadeMeasured.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SoundUtil.playMeasureDecadeSound();
+			}	
+		});
+		panel.add(btnPlayDecadeMeasured, "cell 1 5");
 		txtDecadeMeasured = new JTextField();
-		panel.add(txtDecadeMeasured, "cell 1 5,growx");
+		panel.add(txtDecadeMeasured, "cell 2 5,growx");
 		txtDecadeMeasured.setColumns(10);
-		
-		btnBrowseDecadeMeasured = new JButton("...");
-		panel.add(btnBrowseDecadeMeasured, "cell 2 5");
-		
+		btnBrowseDecadeMeasured = new JButton("");
+		btnBrowseDecadeMeasured.setIcon(Builder.getIcon("open.png", 16));
+		btnBrowseDecadeMeasured.setMargin(new Insets(1, 1, 1, 1));
+		panel.add(btnBrowseDecadeMeasured, "cell 3 5");
 		btnBrowseDecadeMeasured.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				txtDecadeMeasured.setText(getFileChooserFilename());
+				String file = getFileChooserFilename();
+				if(file!=null)	txtDecadeMeasured.setText(file);
 			}
 		});
 		
+		// Measuring Error
 		JLabel lblMeasurementError = new JLabel("Measurement error:");
 		panel.add(lblMeasurementError, "cell 0 6,alignx trailing");
-		
+		btnPlayMeasurementError = new JButton("");
+		btnPlayMeasurementError.setMargin(new Insets(1, 1, 1, 1));
+		btnPlayMeasurementError.setIcon(Builder.getIcon("play.png", 16));
+		btnPlayMeasurementError.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SoundUtil.playMeasureErrorSound();
+			}	
+		});
+		panel.add(btnPlayMeasurementError, "cell 1 6");
 		txtMeasurementError = new JTextField();
-		panel.add(txtMeasurementError, "cell 1 6,growx");
+		panel.add(txtMeasurementError, "cell 2 6,growx");
 		txtMeasurementError.setColumns(10);
-		
-		btnBrowseMeasurementError = new JButton("...");
-		panel.add(btnBrowseMeasurementError, "cell 2 6");
-		
+		btnBrowseMeasurementError = new JButton("");
+		btnBrowseMeasurementError.setIcon(Builder.getIcon("open.png", 16));
+		btnBrowseMeasurementError.setMargin(new Insets(1, 1, 1, 1));
+		panel.add(btnBrowseMeasurementError, "cell 3 6");
 		btnBrowseMeasurementError.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				txtMeasurementError.setText(getFileChooserFilename());
+				String file = getFileChooserFilename();
+				if(file!=null)	txtMeasurementError.setText(file);
 			}
 		});
 		
+		
+		// Barcode scanned
 		JLabel lblBarcodeScanned = new JLabel("Barcode scanned:");
 		panel.add(lblBarcodeScanned, "cell 0 7,alignx trailing");
-		
+		btnPlayBarcodeScanned = new JButton("");
+		btnPlayBarcodeScanned.setMargin(new Insets(1, 1, 1, 1));
+		btnPlayBarcodeScanned.setIcon(Builder.getIcon("play.png", 16));
+		btnPlayBarcodeScanned.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				SoundUtil.playBarcodeBeep();
+			}	
+		});
+		panel.add(btnPlayBarcodeScanned, "cell 1 7");
 		txtBarcodeScanned = new JTextField();
-		panel.add(txtBarcodeScanned, "cell 1 7,growx");
+		panel.add(txtBarcodeScanned, "cell 2 7,growx");
 		txtBarcodeScanned.setColumns(10);
-		
-		btnBrowseBarcodeScanned = new JButton("...");
-		panel.add(btnBrowseBarcodeScanned, "cell 2 7");
-		
+		btnBrowseBarcodeScanned = new JButton("");
+		btnBrowseBarcodeScanned.setIcon(Builder.getIcon("open.png", 16));
+		btnBrowseBarcodeScanned.setMargin(new Insets(1, 1, 1, 1));
+		panel.add(btnBrowseBarcodeScanned, "cell 3 7");
 		btnBrowseBarcodeScanned.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				txtBarcodeScanned.setText(getFileChooserFilename());
+				String file = getFileChooserFilename();
+				if(file!=null)	txtBarcodeScanned.setText(file);
 			}
 		});
+		
 		
 		linkToPrefs();
 		setGuiFromPref();
@@ -182,7 +248,7 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 		// Try and go to the last folder used
 		if(App.prefs.getPref(PrefKey.SOUND_LAST_FOLDER, null)!=null)
 		{
-			fc.setSelectedFile(new File(App.prefs.getPref(PrefKey.SOUND_LAST_FOLDER, null)));
+			fc.setCurrentDirectory(new File(App.prefs.getPref(PrefKey.SOUND_LAST_FOLDER, null)));
 		}
 		
 		// Show the dialog
@@ -190,7 +256,7 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 		
 		try{
 			// Save the folder the file is from for next time
-			App.prefs.setPref(PrefKey.SOUND_LAST_FOLDER, fc.getSelectedFile().getParent());
+			App.prefs.setPref(PrefKey.SOUND_LAST_FOLDER, fc.getCurrentDirectory().getCanonicalPath());
 			
 			// Return the file name
 			return fc.getSelectedFile().getAbsolutePath();
