@@ -164,7 +164,7 @@ public class PlatformTestPanel extends JPanel {
 		dialog.getContentPane().setLayout(new BorderLayout());
 		dialog.getContentPane().add(panel, BorderLayout.CENTER);
 		dialog.pack();
-		dialog.setSize(450, 500);
+		dialog.setSize(650, 500);
 		dialog.setLocationRelativeTo(parent);
 		dialog.setVisible(true);
 		
@@ -198,7 +198,7 @@ public class PlatformTestPanel extends JPanel {
 			return;
 		}
 
-		contentPanel.setLayout(new MigLayout("", "[428.00px,grow]", "[75.00px,grow,fill][247.00px,grow][74.00px:74.00px:74.00px]"));
+		contentPanel.setLayout(new MigLayout("", "[428.00px,grow,fill]", "[75.00px,grow,fill][247.00px,grow][]"));
 		{
 			JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 			contentPanel.add(tabbedPane, "cell 0 1,grow");

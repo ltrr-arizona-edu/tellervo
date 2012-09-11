@@ -121,7 +121,7 @@ public class Remarks {
 		return tridasRemarkIconMap;
 	}
 	
-	public static Map<String, String> getCorinaRemarkIcons() {
+	public static Map<String, String> getTellervoRemarkIcons() {
 		return tellervoRemarkIconMap;
 	}
 	
@@ -152,8 +152,9 @@ public class Remarks {
 	
 	private final static Map<String, String> tellervoRemarkIconMap = new HashMap<String, String>();
 	static {
+		tellervoRemarkIconMap.put("micro ring", "microring.png");
 		tellervoRemarkIconMap.put("insect damage", "bug.png");
-
+		
 
 	}
 	

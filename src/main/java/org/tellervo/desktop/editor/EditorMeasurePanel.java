@@ -14,6 +14,7 @@ import org.tellervo.desktop.hardware.MeasurementReceiver;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.SoundUtil;
+import org.tellervo.desktop.util.SoundUtil.SystemSound;
 
 
 /**
@@ -76,10 +77,10 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 		
 		if(y.column() == 0) 
 		{
-			SoundUtil.playMeasureDecadeSound();
+			SoundUtil.playSystemSound(SystemSound.MEASURE_DECADE);
 		} else 
 		{
-			SoundUtil.playMeasureSound();				
+			SoundUtil.playSystemSound(SystemSound.MEASURE_RING);
 		}
 		
 		setLastMeasurementIndicators(value);

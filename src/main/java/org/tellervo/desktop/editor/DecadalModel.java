@@ -72,7 +72,7 @@ import org.tellervo.desktop.util.Years;
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
-public class DecadalModel extends AbstractTableModel {
+public abstract class DecadalModel extends AbstractTableModel {
 
 	private final static Logger log = LoggerFactory.getLogger(DecadalModel.class);
 	private static final long serialVersionUID = 1L;

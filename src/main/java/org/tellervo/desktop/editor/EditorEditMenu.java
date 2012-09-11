@@ -54,6 +54,7 @@ import java.io.IOException;
 import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -68,6 +69,8 @@ import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.menus.EditMenu;
+import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
+import org.tellervo.desktop.gui.menus.actions.PrintAction;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.io.TwoColumn;
@@ -119,7 +122,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 	private static final long serialVersionUID = 1L;
 	private Sample sample;
-	private Editor editor;
+	private final Editor editor;
 	private SampleDataView dataView;
 	private JMenuItem insert, insertMR, delete;
 	private JMenuItem toggleMeasureMenuItem;
@@ -289,6 +292,11 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 	@SuppressWarnings("serial")
 	private void addMeasure() {
+		
+		if(editor==null) log.error("Editor is null");
+		
+		Action measureAction = new MeasureToggleAction(editor);
+		//toggleMeasureMenuItem = new JMenuItem(measureAction);		
 		toggleMeasureMenuItem = Builder.makeMenuItem("menus.edit.start_measuring", true, "measure.png");
 		toggleMeasureMenuItem.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {

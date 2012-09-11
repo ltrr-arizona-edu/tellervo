@@ -46,9 +46,9 @@ public class CorinaReadingRemark extends AbstractRemark {
 	public Icon getIcon() {
 		
 		String iconFn;
-		if(Remarks.getCorinaRemarkIcons().get(remark.getNormal())!=null)
+		if(Remarks.getTellervoRemarkIcons().get(remark.getNormal())!=null)
 		{
-			iconFn = Remarks.getCorinaRemarkIcons().get(remark.getNormal());	
+			iconFn = Remarks.getTellervoRemarkIcons().get(remark.getNormal());	
 		}
 		else
 		{

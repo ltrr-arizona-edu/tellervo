@@ -41,11 +41,14 @@ import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.DecadalModel;
 import org.tellervo.desktop.editor.SampleDataView;
 import org.tellervo.desktop.editor.support.AbstractTableCellModifier;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.sample.SampleListener;
@@ -56,7 +59,8 @@ import org.tridas.schema.NormalTridasUnit;
 
 public class ReconcileDataView extends SampleDataView implements SampleListener {
 	private static final long serialVersionUID = 1L;
-	
+	private final static Logger log = LoggerFactory.getLogger(ReconcileDataView.class);
+
 	private JEditorPane reconcileInfo;
 	private final static String reconcileIntro = "<html><br>";
 
@@ -208,20 +212,66 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				selectionInfo.append("<br><b><u>Details for year " + y.toString() + "</u></b><br><br>");
 			
 				// just some info
-				NormalTridasUnit displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("tellervo.displayunits", NormalTridasUnit.HUNDREDTH_MM.name()));
+				NormalTridasUnit displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.name()));
 
-				Number value = newSample.getRingWidthData().get(idx);
-				if(displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+				Number num = newSample.getRingWidthData().get(idx);
+				Integer value = num.intValue();
+				if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
 				{
-					value = value.intValue()/10;
+					
 				}
+				else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+				{
+					value = value/10;
+				}
+				else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
+				{
+					value = value/20;
+				}
+				else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
+				{
+					value = value/50;
+				}
+				else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
+				{
+					value = value/100;
+				}
+				else
+				{
+					log.error("Unsupported display units");
+					value = null;
+				}
+				
+				
+				
 				
 				selectionInfo.append("Primary value : " + value + "<br>");
 				
-				value = reference.getRingWidthData().get(idx);
-				if(displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+				value = (Integer) reference.getRingWidthData().get(idx);
+				if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
 				{
-					value = value.intValue()/10;
+					
+				}
+				else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+				{
+					value = value/10;
+				}
+				else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
+				{
+					value = value/20;
+				}
+				else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
+				{
+					value = value/50;
+				}
+				else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
+				{
+					value = value/100;
+				}
+				else
+				{
+					log.error("Unsupported display units");
+					value = null;
 				}
 				
 				selectionInfo.append("Reference value : " + 

@@ -59,6 +59,7 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.FontUtil;
 import org.tellervo.desktop.util.MultiMonitorRobot;
 import org.tellervo.desktop.util.SoundUtil;
+import org.tellervo.desktop.util.SoundUtil.SystemSound;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasUnit;
 import javax.swing.border.TitledBorder;
@@ -85,7 +86,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	protected AbstractMeasuringDevice dev;
 	private Color bgcolor = null;
 	protected JToggleButton btnMouseTrigger;
-	private JTextArea txtInfoMessage;
+	protected JTextArea txtInfoMessage;
 
 	private Point mousePoint;
 	
@@ -119,18 +120,25 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		init(device);
 	}
 	
+	protected void setInfoMessageVisible(Boolean b)
+	{
+		txtInfoMessage.setVisible(b);
+		scrollPane.setVisible(b);
+		lblInfoIcon.setVisible(b);
+	}
+	
 	private void init(final AbstractMeasuringDevice device)
 	{
 		setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Measuring Controls", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		this.setBackground(bgcolor);	
 		dev = device;
 		
-		setLayout(new MigLayout("insets 0", "[160px:160px:160px][160px:160px:160px][grow][250:250:250px]", "[80px:80px,grow,fill][55.00px:55.00px:55.00px][55.00]"));
+		setLayout(new MigLayout("hidemode 2,insets 0", "[160px:160px:160px][160px:160px:160px][grow]", "[80px,grow,fill][55.00px:55.00px:55.00px][55.00][]"));
 				
-		SoundUtil.playMeasureInitSound();
+		SoundUtil.playSystemSound(SystemSound.MEASURING_PLATFORM_INIT);
 		
 		panelInfo = new JPanel();
-		add(panelInfo, "cell 0 0 4 1,growx,wmin 10");
+		add(panelInfo, "cell 0 0 3 1,growx,wmin 10");
 		panelInfo.setLayout(new MigLayout("", "[30px:30px:30px,center][126.00px,grow,fill]", "[grow]"));
 		
 		lblInfoIcon = new JLabel("");
@@ -197,8 +205,27 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 						panelLastValue.add(lblLastValue, "cell 0 1");
 						lblLastValue.setFont(new Font("Dialog", Font.PLAIN, 8));
 				
+				panelCurrentPosition = new JPanel();
+				panelCurrentPosition.setBackground(Color.BLACK);
+				add(panelCurrentPosition, "cell 0 2 2 1,grow");
+				panelCurrentPosition.setLayout(new MigLayout("", "[150][150.00px,grow]", "[58.00,grow,fill][]"));
+				
+				txtCurrentPosition = new JLabel();
+				txtCurrentPosition.setText("-");
+				panelCurrentPosition.add(txtCurrentPosition, "cell 1 0 1 2,growx");
+				txtCurrentPosition.setFont(FontUtil.getFontFromResources("Digitaldream.ttf", 40, Font.PLAIN));
+				txtCurrentPosition.setForeground(lcdBlueColor);
+				txtCurrentPosition.setHorizontalAlignment(SwingConstants.RIGHT);
+				txtCurrentPosition.setBackground(Color.WHITE);
+				txtCurrentPosition.setBorder(null);
+				
+				lblCurrentPosition = new JLabel("Live position ("+micron()+")");
+				lblCurrentPosition.setForeground(Color.LIGHT_GRAY);
+				panelCurrentPosition.add(lblCurrentPosition, "cell 0 1");
+				lblCurrentPosition.setFont(new Font("Dialog", Font.PLAIN, 8));
+				
 				panelButtons = new JPanel();
-				add(panelButtons, "cell 3 1 1 2,grow");
+				add(panelButtons, "cell 0 3 2 1,grow");
 				panelButtons.setLayout(new MigLayout("", "[105.00,grow,fill][grow,fill]", "[][][65.00,grow,fill]"));
 				
 				btnMouseTrigger = new JToggleButton(I18n.getText("measuring.mousetrigger.enable"));
@@ -243,25 +270,6 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 								
 							}
 						});
-				
-				panelCurrentPosition = new JPanel();
-				panelCurrentPosition.setBackground(Color.BLACK);
-				add(panelCurrentPosition, "cell 0 2 2 1,grow");
-				panelCurrentPosition.setLayout(new MigLayout("", "[150][150.00px,grow]", "[58.00,grow,fill][]"));
-				
-				txtCurrentPosition = new JLabel();
-				txtCurrentPosition.setText("-");
-				panelCurrentPosition.add(txtCurrentPosition, "cell 1 0 1 2,growx");
-				txtCurrentPosition.setFont(FontUtil.getFontFromResources("Digitaldream.ttf", 40, Font.PLAIN));
-				txtCurrentPosition.setForeground(lcdBlueColor);
-				txtCurrentPosition.setHorizontalAlignment(SwingConstants.RIGHT);
-				txtCurrentPosition.setBackground(Color.WHITE);
-				txtCurrentPosition.setBorder(null);
-				
-				lblCurrentPosition = new JLabel("Live position ("+micron()+")");
-				lblCurrentPosition.setForeground(Color.LIGHT_GRAY);
-				panelCurrentPosition.add(lblCurrentPosition, "cell 0 1");
-				lblCurrentPosition.setFont(new Font("Dialog", Font.PLAIN, 8));
 				setCurrentPosition(null);
 
 		// Set the device to zero to start with	
@@ -470,16 +478,16 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		if(value.intValue() == 0) 
 		{
 			// Value was zero so must be an error
-			SoundUtil.playMeasureErrorSound();
+			SoundUtil.playSystemSound(SystemSound.MEASURE_ERROR);
 			Alert.message("Warning", "This measurement was 0cm so it will be disregarded.\nRight click on cell to insert missing ring.");
 			this.txtLastValue.setText("Error");
 
 			return false;
 		}
-		else if (value.intValue() >= 5000)
+		else if (value.intValue() >= 50000)
 		{
 			// Value was over 5cm so warn user
-			SoundUtil.playMeasureErrorSound();
+			SoundUtil.playSystemSound(SystemSound.MEASURE_ERROR);
 			
 			Alert.message("Warning", "This measurement was over 5cm so it will be disregarded");
 			
@@ -491,7 +499,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		else if (value.intValue() < 0)
 		{
 			// Value was negative so warn user
-			SoundUtil.playMeasureErrorSound();
+			SoundUtil.playSystemSound(SystemSound.MEASURE_ERROR);
 			
 			Alert.message("Warning", "This measurement was negative so it will be disregarded");
 			
@@ -595,7 +603,14 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 					}
 				}
 				
-				((KeyEvent) e).consume();
+				if(((KeyEvent)e).getKeyCode() == KeyEvent.VK_LEFT)
+				{
+					log.debug("Left pressed");
+				}
+				else
+				{
+					((KeyEvent) e).consume();
+				}
 	    	}
 			else if (e instanceof MouseEvent)
 			{

@@ -8,11 +8,17 @@
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Tellervo.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
+!define MULTIUSER_EXECUTIONLEVEL Admin
+!include MultiUser.nsh
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
 
 !include "EnvVarUpdate.nsh"
+
+Function .onInit
+  !insertmacro MULTIUSER_INIT
+FunctionEnd
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -85,6 +91,7 @@ Function un.onUninstSuccess
 FunctionEnd
 
 Function un.onInit
+  !insertmacro MULTIUSER_UNINIT
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure you want to completely remove $(^Name) and all of its components?" IDYES +2
   Abort
 FunctionEnd

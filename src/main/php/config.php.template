@@ -58,6 +58,9 @@ $timingFlag = FALSE;
 // Base folder on the server where the webservice is stored
 $baseFolder = "/var/www/tellervo/";
 
+// Length of time a login is valid for in seconds. (1800 = 30mins)
+$timeout = 2700;
+
 // Timezone of the server this software is running on.  
 date_default_timezone_set("%%TIMEZONE%%");
 

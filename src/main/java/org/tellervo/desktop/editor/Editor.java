@@ -109,6 +109,7 @@ import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.gui.menus.actions.ExportDataAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
 import org.tellervo.desktop.gui.menus.actions.PrintAction;
 import org.tellervo.desktop.gui.menus.actions.SaveAction;
@@ -176,6 +177,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 	// data
 	private Sample sample;
+	
+	private int measuringPanelWidth = 340;
 	
 	/**
 	 * The main editor dialog.  Contains multiple tabs depending on the data
@@ -456,6 +459,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		Action printAction = new PrintAction(sample);
 		AbstractButton print = new TitlelessButton(printAction);
 		toolbar.add(print);
+		
+		// Edit Buttons
+		Action measureAction = new MeasureToggleAction(this);
+		AbstractButton measure = new TitlelessButton(measureAction);
+		toolbar.add(measure);
 		
 		
 		// Admin Buttons
@@ -954,32 +962,15 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		
 		editorEditMenu.setMeasuring(true);
 		dataView.enableEditing(false);
-		
-		// Make sure the size is sensible
-		Integer w;
-		Integer h;
-		if(getSize().getWidth()<700)
-		{	
-			w = 700;
-		}
-		else
-		{
-			w = (int) getSize().getWidth();
-		}
-		if(getSize().getHeight()<650)
-		{
-			h = 650;
-		}
-		else
-		{
-			h = (int) getSize().getHeight();
-		}
-		
+	
 		// add the measure panel...
 		measurePanel = new EditorMeasurePanel(this, device);
-		add(measurePanel, BorderLayout.SOUTH);
+		add(measurePanel, BorderLayout.WEST);
 		
-		setSize(w,h);		
+		// Make sure the size is sensible
+		int currentWidth = (int) getSize().getWidth();
+		int currentHeight = (int) getSize().getHeight();	
+		setSize(currentWidth+this.measuringPanelWidth, currentHeight);	
 		
 		getContentPane().validate();
 		getContentPane().repaint();
@@ -996,13 +987,21 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	
 	public void stopMeasuring() {
 		if (measurePanel != null) {
+			
+			// Make sure the size is sensible
+			int currentWidth = (int) getSize().getWidth();
+			int currentHeight = (int) getSize().getHeight();
+			
 			measurePanel.cleanup();
 			remove(measurePanel);
 			editorEditMenu.setMeasuring(false);
 			dataView.enableEditing(true);
+			
+			setSize(currentWidth-this.measuringPanelWidth, currentHeight);
 			getContentPane().validate();
 			getContentPane().repaint();
 			measurePanel = null;
+			
 		}
 	}
 	

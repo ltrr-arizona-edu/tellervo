@@ -1,12 +1,21 @@
 package org.tellervo.desktop.prefs.panels;
 
-import java.awt.FileDialog;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileFilter;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -16,16 +25,7 @@ import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ExtensionFileFilter;
 import org.tellervo.desktop.util.SoundUtil;
-
-import javax.swing.JLabel;
-import net.miginfocom.swing.MigLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JFileChooser;
-import javax.swing.JPanel;
-import javax.swing.border.TitledBorder;
-import javax.swing.filechooser.FileFilter;
-import javax.swing.JTextField;
-import javax.swing.JButton;
+import org.tellervo.desktop.util.SoundUtil.SystemSound;
 
 public class SoundPrefsPanel extends AbstractPreferencesPanel {
 
@@ -94,7 +94,7 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 		btnPlayPlatformInit.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SoundUtil.playMeasureInitSound();
+				SoundUtil.playSystemSound(SystemSound.MEASURING_PLATFORM_INIT);
 			}	
 		});
 		panel.add(btnPlayPlatformInit, "cell 1 3");
@@ -123,7 +123,7 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 		btnPlayRingMeasured.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SoundUtil.playMeasureSound();
+				SoundUtil.playSystemSound(SystemSound.MEASURE_RING);
 			}	
 		});
 		panel.add(btnPlayRingMeasured, "cell 1 4");
@@ -151,7 +151,7 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 		btnPlayDecadeMeasured.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SoundUtil.playMeasureDecadeSound();
+				SoundUtil.playSystemSound(SystemSound.MEASURE_DECADE);
 			}	
 		});
 		panel.add(btnPlayDecadeMeasured, "cell 1 5");
@@ -179,7 +179,7 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 		btnPlayMeasurementError.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SoundUtil.playMeasureErrorSound();
+				SoundUtil.playSystemSound(SystemSound.MEASURE_ERROR);
 			}	
 		});
 		panel.add(btnPlayMeasurementError, "cell 1 6");
@@ -208,7 +208,7 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 		btnPlayBarcodeScanned.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				SoundUtil.playBarcodeBeep();
+				SoundUtil.playSystemSound(SystemSound.BARCODE_SCAN);
 			}	
 		});
 		panel.add(btnPlayBarcodeScanned, "cell 1 7");

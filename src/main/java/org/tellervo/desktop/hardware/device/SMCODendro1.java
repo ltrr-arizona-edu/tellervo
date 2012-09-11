@@ -12,6 +12,7 @@ import java.io.UnsupportedEncodingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Build;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 import org.tellervo.desktop.ui.I18n;
 import org.tridas.io.util.StringUtils;
@@ -28,7 +29,7 @@ public class SMCODendro1 extends GenericASCIIDevice {
 
 	private final static Logger log = LoggerFactory.getLogger(SMCODendro1.class);
 	private static final int EVE_ENQ = 5;
-		
+	
 	@Override
 	public void setDefaultPortParams(){
 		
@@ -117,6 +118,8 @@ public class SMCODendro1 extends GenericASCIIDevice {
 		log.debug("Initalising SMCO Dendro 1 device");
 		openPort();
 		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.INITIALIZED_EVENT, null);
+		log.debug("Starting live poller");
+		
 	}
 	
 	@Override
@@ -138,6 +141,9 @@ public class SMCODendro1 extends GenericASCIIDevice {
 		String version = Build.getVersion();
 		version = version.replace("\u03B2", "b");
 		sendMessage("Tellervo v"+version);
+		
+
+		
 		return port;
 	}
 	
@@ -170,6 +176,7 @@ public class SMCODendro1 extends GenericASCIIDevice {
 	@Override
 	public void zeroMeasurement()
 	{
+		
 		String strZeroDataCommand = "<d>";
 		sendRequest(strZeroDataCommand);
 		setPreviousPosition(0);
@@ -177,6 +184,7 @@ public class SMCODendro1 extends GenericASCIIDevice {
 
 	@Override
 	public void requestMeasurement() {
+		
 		String cmd = "<c>";
 		sendRequest(cmd);
 	}
@@ -296,7 +304,7 @@ public class SMCODendro1 extends GenericASCIIDevice {
 	
 		}
 	}
-	
-	
+
+
 }
 

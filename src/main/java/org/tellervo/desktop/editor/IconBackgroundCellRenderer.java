@@ -110,7 +110,7 @@ public class IconBackgroundCellRenderer extends DefaultTableCellRenderer {
 	 * @return the icon, lazily loaded, or null
 	 */
 	private Icon getCorinaIcon(String remark) {
-		return lazyLoadIcon(Remarks.getCorinaRemarkIcons().get(remark));
+		return lazyLoadIcon(Remarks.getTellervoRemarkIcons().get(remark));
 	}
 		
 	private final static String CORINA = "Corina";

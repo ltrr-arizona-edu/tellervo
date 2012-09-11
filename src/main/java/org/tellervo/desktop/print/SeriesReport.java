@@ -34,6 +34,7 @@ import java.util.UUID;
 import org.apache.commons.lang.WordUtils;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.DecadalModel;
+import org.tellervo.desktop.editor.UnitAwareDecadalModel;
 import org.tellervo.desktop.editor.WJTableModel;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -271,7 +272,7 @@ public class SeriesReport extends ReportBase {
 		mainTable.setWidthPercentage(100);		
 		
 		DecadalModel model;
-		model = new DecadalModel(s);
+		model = new UnitAwareDecadalModel(s);
 		int rows = model.getRowCount();
 		List<TridasRemark> masterList = null;
 	
@@ -382,7 +383,7 @@ public class SeriesReport extends ReportBase {
 		}
 		else
 		{
-			model = new DecadalModel(s);
+			model = new UnitAwareDecadalModel(s);
 			document.add(new Chunk("Ring widths:", subSubSectionFont));
 		}
 		
@@ -1198,7 +1199,7 @@ public class SeriesReport extends ReportBase {
 	 */
 	private Image getCorinaIcon(String remark) {
 		
-		String iconName = Remarks.getCorinaRemarkIcons().get(remark);
+		String iconName = Remarks.getTellervoRemarkIcons().get(remark);
 		
 		return lazyLoadIcon(iconName);
 	}

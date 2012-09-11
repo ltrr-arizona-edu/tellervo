@@ -37,8 +37,16 @@ class auth
   function __construct()
   {
      global $firebug;
-    session_start();  
-	if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
+     global $timeout;
+     session_start();  
+	        
+        if($timeout==null || $timeout==0)
+        {
+            $timeout=1800;
+        }
+
+        if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $timeout)) {
+    
 	    $firebug->log("Session has expired");
 	    session_destroy();   // destroy session data in storage
 	    session_unset();     // unset $_SESSION variable for the runtime

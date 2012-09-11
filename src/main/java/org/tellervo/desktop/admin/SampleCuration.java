@@ -43,6 +43,7 @@ import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.SoundUtil;
+import org.tellervo.desktop.util.SoundUtil.SystemSound;
 import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tellervo.desktop.util.labels.ui.TridasListCellRenderer;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
@@ -147,7 +148,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
         		if(txtBarcode.getText().length()==24)
         		{
 
-        			SoundUtil.playBarcodeBeep();
+        			SoundUtil.playSystemSound(SystemSound.BARCODE_SCAN);
         			
         			// A barcode was probably just scanned	
         			String barcodeText = txtBarcode.getText();

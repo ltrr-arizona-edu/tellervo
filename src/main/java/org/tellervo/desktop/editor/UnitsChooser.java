@@ -101,7 +101,7 @@ public class UnitsChooser extends JLabel implements SampleListener {
 	    });
 
 		// which one?  read from prefs
-		String pref = App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.name());
+		String pref = App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.name().toString());
 		if (pref != null) {
 		    for (int i=0; i<unit.length; i++) {
 				if (pref.equals(unit_keys[i])) {

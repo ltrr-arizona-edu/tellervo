@@ -82,9 +82,6 @@ import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasValue;
 
 
-// TODO: add slasher -- but it needs to either (1) override table
-// sizing, or (2) override scrollpane painting (probably the latter)
-
 /**
    A view of the raw data in a Sample.
 
@@ -212,7 +209,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		myTable.addKeyListener(new DecadalKeyListener(myTable, mySample));
 
 		myTable.setCellSelectionEnabled(true);
-		myTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		myTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		
 		// select the first year
 		myTable.setRowSelectionInterval(0, 0);
@@ -224,7 +221,8 @@ public class SampleDataView extends JPanel implements SampleListener,
 		// don't let the columns be rearranged or resized
 		myTable.getTableHeader().setReorderingAllowed(false);
 		myTable.getTableHeader().setResizingAllowed(false);
-
+		myTable.setRowSelectionAllowed(true);
+		
 		// make the last column a jprogressbar, % of max
 		int max = 0;
 		if (mySample.hasCount())

@@ -33,6 +33,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.util.SoundUtil;
+import org.tellervo.desktop.util.SoundUtil.SystemSound;
 
 
 /**
@@ -623,10 +624,10 @@ public abstract class AbstractMeasuringDevice
 		
 		if(sse.getType() == MeasuringSampleIOEvent.BAD_SAMPLE_EVENT) {
 			receiver.receiverUpdateStatus("Error reading value from device. "+sse.getValue());
-			SoundUtil.playMeasureErrorSound();
+			SoundUtil.playSystemSound(SystemSound.MEASURE_ERROR);
 		}
 		if(sse.getType() == MeasuringSampleIOEvent.ERROR) {
-			SoundUtil.playMeasureErrorSound();
+			SoundUtil.playSystemSound(SystemSound.MEASURE_ERROR);
 			try{
 			receiver.receiverUpdateStatus(sse.getValue().toString());
 			} catch (NullPointerException e)

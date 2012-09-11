@@ -42,7 +42,7 @@ import javax.swing.LayoutStyle;
 import javax.swing.ScrollPaneConstants;
 
 import org.tellervo.desktop.Year;
-import org.tellervo.desktop.editor.DecadalModel;
+import org.tellervo.desktop.editor.UnitAwareDecadalModel;
 import org.tellervo.desktop.graph.Graph;
 import org.tellervo.desktop.graph.GraphActions;
 import org.tellervo.desktop.graph.GraphController;
@@ -117,12 +117,14 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		// Create panel for primary series
 		JPanel reconcilePanel = new JPanel();
 		reconcilePanel.setLayout(new BoxLayout(reconcilePanel, BoxLayout.Y_AXIS));
-		reconcilePanel.add(createReconcilePane(s1, dv1, "Primary series: "));
+		JPanel recpanel1 = createReconcilePane(s1, dv1, "Primary series: ");
+		reconcilePanel.add(recpanel1);
 		
 		// Create panel for reference series
 		JPanel refPanel = new JPanel();
 		refPanel.setLayout(new BoxLayout(refPanel, BoxLayout.Y_AXIS));
-		refPanel.add(createReconcilePane(s2, dv2, "Reference series: "));
+		JPanel recpanel2 = createReconcilePane(s2, dv2, "Reference series: ");
+		refPanel.add(recpanel2);
 		
 		//JPanel refPanel = new JPanel(new BorderLayout());
 		//refPanel.addComponent(createReconcilePane(s2, dv2), BorderLayout.CENTER);
@@ -351,10 +353,11 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		int col = dv1.myTable.getSelectedColumn();
 		int row = dv1.myTable.getSelectedRow();
 
-		Year y = ((DecadalModel) dv1.myTable.getModel()).getYear(row, col);
+		Year y = ((UnitAwareDecadalModel) dv1.myTable.getModel()).getYear(row, col);
 		
 		ReconcileMeasureDialog dlg = new ReconcileMeasureDialog(glue, true, s1, s2, y);
 		
+		dlg.setSize(new Dimension(510, 540));
 		Center.center(dlg, glue);
 		dlg.setVisible(true);
 
@@ -362,8 +365,8 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 		Integer value = dlg.getFinalValue();
 		if(value != null) {
 			// kludge in some updates!
-			((DecadalModel) dv1.myTable.getModel()).setValueAt(value, row, col);
-			((DecadalModel) dv2.myTable.getModel()).setValueAt(value, row, col);
+			((UnitAwareDecadalModel) dv1.myTable.getModel()).setValueAt(value, row, col);
+			((UnitAwareDecadalModel) dv2.myTable.getModel()).setValueAt(value, row, col);
 			
 			dv1.myTable.setColumnSelectionInterval(col, col);
 			dv1.myTable.setRowSelectionInterval(row, row);

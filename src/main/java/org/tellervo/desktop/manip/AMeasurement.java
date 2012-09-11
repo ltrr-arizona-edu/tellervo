@@ -19,23 +19,28 @@
  ******************************************************************************/
 package org.tellervo.desktop.manip;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tridas.schema.NormalTridasUnit;
 
 // lame holder for a measurement to be listed in our table...
 public class AMeasurement {	
 	
-	
+	private final static Logger log = LoggerFactory.getLogger(AMeasurement.class);
 	
 	public AMeasurement(boolean enabled, Integer value, String source) {
-	
+		
+		
+
 		NormalTridasUnit displayUnits;
 		
 		try{
-			displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref("tellervo.displayunits", NormalTridasUnit.HUNDREDTH_MM.value().toString()));
+			displayUnits = NormalTridasUnit.valueOf(App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.value().toString()));
 		} catch (Exception e)
 		{
-			displayUnits = NormalTridasUnit.HUNDREDTH_MM;
+			displayUnits = NormalTridasUnit.MICROMETRES;
 		}
 
 		
@@ -49,8 +54,21 @@ public class AMeasurement {
 			{
 				this.value = value/10;
 			}
+			else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
+			{
+				this.value = value/20;
+			}
+			else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
+			{
+				this.value = value/50;
+			}
+			else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
+			{
+				this.value = value/100;
+			}
 			else
 			{
+				log.error("Unsupported display units");
 				this.value = null;
 			}
 		}

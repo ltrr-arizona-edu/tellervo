@@ -41,6 +41,7 @@ import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.SoundUtil;
+import org.tellervo.desktop.util.SoundUtil.SystemSound;
 import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
@@ -390,7 +391,7 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
 		if(textField.getText().length()==24)
 		{
 			// A barcode was probably just scanned
-			SoundUtil.playBarcodeBeep();		
+			SoundUtil.playSystemSound(SystemSound.BARCODE_SCAN);
 			String barcodeText = textField.getText();
 			textField.setText("");
 			
