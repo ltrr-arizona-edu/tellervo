@@ -23,6 +23,9 @@ package org.tellervo.desktop.tridasv2.support;
 import java.util.AbstractList;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.editor.EditorEditMenu;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
@@ -42,6 +45,7 @@ public final class TridasWidthValueWrapper {
 	private List<TridasValue> values;
 	private DataWrapper data;
 	private CountWrapper count;
+	private final static Logger log = LoggerFactory.getLogger(TridasWidthValueWrapper.class);
 
 	private final class CountWrapper extends AbstractList<Integer> {
 		/** The index that we've "added" up to */
@@ -145,9 +149,17 @@ public final class TridasWidthValueWrapper {
 				
 		@Override
 		public Number get(int index) {
-			TridasValue tridasValue = values.get(index);
 			
-			return tridasValueAsNumber(tridasValue);
+			try{
+				TridasValue tridasValue = values.get(index);
+				return tridasValueAsNumber(tridasValue);
+			} catch (IndexOutOfBoundsException e)
+			{
+				log.error("Unable to get index "+index+" from TRiDaS. Series only has "+values.size()+" values.");
+			}
+			
+			return null;
+			
 		}
 		
 		@Override
@@ -193,13 +205,33 @@ public final class TridasWidthValueWrapper {
 	 */
 	public TridasWidthValueWrapper(TridasValues tridasValues) {
 		// sanity check
-		if(!tridasValues.getVariable().isSetNormalTridas()) 
-				throw new IllegalArgumentException("RingWidthWrapper only works on ring, earlywood or latewood widths");
-		
-		if(tridasValues.getVariable().getNormalTridas() != NormalTridasVariable.RING_WIDTH &&
+	/*	if(!tridasValues.getVariable().isSetNormalTridas()) 
+		{
+				//throw new IllegalArgumentException("RingWidthWrapper only works on ring, earlywood or latewood widths");
+			log.warn("RingWidthWrapper only works on ring, earlywood or latewood widths");
+		}
+		else if(tridasValues.getVariable().getNormalTridas() != NormalTridasVariable.RING_WIDTH &&
 		   tridasValues.getVariable().getNormalTridas() != NormalTridasVariable.EARLYWOOD_WIDTH &&
 		   tridasValues.getVariable().getNormalTridas() != NormalTridasVariable.LATEWOOD_WIDTH	)
-			throw new IllegalArgumentException("RingWidthWrapper only works on ring, earlywood or latewood widths");
+		{
+			//throw new IllegalArgumentException("RingWidthWrapper only works on ring, earlywood or latewood widths");
+			log.warn("RingWidthWrapper only works on ring, earlywood or latewood widths");
+		}
+		*/
+		
+		if(tridasValues==null)
+		{
+			log.error("TridasValues is null");
+			return;
+		}
+		
+		if(tridasValues.getValues()==null)
+		{
+			log.error("No values in TridasValues");
+			return;
+		}
+		
+		log.debug("Series has "+tridasValues.getValues().size()+" values");
 		
 		this.values = tridasValues.getValues();
 		

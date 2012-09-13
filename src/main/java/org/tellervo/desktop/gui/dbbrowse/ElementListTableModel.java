@@ -132,12 +132,21 @@ public class ElementListTableModel extends AbstractTableModel {
 			 if (series instanceof TridasMeasurementSeries)
 			 {
 				 TridasMeasurementSeries ser = (TridasMeasurementSeries) series;
-				 return ser.getAnalyst().toString();
+				 
+				 if(ser.isSetAnalyst())
+				 {
+					 return ser.getAnalyst().toString();
+				 }
+				 return null;
 			 }
 			 else if (series instanceof TridasDerivedSeries)
 			 {
 				 TridasDerivedSeries ser = (TridasDerivedSeries) series;
-				 return ser.getAuthor().toString();
+				 if(ser.isSetAuthor())
+				 {
+					 return ser.getAuthor().toString();
+				 }
+				 return null;
 			 }
 			 else return null;
 			

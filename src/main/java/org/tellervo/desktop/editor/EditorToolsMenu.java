@@ -24,12 +24,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.security.AccessControlException;
 import java.security.AccessController;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -40,11 +44,13 @@ import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.gui.menus.actions.TruncateAction;
 import org.tellervo.desktop.index.IndexDialog;
 import org.tellervo.desktop.io.Metadata;
+import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.manip.ReconcileWindow;
 import org.tellervo.desktop.manip.RedateDialog;
 import org.tellervo.desktop.manip.Reverse;
 import org.tellervo.desktop.manip.SumCreationDialog;
 import org.tellervo.desktop.manip.TruncateDialog;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
@@ -58,6 +64,8 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.DendroFileFilter;
+import org.tridas.io.TridasIO;
 import org.tridas.schema.TridasDerivedSeries;
 
 
@@ -75,7 +83,9 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	private JMenuItem sumMenuItem = new JMenuItem();
 	private JMenuItem modifySum = new JMenuItem();
 	private JMenuItem redate = new JMenuItem();
-	private JMenuItem crossAgainst = new JMenuItem();
+	private JMenuItem crossAgainstDBSeries = new JMenuItem();
+	private JMenuItem crossAgainstFileSeries = new JMenuItem();
+
 	private JMenu crossMenu;
 	
 	public EditorToolsMenu(Sample s, Editor e) {
@@ -217,12 +227,22 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		redate.setVisible(true);		
 		
 		
-		// Crossdating	
-		crossAgainst = Builder.makeMenuItem("menus.tools.new_crossdate", true, "crossdate.png");
-		crossAgainst.addActionListener(new ActionListener() {
+		// Crossdating against db series
+		crossAgainstDBSeries = Builder.makeMenuItem("menus.tools.new_crossdate", true, "crossdate.png");
+		crossAgainstDBSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				Element secondary = new CachedElement(sample); 
 				new CrossdateDialog(editor, ElementList.singletonList(secondary), secondary);
+			}
+		});
+		
+		// Crossdating against file series
+		crossAgainstFileSeries = Builder.makeMenuItem("menus.tools.new_crossdate_file", true, "file.png");
+		crossAgainstFileSeries.setEnabled(false);
+		crossAgainstFileSeries.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				
+			
 			}
 		});
 		
@@ -258,7 +278,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 			}
 			else
 			{
-				crossMenu.add(crossAgainst);
+				crossMenu.add(crossAgainstDBSeries);
 				crossMenu.addSeparator();
 				OpenRecent.makeOpenRecentMenu("menus.tools.crossdate", crossMenu, 10);
 				add(crossMenu);	
@@ -267,7 +287,8 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		}
 		else
 		{
-			crossMenu.add(crossAgainst);
+			crossMenu.add(crossAgainstDBSeries);
+			crossMenu.add(crossAgainstFileSeries);
 			crossMenu.addSeparator();
 			OpenRecent.makeOpenRecentMenu("menus.tools.crossdate", crossMenu, 10);
 			add(crossMenu);	
@@ -307,7 +328,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		  indexMenu.setEnabled(App.isLoggedIn() && !sample.isIndexed());
 		  sumMenuItem.setEnabled(App.isLoggedIn());
 		  redate.setEnabled(App.isLoggedIn());
-		  crossAgainst.setEnabled(App.isLoggedIn());
+		  crossAgainstDBSeries.setEnabled(App.isLoggedIn());
 		  crossMenu.setEnabled(App.isLoggedIn());
 	}
 

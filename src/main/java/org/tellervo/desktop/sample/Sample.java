@@ -207,9 +207,32 @@ public class Sample extends BaseSample implements Graphable, Indexable {
 		repopulateValuesMap();
 		
 		// must have ring widths!
-		if(!tridasValuesMap.containsKey(NormalTridasVariable.RING_WIDTH)) {
-			getSeries().getValues().add(createEmptyRingWidths());
-			repopulateValuesMap(); // be lazy
+		if(!tridasValuesMap.containsKey(NormalTridasVariable.RING_WIDTH) && 
+		   !tridasValuesMap.containsKey(NormalTridasVariable.EARLYWOOD_WIDTH) && 
+		   !tridasValuesMap.containsKey(NormalTridasVariable.EARLYWOOD_WIDTH)) {
+			
+			if(otherValuesMap.size()==1 && otherValuesMap.containsKey(UNKNOWN_VARIABLE))
+			{
+				log.debug("Assuming 'unknown' variable is ring widths");
+				TridasValues valuesgrp = otherValuesMap.get(UNKNOWN_VARIABLE);
+				if(valuesgrp.getValues()!=null)
+				{
+					log.debug("Unknown values group has "+valuesgrp.getValues().size()+" values");
+				}
+				else
+				{
+					log.debug("Unknown values group is empty");
+					return;
+				}
+				log.debug("Constructing TridasWidthValueWrapper()");
+				ringwidths = new TridasWidthValueWrapper(valuesgrp);
+			}
+			else
+			{
+				log.error("No ring widths in series");
+				getSeries().getValues().add(createEmptyRingWidths());
+				repopulateValuesMap(); // be lazy
+			}
 		}
 		
 		// make the ring widths wrapper
@@ -1062,5 +1085,11 @@ public class Sample extends BaseSample implements Graphable, Indexable {
 			this.setValue(""); // this is XML mandatory, as it's a value string
 		}
 	};
-
+	
+	public final static TridasVariable UNKNOWN_VARIABLE = new TridasVariable() {
+		{
+			this.setValue("Unknown"); 
+		}
+	};
+	
 }

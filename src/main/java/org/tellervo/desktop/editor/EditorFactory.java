@@ -44,11 +44,14 @@ import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tridas.interfaces.ITridas;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.util.SafeIntYear;
 import org.tridas.io.util.UnitUtils;
+import org.tridas.schema.BaseSeries;
 import org.tridas.schema.NormalTridasMeasuringMethod;
 import org.tridas.schema.NormalTridasUnit;
+import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
@@ -57,8 +60,10 @@ import org.tridas.schema.TridasMeasuringMethod;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasUnit;
+import org.tridas.schema.TridasUnitless;
 import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
+import org.tridas.schema.TridasVariable;
 import org.tridas.util.TridasObjectEx;
 
 
@@ -392,7 +397,7 @@ public class EditorFactory {
 	
 	
 	/**
-	 * Bit of a cheat.  This creates a new editor from a derivedSeries pretending
+	 * Bit of a kludge.  This creates a new editor from a derivedSeries pretending
 	 * it's a raw measurement
 	 *  
 	 * @param container
@@ -400,22 +405,187 @@ public class EditorFactory {
 	 */
 	public static void newSeriesFromDerivedSeries(Container container, TridasDerivedSeries series, NormalTridasUnit unitsIfNotSpecified) {
 		
-		TridasMeasurementSeries ms = new TridasMeasurementSeries();
+		Sample sample = createSampleFromSeries(series);
 		
-		ms.setTitle(series.getTitle());
-		if(series.isSetInterpretation())
+		sample.setModified();
+		
+		// setup our loader and series identifier
+		CorinaWsiTridasElement.attachNewSample(sample);
+
+		// start the editor
+		Editor ed = new Editor(sample);
+		ed.setVisible(true);
+		
+	}
+	
+	public static Sample createSampleFromSeries(ITridas series)
+	{
+		Sample sample = new Sample();
+		sample.setMeta("filename", series.getTitle());
+		sample.setMeta("title", series.getTitle());
+				
+		TridasDerivedSeries ds;
+		TridasMeasurementSeries ms;
+		SafeIntYear endYear;
+		SafeIntYear startYear = new SafeIntYear(1001);
+		List<TridasValues> servalues;
+		
+		if(series instanceof TridasDerivedSeries)
 		{
-			ms.setInterpretation(series.getInterpretation());
+			ds = (TridasDerivedSeries) series;
+			// Set range from series
+			if(ds.isSetInterpretation())
+			{
+				if (ds.getInterpretation().isSetFirstYear())
+				{
+					 startYear = new SafeIntYear(ds.getInterpretation().getFirstYear());
+				}
+			}
+			
+			endYear = startYear.add(ds.getValues().get(0).getValues().size()-1);
+			servalues = ds.getValues();
+		}
+		else
+		{
+			ms = (TridasMeasurementSeries) series;
+			// Set range from series
+			
+			if(ms.isSetInterpretation())
+			{
+				if (ms.getInterpretation().isSetFirstYear())
+				{
+					 startYear = new SafeIntYear(ms.getInterpretation().getFirstYear());
+				}
+			}
+			
+			endYear = startYear.add(ms.getValues().get(0).getValues().size()-1);
+			servalues = ms.getValues();
 		}
 		
-		if(series.isSetValues())
+		Range rng = new Range(new Year(startYear.toString()), new Year(endYear.toString()));
+
+		
+
+		
+		log.debug("New series range is "+rng.toStringWithSpan());
+		sample.setRange(rng);
+
+		ArrayList<TridasValue> ringWidthValues = null;
+		ArrayList<TridasValue> earlyWidthValues = null;
+		ArrayList<TridasValue> lateWidthValues = null;
+		
+		if(servalues==null)
 		{
-			ms.setValues(series.getValues());
+			Alert.error("Import error", "Series contains no data");
+			return null;
 		}
+		else if (servalues.size()==0)
+		{
+			Alert.error("Import error", "Series contains no data");
+			return null;
+		}
+		else if(servalues.size()==1)
+		{
+			TridasVariable var = servalues.get(0).getVariable();
+			
+			if(var.isSetNormalTridas())
+			{
+				if(!var.getNormalTridas().value().equals(NormalTridasVariable.RING_WIDTH))
+				{
+					Alert.error("Import error", "Although the series contains data, it is not ring width data");
+					return null;
+				}
+			}
+			else
+			{
+				log.warn("Series contains data of unknown type.  Assuming ring widths");
+			}
+			
+			ringWidthValues = (ArrayList<TridasValue>) servalues.get(0).getValues();
+		}
+		else
+		{
+			for(TridasValues grp : servalues)
+			{
+				TridasVariable var = grp.getVariable();
+				
+				if(var.isSetNormalTridas())
+				{
+					if(var.getNormalTridas().equals(NormalTridasVariable.RING_WIDTH)) 
+					{
+						ringWidthValues = (ArrayList<TridasValue>) grp.getValues();
+					}
+					else if(var.getNormalTridas().equals(NormalTridasVariable.EARLYWOOD_WIDTH))
+					{
+						earlyWidthValues = (ArrayList<TridasValue>) grp.getValues();
+					}
+					else if(var.getNormalTridas().equals(NormalTridasVariable.LATEWOOD_WIDTH))
+					{
+						lateWidthValues = (ArrayList<TridasValue>) grp.getValues();
+					}
+				}
+			}
+			
+			if(ringWidthValues==null && (earlyWidthValues==null && lateWidthValues==null))
+			{
+				Alert.error("Import error", "Unable to extract data from chronology file");
+				return null;
+			}
+			
+		}
+
 		
-		newSeriesFromMeasurementSeries(container, ms, unitsIfNotSpecified);
-		
-		
+		if(ringWidthValues!=null)
+		{
+			ArrayList<Number> values2 = new ArrayList<Number>();
+			try{
+				for(TridasValue v : ringWidthValues)
+				{
+					values2.add(Integer.valueOf(v.getValue()));
+				}
+			} catch (NumberFormatException e)
+			{
+				Alert.error("Import error", "Invalid value in series");
+				return null;
+			}
+			
+			sample.setRingWidthData(values2);
+		}
+		else
+		{
+			ArrayList<Number> early = new ArrayList<Number>();
+			try{
+				for(TridasValue v : earlyWidthValues)
+				{
+					early.add(Integer.valueOf(v.getValue()));
+				}
+			} catch (NumberFormatException e)
+			{
+				Alert.error("Import error", "Invalid value in series");
+				return null;
+			}
+			
+			ArrayList<Number> late = new ArrayList<Number>();
+			try{
+				for(TridasValue v : lateWidthValues)
+				{
+					late.add(Integer.valueOf(v.getValue()));
+				}
+			} catch (NumberFormatException e)
+			{
+				Alert.error("Import error", "Invalid value in series");
+				return null;
+			}
+			
+			sample.setEarlywoodWidthData(early);
+			sample.setLatewoodWidthData(late);
+		}
+			
+			
+	    sample.getSeries().getValues().get(0).setUnit(null);
+	    sample.getSeries().getValues().get(0).setUnitless(new TridasUnitless());
+	    
+	    return sample;
 	}
 	
 	/**

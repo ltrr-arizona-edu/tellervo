@@ -27,6 +27,9 @@ public class ImportDataOnly extends Object {
 	private static final long serialVersionUID = 1L;
 	private final Window parent;
 	private Boolean warnedAboutUnspecifiedVar = false;
+	private ArrayList<TridasMeasurementSeries> seriesList;
+	private NormalTridasUnit unitsIfNotSpecified = NormalTridasUnit.MICROMETRES;
+	private AbstractDendroFileReader reader;
 	
 	public ImportDataOnly(Window parent, File file, String fileType)
 	{
@@ -58,7 +61,7 @@ public class ImportDataOnly extends Object {
 		
 		
 		// Create a reader based on the file type supplied
-		AbstractDendroFileReader reader;
+		
 		reader = TridasIO.getFileReader(fileType);
 		if(reader==null) 
 		{
@@ -81,7 +84,7 @@ public class ImportDataOnly extends Object {
 			Alert.error("Invalid File", e.getLocalizedMessage());
 		}
 					
-		ArrayList<TridasMeasurementSeries> seriesList = TridasUtils.getMeasurementSeriesFromTridasProject(reader.getProjects()[0]);
+		seriesList = TridasUtils.getMeasurementSeriesFromTridasProject(reader.getProjects()[0]);
 		
 		Integer count = reader.getProjects()[0].getDerivedSeries().size() + seriesList.size();
 		
@@ -129,7 +132,7 @@ public class ImportDataOnly extends Object {
 		}
 		
 		
-		NormalTridasUnit unitsIfNotSpecified = NormalTridasUnit.MICROMETRES;
+
 				
 		if(unitsSet==false)
 		{
@@ -174,8 +177,10 @@ public class ImportDataOnly extends Object {
 				return;
 			}
 		}
-		
-		
+	}
+	
+	public void openEditors()
+	{
 		// Warn if project contains derivedSeries
 		if(reader.getProjects()[0].isSetDerivedSeries())
 		{

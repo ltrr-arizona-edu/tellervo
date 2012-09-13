@@ -22,43 +22,27 @@ package org.tellervo.desktop.gui.menus;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.print.PageFormat;
-import java.awt.print.Pageable;
-import java.awt.print.Printable;
-import java.awt.print.PrinterAbortException;
-import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.KeyStroke;
-import javax.swing.filechooser.FileFilter;
 
-import org.tellervo.desktop.Range;
-import org.tellervo.desktop.Year;
 import org.tellervo.desktop.bulkImport.control.BulkImportController;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;
 import org.tellervo.desktop.editor.Editor;
-import org.tellervo.desktop.editor.ScanBarcodeUI;
-import org.tellervo.desktop.editor.EditorFactory.BarcodeDialogResult;
-import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.CanOpener;
 import org.tellervo.desktop.gui.FileDialog;
-import org.tellervo.desktop.gui.ImportFrame;
 import org.tellervo.desktop.gui.LoginDialog;
 import org.tellervo.desktop.gui.PrintableDocument;
 import org.tellervo.desktop.gui.SaveableDocument;
@@ -68,8 +52,6 @@ import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.gui.menus.actions.ExportDataAction;
 import org.tellervo.desktop.gui.menus.actions.PrintAction;
 import org.tellervo.desktop.gui.menus.actions.SaveAction;
-import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel;
-import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.io.ExportDialog;
@@ -77,18 +59,14 @@ import org.tellervo.desktop.io.WrongFiletypeException;
 import org.tellervo.desktop.io.control.IOController;
 import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.io.view.ImportView;
-import org.tellervo.desktop.manip.TruncateDialog;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
 import org.tellervo.desktop.sample.Element;
-import org.tellervo.desktop.sample.ElementFactory;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.Overwrite;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
@@ -96,12 +74,6 @@ import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
-import org.tridas.io.exceptions.InvalidDendroFileException;
-import org.tridas.io.util.SafeIntYear;
-import org.tridas.io.util.TridasUtils;
-import org.tridas.schema.TridasMeasurementSeries;
-import org.tridas.schema.TridasProject;
-import org.tridas.schema.TridasSample;
 
 
 
@@ -221,6 +193,7 @@ public class FileMenu extends JMenu {
 				    if (returnVal == JFileChooser.APPROVE_OPTION) {
 				        File file = fc.getSelectedFile();
 				        ImportDataOnly importDialog = new ImportDataOnly(f, file, s);
+				        importDialog.openEditors();
 				        
 						// Remember this folder for next time
 						App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
