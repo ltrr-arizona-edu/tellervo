@@ -117,6 +117,8 @@ public class ImportDataOnly extends Object {
 			}
 		}
 		
+		
+		
 		for(TridasDerivedSeries ser : reader.getProjects()[0].getDerivedSeries())
 		{
 			for(TridasValues  tv : ser.getValues())
@@ -131,10 +133,8 @@ public class ImportDataOnly extends Object {
 			}
 		}
 		
-		
 
-				
-		if(unitsSet==false)
+		if(unitsSet==false && seriesList.size()>0)
 		{
 			Object[] possibilities = {"1/1000th mm", 
 					"1/100th mm",
