@@ -31,7 +31,7 @@ $labacronym = "%%LABACRONYM%%";
 $cdbCredentialsFile = "/usr/share/tellervo-server/server_credentials";
 
 // Hostname or IP of the server running PostgreSQL
-$hostname = "%%IP%%";
+$hostname = "localhost";
 
 // PostgreSQL Database name e.g. "tellervo"
 $dbName = "%%DBNAME%%";
@@ -43,8 +43,11 @@ $pgport = "5432";
 /**
  * WEBSERVER SETTINGS
  */
-// Domain name of the server this software is running on e.g. "dendro.cornell.edu/"
-$domain = "%%IP%%/tellervo/";
+// Domain name for this webservice e.g. "dendro.cornell.edu"
+$domain = "%%DBNAME%%";
+
+// IP address of this server
+$ip = "%%IP%%";
 
 // Does the server use https?
 $securehttp = FALSE;

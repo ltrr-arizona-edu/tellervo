@@ -117,7 +117,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>HH:mm dd-MMM-yyyy</maven.build.timestamp.format>
     	<timestamp>${maven.build.timestamp}</timestamp>
-    	<serverversion>1.1.1</serverversion>
+    	<serverversion>1.1.2</serverversion>
 	</properties>
 
 	<!--  Repository to deploy to.  When deploying make sure your .m2/settings.xml

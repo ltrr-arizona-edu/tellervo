@@ -44,23 +44,21 @@ if($_SERVER['USER']=='root')
 	exec("touch $logfile > /dev/null");
 	exec("chmod a+rw $logfile > /dev/null");
 	
-	// Log the date of running to the log file
-	exec("echo \"*******************\" >> ".$logfile); 
-	exec("echo \"Running tellervo-server\" >> ".$logfile); 
-	exec("date >> ".$logfile); 
-	exec("echo \"*******************\" >> ".$logfile); 
+	// Log 
+	exec("echo \"\n******* Running tellervo-server ********\n\" >> $logfile");
 }
 
 /**
  * Grab command line arguments either using long or short options
  */
  
-$shortopts = "htrces";
-$longopts = array("help", "test", "reconfigure", "configure", "emptylog", "sysconfig", "resetpwd", "start", "stop", "restart", "upgrade-db", "version","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info");
+$shortopts = "htrcnesv";
+$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "resetpwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info");
 $args = getopt($shortopts,$longopts);
 
 // Depending on command line arguments run different functions
-if($args["add-wms-name"]!=null && $args["add-wms-url"]!=null)
+if(isset($args["add-wms-name"]) && isset($args["add-wms-url"]) &&
+   $args["add-wms-name"]!=null && $args["add-wms-url"]!=null)
 {
 	$name = $args["add-wms-name"];
 	$url = $args["add-wms-url"];
@@ -80,7 +78,7 @@ if($args["add-wms-name"]!=null && $args["add-wms-url"]!=null)
 	
 	die();
 }
-if($args["del-wms-name"]!=null)
+if(isset($args["del-wms-name"]) && $args["del-wms-name"]!=null)
 {
 	include($configfile);
 	include($dbsetupfile);
@@ -88,15 +86,15 @@ if($args["del-wms-name"]!=null)
 	delWMS($args["del-wms-name"]);
 	die();
 }
-if($args["test"]===false || $args["t"]===false)
+if(isset($args["test"]) || isset($args["t"]))
 {
 	// Test configuration
 	include($configfile);
 	include($dbsetupfile);
 	$setupsuccessful = verifySetup();
-	printComplete(setupsuccessful);
+	printComplete($setupsuccessful);
 }
-else if($args["firstrun"]===false)
+if(isset($args["firstrun"]))
 {
 	// Configure server for first run
 	$colors = new Colors();
@@ -118,7 +116,7 @@ else if($args["firstrun"]===false)
 	exec("sudo $folderbase/firstrun");
 	exit(0);
 }
-else if($args["deploy"]===false)
+if(isset($args["deploy"]))
 {
 	requireRoot();
 	
@@ -176,20 +174,47 @@ else if($args["deploy"]===false)
 	echo "--- BUT FIRST RUN ---\nhistory -c \n\n";
 	exit(0);
 }
-else if($args["reconfigure"]===false || $args["r"]===false)
+if(isset($args["reconfigure"]) || isset($args["r"]))
 {
 	// Reconfigure server
 	requireRoot();
-	postgresSetup();
+	
+	// Confirm the user wants to scrub and start from scratch  
+	echo "\nIf you continue, your existing Tellervo configuration and database will be\n";
+	echo "deleted.  Are you sure you want to proceed?  (y/N): ";
+    $response = trim(fgets(STDIN));
+    if($response!="Y" && $response !="y")
+    {
+    	exit(0);
+    }      
+	
+	// Delete existing config files
+	if (file_exists("$folderbase/firstrun"))
+	{
+		exec("sudo rm $folderbase/firstrun");
+	}
+	if (file_exists("$wsbase/config.php"))
+	{
+		exec("sudo rm $wsbase/config.php");
+	}
+	if (file_exists("$wsbase/systemconfig.php"))
+	{
+		exec("sudo rm $wsbase/systemconfig.php");
+	}
+	
+	createScriptsFromTemplates();
+	postgresSetup(true);
 	include($configfile);
 	include($dbsetupfile);
 	generateSystemsConfig();
+	include($systemconfig);
+
 	apacheSetup();
 	verifySetup();
 	printComplete();
 	exit(0);
 }
-else if($args["sysconfig"]===false || $args["s"]===false)
+if(isset($args["sysconfig"]) || isset($args["s"]))
 {
 	requireRoot();
 	include($configfile);
@@ -197,12 +222,13 @@ else if($args["sysconfig"]===false || $args["s"]===false)
 	generateSystemsConfig();
 	exit(0);
 }
-else if($args["help"]===false || $args["h"]===false)
+if(isset($args["help"]) || isset($args["h"]))
 {
     // Show help documentation
   	showHelp();
+  	exit(0);
 }
-else if($args["stop"]===false)
+if(isset($args["stop"]))
 {
 	requireRoot();
 	echo "Stopping PostgreSQL...\n";
@@ -212,7 +238,7 @@ else if($args["stop"]===false)
 	echo "\n\n";
 	exit(0);
 }
-else if($args["start"]===false)
+if(isset($args["start"]))
 {
 	requireRoot();
 	echo "Starting PostgreSQL...\n";
@@ -222,7 +248,7 @@ else if($args["start"]===false)
 	echo "\n";
 	exit(0);
 }
-else if($args["restart"]===false)
+if(isset($args["restart"]))
 {
 	requireRoot();
 	echo "Restarting PostgreSQL...\n";
@@ -232,14 +258,14 @@ else if($args["restart"]===false)
 	echo "\n";
 	exit(0);
 }
-else if($args["resetpwd"]===false)
+if(isset($args["resetpwd"]))
 {
 	requireRoot();
 	setDBUser();
 	echo "\n";
 	exit(0);
 }
-else if($args["emptylog"]===false || $args["e"]===false)
+if(isset($args["emptylog"]) || isset($args["e"]))
 {
 	requireRoot();
 	include($configfile);
@@ -248,7 +274,7 @@ else if($args["emptylog"]===false || $args["e"]===false)
 	exit(0);
 	
 }
-else if($args["upgrade-db"]===false)
+if(isset($args["upgrade-db"]))
 {
 	requireRoot();
 	include($configfile);
@@ -256,7 +282,7 @@ else if($args["upgrade-db"]===false)
 	runDBUpgrades();
 	exit(0);
 }
-else if ($args["configure"]===false || $args["c"]===false)
+if (isset($args["configure"]) || isset($args["c"]))
 {
 	// Configure
 	requireRoot();
@@ -292,7 +318,7 @@ else if ($args["configure"]===false || $args["c"]===false)
 	printComplete();
 	exit(0);
 }
-else if ($args["version"]===false)
+if (isset($args["version"]) || isset($args["v"]))
 {
 	include($configfile);
 	include($dbsetupfile);
@@ -303,7 +329,7 @@ else if ($args["version"]===false)
 	echo "\n";
 	exit(0);
 }
-else if ($args["info"]===false)
+if (isset($args["info"]))
 {
 	include($configfile);
 	include($dbsetupfile);
@@ -312,7 +338,51 @@ else if ($args["info"]===false)
 	echo "\n";
 	exit(0);
 }
-
+if (isset($args["network"]) || isset($args["n"]))
+{
+	requireRoot();
+	
+	writeLogMsg("Checking network is configured correctly...");
+	require("$configfile");
+	
+	$thisip = getIP();
+	
+	echo "\n";
+	
+	if($ip=="$thisip")
+	{
+		echo " Network settings appear to require no changes...\n";
+		writeLogMsg("IP of server doesn't appear to have changed: $ip");
+	}
+	else
+	{
+	    writeLogMsg("Network settings appear to have changed");
+	    writeLogMsg("Updating config files accordingly...");
+	    writeLogMsg("Switching '$ip' to '$thisip'");
+	    $snr = new File_SearchReplace("ip = \"$ip\"",
+                           			"ip = \"$thisip\"",
+			      					$configfile,
+                              		'', // directorie(s) to search
+                              		false) ;
+        $snr->doSearch();
+	}
+	
+	
+	require("$configfile");
+	require("$dbsetupfile");
+	require("$systemconfig");
+	$setupsuccessful = verifySetup();
+	printComplete($setupsuccessful);
+	
+	if($setupsuccessful)
+	{
+	 	exit(0);
+	}
+	else
+	{
+		exit(1);
+	}
+}
 
 showHelp(true);
 exit(1);
@@ -406,25 +476,40 @@ function showHelp($forced=false)
   echo "  tellervo-server --add-wms-name \"New Server\" --add-wms-url \"http://...\"\n";
   echo "  tellervo-server --del-wms-name \"Server to delete\"\n";
   echo "\nOptions:\n";
-  echo "  -h, --help         Show this help\n";
-  echo "  -t, --test         Run tests on existing setup\n";
-  echo "  -c, --configure    Configure server\n";
-  echo "  -r, --reconfigure  Reconfigure the server overwriting existing config\n";
-  echo "      --resetpwd     Reset the PostgreSQL database password\n";
-  echo "      --start        Start the Tellervo server\n";
-  echo "      --stop         Stop the Tellervo server\n"; 
-  echo "      --restart      Restart the Tellervo server\n";   
-  echo "      --upgrade-db   Run database upgrade scripts\n";
-  echo "      --version      Show version of Tellervo server that is installed\n";
-  echo "      --add-wms-name Name of a web mapping server to add to database\n";
-  echo "      --add-wms-url  URL of a web mapping server to add to database\n";
-  echo "      --del-wms-name Name of a web mapping server to delete from database\n";
+  echo "  -h, --help          Show this help\n";
+  echo "  -v, --version       Show version of Tellervo server that is installed\n";
+  echo "  -t, --test          Run tests on existing setup\n";
+  echo "  -c, --configure    *Configure server\n";
+  echo "  -r, --reconfigure  *Reconfigure the server overwriting existing config\n";
+  echo "  -n, --network      *Check network settings and reset if necessary\n";
+  echo "  -e, --empty-log    *Clean the log files and database tables\n";
+  echo "  -s, --sysconfig    *Generate the systems configuration file\n";
+  echo "      --resetpwd     *Reset the PostgreSQL database password\n";
+  echo "      --start        *Start the Tellervo server\n";
+  echo "      --stop         *Stop the Tellervo server\n"; 
+  echo "      --restart      *Restart the Tellervo server\n";   
+  echo "      --upgrade-db   *Run database upgrade scripts\n";
+  echo "      --add-wms-name  Name of a web mapping server to add to database\n";
+  echo "      --add-wms-url   URL of a web mapping server to add to database\n";
+  echo "      --del-wms-name  Name of a web mapping server to delete from database\n";
+  echo "\n";
+  echo "  * Root or sudo privileges are required to run these commands\n";
   echo "\n";
   
   if(forced) exit(1);
   
   exit(0);
 
+}
+
+/**
+*  Write message to log file
+*/
+function writeLogMsg($message, $errType="INFO")
+{
+	global $logfile;
+	$cmd = "echo \"".date(DATE_ATOM)." - ".truncateString($errType, 9).":  $message\" >> $logfile";
+	exec($cmd);
 }
 
 /**
@@ -439,9 +524,9 @@ function runDBUpgrades()
 
 	echo "Upgrading existing Tellervo database to latest version...\n";
 	
-	exec("echo \"*******************\" >> $logfile");
-    exec("echo \"Upgrading existing Tellervo database to latest version...\" >> $logfile" );
-    exec("echo \"*******************\" >> $logfile");	
+	writeLogMsg("*******************");
+    writeLogMsg("Upgrading existing Tellervo database to latest version...");
+    writeLogMsg("*******************");	
 	
 	// Loop through all upgrade scripts and run any that haven't 
 	// already been run
@@ -527,6 +612,8 @@ function getTellervoDBVersion()
 	global $dbsetupfile;
 	global $dbconn;	
 		
+	include($systemconfig);
+		
 	$sql = "SELECT value FROM tblconfig WHERE key='wsversion'";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -574,7 +661,7 @@ function runSQLUpgradeFile($filename)
 		
 	$sql = file_get_contents($upgradeScripts."/".$filename);
 	
-	exec("echo \"Upgrading database with SQL \n ".escapeshellcmd($sql)."\" >> $logfile");
+	writeLogMsg("Upgrading database with SQL \n ".escapeshellcmd($sql));
 	
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -590,8 +677,8 @@ function runSQLUpgradeFile($filename)
 	    	echo $colors->getColoredString("WARNING", "yellow");
     		echo "\n\n";
 
-    		exec("echo \"Error running upgrade script '".escapeshellcmd($filename)."'\" >> $logfile");
-    		exec("echo \"".escapeshellcmd($error)."\" >> $logfile" );
+    		writeLogMsg("Error running upgrade script '".escapeshellcmd($filename)."'" );
+    		writeLogMsg("".escapeshellcmd($error)."\" >> $logfile" );
     		pg_query($dbconn, "ROLLBACK");
     		 
     		return false;
@@ -608,8 +695,8 @@ function runSQLUpgradeFile($filename)
 	    	    echo $colors->getColoredString("WARNING", "yellow");
     			echo "\n\n";
 
-	    		exec("echo \"Unable to add patch name to upgradelog\" >> $logfile");
-	    		exec("echo \"".escapeshellcmd($error)."\" >> $logfile" );
+	    		writeLogMsg("Unable to add patch name to upgradelog" );
+	    		writeLogMsg(escapeshellcmd($error));
 	    		pg_query($dbconn, "ROLLBACK"); 
 	    		return false;
 	    	}	
@@ -640,9 +727,12 @@ function emptyLog()
     global $systemconfig;
 	global $dbsetupfile;
 	global $dbconn;
-		
-	$sql = "DELETE FROM tbliptracking where timestamp > (CURRENT_DATE - INTERVAL '1 week';
-	        DELETE FROM tblrequestlog where timestamp > (CURRENT_DATE - INTERVAL '1 week';";
+	global $logfile;
+	
+	unlink($logfile); 	
+	
+	$sql = "DELETE FROM tbliptracking where timestamp > (CURRENT_DATE - INTERVAL '1 week');
+	        DELETE FROM tblrequestlog where createdtimestamp > (CURRENT_DATE - INTERVAL '1 week');";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
@@ -773,9 +863,15 @@ function createScriptsFromTemplates()
   echo "\nPlease enter a code/acronym for your lab e.g. C for Cornell : ";
   $response = fgets(STDIN);
   setConfigVariable("%%LABACRONYM%%", trim($response, "\n\r"));   
+  
+  echo "\nPlease enter a unique 'domain' for your database.  This should normally be the\n"; 
+  echo   "domain name of your lab's website (e.g. dendro.cornell.edu), but can be any\n";
+  echo   "name as long as it is unique and doesn't contain spaces : ";
+  $response = fgets(STDIN);
+  setConfigVariable("%%DOMAIN%%", trim($response, "\n\r"));   
  
   // Set timezone from system
-  setConfigVariable("%%TIMEZONE%%", file_get_contents('/etc/timezone')); 
+  setConfigVariable("%%TIMEZONE%%", trim(file_get_contents('/etc/timezone'))); 
  
   echo "\n";
   // Back up pg_hba file if it hasn't been already 
@@ -791,7 +887,7 @@ function createScriptsFromTemplates()
  */
 function getIP()
 {
-  exec("ifconfig $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
+  exec("ifconfig eth0 $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
   return $response[0];
 }
 
@@ -998,7 +1094,7 @@ function apacheSetup()
   exec("ln /usr/share/tellervo-server/tellervo-apache /etc/apache2/sites-enabled/ 2>> $logfile", $response);
   
   echo "\nRestarting webserver...\n";
-  exec("/etc/init.d/apache2 restart >> $logfile");
+  exec("/etc/init.d/apache2 restart");
 
 }
 
@@ -1062,22 +1158,28 @@ function verifySetup($silent=false)
   global $wsurl;
   global $systemconfig;
   global $configfile;
+  
+  
   $runningresult = TRUE;
   
-  require("/var/www/tellervo/config.php");
-
-  if($silent!=TRUE) echo "\nVerifying Tellervo server setup...\n";
+  include($configfile);
+  include($systemconfig);
   
+  global $ip;
+  global $baseFolder;
+  global $securehttp;
+
+  // Compile webservice URL 
   if($securehttp===TRUE)
   {
-    $http = "https://";
+    $wsurl = "https://$ip/".basename($baseFolder)."/";
   }
   else
   {
-    $http = "http://";
+    $wsurl = "http://$ip/".basename($baseFolder)."/";
   }
-  $wsurl = $http.$domain;
-  
+
+  writeLogMsg("Webservice url: $wsurl");
 
 	if($silent)
 	{
@@ -1102,6 +1204,11 @@ function verifySetup($silent=false)
 		if(fopen($wsurl, "r"))
 		{
 			if(getIP()=="127.0.0.1")
+			{
+				printResult(FALSE);
+				$runningresult = FALSE;
+			}
+			else if(substr(getIP(), 0, 3)=="10.") 
 			{
 				printResult(FALSE);
 				$runningresult = FALSE;
@@ -1227,19 +1334,20 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
     {
     case E_ERROR:
     case E_USER_ERROR:
-     $errType = "ERROR ";
+     $errType = "ERROR";
      break;
     case E_WARNING:
     case E_USER_WARNING:
-     $errType = "WARNING ";
+     $errType = "WARNING";
      break;
     case E_NOTICE:
     case E_USER_NOTICE:
-     $errType = "NOTICE ";
+     $errType = "NOTICE";
      break;
     }
 
-    error_log("--- ".$errType." - ".$errstr. "\n" , 3, $logfile);
+	writeLogMsg("File: $errfile, line $errline - $errstr", $errType);
+    //error_log("--- ".$errType." - ".$errstr. "\n" , 3, $logfile);
 }
 
 /**
@@ -1250,7 +1358,8 @@ function printComplete($forceSuccess=null)
 {
   global $errorsFound;
   global $wsurl;
-
+  global $ip;
+  
   $colors = new Colors();
   echo "\n\n";
   
@@ -1258,7 +1367,7 @@ function printComplete($forceSuccess=null)
   {
   	echo "Configuration was successful.  Your Tellervo webservice is now available at:\n";
   	echo "    - $wsurl\n\n";
-  	exit(0);
+   	exit(0);
   }
   else if ($forceSuccess===FALSE)
   {
@@ -1305,6 +1414,14 @@ function printResult($res)
  */
 function echoTruncatedString($str, $length=70)
 {
+	echo truncateString($str, $length);
+}
+ 
+/**
+*  Truncate a string
+*/
+function truncateString($str, $length=70)
+{
   if(strlen($str)>$length-1)
   {
   	$str = substr($str, 0, $length-4 )."... ";
@@ -1314,7 +1431,7 @@ function echoTruncatedString($str, $length=70)
   	$str = str_pad($str, $length);
   }
 
-  echo $str;
+  return $str;
 
 }
 
