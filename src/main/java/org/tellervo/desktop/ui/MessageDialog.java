@@ -16,6 +16,8 @@ import javax.swing.border.EmptyBorder;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextArea;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
 public class MessageDialog extends JDialog {
 
@@ -79,16 +81,17 @@ public class MessageDialog extends JDialog {
 	private void setupGui()
 	{
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
-		this.setMinimumSize(new Dimension(360,175));
+		this.setMinimumSize(new Dimension(460,300));
+		this.setMaximumSize(new Dimension(800,600));
 		//setBounds(100, 100, 386, 310);
 		this.setIconImage(Builder.getApplicationIcon());
 		
 		this.setTitle(title);
 		
 		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPanel.setBorder(null);
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new MigLayout("", "[70px:70:70][grow]", "[64:64:64,grow]"));
+		contentPanel.setLayout(new MigLayout("", "[70px:70px:70px][grow]", "[64:64:64][grow,fill]"));
 		{
 			JLabel lblIcon = new JLabel("");
 			
@@ -109,21 +112,26 @@ public class MessageDialog extends JDialog {
 		{
 			JPanel panel = new JPanel();
 			panel.setBorder(null);
-			contentPanel.add(panel, "cell 1 0,grow");
-			panel.setLayout(new MigLayout("", "[110px,grow]", "[25px,grow]"));
+			contentPanel.add(panel, "cell 1 0 1 2,grow");
+			panel.setLayout(new MigLayout("", "[110px,grow,fill]", "[25px,grow,fill]"));
 			{
-				JTextArea textArea = new JTextArea();
-				textArea.setText(message);
-				textArea.setEditable(false);
-				textArea.setLineWrap(true);
-				textArea.setWrapStyleWord(true);
-				textArea.setFont(new Font("Dialog", Font.PLAIN, 12));
-				textArea.setEditable(false);
-				textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
-				textArea.setOpaque(false);
-				textArea.setBackground(new Color(0,0,0,0));
-				
-				panel.add(textArea, "cell 0 0,growx,wmin 10");
+				JScrollPane scrollPane = new JScrollPane();
+				scrollPane.setViewportBorder(null);
+				scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+				panel.add(scrollPane, "cell 0 0,grow");
+				{
+					JTextArea textArea = new JTextArea();
+					scrollPane.setViewportView(textArea);
+					textArea.setText(message);
+					textArea.setEditable(false);
+					textArea.setLineWrap(true);
+					textArea.setWrapStyleWord(true);
+					textArea.setFont(new Font("Dialog", Font.PLAIN, 12));
+					textArea.setEditable(false);
+					textArea.setBorder(null);
+					textArea.setOpaque(false);
+					textArea.setBackground(new Color(0,0,0,0));
+				}
 			}
 		}
 		{

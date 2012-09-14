@@ -562,6 +562,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     		}
     	});
 
+    	final CrossdateDialog glue = this;
        	btnOk.addActionListener(new ActionListener() {
     		public void actionPerformed(ActionEvent ae) {
     			int row = cboReference.getSelectedIndex();
@@ -570,10 +571,8 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     			try {
     				CrossdateCollection.Pairing pairing = crossdates.getPairing(row, col);
     				
-    				CrossdateCommitDialog commit = new CrossdateCommitDialog(window, true);
-    				Center.center(commit, window);
-    				
-    				commit.setup(pairing.getPrimary(), pairing.getSecondary(), newCrossdateRange);
+    				CrossdateCommitDialog commit = new CrossdateCommitDialog(window, true, pairing.getPrimary(), pairing.getSecondary(), newCrossdateRange);
+    				commit.setLocationRelativeTo(glue);
     				commit.setVisible(true);
     				
     				if(commit.didSave())
@@ -762,7 +761,8 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 	public void graphChanged(GrapherEvent evt) {
 		if(evt.getEventType() == GrapherEvent.Type.XOFFSET_CHANGED) {
 			if(graphSamples.size() == 2)
-				status.setMovingRange(graphSamples.get(1).getRange());
+				newCrossdateRange = graphSamples.get(1).getRange();
+				status.setMovingRange(newCrossdateRange);
 		}
 	}
 	

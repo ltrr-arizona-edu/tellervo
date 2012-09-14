@@ -252,7 +252,7 @@ public class RedateDialog extends JDialog {
 	 * @param dating
 	 * @return true on success, false otherwise
 	 */
-	private boolean performCorinaWsiRedate(TridasDating dating) {
+	/*private boolean performCorinaWsiRedate(TridasDating dating) {
 		// we have to have a name and a justification
 		if(!info.testAndComplainRequired(EnumSet.of(NameVersionJustificationPanel.Fields.NAME,
 				NameVersionJustificationPanel.Fields.JUSTIFICATION)))
@@ -312,7 +312,9 @@ public class RedateDialog extends JDialog {
 		}
 		
 		return false;
-	}
+	}*/
+	
+
 	
 	private boolean performRedate() {
 		ITridasSeries series = sample.getSeries();
@@ -359,7 +361,11 @@ public class RedateDialog extends JDialog {
 		}
 		
 		if(sample.getLoader() instanceof CorinaWsiTridasElement) {
-			return performCorinaWsiRedate(newDating);
+			//return performCorinaWsiRedate(newDating);
+			
+			return Redate.performCorinaWsiRedate(sample, 
+					info.getName(), info.getVersion(), info.getJustification(), 
+					datingType, originalDatingType, range);
 		}
 		
 		Alert.error(I18n.getText("error"), I18n.getText("error.couldNotRedate"));

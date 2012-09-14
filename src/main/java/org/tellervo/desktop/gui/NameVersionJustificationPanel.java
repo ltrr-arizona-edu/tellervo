@@ -65,6 +65,7 @@ public class NameVersionJustificationPanel extends JPanel {
 	/**
 	 * Create a new panel for the given sample, without a justification box
 	 * @param sample
+	 * @wbp.parser.constructor
 	 */
 	public NameVersionJustificationPanel(Sample sample) {
 		this(sample, false, false);

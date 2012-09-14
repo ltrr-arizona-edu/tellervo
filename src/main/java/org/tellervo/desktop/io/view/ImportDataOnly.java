@@ -145,11 +145,11 @@ public class ImportDataOnly extends Object {
 			                    parent,
 			                    "One or more series has no units defined.\n"
 			                    + "Please specify units below:",
-			                    "Customized Dialog",
+			                    "Set Units",
 			                    JOptionPane.PLAIN_MESSAGE,
 			                    null,
 			                    possibilities,
-			                    "1/100th mm");
+			                    "1/1000th mm");
 
 			if (s.equals("1/1000th mm")) 
 			{

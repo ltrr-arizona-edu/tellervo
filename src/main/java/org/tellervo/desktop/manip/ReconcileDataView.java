@@ -132,7 +132,7 @@ public class ReconcileDataView extends SampleDataView implements SampleListener 
 				JPopupMenu menu = new JPopupMenu();
 				
 				// Create a remeasure button
-				JMenuItem remeasure = Builder.makeMenuItem("remeasure", true, "measure.png");
+				JMenuItem remeasure = Builder.makeMenuItem("menus.tools.reconcile.remeasure", true, "measure.png");
 				remeasure.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent ae) {
 							parent.remeasureSelectedRing();

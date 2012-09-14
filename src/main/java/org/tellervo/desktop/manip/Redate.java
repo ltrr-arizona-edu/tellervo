@@ -39,15 +39,29 @@
 
 package org.tellervo.desktop.manip;
 
+import java.io.IOException;
+
 import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import org.tellervo.desktop.Range;
+import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.sample.CorinaWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.sample.SampleType;
+import org.tellervo.desktop.tridasv2.GenericFieldUtils;
+import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.util.openrecent.OpenRecent;
+import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
+import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.NormalTridasDatingType;
 import org.tridas.schema.TridasDating;
+import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasInterpretation;
 
 
@@ -149,5 +163,72 @@ public class Redate extends AbstractUndoableEdit {
 	@Override
 	public String getPresentationName() {
 		return I18n.getText("redate");
+	}
+	
+	/**
+	 * Create a new redate on the webservice
+	 * @param dating
+	 * @return true on success, false otherwise
+	 */
+	public static boolean performCorinaWsiRedate(Sample sample, 
+			String newname, String newversion, String justification, NormalTridasDatingType datingType, 
+			NormalTridasDatingType originalDatingType, Range newDateRange) {
+
+		TridasDerivedSeries series = new TridasDerivedSeries();
+		
+		// set title (and version?)
+		if(newname!=null) series.setTitle(newname);
+		if(newversion!=null) series.setVersion(newversion);
+		
+		ControlledVoc voc = new ControlledVoc();
+		voc.setValue(SampleType.REDATE.toString());
+		series.setType(voc);
+		
+		// the identifier is based on the domain from the series
+		series.setIdentifier(NewTridasIdentifier.getInstance(sample.getSeries().getIdentifier()));
+		
+		// set the parent
+		SeriesLinkUtil.addToSeries(series, sample.getSeries().getIdentifier());
+		
+		// now, a redate has three other parameters
+		TridasInterpretation interpretation = new TridasInterpretation();
+		series.setInterpretation(interpretation);
+		
+		// 1: Dating type (but only if it changed)
+		if(datingType != originalDatingType)
+		{
+			TridasDating dating = new TridasDating();
+			dating.setType(datingType);
+			interpretation.setDating(dating);
+		}
+		
+		// 2: Relative start year
+		interpretation.setFirstYear(newDateRange.getStart().tridasYearValue());
+		// looks like the genericField is what's actually used?
+		GenericFieldUtils.setField(series, "tellervo.newStartYear", Integer.parseInt(newDateRange.getStart().toString()));
+
+		// 3: Justification
+		GenericFieldUtils.setField(series, "tellervo.justification", justification);
+		
+		// make a new 'redate' dummy sample for saving
+		Sample tmp = new Sample(series);		
+
+		try {
+			CorinaWsiTridasElement saver = new CorinaWsiTridasElement(series.getIdentifier());
+			// here's where we do the "meat"
+			if(saver.save(tmp)) {
+				// put it in our menu
+				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
+				
+				new Editor(tmp).toFront();
+				
+				// get out of here! :)
+				return true;
+			}
+		} catch (IOException ioe) {
+			Alert.error(I18n.getText("error.couldNotRedate"), I18n.getText("error") + ": " + ioe.toString());
+		}
+		
+		return false;
 	}
 }

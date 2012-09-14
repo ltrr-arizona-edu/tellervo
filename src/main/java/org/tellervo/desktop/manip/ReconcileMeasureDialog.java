@@ -137,7 +137,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog {
 						dev.close();
 						dev = null;
 					}
-					dispose();
+					glue.dispose();
 				} catch (NumberFormatException nfe) {
 					JOptionPane.showMessageDialog(glue, 
 							"Invalid integer value: " + newValue.getText(), "Error", 
@@ -153,7 +153,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog {
 					dev.close();
 					dev = null;
 				}
-				dispose();
+				glue.dispose();
 			}
 		});
 
@@ -291,10 +291,7 @@ public class ReconcileMeasureDialog extends javax.swing.JDialog {
 
 	private void formWindowClosed(java.awt.event.WindowEvent evt) {
 		// make sure we close the device.
-		if(dev != null) {
-			dev.close();
-			dev = null;
-		}
+		panelMeasure.cleanup();
 	}
 
 	/** This method is called from within the constructor to

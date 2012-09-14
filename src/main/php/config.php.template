@@ -49,6 +49,9 @@ $domain = "%%DBNAME%%";
 // IP address of this server
 $ip = "%%IP%%";
 
+// Length of time a login is valid for in seconds. (1800 = 30mins)
+$timeout = 1800;
+
 // Does the server use https?
 $securehttp = FALSE;
 

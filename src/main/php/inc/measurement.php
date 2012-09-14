@@ -1909,21 +1909,23 @@ class measurement extends measurementEntity implements IDBAccessor
 					{
 						if ($stmt==NULL) continue;
 						pg_send_query($dbconn, $stmt);
-						$result = pg_get_result($dbconn);	
-						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-						{
-							if(substr(pg_result_error($result), 8, 21)=='EVERSIONALREADYEXISTS')
-							{
-								trigger_error("911"."A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
-							}	
-							else
-							{
-								trigger_error("002".pg_result_error($result)."--- SQL was $stmt", E_USER_ERROR);
-							}
-							
-							pg_query($dbconn, "rollback;");
-							return FALSE;
-						}
+                        while ($result = pg_get_result($dbconn)) 
+                        {
+                        	if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+                            {
+                            	if(substr(pg_result_error($result), 8, 21)=='EVERSIONALREADYEXISTS')
+                                {
+                                	trigger_error("911"."A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
+                                }
+                                else
+                            {
+                                	trigger_error("002".pg_result_error($result)."--- SQL was $stmt", E_USER_ERROR);
+                                }
+                                                         
+                                pg_query($dbconn, "rollback;");
+                                return FALSE;
+                            }
+                        }
 					}
 
 					// All gone well so commit transaction to db
