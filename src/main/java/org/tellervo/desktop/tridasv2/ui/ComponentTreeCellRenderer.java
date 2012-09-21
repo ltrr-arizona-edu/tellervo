@@ -156,7 +156,7 @@ public class ComponentTreeCellRenderer extends DefaultTreeCellRenderer {
 		return getFullTitle(s, true);
 	}
 	
-	private String getFullTitle(Sample s, Boolean includeRange)
+	static String getFullTitle(Sample s, Boolean includeRange)
 	{
 		StringBuilder builder = new StringBuilder();
 		

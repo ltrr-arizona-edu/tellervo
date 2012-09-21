@@ -260,7 +260,9 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 		// insert, insert MR, delete
 		addInsert();
+		addInsertBackwards();
 		addInsertMR();
+		addInsertMRBackwards();
 		addDelete();
 		addInsertYears();
 
@@ -396,6 +398,19 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	}
 	
 	@SuppressWarnings("serial")
+	private void addInsertBackwards() {
+		insert = Builder.makeMenuItem("menus.edit.insert_year.back", true, "insertyear.png");
+		insert.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				dataView.insertYear(0, true, null, false);
+			}
+		});
+		
+		add(insert);
+	}
+	
+	
+	@SuppressWarnings("serial")
 	private void addInsertYears() {
 		insert = Builder.makeMenuItem("menus.edit.insert_years");
 		insert.addActionListener(new AbstractAction() {
@@ -445,6 +460,18 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		add(insertMR);
 	}
 
+	@SuppressWarnings("serial")
+	private void addInsertMRBackwards() {
+		insertMR = Builder.makeMenuItem("menus.edit.insert_mr.back", true, "insertmissingyear.png");
+		insertMR.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae) {
+				dataView.insertMissingRingBackwards();
+			}
+		});
+		insertMR.setEnabled(false);
+		add(insertMR);
+	}
+	
 	@SuppressWarnings("serial")
 	private void addDelete() {
 		delete = Builder.makeMenuItem("menus.edit.delete_year", true, "deleteyear.png");

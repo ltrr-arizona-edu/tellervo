@@ -320,7 +320,7 @@
 		<dependency>
 			<groupId>org.tridas</groupId>
 			<artifactId>dendrofileio</artifactId>
-			<version>1.0.6-SNAPSHOT</version>
+			<version>1.0.7-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.tridas</groupId>
@@ -618,7 +618,7 @@
 			<!--  Create a Windows native executable 
 			      n.b. this creates a raw executable, not an installer. 
 			      The installer is created with an Ant task -->
-		 	<plugin>
+	<!--  	<plugin>
 				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
 				<artifactId>launch4j-plugin</artifactId>
 				<version>1.5.0.0</version>
@@ -642,7 +642,7 @@
 						</configuration>
 					</execution>
 				</executions>
-			</plugin>
+			</plugin>-->
 			
 			<!-- Create a MacOSX native executable 
 			     n.b. on Linux and Windows this will create an *app.zip file
@@ -899,21 +899,30 @@
 								  <trycatch>  
 								  <try>
 									  <!-- Create the binary folder to hold the MacOSX package -->
+									  <echo> MKDIR ${project.build.directory}/binaries/desktop/${project.version}/MacOSX </echo>
 									  <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/MacOSX"/>
 									  
 									  <!-- Delete the seperate dependencies as they are included in the Tellervo jar -->
+									  <echo> Delete dependencies from JAR: ${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo</echo>
 									  <delete dir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo"/>
 									  				
-									  <!-- Copy in to our build folder the Tellervo jar -->				
+									  <!-- Copy in to our build folder the Tellervo jar -->			
+									  <echo>Copy JAR into the build folder</echo>
+									  <echo>File: ${project.build.directory}/${project.build.finalName}.jar... into ${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo/org/tellervo/tellervo/${project.version}/</echo>	
 									  <copy file="${project.build.directory}/${project.build.finalName}.jar"		
 									  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo/org/tellervo/tellervo/${project.version}/"/>		
+									  		
+									  <echo>Delete any previous OSX package</echo>
+									  <delete file="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" failonerror="false"/>		
 									  										  
-									  <!-- Create the app.zip file from our build folder.  555 filemode required for executing-->								  
+									  <!-- Create the app.zip file from our build folder.  555 filemode required for executing-->
+									  <echo>Create the app.zip file from our build folder.  555 filemode required for executing</echo>								  
 									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="false">
 									  	<zipfileset filemode="555" dir="${project.build.directory}/${project.build.finalName}" includes="Tellervo.app/**"/>
 									  </zip>
 									  
 									  <!-- Add license, manual and native package into the root of the zip -->
+									  <echo>Add license, manual and native package into the root of the zip</echo>
 									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="true">
 									  	     <fileset dir="Native/BuildResources/MacBuild/NativePackages/" includes="**/*.pkg"/>
 									  		 <fileset dir="${project.build.directory}/classes/Licenses/" includes="**/license.txt"/>

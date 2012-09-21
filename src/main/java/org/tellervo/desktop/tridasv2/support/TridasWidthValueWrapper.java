@@ -21,6 +21,7 @@
 package org.tellervo.desktop.tridasv2.support;
 
 import java.util.AbstractList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;

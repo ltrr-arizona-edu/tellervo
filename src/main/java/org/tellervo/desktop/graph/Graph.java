@@ -259,7 +259,7 @@ public final class Graph {
      * Get the plotter
      * @return The plotter used to graph this
      */
-    public CorinaGraphPlotter getPlotter() {
+    public TellervoGraphPlotter getPlotter() {
     	return graphAgent.getPlotter();
     }
     

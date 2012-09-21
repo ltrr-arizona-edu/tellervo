@@ -42,7 +42,7 @@ package org.tellervo.desktop.graph;
 import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
 
-public class DensityPlot extends StandardPlot implements CorinaGraphPlotter {	
+public class DensityPlot extends StandardPlot implements TellervoGraphPlotter {	
 	public DensityPlot() {
 		super();
 	}

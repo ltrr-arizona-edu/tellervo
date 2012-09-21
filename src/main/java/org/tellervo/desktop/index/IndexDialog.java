@@ -69,8 +69,11 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.graph.Graph;
 import org.tellervo.desktop.graph.GraphActions;
 import org.tellervo.desktop.graph.GraphController;
@@ -114,6 +117,8 @@ import org.tridas.schema.TridasDerivedSeries;
  */
 public class IndexDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
+	private final static Logger log = LoggerFactory.getLogger(IndexDialog.class);
+
 
 	private GrapherPanel graphPanel;
 
@@ -190,6 +195,15 @@ public class IndexDialog extends JDialog {
 			dispose();
 			return;
 		}
+				
+		// Make sure they save before indexing
+		if(!sample.isSynced())
+		{
+			Alert.error(I18n.getText("error"), "Please make sure the series is saved before indexing");
+			dispose();
+			return;
+		}
+		
 
 		// make sure there's data here
 		// BETTER: make this "==0", and have individual indexes throw if they

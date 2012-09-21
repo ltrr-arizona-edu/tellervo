@@ -15,27 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  * Contributors:
- *     Peter Brewer
+ *     Ken Harris, Peter Brewer
  ******************************************************************************/
-//
-// This file is part of Corina.
-// 
-// Corina is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// Corina is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with Corina; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// Copyright 2001 Ken Harris <kbh7@cornell.edu>
-//
+
 
 package org.tellervo.desktop.editor;
 
@@ -47,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Collections;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -58,6 +41,8 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
@@ -95,6 +80,8 @@ import org.tridas.schema.TridasValue;
 
 public class SampleDataView extends JPanel implements SampleListener,
 		PrefsListener {
+
+	private final static Logger log = LoggerFactory.getLogger(SampleDataView.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -307,6 +294,15 @@ public class SampleDataView extends JPanel implements SampleListener,
 				insertYear();
 			}
 		});
+		
+
+		JMenuItem insertBackwards = Builder.makeMenuItem("menus.edit.insert_year.back", true, "insertyear.png");
+		insertBackwards.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				insertYear(0, true, null, false);
+			}
+		});
+				
 
 		JMenuItem insertMR = Builder.makeMenuItem("menus.edit.insert_mr", true, "insertmissingyear.png");
 		insertMR.addActionListener(new ActionListener() {
@@ -314,6 +310,14 @@ public class SampleDataView extends JPanel implements SampleListener,
 				insertMissingRing();
 			}
 		});
+		
+		JMenuItem insertMRBackwards = Builder.makeMenuItem("menus.edit.insert_mr.back", true, "insertmissingyear.png");
+		insertMRBackwards.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				insertMissingRingBackwards();
+			}
+		});
+		insertMRBackwards.setEnabled(false);
 
 		JMenuItem delete = Builder.makeMenuItem("menus.edit.delete_year", true, "deleteyear.png");
 		delete.addActionListener(new ActionListener() {
@@ -323,7 +327,9 @@ public class SampleDataView extends JPanel implements SampleListener,
 		});
 
 		menu.add(insert);
+		menu.add(insertBackwards);
 		menu.add(insertMR);
+		menu.add(insertMRBackwards);
 		menu.add(delete);
 		// DISABLED until they're implemented.
 		// popup.addSeparator();
@@ -384,7 +390,12 @@ public class SampleDataView extends JPanel implements SampleListener,
 	 */
 	public void insertMissingRing() {
 		TridasReadingRemark remark = new TridasReadingRemark(NormalTridasRemark.MISSING_RING);
-		insertYear(new Integer(Sample.missingRingValue), true, remark);
+		insertYear(new Integer(Sample.missingRingValue), true, remark, true);
+	}
+	
+	public void insertMissingRingBackwards() {
+		TridasReadingRemark remark = new TridasReadingRemark(NormalTridasRemark.MISSING_RING);
+		insertYear(new Integer(Sample.missingRingValue), true, remark, false);
 	}
 
 	/**
@@ -394,7 +405,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 	 * @param selectAndEdit
 	 */
 	public void insertYear(Integer val, boolean selectAndEdit) {
-		insertYear(val, selectAndEdit, null);
+		insertYear(val, selectAndEdit, null, true);
 	}
 	
 	/**
@@ -404,7 +415,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 	 * @param selectAndEdit
 	 * @param remark
 	 */
-	public void insertYear(Integer val, boolean selectAndEdit, AbstractRemark remark) {
+	public void insertYear(Integer val, boolean selectAndEdit, AbstractRemark remark, boolean pushForward) {
 
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
@@ -412,18 +423,30 @@ public class SampleDataView extends JPanel implements SampleListener,
 					"You cannot modify indexed or summed data files.");
 			return;
 		}
-
+		
+		Boolean addReverseRow = false;
+		
+		if(mySample.getRange().getStart().column()==0)
+		{
+			addReverseRow = true;
+		}
+		
+		
 		// get row, col
-		int row = myTable.getSelectedRow();
-		int col = myTable.getSelectedColumn();
+		int selectedRow = myTable.getSelectedRow();
+		int selectedCol = myTable.getSelectedColumn();
 
 		// get year => get data index
-		Year y = ((UnitAwareDecadalModel) myModel).getYear(row, col);
-		int i = y.diff(mySample.getRange().getStart());
+		Year yearToInsert = ((UnitAwareDecadalModel) myModel).getYear(selectedRow, selectedCol);
+		if(!pushForward)
+		{
+			yearToInsert = yearToInsert.add(1);
+		}
+		int i = yearToInsert.diff(mySample.getRange().getStart());
 
 		// make sure it's a valid place to insert a year
-		if (!mySample.getRange().contains(y)
-				&& !mySample.getRange().getEnd().add(+1).equals(y)) {
+		if (!mySample.getRange().contains(yearToInsert)
+				&& !mySample.getRange().getEnd().add(+1).equals(yearToInsert)) {
 			// Alert.error("Can't insert here",
 			//    "This isn't a valid place to insert a year.");
 			return;
@@ -445,40 +468,59 @@ public class SampleDataView extends JPanel implements SampleListener,
 		mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
 				.getEnd().add(+1)));
 
-		// Add remark if provided
-		if(remark!=null)
-		{
-			Year y2 = ((UnitAwareDecadalModel) myModel).getYear(row, col);
-			TridasValue value = mySample.getRingWidthValueForYear(y2);
-			remark.overrideRemark(value);
+		
+		if(!pushForward)
+		{	
+			// Users wants to insert backwards
+			mySample.setRange(new Range(mySample.getRange().getStart().add(-1), mySample.getRange()
+					.getEnd().add(-1)));
 		}	
-
+				
+		myTable.setColumnSelectionInterval(selectedCol, selectedCol);
+		myTable.setRowSelectionInterval(selectedRow, selectedRow);
+		myTable.editCellAt(selectedRow, selectedCol);
+		
 		// fire event -- obsolete?
-		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
-
-		// select this cell again?  edit it
-		myTable.setRowSelectionInterval(row, row);
-		myTable.setColumnSelectionInterval(col, col);
-
-		if (selectAndEdit)
-			myTable.editCellAt(row, col);
+		((UnitAwareDecadalModel) myModel).fireTableDataChanged();		
 
 		// set modified
 		mySample.fireSampleDataChanged();
 		mySample.fireSampleRedated();
 		mySample.setModified();
 		
-		if(!selectAndEdit) {
+		// Add remark if provided
+		if(remark!=null)
+		{
+			TridasValue value = mySample.getRingWidthValueForYear(yearToInsert);
+			remark.overrideRemark(value);
+		}	
+		
+		// select this cell again?  edit it
+		if(selectAndEdit) {
+			if(!pushForward && addReverseRow)
+			{
+				log.debug("skipping forward a row");
+				// Handle user inserting years and shifting backwards a row
+				selectedRow++;
+			}	
+			
+			log.debug("selecting cell "+selectedRow+","+selectedCol);
+			
+		}
+		else
+		{
 			// what's the next year?
-			y = y.add(1);
+			yearToInsert = yearToInsert.add(1);
 
 			// where's it located?
-			row = y.row() - mySample.getRange().getStart().row();
-			col = y.column() + 1;
+			selectedRow = yearToInsert.row() - mySample.getRange().getStart().row();
+			selectedCol = yearToInsert.column() + 1;
 
-			myTable.setRowSelectionInterval(row, row);
-			myTable.setColumnSelectionInterval(col, col);
+			myTable.setRowSelectionInterval(selectedRow, selectedRow);
+			myTable.setColumnSelectionInterval(selectedCol, selectedCol);
 		}
+		
+		
 	}
 
 	public void insertYears(Integer val, int nYears) {

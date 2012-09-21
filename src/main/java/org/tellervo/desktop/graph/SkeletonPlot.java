@@ -57,9 +57,9 @@ import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.util.ColorUtils;
 
 
-public class StandardPlot implements TellervoGraphPlotter {
+public class SkeletonPlot implements TellervoGraphPlotter {
 	
-	public StandardPlot() {
+	public SkeletonPlot() {
 		// no initializing to do, I am STATELESS!
 	}
 

@@ -39,6 +39,7 @@
 
 package org.tellervo.desktop.sample;
 
+import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -97,7 +98,7 @@ import org.tridas.schema.TridasVariable;
 // editor(sample) bringstofront the existing editor.
 
 @SuppressWarnings("serial")
-public class Sample extends BaseSample implements Graphable, Indexable {
+public class Sample extends BaseSample implements Graphable, Indexable, Serializable {
 
 	private final static Logger log = LoggerFactory.getLogger(Sample.class);
 	private boolean metadataChanged = true;
@@ -860,6 +861,28 @@ public class Sample extends BaseSample implements Graphable, Indexable {
 		}
 	}
 
+	/**
+	 * Check whether the server copy of this sample is the same as the local copy.
+	 * i.e. it is saved and on the server
+	 * 
+	 * @return
+	 */
+	public boolean isSynced(){
+		
+		log.debug("isSynced modified = "+isModified());
+		log.debug("isSynced series id = "+getSeries().getIdentifier().getValue());
+		
+		
+		if(isModified() || getSeries().getIdentifier().getValue().equals("newSeries"))
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
 	/** Return true if the file was modified since last save.
 	 @return if the sample has been modified */
 	public boolean isModified() {

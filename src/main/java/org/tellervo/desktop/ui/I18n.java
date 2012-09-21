@@ -265,7 +265,14 @@ public class I18n {
 	 * @return the integer representing the mnemonic character
 	 */
 	public static Integer getMnemonic(String key) {
-		String value = msg.getString(key);
+		
+		String value = null;
+		try{
+			value = msg.getString(key);
+		} catch (MissingResourceException e)
+		{
+			return null;
+		}
 
 		int amp = value.indexOf('&');
 
@@ -282,7 +289,14 @@ public class I18n {
 	 * @return an Integer, or null
 	 */
 	public static Integer getMnemonicPosition(String key) {
-		String value = msg.getString(key);
+		
+		String value = null;
+		try{
+			value = msg.getString(key);
+		} catch (MissingResourceException e)
+		{
+			return null;
+		}
 
 		int amp = value.indexOf('&');
 

@@ -147,7 +147,7 @@ public class GraphPrintDialog extends JPanel {
 	      }
 	    });
 
-	    String canceltext = org.tellervo.desktop.ui.I18n.getText("cancel");
+	    String canceltext = org.tellervo.desktop.ui.I18n.getText("general.cancel");
 	    if (canceltext == null) canceltext = "Cancel";
 	    JButton cancelButton = new JButton(canceltext);
 	    okButtonContainer.add(cancelButton);

@@ -62,7 +62,7 @@ public class Remarks {
 		
 		for(TridasRemark r : tellervoRemarks) {
 			// only tellervo remarks for now
-			if("Corina".equals(r.getNormalStd()))
+			if("Tellervo".equals(r.getNormalStd()) || "Corina".equals(r.getNormalStd()))
 				remarks.add(new CorinaReadingRemark(r));
 		}
 		
@@ -154,8 +154,7 @@ public class Remarks {
 	static {
 		tellervoRemarkIconMap.put("micro ring", "microring.png");
 		tellervoRemarkIconMap.put("insect damage", "bug.png");
-		
-
+		tellervoRemarkIconMap.put("locally absent ring", "note.png");
 	}
 	
 	private Remarks() {

@@ -39,7 +39,7 @@
 
 package org.tellervo.desktop.graph;
 
-public class SemilogPlot extends StandardPlot implements CorinaGraphPlotter {	
+public class SemilogPlot extends StandardPlot implements TellervoGraphPlotter {	
 	public SemilogPlot() {
 		super();
 	}

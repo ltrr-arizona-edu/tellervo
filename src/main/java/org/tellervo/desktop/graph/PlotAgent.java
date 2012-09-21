@@ -33,13 +33,13 @@ public enum PlotAgent {
 	TOOTHED(DensityPlot.class, Axis.AXIS_STANDARD);
 	
 	/** The class of this plotter */
-	private final Class<? extends CorinaGraphPlotter> plotterType;
+	private final Class<? extends TellervoGraphPlotter> plotterType;
 	/** The type of axis associated with this plotter */
 	private final int axisType;
 	/** A reference to the plotter */
-	private WeakReference<CorinaGraphPlotter> plotter;
+	private WeakReference<TellervoGraphPlotter> plotter;
 	
-	private PlotAgent(Class<? extends CorinaGraphPlotter> type, int axisType) {
+	private PlotAgent(Class<? extends TellervoGraphPlotter> type, int axisType) {
 		this.plotterType = type;
 		this.axisType = axisType;
 	}
@@ -48,13 +48,13 @@ public enum PlotAgent {
 	 * Get an instance of this plotter to plot with
 	 * @return A CorinaGraphPlotter, never null
 	 */
-	public final CorinaGraphPlotter getPlotter() {
-		CorinaGraphPlotter realPlotter;
+	public final TellervoGraphPlotter getPlotter() {
+		TellervoGraphPlotter realPlotter;
 		
 		if(plotter == null || (realPlotter = plotter.get()) == null) {
 			try {
 				realPlotter = plotterType.newInstance();
-				plotter = new WeakReference<CorinaGraphPlotter>(realPlotter);
+				plotter = new WeakReference<TellervoGraphPlotter>(realPlotter);
 			} catch (Exception e) {
 				throw new RuntimeException("Can't instantiate plotter class for " + this);
 			}

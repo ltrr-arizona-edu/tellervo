@@ -122,6 +122,7 @@ import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.prefs.PrefsListener;
+import org.tellervo.desktop.remarks.RemarkPanel;
 import org.tellervo.desktop.sample.FileElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleEvent;
@@ -164,6 +165,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	protected GISPanel wwMapPanel;
 	private JTabbedPane tabbedPanel;
 	private JToolBar toolbar;
+	private RemarkPanel remarkPanel;
 	
 	// for menus we have to notify...
 	private EditorFileMenu editorFileMenu;
@@ -673,6 +675,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 	
 	
+
+	
 	// setup common to both constructors
 	private void setup() {
 		
@@ -691,6 +695,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		initMetaView();
 		initComponentsPanel();
 		initWWMapPanel();
+
 
 		// i'll watch the data
 		sample.addSampleListener(this);

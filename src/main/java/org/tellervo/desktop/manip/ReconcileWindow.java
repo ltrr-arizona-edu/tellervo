@@ -57,6 +57,7 @@ import org.tellervo.desktop.gui.XFrame;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.util.Center;
+import org.tridas.schema.TridasDerivedSeries;
 
 
 public class ReconcileWindow extends XFrame implements ReconcileNotifier, SaveableDocument {
@@ -90,6 +91,17 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	private final static String HIDE = "Hide reference";
 	
 	public ReconcileWindow(Sample s1, Sample s2) {
+		
+		// Sanity check
+		try{
+			if(s1.getSeries() instanceof TridasDerivedSeries ||
+			   s2.getSeries() instanceof TridasDerivedSeries	)
+			{
+				Alert.error("Error", "You can only reconcile raw measurement series");
+				return;
+			}
+		} catch (Exception e){}
+			
 		JPanel content = new JPanel(new BorderLayout());
 				
 		setTitle("Reconciling " + s1.toSimpleString());
