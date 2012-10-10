@@ -25,10 +25,10 @@ import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.TridasRemark;
 
 
-public class CorinaReadingRemark extends AbstractRemark {
+public class TellervoReadingRemark extends AbstractRemark {
 	private final TridasRemark remark;
 	
-	public CorinaReadingRemark(TridasRemark tellervoRemark) {	
+	public TellervoReadingRemark(TridasRemark tellervoRemark) {	
 		remark = (TridasRemark) tellervoRemark.clone();
 		tellervoRemark.copyTo(remark);
 		remark.setValue("");

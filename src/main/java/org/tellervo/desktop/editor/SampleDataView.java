@@ -23,6 +23,7 @@ package org.tellervo.desktop.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,6 +55,7 @@ import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.prefs.PrefsListener;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.remarks.AbstractRemark;
+import org.tellervo.desktop.remarks.RemarkPanel;
 import org.tellervo.desktop.remarks.Remarks;
 import org.tellervo.desktop.remarks.TridasReadingRemark;
 import org.tellervo.desktop.sample.Sample;
@@ -65,6 +67,7 @@ import org.tellervo.desktop.util.PopupListener;
 import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasValue;
+import javax.swing.JSplitPane;
 
 
 /**
@@ -85,8 +88,6 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 	private static final long serialVersionUID = 1L;
 
-	private RingAnnotations remarksPanel = null;
-	
 	private Sample mySample;
 
 	private EditorStatusBar statusBar;
@@ -95,6 +96,10 @@ public class SampleDataView extends JPanel implements SampleListener,
 	protected TableModel myModel;
 	
 	protected ModifiableTableCellRenderer myCellRenderer;
+	private JSplitPane splitPane;
+	private JPanel panelLeft;
+	private JPanel panelRight;
+	private RemarkPanel remarkPanel;
 
 	// pass this along to the table
 	@Override
@@ -242,12 +247,37 @@ public class SampleDataView extends JPanel implements SampleListener,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		add(sp, BorderLayout.CENTER);
+		
+		
+		sp.setPreferredSize(new Dimension(700, 520));
+		
+		
+		splitPane = new JSplitPane();
+		splitPane.setOneTouchExpandable(true);
+		
+		add(splitPane, BorderLayout.CENTER);
+		
+		panelLeft = new JPanel();
+		splitPane.setLeftComponent(panelLeft);
+		
+		panelRight = new JPanel();
+		splitPane.setRightComponent(panelRight);
+		panelRight.setLayout(new BorderLayout(0, 0));
+		panelLeft.setLayout(new BorderLayout(0, 0));
+		
+		remarkPanel = new RemarkPanel(myTable, mySample);
+		
+		panelRight.add(remarkPanel);
+		
+		panelLeft.add(sp);
 		statusBar = new EditorStatusBar(myTable, mySample);
 		add(statusBar, BorderLayout.SOUTH);
 		
 		initPrefs();
 		App.prefs.addPrefsListener(this);
+		splitPane.setDividerLocation(2000);
+		splitPane.setResizeWeight(1.0);
+		
 	}
 	
 	protected JPopupMenu createPopupMenu(int row, int col) {
@@ -797,14 +827,13 @@ public class SampleDataView extends JPanel implements SampleListener,
 		
 	}
 
-	public void setRemarksPanel(RingAnnotations remarksPanel) {
-		this.remarksPanel = remarksPanel;
-	}
 
-	public RingAnnotations getRemarksPanel() {
-		return remarksPanel;
+	public void toggleRemarks()
+	{
+		log.debug("toggling Remarks panel");
+		splitPane.setDividerLocation(0.0);
 	}
-
+	
 	@Override
 	public void measurementVariableChanged(SampleEvent e) {
 		// TODO Auto-generated method stub

@@ -713,7 +713,7 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 	 * @return scale factor
 	 */
 	public float getScale() {
-		return 0.1f;
+		return 1f;
 	}
 
 	/** Return the start date for a graph.
@@ -1114,5 +1114,11 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 			this.setValue("Unknown"); 
 		}
 	};
+
+	@Override
+	public List<TridasValue> getTridasData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 }

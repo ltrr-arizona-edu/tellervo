@@ -112,6 +112,7 @@ import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
 import org.tellervo.desktop.gui.menus.actions.PrintAction;
+import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.SaveAction;
 import org.tellervo.desktop.gui.menus.actions.TruncateAction;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
@@ -122,7 +123,6 @@ import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.prefs.PrefsListener;
-import org.tellervo.desktop.remarks.RemarkPanel;
 import org.tellervo.desktop.sample.FileElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleEvent;
@@ -165,7 +165,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	protected GISPanel wwMapPanel;
 	private JTabbedPane tabbedPanel;
 	private JToolBar toolbar;
-	private RemarkPanel remarkPanel;
 	
 	// for menus we have to notify...
 	private EditorFileMenu editorFileMenu;
@@ -467,7 +466,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		AbstractButton measure = new TitlelessButton(measureAction);
 		toolbar.add(measure);
 		
-		
+		// Remarks Button
+		Action remarkAction = new RemarkToggleAction(dataView);
+		AbstractButton toggleRemarks = new TitlelessButton(remarkAction);
+		toolbar.add(toggleRemarks);
+				
 		// Admin Buttons
 		toolbar.addSeparator();
 		Action metadbAction = new MetadatabaseBrowserAction();
@@ -490,6 +493,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		AbstractButton graph = new TitlelessButton(graphSeriesAction);
 		toolbar.add(graph);
 		
+		
+
 
 				
 		getContentPane().add(toolbar, BorderLayout.NORTH);

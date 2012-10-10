@@ -109,11 +109,11 @@ public class IconBackgroundCellRenderer extends DefaultTableCellRenderer {
 	 * @param remark
 	 * @return the icon, lazily loaded, or null
 	 */
-	private Icon getCorinaIcon(String remark) {
+	private Icon getTellervoIcon(String remark) {
 		return lazyLoadIcon(Remarks.getTellervoRemarkIcons().get(remark));
 	}
 		
-	private final static String CORINA = "Corina";
+	private final static String TELLERVO = "Tellervo";
 
 	/* (non-Javadoc)
 	 * @see javax.swing.table.DefaultTableCellRenderer#getTableCellRendererComponent(javax.swing.JTable, java.lang.Object, boolean, boolean, int, int)
@@ -167,8 +167,8 @@ public class IconBackgroundCellRenderer extends DefaultTableCellRenderer {
 					usedMissing = true;
 				}
 			}
-			else if(CORINA.equals(remark.getNormalStd())) {
-				Icon icon = getCorinaIcon(remark.getNormal());				
+			else if(TELLERVO.equals(remark.getNormalStd())) {
+				Icon icon = getTellervoIcon(remark.getNormal());				
 				
 				if(icon != null)
 					icons.add(icon);
@@ -186,7 +186,7 @@ public class IconBackgroundCellRenderer extends DefaultTableCellRenderer {
 	}
 	
 	/** For showing an icon we don't have */
-	private final Icon missingIcon = Builder.getMissingIcon(16);
+	private final Icon missingIcon = Builder.getIcon("user.png", 16);
 	
 	/** For alpha blending our icons with the background */
 	private final AlphaComposite alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.66f);

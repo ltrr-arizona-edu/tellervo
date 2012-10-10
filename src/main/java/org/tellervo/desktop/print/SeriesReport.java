@@ -321,7 +321,7 @@ public class SeriesReport extends ReportBase {
 				icon = getTridasIcon(remark.getNormalTridas());	
 				if(icon==null) icon = Builder.getITextImageMissingIcon();
 			}
-			else if(CORINA.equals(remark.getNormalStd())) {
+			else if(TELLERVO.equals(remark.getNormalStd())) {
 				remarkStr = remark.getNormal();
 				icon = getCorinaIcon(remark.getNormal());	
 				if(icon==null) icon = Builder.getITextImageMissingIcon();
@@ -522,10 +522,26 @@ public class SeriesReport extends ReportBase {
 							icon = getTridasIcon(remark.getNormalTridas());	
 							if(icon==null) icon = Builder.getITextImageMissingIcon();
 						}
-						else if(CORINA.equals(remark.getNormalStd())) {
+						else if(TELLERVO.equals(remark.getNormalStd())) {
 							remstr = remark.getNormal();
 							icon = getCorinaIcon(remark.getNormal());	
 							if(icon==null) icon = Builder.getITextImageMissingIcon();
+						}
+						else 
+						{
+							if(remark.isSetValue())
+							{
+								remstr = remark.getValue();
+							}
+							else if (remark.isSetNormal())
+							{
+								remstr = remark.getNormal();
+							}
+							else
+							{
+								remstr = "Unknown";
+							}
+							icon = Builder.getITextImageIcon("user.png");
 						}
 
 						// Print debug info for this remark
@@ -1205,7 +1221,7 @@ public class SeriesReport extends ReportBase {
 	}
 	
 	
-	private final static String CORINA = "Corina";
+	private final static String TELLERVO = "Tellervo";
 	
 
 	

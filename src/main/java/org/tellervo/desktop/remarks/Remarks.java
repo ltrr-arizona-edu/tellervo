@@ -46,7 +46,7 @@ public class Remarks {
 	 * Lazily-build the list of remarks
 	 * @return a list of remarks
 	 */
-	private static List<Remark> getRemarks() {
+	public static List<Remark> getRemarks() {
 		if(remarks != null)
 			return remarks;
 		
@@ -63,7 +63,7 @@ public class Remarks {
 		for(TridasRemark r : tellervoRemarks) {
 			// only tellervo remarks for now
 			if("Tellervo".equals(r.getNormalStd()) || "Corina".equals(r.getNormalStd()))
-				remarks.add(new CorinaReadingRemark(r));
+				remarks.add(new TellervoReadingRemark(r));
 		}
 		
 		return remarks;

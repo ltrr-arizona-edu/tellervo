@@ -19,14 +19,17 @@
  ******************************************************************************/
 package org.tellervo.desktop.remarks;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.util.EmptyStringEqualsBuilder;
 import org.tridas.schema.TridasRemark;
 
 
 public class RemarkEquals {
 	private RemarkEquals() {}
+	private final static Logger log = LoggerFactory.getLogger(RemarkEquals.class);
 
-	public final static boolean remarksEqual(TridasRemark r1, TridasRemark r2) {
+	public final static boolean remarksEqual(TridasRemark r1, TridasRemark r2) {		
 		return remarksEqual(r1, r2, true);
 	}
 	
@@ -38,7 +41,7 @@ public class RemarkEquals {
 		e.append(r1.getNormalStd(), r2.getNormalStd());
 		e.append(r1.getValue(), r2.getValue());
 		e.append(r1.getNormalTridas(), r2.getNormalTridas());
-		
+				
 		if(!ignoreInheritedCount)
 			e.append(r1.getInheritedCount(), r2.getInheritedCount());
 		

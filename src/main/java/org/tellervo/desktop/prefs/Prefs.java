@@ -115,6 +115,8 @@ public class Prefs extends AbstractSubsystem {
 		DISPLAY_UNITS("tellervo.displayunits"),
 		BARCODES_DISABLED("tellervo.barcodes.disable"),
 		MEASUREMENT_VARIABLE("tellervo.measurement.variable"),
+		HIDE_PINNING_AND_RADIUS_SHIFT_ICONS("tellervo.remarks.hidepinningandradiusshifticons"),
+		DERIVED_REMARKS_THRESHOLD("tellervo.remarks.thresholdfordisplay"),
 		
 		/** Boolean indicating whether OpenGL failed on last attempt*/
 		OPENGL_FAILED("opengl.failed"),
