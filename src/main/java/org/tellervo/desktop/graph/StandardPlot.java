@@ -50,6 +50,7 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -57,17 +58,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.Icon;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.index.Index;
+import org.tellervo.desktop.remarks.Remarks;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ColorUtils;
+import org.tridas.schema.TridasRemark;
 
 
 public class StandardPlot implements TellervoGraphPlotter {
-	
+	private final static Logger log = LoggerFactory.getLogger(StandardPlot.class);
+
 	public StandardPlot() {
 		// no initializing to do, I am STATELESS!
 	}
@@ -240,6 +247,21 @@ public class StandardPlot implements TellervoGraphPlotter {
 				// BAD!  instead: (1) draw what i've got so far, and (2) NEXT point is a move-to.
 				// -- try to parse String as an integer?
 			}
+
+			// Try and paint remark icons
+			try{
+				List<TridasRemark> remarks = g.graph.getTridasValues().get(i).getRemarks();
+				int xcoord = (yearWidth * (i + g.graph.getStart().diff(gInfo.getDrawBounds().getStart())));
+				int ycoord = (bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale)); 
+
+				Graph.drawRemarkIcons(g2, gInfo, remarks, xcoord, ycoord);
+				
+			} catch (Exception e)
+			{
+				log.error("Exception drawing icons to graph: " + e.getClass());
+			}
+			
+			
 			int y = bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale);
 
 			// if we're not where this sample starts, don't bother drawing yet
@@ -258,6 +280,7 @@ public class StandardPlot implements TellervoGraphPlotter {
 
 		// draw it!
 		g2.draw(p);
+
 	}
 
 	// if it's within this many pixels, it's considered a hit (see "correct?" comment)

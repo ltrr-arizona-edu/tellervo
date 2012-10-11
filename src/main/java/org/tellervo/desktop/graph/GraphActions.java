@@ -79,6 +79,7 @@ public class GraphActions {
 	protected ToggleableAction showBaselines;
 	protected ToggleableAction showHundredPercentLines;
 	protected ToggleableAction showComponentNames;
+	protected ToggleableAction showRemarks;
 	
 	private void createGraphActions() throws IntrospectionException {
 		showVerticalAxis = new ToggleableBoundAction<GraphInfo>("graph.verticalAxis", "graph.verticalAxis", 
@@ -94,6 +95,10 @@ public class GraphActions {
 
 		showComponentNames = new ToggleableBoundAction<GraphInfo>("graph.labels", "graph.labels",
 				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_NAMES_PROPERTY, "label.png", 
+				Builder.ICONS, 22);
+		
+		showRemarks = new ToggleableBoundAction<GraphInfo>("graph.remarks", "graph.remarks",
+				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_REMARKS, "note.png", 
 				Builder.ICONS, 22);
 
 		showHundredPercentLines = new ToggleableBoundAction<GraphInfo>("graph.100percentLines", "graph.100percentLines", 

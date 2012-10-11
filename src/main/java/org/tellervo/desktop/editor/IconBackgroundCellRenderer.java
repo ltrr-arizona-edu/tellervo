@@ -115,7 +115,7 @@ public class IconBackgroundCellRenderer extends DefaultTableCellRenderer {
 	}
 	
 	/**
-	 * Get an icon for this Corina remark (text)
+	 * Get an icon for this Tellervo remark (text)
 	 * @param remark
 	 * @return the icon, lazily loaded, or null
 	 */

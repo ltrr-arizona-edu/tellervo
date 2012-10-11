@@ -619,8 +619,9 @@ public class IndexDialog extends JDialog {
 			return startYear;
 		}
 
+
 		@Override
-		public List<TridasValue> getTridasData() {
+		public List<TridasValue> getTridasValues() {
 			// TODO Auto-generated method stub
 			return null;
 		}

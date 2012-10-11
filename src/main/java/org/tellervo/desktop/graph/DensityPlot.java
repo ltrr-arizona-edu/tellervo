@@ -41,6 +41,9 @@ package org.tellervo.desktop.graph;
 
 import java.awt.Graphics2D;
 import java.awt.geom.GeneralPath;
+import java.util.List;
+
+import org.tridas.schema.TridasRemark;
 
 public class DensityPlot extends StandardPlot implements TellervoGraphPlotter {	
 	public DensityPlot() {
@@ -150,6 +153,15 @@ public class DensityPlot extends StandardPlot implements TellervoGraphPlotter {
 			if (x < l - yearWidth) {
 				p.moveTo(x, y);
 				continue;
+			}
+			
+			// Try and paint remark icons
+			try{
+				List<TridasRemark> remarks = g.graph.getTridasValues().get(i).getRemarks();
+				Graph.drawRemarkIcons(g2, gInfo, remarks, x, y);
+			
+			} catch (Exception e)
+			{
 			}
 
 			// draw a horizontal line to this point.

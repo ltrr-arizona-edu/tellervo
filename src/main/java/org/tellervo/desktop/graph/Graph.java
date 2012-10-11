@@ -41,11 +41,17 @@ package org.tellervo.desktop.graph;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
+import org.tellervo.desktop.remarks.Remarks;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.ui.Builder;
+import org.tridas.schema.TridasRemark;
 
 
 /*
@@ -60,6 +66,7 @@ import org.tellervo.desktop.sample.Sample;
 */
 
 public final class Graph {
+	private final static Logger log = LoggerFactory.getLogger(Graph.class);
 
     // should these members be public?  or private, with getters and
     // setters?  that way it could extend Observable, which would be
@@ -265,5 +272,57 @@ public final class Graph {
     
     public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, int thickness, int xscroll) {
     	graphAgent.getPlotter().draw(gInfo, g2, bottom, this, thickness, xscroll);
+    }
+    
+    /**
+     * Helper function to plot remark icons on a chart.  
+     * 
+     * @param g2      - Graphics2D to plot on 
+     * @param remarks - list of remarks to plot
+     * @param xcoord  - xcoord of the data point (start point for the first remark)
+     * @param ycoord  - ycoord of the data point (start point for the first remark)
+     */
+    public static void drawRemarkIcons(Graphics2D g2, GraphInfo info, List<TridasRemark> remarks, int xcoord, int ycoord)
+    {
+		xcoord = xcoord-8;
+		ycoord = ycoord-22; 
+		
+		if(!info.isShowGraphRemarks()) return;
+    	
+    	if(remarks.size()>0)
+		{
+			log.debug(remarks.size()+" remarks found");
+			int remarkoffset = 0;
+			for(TridasRemark remark : remarks)
+			{
+				
+				Image img = null;
+				
+				if(remark.isSetNormalTridas()) 
+				{
+					//log.debug("Remark is a TRiDaS remark: "+ Remarks.getTridasRemarkIcons().get(remark.getNormalTridas()));						
+					img = Builder.getIconAsImage(Remarks.getTridasRemarkIcons().get(remark.getNormalTridas()), 16);
+				}
+				else if (remark.isSetNormalStd())
+				{
+					//log.debug("Remark is a Tellervo remark: "+Remarks.getTellervoRemarkIcons().get(remark.getNormal()));
+					img = Builder.getIconAsImage(Remarks.getTellervoRemarkIcons().get(remark.getNormal()), 16);
+				}
+				else
+				{
+					//log.debug("Remark is a free text remark");
+					img = Builder.getIconAsImage("user.png", 16);
+				}
+				
+				if(img==null)
+				{
+					img = Builder.getIconAsImage("missingicon.png", 16);
+				}
+				
+				
+				g2.drawImage(img,xcoord, ycoord-remarkoffset, null);
+				remarkoffset = remarkoffset + 18;
+			}
+		}
     }
 }

@@ -74,7 +74,7 @@ public interface Graphable {
     // it's a list because sample holds a list for editing, which forces graphable to take a list,
     // which forces index to use a list, which just sucks everywhere.  i still want to be able
     // to edit a sample and have it updated, so a plain copy won't work -- is this possible?
-
+    
     /**
        Get the start of the range to graph.
 
@@ -91,5 +91,5 @@ public interface Graphable {
     public float getScale();
     
     
-    public List<TridasValue> getTridasData();
+    public List<TridasValue> getTridasValues();
 }

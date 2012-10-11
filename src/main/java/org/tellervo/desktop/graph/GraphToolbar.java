@@ -35,6 +35,7 @@ public class GraphToolbar extends JToolBar {
 		addToggle(actions.showVerticalAxis, "vert_show");
 		addToggle(actions.showGridlines, "grid_show");
 		addToggle(actions.showComponentNames, "compn_show");
+		addToggle(actions.showRemarks, "remarks_show");
 		
 		addSeparator();
 		

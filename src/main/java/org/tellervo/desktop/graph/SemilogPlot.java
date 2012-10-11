@@ -51,7 +51,7 @@ public class SemilogPlot extends StandardPlot implements TellervoGraphPlotter {
 		int tval = 1000 + (int) (1000.0 * Math.log(y / 1000.0));
 		return tval;
 		*/
-		return (int) (Math.log10(y) * 100.0);
+		return (int) (Math.log10(y) * 1000.0);
 	}
 	
 	@Override

@@ -1824,6 +1824,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				EnumSet.of(UpdateAction.RECOMPUTE_RANGE, UpdateAction.UPDATE_SIZE,
 						UpdateAction.REVALIDATE, UpdateAction.REPAINT));
 		
+		updateActions.put(GraphInfo.SHOW_GRAPH_REMARKS,
+				EnumSet.of(UpdateAction.REPAINT));
+		
 		updateActions.put(GraphInfo.SHOW_VERT_AXIS_PROPERTY, 
 				EnumSet.of(UpdateAction.VERTICAL_AXIS_SCROLLBAR_UPDATE, UpdateAction.REPAINT));
 		

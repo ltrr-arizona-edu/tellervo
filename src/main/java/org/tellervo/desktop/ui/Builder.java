@@ -21,8 +21,10 @@
 package org.tellervo.desktop.ui;
 
 import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -30,6 +32,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.StringTokenizer;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -404,6 +407,19 @@ public class Builder {
 			new Bug(ise);
 			throw ise;
 		}
+	}
+	
+	public static Image getIconAsImage(String name, int size)
+	{
+		String sizeStr = size + "x" + size;
+		
+		java.net.URL url = cl.getResource( RESOURCE_PACKAGE_PREFIX + ICONS + "/" + sizeStr +"/"+ name);
+		//log.debug("Image url "+url);
+		if (url != null)
+				return Toolkit.getDefaultToolkit().getImage(url);
+			
+		else
+			return null;
 	}
 	
 	public static Image getImage(String name) {

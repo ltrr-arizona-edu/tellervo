@@ -15,7 +15,7 @@ import org.tellervo.desktop.ui.I18n;
 @SuppressWarnings("serial")
 class GraphViewMenu extends JMenu {
 	// custom menus for graph windows
-	private JMenuItem _axisMenu, _gridlinesMenu, _baselinesMenu, _compnamesMenu, _hundredpercentlinesMenu;
+	private JMenuItem _axisMenu, _gridlinesMenu, _baselinesMenu, _compnamesMenu, _remarksMenu, _hundredpercentlinesMenu;
 
 	GraphViewMenu(GraphWindow win, GraphActions actions) {			
 		super(I18n.getText("menus.view"));		
@@ -52,6 +52,11 @@ class GraphViewMenu extends JMenu {
 		_compnamesMenu = new JCheckBoxMenuItem(actions.showComponentNames);
 		actions.showComponentNames.connectToggleableButton(_compnamesMenu);
 		this.add(_compnamesMenu);
+		
+		// Show/hide graph remarks
+		_remarksMenu = new JCheckBoxMenuItem(actions.showRemarks);
+		actions.showRemarks.connectToggleableButton(_remarksMenu);
+		this.add(_remarksMenu);
 		
 		// ---
 		this.addSeparator();

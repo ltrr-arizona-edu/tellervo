@@ -81,6 +81,9 @@ public final class GraphInfo {
 
 	/** Draw graph names in empty range? */
 	private boolean showGraphNames;
+	
+	private boolean showGraphRemarks;
+	
 	/** Draw vertical axis? */
 	private boolean showVertAxis;
 	/** Width of one year */
@@ -158,6 +161,7 @@ public final class GraphInfo {
 		this.showHundredpercentlines = src.showHundredpercentlines;
 		
 		this.showGraphNames = src.showGraphNames;
+		this.showGraphRemarks = src.showGraphRemarks;
 		this.showVertAxis = src.showVertAxis;
 		
 		this.yearWidth = src.yearWidth;
@@ -416,6 +420,11 @@ public final class GraphInfo {
 		return showGraphNames;
 	}
 
+	public boolean isShowGraphRemarks() {
+		return showGraphRemarks;
+	}
+
+	
 	/**
 	 * @param showGraphNames the showGraphNames to set
 	 */
@@ -425,6 +434,15 @@ public final class GraphInfo {
 		changes.firePropertyChange(SHOW_GRAPH_NAMES_PROPERTY, oldValue, showGraphNames);
 	}
 
+	/**
+	 * @param showGraphNames the showGraphRemarks to set
+	 */
+	public void setShowGraphRemarks(boolean showGraphRemarks) {
+		boolean oldValue = this.showGraphRemarks;
+		this.showGraphRemarks = showGraphRemarks;
+		changes.firePropertyChange(SHOW_GRAPH_REMARKS, oldValue, showGraphRemarks);
+	}
+	
 	/**
 	 * @return the showVertAxis
 	 */
@@ -580,6 +598,8 @@ public final class GraphInfo {
 	/** The property name for showGraphNames */
 	public static final String SHOW_GRAPH_NAMES_PROPERTY = "showGraphNames";
 
+	public static final String SHOW_GRAPH_REMARKS = "showGraphRemarks";
+	
 	/** The property name for showVertAxis */
 	public static final String SHOW_VERT_AXIS_PROPERTY = "showVertAxis";
 

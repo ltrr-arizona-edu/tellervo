@@ -1116,9 +1116,8 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 	};
 
 	@Override
-	public List<TridasValue> getTridasData() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<TridasValue> getTridasValues() {
+		return this.getSeries().getValues().get(0).getValues(); 
 	}
 	
 }
