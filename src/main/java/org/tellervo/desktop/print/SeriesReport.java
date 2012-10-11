@@ -264,12 +264,19 @@ public class SeriesReport extends ReportBase {
 		}
 	}
 	
-	private PdfPTable getTableKey() throws DocumentException, IOException, IOException
+	private void getTableKey() throws DocumentException, IOException, IOException
 	{
 		PdfPTable mainTable = new PdfPTable(12);
 		float[] widths = {0.1f, 0.1f, 0.8f, 0.1f, 0.1f, 0.8f, 0.1f, 0.1f, 0.8f, 0.1f, 0.1f, 0.8f};
 		mainTable.setWidths(widths);
-		mainTable.setWidthPercentage(100);		
+		mainTable.setWidthPercentage(100);
+		
+		PdfPTable userRemarksTable = new PdfPTable(2);
+		float[] widths2 = {0.083f, 0.92f};
+		userRemarksTable.setWidths(widths2);
+		userRemarksTable.setWidthPercentage(100);
+		
+		Boolean userRemarkUsed = false;
 		
 		DecadalModel model;
 		model = new UnitAwareDecadalModel(s);
@@ -326,6 +333,20 @@ public class SeriesReport extends ReportBase {
 				icon = getCorinaIcon(remark.getNormal());	
 				if(icon==null) icon = Builder.getITextImageMissingIcon();
 			}
+			else
+			{
+				if(!userRemarkUsed)
+				{
+					remarkStr = "User Remark (See Below)";
+					icon = Builder.getITextImageIcon("user.png");
+					userRemarkUsed = true;
+				}
+				else
+				{
+					// User remark and we already have a key for this so continue
+					continue;
+				}
+			}
 			
 			
 			iconCell.addElement(icon);
@@ -347,7 +368,50 @@ public class SeriesReport extends ReportBase {
 		}
 		
 		
-		return mainTable;
+		document.add(mainTable);
+		
+		if(userRemarkUsed)
+		{		
+			PdfPCell yearCell = new PdfPCell();
+			yearCell.setBorder(0);
+			yearCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+			yearCell.addElement(new Phrase("Year", tableHeaderFont));
+			userRemarksTable.addCell(yearCell);
+
+			PdfPCell remarkCell = new PdfPCell();
+			remarkCell.setBorder(0);
+			remarkCell.addElement(new Phrase("User ring remarks", tableHeaderFont));
+			userRemarksTable.addCell(remarkCell);
+			
+			for(int row =0; row < rows; row++)
+			{				
+				// Loop through columns
+				for(int col = 0; col < 11; col++) 
+				{
+					org.tellervo.desktop.Year year = model.getYear(row, col);
+					List<TridasRemark> remarksList = null;
+					remarksList = s.getRemarksForYear(year);
+										
+					for(TridasRemark remark : remarksList)
+					{
+						if(remark.isSetNormalTridas() || remark.isSetNormalStd()) continue;
+						
+						yearCell = new PdfPCell();
+						yearCell.setBorder(0);
+						yearCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+						yearCell.addElement(new Phrase(year.toString(), tableHeaderFont));
+						userRemarksTable.addCell(yearCell);
+						
+						remarkCell = new PdfPCell();
+						remarkCell.setBorder(0);
+						remarkCell.addElement(new Phrase(remark.getValue(), tableBodyFont));
+						userRemarksTable.addCell(remarkCell);
+					}
+				}
+			}
+			
+			document.add(userRemarksTable);
+		}
 	}
 	
 	/**
@@ -453,7 +517,7 @@ public class SeriesReport extends ReportBase {
 				float[] widths = {0.3f, 0.3f, 0.6f};
 				remarksMiniTable.setWidths(widths);
 				remarksMiniTable.setWidthPercentage(100);			
-				
+								
 				// Get ring value or year number for first column
 				Phrase cellValuePhrase = null;
 				Object value = model.getValueAt(row, col);
@@ -484,7 +548,7 @@ public class SeriesReport extends ReportBase {
 				org.tellervo.desktop.Year year = model.getYear(row, col);
 				List<TridasRemark> remarksList = null;
 				remarksList = s.getRemarksForYear(year);
-								
+				
 				// If there are remarks, cycle through them adding cells to the mini table
 				if(col!=0 && remarksList.size()>0)
 				{
@@ -493,7 +557,7 @@ public class SeriesReport extends ReportBase {
 					int cellnum = 1;
 					int remarknum = 0;
 					for(TridasRemark remark : remarksList)
-					{
+					{				
 						// Keep track of which remark we are on.
 						remarknum++;
 						// String for holding remark name for debugging
@@ -501,7 +565,7 @@ public class SeriesReport extends ReportBase {
 						// The actual remark icon
 						Image icon = null;
 						// A table cell for the remark
-						PdfPCell remarkCell = new PdfPCell();
+						PdfPCell remarkCell = new PdfPCell();				
 
 						// Set default attributes for remark and value cells
 						remarkCell.setBorderWidthBottom(0);
@@ -542,6 +606,7 @@ public class SeriesReport extends ReportBase {
 								remstr = "Unknown";
 							}
 							icon = Builder.getITextImageIcon("user.png");
+							
 						}
 
 						// Print debug info for this remark
@@ -620,7 +685,7 @@ public class SeriesReport extends ReportBase {
 					valueCell.setPhrase(cellValuePhrase);
 					remarksMiniTable.addCell(valueCell);
 				}
-				
+							
 				
 				
 				// Set border styles depending on where we are in the table
@@ -662,6 +727,8 @@ public class SeriesReport extends ReportBase {
 				// Write mini table to cell 		
 				mainTableCell.addElement(remarksMiniTable);
 				
+				//mainTableCell.addElement(userRemarksMiniTable);
+				
 				// Write cell to main table
 	            mainTable.addCell(mainTableCell);
 
@@ -671,7 +738,7 @@ public class SeriesReport extends ReportBase {
 		// Add table to document
 		document.add(mainTable);
 		
-		if(!wj && hasRemarks)	document.add(getTableKey());
+		if(!wj && hasRemarks)	getTableKey();
 	}
 		
 	
@@ -1231,7 +1298,7 @@ public class SeriesReport extends ReportBase {
 	 * @param printReport Boolean
 	 * @param vmid String
 	 */
-	private static void getReport(Boolean printReport, Sample samp)
+	private static void getReport(Boolean printReport, final Sample samp)
 	{
 		// create the series report
 		SeriesReport report = new SeriesReport(samp);		

@@ -39,7 +39,7 @@ public final class GraphPrefs extends PrefHolder {
 	public final static PrefHandle<Boolean> INDEXES_DOTTED = mkPref(PREFIX, "dotindexes", true);
 	
 	public final static PrefHandle<Integer> YEAR_WIDTH = mkPref(PREFIX, "pixelsperyear", DPI / 8);
-	public final static PrefHandle<Integer> TENUNIT_HEIGHT = mkPref(PREFIX, "pixelspertenunit", DPI / 8);
+	public final static PrefHandle<Integer> HUNDREDUNIT_HEIGHT = mkPref(PREFIX, "pixelsperhundredunit", DPI / 8);
 	
 	private GraphPrefs() {
 		// don't instantiate this class!

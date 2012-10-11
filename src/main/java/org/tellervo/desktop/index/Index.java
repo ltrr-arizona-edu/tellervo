@@ -53,6 +53,7 @@ import org.tellervo.desktop.graph.Graphable;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.indexing.IndexFunction;
+import org.tridas.schema.TridasValue;
 
 /**
    Abstract representation of an index of a Sample.  ("Index", in
@@ -386,5 +387,11 @@ public final class Index implements Graphable, Runnable, UndoableEdit {
 		target.fireSampleMetadataChanged();
 		if (!wasMod)
 			target.clearModified();
+	}
+
+	@Override
+	public List<TridasValue> getTridasData() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

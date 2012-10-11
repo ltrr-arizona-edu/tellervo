@@ -32,6 +32,7 @@ import java.util.Collections;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -39,6 +40,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
@@ -266,6 +268,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 		panelLeft.setLayout(new BorderLayout(0, 0));
 		
 		remarkPanel = new RemarkPanel(myTable, mySample);
+		remarkPanel.setMinimumSize(new Dimension(280,280));
 		
 		panelRight.add(remarkPanel);
 		
@@ -361,15 +364,10 @@ public class SampleDataView extends JPanel implements SampleListener,
 		menu.add(insertMR);
 		menu.add(insertMRBackwards);
 		menu.add(delete);
-		// DISABLED until they're implemented.
-		// popup.addSeparator();
-		// popup.add(marks);
-		// popup.addSeparator();
-		// popup.add(new JMenuItem("Edit note..."));
-		// TODO: hook up edit_note, with i18n
 
 		// (dim insert/insertMR/delete, if it's not an editable sample.)
 		if (!mySample.isEditable()) {
+			insertBackwards.setEnabled(false);
 			insert.setEnabled(false);
 			insertMR.setEnabled(false);
 			delete.setEnabled(false);
@@ -831,7 +829,30 @@ public class SampleDataView extends JPanel implements SampleListener,
 	public void toggleRemarks()
 	{
 		log.debug("toggling Remarks panel");
-		splitPane.setDividerLocation(0.0);
+		
+		int currLoc = splitPane.getDividerLocation();
+		int totalWidth = splitPane.getWidth();
+		
+		log.debug("Currloc     = "+currLoc);
+		log.debug("Total width = " + totalWidth);
+		
+		
+		if(currLoc+20 >= totalWidth)
+		{
+			log.debug("Panel appears to be shut so open");
+			BasicSplitPaneUI ui = (BasicSplitPaneUI)splitPane.getUI();
+			JButton oneClick = (JButton)ui.getDivider().getComponent(0);
+			oneClick.doClick();
+		}
+		else
+		{
+			log.debug("Panel appears to be open so shut");
+			splitPane.setDividerLocation(1.0);
+		}
+		
+
+		
+		
 	}
 	
 	@Override

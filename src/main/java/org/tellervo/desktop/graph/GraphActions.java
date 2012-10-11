@@ -217,39 +217,18 @@ public class GraphActions {
 		};	
 		
 		zoomIn = new TellervoAction("graph.vzoom_in", "vaxiszoomin.png", Builder.ICONS, 22){
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Zooming in on vertical scale");
-				int height = info.getTenUnitHeight();			
-				float fheight = ((float) height) * 1.25f;
-				int newHeight = (height == (int) fheight) ? height + 1 : (int) fheight;
-				
-				System.out.println("Int   height = "+height);
-				System.out.println("Float height = "+fheight);
-				System.out.println("Setting height to = "+newHeight);
-				
-				info.setTenUnitHeight(newHeight);
+			public void actionPerformed(ActionEvent e) {				
+				info.increaseHundredUnitHeight();
 			}
 		};
 		zoomOut = new TellervoAction("graph.vzoom_out", "vaxiszoomout.png", Builder.ICONS, 22){
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("Zooming out on vertical scale");
-
-				int height = info.getTenUnitHeight();
-				float fheight = ((float) height) / 1.25f;
-				int newHeight = (height == (int) fheight) ? height - 1 : (int) fheight;
-				if(newHeight==0) newHeight=1;
-				
-				System.out.println("Int   height = "+height);
-				System.out.println("Float height = "+fheight);
-				System.out.println("Setting height to = "+newHeight);
-				
-				info.setTenUnitHeight(newHeight);
+			public void actionPerformed(ActionEvent e) {				
+				info.decreaseHundredUnitHeight();
 			}
 		};
 		zoomReset = new TellervoAction("graph.zoom_reset"){
 			public void actionPerformed(ActionEvent e) {
-				// reload pref
-				info.setTenUnitHeight(GraphPrefs.TENUNIT_HEIGHT.get());
+				info.resetHundredUnitHeight();
 			}
 		};
 		

@@ -583,7 +583,7 @@ public class GraphPrintDialog extends JPanel {
 					float fppy = Float.parseFloat(pixelsperyear.getText());
 					yearsperinch.setText(dfmt.format(fdpi / fppy));
 					gInfo.setYearWidth((int) fppy);
-					gInfo.setTenUnitHeight((int) fppy);
+					gInfo.setHundredUnitHeight((int) fppy);
 					
 				    float iw = 0;
 				    try {

@@ -1,15 +1,12 @@
 package org.tellervo.desktop.remarks;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -43,7 +40,6 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.SpinnerWrapper;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.ui.I18n;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasRemark;
 import org.tridas.schema.TridasValue;
@@ -137,7 +133,9 @@ public class RemarkPanel extends JPanel implements ListSelectionListener, TableC
 		icon.setIcon(remark.getIcon());
 		panelRemarkList.add(icon, "cell 0 "+i);
 		
-		final JCheckBox chkRemark = new JCheckBox(remark.getDisplayName());
+		String remarkStr = remark.getDisplayName().substring(0,1).toUpperCase()+remark.getDisplayName().substring(1);
+			
+		final JCheckBox chkRemark = new JCheckBox(remarkStr);
 		Font font = new Font("Dialog", Font.ITALIC, 12);
 		
 		
@@ -209,6 +207,12 @@ public class RemarkPanel extends JPanel implements ListSelectionListener, TableC
 			}
 			
 		});
+		
+		if (!sample.isEditable())
+		{
+			chkRemark.setEnabled(false);
+		}
+		
 		panelRemarkList.add(chkRemark, "cell 1 "+i);
 		
 	}
@@ -220,12 +224,12 @@ public class RemarkPanel extends JPanel implements ListSelectionListener, TableC
 		JPanel currentRingRemarksPanel = new JPanel();
 		add(currentRingRemarksPanel, BorderLayout.CENTER);
 		currentRingRemarksPanel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
-		currentRingRemarksPanel.setLayout(new MigLayout("hidemode 3", "[214.00px,grow,fill]", "[3px,grow,fill][][]"));
+		currentRingRemarksPanel.setLayout(new MigLayout("hidemode 3", "[grow,fill]", "[3px,grow,fill][]"));
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Current ring remarks", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		currentRingRemarksPanel.add(panel, "cell 0 0 1 2,grow");
-		panel.setLayout(new MigLayout("", "[grow,fill]", "[grow,fill][]"));
+		currentRingRemarksPanel.add(panel, "cell 0 0,grow");
+		panel.setLayout(new MigLayout("hidemode 3", "[grow,fill]", "[grow,fill][]"));
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setViewportBorder(null);
@@ -233,14 +237,15 @@ public class RemarkPanel extends JPanel implements ListSelectionListener, TableC
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		
 		panelRemarkList = new JPanel();
+		panelRemarkList.setBorder(null);
 		scrollPane.setViewportView(panelRemarkList);
-		panelRemarkList.setLayout(new MigLayout("", "[][grow]", "[fill]"));
+		panelRemarkList.setLayout(new MigLayout("hidemode 3", "[][grow]", "[fill]"));
 		
 		
 		
 		JPanel addRemarkPanel = new JPanel();
 		panel.add(addRemarkPanel, "cell 0 1");
-		addRemarkPanel.setLayout(new MigLayout("", "[114px,grow,fill][61px]", "[25px]"));
+		addRemarkPanel.setLayout(new MigLayout("hidemode 3", "[114px,grow,fill][61px]", "[25px]"));
 		
 		txtFreeTextRemark = new JTextField();
 		addRemarkPanel.add(txtFreeTextRemark, "cell 0 0,alignx left,aligny center");
@@ -306,7 +311,7 @@ public class RemarkPanel extends JPanel implements ListSelectionListener, TableC
 		
 		JPanel showRemarkThresholdPanel = new JPanel();
 		showRemarkThresholdPanel.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Remark settings", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		currentRingRemarksPanel.add(showRemarkThresholdPanel, "cell 0 2");
+		currentRingRemarksPanel.add(showRemarkThresholdPanel, "cell 0 1");
 		showRemarkThresholdPanel.setLayout(new MigLayout("", "[][][134px,grow]", "[20px][center][]"));
 		
 		JLabel lblShowRemarksWhen = new JLabel("Show remarks when present in:");
@@ -330,18 +335,25 @@ public class RemarkPanel extends JPanel implements ListSelectionListener, TableC
 		if(sample.getSeries() instanceof TridasDerivedSeries)
 		{
 			showRemarkThresholdPanel.setVisible(true);
+			txtFreeTextRemark.setVisible(false);
+			btnAdd.setVisible(false);
+			
 		}
 		else
 		{
 			showRemarkThresholdPanel.setVisible(false);
 		}
-		
-		currentRingRemarksPanel.setMinimumSize(new Dimension(200,200));
 	}
 
 	private void setAddButton()
 	{
 		if(row<0 || col<0) 
+		{
+			btnAdd.setEnabled(false);
+			return;
+		}
+		
+		if (!sample.isEditable())
 		{
 			btnAdd.setEnabled(false);
 			return;

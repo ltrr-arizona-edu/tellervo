@@ -42,6 +42,7 @@ package org.tellervo.desktop.graph;
 import java.util.List;
 
 import org.tellervo.desktop.Year;
+import org.tridas.schema.TridasValue;
 
 
 /**
@@ -88,4 +89,7 @@ public interface Graphable {
        @return default vertical scale factor
     */
     public float getScale();
+    
+    
+    public List<TridasValue> getTridasData();
 }

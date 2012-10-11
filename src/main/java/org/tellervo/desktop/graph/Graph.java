@@ -72,7 +72,7 @@ public final class Graph {
     public int xoffset=0, yoffset=0;
 
     // scaling
-    public float scale=1.0f;
+    public float scale=1f;
     
     /** Can the graph agent be changed? */
     private boolean canChangeAgent = true;

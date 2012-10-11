@@ -467,7 +467,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		toolbar.add(measure);
 		
 		// Remarks Button
-		Action remarkAction = new RemarkToggleAction(dataView);
+		Action remarkAction = new RemarkToggleAction(this);
 		AbstractButton toggleRemarks = new TitlelessButton(remarkAction);
 		toolbar.add(toggleRemarks);
 				
@@ -526,7 +526,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			tabbedPanel.add(wjPanel, I18n.getText("editor.tab_weiserjahre"));
 		
 		if(componentsPanel != null) {
-			tabbedPanel.add(componentsPanel, I18n.getText("editor.tab_components"));			
+			tabbedPanel.addTab(I18n.getText("editor.tab_components")+" ", Builder.getIcon("history.png", 16), componentsPanel);			
 			
 			// let the components panel know it's being set as visible...
 			tabbedPanel.addChangeListener(new ChangeListener() {

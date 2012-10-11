@@ -90,7 +90,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 
 	// returns the maximum size, in pixels, that the graph will take up.
 	public int getYRange(GraphInfo gInfo, Graph g) {
-		float unitScale = gInfo.getTenUnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
+		float unitScale = gInfo.getHundredUnitHeight() / 100.0f; // the size of 1 "unit" in pixels.
 		int miny = 0; // minimum always starts at zero...
 		int maxy = Integer.MIN_VALUE;
 		int value;
@@ -112,7 +112,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 	public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
 		// cache yearsize, we use this a lot
 		int yearWidth = gInfo.getYearWidth(); // the size of a year, in pixels
-		float unitScale = gInfo.getTenUnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
+		float unitScale = gInfo.getHundredUnitHeight() / 100.0f; // the size of 1 "unit" in pixels.
 		
 		// set pen
 		boolean dotted = (gInfo.isDottedIndexes() && (g.graph instanceof Index));
@@ -306,7 +306,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		// the adjusted range of this graph
 		Range graphRange = g.getRange();
 		int yearWidth = gInfo.getYearWidth();
-		float unitScale = gInfo.getTenUnitHeight() / 10.0f;
+		float unitScale = gInfo.getHundredUnitHeight() / 100.0f;
 		
 		for(int i = 0; i <= nYears; i++) {
 			// skip points that don't exist
@@ -324,7 +324,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 	}
 
 	protected final int getPosition(GraphInfo gInfo, Graph g, Year y, int bottom) {
-		return getYValue(g, gInfo.getTenUnitHeight() / 10.0f, getDataValue(g, y), bottom);
+		return getYValue(g, gInfo.getHundredUnitHeight() / 100.0f, getDataValue(g, y), bottom);
 	}
 
 	// REFACTOR: use this same method above when actually drawing it

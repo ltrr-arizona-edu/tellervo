@@ -86,7 +86,7 @@ public final class GraphInfo {
 	/** Width of one year */
 	private int yearWidth;
 	/** Height of 10 graph units */
-	private int tenUnitHeight;
+	private int hundredUnitHeight;
 
 	/** The height of what we're printing (only used when printing) */
 	private int printHeight = 0;
@@ -161,7 +161,7 @@ public final class GraphInfo {
 		this.showVertAxis = src.showVertAxis;
 		
 		this.yearWidth = src.yearWidth;
-		this.tenUnitHeight = src.tenUnitHeight;
+		this.hundredUnitHeight = src.hundredUnitHeight;
 	}
 
 	/**
@@ -206,7 +206,7 @@ public final class GraphInfo {
 		dottedIndexes = GraphPrefs.INDEXES_DOTTED.get();
 
 		yearWidth = GraphPrefs.YEAR_WIDTH.get();
-		tenUnitHeight = GraphPrefs.TENUNIT_HEIGHT.get();
+		hundredUnitHeight = GraphPrefs.HUNDREDUNIT_HEIGHT.get();
 	}
 
 	/**
@@ -464,21 +464,45 @@ public final class GraphInfo {
 	/**
 	 * @return the unitHeight
 	 */
-	public int getTenUnitHeight() {
-		return tenUnitHeight;
+	public int getHundredUnitHeight() {
+		return hundredUnitHeight;
 	}
 
+	public void increaseHundredUnitHeight()
+	{
+		int height = hundredUnitHeight;			
+		float fheight = ((float) height) * 1.25f;
+		int newHeight = (height == (int) fheight) ? height + 1 : (int) fheight;
+		setHundredUnitHeight(newHeight);
+	}
+	
+	public void decreaseHundredUnitHeight()
+	{
+	
+		int height = hundredUnitHeight;	
+		float fheight = ((float) height) / 1.25f;
+		int newHeight = (height == (int) fheight) ? height - 1 : (int) fheight;
+		if(newHeight==0) newHeight=1;
+		
+		setHundredUnitHeight(newHeight);
+	}
+	
+	public void resetHundredUnitHeight()
+	{
+		setHundredUnitHeight(GraphPrefs.HUNDREDUNIT_HEIGHT.get());
+	}
+	
 	/**
 	 * @param unitHeight the unitHeight to set
 	 */
-	public void setTenUnitHeight(int tenUnitHeight) {
+	public void setHundredUnitHeight(int hundredUnitHeight) {
 		// force > 0!
-		if(tenUnitHeight < 1)
-			tenUnitHeight = 1;
+		if(hundredUnitHeight < 1)
+			hundredUnitHeight = 1;
 		
-		int oldValue = this.tenUnitHeight;
-		this.tenUnitHeight = tenUnitHeight;
-		changes.firePropertyChange(TEN_UNIT_HEIGHT_PROPERTY, oldValue, tenUnitHeight);
+		int oldValue = this.hundredUnitHeight;
+		this.hundredUnitHeight = hundredUnitHeight;
+		changes.firePropertyChange(TEN_UNIT_HEIGHT_PROPERTY, oldValue, hundredUnitHeight);
 	}
 
 	/**

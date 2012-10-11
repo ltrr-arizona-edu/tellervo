@@ -26,6 +26,7 @@ package org.tellervo.desktop.graph;
 import java.util.List;
 
 import org.tellervo.desktop.Year;
+import org.tridas.schema.TridasValue;
 
 
 public class DensityGraph implements Graphable {
@@ -58,4 +59,10 @@ public class DensityGraph implements Graphable {
 	public String toString() {
         return gname;
     }
+
+	@Override
+	public List<TridasValue> getTridasData() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

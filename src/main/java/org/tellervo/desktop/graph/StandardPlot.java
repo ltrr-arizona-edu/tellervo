@@ -42,18 +42,27 @@ package org.tellervo.desktop.graph;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.Toolkit;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.index.Index;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ColorUtils;
 
 
@@ -90,7 +99,7 @@ public class StandardPlot implements TellervoGraphPlotter {
 
 	// returns the maximum size, in pixels, that the graph will take up.
 	public int getYRange(GraphInfo gInfo, Graph g) {
-		float unitScale = gInfo.getTenUnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
+		float unitScale = gInfo.getHundredUnitHeight() / 100.0f; // the size of 1 "unit" in pixels.
 		int miny = 0; // minimum always starts at zero...
 		int maxy = Integer.MIN_VALUE;
 		int value;
@@ -112,7 +121,7 @@ public class StandardPlot implements TellervoGraphPlotter {
 	public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
 		// cache yearsize, we use this a lot
 		int yearWidth = gInfo.getYearWidth(); // the size of a year, in pixels
-		float unitScale = gInfo.getTenUnitHeight() / 10.0f; // the size of 1 "unit" in pixels.
+		float unitScale = gInfo.getHundredUnitHeight() / 100.0f; // the size of 1 "unit" in pixels.
 		
 		// set pen
 		boolean dotted = (gInfo.isDottedIndexes() && (g.graph instanceof Index));
@@ -122,6 +131,11 @@ public class StandardPlot implements TellervoGraphPlotter {
 		int l = g2.getClipBounds().x;
 		int r = l + g2.getClipBounds().width;
 
+
+		//Image img1 = Toolkit.getDefaultToolkit().getImage("/home/pwb48/dev/java5/tellervo-desktop/src/main/resources/Icons/256x256/tellervo-application.png");
+	    //g2.drawImage(img1, 10, 10, null);
+
+		
 		// baseline
 		if (gInfo.isShowBaselines()) {
 			int y = bottom - (int) (g.yoffset * unitScale);
@@ -254,7 +268,7 @@ public class StandardPlot implements TellervoGraphPlotter {
 		int yearWidth = gInfo.getYearWidth();
 		int firstYearIdx = (p.x / yearWidth) - 1;
 		int nYears = 3;
-		
+				
 		// Check three years' worth of data: the year prior to and after the year the mouse is inside
 		Year startYear = gInfo.getDrawBounds().getStart().add(firstYearIdx);
 		List<Point2D> points = this.getPointsFrom(gInfo, g, startYear, nYears, bottom);
@@ -306,7 +320,7 @@ public class StandardPlot implements TellervoGraphPlotter {
 		// the adjusted range of this graph
 		Range graphRange = g.getRange();
 		int yearWidth = gInfo.getYearWidth();
-		float unitScale = gInfo.getTenUnitHeight() / 10.0f;
+		float unitScale = gInfo.getHundredUnitHeight() / 100.0f;
 		
 		for(int i = 0; i <= nYears; i++) {
 			// skip points that don't exist
@@ -324,7 +338,7 @@ public class StandardPlot implements TellervoGraphPlotter {
 	}
 
 	protected final int getPosition(GraphInfo gInfo, Graph g, Year y, int bottom) {
-		return getYValue(g, gInfo.getTenUnitHeight() / 10.0f, getDataValue(g, y), bottom);
+		return getYValue(g, gInfo.getHundredUnitHeight() / 100.0f, getDataValue(g, y), bottom);
 	}
 
 	// REFACTOR: use this same method above when actually drawing it

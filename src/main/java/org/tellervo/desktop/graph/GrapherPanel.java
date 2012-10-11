@@ -65,6 +65,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Collections;
@@ -83,6 +85,8 @@ import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.event.EventListenerList;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Build;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
@@ -94,9 +98,10 @@ import org.tellervo.desktop.util.ColorUtils;
 
 @SuppressWarnings("serial")
 public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
-		MouseMotionListener, AdjustmentListener, Scrollable {
+		MouseMotionListener, MouseWheelListener, AdjustmentListener, Scrollable {
 
-	
+	private final static Logger log = LoggerFactory.getLogger(GrapherPanel.class);
+
 	// public data
 	public List<Graph> graphs; // of Graph
 	public int current = 0; // currenly selected sample
@@ -477,6 +482,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// unknown key?
 		boolean unknown = false;
 		
+		boolean isModifier = false;
+		
 		// graph
 		Graph g = (graphs.size() > 0) ? graphs.get(current) : emptyGraph;
 		
@@ -485,6 +492,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// parse it...ugh
 		if (m == InputEvent.SHIFT_MASK) { // shift keys
+			
+			isModifier = true;
+			
 			switch (k) {
 			case KeyEvent.VK_TAB:
 				current = (current == 0 ? graphs.size() - 1 : current - 1);
@@ -512,20 +522,22 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 				unknown = true;
 			}
 		} else if (m == InputEvent.CTRL_MASK) { // control keys
+			isModifier = true;
+			
 			switch (k) {
 			// change the graph scale!
 			case KeyEvent.VK_W: {
-				int curheight = gInfo.getTenUnitHeight();
+				int curheight = gInfo.getHundredUnitHeight();
 				if(--curheight < 2)
 					curheight = 2;
-				gInfo.setTenUnitHeight(curheight);
+				gInfo.setHundredUnitHeight(curheight);
 				repaint = false;
 				break;
 			}
 			case KeyEvent.VK_S: {
-				int curheight = gInfo.getTenUnitHeight();
+				int curheight = gInfo.getHundredUnitHeight();
 				curheight++;
-				gInfo.setTenUnitHeight(curheight);
+				gInfo.setHundredUnitHeight(curheight);
 				repaint = false;
 				break;
 			}
@@ -679,8 +691,8 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		}
 
 		// yummy
-		if (!unknown)
-			e.consume();
+		//if (!unknown)
+		//	e.consume();
 
 		// updating the title is quick, so don't worry about doing it
 		// a lot (oh wait, on windows2000 it isn't.  ouch.)
@@ -824,10 +836,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// motion listener
 		addMouseMotionListener(this);
-
+		addMouseWheelListener(this);
+		
 		// click/drag listener
 		addMouseListener(this);
-
+		
 		// copy data ref
 		this.graphs = graphs;
 		
@@ -921,12 +934,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		int bottom = info.getGraphHeight(this) - AXIS_HEIGHT;
 
 		// draw horizontal lines
-		// (would it help if everything was a big generalpath?  it appears not.)
 		Color major = info.getMajorLineColor();
 		Color mid = info.getMidLineColor();
 		Color minor = info.getMinorLineColor();
 		int yearWidth = info.getYearWidth();
-		int unitHeight = info.getTenUnitHeight();
+		int unitHeight = info.getHundredUnitHeight();
 		
 		// be sure to draw all the way to our first vert. line....
 		Year leftYear = yearForPosition(info, l);
@@ -1102,7 +1114,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			return;
 		
 		int[] overlaps = new int[graphs.size()];		
-		float unitScale = info.getTenUnitHeight() / 10.0f;			
+		float unitScale = info.getHundredUnitHeight() / 100.0f;			
 		Stroke oldstroke;
 		Font oldfont;
 		BasicStroke connectorLine = new BasicStroke(1, BasicStroke.CAP_BUTT,
@@ -1494,7 +1506,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	public int getScrollableUnitIncrement(Rectangle visibleRect,
 			int orientation, int direction) {
 		if(orientation == SwingConstants.VERTICAL)
-			return gInfo.getTenUnitHeight() * 10; // 100 (?)
+			return gInfo.getHundredUnitHeight() * 10; // 100 (?)
 		else
 			return gInfo.getYearWidth() * 10; // one decade (?)
 	}
@@ -1563,7 +1575,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	}
 		
 	public int getGraphHeight() {
-		return getMaxPixelHeight() + GrapherPanel.AXIS_HEIGHT + gInfo.getTenUnitHeight();
+		return getMaxPixelHeight() + GrapherPanel.AXIS_HEIGHT + gInfo.getHundredUnitHeight();
 	}
 	
 	/**
@@ -1857,5 +1869,53 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			if(listeners[i] == GrapherListener.class)
 				((GrapherListener)listeners[i+1]).graphChanged(evt);
 		}
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		
+		log.debug("Mouse wheel");
+		
+		int notches = e.getWheelRotation();
+		
+		if(e.isControlDown())
+		{		
+			
+			log.debug("CTRL mouse wheel");
+			if(notches<0)
+			{
+				log.debug("wheel up");
+				gInfo.increaseHundredUnitHeight();
+				calculateScores();
+				repaint();
+			}
+			else
+			{
+				log.debug("wheel down");
+				gInfo.decreaseHundredUnitHeight();
+				calculateScores();
+				repaint();
+			}
+			
+		}
+		else if (e.isShiftDown())
+		{
+			
+		}
+		else
+		{
+			JScrollBar horiz = scroller.getHorizontalScrollBar();
+			int yearWidth = gInfo.getYearWidth();
+			if(notches<0)
+			{
+				horiz.setValue(horiz.getValue() - yearWidth * 10);
+			}
+			else
+			{
+				horiz.setValue(horiz.getValue() + yearWidth * 10);
+
+			}
+		}
+		
 	}
 }

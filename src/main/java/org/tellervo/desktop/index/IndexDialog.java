@@ -103,6 +103,7 @@ import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tellervo.indexing.Exponential;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasValue;
 
 
 /**
@@ -338,7 +339,7 @@ public class IndexDialog extends JDialog {
 		graphSamples.get(1).setDraggable(false);
 		
 		// Override units and show labels
-		gInfo.setTenUnitHeight(2);
+		gInfo.setHundredUnitHeight(2);
 		gInfo.setShowGraphNames(true);
 				
 		// create a graph panel; put it in a scroll pane
@@ -616,6 +617,12 @@ public class IndexDialog extends JDialog {
 
 		public Year getStart() {
 			return startYear;
+		}
+
+		@Override
+		public List<TridasValue> getTridasData() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 }

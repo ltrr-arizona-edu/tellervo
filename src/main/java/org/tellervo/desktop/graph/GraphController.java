@@ -140,7 +140,7 @@ public class GraphController {
 		int uph = (int) Math.floor(10.0f * ((float) viewHeight / (float) minmax[1]));
 		
 		// reset the scaled height...
-		info.setTenUnitHeight(Math.max(minimumTenUnitHeight, uph));	
+		info.setHundredUnitHeight(Math.max(minimumTenUnitHeight, uph));	
 	}
 	
 	/**

@@ -45,9 +45,13 @@ import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @SuppressWarnings("serial")
 public class Axis extends JPanel {
-	
+	private final static Logger log = LoggerFactory.getLogger(Axis.class);
+
 	private GraphInfo gInfo;
 	private int axisType;
 	private JPanel parent;
@@ -55,7 +59,7 @@ public class Axis extends JPanel {
 	public static final int AXIS_STANDARD = 1; // counts up from zero
 	public static final int AXIS_LOG = 3; // has percentages...
 	
-	public static final int AXIS_WIDTH = 50;
+	public static final int AXIS_WIDTH = 65;
 
 	public Axis(GraphInfo gInfo, int type, JPanel parent) {
 		// background -- default is black
@@ -79,8 +83,8 @@ public class Axis extends JPanel {
 
 	public void drawVertAxis(Graphics g) {
 		Graphics2D g2 = (Graphics2D) g;
-		int tenunitSize = gInfo.getTenUnitHeight();
-
+		int hundredunitSize = gInfo.getHundredUnitHeight();
+		//log.debug("Hundred unit height: "+ hundredunitSize);
 		int w = getWidth();
 		int lastLabelTop = Integer.MAX_VALUE;
 
@@ -89,22 +93,26 @@ public class Axis extends JPanel {
 		g2.setColor(gInfo.getForeColor());
 		g2.drawLine(w - 1, 0, w - 1, bottom);
 
+		
 		// draw ticks
 		switch(axisType) {
-			case AXIS_STANDARD: {		
+			case AXIS_STANDARD: {	
+				
 				int i = 1;
-				int y = bottom - i * tenunitSize;
+				int y = bottom - i * hundredunitSize;
 				while (y > 0) {
+					
 					// draw tick
 					g2.drawLine(w - 1, y, w - 1 - (i % 5 == 0 ? 10 : 5), y);
 
 					// draw number -- every 50
 					if (i % 5 == 0) {
+												
 						int lsz = g2.getFontMetrics().getMaxAscent();
 						
 						if(lastLabelTop - (y+5) >= (lsz * 1.10)) {
 						
-							String value = String.valueOf(i * 10);				
+							String value = String.valueOf(i * 100);				
 							g2.drawString(value, 
 									w - (g2.getFontMetrics().stringWidth(value) + 15), 
 									y + 5);	
@@ -115,13 +123,13 @@ public class Axis extends JPanel {
 				
 					// update coordinates
 					i++;
-					y = bottom - i * tenunitSize;
+					y = bottom - i * hundredunitSize;
 				}
 				break;
 			}
 			case AXIS_LOG: {
 				int i = 1;
-				int y = bottom - i * tenunitSize;
+				int y = bottom - i * hundredunitSize;
 				while (y > 0) {
 					// draw tick
 					g2.drawLine(w - 1, y, w - 1 - (i % 10 == 0 ? 10 : 5), y);
@@ -135,7 +143,7 @@ public class Axis extends JPanel {
 					}
 					// update coordinates
 					i++;
-					y = bottom - i * tenunitSize;
+					y = bottom - i * hundredunitSize;
 				}
 				break;
 			}
