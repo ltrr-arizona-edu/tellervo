@@ -142,6 +142,7 @@ public class Prefs extends AbstractSubsystem {
 		STATS_OVERLAP_REQUIRED("tellervo.cross.overlap"),
 		STATS_OVERLAP_REQUIRED_DSCORE("tellervo.cross.d-overlap"),
 		STATS_MODELINE("tellervo.modeline.statistic"),
+		STATS_SKELETON_PLOT_WINDOW_SIZE("tellervo.skeletonplot.windowsize"),
 		
 		PERSONAL_DETAILS_EMAIL("tellervo.bugreport.fromemail"),
 		PERSONAL_DETAILS_USERNAME("tellervo.login.username"),

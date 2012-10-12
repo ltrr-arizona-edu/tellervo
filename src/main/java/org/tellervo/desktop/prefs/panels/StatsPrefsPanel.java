@@ -51,7 +51,7 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 	private JComboBox cboHighlightColor;
 	private JSpinner spnMinOverlapDScore;
 	private JSpinner spnMinOverlap;
-	
+	private JSpinner spnSkeletonWindow;
 	/**
 	 * Create the panel.
 	 */
@@ -106,21 +106,21 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 		JPanel panelSigScores = new JPanel();
 		panelSigScores.setBorder(new TitledBorder(null, "Significant scores", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panelSigScores, "cell 1 0,grow");
-		panelSigScores.setLayout(new MigLayout("", "[grow][grow]", "[][][][]"));
+		panelSigScores.setLayout(new MigLayout("", "[grow][grow]", "[][][][][]"));
 		
 		JLabel lblNewLabel_3 = new JLabel("Minimum years overlap:");
 		panelSigScores.add(lblNewLabel_3, "cell 0 0,alignx right");
 		
 		spnMinOverlap = new JSpinner();
 		spnMinOverlap.setModel(new SpinnerNumberModel(50, 1, 9999, 1));
-		panelSigScores.add(spnMinOverlap, "cell 1 0,alignx right");
+		panelSigScores.add(spnMinOverlap, "cell 1 0,growx");
 		
 		JLabel lblMinYearsOverlap = new JLabel("Min. years overlap for D score:");
 		panelSigScores.add(lblMinYearsOverlap, "cell 0 1,alignx right");
 		
 		spnMinOverlapDScore = new JSpinner();
 		spnMinOverlapDScore.setModel(new SpinnerNumberModel(1, 1, 9999, 1));
-		panelSigScores.add(spnMinOverlapDScore, "cell 1 1,alignx right");
+		panelSigScores.add(spnMinOverlapDScore, "cell 1 1,growx");
 		
 		chkHighlightSig = new JCheckBox("Highlight significant years");
 		panelSigScores.add(chkHighlightSig, "cell 0 2 2 1,alignx right");
@@ -130,6 +130,13 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 		
 		cboHighlightColor = new JComboBox();
 		panelSigScores.add(cboHighlightColor, "cell 1 3,growx");
+		
+		JLabel lblSkeletonPlotWindow = new JLabel("Skeleton plot window size:");
+		panelSigScores.add(lblSkeletonPlotWindow, "cell 0 4,alignx right");
+		
+		spnSkeletonWindow = new JSpinner();
+		spnSkeletonWindow.setModel(new SpinnerNumberModel(7, 3, 99, 2));
+		panelSigScores.add(spnSkeletonWindow, "cell 1 4,growx");
 
 		linkToPrefs();
 	}
@@ -145,6 +152,8 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 		new FormatWrapper(cboWJ, PrefKey.STATS_FORMAT_WEISERJAHRE, "0.0%");
 		new SpinnerWrapper(spnMinOverlap, PrefKey.STATS_OVERLAP_REQUIRED, 15);
 		new SpinnerWrapper(spnMinOverlapDScore, PrefKey.STATS_OVERLAP_REQUIRED_DSCORE, 100);
+		new SpinnerWrapper(spnSkeletonWindow, PrefKey.STATS_SKELETON_PLOT_WINDOW_SIZE, 7);
+
 		new CheckBoxWrapper(chkHighlightSig, PrefKey.GRID_HIGHLIGHT, true);
 		new ColorComboBoxWrapper(cboHighlightColor, PrefKey.GRID_HIGHLIGHTCOLOR, Color.green);
 	}
@@ -156,5 +165,4 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 		// TODO Auto-generated method stub
 		
 	}
-
 }

@@ -56,7 +56,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.index.Index;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.util.ColorUtils;
 
@@ -174,7 +176,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		}
 		
 		int n = g.graph.getRingWidthData().size(); 
-		int runningMean = meanYVal;
+
 		for (int i = 1; i < n; i++) {
 			// new x-position for this point
 			x += yearWidth;
@@ -185,53 +187,33 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 				break;
 			}
 
-			// Calculate running mean for 3 rings either side of this value
-			double[] window;
-			if(i<=3)
-			{
-				// One of the first few rings
-				window = new double[i+3];
-				int k = 0;
-				for(int j =0; j<=i+2; j++)
-				{
-					window[k] = (double) g.graph.getRingWidthData().get(j).intValue();
-					k++;
-				}
+			// Extract the window of interest
+			int ringsEitherSideOfFocus = (App.prefs.getIntPref(PrefKey.STATS_SKELETON_PLOT_WINDOW_SIZE, 7)-1)/2;
 				
-				log.debug("Ring "+i+" has "+window.length+" values in window");
-			}
-			else if (i> n-3)
+			// Convert to ArrayList first as its easier to handle
+			ArrayList<Double> ringWidths = new ArrayList<Double>();
+			for(int z=0; z<n; z++)
 			{
-				// One of the last few rings
-				window = new double[n-i];
-				int k = 0;
-				for(int j =i-4; j<=i+2; j++)
-				{
-					try{
-						window[k] = (double) g.graph.getRingWidthData().get(j).intValue();
-					} catch (Exception e){	}
-					k++;
-				}
-				
-				log.debug("Ring "+i+" has "+window.length+" values in window");
-
+				ringWidths.add((double) g.graph.getRingWidthData().get(z).intValue());
 			}
-			else
+			
+			int firstind = i-1-ringsEitherSideOfFocus;
+			int lastind = i+ringsEitherSideOfFocus;
+			if(firstind<0) firstind =0;
+			if(lastind>n) lastind = n;
+			int size = lastind-firstind;
+			
+			double[] window = new double[size];
+			
+			int t=0;
+			for(int w=firstind; w<lastind; w++)
 			{
-				// In middle of dataset
-				window = new double[7];
-				int k = 0;
-				for(int j =i-4; j<=i+2; j++)
-				{
-					window[k] = (double) g.graph.getRingWidthData().get(j).intValue();
-					k++;
-				}
-				
-				log.debug("Ring "+i+" has "+window.length+" values in window");
-
+				window[t] = ringWidths.get(w);
+				t++;
 			}
+		
 			DescriptiveStatistics windowStats = new DescriptiveStatistics(window);
-			if(i==4 || i>278) 
+			if(i<7 ) 
 			{
 				log.debug("Stats for ring: "+i);
 				try{
@@ -248,10 +230,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 				log.debug("  Std   is "+i+" - "+(int) windowStats.getStandardDeviation());
 				log.debug("  Std/2 is "+i+" - "+(int) windowStats.getStandardDeviation()/2);
 			}
-			runningMean = (int) windowStats.getMean();
-			
-
-			
+		
 			// y-position for this point
 			try {
 				value = yTransform(((Number) g.graph.getRingWidthData().get(i)).intValue() * g.scale);
