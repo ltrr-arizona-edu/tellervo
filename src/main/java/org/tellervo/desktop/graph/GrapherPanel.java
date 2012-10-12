@@ -105,7 +105,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	// public data
 	public List<Graph> graphs; // of Graph
 	public int current = 0; // currenly selected sample
-
+	
 	// gui
 	private JScrollPane scroller = null;
 	private JFrame myFrame; // for setTitle(), dispose()
@@ -345,7 +345,13 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		if(!e.isControlDown())
 		{
 			dragGraph.yoffset = (int) dragStart.getY() - e.getY();
-
+			if(plotAgent.getPlotter() instanceof SemilogPlot)
+			{
+			}
+			else
+			{
+				dragGraph.yoffset = dragGraph.yoffset*10;
+			}
 		}
 			
 		// change xoffset[n], but only if no shift
@@ -1139,14 +1145,20 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			          (yearWidth * yearsAfterLabel);
 			
 			// if this is an indexed sample, set this to be at the 100% line
-			int grfirstvalue = 1000;			
+			int grfirstvalue = 1000;		
+			
 			// otherwise, get the first point!
-			if(!((gr.graph instanceof Sample) && ((Sample) gr.graph).isIndexed())) {
+			/*if(!((gr.graph instanceof Sample) && ((Sample) gr.graph).isIndexed())) {
 				try {
 					grfirstvalue = ((Number) gr.graph.getRingWidthData().get(0)).intValue();
 				} catch (ClassCastException cce) {
 					grfirstvalue = bottom - (int) (gr.yoffset * unitScale) - (lineHeight / 2);
 				}
+			}*/
+			
+			if(gr.graph instanceof Sample)
+			{
+				grfirstvalue = gr.getPlotter().getFirstValue(gr);
 			}
 			
 			int y = bottom - (int) (grfirstvalue * gr.scale * unitScale) - (int) (gr.yoffset * unitScale);

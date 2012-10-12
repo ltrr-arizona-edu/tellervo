@@ -30,7 +30,8 @@ import java.lang.ref.WeakReference;
 public enum PlotAgent {
 	STANDARD(StandardPlot.class, Axis.AXIS_STANDARD),
 	SEMILOG(SemilogPlot.class, Axis.AXIS_LOG),
-	TOOTHED(DensityPlot.class, Axis.AXIS_STANDARD);
+	TOOTHED(DensityPlot.class, Axis.AXIS_STANDARD),
+	SKELETON(SkeletonPlot.class, Axis.AXIS_STANDARD);;
 	
 	/** The class of this plotter */
 	private final Class<? extends TellervoGraphPlotter> plotterType;
@@ -95,6 +96,8 @@ public enum PlotAgent {
 		if(this.toString().equals(PlotAgent.SEMILOG.toString())) return "graph.agent_semilog";
 		else if (this.toString().equals(PlotAgent.STANDARD.toString()))	return "graph.agent_standard";
 		else if (this.toString().equals(PlotAgent.TOOTHED.toString())) return "graph.agent_toothed";
+		else if (this.toString().equals(PlotAgent.SKELETON.toString())) return "graph.agent_skeleton";
+
 		else return null;
 		
 	}

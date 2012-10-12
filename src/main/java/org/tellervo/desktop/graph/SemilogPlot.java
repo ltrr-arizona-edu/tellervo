@@ -43,7 +43,7 @@ public class SemilogPlot extends StandardPlot implements TellervoGraphPlotter {
 	public SemilogPlot() {
 		super();
 	}
-
+	
 	// This is only useful for indexed things...
 	@Override
 	protected int yTransform(float y) {
@@ -59,4 +59,9 @@ public class SemilogPlot extends StandardPlot implements TellervoGraphPlotter {
 		return true;
 	}
 
+	@Override
+	public int getFirstValue(Graph g) {
+		return g.graph.getRingWidthData().get(0).intValue()*1000;
+	}
+	
 }

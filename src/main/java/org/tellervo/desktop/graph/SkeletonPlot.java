@@ -50,6 +50,10 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math.stat.descriptive.moment.Mean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.index.Index;
@@ -58,7 +62,8 @@ import org.tellervo.desktop.util.ColorUtils;
 
 
 public class SkeletonPlot implements TellervoGraphPlotter {
-	
+	private final static Logger log = LoggerFactory.getLogger(SkeletonPlot.class);
+
 	public SkeletonPlot() {
 		// no initializing to do, I am STATELESS!
 	}
@@ -122,26 +127,6 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		int l = g2.getClipBounds().x;
 		int r = l + g2.getClipBounds().width;
 
-		// baseline
-		if (gInfo.isShowBaselines()) {
-			int y = bottom - (int) (g.yoffset * unitScale);
-			g2.drawLine(xscroll, y, xscroll + 10 * yearWidth, y); // 1 decade wide -- ok?
-		}
-		
-		// hundred percent line
-		if (gInfo.isShowHundredpercentlines() && (g.graph instanceof Sample) && ((Sample) g.graph).isIndexed()) {
-			Color oldcolor = g2.getColor();
-			g2.setColor(ColorUtils.blend(oldcolor, gInfo.getBackgroundColor()));
-		
-			// x is 0 if we aren't drawing graph names...
-			// x is the pixel at the end of the empty range if we are.
-			int x = (gInfo.isShowGraphNames()) ? yearWidth * (gInfo.getEmptyBounds().span() - 1) : 0;			
-			int y = bottom - (int) (yTransform(1000 * g.scale) * unitScale) - (int) (g.yoffset * unitScale);
-			g2.drawLine((x > xscroll) ? x : xscroll, y, r, y);
-						
-			g2.setColor(oldcolor);
-		}
-
 		// no data?  stop.
 		if (g.graph.getRingWidthData().isEmpty())
 			return;
@@ -159,45 +144,37 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 			return;
 		}
 
-		// compute sapwood
-		int sapwoodIndex, sapwoodCount = 0;
-		if (g.graph instanceof Sample) {
-			Sample sample = (Sample) g.graph;
+		// Draw mean line
+		int x = yearWidth * (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset);
+		int value1 = yTransform((float) getMeanValue(g));
+		int meanYVal = bottom - (int) (value1 * unitScale) - (int) (g.yoffset * unitScale);
+		try {
+			// x-position
+			int x1 = x;
+			int x2 = yearWidth * (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset +g.graph.getRingWidthData().size());
+
+			// if we're past the end, draw only as far as we need
+			if (x2 > r + yearWidth) {
+				x2 = r+yearWidth;
+			}
 			
-			if(sample.meta().hasSapwood())
-				sapwoodCount = sample.meta().getNumberOfSapwoodRings();			
+			//log.debug("Drawing mean line: "+x1+", "+meanYVal+", "+x2+", "+meanYVal);
+			g2.drawLine(x1, meanYVal, x2, meanYVal);
+			
+		} catch (ClassCastException cce) {
+			
 		}
-		sapwoodIndex = g.graph.getRingWidthData().size() - sapwoodCount + 1;
-
-		// my path
-		GeneralPath p = new GeneralPath();
-
-		// x-position
-		int x = yearWidth
-				* (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset);
-
-		// move to the first point -- THIS IS NOT REALLY A SPECIAL CASE!
+	
 		int value;
 		try {
 			value = ((Number) g.graph.getRingWidthData().get(0)).intValue();
 			value = yTransform(value * g.scale);
 		} catch (ClassCastException cce) {
-			value = yTransform(0); // BAD!  instead: (1) just continue now, and (2) NEXT point is a move-to.
+			value = yTransform(0); 
 		}
-		p.moveTo(x, bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale));
-
-		/*
-		 -- i really want to start at year max(graph.start, bounds.start)
-		 -- there are 3 things going on:
-		 ---- x is the pixel position
-		 ---- i is the index into data[]
-		 ---- y is the year
-		 -- y isn't updated each time through the loop, so that's not too bad
-		 -- but: starting y is easy to compute; from that, i and x are easy
-		 */
-
-		// connect the lines through the rest of the graph
-		int n = g.graph.getRingWidthData().size(); // THIS is the third time it's called; why not use it above?
+		
+		int n = g.graph.getRingWidthData().size(); 
+		int runningMean = meanYVal;
 		for (int i = 1; i < n; i++) {
 			// new x-position for this point
 			x += yearWidth;
@@ -208,16 +185,73 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 				break;
 			}
 
-			// sapwood?  draw what we've got, and start a new (thicker) path
-			// but only do it if sapwoodThicker() is enabled!
-			if (gInfo.isThickerSapwood() && i == sapwoodIndex) {
-				g2.draw(p);
-				g2.setStroke(makeStroke(2 * thickness, false));
-				p = new GeneralPath();
-				p.moveTo(yearWidth * (i - 1 + g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset),
-						 bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale));
+			// Calculate running mean for 3 rings either side of this value
+			double[] window;
+			if(i<=3)
+			{
+				// One of the first few rings
+				window = new double[i+3];
+				int k = 0;
+				for(int j =0; j<=i+2; j++)
+				{
+					window[k] = (double) g.graph.getRingWidthData().get(j).intValue();
+					k++;
+				}
+				
+				log.debug("Ring "+i+" has "+window.length+" values in window");
 			}
+			else if (i> n-3)
+			{
+				// One of the last few rings
+				window = new double[n-i];
+				int k = 0;
+				for(int j =i-4; j<=i+2; j++)
+				{
+					try{
+						window[k] = (double) g.graph.getRingWidthData().get(j).intValue();
+					} catch (Exception e){	}
+					k++;
+				}
+				
+				log.debug("Ring "+i+" has "+window.length+" values in window");
 
+			}
+			else
+			{
+				// In middle of dataset
+				window = new double[7];
+				int k = 0;
+				for(int j =i-4; j<=i+2; j++)
+				{
+					window[k] = (double) g.graph.getRingWidthData().get(j).intValue();
+					k++;
+				}
+				
+				log.debug("Ring "+i+" has "+window.length+" values in window");
+
+			}
+			DescriptiveStatistics windowStats = new DescriptiveStatistics(window);
+			if(i==4 || i>278) 
+			{
+				log.debug("Stats for ring: "+i);
+				try{
+					log.debug("  Window 0: "+window[0]);
+					log.debug("  Window 1: "+window[1]);
+					log.debug("  Window 2: "+window[2]);
+					log.debug("  Window 3: "+window[3]);
+					log.debug("  Window 4: "+window[4]);
+					log.debug("  Window 5: "+window[5]);
+					log.debug("  Window 6: "+window[6]);
+				} catch (ArrayIndexOutOfBoundsException e){}
+				log.debug("  Mean  is "+i+" - "+(int) windowStats.getMean());
+				log.debug("  Min   is "+i+" - "+(int) windowStats.getMin());
+				log.debug("  Std   is "+i+" - "+(int) windowStats.getStandardDeviation());
+				log.debug("  Std/2 is "+i+" - "+(int) windowStats.getStandardDeviation()/2);
+			}
+			runningMean = (int) windowStats.getMean();
+			
+
+			
 			// y-position for this point
 			try {
 				value = yTransform(((Number) g.graph.getRingWidthData().get(i)).intValue() * g.scale);
@@ -228,22 +262,52 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 			}
 			int y = bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale);
 
-			// if we're not where this sample starts, don't bother drawing yet
-			if (x < l - yearWidth) {
-				p.moveTo(x, y);
-				continue;
+			Integer skeletonCategory = 0;
+			// Calculate skeleton category
+			if(value == (int) windowStats.getMin())
+			{
+				skeletonCategory = 10;
 			}
+			else if(value < windowStats.getPercentile(10))
+			{
+				skeletonCategory = 9;
+			}
+			else if(value < windowStats.getPercentile(15))
+			{
+				skeletonCategory = 8;
+			}
+			else if(value < windowStats.getPercentile(20))
+			{
+				skeletonCategory = 7;
+			}
+			else if(value < windowStats.getPercentile(25))
+			{
+				skeletonCategory = 6;
+			}
+			else if(value < windowStats.getPercentile(30))
+			{
+				skeletonCategory = 5;
+			}
+			else if(value < windowStats.getPercentile(35))
+			{
+				skeletonCategory = 4;
+			}
+			else if(value < windowStats.getPercentile(40))
+			{
+				skeletonCategory = 3;
+			}
+			else if(value < windowStats.getPercentile(45))
+			{
+				skeletonCategory = 2;
+			}
+			else if(value < windowStats.getPercentile(50))
+			{
+				skeletonCategory = 1;				
+			}
+			
+			g2.drawLine(x, meanYVal, x, meanYVal-(skeletonCategory*5));
 
-			// if MR, draw a vertical line -- use Sample.MR, for now
-			if (g.graph instanceof Sample && !validValue(value))
-				g2.drawLine(x, y - 20, x, y + 20);
-
-			// draw a line to this point
-			p.lineTo(x, y);
 		}
-
-		// draw it!
-		g2.draw(p);
 	}
 
 	// if it's within this many pixels, it's considered a hit (see "correct?" comment)
@@ -258,7 +322,9 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		// Check three years' worth of data: the year prior to and after the year the mouse is inside
 		Year startYear = gInfo.getDrawBounds().getStart().add(firstYearIdx);
 		List<Point2D> points = this.getPointsFrom(gInfo, g, startYear, nYears, bottom);
-
+		
+		
+		
 		int nLines = points.size() - 1;
 		for(int i = 0; i < nLines; i++) {
 			Line2D line = new Line2D.Float(points.get(i), points.get(i+1));
@@ -267,6 +333,11 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 			if(distance <= NEAR)
 				return true;
 		}
+		
+		
+		
+		
+		
 		
 		return false;
 	}
@@ -281,50 +352,65 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 						(int) (g.yoffset * unitScale); // DUPLICATE: this line appears above 3 times
 	}
 	
-	/**
-	 * Get the X value of a year
-	 * @param g the graph
-	 * @param plotStartYear the start year of the entire plot
-	 * @param yearWidth the width of a year, in pixels
-	 * @paran n the number of years into the graph
-	 * @return
-	 */
-	private final int getXValue(Graph g, Year plotStartYear, int yearWidth, int n) {
-		return yearWidth * (g.graph.getStart().diff(plotStartYear) + g.xoffset + n);
-	}
 	
 	private final List<Point2D> getPointsFrom(GraphInfo gInfo, Graph g, Year startYear, int nYears, int bottom) {
-		// index into our data values for this particular year
-		int idx = startYear.diff(g.graph.getStart().add(g.xoffset));
 
 		// make a list of points
 		// this is ok, because we know points are continuous
 		List<Point2D> points = new ArrayList<Point2D>(nYears);
 		
-		// the year the plot starts
-		Year plotStartYear = gInfo.getDrawBounds().getStart();
-		// the adjusted range of this graph
-		Range graphRange = g.getRange();
 		int yearWidth = gInfo.getYearWidth();
 		float unitScale = gInfo.getHundredUnitHeight() / 100.0f;
 		
-		for(int i = 0; i <= nYears; i++) {
-			// skip points that don't exist
-			if(!graphRange.contains(startYear.add(i)))
-				continue;
-			
-			int value = g.graph.getRingWidthData().get(idx + i).intValue();
-			int x = getXValue(g, plotStartYear, yearWidth, idx + i);
-			int y = getYValue(g, unitScale, value, bottom);
-			
-			points.add(new Point2D.Float(x, y));
+		List<? extends Number> data = g.graph.getRingWidthData();
+		double[] dataDbl = new double[data.size()];
+		for(int i=0; i<data.size(); i++)
+		{
+			Integer intval = (Integer) data.get(i);
+			dataDbl[i] = (double) intval ;
 		}
+		DescriptiveStatistics stats = new DescriptiveStatistics(dataDbl);
 		
+		int x = yearWidth * (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset);
+		int value1 = yTransform((float) stats.getMean());
+		int meanYVal = bottom - (int) (value1 * unitScale) - (int) (g.yoffset * unitScale);
+		try {
+			// x-position
+			int x1 = x;
+			int x2 = yearWidth * (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset +g.graph.getRingWidthData().size());
+
+			points.add(new Point2D.Float(x1, meanYVal));
+			points.add(new Point2D.Float(x2, meanYVal));
+			
+		} catch (ClassCastException cce) {
+			
+		}
+				
 		return points;
 	}
 
 	protected final int getPosition(GraphInfo gInfo, Graph g, Year y, int bottom) {
 		return getYValue(g, gInfo.getHundredUnitHeight() / 100.0f, getDataValue(g, y), bottom);
+	}
+
+	@Override
+	public int getFirstValue(Graph g) {
+		return getMeanValue(g);
+	}
+	
+	private int getMeanValue(Graph g)
+	{
+		// Computer average 
+		List<? extends Number> data = g.graph.getRingWidthData();
+		double[] dataDbl = new double[data.size()];
+		for(int i=0; i<data.size(); i++)
+		{
+			Integer intval = (Integer) data.get(i);
+			dataDbl[i] = (double) intval ;
+		}
+		DescriptiveStatistics stats = new DescriptiveStatistics(dataDbl);
+		
+		return (int) stats.getMean();
 	}
 
 	// REFACTOR: use this same method above when actually drawing it

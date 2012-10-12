@@ -364,5 +364,10 @@ public class StandardPlot implements TellervoGraphPlotter {
 		return getYValue(g, gInfo.getHundredUnitHeight() / 100.0f, getDataValue(g, y), bottom);
 	}
 
+	@Override
+	public int getFirstValue(Graph g) {
+		return g.graph.getRingWidthData().get(0).intValue();
+	}
+
 	// REFACTOR: use this same method above when actually drawing it
 }
