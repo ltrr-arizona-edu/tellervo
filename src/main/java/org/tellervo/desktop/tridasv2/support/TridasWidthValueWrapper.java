@@ -114,7 +114,7 @@ public final class TridasWidthValueWrapper {
 		
 		@Override
 		public int size() {
-			return countIndex;
+			return values.size();
 		}	
 	}
 	

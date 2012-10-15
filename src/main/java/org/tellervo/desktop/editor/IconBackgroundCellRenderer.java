@@ -171,47 +171,16 @@ public class IconBackgroundCellRenderer extends DefaultTableCellRenderer {
 	private void populateIcons(List<TridasRemark> remarks, TridasValue value) {
 		boolean usedNonStandard = false;
 		icons.clear();
-		
-		Boolean hidePinningIcons = App.prefs.getBooleanPref(PrefKey.HIDE_PINNING_AND_RADIUS_SHIFT_ICONS, false);
-		Integer iconThreshold = App.prefs.getIntPref(PrefKey.DERIVED_REMARKS_THRESHOLD, 0);
 				
 		// loop through each remark and get the appropriate icon
 		for(TridasRemark remark : remarks) {
+			
+			if(Remarks.isRemarkVisible(remark, value)==false) continue;
+			
 			// tridas icon
 			if(remark.isSetNormalTridas()) {
 				Icon icon = getTridasIcon(remark.getNormalTridas());
-				
-				if(hidePinningIcons)
-				{
-					if(remark.getNormalTridas().equals(NormalTridasRemark.SINGLE_PINNED) || 
-					   remark.getNormalTridas().equals(NormalTridasRemark.DOUBLE_PINNED) || 	
-					   remark.getNormalTridas().equals(NormalTridasRemark.TRIPLE_PINNED) || 
-					   remark.getNormalTridas().equals(NormalTridasRemark.RADIUS_SHIFT_DOWN) || 
-					   remark.getNormalTridas().equals(NormalTridasRemark.RADIUS_SHIFT_UP) )
-					{
-						//log.debug("Hiding pinning and radius shift icons by request");
-						continue;
-					}
-				}
-				
-				if(remark.isSetInheritedCount())
-				{
-					try{
-						Double inheritedCount = remark.getInheritedCount().doubleValue();
-						Double countOfValues = value.getCount().doubleValue();
-						Double currPercentage = (inheritedCount / countOfValues)*100;
-						
-						//log.debug(inheritedCount + " / " +countOfValues + " * 100 = "+currPercentage);
-						//log.debug("Threshold          = "+iconThreshold );						
-						
-						Double iconThresholdDbl = iconThreshold.doubleValue(); 
-						if(currPercentage.compareTo(iconThresholdDbl)<0) continue;
-					} catch (Exception e)
-					{
-						log.error("Error calculating remark threshold");
-					}
-				}
-				
+
 				if(icon != null)
 					icons.add(icon);
 				else if(!usedNonStandard) {

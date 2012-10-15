@@ -59,6 +59,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.cross.Cross;
@@ -120,6 +122,7 @@ public class GraphWindow extends XFrame implements SampleListener,
 	 * 
 	 */
 	private static final long serialVersionUID = 5018275020308926052L;
+	private final static Logger log = LoggerFactory.getLogger(GraphWindow.class);
 
 	// SampleListener
 	private void update(Sample s) {
@@ -566,8 +569,16 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 		// summed -- add count, too
 		if (s.isSummed())
-			samples.add(new Graph(s.getCount(), s.getRange().getStart(), I18n
+		{
+			List<Integer> counts = s.getCount();
+			ArrayList<Integer> countsx100 = new ArrayList<Integer>();
+			for(Integer v : counts)
+			{
+				countsx100.add(v*100);
+			}
+			samples.add(new Graph(countsx100, s.getRange().getStart(), I18n
 					.getText("graph.number_of_samples")));
+		}
 
 		// observe
 		s.addSampleListener(this);
@@ -644,8 +655,16 @@ public class GraphWindow extends XFrame implements SampleListener,
 
 		// summed -- add count, too
 		if (s.isSummed())
-			samples.add(new Graph(s.getCount(), s.getRange().getStart(), I18n
+		{
+			List<Integer> counts = s.getCount();
+			ArrayList<Integer> countsx100 = new ArrayList<Integer>();
+			for(Integer v : counts)
+			{
+				countsx100.add(v*100);
+			}
+			samples.add(new Graph(countsx100, s.getRange().getStart(), I18n
 					.getText("graph.number_of_samples")));
+		}
 
 		// observe
 		s.addSampleListener(this);

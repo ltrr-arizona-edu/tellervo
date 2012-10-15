@@ -38,6 +38,7 @@ import org.tellervo.desktop.prefs.wrappers.SpinnerWrapper;
 import org.tellervo.desktop.ui.I18n;
 
 import net.miginfocom.swing.MigLayout;
+import javax.swing.DefaultComboBoxModel;
 
 public class StatsPrefsPanel extends AbstractPreferencesPanel {
 
@@ -106,7 +107,7 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 		JPanel panelSigScores = new JPanel();
 		panelSigScores.setBorder(new TitledBorder(null, "Significant scores", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panelSigScores, "cell 1 0,grow");
-		panelSigScores.setLayout(new MigLayout("", "[grow][grow]", "[][][][][]"));
+		panelSigScores.setLayout(new MigLayout("", "[grow][grow]", "[][][][][][]"));
 		
 		JLabel lblNewLabel_3 = new JLabel("Minimum years overlap:");
 		panelSigScores.add(lblNewLabel_3, "cell 0 0,alignx right");
@@ -137,6 +138,13 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 		spnSkeletonWindow = new JSpinner();
 		spnSkeletonWindow.setModel(new SpinnerNumberModel(7, 3, 99, 2));
 		panelSigScores.add(spnSkeletonWindow, "cell 1 4,growx");
+		
+		JLabel lblSkeletonAlg = new JLabel("Skeleton plot algorithm:");
+		panelSigScores.add(lblSkeletonAlg, "cell 0 5,alignx trailing");
+		
+		JComboBox cboSkeletonAlg = new JComboBox();
+		cboSkeletonAlg.setModel(new DefaultComboBoxModel(new String[] {"Percentiles", "StdDevs"}));
+		panelSigScores.add(cboSkeletonAlg, "cell 1 5,growx");
 
 		linkToPrefs();
 	}

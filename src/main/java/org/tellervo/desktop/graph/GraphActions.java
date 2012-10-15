@@ -118,10 +118,10 @@ public class GraphActions {
 	}
 
 	protected TellervoAction squeezeVertically;
-	protected TellervoAction spreadB25;
-	protected TellervoAction spreadB50;
-	protected TellervoAction spreadB100;
-	protected TellervoAction spreadB200;
+	protected TellervoAction spreadB250;
+	protected TellervoAction spreadB500;
+	protected TellervoAction spreadB1000;
+	protected TellervoAction spreadB2000;
 	
 	protected TellervoAction squishBaselines;
 	protected TellervoAction fitHorizontally;
@@ -149,24 +149,24 @@ public class GraphActions {
 			}		
 		};
 		
-		spreadB25 = new TellervoAction("graph.units25") {
+		spreadB250 = new TellervoAction("graph.units250") {
 			public void actionPerformed(ActionEvent e) {
-				controller.spreadOut(25);
+				controller.spreadOut(250);
 			}
 		};
-		spreadB50 = new TellervoAction("graph.units50") {
+		spreadB500 = new TellervoAction("graph.units500") {
 			public void actionPerformed(ActionEvent e) {
-				controller.spreadOut(50);
+				controller.spreadOut(500);
 			}
 		};
-		spreadB100 = new TellervoAction("graph.units100") {
+		spreadB1000 = new TellervoAction("graph.units1000") {
 			public void actionPerformed(ActionEvent e) {
-				controller.spreadOut(100);
+				controller.spreadOut(1000);
 			}
 		};
-		spreadB200 = new TellervoAction("graph.units200") {
+		spreadB2000 = new TellervoAction("graph.units2000") {
 			public void actionPerformed(ActionEvent e) {
-				controller.spreadOut(200);
+				controller.spreadOut(2000);
 			}
 		};
 		

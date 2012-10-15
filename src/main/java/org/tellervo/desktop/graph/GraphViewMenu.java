@@ -70,10 +70,10 @@ class GraphViewMenu extends JMenu {
 
 		// Spread apart
 		JMenu spread = Builder.makeMenu("graph.baselines_spread");
-		JMenuItem spread_25 = new JMenuItem(actions.spreadB25);		
-		JMenuItem spread_50 = new JMenuItem(actions.spreadB50);
-		JMenuItem spread_100 = new JMenuItem(actions.spreadB100);		
-		JMenuItem spread_200 = new JMenuItem(actions.spreadB200);
+		JMenuItem spread_25 = new JMenuItem(actions.spreadB250);		
+		JMenuItem spread_50 = new JMenuItem(actions.spreadB500);
+		JMenuItem spread_100 = new JMenuItem(actions.spreadB1000);		
+		JMenuItem spread_200 = new JMenuItem(actions.spreadB2000);
 		
 		spread.add(spread_25);
 		spread.add(spread_50);

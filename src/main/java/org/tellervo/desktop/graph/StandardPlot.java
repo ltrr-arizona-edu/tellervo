@@ -254,7 +254,7 @@ public class StandardPlot implements TellervoGraphPlotter {
 				int xcoord = (yearWidth * (i + g.graph.getStart().diff(gInfo.getDrawBounds().getStart())));
 				int ycoord = (bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale)); 
 
-				Graph.drawRemarkIcons(g2, gInfo, remarks, xcoord, ycoord);
+				Graph.drawRemarkIcons(g2, gInfo, remarks, g.graph.getTridasValues().get(i), xcoord, ycoord);
 				
 			} catch (Exception e)
 			{

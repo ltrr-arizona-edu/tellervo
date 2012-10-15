@@ -31,7 +31,7 @@ public enum PlotAgent {
 	STANDARD(StandardPlot.class, Axis.AXIS_STANDARD),
 	SEMILOG(SemilogPlot.class, Axis.AXIS_LOG),
 	TOOTHED(DensityPlot.class, Axis.AXIS_STANDARD),
-	SKELETON(SkeletonPlot.class, Axis.AXIS_STANDARD);;
+	SKELETON(SkeletonPlot.class, Axis.AXIS_STANDARD);
 	
 	/** The class of this plotter */
 	private final Class<? extends TellervoGraphPlotter> plotterType;
@@ -47,7 +47,7 @@ public enum PlotAgent {
 	
 	/**
 	 * Get an instance of this plotter to plot with
-	 * @return A CorinaGraphPlotter, never null
+	 * @return A TellervoGraphPlotter, never null
 	 */
 	public final TellervoGraphPlotter getPlotter() {
 		TellervoGraphPlotter realPlotter;

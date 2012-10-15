@@ -52,6 +52,7 @@ import org.tellervo.desktop.remarks.Remarks;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.TridasRemark;
+import org.tridas.schema.TridasValue;
 
 
 /*
@@ -282,10 +283,23 @@ public final class Graph {
      * @param xcoord  - xcoord of the data point (start point for the first remark)
      * @param ycoord  - ycoord of the data point (start point for the first remark)
      */
-    public static void drawRemarkIcons(Graphics2D g2, GraphInfo info, List<TridasRemark> remarks, int xcoord, int ycoord)
+    public static void drawRemarkIcons(Graphics2D g2, GraphInfo info, List<TridasRemark> remarks, TridasValue value, int xcoord, int ycoord)
+    {
+    	drawRemarkIcons(g2, info, remarks, value, xcoord, ycoord, false);
+    }
+    
+    public static void drawRemarkIcons(Graphics2D g2, GraphInfo info, List<TridasRemark> remarks, TridasValue value, int xcoord, int ycoord, Boolean stackBelow)
     {
 		xcoord = xcoord-8;
-		ycoord = ycoord-22; 
+		
+		if(stackBelow)
+		{
+			ycoord = ycoord+3;
+		}
+		else
+		{
+			ycoord = ycoord-22;
+		}
 		
 		if(!info.isShowGraphRemarks()) return;
     	
@@ -295,6 +309,8 @@ public final class Graph {
 			int remarkoffset = 0;
 			for(TridasRemark remark : remarks)
 			{
+				if(Remarks.isRemarkVisible(remark, value)==false) continue;
+				
 				
 				Image img = null;
 				
@@ -321,7 +337,15 @@ public final class Graph {
 				
 				
 				g2.drawImage(img,xcoord, ycoord-remarkoffset, null);
-				remarkoffset = remarkoffset + 18;
+				
+				if(stackBelow)
+				{
+					remarkoffset = remarkoffset - 18;
+				}
+				else
+				{
+					remarkoffset = remarkoffset + 18;
+				}
 			}
 		}
     }

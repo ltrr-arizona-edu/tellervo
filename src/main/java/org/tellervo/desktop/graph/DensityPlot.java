@@ -158,7 +158,7 @@ public class DensityPlot extends StandardPlot implements TellervoGraphPlotter {
 			// Try and paint remark icons
 			try{
 				List<TridasRemark> remarks = g.graph.getTridasValues().get(i).getRemarks();
-				Graph.drawRemarkIcons(g2, gInfo, remarks, x, y);
+				Graph.drawRemarkIcons(g2, gInfo, remarks, g.graph.getTridasValues().get(i), x, y);
 			
 			} catch (Exception e)
 			{

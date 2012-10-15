@@ -61,6 +61,7 @@ import org.tellervo.desktop.index.Index;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.util.ColorUtils;
+import org.tridas.schema.TridasRemark;
 
 
 public class SkeletonPlot implements TellervoGraphPlotter {
@@ -146,10 +147,13 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 			return;
 		}
 
-		// Draw mean line
+		// Draw standard line
 		int x = yearWidth * (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset);
-		int value1 = yTransform((float) getMeanValue(g));
-		int meanYVal = bottom - (int) (value1 * unitScale) - (int) (g.yoffset * unitScale);
+		//int value1 = yTransform((float) getMeanValue(g));
+		int value1 = yTransform((float) 100);
+		int baseYVal = bottom - (int) (value1 * unitScale) - (int) (g.yoffset * unitScale);
+		
+
 		try {
 			// x-position
 			int x1 = x;
@@ -161,7 +165,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 			}
 			
 			//log.debug("Drawing mean line: "+x1+", "+meanYVal+", "+x2+", "+meanYVal);
-			g2.drawLine(x1, meanYVal, x2, meanYVal);
+			g2.drawLine(x1, baseYVal, x2, baseYVal);
 			
 		} catch (ClassCastException cce) {
 			
@@ -241,50 +245,18 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 			}
 			int y = bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale);
 
-			Integer skeletonCategory = 0;
-			// Calculate skeleton category
-			if(value == (int) windowStats.getMin())
-			{
-				skeletonCategory = 10;
-			}
-			else if(value < windowStats.getPercentile(10))
-			{
-				skeletonCategory = 9;
-			}
-			else if(value < windowStats.getPercentile(15))
-			{
-				skeletonCategory = 8;
-			}
-			else if(value < windowStats.getPercentile(20))
-			{
-				skeletonCategory = 7;
-			}
-			else if(value < windowStats.getPercentile(25))
-			{
-				skeletonCategory = 6;
-			}
-			else if(value < windowStats.getPercentile(30))
-			{
-				skeletonCategory = 5;
-			}
-			else if(value < windowStats.getPercentile(35))
-			{
-				skeletonCategory = 4;
-			}
-			else if(value < windowStats.getPercentile(40))
-			{
-				skeletonCategory = 3;
-			}
-			else if(value < windowStats.getPercentile(45))
-			{
-				skeletonCategory = 2;
-			}
-			else if(value < windowStats.getPercentile(50))
-			{
-				skeletonCategory = 1;				
-			}
+			// Draw the skeleton line
+			g2.drawLine(x, baseYVal, x, baseYVal-(getSkeletonCategory(value, windowStats)*5));
 			
-			g2.drawLine(x, meanYVal, x, meanYVal-(skeletonCategory*5));
+			// Try and paint remark icons
+			try{
+				List<TridasRemark> remarks = g.graph.getTridasValues().get(i).getRemarks();
+				Graph.drawRemarkIcons(g2, gInfo, remarks, g.graph.getTridasValues().get(i), x, baseYVal, true);
+				
+			} catch (Exception e)
+			{
+				log.error("Exception drawing icons to graph: " + e.getClass());
+			}
 
 		}
 	}
@@ -321,6 +293,55 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		return false;
 	}
 	
+	private Integer getSkeletonCategory(Integer value, DescriptiveStatistics windowStats)
+	{
+		Integer skeletonCategory = 0;
+		// Calculate skeleton category
+		if(value == (int) windowStats.getMin())
+		{
+			skeletonCategory = 10;
+		}
+		else if(value < windowStats.getPercentile(10))
+		{
+			skeletonCategory = 9;
+		}
+		else if(value < windowStats.getPercentile(15))
+		{
+			skeletonCategory = 8;
+		}
+		else if(value < windowStats.getPercentile(20))
+		{
+			skeletonCategory = 7;
+		}
+		else if(value < windowStats.getPercentile(25))
+		{
+			skeletonCategory = 6;
+		}
+		else if(value < windowStats.getPercentile(30))
+		{
+			skeletonCategory = 5;
+		}
+		else if(value < windowStats.getPercentile(35))
+		{
+			skeletonCategory = 4;
+		}
+		else if(value < windowStats.getPercentile(40))
+		{
+			skeletonCategory = 3;
+		}
+		else if(value < windowStats.getPercentile(45))
+		{
+			skeletonCategory = 2;
+		}
+		else if(value < windowStats.getPercentile(50))
+		{
+			skeletonCategory = 1;				
+		}
+		
+		return skeletonCategory;
+	}
+	
+	
 	private final int getDataValue(Graph g, Year y) {
 		int i = y.diff(g.graph.getStart().add(g.xoffset));
 		return g.graph.getRingWidthData().get(i).intValue();
@@ -351,7 +372,9 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		DescriptiveStatistics stats = new DescriptiveStatistics(dataDbl);
 		
 		int x = yearWidth * (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset);
-		int value1 = yTransform((float) stats.getMean());
+		//int value1 = yTransform((float) stats.getMean());
+		int value1 = yTransform((float) 100);
+
 		int meanYVal = bottom - (int) (value1 * unitScale) - (int) (g.yoffset * unitScale);
 		try {
 			// x-position
@@ -374,23 +397,10 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 
 	@Override
 	public int getFirstValue(Graph g) {
-		return getMeanValue(g);
+
+		return yTransform((float) 100);
 	}
 	
-	private int getMeanValue(Graph g)
-	{
-		// Computer average 
-		List<? extends Number> data = g.graph.getRingWidthData();
-		double[] dataDbl = new double[data.size()];
-		for(int i=0; i<data.size(); i++)
-		{
-			Integer intval = (Integer) data.get(i);
-			dataDbl[i] = (double) intval ;
-		}
-		DescriptiveStatistics stats = new DescriptiveStatistics(dataDbl);
-		
-		return (int) stats.getMean();
-	}
 
 	// REFACTOR: use this same method above when actually drawing it
 }

@@ -31,7 +31,12 @@ import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.editor.IconBackgroundCellRenderer;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.util.ListUtil;
 import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.TridasRemark;
@@ -41,7 +46,8 @@ import org.tridas.schema.TridasValue;
 public class Remarks {
 	
 	private static List<Remark> remarks;
-	
+	private final static Logger log = LoggerFactory.getLogger(Remarks.class);
+
 		
 	/**
 	 * Lazily-build the list of remarks
@@ -159,5 +165,49 @@ public class Remarks {
 	}
 	
 	private Remarks() {
+	}
+	
+	public static Boolean isRemarkVisible(TridasRemark remark, TridasValue value)
+	{
+		Boolean hidePinningIcons = App.prefs.getBooleanPref(PrefKey.HIDE_PINNING_AND_RADIUS_SHIFT_ICONS, false);
+		Integer iconThreshold = App.prefs.getIntPref(PrefKey.DERIVED_REMARKS_THRESHOLD, 0);
+		
+		if(remark.isSetNormalTridas()) {
+			
+			if(hidePinningIcons)
+			{
+				if(remark.getNormalTridas().equals(NormalTridasRemark.SINGLE_PINNED) || 
+				   remark.getNormalTridas().equals(NormalTridasRemark.DOUBLE_PINNED) || 	
+				   remark.getNormalTridas().equals(NormalTridasRemark.TRIPLE_PINNED) || 
+				   remark.getNormalTridas().equals(NormalTridasRemark.RADIUS_SHIFT_DOWN) || 
+				   remark.getNormalTridas().equals(NormalTridasRemark.RADIUS_SHIFT_UP) ||
+				   remark.getNormalTridas().equals(NormalTridasRemark.CRACK))
+				{
+					return false;
+				}
+			}
+			
+			if(remark.isSetInheritedCount())
+			{
+				try{
+					Double inheritedCount = remark.getInheritedCount().doubleValue();
+					Double countOfValues = value.getCount().doubleValue();
+					Double currPercentage = (inheritedCount / countOfValues)*100;
+					
+					//log.debug(inheritedCount + " / " +countOfValues + " * 100 = "+currPercentage);
+					//log.debug("Threshold          = "+iconThreshold );						
+					
+					Double iconThresholdDbl = iconThreshold.doubleValue(); 
+					if(currPercentage.compareTo(iconThresholdDbl)<0) return false;
+				} catch (Exception e)
+				{
+					log.error("Error calculating remark threshold");
+				}
+			}
+		
+		
+		}
+		
+		return true;
 	}
 }
