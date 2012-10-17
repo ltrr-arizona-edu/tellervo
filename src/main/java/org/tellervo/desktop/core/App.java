@@ -35,7 +35,6 @@ import javax.media.opengl.GLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.Build;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gui.Log4JViewer;

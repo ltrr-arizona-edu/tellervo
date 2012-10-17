@@ -55,6 +55,7 @@ import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.GrapherEvent;
 import org.tellervo.desktop.graph.GrapherListener;
 import org.tellervo.desktop.graph.GrapherPanel;
+import org.tellervo.desktop.graph.SkeletonPlot;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.ReverseScrollBar;
 import org.tellervo.desktop.gui.cross.Ui_CrossdatePanel;
@@ -753,6 +754,8 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     		status.setMovingRange(null);
     	
 		graphInfo.setShowVertAxis(true);
+		
+		
     	graph.update(true);
 		btnOk.setEnabled(graphSamples.size() == 2);
     }

@@ -69,11 +69,7 @@ import org.tridas.schema.TridasValue;
 public final class Graph {
 	private final static Logger log = LoggerFactory.getLogger(Graph.class);
 
-    // should these members be public?  or private, with getters and
-    // setters?  that way it could extend Observable, which would be
-    // very cool.  [what did i mean by that?]
-
-    // the thing-to-graph
+	// the thing-to-graph
     public final Graphable graph;
 
     // offsets

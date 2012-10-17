@@ -51,7 +51,7 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 
-import org.tellervo.desktop.Build;
+import org.tellervo.desktop.core.Build;
 
 
 /**

@@ -45,10 +45,10 @@ public class GraphToolbar extends JToolBar {
 		
 			addSeparator();
 		
-			addButton(actions.zoomIn, "zoom_in");
-			addButton(actions.zoomOut, "zoom_out");
-			addButton(actions.zoomInHorizontally, "zoom_in2");
-			addButton(actions.zoomOutHorizontally, "zoom_out2");
+			addButton(actions.zoomIn, "vzoom_in");
+			addButton(actions.zoomOut, "vzoom_out");
+			addButton(actions.zoomInHorizontally, "hzoom_in");
+			addButton(actions.zoomOutHorizontally, "hzoom_out");
 			
 		}
 	}
@@ -56,7 +56,10 @@ public class GraphToolbar extends JToolBar {
 	private void addPlotTypeButtons(GraphActions actions)
 	{
 		for(int i = 0; i < actions.plotTypes.length; i++) {
-			JRadioButtonMenuItem sa = new JRadioButtonMenuItem(actions.plotTypes[i]);
+			//JRadioButtonMenuItem sa = new JRadioButtonMenuItem(actions.plotTypes[i]);
+			TellervoAction ta = actions.plotTypes[i];
+			
+			AbstractButton sa = new TitlelessToggleButton(ta, I18n.getText(ta.i18nKey)+" "+I18n.getText("graph.plot_style"));
 			actions.plotTypes[i].connectToggleableButton(sa);
 			
 			add(sa);
@@ -116,6 +119,13 @@ public class GraphToolbar extends JToolBar {
 	private static class TitlelessToggleButton extends JToggleButton {
 		public TitlelessToggleButton(Action action) {
 			super(action);
+			
+		}
+		
+		public TitlelessToggleButton(Action action, String tooltip) {
+			super(action);
+			this.setToolTipText(tooltip);
+			
 		}
 		
 		@Override

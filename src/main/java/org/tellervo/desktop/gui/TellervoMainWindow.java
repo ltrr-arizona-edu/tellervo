@@ -69,8 +69,8 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.tellervo.desktop.Build;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.gui.menus.AdminMenu;
 import org.tellervo.desktop.gui.menus.EditMenu;

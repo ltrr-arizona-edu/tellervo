@@ -102,9 +102,9 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import org.tellervo.desktop.Build;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
+import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.PrintableDocument;

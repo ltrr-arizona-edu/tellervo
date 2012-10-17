@@ -256,12 +256,13 @@ public class GraphActions {
 			final PlotAgent agent = agents[i];
 
 			// on action, set the plot agent and update/redraw the graph
-			ToggleableAction action = new ToggleableAction(agent.getI18nTag(), (agent == defaultAgent)) {
+			TellervoAction action = new ToggleableAction(agent.getI18nTag(), (agent == defaultAgent), Builder.getIcon(agent.getI18nTag()+".png", 22)) {
 				public void togglePerformed(ActionEvent ae, Boolean value) {
 					graph.setPlotAgent(agent);
 					graph.update();
 				}
 			};
+			
 			
 			agentGroup.add(action);
 			plotTypes[i] = action;

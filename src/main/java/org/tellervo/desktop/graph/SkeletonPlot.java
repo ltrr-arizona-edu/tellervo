@@ -66,7 +66,10 @@ import org.tridas.schema.TridasRemark;
 
 public class SkeletonPlot implements TellervoGraphPlotter {
 	private final static Logger log = LoggerFactory.getLogger(SkeletonPlot.class);
-
+    private Integer baselineY = 0;
+    
+    protected Boolean areBonesBelowLine = false;
+    
 	public SkeletonPlot() {
 		// no initializing to do, I am STATELESS!
 	}
@@ -150,7 +153,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		// Draw standard line
 		int x = yearWidth * (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset);
 		//int value1 = yTransform((float) getMeanValue(g));
-		int value1 = yTransform((float) 100);
+		int value1 = yTransform((float) baselineY);
 		int baseYVal = bottom - (int) (value1 * unitScale) - (int) (g.yoffset * unitScale);
 		
 
@@ -217,7 +220,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 			}
 		
 			DescriptiveStatistics windowStats = new DescriptiveStatistics(window);
-			if(i<7 ) 
+			/*if(i<7 ) 
 			{
 				log.debug("Stats for ring: "+i);
 				try{
@@ -233,7 +236,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 				log.debug("  Min   is "+i+" - "+(int) windowStats.getMin());
 				log.debug("  Std   is "+i+" - "+(int) windowStats.getStandardDeviation());
 				log.debug("  Std/2 is "+i+" - "+(int) windowStats.getStandardDeviation()/2);
-			}
+			}*/
 		
 			// y-position for this point
 			try {
@@ -246,12 +249,27 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 			int y = bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale);
 
 			// Draw the skeleton line
-			g2.drawLine(x, baseYVal, x, baseYVal-(getSkeletonCategory(value, windowStats)*5));
+			if(areBonesBelowLine)
+			{
+				g2.drawLine(x, baseYVal, x, baseYVal+(getSkeletonCategoryFromPercentiles(value, windowStats)*5));
+			}
+			else
+			{
+				g2.drawLine(x, baseYVal, x, baseYVal-(getSkeletonCategoryFromPercentiles(value, windowStats)*5));
+			}
 			
 			// Try and paint remark icons
 			try{
 				List<TridasRemark> remarks = g.graph.getTridasValues().get(i).getRemarks();
-				Graph.drawRemarkIcons(g2, gInfo, remarks, g.graph.getTridasValues().get(i), x, baseYVal, true);
+				
+				if(areBonesBelowLine)
+				{
+					Graph.drawRemarkIcons(g2, gInfo, remarks, g.graph.getTridasValues().get(i), x, baseYVal, false);
+				}
+				else
+				{
+					Graph.drawRemarkIcons(g2, gInfo, remarks, g.graph.getTridasValues().get(i), x, baseYVal, true);
+				}
 				
 			} catch (Exception e)
 			{
@@ -260,7 +278,12 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 
 		}
 	}
-
+	
+	public void setShowBonesBelow(Boolean b)
+	{
+		areBonesBelowLine = b;
+	}
+	
 	// if it's within this many pixels, it's considered a hit (see "correct?" comment)
 	private final static int NEAR = 5;
 
@@ -293,7 +316,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		return false;
 	}
 	
-	private Integer getSkeletonCategory(Integer value, DescriptiveStatistics windowStats)
+	private Integer getSkeletonCategoryFromPercentiles(Integer value, DescriptiveStatistics windowStats)
 	{
 		Integer skeletonCategory = 0;
 		// Calculate skeleton category
@@ -368,12 +391,10 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		{
 			Integer intval = (Integer) data.get(i);
 			dataDbl[i] = (double) intval ;
-		}
-		DescriptiveStatistics stats = new DescriptiveStatistics(dataDbl);
-		
+		}		
 		int x = yearWidth * (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset);
 		//int value1 = yTransform((float) stats.getMean());
-		int value1 = yTransform((float) 100);
+		int value1 = yTransform((float) baselineY);
 
 		int meanYVal = bottom - (int) (value1 * unitScale) - (int) (g.yoffset * unitScale);
 		try {
@@ -398,7 +419,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 	@Override
 	public int getFirstValue(Graph g) {
 
-		return yTransform((float) 100);
+		return yTransform((float) baselineY);
 	}
 	
 

@@ -18,7 +18,7 @@
  * 	   Ken Harris   - Initial implementation
  *     Peter Brewer
  ******************************************************************************/
-package org.tellervo.desktop;
+package org.tellervo.desktop.core;
 
 import java.io.*;
 import java.net.URL;
@@ -35,7 +35,7 @@ public class Build {
     }
 
     /**
-       The date and time Corina was compiled.
+       The date and time Tellervo was compiled.
 
        <p>This is computed at compile-time by running <code>date "+%Y
        %B %e %l:%M %p (%Z)"</code>, which returns a string like "23
@@ -160,5 +160,5 @@ public class Build {
     public final static String YEAR = "2001-2012";
 
     /** Author's name (for copyright). */
-    public final static String AUTHOR = "Peter Brewer, Chris Dunham, Dan Girshovich, Aaron Hamid, Ken Harris, Drew Kalina, Rocky Li, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl and Kit Sturgeon";
+    public final static String AUTHOR = "Peter Brewer, Chris Dunham, Dan Girshovich, Aaron Hamid, Ken Harris, Drew Kalina, Rocky Li, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl, Paul Sheppard and Kit Sturgeon";
 }

@@ -87,9 +87,9 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
-import org.tellervo.desktop.Build;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
 import org.tellervo.desktop.gis.GISPanel;
 import org.tellervo.desktop.gis.GISViewMenu;
@@ -550,10 +550,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	public void updateTitle() {
 		SampleType st = sample.getSampleType();
 		
-		setTitle(sample.toString() + 
+		/*setTitle(sample.toString() + 
 				((st != null) ? (" [" + st + "]") : "") +
 				" - " +
-				Build.getCompleteVersionNumber());
+				Build.getCompleteVersionNumber());*/
+		setTitle(sample.toString());
 	}
 
 

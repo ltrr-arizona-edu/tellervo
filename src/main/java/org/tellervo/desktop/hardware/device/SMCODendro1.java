@@ -11,7 +11,7 @@ import java.io.UnsupportedEncodingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.Build;
+import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 import org.tellervo.desktop.ui.I18n;

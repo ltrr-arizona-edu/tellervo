@@ -37,7 +37,8 @@ import org.tellervo.desktop.platform.Platform;
 
 
 /**
- * A base Corina action which sets Mnemonic and Accelerator based on I18N settings.
+ * A base Tellervo action which sets Mnemonic and Accelerator based on I18N settings.
+ * 
  * @author Aaron Hamid
  * @author Lucas Madar
  */
@@ -52,6 +53,8 @@ public abstract class TellervoAction extends AbstractAction {
 	
 	/** Toggle button adapters associated with this class */
 	protected ArrayList<ButtonSelectionActionAdapter> buttonAdapters;
+	
+	public String i18nKey;
 		
 	/**
 	 * Construct an action, given an i18n key
@@ -98,6 +101,8 @@ public abstract class TellervoAction extends AbstractAction {
 	 * @param key
 	 */
 	private final void initialize(String key) {
+		
+		i18nKey= key;
 		if (!Platform.isMac()) {			
 			Integer mnemonic = I18n.getMnemonic(key);
 			

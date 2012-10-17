@@ -69,6 +69,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -87,9 +88,9 @@ import javax.swing.event.EventListenerList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.Build;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
+import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.gui.XFrame;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.I18n;
@@ -105,7 +106,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	// public data
 	public List<Graph> graphs; // of Graph
 	public int current = 0; // currenly selected sample
-	
+	private Integer previousY = 0;
 	// gui
 	private JScrollPane scroller = null;
 	private JFrame myFrame; // for setTitle(), dispose()
@@ -122,6 +123,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	
 	/** The plot agent used to obtain the plotter to plot the graphs */
 	private PlotAgent plotAgent;
+	private ArrayList<PlotAgent> plotAgents;
 	
 	private String emptyGraphText = I18n.getText("error.nothingToGraph");
 	
@@ -329,7 +331,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 			// yes, store
 			dragStart = (Point) e.getPoint().clone();
-			dragStart.y += dragGraph.yoffset;
+			dragStart.y += (dragGraph.yoffset)/10;
 			startX = dragGraph.xoffset;
 			lastX = null;
 
@@ -341,17 +343,9 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			dragGraph = graphs.get(current);
 
 		// change yoffset[n], but only if no ctrl
-		
 		if(!e.isControlDown())
 		{
-			dragGraph.yoffset = (int) dragStart.getY() - e.getY();
-			if(plotAgent.getPlotter() instanceof SemilogPlot)
-			{
-			}
-			else
-			{
-				dragGraph.yoffset = dragGraph.yoffset*10;
-			}
+			dragGraph.yoffset = (int) (dragStart.getY() - e.getY())*10;
 		}
 			
 		// change xoffset[n], but only if no shift
@@ -819,6 +813,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	// graphs = List of Graph.
 	// frame = window; (used for: title set to current graph, closed when ESC pressed.)
 	public GrapherPanel(List<Graph> graphs, final JFrame myFrame, GraphInfo graphInfo) {		
+		this(graphs, myFrame, graphInfo, null);
+	}
+		
+
+	public GrapherPanel(List<Graph> graphs, final JFrame myFrame, GraphInfo graphInfo, ArrayList<PlotAgent> agents) {	
 		// my frame
 		this.myFrame = myFrame;
 
@@ -832,9 +831,6 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		
 		manager = new GraphManager();
 		
-		// set up the default plotagent
-		this.plotAgent = PlotAgent.getDefault();
-
 		// key listener -- apparently the focus gets screwed up and
 		// keys stop responding if I don't add a key listener to both
 		// the JFrame and JPanel, I don't know why.
@@ -857,13 +853,29 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		computeRange();
 		
 		// assign plot agents to all the graphs
-		for (int i = 0; i < graphs.size(); i++) {
-			Graph cg = graphs.get(i);
+		// set up the default plotagent
+		if(agents==null)
+		{
+			this.plotAgent = PlotAgent.getDefault();
 
-			// assign each graph a plotting agent
-			cg.setAgent(plotAgent);
+		}
+		else
+		{
+			this.plotAgents = agents;
 		}
 
+		for (int i = 0; i < graphs.size(); i++) {
+			Graph cg = graphs.get(i);
+			if(plotAgents!=null && plotAgents.size()==graphs.size())
+			{
+				cg.setAgent(plotAgents.get(i));
+			}
+			else
+			{
+				cg.setAgent(plotAgent);
+			}			
+		}
+		
 		// set default scrolly window size
 		setPreferredSize(new Dimension(gInfo.getDrawBounds().span() * gInfo.getYearWidth(), getGraphHeight()));
 		

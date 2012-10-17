@@ -33,7 +33,7 @@ import javax.swing.JLabel;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 
-import org.tellervo.desktop.Build;
+import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import net.miginfocom.swing.MigLayout;
