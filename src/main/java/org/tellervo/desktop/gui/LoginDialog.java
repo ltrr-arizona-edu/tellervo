@@ -632,13 +632,30 @@ public class LoginDialog extends JDialog {
 						Exception e = re.getAttachedException();
 						setCursor(Cursor.getDefaultCursor());
 						
-						// failure. what type?
-						JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
-								"Error authenticating: Query failed",
-							    "Could not authenticate",
-							    JOptionPane.ERROR_MESSAGE);
-						enableDialogButtons(true);
 						
+						if(e instanceof WebInterfaceException && 
+								((WebInterfaceException)e).getMessageCode() == 
+									WebInterfaceCode.UNSUPPORTED_CLIENT_VERSION) 
+						{
+							JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
+									"This Tellervo desktop version is no longer supported\n" +
+									"by the Tellervo server you are trying to access. Please\n" +
+									"upgrade and try again.",
+								    "Client no longer supported",
+								    JOptionPane.ERROR_MESSAGE);
+						}
+						else
+						{
+						
+							// failure. what type?
+							JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
+									"Error authenticating: Query failed",
+								    "Could not authenticate",
+								    JOptionPane.ERROR_MESSAGE);
+						}
+						
+						enableDialogButtons(true);
+							
 						if(authenticationNotifier != null) {
 							authenticationNotifier.setSuccess(false);
 							authenticationNotifier.stop();
@@ -670,18 +687,31 @@ public class LoginDialog extends JDialog {
 						cancelled = false;
 						dispose();
 					}
-					else if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_FAILED) {
+					else if(re.getEventType() == ResourceEvent.RESOURCE_QUERY_FAILED) 
+					{
 						setCursor(Cursor.getDefaultCursor());
 						Exception e = re.getAttachedException();
 						
 						// bad server nonce?
 						if(e instanceof WebInterfaceException && 
 								((WebInterfaceException)e).getMessageCode() == 
-									WebInterfaceCode.BAD_SERVER_NONCE) {
+									WebInterfaceCode.BAD_SERVER_NONCE) 
+						{
 							
 							setNonce(null, null);
 							performAuthentication(recursionLevel + 1);
 							return;
+						}
+						else if(e instanceof WebInterfaceException && 
+								((WebInterfaceException)e).getMessageCode() == 
+									WebInterfaceCode.UNSUPPORTED_CLIENT_VERSION) 
+						{
+							JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
+									"This Tellervo desktop version is no longer supported\n" +
+									"by the Tellervo server you are trying to access. Please\n" +
+									"upgrade and try again.",
+								    "Client no longer supported",
+								    JOptionPane.ERROR_MESSAGE);
 						}
 						// Standard authentication error
 						else if(e instanceof WebInterfaceException && 
@@ -691,6 +721,27 @@ public class LoginDialog extends JDialog {
 									"Incorrect username or password.\n"
 									+"Please check and try again.",
 									"Invalid credentials",
+									JOptionPane.ERROR_MESSAGE);
+							enableDialogButtons(true);
+						}
+						else if(e instanceof WebInterfaceException && 
+								((WebInterfaceException)e).getMessageCode() == 
+									WebInterfaceCode.PASSWORD_UPDATED_REQUIRED) {
+							JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
+									 "Your password has expired.  Please see your Tellervo\n"
+									+"database administrator for further information",
+									"Password expired",
+									JOptionPane.ERROR_MESSAGE);
+							enableDialogButtons(true);
+						}
+						else if(e instanceof WebInterfaceException && 
+								((WebInterfaceException)e).getMessageCode() == 
+									WebInterfaceCode.PASSWORD_UPGRADE_REQUIRED) {
+							JOptionPane.showMessageDialog(glue.isVisible() ? glue : null,
+									"Due to a change in server security procedures you must\n"
+									+"reset your password.  Please see your Tellervo database\n"
+									+"administrator for further information.",
+									"Security upgrade",
 									JOptionPane.ERROR_MESSAGE);
 							enableDialogButtons(true);
 						}

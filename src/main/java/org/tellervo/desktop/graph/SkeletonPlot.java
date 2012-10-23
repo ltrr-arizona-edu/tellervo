@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2011 Peter Brewer.
+ * Copyright (C) 2012 Peter Brewer
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,26 +17,6 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-//
-// This file is part of Corina.
-// 
-// Corina is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// Corina is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with Corina; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// Copyright 2001 Ken Harris <kbh7@cornell.edu>
-//
-
 package org.tellervo.desktop.graph;
 
 import java.awt.BasicStroke;
@@ -57,10 +37,13 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.hardware.UnsupportedPortParameterException;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.PortParity;
 import org.tellervo.desktop.index.Index;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.util.ColorUtils;
+import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasRemark;
 
 
@@ -69,6 +52,45 @@ public class SkeletonPlot implements TellervoGraphPlotter {
     private Integer baselineY = 0;
     
     protected Boolean areBonesBelowLine = false;
+    
+    public enum SkeletonPlotAlgorithm{
+    	PERCENTILES         ("Percentiles"),
+    	CROPPER1979_0POINT5 ("Cropper 1979 (0.50 stdev)"),
+    	CROPPER1979_0POINT75("Cropper 1979 (0.75 stdev)");
+    	
+    	private String value;
+    	
+    	SkeletonPlotAlgorithm(String str)
+    	{
+    		value = str;
+    	}
+    	public String toString()
+    	{
+    		return value;
+    	}
+    	
+		public static String[] allValuesAsArray()
+		{
+			ArrayList<String> arr = new ArrayList<String>();
+			for(SkeletonPlotAlgorithm val : SkeletonPlotAlgorithm.values())
+			{
+				arr.add(val.toString());
+			}
+			
+			return arr.toArray(new String[0]);
+		}
+		
+		public static SkeletonPlotAlgorithm fromString(String str)
+		{
+			for(SkeletonPlotAlgorithm val : SkeletonPlotAlgorithm.values())
+			{
+				if(val.toString().equals(str)) return val;
+			}
+			
+			return null;
+		}
+    	
+    }
     
 	public SkeletonPlot() {
 		// no initializing to do, I am STATELESS!
@@ -129,6 +151,15 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		boolean dotted = (gInfo.isDottedIndexes() && (g.graph instanceof Index));
 		g2.setStroke(makeStroke(thickness, dotted));
 
+		// If it's a chronology, point bones down
+		/*if(g.graph instanceof Sample)
+		{
+			if (((Sample) g.graph).getSeries() instanceof TridasDerivedSeries)
+			{
+				this.areBonesBelowLine = true;
+			}
+		}*/
+				
 		// left/right
 		int l = g2.getClipBounds().x;
 		int r = l + g2.getClipBounds().width;
@@ -154,8 +185,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		int x = yearWidth * (g.graph.getStart().diff(gInfo.getDrawBounds().getStart()) + g.xoffset);
 		//int value1 = yTransform((float) getMeanValue(g));
 		int value1 = yTransform((float) baselineY);
-		int baseYVal = bottom - (int) (value1 * unitScale) - (int) (g.yoffset * unitScale);
-		
+		int baseYVal = bottom - (int) (value1 * unitScale) - (int) (g.yoffset * unitScale);	
 
 		try {
 			// x-position
@@ -169,6 +199,28 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 			
 			//log.debug("Drawing mean line: "+x1+", "+meanYVal+", "+x2+", "+meanYVal);
 			g2.drawLine(x1, baseYVal, x2, baseYVal);
+			
+			// Calcs for start/end triangles
+			int YLineHeight = 50;
+			int YTriangleHeight = 25;
+			int XTriangleWidth = 15;
+			if(areBonesBelowLine)
+			{
+				YLineHeight = -50;
+				YTriangleHeight = -25;
+			}
+			
+			// Draw start triangle
+			g2.drawLine(x1, baseYVal, x1, baseYVal-YTriangleHeight);
+			g2.drawLine(x1, baseYVal, x1-XTriangleWidth, baseYVal-YTriangleHeight);
+			g2.drawLine(x1-XTriangleWidth, baseYVal-YTriangleHeight, x1, baseYVal-YTriangleHeight);	
+			g2.drawLine(x1, baseYVal, x1, baseYVal-YLineHeight);
+			
+			// Draw end triangle
+			g2.drawLine(x2, baseYVal, x2, baseYVal-YTriangleHeight);
+			g2.drawLine(x2, baseYVal, x2+XTriangleWidth, baseYVal-YTriangleHeight);
+			g2.drawLine(x2+XTriangleWidth, baseYVal-YTriangleHeight, x2, baseYVal-YTriangleHeight);	
+			g2.drawLine(x2, baseYVal, x2, baseYVal-YLineHeight);
 			
 		} catch (ClassCastException cce) {
 			
@@ -248,14 +300,32 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 			}
 			int y = bottom - (int) (value * unitScale) - (int) (g.yoffset * unitScale);
 
+			// Calculate skeleton category
+			Integer skeletonCateogory = null;
+			
+			String prefAlg = App.prefs.getPref(PrefKey.STATS_SKELETON_PLOT_ALGORITHM, SkeletonPlotAlgorithm.PERCENTILES.toString());
+			
+			if(prefAlg.equals(SkeletonPlotAlgorithm.PERCENTILES.toString()))
+			{
+				skeletonCateogory = getSkeletonCategoryFromPercentiles(value, windowStats);
+			}
+			else if (prefAlg.equals(SkeletonPlotAlgorithm.CROPPER1979_0POINT5.toString()))
+			{
+				skeletonCateogory = getSkeletonCategoryFromCropper1979(value, windowStats, 0.5);
+			}
+			else if (prefAlg.equals(SkeletonPlotAlgorithm.CROPPER1979_0POINT75.toString()))
+			{
+				skeletonCateogory = getSkeletonCategoryFromCropper1979(value, windowStats, 0.75);
+			}
+			
 			// Draw the skeleton line
 			if(areBonesBelowLine)
 			{
-				g2.drawLine(x, baseYVal, x, baseYVal+(getSkeletonCategoryFromPercentiles(value, windowStats)*5));
+				g2.drawLine(x, baseYVal, x, baseYVal+(skeletonCateogory*5));
 			}
 			else
 			{
-				g2.drawLine(x, baseYVal, x, baseYVal-(getSkeletonCategoryFromPercentiles(value, windowStats)*5));
+				g2.drawLine(x, baseYVal, x, baseYVal-(skeletonCateogory*5));
 			}
 			
 			// Try and paint remark icons
@@ -314,6 +384,35 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		
 		
 		return false;
+	}
+	
+	private Integer getSkeletonCategoryFromCropper1979(Integer value, DescriptiveStatistics windowStats, Double criticalLevel)
+	{
+		Integer skeletonCategory = 0;
+		
+		if(criticalLevel==null) criticalLevel = 0.5;
+		double mean = windowStats.getMean();
+		double stdev = windowStats.getStandardDeviation();
+		double smallRingThreshold = mean-(stdev*criticalLevel);
+		int min = (int) windowStats.getMin();
+		
+		if(value == min) 
+		{
+			skeletonCategory = 10;
+		}
+		else if(value > smallRingThreshold) 
+		{
+			skeletonCategory = 0;
+		}
+		else
+		{
+			Integer range = (int) (smallRingThreshold - min);
+			Integer categoryStepSize = range / 10;
+			skeletonCategory = (int) (0-((value-smallRingThreshold)/categoryStepSize));
+		}
+			
+		
+		return skeletonCategory;
 	}
 	
 	private Integer getSkeletonCategoryFromPercentiles(Integer value, DescriptiveStatistics windowStats)

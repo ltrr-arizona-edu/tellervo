@@ -62,7 +62,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.CanOpener;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
 import org.tellervo.desktop.ui.Alert;
@@ -297,7 +297,7 @@ public class OpenRecent {
 			
 			switch(desc.getLoaderType()) {
 			case CWTE: {
-				CorinaWsiTridasElement element = new CorinaWsiTridasElement(desc.getIdentifier());
+				TellervoWsiTridasElement element = new TellervoWsiTridasElement(desc.getIdentifier());
 				
 				((SampleOpener)opener).performOpen(element.load());
 				break;

@@ -1247,13 +1247,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   				
 		   		}
 		   		break;
-
-            case "woodCompleteness":
-    	        // Ignore for now, as we expect this in radius instead.  
-	            // TODO!
-                break;
-		   		
-		   		
+		   			   		
 		   	case "values":
 		   		
 		   		// In a <values> group tag
@@ -1687,12 +1681,14 @@ class securityUserParameters extends parameters
     
     function getXMLParams()
     {
+	global $hashAlgorithm;
+
         if(isset($this->xmlrequest['id']))              $this->id            = (int) $this->xmlrequest['id'];
         if(isset($this->xmlrequest['isActive']))        $this->isActive      = fromStringToPHPBool($this->xmlrequest['isActive']);
         if(isset($this->xmlrequest['username']))        $this->username      = addslashes(trim($this->xmlrequest['username']));
         if(isset($this->xmlrequest['firstName']))       $this->firstName     = addslashes(trim($this->xmlrequest['firstName']));
         if(isset($this->xmlrequest['lastName']))        $this->lastName      = addslashes(trim($this->xmlrequest['lastName']));
-        if(isset($this->xmlrequest['plainPassword']))   $this->hashPassword  = hash('md5', addslashes(trim($this->xmlrequest['plainPassword'])));
+        if(isset($this->xmlrequest['plainPassword']))   $this->hashPassword  = hash($hashAlgorithm, addslashes(trim($this->xmlrequest['plainPassword'])));
         if(isset($this->xmlrequest['hashPassword']))    $this->hashPassword  = addslashes(trim($this->xmlrequest['hashPassword']));
         
         $groupArray = $this->xmlrequest->xpath('//memberOf');

@@ -53,7 +53,7 @@ if($_SERVER['USER']=='root')
  */
  
 $shortopts = "htrcnesv";
-$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "resetpwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info");
+$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "set-db-pwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info", "set-admin-pwd");
 $args = getopt($shortopts,$longopts);
 
 // Depending on command line arguments run different functions
@@ -258,7 +258,7 @@ if(isset($args["restart"]))
 	echo "\n";
 	exit(0);
 }
-if(isset($args["resetpwd"]))
+if(isset($args["set-db-pwd"]))
 {
 	requireRoot();
 	setDBUser();
@@ -383,6 +383,13 @@ if (isset($args["network"]) || isset($args["n"]))
 		exit(1);
 	}
 }
+if (isset($args["set-admin-pwd"]))
+{
+	requireRoot();
+	setAdminPwd();
+	echo "\n";
+	exit(0);
+}
 
 showHelp(true);
 exit(1);
@@ -390,6 +397,54 @@ exit(1);
 /**
  * END OF SCRIPT BODY
  */
+
+function setAdminPwd()
+{
+	//include '$systemconfig';
+	
+	// Confirm the user wants to reset the admin user pwd
+	echo "\nAre you sure you want to reset the admin user password?\n";
+	echo "   (y/N): ";
+    $response = trim(fgets(STDIN));
+    if($response!="Y" && $response !="y")
+    {
+    	exit(0);
+    }        
+    
+              
+      echo "\nPlease create a password for the admin user to use when logging in with the \n";
+      echo   "Tellervo desktop application. The password should be 8-20 characters, and \n";
+      echo   "include numbers, letters, and capitals but no spaces.\n";
+      $pwd = promptForPwd();
+      
+      $sql = "UPDATE tblsecurityuser set password=digest('$pwd', 'sha512') where username='admin'";
+
+	    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+	    {
+			pg_send_query($dbconn, $sql);
+		    $result = pg_get_result($dbconn);
+			$error= pg_result_error($result);
+			if($error)
+			{
+				echo "Failed to reset admin users password\n";
+				echo $error."\n";
+		
+			}
+			else
+			{
+	    		echo "Admin password successfully reset\n";
+	    		return true;
+	    	}   	
+	    }
+	    else
+	    {
+	    	die("Unable to connect to PostgreSQL database.\n\n");
+	    }
+	    
+	    return false;
+
+}
+
 
 function delWMS($name)
 {
@@ -476,22 +531,23 @@ function showHelp($forced=false)
   echo "  tellervo-server --add-wms-name \"New Server\" --add-wms-url \"http://...\"\n";
   echo "  tellervo-server --del-wms-name \"Server to delete\"\n";
   echo "\nOptions:\n";
-  echo "  -h, --help          Show this help\n";
-  echo "  -v, --version       Show version of Tellervo server that is installed\n";
-  echo "  -t, --test          Run tests on existing setup\n";
-  echo "  -c, --configure    *Configure server\n";
-  echo "  -r, --reconfigure  *Reconfigure the server overwriting existing config\n";
-  echo "  -n, --network      *Check network settings and reset if necessary\n";
-  echo "  -e, --empty-log    *Clean the log files and database tables\n";
-  echo "  -s, --sysconfig    *Generate the systems configuration file\n";
-  echo "      --resetpwd     *Reset the PostgreSQL database password\n";
-  echo "      --start        *Start the Tellervo server\n";
-  echo "      --stop         *Stop the Tellervo server\n"; 
-  echo "      --restart      *Restart the Tellervo server\n";   
-  echo "      --upgrade-db   *Run database upgrade scripts\n";
-  echo "      --add-wms-name  Name of a web mapping server to add to database\n";
-  echo "      --add-wms-url   URL of a web mapping server to add to database\n";
-  echo "      --del-wms-name  Name of a web mapping server to delete from database\n";
+  echo "  -h, --help           Show this help\n";
+  echo "  -v, --version        Show version of Tellervo server that is installed\n";
+  echo "  -t, --test           Run tests on existing setup\n";
+  echo "  -c, --configure     *Configure server\n";
+  echo "  -r, --reconfigure   *Reconfigure the server overwriting existing config\n";
+  echo "  -n, --network       *Check network settings and reset if necessary\n";
+  echo "  -e, --empty-log     *Clean the log files and database tables\n";
+  echo "  -s, --sysconfig     *Generate the systems configuration file\n";
+  echo "      --set-db-pwd    *Reset the PostgreSQL database password\n";
+  echo "      --set-admin-pwd *Reset the Tellervo desktop login for the admin user\n"; 
+  echo "      --start         *Start the Tellervo server\n";
+  echo "      --stop          *Stop the Tellervo server\n"; 
+  echo "      --restart       *Restart the Tellervo server\n";   
+  echo "      --upgrade-db    *Run database upgrade scripts\n";
+  echo "      --add-wms-name   Name of a web mapping server to add to database\n";
+  echo "      --add-wms-url    URL of a web mapping server to add to database\n";
+  echo "      --del-wms-name   Name of a web mapping server to delete from database\n";
   echo "\n";
   echo "  * Root or sudo privileges are required to run these commands\n";
   echo "\n";

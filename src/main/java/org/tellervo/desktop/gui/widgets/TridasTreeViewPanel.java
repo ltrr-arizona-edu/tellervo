@@ -72,7 +72,9 @@ import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.util.TridasUtils.TreeDepth;
+import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
@@ -871,8 +873,21 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 			entity = (TridasRadius) node.getUserObject();
 			rsrc = new EntityResource<TridasRadius>(entity, TellervoRequestType.DELETE, TridasRadius.class);
 		}
+		else if(node.getUserObject() instanceof TridasMeasurementSeries)
+		{
+			entityType = "Series";
+			entity = (TridasMeasurementSeries) node.getUserObject();
+			rsrc = new EntityResource<TridasMeasurementSeries>(entity, TellervoRequestType.DELETE, TridasMeasurementSeries.class);
+		}
+		else if(node.getUserObject() instanceof TridasDerivedSeries)
+		{
+			entityType = "Series";
+			entity = (TridasDerivedSeries) node.getUserObject();
+			rsrc = new EntityResource<TridasDerivedSeries>(entity, TellervoRequestType.DELETE, TridasDerivedSeries.class);
+		}
 		else
 		{
+			log.error("Unable to delete this entity as it is of an unknown type");
 			return;
 		}
 			    			

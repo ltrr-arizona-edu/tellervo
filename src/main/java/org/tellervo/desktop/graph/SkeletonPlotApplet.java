@@ -2,8 +2,8 @@ package org.tellervo.desktop.graph;
 
 import java.awt.*;
 
-public class SkeletonPlot18 extends java.applet.Applet {
-	public SkeletonPlot18() {
+public class SkeletonPlotApplet extends java.applet.Applet {
+	public SkeletonPlotApplet() {
 	}
 
     Image offscreenImg; //setup offscreen area
@@ -557,10 +557,11 @@ public class SkeletonPlot18 extends java.applet.Applet {
                             cutoff (range 1 to 10)     as cutoff -> 10, trigger -> 0
         	 */
             if (year > 0 && (index[year] < (1-(1-minimumIndex)/absoluteValueCutoff) ||
-                             index[year]-index[year-1] < (minimumIndex-maximumIndex)/firstDifferenceCutoff)) {
-                masterBoneX[numberOfMasterBones] = (graphEmptySpace+year*lineSpacing*graphScale)/
-               (lineSpacing*graphScale);
-               masterBoneY[numberOfMasterBones] = 0;
+                             index[year]-index[year-1] < (minimumIndex-maximumIndex)/firstDifferenceCutoff)) 
+            {
+                
+            	masterBoneX[numberOfMasterBones] = (graphEmptySpace+year*lineSpacing*graphScale)/(lineSpacing*graphScale);
+            	masterBoneY[numberOfMasterBones] = 0;
 /*
                           (     index[yr]        )
                           | ==================== |
@@ -581,16 +582,25 @@ take maximum mark of the two
 note: it's possible to have a positive first difference evaluated, so set a conditional against that possibility
 */
                if (absoluteValueCutoff > 1)
+               {
                    masterBoneY[numberOfMasterBones] = 10 - index[year]/(1-(1-minimumIndex)/absoluteValueCutoff)*10;
+               }
+               
                if (firstDifferenceCutoff > 1 && index[year] < index[year-1])
+               {
                    masterBoneY[numberOfMasterBones] = Math.max(masterBoneY[numberOfMasterBones],
                    10 - ((index[year]-index[year-1])-(minimumIndex-maximumIndex))/
                    ((minimumIndex-maximumIndex)/firstDifferenceCutoff-(minimumIndex-maximumIndex))*10);
+               }
+               
                numberOfMasterBones++;
+               
             }
             //find wide bones of master plot
-            if (index[year] > masterBoneWideCutoff*maximumIndex) {
-                masterWideBoneX[numberOfMasterWideBones] = (graphEmptySpace+year*lineSpacing*graphScale)/
+            if (index[year] > masterBoneWideCutoff*maximumIndex) 
+            {
+                masterWideBoneX[numberOfMasterWideBones] = 
+                	                         (graphEmptySpace+year*lineSpacing*graphScale)/
                                                    (lineSpacing*graphScale);
                 numberOfMasterWideBones++;
             }

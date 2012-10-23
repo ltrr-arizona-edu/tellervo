@@ -47,7 +47,7 @@ import javax.swing.undo.CannotUndoException;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.editor.Editor;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
@@ -170,7 +170,7 @@ public class Redate extends AbstractUndoableEdit {
 	 * @param dating
 	 * @return true on success, false otherwise
 	 */
-	public static boolean performCorinaWsiRedate(Sample sample, 
+	public static boolean performTellervoWsiRedate(Sample sample, 
 			String newname, String newversion, String justification, NormalTridasDatingType datingType, 
 			NormalTridasDatingType originalDatingType, Range newDateRange) {
 
@@ -214,7 +214,7 @@ public class Redate extends AbstractUndoableEdit {
 		Sample tmp = new Sample(series);		
 
 		try {
-			CorinaWsiTridasElement saver = new CorinaWsiTridasElement(series.getIdentifier());
+			TellervoWsiTridasElement saver = new TellervoWsiTridasElement(series.getIdentifier());
 			// here's where we do the "meat"
 			if(saver.save(tmp)) {
 				// put it in our menu

@@ -192,6 +192,11 @@ class dating extends lookupEntity
 	{
 		return $this->datingErrorNegative;
 	}
+
+	function getDatingValue()
+	{
+		return $this->getValue();
+	}
 }
 
 

@@ -109,7 +109,7 @@ public class AboutBox extends javax.swing.JDialog {
               Build.AUTHOR });
         
         String strDescription = I18n.getText("about.description");
-        String strLicense = fileResourceToString("Licenses/CorinaLicense.txt");
+        String strLicense = fileResourceToString("Licenses/license.txt");
         
         // Set text in dialog
         txtCopyright.setText(strCopyright);

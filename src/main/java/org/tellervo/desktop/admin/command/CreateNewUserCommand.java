@@ -28,6 +28,7 @@ import javax.swing.JOptionPane;
 
 import org.tellervo.desktop.admin.control.CreateNewUserEvent;
 import org.tellervo.desktop.admin.model.UserGroupAdminModel;
+import org.tellervo.desktop.core.App;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSISecurityGroup;
 import org.tellervo.schema.WSISecurityUser;
@@ -53,7 +54,7 @@ public class CreateNewUserCommand implements ICommand {
 	    	// Set password to hash
 	    	MessageDigest digest;
 			try {
-				digest = MessageDigest.getInstance("MD5");
+				digest = MessageDigest.getInstance(App.cryptoAlgorithm);
 				digest.update(password.getBytes());
 		    	user.setHashOfPassword(StringUtils.bytesToHex(digest.digest()));
 			} catch (NoSuchAlgorithmException e) {

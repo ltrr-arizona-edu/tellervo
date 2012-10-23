@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2011 Peter Brewer.
+ * Copyright (C) 2003 Ken Harris
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,25 +17,6 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-//
-// This file is part of Corina.
-//
-// Corina is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-//
-// Corina is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with Corina; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// Copyright 2003 Ken Harris <kbh7@cornell.edu>
-//
 
 package org.tellervo.desktop.gui.menus;
 
@@ -61,30 +42,6 @@ import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.ui.I18n;
 
 
-// TODO: move all menus to tellervo.gui.menus or even tellervo.menus (i'm tending towards the latter)
-// TODO: error-log should be a singleton-window, and centered
-// TODO: system-info should be a singleton-window, and centered
-// TODO: perhaps also provide a menuitem which takes you to the tellervo web page?
-// TODO: the error log should be just a text dump window, perhaps
-// TODO: need a complaint menu item; perhaps "Submit Complaint..."
-
-/**
-   A Help menu.
-
-   <p>Standard menuitems are:</p>
-
-   <ul>
-     <li>Corina Help</li>
-     <br>
-     <li>System Properties...</li>
-     <li>Error Log...</li>
-     <br>
-     <li>About Corina... (except on Mac)</li>
-   </ul>
-
-   @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
-   @version $Id: HelpMenu.java 2163 2009-09-15 19:39:09Z Peter Brewer $
-*/
 @SuppressWarnings("serial")
 public class AdminMenu extends JMenu {
 	

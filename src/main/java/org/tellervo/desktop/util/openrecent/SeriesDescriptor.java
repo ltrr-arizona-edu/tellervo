@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 import org.tellervo.desktop.Range;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.FileElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
@@ -88,7 +88,7 @@ public class SeriesDescriptor implements OpenableDocumentDescriptor {
     	if(series instanceof ITridasDerivedSeries)
     		setVersion(((ITridasDerivedSeries)series).getVersion());
     	
-    	if(s.getLoader() instanceof CorinaWsiTridasElement)
+    	if(s.getLoader() instanceof TellervoWsiTridasElement)
     		setLoaderType(LoaderType.CWTE);
     	else if(s.getLoader() instanceof FileElement)
     		setLoaderType(LoaderType.FILE);

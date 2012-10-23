@@ -207,12 +207,12 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
      */
 	public void forceFireEvent()
 	{
-    	fireEventByCorinaCode(textField.getText());
+    	fireEventByTellervoCode(textField.getText());
     	textField.setText("");
 	}
 
 
-	private void fireEventByCorinaCode(String labcodestr)
+	private void fireEventByTellervoCode(String labcodestr)
 	{
 		String [] strarray = null;
 		String objcode = null;

@@ -91,7 +91,7 @@ public class MessageDialog extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(null);
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new MigLayout("", "[70px:70px:70px][grow]", "[64:64:64][grow,fill]"));
+		contentPanel.setLayout(new MigLayout("", "[70px:70px:70px,center][grow]", "[64:64:64][grow,fill]"));
 		{
 			JLabel lblIcon = new JLabel("");
 			

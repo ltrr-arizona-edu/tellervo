@@ -23,7 +23,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.io.command.ReplaceHierarchyCommand;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.schema.TellervoRequestFormat;
@@ -383,7 +383,7 @@ public class EditorFactory {
 		}
 		
 		// setup our loader and series identifier
-		CorinaWsiTridasElement.attachNewSample(sample);
+		TellervoWsiTridasElement.attachNewSample(sample);
 
 		// start the editor
 		Editor ed = new Editor(sample);
@@ -410,7 +410,7 @@ public class EditorFactory {
 		sample.setModified();
 		
 		// setup our loader and series identifier
-		CorinaWsiTridasElement.attachNewSample(sample);
+		TellervoWsiTridasElement.attachNewSample(sample);
 
 		// start the editor
 		Editor ed = new Editor(sample);
@@ -662,7 +662,7 @@ public class EditorFactory {
 		sample.setModified();
 		
 		// setup our loader and series identifier
-		CorinaWsiTridasElement.attachNewSample(sample);
+		TellervoWsiTridasElement.attachNewSample(sample);
 
 		// start the editor
 		Editor ed = new Editor(sample);

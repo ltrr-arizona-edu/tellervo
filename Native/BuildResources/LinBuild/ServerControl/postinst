@@ -9,7 +9,22 @@ if [ $1 = 'configure' ]; then
       echo "Configuring new installation" >> /var/log/tellervo-installation.log
       /usr/bin/tellervo-server --configure
 
-#elif [ $1 = 'upgrade' ]; then
+elif [ $1 = 'upgrade' ]; then
+	  
+	  if [$2 = '1.1.0']; then
+	  		echo "Upgrading Tellervo database security" >> /var/log/tellervo-installation.log
+	  		echo "Admin database password reset required";
+	  		/usb/bin/tellervo-server --reset-admin-pwd
+	  elif [$2 = '1.1.1']; then
+			echo "Upgrading Tellervo database security" >> /var/log/tellervo-installation.log
+			echo "Admin database password reset required";
+			/usb/bin/tellervo-server --reset-admin-pwd
+	  elif [$2 = '1.1.2']; then
+			echo "Upgrading Tellervo database security" >> /var/log/tellervo-installation.log
+			echo "Admin database password reset required";
+			/usb/bin/tellervo-server --reset-admin-pwd
+	 
+	  fi
       
 #elif [ $1 = 'abort-upgrade' ]; then
 

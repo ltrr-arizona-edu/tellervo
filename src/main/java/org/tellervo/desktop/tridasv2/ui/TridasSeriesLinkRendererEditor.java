@@ -39,7 +39,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gui.Bug;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.SeriesLink;
@@ -101,7 +101,7 @@ public class TridasSeriesLinkRendererEditor extends AbstractPropertyEditor imple
 		}
 		
 		TridasIdentifier identifier = link.getIdentifier();
-		CorinaWsiTridasElement element = new CorinaWsiTridasElement(identifier);
+		TellervoWsiTridasElement element = new TellervoWsiTridasElement(identifier);
 		
 		Window window = SwingUtilities.getWindowAncestor(editor);
 		Frame frame = (window instanceof Frame) ? ((Frame) window) : null;

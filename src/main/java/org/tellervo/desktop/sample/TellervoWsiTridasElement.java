@@ -40,7 +40,7 @@ import org.tridas.schema.TridasRadius;
 /**
  * An implementation of SampleLoader
  * 
- * Loads or saves a TRiDaS document from a Corina-style resource
+ * Loads or saves a TRiDaS document from a Tellervo-style resource
  * 
  * Loading:
  * 	identifier = identifier of the series we want
@@ -57,27 +57,27 @@ import org.tridas.schema.TridasRadius;
  *
  */
 
-public class CorinaWsiTridasElement extends AbstractTellervoGUIDeletableSampleLoader<SeriesResource> implements Cloneable {
+public class TellervoWsiTridasElement extends AbstractTellervoGUIDeletableSampleLoader<SeriesResource> implements Cloneable {
 	private String shortName;
 	private String name;
 	private TridasIdentifier identifier;
 	private SampleType type = SampleType.UNKNOWN;
 	
 	/**
-	 * Create a new CorinaWsiTridasElement from this identifier
+	 * Create a new TellervoWsiTridasElement from this identifier
 	 * @param identifier
 	 */
-	public CorinaWsiTridasElement(TridasIdentifier identifier) {
+	public TellervoWsiTridasElement(TridasIdentifier identifier) {
 		this.identifier = identifier;
 		
 		name = shortName = identifier.toString();
 	}
 	
 	/**
-	 * Create a copy of this CorinaWsiTridasElement
+	 * Create a copy of this TellervoWsiTridasElement
 	 * @param src
 	 */
-	public CorinaWsiTridasElement(CorinaWsiTridasElement src) {
+	public TellervoWsiTridasElement(TellervoWsiTridasElement src) {
 		this.identifier = (TridasIdentifier) src.identifier.clone();
 		src.identifier.copyTo(this.identifier);
 		
@@ -87,16 +87,16 @@ public class CorinaWsiTridasElement extends AbstractTellervoGUIDeletableSampleLo
 	}
 
 	/**
-	 * Make a new CorinaWsiTridasElement and attach it to this sample
+	 * Make a new TellervoWsiTridasElement and attach it to this sample
 	 * 
 	 * TODO: Make this work for different domains!
 	 * 
 	 * @param s
-	 * @return the CorinaWsiTridasElement (same as s.getLoader())
+	 * @return the TellervoWsiTridasElement (same as s.getLoader())
 	 */
-	public static CorinaWsiTridasElement attachNewSample(Sample s) {
+	public static TellervoWsiTridasElement attachNewSample(Sample s) {
 		TridasIdentifier newid = NewTridasIdentifier.getInstance("unknown");
-		CorinaWsiTridasElement element = new CorinaWsiTridasElement(newid);
+		TellervoWsiTridasElement element = new TellervoWsiTridasElement(newid);
 		
 		s.setLoader(element);
 		s.getSeries().setIdentifier(newid);
@@ -311,8 +311,8 @@ public class CorinaWsiTridasElement extends AbstractTellervoGUIDeletableSampleLo
 
 	@Override
 	public boolean equals(Object o) {
-		if(o instanceof CorinaWsiTridasElement) {
-			CorinaWsiTridasElement o2 = (CorinaWsiTridasElement) o;
+		if(o instanceof TellervoWsiTridasElement) {
+			TellervoWsiTridasElement o2 = (TellervoWsiTridasElement) o;
 
 			return identifier.equals(o2.identifier);
 		}
@@ -327,7 +327,7 @@ public class CorinaWsiTridasElement extends AbstractTellervoGUIDeletableSampleLo
 	
 	@Override
 	public Object clone() {
-		return new CorinaWsiTridasElement(this);
+		return new TellervoWsiTridasElement(this);
 	}
 
 	public SampleType getSampleType() {

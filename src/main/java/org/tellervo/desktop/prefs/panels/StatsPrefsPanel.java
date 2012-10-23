@@ -30,6 +30,8 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
 
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.graph.SkeletonPlot;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.ColorComboBoxWrapper;
@@ -50,9 +52,11 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 	private JComboBox cboTScore;
 	private JCheckBox chkHighlightSig;
 	private JComboBox cboHighlightColor;
+	private JComboBox cboSkeletonAlg;
 	private JSpinner spnMinOverlapDScore;
 	private JSpinner spnMinOverlap;
 	private JSpinner spnSkeletonWindow;
+	
 	/**
 	 * Create the panel.
 	 */
@@ -142,7 +146,7 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 		JLabel lblSkeletonAlg = new JLabel("Skeleton plot algorithm:");
 		panelSigScores.add(lblSkeletonAlg, "cell 0 5,alignx trailing");
 		
-		JComboBox cboSkeletonAlg = new JComboBox();
+		cboSkeletonAlg = new JComboBox();
 		cboSkeletonAlg.setModel(new DefaultComboBoxModel(new String[] {"Percentiles", "StdDevs"}));
 		panelSigScores.add(cboSkeletonAlg, "cell 1 5,growx");
 
@@ -157,7 +161,11 @@ public class StatsPrefsPanel extends AbstractPreferencesPanel {
 		new FormatWrapper(cboRScore, PrefKey.STATS_FORMAT_RVALUE, "0.00");
 		new FormatWrapper(cboTrend, PrefKey.STATS_FORMAT_TREND, "0.0%");
 		new FormatWrapper(cboDScore, PrefKey.STATS_FORMAT_DSCORE, "0.00");
-		new FormatWrapper(cboWJ, PrefKey.STATS_FORMAT_WEISERJAHRE, "0.0%");
+		new FormatWrapper(cboWJ, PrefKey.STATS_FORMAT_WEISERJAHRE, "0.0%");		
+    	new FormatWrapper(cboSkeletonAlg, 
+    			PrefKey.STATS_SKELETON_PLOT_ALGORITHM, 
+    			App.prefs.getPref(PrefKey.STATS_SKELETON_PLOT_ALGORITHM, SkeletonPlot.SkeletonPlotAlgorithm.PERCENTILES.toString()), 
+    			SkeletonPlot.SkeletonPlotAlgorithm.allValuesAsArray());
 		new SpinnerWrapper(spnMinOverlap, PrefKey.STATS_OVERLAP_REQUIRED, 15);
 		new SpinnerWrapper(spnMinOverlapDScore, PrefKey.STATS_OVERLAP_REQUIRED_DSCORE, 100);
 		new SpinnerWrapper(spnSkeletonWindow, PrefKey.STATS_SKELETON_PLOT_WINDOW_SIZE, 7);

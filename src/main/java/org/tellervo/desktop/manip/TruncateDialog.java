@@ -72,7 +72,7 @@ import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.NameVersionJustificationPanel;
 import org.tellervo.desktop.gui.RangeSlider;
 import org.tellervo.desktop.io.Metadata;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
@@ -253,7 +253,7 @@ public class TruncateDialog extends JDialog {
 		Sample tmp = new Sample(series);		
 
 		try {
-			CorinaWsiTridasElement saver = new CorinaWsiTridasElement(series.getIdentifier());
+			TellervoWsiTridasElement saver = new TellervoWsiTridasElement(series.getIdentifier());
 			// here's where we do the "meat"
 			if(saver.save(tmp)) {
 				// put it in our menu
@@ -301,7 +301,7 @@ public class TruncateDialog extends JDialog {
 			}
 		}
 		
-		if(s.getLoader() instanceof CorinaWsiTridasElement) {
+		if(s.getLoader() instanceof TellervoWsiTridasElement) {
 			return applyCorinaWsiTruncation();
 		}
 		

@@ -57,7 +57,7 @@ import org.tellervo.desktop.gui.dbbrowse.ElementListPopupMenu;
 import org.tellervo.desktop.gui.dbbrowse.ElementListTableModel;
 import org.tellervo.desktop.gui.dbbrowse.ElementListTableSorter;
 import org.tellervo.desktop.sample.CachedElement;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
@@ -340,8 +340,8 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		
 		loadedComprehensive = true;
 		
-		if(sample.getLoader() instanceof CorinaWsiTridasElement) {
-			TridasIdentifier identifier = ((CorinaWsiTridasElement) sample.getLoader()).getTridasIdentifier();
+		if(sample.getLoader() instanceof TellervoWsiTridasElement) {
+			TridasIdentifier identifier = ((TellervoWsiTridasElement) sample.getLoader()).getTridasIdentifier();
 			// create a new resource
 			SeriesResource resource = new SeriesResource(identifier, EntityType.MEASUREMENT_SERIES, TellervoRequestType.READ);
 

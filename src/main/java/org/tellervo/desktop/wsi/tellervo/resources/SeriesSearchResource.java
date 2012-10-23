@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.io.TridasDoc;
 import org.tellervo.desktop.sample.BaseSample;
 import org.tellervo.desktop.sample.CachedElement;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
@@ -102,7 +102,7 @@ public class SeriesSearchResource extends TellervoAssociatedResource<ElementList
 			}
 			
 			// create an loader and associate it with this sample
-			CorinaWsiTridasElement loader = new CorinaWsiTridasElement(series.getIdentifier());
+			TellervoWsiTridasElement loader = new TellervoWsiTridasElement(series.getIdentifier());
 			sample.setLoader(loader);
 			
 			// create an associated element and add it to our list

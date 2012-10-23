@@ -69,7 +69,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 	
 	public enum AddLayerType{
 		ALL_OBJECTS("All objects in database"),
-		CORINA_ENTITY("One specific entity from database"),
+		TELLERVO_ENTITY("One specific entity from database"),
 		ELEMENTS_FOR_OBJECT("All elements of an object"),
 		ITRDB_SITES("All ITRDB sites"),
 		SHAPEFILE("ESRI Shapefile"),
@@ -185,7 +185,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 		}
 		
 		// Show or hide picker panel accordingly
-		if(selectedType.equals(AddLayerType.CORINA_ENTITY))
+		if(selectedType.equals(AddLayerType.TELLERVO_ENTITY))
 		{
 			pickerPanel = new TridasEntityPickerPanel(this, TridasObject.class, EntitiesAccepted.ALL);
 			((TridasEntityPickerPanel) pickerPanel).setMinimalGui(true);
@@ -225,7 +225,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 				addAllObjects();
 				dispose();
 			}
-			else if ((cboAddType.getSelectedItem().equals(AddLayerType.CORINA_ENTITY)) ||
+			else if ((cboAddType.getSelectedItem().equals(AddLayerType.TELLERVO_ENTITY)) ||
 					(cboAddType.getSelectedItem().equals(AddLayerType.ELEMENTS_FOR_OBJECT))
 					)
 			{
@@ -337,7 +337,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 				return;
 			}
 			
-			if(cboAddType.getSelectedItem().equals(AddLayerType.CORINA_ENTITY))
+			if(cboAddType.getSelectedItem().equals(AddLayerType.TELLERVO_ENTITY))
 			{
 				if(TridasUtils.getElementList(obj).size()>0)
 				{

@@ -51,13 +51,13 @@ Due to the complications arising from the virtual measurement concept, creating 
 \index{Packaging!Server}
 The Ubuntu server package is built by Maven at the same time as the desktop package (see section \ref{txt:buildScript}) during the package goal.  
 
-The server packaging is done as a secondary execution of the JDeb plugin.  JDeb is configured in the pom.xml by including all the files that need to be copied along with where in the target file system they should be placed. The database files are installed to `/usr/share/corina-server' and the webservices files to `/var/www/corina-webservice'. 
+The server packaging is done as a secondary execution of the JDeb plugin.  JDeb is configured in the pom.xml by including all the files that need to be copied along with where in the target file system they should be placed. The database files are installed to `/usr/share/tellervo-server' and the webservices files to `/var/www/tellervo/'. 
 
 The metadata for the deb file is included in the control file located in Native/BuildResources/LinBuild/ServerControl.  JDeb makes use of Ubuntu's excellent package management system to handle the dependencies.  Adding or editing dependencies is simply a matter of changing the `depends' attribute control file.  
 
 The ServerControl folder also contains scripts called preinst, postinst, prerm and postrm, which are launched before and after installation, and before uninstalling.  These files are called with different parameters depending on whether this is part of a fresh install, an upgrade, or an aborted install.  There are a number of rules that the resulting deb package should follow (e.g.\ if a program is configured twice, then the second run should know and understand about previously provided details), the details of which can be found in the Debian Policy Manual\footnote{Debian Policy Manual -- \url{http://www.debian.org/doc/debian-policy/}}, along with information how and when each of the pre and post scripts is run.  Hopefully this side of the server packaging will not need to be touched again, but if you are making changes and are doing anything more than simple tweaks, please consult the Debian policy documentation.
 
-The postinst script is used to trigger the interactive script that helps the user configure the Tellervo server (described further in section \ref{txt:corina-server-script}).  The steps are as follows:  
+The postinst script is used to trigger the interactive script that helps the user configure the Tellervo server (described further in section \ref{txt:tellervo-server-script}).  The steps are as follows:  
 
 \begin{itemize*}
  \item Check the user running the script is root as we're doing privileged functions
@@ -70,9 +70,9 @@ The postinst script is used to trigger the interactive script that helps the use
 \end{itemize*}
 
 \subsection{Tellervo server script}
-\label{txt:corina-server-script}
+\label{txt:tellervo-server-script}
 
-At the heart of most of the configuration and control of the Tellervo server is the corina-server script.  This is a command line PHP script that is launched after installation and can be re-run by the user to make changes to the configuration.  Although such a script would normally be written in Bash or similar, we decided to go with PHP because of the requirement to interact with the Tellervo PostgreSQL database.  
+At the heart of most of the configuration and control of the Tellervo server is the tellervo-server script.  This is a command line PHP script that is launched after installation and can be re-run by the user to make changes to the configuration.  Although such a script would normally be written in Bash or similar, we decided to go with PHP because of the requirement to interact with the Tellervo PostgreSQL database.  
 
 The script isolates the common tasks performed into functions.  It uses the getopt() function to read both long (e.g. --blah) and short (e.g. -b) arguments from the command line.  These depending on the arguments given, the script then calls the relevant functions.
 
@@ -91,14 +91,20 @@ The script includes a number of helper functions and classes that you may find u
 
 \end{description}
 
-\section{Handling client version dependencies}
-In an ideal world, the API for how clients talk to the Tellervo server would never change.  Unfortunately, we don't live in an ideal world!  New features in Tellervo will require changes to the API, as will changes to TRiDaS.  In anticipation to such changes, the Tellervo server includes a mechanism for detecting when a client is too old to handle the API that it is using.  In this case the server will refuse to handle the request.  A similar complementary mechanism is in place in the client for instances when a client is attempting to talk to an older server that it no longer supports.  
+\section{Handling version dependencies}
+In an ideal world, the API for how clients talk to the Tellervo server would never change.  Unfortunately, we don't live in an ideal world!  New features in Tellervo will require changes to the API, as will changes to TRiDaS.  In anticipation of such changes, the Tellervo server includes a mechanism for detecting when a client is too old to handle the API that it is using.  In this case the server will refuse to handle the request.  A similar complementary mechanism is in place in the client for instances when a client is attempting to talk to an older server that it no longer supports.  
 
 At the moment, the Tellervo desktop client is the only known software that talks to the Tellervo server, but in the future we may have other 3rd party clients making requests.  For example it would be possible to develop a central data repository (much like the ITRDB or perhaps as an extension to the existing ITRDB) that harvests data from multiple labs each running the Tellervo server. Alternatively, existing 3rd party desktop applications (e.g. TSAP-Win, PAST4 etc) may be extended to enable them to obtain data directly from servers running the Tellervo server software.  Either way, it is important to include the ability to specify the oldest versions of clients that are able to connect, and also to be able to specify different versions for different types of clients. 
 
 It is also necessary to include the ability to allow or disallow access to the server by unknown client applications.  If a new program is written by other developers and it attempts to access the server it could contain bugs (or even malicious code\footnote{Keep in mind though that a user with the necessary privileges would need to provide this new program with their credentials for it to make changes to data.}) that interferes with the server.  For a production instance of the server this is obviously undesirable, therefore the systems configuration option `onlyAllowKnownClients' is set to TRUE.  
 
-The minimum versions of each supported client are stored in the database in the table tblsupportedclient.  The `client' field should contain a unique portion of the HTTP\_USER\_AGENT header provided by the client.  
+\subsection{Client requiring a recent server}
+
+In the event that changes are made to the client that means it needs a particular version of the server to run, then this information is specified in the static string App.earliestServerVersionSupported.  This value should be a three part version number e.g.\ 1.1.1.  No other changes are required.  When the user tries to connect to a server with a version prior to the minimum version specified, they will be shown an error message explaining that they need to get the Tellervo administrator to upgrade the server.  
+
+\subsection{Server requires a recent client}
+
+In the event that changes are made to the server which mean that a recent version of the client is required, then this information is stored in the database in the tblsupportedclient table.  The `client' field should contain a unique portion of the HTTP\_USER\_AGENT header provided by the client.  The version number field should be a 2 or 3 part number e.g.\ 1.1 or 1.1.1.  In the event that a user tried to connect to a Tellervo server using a client that is too old, then they will be given a clear error message informing them that they need to upgrade.
 
 
 \section{Handling server configuration}
@@ -106,9 +112,9 @@ The minimum versions of each supported client are stored in the database in the 
 \index{config.php}
 The Tellervo server is configured using two main PHP files: config.php and systemconfig.php.  The configuration is split into two primarily because the config.php values are considered to be editable by the server administrator, whereas those in systemconfig.php should normally only be edited by Tellervo developers.  
 
-If you want to make configuration options editable by the administrator of the Tellervo server, then these should be implemented within the config.php file.  There is a config.php.template file which is used to construct the config.php file on the users system.  Simply adding hardcoded entries to this file is the simplest way when a default value is appropriate.  If you value of your field needs to be generated either by asking the administrator a question (e.g. name of lab), or dynamically at the time of installation (e.g. IP address of the server) then this template file should contain placeholder values which can then be replaced by the corina-server configuration script.  For instance the config.php.template file contains a placeholder for the hostname of the server like this: \verb|$hostname = "%%IP%%";|.  The value is set by the corina-server script using the function \verb|setConfigVariable($var, $value)|.  Keep in mind though, that during an upgrade, the config.php is maintained and not replaced.  If you make additions to the config.php.template you will also need to make provision for handling changes to the end users existing config.php.
+If you want to make configuration options editable by the administrator of the Tellervo server, then these should be implemented within the config.php file.  There is a config.php.template file which is used to construct the config.php file on the users system.  Simply adding hardcoded entries to this file is the simplest way when a default value is appropriate.  If the value of your field needs to be generated either by asking the administrator a question (e.g. name of lab), or dynamically at the time of installation (e.g. IP address of the server) then this template file should contain placeholder values which can then be replaced by the tellervo-server configuration script.  For instance the config.php.template file contains a placeholder for the hostname of the server like this: \verb|$hostname = "%%IP%%";|.  The value is set by the tellervo-server script using the function \verb|setConfigVariable($var, $value)|.  Keep in mind though, that during an upgrade, the config.php is maintained and not replaced.  If you make additions to the config.php.template you will also need to make provision for handling changes to the end users existing config.php.
 
-If you want to add new configuration fields that don't need to be edited by the system administrator, these should be handled in the systemconfig.php file.  The systemconfig.php file is automatically generated during installation/upgrade of the server from entries in the database table tblconfig.  This means that any changes to the system configuration can be handled as part of the database upgrade simply by adding new rows or editing existing rows in tblconfig.  Each entry in this table is made available to the webservice as a global variable once the corina-server script has been run.  For instance the row containing key=wsversion and value=1.0.0 is available as the variable \$wsversion within the webservice. 
+If you want to add new configuration fields that don't need to be edited by the system administrator, these should be handled in the systemconfig.php file.  The systemconfig.php file is automatically generated during installation/upgrade of the server from entries in the database table tblconfig.  This means that any changes to the system configuration can be handled as part of the database upgrade simply by adding new rows or editing existing rows in tblconfig.  Each entry in this table is made available to the webservice as a global variable once the tellervo-server script has been run.  For instance the row containing key=wsversion and value=1.0.0 is available as the variable \$wsversion within the webservice. 
 
 
 

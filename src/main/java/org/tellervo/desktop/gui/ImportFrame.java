@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 
 import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.editor.EditorFactory.BarcodeDialogResult;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleAdapter;
 import org.tellervo.desktop.sample.SampleEvent;
@@ -130,7 +130,7 @@ public class ImportFrame extends XFrame {
 				dispose();
 				
 				// attach a new loader (well, saver!)
-				CorinaWsiTridasElement.attachNewSample(s);
+				TellervoWsiTridasElement.attachNewSample(s);
 				
 				// and open!
 				new Editor(s).setVisible(true);

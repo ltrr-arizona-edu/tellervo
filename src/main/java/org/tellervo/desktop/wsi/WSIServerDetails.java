@@ -334,7 +334,7 @@ public class WSIServerDetails {
 		}
 		if(!revision.equals(""))
 		{
-			str+=" rev. "+revision;
+			str+="."+revision;
 		}
 		
 		return str;
@@ -342,12 +342,13 @@ public class WSIServerDetails {
 	}
 	
 	/**
-	 * Is the server a valid Corina WS?
+	 * Is the server a valid Tellervo WS?
 	 * 
 	 * @return
 	 */
 	public Boolean isServerValid()
 	{		
+		log.debug("Checking if server is valid...");
 		
 		if(status==WSIServerStatus.VALID)
 		{
@@ -371,6 +372,9 @@ public class WSIServerDetails {
 					earliestRevision = earliestServerVersion[2];
 				}
 				
+				
+				log.debug("Earliest server version accepted is : "+earliestMajor + " . "+earliestMinor + " . "+earliestRevision);
+				log.debug("Actual server version is            : "+majorversion + " . "+minorversion +" . "+revision);
 				if(majorversion<earliestMajor)
 				{
 					setTooOldErrorMessage();
@@ -385,7 +389,7 @@ public class WSIServerDetails {
 					}
 					else
 					{
-						if(earliestRevision.compareTo(earliestRevision)<0)
+						if(revision.compareTo(earliestRevision)<0)
 						{
 							setTooOldErrorMessage();
 							return false;
@@ -413,7 +417,8 @@ public class WSIServerDetails {
 	
 	private void setTooOldErrorMessage()
 	{
-		errMessage = "The version of the Corina server ("+ getWSIVersion()+") that\n"+
+		log.debug("Server too old!");
+		errMessage = "The version of the Tellervo server ("+ getWSIVersion()+") that\n"+
 		"you are trying to connect to is too old for this client.\n"+
 		"The server needs to be version "+ App.earliestServerVersionSupported + " or later.";
 		log.debug(errMessage);

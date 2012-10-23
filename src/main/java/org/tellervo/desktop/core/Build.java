@@ -40,13 +40,13 @@ public class Build {
        <p>This is computed at compile-time by running <code>date "+%Y
        %B %e %l:%M %p (%Z)"</code>, which returns a string like "23
        October 6 5:06 PM (EDT)".  This string is stored in the file
-       Timestamp, which is added to the final Corina.jar file.</p>
+       Timestamp, which is added to the final Tellervo jar file.</p>
     */
     public final static String TIMESTAMP = loadTimestamp();
     
     
     /**
-     * The current SVN revision number stored in a file in Corina.jar 
+     * The current SVN revision number stored in a file in Tellervo jar file 
      */
     public final static String REVISION_NUMBER = loadRevisionNumber();
 
@@ -134,6 +134,7 @@ public class Build {
     	if(Build.VERSION==null)
     	{
     		return "DEV. SNAPSHOT";
+    		//return "0.0.1";
     	}
   
     	return Build.VERSION;
@@ -144,6 +145,7 @@ public class Build {
     	if(Build.VERSION==null)
     	{
     		return "development";
+    		
     	}
     	
     	if(Build.VERSION.contains("-SNAPSHOT"))

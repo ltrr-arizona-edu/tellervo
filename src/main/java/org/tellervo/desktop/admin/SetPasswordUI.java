@@ -234,7 +234,7 @@ public class SetPasswordUI extends javax.swing.JDialog implements KeyListener{
     	// Set password to hash
     	MessageDigest digest;
 		try {
-			digest = MessageDigest.getInstance("MD5");
+			digest = MessageDigest.getInstance(App.cryptoAlgorithm);
 			String pwd1 = new String(this.pwdNew.getPassword());
 			digest.update(pwd1.getBytes());
 	    	thisUser.setHashOfPassword(StringUtils.bytesToHex(digest.digest()));

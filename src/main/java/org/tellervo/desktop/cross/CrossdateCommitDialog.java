@@ -47,7 +47,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.manip.Redate;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
@@ -210,7 +210,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		}
 		else if (this.radNewRedate.isSelected())
 		{
-			return Redate.performCorinaWsiRedate(sampleToDate, txtNewCrossdateName.getText(), 
+			return Redate.performTellervoWsiRedate(sampleToDate, txtNewCrossdateName.getText(), 
 					txtVersion.getText(), txtJustification.getText(), (NormalTridasDatingType) this.cboDatingType.getSelectedItem(), 
 					originalDatingType, range);
 		}
@@ -304,7 +304,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		Sample tmp = new Sample(series);		
 
 		try {
-			CorinaWsiTridasElement saver = new CorinaWsiTridasElement(series.getIdentifier());
+			TellervoWsiTridasElement saver = new TellervoWsiTridasElement(series.getIdentifier());
 			// here's where we do the "meat"
 			if(saver.save(tmp)) {
 				// put it in our menu

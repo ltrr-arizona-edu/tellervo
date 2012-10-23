@@ -68,7 +68,7 @@ import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.NameVersionJustificationPanel;
 import org.tellervo.desktop.io.Metadata;
-import org.tellervo.desktop.sample.CorinaWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
@@ -360,10 +360,10 @@ public class RedateDialog extends JDialog {
 			}
 		}
 		
-		if(sample.getLoader() instanceof CorinaWsiTridasElement) {
+		if(sample.getLoader() instanceof TellervoWsiTridasElement) {
 			//return performCorinaWsiRedate(newDating);
 			
-			return Redate.performCorinaWsiRedate(sample, 
+			return Redate.performTellervoWsiRedate(sample, 
 					info.getName(), info.getVersion(), info.getJustification(), 
 					datingType, originalDatingType, range);
 		}

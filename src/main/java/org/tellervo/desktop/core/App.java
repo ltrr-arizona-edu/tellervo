@@ -73,8 +73,8 @@ public class App{
    * Most primitive server version supported by this client should be a three part string
    * e.g 1.1.1
    */
-  public static final String earliestServerVersionSupported = "1.0.5";
-  
+  public static final String earliestServerVersionSupported = "1.1.3";
+  public static String cryptoAlgorithm = "SHA-512";
   public static final String SUN_JAVA_COMMAND = "sun.java.command";
   
   public static Prefs prefs;
@@ -96,8 +96,6 @@ public class App{
   public static Boolean isFirstRun = false;
   
   private final static boolean DEBUGGING = false;
-
-  //private static final CorinaLog log = new CorinaLog(App.class);
   private final static Logger log = LoggerFactory.getLogger(App.class);
   private static boolean initialized;
   
@@ -454,7 +452,7 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
 
   	
 	/**
-	 * Restart Corina programmatically
+	 * Restart Tellervo programmatically
 	 * 
 	 * @throws Exception
 	 */

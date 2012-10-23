@@ -45,6 +45,9 @@ public class Alert {
 		dialog.setVisible(true);
     }
 
+    /**
+     * @wbp.parser.entryPoint
+     */
     public static void message(String title, String text) {
     	MessageDialog dialog = new MessageDialog(title, text, DialogType.INFO);
 		dialog.setVisible(true);	

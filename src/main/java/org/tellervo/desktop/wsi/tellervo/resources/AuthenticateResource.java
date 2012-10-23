@@ -26,6 +26,10 @@ package org.tellervo.desktop.wsi.tellervo.resources;
 import java.security.MessageDigest;
 import java.util.Random;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.graph.SkeletonPlot;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIAuthenticate;
@@ -43,6 +47,8 @@ import org.tellervo.desktop.wsi.tellervo.TellervoResource;
  *
  */
 public class AuthenticateResource extends TellervoResource {
+	private final static Logger log = LoggerFactory.getLogger(AuthenticateResource.class);
+
 	private String username;
 	private String cliNonce;
 	private String hash;
@@ -71,10 +77,10 @@ public class AuthenticateResource extends TellervoResource {
 		this.cliNonce = StringUtils.bytesToHex(randomBytes);
 		
 		// generate our fun hash thing.
-		String md5password = md5(password);
-		String prehash = username + ":" + md5password + ":" + nonce + ":" + cliNonce;
+		String hashedPassword = getHash(password);
+		String prehash = username + ":" + hashedPassword + ":" + nonce + ":" + cliNonce;
 		
-		this.hash = md5(prehash);
+		this.hash = getHash(prehash);
 		this.username = username;
 	}
 
@@ -105,17 +111,16 @@ public class AuthenticateResource extends TellervoResource {
 	}
 	
 	/**
-	 * Compute an md5 hash of this string
+	 * Compute an cyptographic hash of this string.
+	 * The algorithm to use is specified in App
 	 * 
-	 * @param in
-	 * @return an md5 hash, in string format
+	 * @param in string to hash
+	 * @return a hash, in string format
 	 */
-	public static String md5(String in) {
+	public static String getHash(String in) {
 		try {
-			MessageDigest digest = MessageDigest.getInstance("MD5");
-			
+			MessageDigest digest = MessageDigest.getInstance(App.cryptoAlgorithm);
 			digest.update(in.getBytes());
-			
 			return StringUtils.bytesToHex(digest.digest());
 		} catch (Exception e) {
 			new Bug(e);

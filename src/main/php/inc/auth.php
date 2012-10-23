@@ -37,16 +37,8 @@ class auth
   function __construct()
   {
      global $firebug;
-     global $timeout;
-     session_start();  
-	        
-        if($timeout==null || $timeout==0)
-        {
-            $timeout=1800;
-        }
-
-        if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $timeout)) {
-    
+    session_start();  
+	if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
 	    $firebug->log("Session has expired");
 	    session_destroy();   // destroy session data in storage
 	    session_unset();     // unset $_SESSION variable for the runtime
@@ -77,6 +69,8 @@ class auth
 
   }
 
+ 
+
   /**
    * Login using a nonce
    *
@@ -90,6 +84,7 @@ class auth
   function loginWithNonce($theUsername, $theClientHash, $theClientNonce, $theServerNonce, $theSequence)
   {
     global $dbconn;
+    global $hashAlgorithm;
 
     // Before we do anything - check that the server nonce the client is sending has not expired
     if($this->isValidServerNonce($theServerNonce,$theSequence)===FALSE) 
@@ -112,6 +107,58 @@ class auth
             $this->username = $row['username'];
         }
     }
+ 
+
+    $pwdlen = strlen($this->dbPasswordHash);
+    $currentHashStyle = "";
+    if($pwdlen==32)
+    {
+  	// Old style plain md5
+	$currentHashStyle = 'oldmd5';
+    }
+    elseif($pwdlen=34)
+    {
+        // New style md5
+	$currentHashStyle = 'md5';
+    }
+    elseif($pwdlen=42)
+    {
+        // New style sha1
+	$currentHashStyle = 'sha1';
+    }
+    elseif($pwdlen=58)
+    {
+        // New style sha224
+	$currentHashStyle = 'sha224';
+    }
+    elseif($pwdlen=66)
+    {
+        // New style sha256
+	$currentHashStyle = 'sha256';
+    }
+    elseif($pwdlen=98)
+    {
+        // New style sha384
+	$currentHashStyle = 'sha384';
+    }
+    elseif($pwdlen=130)
+    {
+        // New style sha512
+	$currentHashStyle = 'sha512';
+    }
+    else
+    {
+	$currentHashStyle = 'unknown';
+    }
+
+
+    if($currentHashStyle!=$hashAlgorithm)
+    {
+	// Database password hash requires update
+        trigger_error('110'.'Due to an upgrade in security procedures, your password needs to be reset.  Please see your database administrator. Required hash = '.$hashAlgorithm.' and current hash = '.$currentHashStyle, E_USER_ERROR);
+	return;
+    }
+    
 
     // Authenticate against the database
     if ($this->checkClientHash($this->dbPasswordHash, $theClientNonce, $theSequence, $theClientHash))
@@ -157,6 +204,7 @@ class auth
   public function login($theUsername, $thePassword)
   {
     global $dbconn;
+    global $hashAlgorithm;
 
     $sql = "select * from tblsecurityuser where username='".pg_escape_string($theUsername)."' and isactive=true";
     
@@ -177,7 +225,7 @@ class auth
     }
 
     // Authenticate against the database
-    if (hash('md5', $thePassword)==$dbpassword)
+    if (hash($hashAlgorithm, $thePassword)==$dbpassword)
     {
         // Login passed
         $result = pg_query($dbconn, $sql);
@@ -612,15 +660,16 @@ class auth
    */
   public function nonce($seq, $timeseed="current")
   {
+    global $hashAlgorithm;
     if ($timeseed=="current")
     {
         // hash of current date
-       return hash('md5', date("l F j H:i T Y") . ":" . $seq);
+       return hash($hashAlgorithm, date("l F j H:i T Y") . ":" . $seq);
     }
     else
     {
         // hash of  date 1 minute ago
-       return hash('md5', date("l F j H:i T Y", time()-60) . ":" . $seq);
+       return hash($hashAlgorithm, date("l F j H:i T Y", time()-60) . ":" . $seq);
     }
   }
 
@@ -635,8 +684,10 @@ class auth
    */
   function checkClientHash($dbPasswordHash, $cnonce, $seq, $clientHash)
   {
-    $serverHashCurrent = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce($seq, "current").":".$cnonce);
-    $serverHashLast = hash('md5', $this->username.":".$dbPasswordHash.":".$this->nonce($seq, "last").":".$cnonce);
+    global $hashAlgorithm;
+
+    $serverHashCurrent = hash($hashAlgorithm, $this->username.":".$dbPasswordHash.":".$this->nonce($seq, "current").":".$cnonce);
+    $serverHashLast = hash($hashAlgorithm, $this->username.":".$dbPasswordHash.":".$this->nonce($seq, "last").":".$cnonce);
 
     //echo $this->username.":".$dbPasswordHash.":".$this->nonce($seq, "current").":".$cnonce."<br/>";
     //echo $serverHashCurrent."<br/>";
@@ -721,8 +772,9 @@ class auth
   protected function setPassword($password)
   {
     global $dbconn;
+    global $hashAlgorithm;
 
-    $sql = "update tblsecurityuser set password='".hash('md5', pg_escape_string($password))."' where username='".pg_escape_string($this->username)."'";
+    $sql = "update tblsecurityuser set password='".hash($hashAlgorithm, pg_escape_string($password))."' where username='".pg_escape_string($this->username)."'";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
