@@ -313,7 +313,7 @@ public class Range implements Comparable<Range> {
 
 	/**
 	 * The union of this range with r. Since there is no concept of
-	 * "range with a gap" in Corina, it assumes they overlap.
+	 * "range with a gap" in Tellervo, it assumes they overlap.
 	 * 
 	 * @see #intersection
 	 * @param r

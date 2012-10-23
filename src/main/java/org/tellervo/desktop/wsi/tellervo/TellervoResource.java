@@ -42,7 +42,7 @@ import org.tellervo.desktop.wsi.ResourceException;
 
 
 /**
- * An implementation of a resource that uses the Corina webservice
+ * An implementation of a resource that uses the Tellervo webservice
  */
 
 public abstract class TellervoResource extends Resource<WSIRootElement, WSIRootElement> {
@@ -123,7 +123,7 @@ public abstract class TellervoResource extends Resource<WSIRootElement, WSIRootE
 		// set the request type
 		request.setType(queryType);
 		
-		// populate this request with Corina stuff
+		// populate this request with Tellervo stuff
 		populateRequest(request);
 
 		// if we have a request format override, implement it

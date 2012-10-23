@@ -147,7 +147,7 @@ public class LabBarcode extends Barcode128 {
 			long lsb = dis.readLong();
 			
 			if(colon != ':')
-				throw new IllegalArgumentException("Barcode is not a Corina barcode (invalid format)");
+				throw new IllegalArgumentException("Barcode is not a Tellervo barcode (invalid format)");
 			
 			DecodedBarcode barcode = new DecodedBarcode();
 			
@@ -161,7 +161,7 @@ public class LabBarcode extends Barcode128 {
 			
 			return barcode;
 		} catch (IOException e) {
-			throw new IllegalArgumentException("Barcode is not a Corina barcode");
+			throw new IllegalArgumentException("Barcode is not a Tellervo barcode");
 		}
 	}
 }

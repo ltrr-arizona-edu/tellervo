@@ -38,7 +38,7 @@ public class QC1100 extends GenericASCIIDevice {
 	@Override
 	public void setDefaultPortParams(){
 		
-		//MeasureJ2X defaults to using 2 stop bits but Corina/Java/something bombs if you 
+		//MeasureJ2X defaults to using 2 stop bits but Tellervo/Java/something bombs if you 
 		//try to write to the port with 2 stop bits set.  So lets stick with 1 stop bit for now!
 		
 		baudRate = BaudRate.B_600;

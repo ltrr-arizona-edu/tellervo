@@ -1138,7 +1138,7 @@ public class ImportView extends JFrame{
 		{
 			// This entity is a project so set list to null as 
 			// projects aren't supported
-			setTopChooserEnabled(false, "Projects are not supported in Corina");
+			setTopChooserEnabled(false, "Projects are not supported in Tellervo");
 			return;
 		}
 		else if(currentEntity instanceof TridasObject)

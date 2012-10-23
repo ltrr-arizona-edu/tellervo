@@ -114,7 +114,7 @@ public class FileSelectedCommand implements ICommand {
 					"Tellervo does not currently support importing of derived series / chronologies"));
 		}
 		
-		// Add custom Corina warnings for unsupported aspects of TRiDaS
+		// Add custom Tellervo warnings for unsupported aspects of TRiDaS
 		
 		try{
 			

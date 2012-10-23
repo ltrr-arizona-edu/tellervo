@@ -44,7 +44,7 @@ public class TellervoSchema {
 	 * Returns a schema object representing all valid tellervo schemas
 	 * @return
 	 */
-	public static Schema getCorinaSchema() {
+	public static Schema getTellervoSchema() {
 		// be sure we load the schema in a threadsafe manner
 		synchronized(schemaLoaded) {
 			if(!schemaLoaded) {
@@ -108,8 +108,7 @@ public class TellervoSchema {
 	 */
     private static InputStream findSchema(String filename) {
     	InputStream ret = TellervoSchema.class.getClassLoader().getResourceAsStream("schemas/"+filename);
-    	//InputStream ret = CorinaSchema.class.getClassLoader().getResourceAsStream("edu/cornell/dendro/webservice/schemas/" + filename);
-    	
+   	
     	if(ret == null)
     	{
     		log.error("Failed to load local schema: " + filename);

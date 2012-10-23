@@ -47,7 +47,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 	@Override
 	public void setDefaultPortParams(){
 		
-		//MeasureJ2X defaults to using 2 stop bits but Corina/Java/something bombs if you 
+		//MeasureJ2X defaults to using 2 stop bits but Tellervo/Java/something bombs if you 
 		//try to write to the port with 2 stop bits set.  So lets stick with 1 stop bit for now!
 		log.debug("Setting Heidenhain default port parameters");
 		baudRate = BaudRate.B_9600;

@@ -129,7 +129,7 @@ public class AuthenticateResource extends TellervoResource {
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.tellervo.desktop.wsi.tellervo.CorinaResource#populateRequest(org.tellervo.desktop.schema.WSIRequest)
+	 * @see org.tellervo.desktop.wsi.tellervo.TellervoResource#populateRequest(org.tellervo.desktop.schema.WSIRequest)
 	 */
 	@Override
 	protected void populateRequest(WSIRequest request) {

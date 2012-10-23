@@ -39,7 +39,7 @@ import gnu.io.SerialPortEvent;
  * that RINNTECH claim is proprietary.  An agreement was made whereby RINNTECH 
  * would produce and supply new boxes that would attach to LINTAB platforms that 
  * communicate with a non-proprietary ASCII-based protocol. Users must purchase
- * such an adapter to use LINTAB platforms with Corina (or any other software 
+ * such an adapter to use LINTAB platforms with Tellervo (or any other software 
  * other than TSAP-Win). 
  * 
  * These new boxes include a serial and USB connection.  The USB connection is 

@@ -43,6 +43,6 @@ public class TellervoResourceCacher extends ResourceCacher<WSIRootElement> {
 
 	@Override
 	protected JAXBContext getJAXBContext() throws JAXBException {
-		return TellervoWsiAccessor.getCorinaContext();
+		return TellervoWsiAccessor.getTellervoContext();
 	}
 }

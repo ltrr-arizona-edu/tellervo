@@ -44,7 +44,7 @@ public class TellervoWsiAccessor extends WebJaxbAccessor<WSIRootElement, WSIRoot
 	 */
 	@Override
 	protected Schema getValidationSchema() {
-		return TellervoSchema.getCorinaSchema();
+		return TellervoSchema.getTellervoSchema();
 	}
 
 	/* (non-Javadoc)
@@ -52,7 +52,7 @@ public class TellervoWsiAccessor extends WebJaxbAccessor<WSIRootElement, WSIRoot
 	 */
 	@Override
 	protected JAXBContext getJAXBContext() throws JAXBException {
-		return TellervoWsiAccessor.getCorinaContext();
+		return TellervoWsiAccessor.getTellervoContext();
 	}	
 
 	@Override
@@ -64,9 +64,9 @@ public class TellervoWsiAccessor extends WebJaxbAccessor<WSIRootElement, WSIRoot
 	 * @return
 	 * @throws JAXBException
 	 */
-	protected synchronized static JAXBContext getCorinaContext() throws JAXBException {
+	protected synchronized static JAXBContext getTellervoContext() throws JAXBException {
 		if(tellervoContext == null)
-			tellervoContext = JAXBContext.newInstance(CORINA_CONTEXT_CLASSES);
+			tellervoContext = JAXBContext.newInstance(TELLERVO_CONTEXT_CLASSES);
 
 		return tellervoContext;
 	}
@@ -76,14 +76,14 @@ public class TellervoWsiAccessor extends WebJaxbAccessor<WSIRootElement, WSIRoot
 	 */
 	public static void loadTellervoContext() {
 		try {
-			getCorinaContext();
+			getTellervoContext();
 		} catch (Exception e) {
 			new Bug(e);
 		}
 	}
 
 	private static JAXBContext tellervoContext;
-	private static final Class<?> CORINA_CONTEXT_CLASSES[] = {
+	private static final Class<?> TELLERVO_CONTEXT_CLASSES[] = {
 		net.opengis.gml.schema.ObjectFactory.class,
 		org.tridas.schema.ObjectFactory.class,
 		org.tellervo.schema.ObjectFactory.class,

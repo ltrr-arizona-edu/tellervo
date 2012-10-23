@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2011 Peter Brewer.
+ * Copyright (C) 2001 Ken Harris
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,25 +17,6 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-//
-// This file is part of Corina.
-// 
-// Corina is free software; you can redistribute it and/or modify
-// it under the terms of the GNU General Public License as published by
-// the Free Software Foundation; either version 2 of the License, or
-// (at your option) any later version.
-// 
-// Corina is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-// 
-// You should have received a copy of the GNU General Public License
-// along with Corina; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// Copyright 2001 Ken Harris <kbh7@cornell.edu>
-//
 
 package org.tellervo.desktop.manip;
 
@@ -247,74 +228,6 @@ public class RedateDialog extends JDialog {
 		sample.postEdit(Redate.redate(sample, range, dating));
 	}
 	
-	/**
-	 * Create a new redate on the webservice
-	 * @param dating
-	 * @return true on success, false otherwise
-	 */
-	/*private boolean performCorinaWsiRedate(TridasDating dating) {
-		// we have to have a name and a justification
-		if(!info.testAndComplainRequired(EnumSet.of(NameVersionJustificationPanel.Fields.NAME,
-				NameVersionJustificationPanel.Fields.JUSTIFICATION)))
-			return false;
-
-		TridasDerivedSeries series = new TridasDerivedSeries();
-		
-		// set title (and version?)
-		series.setTitle(info.getSeriesName());
-		if(info.hasVersion())
-			series.setVersion(info.getVersion());
-		
-		// it's a truncate
-		ControlledVoc voc = new ControlledVoc();
-		voc.setValue(SampleType.REDATE.toString());
-		series.setType(voc);
-		
-		// the identifier is based on the domain from the series
-		series.setIdentifier(NewTridasIdentifier.getInstance(sample.getSeries().getIdentifier()));
-		
-		// set the parent
-		SeriesLinkUtil.addToSeries(series, sample.getSeries().getIdentifier());
-		
-		// now, a redate has three other parameters
-		TridasInterpretation interpretation = new TridasInterpretation();
-		series.setInterpretation(interpretation);
-		
-		// 1: Dating type (but only if it changed)
-		if(datingType != originalDatingType)
-			interpretation.setDating(dating);
-
-		// 2: Relative start year
-		interpretation.setFirstYear(range.getStart().tridasYearValue());
-		// looks like the genericField is what's actually used?
-		GenericFieldUtils.setField(series, "tellervo.newStartYear", Integer.parseInt(range.getStart().toString()));
-
-		// 3: Justification
-		GenericFieldUtils.setField(series, "tellervo.justification", info.getJustification());
-		
-		// make a new 'redate' dummy sample for saving
-		Sample tmp = new Sample(series);		
-
-		try {
-			CorinaWsiTridasElement saver = new CorinaWsiTridasElement(series.getIdentifier());
-			// here's where we do the "meat"
-			if(saver.save(tmp)) {
-				// put it in our menu
-				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
-				
-				new Editor(tmp).toFront();
-				
-				// get out of here! :)
-				return true;
-			}
-		} catch (IOException ioe) {
-			Alert.error(I18n.getText("error.couldNotRedate"), I18n.getText("error") + ": " + ioe.toString());
-		}
-		
-		return false;
-	}*/
-	
-
 	
 	private boolean performRedate() {
 		ITridasSeries series = sample.getSeries();

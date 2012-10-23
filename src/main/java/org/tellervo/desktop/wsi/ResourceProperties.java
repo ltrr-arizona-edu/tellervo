@@ -26,5 +26,5 @@ package org.tellervo.desktop.wsi;
  * @author Lucas Madar
  */
 public abstract class ResourceProperties {
-	// as of now, there are no system-wide properties; see CorinaResourceProperties?
+	// as of now, there are no system-wide properties; see TellervoResourceProperties?
 }

@@ -149,7 +149,7 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 					
 					WSIBox box = boxmap.get(boxIdentifier);
 					
-					// if we have a box, attach it to the Corina sample
+					// if we have a box, attach it to the Tellervo sample
 					if(box != null)
 						s.setMeta(Metadata.BOX, box);
 				}
@@ -188,7 +188,7 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 	}
 	
 	/* (non-Javadoc)
-	 * @see org.tellervo.desktop.wsi.tellervo.CorinaResource#preprocessQuery(org.tellervo.desktop.schema.WSIRootElement)
+	 * @see org.tellervo.desktop.wsi.tellervo.TellervoResource#preprocessQuery(org.tellervo.desktop.schema.WSIRootElement)
 	 * 
 	 * We need to handle a 'version already exists' response
 	 */

@@ -101,7 +101,7 @@ public class PDFLabelMaker {
 		
 		document = new Document(margins.getPageSize());
 		PdfWriter writer = PdfWriter.getInstance(document, output);
-		document.addAuthor("Corina Label Generator");
+		document.addAuthor("Tellervo Label Generator");
 		document.addCreationDate();
 		
 		document.open();

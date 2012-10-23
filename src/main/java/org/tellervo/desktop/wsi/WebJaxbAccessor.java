@@ -271,7 +271,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			WSCookieStoreHandler.getCookieStore().fromCookieStore(client.getCookieStore());
 			
 			// ok, now inspect the document we got back
-			//CorinaDocumentInspector inspector = new CorinaDocumentInspector(inDocument);
+			//TellervoDocumentInspector inspector = new TellervoDocumentInspector(inDocument);
 
 			// Verify our document based on schema validity
 			//inspector.validate();

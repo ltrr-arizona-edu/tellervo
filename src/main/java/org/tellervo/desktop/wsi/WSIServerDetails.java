@@ -45,7 +45,7 @@ import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
 
 
 /**
- * Class for polling the Corina WS to check the server is valid and to check
+ * Class for polling the Tellervo WS to check the server is valid and to check
  * version information.
  * 
  * @author pwb48
@@ -54,7 +54,7 @@ import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
 public class WSIServerDetails {
 
 	/**
-	 * Status of Corina Webservice Server
+	 * Status of Tellervo Webservice Server
 	 * @author pwb48
 	 *
 	 */
@@ -256,7 +256,7 @@ public class WSIServerDetails {
 	}
 	
 	/**
-	 * Get the status of the Corina server
+	 * Get the status of the Tellervo server
 	 * @return
 	 */
 	public WSIServerStatus getWSIServerStatus()
@@ -316,7 +316,7 @@ public class WSIServerDetails {
 	}
 	
 	/**
-	 * Get the Corina server version as a full string
+	 * Get the Tellervo server version as a full string
 	 * 
 	 * @return
 	 */

@@ -429,7 +429,7 @@ public class ExportUI extends javax.swing.JPanel{
 	    	AbstractNamingConvention nc;
 	    	if(labCodeList.size()==projList.size())
 	    	{
-	    		// We have a Corina lab code for each project so use this as the base filename
+	    		// We have a Tellervo lab code for each project so use this as the base filename
 	    		nc = new NumericalNamingConvention();
 	    		((NumericalNamingConvention)nc).setBaseFilename(
 	    				LabCodeFormatter.getDefaultFormatter().format(labCodeList.get(i)).toString());
