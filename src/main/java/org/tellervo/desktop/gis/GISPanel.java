@@ -180,7 +180,7 @@ public class GISPanel extends JPanel implements SelectListener{
         	this.failedRetest = true;
         	App.prefs.setBooleanPref(PrefKey.OPENGL_FAILED, true);
         	GrfxWarning warn = new GrfxWarning(this);
-        	warn.btnRetry.setVisible(false);
+        	//warn.btnRetry.setVisible(false);
         	this.add(warn, BorderLayout.CENTER);
         }
                 

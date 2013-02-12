@@ -20,6 +20,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.wsi;
 
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -44,10 +45,13 @@ import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.entity.mime.MultipartEntity;
 import org.apache.http.entity.mime.content.StringBody;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.impl.client.ContentEncodingHttpClient;
 import org.apache.http.util.VersionInfo;
 import org.jdom.Document;
 import org.jdom.transform.JDOMResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.gui.Bug;
@@ -70,6 +74,9 @@ import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
  */
 
 public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OUTTYPE> {	
+	
+	private final static Logger log = LoggerFactory.getLogger(WebJaxbAccessor.class);
+
 	/** The URL we plan to access */ 
 	private URI url;
 	
@@ -207,7 +214,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 	}
 	
 	private INTYPE doRequest() throws IOException {
-		DefaultHttpClient client = new DefaultHttpClient();
+		HttpClient client = new ContentEncodingHttpClient();
 		HttpUriRequest req;
 		JAXBContext context;
 		Document outDocument = null;
@@ -246,7 +253,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			TransactionDebug.sent(outDocument, noun);
 			
 			// load cookies
-			client.setCookieStore(WSCookieStoreHandler.getCookieStore().toCookieStore());
+			((AbstractHttpClient) client).setCookieStore(WSCookieStoreHandler.getCookieStore().toCookieStore());
 			
 			req.setHeader("User-Agent", "Tellervo WSI " + Build.getUTF8Version() + 
 					" (" + clientModuleVersion + "; ts " + Build.getCompleteVersionNumber() +")");
@@ -261,14 +268,20 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			
 			// set the schema we validate against
 			responseHandler.setValidateSchema(getValidationSchema());
-			
+						
 			// execute the actual http query
-			INTYPE inObject = client.execute(req, responseHandler);		
+			INTYPE inObject = null;
+			try{
+				inObject= client.execute(req, responseHandler);		
+			} catch (EOFException e4){
+				log.debug("Caught EOFException");
+			}
+			
 			
 			TransactionDebug.received(inObject, noun, context);
 			
 			// save our cookies?
-			WSCookieStoreHandler.getCookieStore().fromCookieStore(client.getCookieStore());
+			WSCookieStoreHandler.getCookieStore().fromCookieStore(((AbstractHttpClient) client).getCookieStore());
 			
 			// ok, now inspect the document we got back
 			//TellervoDocumentInspector inspector = new TellervoDocumentInspector(inDocument);

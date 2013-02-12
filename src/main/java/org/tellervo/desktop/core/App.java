@@ -73,8 +73,8 @@ public class App{
    * Most primitive server version supported by this client should be a three part string
    * e.g 1.1.1
    */
-  public static final String earliestServerVersionSupported = "1.1.3";
-  public static String cryptoAlgorithm = "SHA-512";
+  public static final String earliestServerVersionSupported = "1.0.9";
+  public static String cryptoAlgorithm = "MD5";
   public static final String SUN_JAVA_COMMAND = "sun.java.command";
   
   public static Prefs prefs;
