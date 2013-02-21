@@ -440,7 +440,7 @@ public class TruncateDialog extends JDialog {
 		// build primary panel
 		pri.add(Box.createVerticalStrut(8));
 		String text = I18n.getText("truncate.seriesIsNow") + ": " + s.getRange() + " (n="
-				+ s.getRange().span() + ")";
+				+ s.getRange().getSpan() + ")";
 		JLabel tmp = new JLabel(text);
 		// center the label
 		tmp.setHorizontalAlignment(SwingConstants.CENTER);
@@ -452,7 +452,7 @@ public class TruncateDialog extends JDialog {
 
 		// add a slider
 		int startYear = Integer.valueOf(r.getStart().toString());
-		int endYear = startYear + r.span();
+		int endYear = startYear + r.getSpan();
 		slider = new RangeSlider(startYear, endYear);
 		slider.setValue(startYear);
 		slider.setUpperValue(endYear);
@@ -544,7 +544,7 @@ public class TruncateDialog extends JDialog {
 		r = new Range(start, end);
 		
 		// well, don't let the span get to be zero; that breaks things.
-		if(r.span() == 0) {
+		if(r.getSpan() == 0) {
 			r = null;
 			return;
 		}
@@ -618,7 +618,7 @@ public class TruncateDialog extends JDialog {
 			cellModifier.updateRange(s.getRange());
 		}
 		else {
-			rangeAndSpan = r + " (n=" + r.span() + ")";
+			rangeAndSpan = r + " (n=" + r.getSpan() + ")";
 			cellModifier.updateRange(r);
 		}
 

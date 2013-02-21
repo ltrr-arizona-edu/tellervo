@@ -770,7 +770,7 @@ public class SamplePrintEditor extends JPanel {
 						.size())) + "\n");
 		sb.append("Number of rings in data set: "
 				+ s.countRings() + "\n");
-		sb.append("Length of data set: " + s.getRange().span()
+		sb.append("Length of data set: " + s.getRange().getSpan()
 				+ " years\n\n");
 		
 		return sb.toString();

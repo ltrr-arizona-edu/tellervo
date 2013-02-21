@@ -140,4 +140,20 @@ public abstract class AbstractRemark implements Remark {
 	public int hashCode() {
 		return asTridasRemark().hashCode();
 	}
+	
+	public String getVocabulary()
+	{
+		TridasRemark remark = asTridasRemark();
+		
+		if(remark.isSetNormalTridas())
+		{
+			return "Tridas";
+		}
+		else if (remark.isSetNormalStd())
+		{
+			return remark.getNormalStd();
+		}
+		
+		return null;
+	}
 }

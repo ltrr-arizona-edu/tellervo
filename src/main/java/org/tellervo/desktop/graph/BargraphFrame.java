@@ -436,7 +436,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		@Override
 		public Dimension getMinimumSize() {
 			Dimension d = super.getMinimumSize();
-			d.width = (int) (range.span() * X_SCALE);
+			d.width = (int) (range.getSpan() * X_SCALE);
 			d.height = bars.size() * (BAR_HEIGHT + BAR_SPACING) + BAR_SPACING;
 			return d;
 		}
@@ -444,7 +444,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 		@Override
 		public Dimension getPreferredSize() { // REFACTOR: aren't these 2 methods identical?
 			Dimension d = super.getPreferredSize();
-			d.width = (int) (range.span() * X_SCALE);
+			d.width = (int) (range.getSpan() * X_SCALE);
 			d.height = bars.size() * (BAR_HEIGHT + BAR_SPACING) + BAR_SPACING;
 			return d;
 		}
@@ -501,7 +501,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 				// style: [=title=========]
 				barRect.x = (int) (X_SCALE * bs.getRange().getStart().diff(range.getStart()));
 				barRect.y = y; // i*dy + BAR_SPACING;
-				barRect.width = (int) (X_SCALE * bs.getRange().span()); // scale me?
+				barRect.width = (int) (X_SCALE * bs.getRange().getSpan()); // scale me?
 				barRect.height = BAR_HEIGHT; // dy; // - BAR_SPACING;
 
 				// this is the area we're supposed to (re)draw

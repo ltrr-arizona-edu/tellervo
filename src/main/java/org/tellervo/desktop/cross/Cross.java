@@ -270,7 +270,7 @@ public abstract class Cross implements Runnable {
 
 		// set the range (= end date of moving sample)
 		Year start = fixed.getRange().getStart();
-		Year end = fixed.getRange().getEnd().add(moving.getRange().span() - 1);
+		Year end = fixed.getRange().getEnd().add(moving.getRange().getSpan() - 1);
 
 		// TESTING: shrink it by 14 _more_, for min overlap = 15
 		// start = start.add(14);

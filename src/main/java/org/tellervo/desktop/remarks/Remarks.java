@@ -22,6 +22,7 @@ package org.tellervo.desktop.remarks;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.Map;
 
 import javax.swing.Icon;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 
 import org.slf4j.Logger;
@@ -37,10 +39,13 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.editor.IconBackgroundCellRenderer;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ListUtil;
 import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.TridasRemark;
 import org.tridas.schema.TridasValue;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 
 public class Remarks {
@@ -69,9 +74,11 @@ public class Remarks {
 		
 		for(TridasRemark r : tellervoRemarks) {
 			// only tellervo remarks for now
-			if("Tellervo".equals(r.getNormalStd()) || "Tellervo".equals(r.getNormalStd()))
+			if("Tellervo".equals(r.getNormalStd()) || "Corina".equals(r.getNormalStd()) || "FHX".equals(r.getNormalStd()) )
 				remarks.add(new TellervoReadingRemark(r));
 		}
+		
+		Collections.sort(remarks, new ReadingRemarkComparator());
 		
 		return remarks;
 	}
@@ -86,6 +93,13 @@ public class Remarks {
 	public static void appendRemarksToMenu(final JPopupMenu menu, final TridasValue value, 
 			final Runnable onRemarkChange, final boolean isChangeable) {
 		List<Remark> remarks = getRemarks();
+		
+
+		// Add FHX2 remarks to a submenu
+		JMenu fhxsubmenu = new JMenu();
+		fhxsubmenu.setText("FHX2 fire history remarks");
+		fhxsubmenu.setIcon(Builder.getIcon("fire.png", 16));
+		menu.add(fhxsubmenu);
 		
 		for(final Remark remark : remarks) {
 			String displayName = remark.getDisplayName().substring(0,1).toUpperCase()+remark.getDisplayName().substring(1);
@@ -120,8 +134,17 @@ public class Remarks {
 				}
 			});
 			
-			menu.add(item);
+			if(((AbstractRemark)remark).getVocabulary().equals("FHX"))
+			{
+				fhxsubmenu.add(item);
+			}
+			else
+			{
+				menu.add(item);
+			}
 		}
+		
+	
 	}
 
 	public static Map<NormalTridasRemark, String> getTridasRemarkIcons() {
@@ -162,6 +185,20 @@ public class Remarks {
 		tellervoRemarkIconMap.put("micro ring", "microring.png");
 		tellervoRemarkIconMap.put("insect damage", "bug.png");
 		tellervoRemarkIconMap.put("locally absent ring", "note.png");
+		tellervoRemarkIconMap.put("Fire scar in latewood", "fire-A.png");
+		tellervoRemarkIconMap.put("Fire injury in latewood", "fire-a.png");	
+		tellervoRemarkIconMap.put("Fire scar in dormant position", "fire-D.png");
+		tellervoRemarkIconMap.put("Fire injury in dormant position", "fire-d.png");
+		tellervoRemarkIconMap.put("Fire scar in first third of earlywood", "fire-E.png");
+		tellervoRemarkIconMap.put("Fire injury in first third of earlywood", "fire-e.png");
+		tellervoRemarkIconMap.put("Fire scar in middle third of earlywood", "fire-M.png");
+		tellervoRemarkIconMap.put("Fire injury in middle third of earlywood", "fire-m.png");
+		tellervoRemarkIconMap.put("Fire scar in last third of earlywood", "fire-L.png");
+		tellervoRemarkIconMap.put("Fire injury in last third of earlywood", "fire-l.png");
+		tellervoRemarkIconMap.put("Fire scar - position undetermined", "fire-U.png");
+		tellervoRemarkIconMap.put("Fire injury - position undetermined", "fire-u.png");
+
+		
 	}
 	
 	private Remarks() {

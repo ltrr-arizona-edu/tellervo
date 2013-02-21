@@ -191,7 +191,7 @@ public class Sum {
 		Range range = computeRange(buf);
 
 		// step 2: make arrays (all 0's) for computation
-		int n = range.span();
+		int n = range.getSpan();
 		int[] data = new int[n];
 		int[] count = new int[n];
 		int[] incr = new int[n];
@@ -215,7 +215,7 @@ public class Sum {
 			int elemIndex = Math.max(0, range.getStart().diff(s.getRange().getStart()));
 			int sumIndex = elemIndex + startIndex;
 
-			while (elemIndex < s.getRange().span() && sumIndex < range.span()) {
+			while (elemIndex < s.getRange().getSpan() && sumIndex < range.getSpan()) {
 
 				// this year's data; also copy thisData->prevData
 				prevData = thisData;

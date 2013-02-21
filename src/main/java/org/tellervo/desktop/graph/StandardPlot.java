@@ -136,7 +136,7 @@ public class StandardPlot implements TellervoGraphPlotter {
 		
 			// x is 0 if we aren't drawing graph names...
 			// x is the pixel at the end of the empty range if we are.
-			int x = (gInfo.isShowGraphNames()) ? yearWidth * (gInfo.getEmptyBounds().span() - 1) : 0;			
+			int x = (gInfo.isShowGraphNames()) ? yearWidth * (gInfo.getEmptyBounds().getSpan() - 1) : 0;			
 			int y = bottom - (int) (yTransform(1000 * g.scale) * unitScale) - (int) (g.yoffset * unitScale);
 			g2.drawLine((x > xscroll) ? x : xscroll, y, r, y);
 						

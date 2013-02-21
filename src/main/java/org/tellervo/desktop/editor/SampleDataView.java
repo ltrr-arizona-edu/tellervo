@@ -568,10 +568,10 @@ public class SampleDataView extends JPanel implements SampleListener,
 		int i = y.diff(mySample.getRange().getStart());
 
 		// make sure it's a valid place to insert a year
-		if (!mySample.getRange().contains(y)
-				&& !mySample.getRange().getEnd().add(nYears).equals(y)) {
-			// Alert.error("Can't insert here",
-			//    "This isn't a valid place to insert a year.");
+		if ((!mySample.getRange().contains(y)
+				&& !mySample.getRange().getEnd().add(nYears).equals(y)) && mySample.getRange().getSpan()>1) {
+			 Alert.error("Can't insert here",
+			    "This isn't a valid place to insert a year.");
 			return;
 		}
 

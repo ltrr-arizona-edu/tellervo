@@ -99,7 +99,7 @@ public class BargraphPager extends Book {
 		Range r = new Range(year1, yearN);
 
 		for (int i = bar1; i <= barN; i++) {
-			if (bars.get(i).getRange().intersection(r).span() == 0)
+			if (bars.get(i).getRange().intersection(r).getSpan() == 0)
 				return false;
 		}
 
@@ -189,7 +189,7 @@ public class BargraphPager extends Book {
 					
 					// edges of box
 					int x1 = l + bar.getRange().getStart().diff(firstYear);
-					int x2 = x1 + bar.getRange().span();
+					int x2 = x1 + bar.getRange().getSpan();
 					int y1 = t + axisHeight + barHeight * i + barSpacing * (i + 1);
 					int y2 = y1 + barHeight;
 

@@ -85,7 +85,7 @@ public class GraphController {
 	
 	public void scaleToFitWidth() {
 		int viewportSize = scroller.getViewport().getWidth();
-		int nYears = grapher.getGraphingRange().span() + 2;
+		int nYears = grapher.getGraphingRange().getSpan() + 2;
 		
 		// viewportSize is the number of pixels.
 		// nyears = 
@@ -181,7 +181,7 @@ public class GraphController {
 			Range range = cur.getRange();
 			Range overlap = range.intersection(viewport);
 			overlap = overlap.intersection(graphs.get(grapher.current).getRange());
-			if (overlap.span() == 0)
+			if (overlap.getSpan() == 0)
 				continue;
 
 			// now, compute mean of sample[current][y] - sample[i][y]
@@ -206,7 +206,7 @@ public class GraphController {
 				mean += ((Number) data.get(j++)).doubleValue() * dataScale
 						- ((Number) base.get(k++)).doubleValue() * baseScale;
 			}
-			mean /= overlap.span();
+			mean /= overlap.getSpan();
 
 			// make -mean its new offset
 			cur.yoffset = (int) -mean;

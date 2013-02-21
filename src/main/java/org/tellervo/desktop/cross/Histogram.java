@@ -79,7 +79,7 @@ public class Histogram {
 
 	// copy all of the scores from this crossdate into a float array.
 	private static float[] allScores(Cross c) {
-		float x[] = new float[c.getRange().span()];
+		float x[] = new float[c.getRange().getSpan()];
 		
 		for (Year y = c.getRange().getStart(); c.getRange().contains(y); y = y.add(1))
 			x[y.diff(c.getRange().getStart())] = c.getScore(y);

@@ -85,9 +85,9 @@ public class YearTest extends TestCase {
     }
     public void testRangeSpan() {
         Range r = new Range("1 - 5");
-        assertEquals(r.span(), 5);
+        assertEquals(r.getSpan(), 5);
         r = new Range("-1 - 1");
-        assertEquals(r.span(), 2);
+        assertEquals(r.getSpan(), 2);
     }
     public void testRangeOverlap() {
         Range r1 = new Range("1 - 5");

@@ -19,6 +19,8 @@
  ******************************************************************************/
 package org.tellervo.desktop.remarks;
 
+import java.util.Comparator;
+
 import javax.swing.Icon;
 
 import org.tellervo.desktop.ui.Builder;
@@ -59,4 +61,6 @@ public class TellervoReadingRemark extends AbstractRemark {
 		return (iconFn == null) ? null : Builder.getIcon(iconFn, 16);
 	}
 
+
+	
 }

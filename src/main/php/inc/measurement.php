@@ -274,8 +274,9 @@ class measurement extends measurementEntity implements IDBAccessor
 						foreach($jsonNotes as $note)
 						{			
 							$currReadingNote = new readingNote();
-							$currReadingNote->setID($note['stdid']);
+							$currReadingNote->setID($note['dbid']);
 							$currReadingNote->setNote($note['note']);
+							$currReadingNote->setStandardisedID($note['stdid']);
 							$currReadingNote->setInheritedCount($note['icnt']);
 							$currReadingNote->setControlledVoc(null, $note['std']);				
 							

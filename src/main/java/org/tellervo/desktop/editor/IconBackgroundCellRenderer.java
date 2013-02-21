@@ -198,6 +198,16 @@ public class IconBackgroundCellRenderer extends DefaultTableCellRenderer {
 					usedNonStandard = true;
 				}
 			}
+			else if(remark.isSetNormalStd())
+			{
+				Icon icon = getTellervoIcon(remark.getNormal());	
+				if(icon != null)
+					icons.add(icon);
+				else if(!usedNonStandard) {
+					icons.add(nonStandardIcon);
+					usedNonStandard = true;
+				}
+			}
 			else if(!usedNonStandard) {
 				// we don't know what this is...?
 				icons.add(nonStandardIcon);

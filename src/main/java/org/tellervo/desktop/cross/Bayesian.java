@@ -417,7 +417,7 @@ public class Bayesian {
 	    c.run();
 
 	    // add all scores
-	    int n = c.getRange().span();
+	    int n = c.getRange().getSpan();
 	    for (int j=0; j<n; j++) {
 		float score = c.getScore(j);
 

@@ -557,7 +557,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					endBoundChanged = true;
 				if(!bounds.getStart().equals(y1) || endBoundChanged)
 				{
-					setPreferredSize(new Dimension(bounds.span() * yearWidth, getGraphHeight()));
+					setPreferredSize(new Dimension(bounds.getSpan() * yearWidth, getGraphHeight()));
 					revalidate();					
 				}
 				
@@ -583,7 +583,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					startBoundChanged = true;
 				if(!bounds.getEnd().equals(y2) || startBoundChanged)
 				{
-					setPreferredSize(new Dimension(bounds.span() * yearWidth, getGraphHeight()));
+					setPreferredSize(new Dimension(bounds.getSpan() * yearWidth, getGraphHeight()));
 					revalidate();					
 				}
 				
@@ -742,7 +742,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			
 			if(startBoundChanged || endBoundChanged){
 				int yearWidth = gInfo.getYearWidth();
-				setPreferredSize(new Dimension(bounds.span() * yearWidth, getGraphHeight()));
+				setPreferredSize(new Dimension(bounds.getSpan() * yearWidth, getGraphHeight()));
 				revalidate();					
 				
 				JScrollBar horiz = scroller.getHorizontalScrollBar();
@@ -857,7 +857,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		}
 		
 		// set default scrolly window size
-		setPreferredSize(new Dimension(gInfo.getDrawBounds().span() * gInfo.getYearWidth(), getGraphHeight()));
+		setPreferredSize(new Dimension(gInfo.getDrawBounds().getSpan() * gInfo.getYearWidth(), getGraphHeight()));
 		
 		// background -- default is black
 		setBackground(gInfo.getBackgroundColor());
@@ -969,7 +969,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 
 		// crosses AD/BC boundary?
 		// (LOD: EXTRACT "crosses-boundary"?  well, it's pretty trivial now)
-		if (bounds.intersection(AD_BC).span() == 2) {
+		if (bounds.intersection(AD_BC).getSpan() == 2) {
 			// thick vertical decade lines: can't just go every
 			// 5*yearSize, because that would not take the zero-gap into
 			// account.  so start at -5 and go backward, and also start at
@@ -1105,7 +1105,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		Graphics2D g2 = (Graphics2D) g;
 		int bottom = info.getGraphHeight(this) - GrapherPanel.AXIS_HEIGHT;
 		int yearWidth = info.getYearWidth();
-		Rectangle temprect = new Rectangle(0, 0, info.getEmptyBounds().span() * yearWidth, bottom);
+		Rectangle temprect = new Rectangle(0, 0, info.getEmptyBounds().getSpan() * yearWidth, bottom);
 		
 		// we're not on the screen, don't draw this...
 		if(!temprect.intersects(g2.getClipBounds()))
@@ -1133,7 +1133,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			int stringWidth = g2.getFontMetrics().stringWidth(gn);
 			
 			// gnw = x coordinate for start of string
-			int gnw = ((info.getEmptyBounds().span() * yearWidth) - stringWidth) - 
+			int gnw = ((info.getEmptyBounds().getSpan() * yearWidth) - stringWidth) - 
 			          (yearWidth * yearsAfterLabel);
 			
 			// if this is an indexed sample, set this to be at the 100% line
@@ -1484,7 +1484,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			return;
 		
 		// change size
-		setPreferredSize(new Dimension(gInfo.getDrawBounds().span() * gInfo.getYearWidth(), getGraphHeight()));
+		setPreferredSize(new Dimension(gInfo.getDrawBounds().getSpan() * gInfo.getYearWidth(), getGraphHeight()));
 		// and redo ourselves!
 		revalidate();
 		// redraw
@@ -1560,7 +1560,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	 * @return the width of this graph in its current state, in pixels
 	 */
 	public int getGraphPixelWidth() {
-		return gInfo.getDrawBounds().span() * gInfo.getYearWidth();
+		return gInfo.getDrawBounds().getSpan() * gInfo.getYearWidth();
 	}
 	
 	/**
@@ -1765,7 +1765,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 			
 			// graph size changed
 			if(actions.contains(UpdateAction.UPDATE_SIZE)) 
-				setPreferredSize(new Dimension(gInfo.getDrawBounds().span() * gInfo.getYearWidth(), getGraphHeight()));
+				setPreferredSize(new Dimension(gInfo.getDrawBounds().getSpan() * gInfo.getYearWidth(), getGraphHeight()));
 			
 			// revalidate - is this necessary?
 			if(actions.contains(UpdateAction.REVALIDATE))

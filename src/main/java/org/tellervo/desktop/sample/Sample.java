@@ -1022,7 +1022,7 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 	// contain all legit Numbers.  turns nulls/non-numbers into 0's.
 	public void verify() {
 		List<Number> data = getRingWidthData();
-		int n = getRange().span();
+		int n = getRange().getSpan();
 
 		// what to do if they're the wrong size -- adjust range if the data
 		// are all the same size, but pad with zeros if only one is off?

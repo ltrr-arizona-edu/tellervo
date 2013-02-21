@@ -190,7 +190,7 @@ public class ElementListTableModel extends AbstractTableModel {
 		
 		// number of readings
 		case 9:
-			return bs.getRange().span();
+			return bs.getRange().getSpan();
 		
 		// reconciled
 		case 10:

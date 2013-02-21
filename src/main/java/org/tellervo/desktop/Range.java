@@ -76,7 +76,7 @@ public class Range implements Comparable<Range> {
 		start = Year.DEFAULT;
 		end = start.add(-1);
 	}
-
+	
 	/**
 	 * Construct a new range, from y<sub>1</sub> to y<sub>2</sub>. (Neither year
 	 * may be <code>null</code>.) If y<sub>2</sub> &lt; y<sub>1</sub>, it is an
@@ -203,7 +203,7 @@ public class Range implements Comparable<Range> {
 	 * @return the span of this range (difference between start and end,
 	 *         inclusive)
 	 */
-	public int span() {
+	public int getSpan() {
 		return end.diff(start) + 1;
 	}
 
@@ -239,7 +239,7 @@ public class Range implements Comparable<Range> {
 	 * @return a string representation of the range, including span
 	 */
 	public String toStringWithSpan() {
-		return "(" + start + " - " + end + ", n=" + span() + ")";
+		return "(" + start + " - " + end + ", n=" + getSpan() + ")";
 		// use \u2014 EM DASH?
 	}
 
@@ -295,7 +295,7 @@ public class Range implements Comparable<Range> {
 	 * @return number of years overlap
 	 */
 	public int overlap(Range r) {
-		return intersection(r).span();
+		return intersection(r).getSpan();
 	}
 
 	/**

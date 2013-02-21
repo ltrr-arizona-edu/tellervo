@@ -73,7 +73,7 @@ public class TopScores {
 													// "tellervo.cross.overlap",
 													// 15);
 		int nr = 0;
-		int length = c.getRange().span();
+		int length = c.getRange().getSpan();
 		for (int i = 0; i < length; i++) {
 			// overlap not long enough? skip it.
 			// (PERF: inefficient!)

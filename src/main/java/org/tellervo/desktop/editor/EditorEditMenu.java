@@ -402,7 +402,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 							editor, I18n.getText("menus.edit.insert_years"),
 							I18n.getText("question.insertHowManyYears"), 2);
 					
-					String labels[] = {I18n.getText("general.blank"), I18n.getText("general.defaultValue") +" ["+Sample.missingRingValue+"]", I18n.getText("general.cancel")};
+					String labels[] = {I18n.getText("general.blank"), I18n.getText("general.defaultValue") +" "+Sample.missingRingValue+"", I18n.getText("general.cancel")};
 					
 					int ret = JOptionPane.showOptionDialog(
 							editor,
@@ -570,8 +570,8 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		try {
 			int inindex = range.getStart().compareTo(sample.getRange().getStart());
 			
-			List tmpData = sample.getRingWidthData().subList(inindex, inindex + range.span());
-			List tmpCount = sample.hasCount() ? null : sample.getCount().subList(inindex, inindex + range.span());
+			List tmpData = sample.getRingWidthData().subList(inindex, inindex + range.getSpan());
+			List tmpCount = sample.hasCount() ? null : sample.getCount().subList(inindex, inindex + range.getSpan());
 			Sample tmpSample = new Sample();
 			
 			tmpSample.setRange(range);

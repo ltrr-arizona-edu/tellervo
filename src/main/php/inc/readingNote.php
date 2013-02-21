@@ -21,6 +21,8 @@ class readingNote
 {
 	protected $id = NULL;
 	protected $note = NULL;
+	protected $standardisedid = NULL;
+	
 	/**
 	 * Controlled vocabulary for this note
 	 *
@@ -68,6 +70,7 @@ class readingNote
                 // Set parameters from db
                 $row = pg_fetch_array($result);
                 $this->setID($row['readingnoteid']);
+                $this->setStandardisedID($row['standardisedid']);
                 $this->setNote($row['note']);
                 $this->controlledVoc->setControlledVoc($row['vocabularyid'], null);
                 
@@ -93,6 +96,12 @@ class readingNote
 	{
 		$this->note = $note;
 	}
+	
+    function setStandardisedID($id)
+    {
+            $this->standardisedid = $id;
+    }
+	
 	
 	function setControlledVoc($id, $value)
 	{
@@ -129,6 +138,12 @@ class readingNote
 		return $this->controlledVoc->getValue();
 	}
 	
+    function getStandardisedID()
+    {
+            return $this->standardisedid;
+    }
+	
+	
 	function getControlledVocID()
 	{
 		return $this->controlledVoc->getID();
@@ -160,7 +175,7 @@ class readingNote
 			}
 			else
 			{
-				$xml.= "normalStd=\"".$this->getControlledVocName()."\" normal=\"".$this->getNote()."\" normalId=\"".$this->getID()."\"/>";
+                $xml.= "normalStd=\"".$this->getControlledVocName()."\" normal=\"".$this->getNote()."\" normalId=\"".$this->getStandardisedID()."\"/>";
 			}
 			return $xml;
 		}
