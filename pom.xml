@@ -956,12 +956,9 @@
 								<trycatch>
 							    <try>
 								      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Windows"/>
-								      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Windows64"/>
+								      
 								      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
-								        <arg value="nsis-32bit.nsi"/>  
-								      </exec>  
-								      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
-								        <arg value="nsis-64bit.nsi"/>  
+								        <arg value="main.nsh"/>  
 								      </exec>  
 								 </try>
 								 <catch>

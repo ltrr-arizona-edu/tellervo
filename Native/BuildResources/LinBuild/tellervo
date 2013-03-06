@@ -1,2 +1,2 @@
 #!/bin/bash
-java -jar /usr/share/tellervo/tellervo-${version}.jar
+java -Djava.library.path=/usr/lib/jni -jar /usr/share/tellervo/tellervo-${version}.jar

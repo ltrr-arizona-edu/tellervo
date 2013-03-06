@@ -9,6 +9,8 @@
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !define MULTIUSER_EXECUTIONLEVEL Admin
+!define PLATFORM_SUFFIX ""
+!define OUTFOLDER  "Windows"
 !include MultiUser.nsh
 
 ; MUI 1.67 compatible ------
@@ -19,6 +21,10 @@
 Function .onInit
   !insertmacro MULTIUSER_INIT
 FunctionEnd
+
+
+
+
 
 ; MUI Settings
 !define MUI_ABORTWARNING
@@ -60,12 +66,36 @@ Section "MainSection" SEC01
   CreateDirectory "$SMPROGRAMS\Tellervo"
   CreateShortCut "$SMPROGRAMS\Tellervo\Tellervo.lnk" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
   CreateShortCut "$DESKTOP\Tellervo.lnk" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
-  File "..\..\..\Native\Libraries\${PLATFORM}\gluegen-rt.dll"
-  File "..\..\..\Native\Libraries\${PLATFORM}\jogl.dll"
-  File "..\..\..\Native\Libraries\${PLATFORM}\jogl_awt.dll"
-  File "..\..\..\Native\Libraries\${PLATFORM}\jogl_cg.dll"
-  File "..\..\..\Native\Libraries\${PLATFORM}\rxtxSerial.dll"
-  ${EnvVarUpdate} $0 "CLASSPATH" "A" "HKLM" "$INSTDIR\jogl.jar" ; Append  
+  
+  ; 32/64bit DLL installation
+	File ".../../../Native/BuildResources/WinBuild/detectjvm.exe"
+	ClearErrors
+	ExecWait '"$INSTDIR\detectjvm.exe"' $0
+	IfErrors DetectExecError
+	IntCmp $0 0 DetectError DetectError DoneDetect
+	DetectExecError:
+	    StrCpy $0 "exec error"
+	DetectError:
+	    MessageBox MB_OK "Could not determine JVM architecture ($0). Assuming 32-bit."
+	    Goto NotX64
+	DoneDetect:
+	IntCmp $0 64 X64 NotX64 NotX64
+	X64:
+	  	File "..\..\..\Native\Libraries\windows-amd64\gluegen-rt.dll"
+	  	File "..\..\..\Native\Libraries\windows-amd64\jogl.dll"
+	  	File "..\..\..\Native\Libraries\windows-amd64\jogl_awt.dll"
+	  	File "..\..\..\Native\Libraries\windows-amd64\jogl_cg.dll"
+	  	File "..\..\..\Native\Libraries\windows-amd64\rxtxSerial.dll"
+	    Goto DoneX64
+	NotX64:
+	  	File "..\..\..\Native\Libraries\windows-i586\gluegen-rt.dll"
+	  	File "..\..\..\Native\Libraries\windows-i586\jogl.dll"
+	  	File "..\..\..\Native\Libraries\windows-i586\jogl_awt.dll"
+	  	File "..\..\..\Native\Libraries\windows-i586\jogl_cg.dll"
+	  	File "..\..\..\Native\Libraries\windows-i586\rxtxSerial.dll"
+	DoneX64:
+	Delete $INSTDIR\detectjvm.exe
+    ${EnvVarUpdate} $0 "CLASSPATH" "A" "HKLM" "$INSTDIR\jogl.jar" ; Append  
 SectionEnd
 
 Section -AdditionalIcons
