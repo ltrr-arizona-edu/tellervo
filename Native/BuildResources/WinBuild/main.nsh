@@ -68,7 +68,7 @@ Section "MainSection" SEC01
   CreateShortCut "$DESKTOP\Tellervo.lnk" "$INSTDIR\${PRODUCT_NAME}-${PRODUCT_VERSION}.exe"
   
   ; 32/64bit DLL installation
-	File ".../../../Native/BuildResources/WinBuild/detectjvm.exe"
+	File "..\..\..\Native\BuildResources\WinBuild\detectjvm.exe"
 	ClearErrors
 	ExecWait '"$INSTDIR\detectjvm.exe"' $0
 	IfErrors DetectExecError
