@@ -16,8 +16,8 @@
 		</license>
 	</licenses>
 	<organization>
-		<name>Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern Dendrochronology</name>
-		<url>http://dendro.cornell.edu</url>
+		<name>Laboratory of Tree-Ring Research, University of Arizona</name>
+		<url>http://www.tellervo.org</url>
 	</organization>
 	<developers>
 		<developer>
@@ -26,9 +26,8 @@
 			<roles>
 				<role>Lead Developer</role>
 			</roles>
-			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern
-				Dendrochronology</organization>
-			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+			<organization>Laboratory of Tree-Ring Research, University of Arizona</organization>
+			<organizationUrl>http://ltrr.arizona.edu</organizationUrl>
 		</developer>
 		<developer>
 			<name>Chris Dunham</name>
@@ -43,7 +42,7 @@
 				Dendrochronology</organization>
 			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
 			<roles>
-				<role>Student developer</role>
+				<role>Inactive developer</role>
 			</roles>				
 		</developer>
 		<developer>
@@ -90,7 +89,7 @@
 				Dendrochronology</organization>
 			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
 			<roles>
-				<role>Student developer</role>
+				<role>Inactive developer</role>
 			</roles>				
 		</developer>
 		<developer>
