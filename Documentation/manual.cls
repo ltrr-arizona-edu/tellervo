@@ -91,8 +91,12 @@
 \clubpenalty=10000
 \setcounter{tocdepth}{1}
 
-\newcommand{\version}[1]{\def\@versionnumber{#1}}
-\newcommand{\versionnumber}[0]{\@versionnumber}
+\newcommand{\desktopversion}[1]{\def\@desktopversionnumber{#1}}
+\newcommand{\desktopversionnumber}[0]{\@desktopversionnumber}
+
+\newcommand{\serverversion}[1]{\def\@serverversionnumber{#1}}
+\newcommand{\serverversionnumber}[0]{\@serverversionnumber}
+
 \newcommand{\authors}[1]{\def\@authornames{#1}}
 \newcommand{\authornames}[0]{\@authornames}
 \renewcommand{\title}[1]{\def\@thetitle{#1}}

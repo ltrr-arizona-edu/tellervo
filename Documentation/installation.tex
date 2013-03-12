@@ -51,6 +51,22 @@ To save on download size and disk space only the essential packages to make the 
 
 There are a number of limitations caused by distributing the server software in this way. The operating system has already been configured to use networking without a proxy server, so if your computer requires a proxy then you won't be able to connect to the Internet.  Please contact the developers for more details.
 
+VirtualBox has a number of methods for providing network connectivity to the Tellervo virtual appliance.  The default setup described above is to use \textbf{bridged networking}.  This makes the virtual server appear as if it was another physical computer on your network with its own IP address.  This works best in most situations, but can cause problems if your network administration is particularly strict.  It is also not suited to those installing Tellervo Server on a laptop which is used on different networks, especially via wifi.  If you have problems with bridged networking, then it may be better to use one of the alternatives listed below.
+
+The first network alternative is to use \textbf{host-only networking}.  To use this you simple select your server in VirtualBox, click settings then on the network tab choose host-only adapter.  This setting means that your server will only be visible to the physical computer you are running Tellervo server on.  This may not be a problem (it may even be desirable) if you are installing for your personal use but of course it is not suitable if you are intending to share the server with colleagues.
+
+The second network alternative is to use \textbf{NAT networking}.  NAT stands for Network Address Translation and means that requests and responses sent to/from your physical computer are intercepted and forwarded on to the virtual Tellervo server.  Instead of Tellervo server having its own IP address, Tellervo clients wanting to talk to the server send requests to your physical computer.  This has the benefit of being more likely to work if your institution has strict network policies.  The main drawback is that it takes a little more effort, and perhaps requires a better understanding of systems administration to set up.  
+
+With your virtual machine powered off, select it in VirtualBox, click settings and go to the network tab.  Change the network type to NAT and then click the port forwarding button.  Add an entry to the list:
+\begin{description}
+ \item[Name] - TellervoHTTP
+ \item[Protocol] - TCP
+ \item[Host Port] - 8080
+ \item[Guest Port] - 80 
+\end{description}
+You can leave the other fields blank.  The host port is the port that your Tellervo users connect to.  The normal port that users connect to for web services is port 80, however, on most secure operating systems (e.g. Linux and OSX) you cannot port forward to ports below 1024, although it should be possible in Windows.  If you are running Windows you may therefore be able to use a host port of 80.  If you use 8080 (or any other port other than 80) you will need to include this in the URL of your webservice when you try to connect.  The other complication of using NAT networking is that the URL provided by the Tellervo server configuration utility is incorrect as the server has no way of knowing that NAT is being used.  The URL that you need to use to connect to is: \url{http://ip.of.your.physical.machine:8080/tellervo/}  
+
+
 \subsection{Ubuntu native installation}
 \label{txt:installnativeserver}
 If you are fortunate enough to be running Ubuntu then the native Ubuntu deb package is the best and easiest method for installing the Tellervo server, otherwise see section \ref{txt:virtualAppliance} to install the server as a Virtual Appliance.  
