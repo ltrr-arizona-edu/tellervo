@@ -59,8 +59,7 @@ import org.tellervo.desktop.ui.Builder;
  *         style="color: gray">dot </i> edu&gt;
  * @version $Id$
  */
-@SuppressWarnings("unchecked")
-public class Startup implements PrivilegedAction {
+public class Startup  {
 	private final static Logger log = LoggerFactory.getLogger(Startup.class);
 	
 	private Startup(String[] args) {
@@ -114,42 +113,8 @@ public class Startup implements PrivilegedAction {
 		return null;
 	}
 
-	private static final class PasswordDialogCallbackHandler implements
-			CallbackHandler {
-		private boolean prompted = false;
-		private String user;
-		private String pass;
-
-		public void handle(Callback[] callbacks) {
-			if (prompted)
-				return;
-
-			JTextField nameField = new JTextField();
-			JTextField passField = new JTextField();
-			int option = JOptionPane.showOptionDialog(null, new Object[] {
-					"user name", nameField, "password", passField }, "Login",
-					JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE,
-					null, null, null);
-			prompted = true;
-			if (option == JOptionPane.CLOSED_OPTION
-					|| option == JOptionPane.CANCEL_OPTION) {
-				return;
-			}
-
-			for (int i = 0; i < callbacks.length; i++) {
-				System.out.println("Callback " + i + ": " + callbacks[i]);
-				if (callbacks[i] instanceof NameCallback) {
-					((NameCallback) callbacks[i]).setName(user);
-				} else if (callbacks[i] instanceof PasswordCallback) {
-					((PasswordCallback) callbacks[i]).setPassword(pass
-							.toCharArray());
-				}
-			}
-		}
-	}
-
 	/**
-	 * The <code>main()</code> method that sets all of Corina in motion. Loads
+	 * The <code>main()</code> method that sets all of Tellervo in motion. Loads
 	 * system and user preferences, and instantiates an TellervoMainWindow object.
 	 * 
 	 * @param args
@@ -158,10 +123,6 @@ public class Startup implements PrivilegedAction {
 	public static void main(String args[]) {
 		// initialize controllers
 		TellervoModelLocator.getInstance();
-		
-		// the Java Web Start security manager is by default horribly
-		// restrictive.
-		System.setSecurityManager(null);
 
 		if (args.length == 0 || !"-a".equals(args[0])) {
 			new Startup(args).run();
@@ -171,45 +132,5 @@ public class Startup implements PrivilegedAction {
 		UIManager.put("wizard.sidebar.image", Builder.getImage("background3.png"));
 
 
-		// Obtain a LoginContext, needed for authentication. Tell it
-		// to use the LoginModule implementation specified by the
-		// entry named "Corina" in the JAAS login configuration
-		// file and to also use the specified CallbackHandler.
-		LoginContext lc = null;
-		try {
-			lc = new LoginContext("Corina", new PasswordDialogCallbackHandler());
-		} catch (LoginException le) {
-			log.error("Cannot create LoginContext. " + le.getMessage());
-			System.exit(-1);
-		} catch (SecurityException se) {
-			log.error("Cannot create LoginContext. " + se.getMessage());
-			System.exit(-1);
-		}
-		
-		int i;
-		for (i = 0; i < 3; i++) {
-			try {
-				// attempt authentication
-				lc.login();
-
-				break;
-			} catch (LoginException le) {
-
-				log.error("Authentication failed:");
-				log.error("  " + le.getMessage());
-				System.exit(-1);
-
-			}
-		}
-		// did they fail three times?
-		if (i == 3) {
-			System.out.println("Sorry");
-			System.exit(-1);
-		}
-
-		System.out.println("Authentication succeeded!");
-
-		Subject mySubject = lc.getSubject();
-		Subject.doAsPrivileged(mySubject, new Startup(args), null);
 	}
 }

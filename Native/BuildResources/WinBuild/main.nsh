@@ -76,7 +76,7 @@ Section "MainSection" SEC01
 	DetectExecError:
 	    StrCpy $0 "exec error"
 	DetectError:
-	    MessageBox MB_OK "Could not determine JVM architecture ($0). Assuming 32-bit."
+	    MessageBox MB_OK "Could not determine JVM architecture ($0) - Assuming 32-bit so 3D mapping and serial support may fail."
 	    Goto NotX64
 	DoneDetect:
 	IntCmp $0 64 X64 NotX64 NotX64
