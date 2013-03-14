@@ -27,6 +27,7 @@ import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.INamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.util.DateUtils;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.DateTime;
 import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasDerivedSeries;
@@ -151,6 +152,11 @@ public class ExportCommand implements ICommand {
 		}
 		
 		if(event.grouped) {
+			
+			
+			ArrayList<TridasObject> obj = TridasUtils.consolidateObjects(project.getObjects(), true);
+			project.getObjects().clear();
+			project.setObjects(obj);
 			
 			projList.add(project);
 			

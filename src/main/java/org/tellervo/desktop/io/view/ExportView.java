@@ -40,10 +40,12 @@ import org.tellervo.desktop.io.model.ConvertModel.WriterObject;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tridas.io.TridasIO;
+import org.tridas.io.naming.TellervoHierarchicalNamingConvention;
 import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.INamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.naming.UUIDNamingConvention;
+
 
 import com.dmurph.mvc.model.MVCArrayList;
 
@@ -183,14 +185,15 @@ public class ExportView extends JFrame {
 		panelAdv.add(lblGrouping, "cell 0 1");
 		
 		groupings = new JComboBox(groupingNames);
-		groupings.setModel(new DefaultComboBoxModel(new String[] {"Separate files for each series", "Single packed file if possible"}));
+		groupings.setModel(new DefaultComboBoxModel(new String[] {"Single packed file if possible", "Separate files for each series"}));
 		panelAdv.add(groupings, "cell 1 1");
 		
 		JLabel lblNaming = new JLabel(I18n.getText("io.convert.lblNaming"));
 		panelAdv.add(lblNaming, "cell 0 2");
 		
 		naming = new JComboBox(namings);
-		naming.setModel(new DefaultComboBoxModel(new String[] {"Labcodes", "Hierachical", "UUID"}));
+		naming.setModel(new DefaultComboBoxModel(new String[] {"Labcodes", "Hierarchical", "UUID", "Tellervo hierarchical"}));
+		naming.setSelectedIndex(3);
 		panelAdv.add(naming, "cell 1 2");
 		
 		JLabel lblEncoding = new JLabel(I18n.getText("io.convert.lblEncoding"));
@@ -231,10 +234,14 @@ public class ExportView extends JFrame {
 				else if (naming.getSelectedIndex() == 1) {
 					name = new HierarchicalNamingConvention();
 				}
-				else {
+				else if (naming.getSelectedIndex() == 2){
 					name = new UUIDNamingConvention();
 				}
-				ExportEvent evt = new ExportEvent(model, charset.getSelectedItem().toString(), format.getSelectedItem().toString(), name, groupings.getSelectedIndex() == 1);
+				else
+				{
+					name = new TellervoHierarchicalNamingConvention();
+				}
+				ExportEvent evt = new ExportEvent(model, charset.getSelectedItem().toString(), format.getSelectedItem().toString(), name, groupings.getSelectedIndex() == 0);
 				evt.dispatch();
 			}
 		});
