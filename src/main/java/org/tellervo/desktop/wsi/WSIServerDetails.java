@@ -380,6 +380,10 @@ public class WSIServerDetails {
 					setTooOldErrorMessage();
 					return false;
 				}
+				else if (majorversion>earliestMajor)
+				{
+					return true;
+				}
 				else
 				{
 					if(minorversion<earliestMinor)
@@ -387,12 +391,20 @@ public class WSIServerDetails {
 						setTooOldErrorMessage();
 						return false;
 					}
+					else if (minorversion>earliestMinor)
+					{
+						return true;
+					}
 					else
 					{
 						if(revision.compareTo(earliestRevision)<0)
 						{
 							setTooOldErrorMessage();
 							return false;
+						}
+						else
+						{
+							return true;
 						}
 						
 					}
@@ -409,7 +421,6 @@ public class WSIServerDetails {
 			}
 			
 			
-			return true;
 		}
 		
 		return false;
