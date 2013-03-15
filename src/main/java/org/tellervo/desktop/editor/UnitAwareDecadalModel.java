@@ -19,10 +19,17 @@
  ******************************************************************************/
 package org.tellervo.desktop.editor;
 
+import java.io.IOException;
+
+import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.util.SafeIntYear;
 import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.DatingSuffix;
+import org.tridas.schema.NormalTridasDatingType;
 import org.tridas.schema.NormalTridasUnit;
 
 
@@ -31,14 +38,20 @@ public class UnitAwareDecadalModel extends DecadalModel {
 
 	private static final long serialVersionUID = 1L;
 	private NormalTridasUnit displayUnits = NormalTridasUnit.MICROMETRES;
+	private DatingSuffix datingSuffix = DatingSuffix.AD;
+	private final ITridasSeries series;
 	
 	public UnitAwareDecadalModel() {
 		setDisplayUnits(null);
+		setDatingSuffix(null);
+		series = s.getSeries();
+
 	}
 
 	public UnitAwareDecadalModel(Sample s) {
 		super(s);
 		setDisplayUnits(null);
+		series = s.getSeries();
 	}
 
 	/**
@@ -64,10 +77,33 @@ public class UnitAwareDecadalModel extends DecadalModel {
 		displayUnits = unit;	
 		this.fireTableDataChanged();
 	}
-	
+		
 	public NormalTridasUnit getDisplayUnits()
 	{
 		return displayUnits;
+	}
+	
+	
+	public void setDatingSuffix(DatingSuffix ds)
+	{
+		if(ds==null)
+		{
+			try{
+				String strds = App.prefs.getPref(PrefKey.DISPLAY_DATING_SUFFIX, DatingSuffix.AD.name().toString());
+				ds = TridasUtils.getDatingSuffixFromName(strds);
+			} catch (Exception e)
+			{
+				ds = DatingSuffix.AD;
+			}
+		}
+
+		datingSuffix = ds;	
+		this.fireTableDataChanged();
+	}
+	
+	public DatingSuffix getDisplayDatingSuffix()
+	{
+		return datingSuffix;
 	}
 	
 	public Object getValueAt(int row, int col) 
@@ -78,7 +114,24 @@ public class UnitAwareDecadalModel extends DecadalModel {
 		if(obj==null) {
 			return obj;
 		}
+			
+		if(col==0)
+		{
+			NormalTridasDatingType datingtype = null;
+
+			try{
+				datingtype = series.getInterpretation().getDating().getType();
+			} catch (Exception e)
+			{
 				
+			}
+
+			SafeIntYear y = new SafeIntYear(obj.toString());
+			return y.formattedYear(datingtype, datingSuffix);
+
+
+		}
+		
 		if (col==0 || col==11)
 		{
 			// Year or count column so just return

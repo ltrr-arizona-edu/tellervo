@@ -338,6 +338,13 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		// TODO Auto-generated method stub
 		
 	}
+
+
+	@Override
+	public void sampleDisplayCalendarChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }
 
 

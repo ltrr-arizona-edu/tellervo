@@ -113,6 +113,7 @@ public class Prefs extends AbstractSubsystem {
 		GRID_HIGHLIGHT("tellervo.grid.highlight"),
 		GRID_HIGHLIGHTCOLOR("tellervo.grid.hightlightcolor"),
 		DISPLAY_UNITS("tellervo.displayunits"),
+		DISPLAY_DATING_SUFFIX("tellervo.displaydatingsuffix"),
 		BARCODES_DISABLED("tellervo.barcodes.disable"),
 		MEASUREMENT_VARIABLE("tellervo.measurement.variable"),
 		HIDE_PINNING_AND_RADIUS_SHIFT_ICONS("tellervo.remarks.hidepinningandradiusshifticons"),

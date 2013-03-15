@@ -1064,4 +1064,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	{
 		metaView.showPage(type);
 	}
+
+	@Override
+	public void sampleDisplayCalendarChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

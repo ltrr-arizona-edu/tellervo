@@ -69,6 +69,10 @@ public interface SampleListener extends EventListener {
     public void sampleDisplayUnitsChanged(SampleEvent e);
     
     
+    
+    public  void sampleDisplayCalendarChanged(SampleEvent e);
+    
+    
     public void measurementVariableChanged(SampleEvent e);
     // 
     // -> add other types of events here

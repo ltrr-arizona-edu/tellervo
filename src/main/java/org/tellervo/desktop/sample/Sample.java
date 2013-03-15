@@ -519,6 +519,10 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 		fireSampleEvent("sampleDisplayUnitsChanged");
 	}
 	
+	public void fireDisplayCalendarChanged(){
+		fireSampleEvent("sampleDisplayCalendarChanged");
+	}
+	
 	public void fireMeasurementVariableChanged(){
 		fireSampleEvent("measurementVariableChanged");
 	}

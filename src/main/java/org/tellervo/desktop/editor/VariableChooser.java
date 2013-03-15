@@ -173,4 +173,10 @@ public class VariableChooser extends JLabel implements SampleListener {
 		setText("Variable: "+selectedState.toString());		
 	}
 
+	@Override
+	public void sampleDisplayCalendarChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

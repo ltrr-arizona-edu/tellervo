@@ -214,6 +214,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 
 		// don't let the columns be rearranged or resized
 		myTable.getTableHeader().setReorderingAllowed(false);
+		myTable.getColumnModel().getColumn(0).setMinWidth(100);
 		myTable.getTableHeader().setResizingAllowed(false);
 		myTable.setRowSelectionAllowed(true);
 		
@@ -857,6 +858,12 @@ public class SampleDataView extends JPanel implements SampleListener,
 	
 	@Override
 	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleDisplayCalendarChanged(SampleEvent e) {
 		// TODO Auto-generated method stub
 		
 	}

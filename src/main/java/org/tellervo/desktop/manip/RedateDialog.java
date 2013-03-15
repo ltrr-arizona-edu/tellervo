@@ -355,7 +355,8 @@ public class RedateDialog extends JDialog {
 					if(!performRedate())
 						return;
 				}
-
+				
+				sample.fireDisplayCalendarChanged();
 				dispose();
 			}
 		};

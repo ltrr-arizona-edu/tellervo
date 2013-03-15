@@ -34,10 +34,16 @@ import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 
 import org.tellervo.desktop.Year;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.UnitsChooser;
 import org.tellervo.desktop.gui.ElementsPanel;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.I18n;
+import org.tridas.io.util.SafeIntYear;
+import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.DatingSuffix;
+import org.tridas.schema.NormalTridasDatingType;
 
 
 /**
@@ -78,7 +84,8 @@ public class EditorStatusBar extends JPanel
     
     // statistics
     private Statistics stats;
-    private UnitsChooser units;
+    private UnitsChooser unitsChooser;
+    private CalendarChooser calendarChooser;
 
     // optional: table
     private JTable table;
@@ -114,7 +121,7 @@ public class EditorStatusBar extends JPanel
 		}
 	
 		// get year from (row,col)
-		Year y = ((DecadalModel) table.getModel()).getYear(row, col);
+		Year y = ((UnitAwareDecadalModel) table.getModel()).getYear(row, col);
 	
 		// get index from year
 		int i = y.diff(sample.getRange().getStart());
@@ -127,7 +134,27 @@ public class EditorStatusBar extends JPanel
 
 		// get ring value 
 		String strRingWidthValue = sample.getRingWidthData().get(i).toString();
-		widthLabel.setText(I18n.getText("editor.year")+ ": " + y.toString() + " = " + strRingWidthValue+"\u03BCm");
+		
+		SafeIntYear yr = new SafeIntYear(y.tridasYearValue());
+		
+		NormalTridasDatingType datingtype = null;
+		try{
+			datingtype = sample.getSeries().getInterpretation().getDating().getType();
+		} catch (Exception e)
+		{
+			
+		}
+		
+		DatingSuffix ds = null;
+		try{
+			String strds = App.prefs.getPref(PrefKey.DISPLAY_DATING_SUFFIX, DatingSuffix.AD.name().toString());
+			ds = TridasUtils.getDatingSuffixFromName(strds);
+		} catch (Exception e)
+		{
+			ds = DatingSuffix.AD;
+		}
+
+		widthLabel.setText(I18n.getText("editor.year")+ ": " + yr.formattedYear(datingtype, ds) + " = " + strRingWidthValue+"\u03BCm");
 	}
 
     // row-change
@@ -178,9 +205,11 @@ public class EditorStatusBar extends JPanel
 		//stats.setBorder(BorderFactory.createEtchedBorder());
 		
 		// Units 
-		units = new UnitsChooser(sample);
+		unitsChooser = new UnitsChooser(sample);
 		
 		variableChooser = new VariableChooser(sample);
+		
+		calendarChooser = new CalendarChooser(sample);
 		
 		// initial text
 		update();
@@ -191,13 +220,18 @@ public class EditorStatusBar extends JPanel
 		add(Box.createHorizontalStrut(2));
 		// add(icon);
 		// add(Box.createHorizontalStrut(4));
-		add(variableChooser);
-		add(new JLabel("  |  "));
-		add(units);
+		
+		add(calendarChooser);
 		add(new JLabel("  |  "));
 		add(widthLabel);
 		add(new JLabel("  |  "));
+		
 		add(Box.createHorizontalGlue());
+		
+		add(new JLabel("  |  "));
+		add(variableChooser);
+		add(new JLabel("  |  "));
+		add(unitsChooser);
 		add(new JLabel("  |  "));
 		add(stats);
 		add(Box.createHorizontalStrut(2));
