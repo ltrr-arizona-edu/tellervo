@@ -54,6 +54,8 @@ public class TridasRepresentationTableTreeRow extends HashModel{
 	public enum ImportStatus{
 		IGNORE("Ignored"),
 		STORED_IN_DATABASE("Stored in database"),
+		NEWER_THAN_DATABASE("Newer than database"),
+		OLDER_THAN_DATABASE("Older than database"),
 		PENDING("Attention required"),
 		UNSUPPORTED("Unsupported - ignored"),
 		UNKNOWN("Unknown");
