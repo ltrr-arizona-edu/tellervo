@@ -36,7 +36,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import org.tellervo.desktop.bulkImport.control.BulkImportController;
+import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;

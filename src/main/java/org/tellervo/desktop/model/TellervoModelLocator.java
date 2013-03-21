@@ -20,8 +20,8 @@
 package org.tellervo.desktop.model;
 
 import org.tellervo.desktop.admin.control.UserGroupAdminController;
-import org.tellervo.desktop.bulkImport.control.BulkImportController;
-import org.tellervo.desktop.bulkImport.control.ColumnChooserController;
+import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
+import org.tellervo.desktop.bulkdataentry.control.ColumnChooserController;
 import org.tellervo.desktop.editor.control.EditorController;
 import org.tellervo.desktop.io.control.IOController;
 import org.tellervo.desktop.io.model.ImportModel;
