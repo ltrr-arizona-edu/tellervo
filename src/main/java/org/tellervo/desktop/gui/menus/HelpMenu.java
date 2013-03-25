@@ -20,8 +20,12 @@
 
 package org.tellervo.desktop.gui.menus;
 
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -97,12 +101,56 @@ public class HelpMenu extends JMenu {
 
 		helpwiki.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
-				Help.showHelpIndex();
+				Desktop desktop = Desktop.getDesktop();
+				
+				
+				
+				try {
+					URI uri = new URI("http://www.tellervo.org/support/");
+
+					desktop.browse(uri);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				
 			}
 		});
 		
 		add(helpwiki);
+		
+		
+		JMenuItem emailDev = Builder.makeMenuItem("menus.help.emaildevelopers", true, "email.png");
+
+		emailDev.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				Desktop desktop = Desktop.getDesktop();
+				
+				
+				
+				try {
+					URI uri = new URI("mailto:p.brewer@ltrr.arizona.edu");
+
+					desktop.mail(uri);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				
+			}
+		});
+		
+		add(emailDev);
+		
+		
     }
     
 
