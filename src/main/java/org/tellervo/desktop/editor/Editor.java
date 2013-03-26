@@ -28,6 +28,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -89,6 +90,7 @@ import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.gui.menus.actions.ExportDataAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.InitDataGridAction;
 import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
 import org.tellervo.desktop.gui.menus.actions.PrintAction;
@@ -446,6 +448,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		AbstractButton measure = new TitlelessButton(measureAction);
 		toolbar.add(measure);
 		
+		// Initialize data grid button
+		Action initGridAction = new InitDataGridAction(this, dataView);
+		AbstractButton initGrid = new TitlelessButton(initGridAction);
+		toolbar.add(initGrid);
+
 		// Remarks Button
 		Action remarkAction = new RemarkToggleAction(this);
 		AbstractButton toggleRemarks = new TitlelessButton(remarkAction);
@@ -689,12 +696,13 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// title (must be before menubar)
 		updateTitle();
 
-		// Set up the toolbar
-		initToolbar();
-				
 		// put views into notecard-tabbedPanel
 		initTabs();
 
+		// Set up the toolbar
+		initToolbar();
+				
+		
 		// set preferences
 		setUIFromPrefs();
 		

@@ -553,6 +553,13 @@ public class SampleDataView extends JPanel implements SampleListener,
 	}
 
 	public void insertYears(Integer val, int nYears) {
+		int row = myTable.getSelectedRow();
+		int col = myTable.getSelectedColumn();
+		
+		insertYears(val, nYears, row, col);
+	}
+	
+	public void insertYears(Integer val, int nYears, int insertpointrow, int insertpointcol) {
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
 			Alert.error("Can't Modify Data",
@@ -561,8 +568,8 @@ public class SampleDataView extends JPanel implements SampleListener,
 		}
 
 		// get row, col
-		int row = myTable.getSelectedRow();
-		int col = myTable.getSelectedColumn();
+		int row = insertpointrow;
+		int col = insertpointcol;
 
 		// get year => get data index
 		Year y = ((UnitAwareDecadalModel) myModel).getYear(row, col);

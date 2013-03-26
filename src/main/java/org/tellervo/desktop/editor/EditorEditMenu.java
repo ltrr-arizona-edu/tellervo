@@ -428,6 +428,19 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			}
 		});
 		add(insert);
+		
+		
+		JMenuItem prepopulate = Builder.makeMenuItem("menus.edit.populateditor");
+		prepopulate.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent ae){
+				PopulateEditorDialog dialog = new PopulateEditorDialog(editor, dataView);
+				dialog.setVisible(true);
+			}
+		});
+		
+		add(prepopulate);
+		
+			
 	}
 
 	@SuppressWarnings("serial")
