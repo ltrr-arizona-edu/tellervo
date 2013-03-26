@@ -19,6 +19,11 @@ import javax.swing.JTextArea;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.setupwizard.SetupWizard;
+
 public class MessageDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
@@ -26,8 +31,12 @@ public class MessageDialog extends JDialog {
 	private final String title;
 	private final String message;
 	private final DialogType type;
-	private Window parent;
+	private JTextArea textArea;
+	private JScrollPane scrollPane;
 	
+	private Window parent;
+	private final static Logger log = LoggerFactory.getLogger(MessageDialog.class);
+
 	enum DialogType {
 		INFO,
 		WARNING,
@@ -81,7 +90,7 @@ public class MessageDialog extends JDialog {
 	private void setupGui()
 	{
 		this.setModalityType(ModalityType.APPLICATION_MODAL);
-		this.setMinimumSize(new Dimension(460,300));
+		this.setMinimumSize(new Dimension(460,150));
 		this.setMaximumSize(new Dimension(800,600));
 		//setBounds(100, 100, 386, 310);
 		this.setIconImage(Builder.getApplicationIcon());
@@ -111,26 +120,33 @@ public class MessageDialog extends JDialog {
 		}
 		{
 			JPanel panel = new JPanel();
-			panel.setBorder(null);
+			panel.setBorder(new EmptyBorder(0,0,0,0));
 			contentPanel.add(panel, "cell 1 0 1 2,grow");
 			panel.setLayout(new MigLayout("", "[110px,grow,fill]", "[25px,grow,fill]"));
 			{
-				JScrollPane scrollPane = new JScrollPane();
+				scrollPane = new JScrollPane();
+				scrollPane.setBorder(new EmptyBorder(5,5,5,5));
 				scrollPane.setViewportBorder(null);
 				scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 				panel.add(scrollPane, "cell 0 0,grow");
 				{
-					JTextArea textArea = new JTextArea();
+					textArea = new JTextArea();
 					scrollPane.setViewportView(textArea);
 					textArea.setText(message);
 					textArea.setEditable(false);
 					textArea.setLineWrap(true);
 					textArea.setWrapStyleWord(true);
-					textArea.setFont(new Font("Dialog", Font.PLAIN, 12));
 					textArea.setEditable(false);
-					textArea.setBorder(null);
 					textArea.setOpaque(false);
 					textArea.setBackground(new Color(0,0,0,0));
+					textArea.setFont(new Font("Dialog", Font.PLAIN, 12));
+					textArea.setBorder(new EmptyBorder(5, 5, 5, 5));
+					
+					textArea.doLayout();
+					textArea.getHeight();
+
+					
+					
 				}
 			}
 		}
@@ -155,7 +171,36 @@ public class MessageDialog extends JDialog {
 		}
 
 		pack();
-		this.setLocationRelativeTo(parent);
+
+
+		int currWidth = this.getWidth();
+		int currHeight = 150;
+		log.debug("textArea height = "+textArea.getHeight());
+		
+		if(textArea.getHeight()>450)
+		{
+			currHeight = 600;
+
+		}
+		else if(textArea.getHeight()>20)
+		{
+			log.debug("Increasing size of window to remove scrollbars if possible");
+			currHeight = 150+ (textArea.getHeight()-20);
+		}
+		
+		log.debug("Setting dialog size to "+currWidth+", "+currHeight);
+		this.setPreferredSize(new Dimension(currWidth, currHeight));
+		pack();
+
+		
+		if(parent!=null)
+		{
+			this.setLocationRelativeTo(parent);
+		}
+		else 
+		{
+			this.setLocationRelativeTo(App.mainWindow);
+		}
 
 	}
 

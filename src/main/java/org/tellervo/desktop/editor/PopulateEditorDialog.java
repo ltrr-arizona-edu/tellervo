@@ -60,7 +60,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 		try{
 			if(dataView.getSample().getRingWidthData().size()>0)	
 			{
-				Alert.error("Error", "Data grid has already been initialized!");
+				Alert.error(parent, "Error", "Unable to initialize as data grid has already been initialized!");
 				dispose();
 				return;
 			}
@@ -72,7 +72,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 		
 		datingType = NormalTridasDatingType.RELATIVE;
 		
-		setTitle("Populate editor dialog");
+		setTitle(I18n.getText("menus.edit.populateditor"));
 		setModal(true);
 		setBounds(100, 100, 364, 166);
 		getContentPane().setLayout(new BorderLayout());
