@@ -150,6 +150,54 @@ public class PreferencesDialog extends JDialog {
 			}
 			{
 				btnResetAllPreferences = new JButton("Reset all to default");
+				
+				
+				
+				btnResetAllPreferences.addActionListener(new ActionListener(){
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						
+						int response = JOptionPane.showConfirmDialog(contentPanel, "Resetting your preferences will mean Tellervo acts as a fresh install.\n\nAre you sure you want to continue?");
+						
+						if(response == JOptionPane.OK_OPTION)
+						{
+							Boolean success = App.prefs.resetPreferences();
+							
+							if(success)
+							{
+								int n = JOptionPane.showConfirmDialog(
+										App.mainWindow,
+									    "You will need to restart Tellervo for the changes to take effect.\n" +
+									    "Would you like to restart now?  Any unsaved changes will be lost.",
+									    "Restart required",
+									    JOptionPane.YES_NO_CANCEL_OPTION);
+
+								if(n == JOptionPane.YES_OPTION)
+								{
+									try {
+										App.restartApplication();
+									} catch (Exception e1) {
+										Alert.message("Manual restart required", 
+										"Unable to restart Tellervo automatically.  Please restart manually!");
+									}
+								}
+								else if (n == JOptionPane.CANCEL_OPTION)
+								{
+									return;
+								}	
+							}
+							else
+							{
+								Alert.error("Error", "Unable to reset preferences. Please contact the developers.");
+							}
+						}
+						
+					}
+					
+					
+				});
+				
 				buttonPane.add(btnResetAllPreferences, "cell 0 1");
 			}
 			{

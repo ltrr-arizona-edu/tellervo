@@ -117,7 +117,7 @@ public class LoginDialog extends JDialog {
 		
 		setTitle(I18n.getText("login.Authentication"));
 		setIconImage(Builder.getApplicationIcon());
-		setBounds(100, 100, 502, 277);
+		setBounds(100, 100, 620, 277);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);

@@ -26,10 +26,15 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Map;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.tellervo.desktop.UpdateChecker;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.Help;
@@ -92,6 +97,80 @@ public class HelpMenu extends JMenu {
 
 
 
+    private void addVideoMenu(){
+    	
+    	JMenu videoMenu = Builder.makeMenu("menus.help.video", "video.png");
+    	
+    	ArrayList<Map.Entry<String, URI>> links = new ArrayList<Map.Entry<String, URI>>();
+    	
+    	try{
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+    			("Introduction", 
+    			new URI("http://www.tellervo.org/tutorials/index.php")));
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+				("Getting started", 
+				new URI("http://www.tellervo.org/tutorials/gettingstarted.php")));
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+				("Server installation", 
+				new URI("http://www.tellervo.org/tutorials/serverinstallation.php")));
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+				("Entering metadata", 
+				new URI("http://www.tellervo.org/tutorials/bulkdataentry.php")));
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+				("Measuring samples", 
+				new URI("http://www.tellervo.org/tutorials/measuring.php")));
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+				("mapping", 
+				new URI("http://www.tellervo.org/tutorials/mapping.php")));
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+				("Administering users and groups", 
+				new URI("http://www.tellervo.org/tutorials/usergroup.php")));
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+				("Curating your collection", 
+				new URI("http://www.tellervo.org/tutorials/curation.php")));
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+				("Exporting data", 
+				new URI("http://www.tellervo.org/tutorials/export.php")));
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+				("Importing", 
+				new URI("http://www.tellervo.org/tutorials/import.php")));
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+				("Graphing", 
+				new URI("http://www.tellervo.org/tutorials/graphing.php")));
+    	links.add(new AbstractMap.SimpleEntry<String, URI>
+				("Data manipulation", 
+				new URI("http://www.tellervo.org/tutorials/datamanipulation.php")));
+
+    	} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
+    	for(final Map.Entry<String, URI> link : links)
+    	{
+    		JMenuItem li = new JMenuItem();
+    		li.setText((String) link.getKey());
+    		
+    		li.addActionListener(new ActionListener() {
+    			public void actionPerformed(ActionEvent ae) {
+    				Desktop desktop = Desktop.getDesktop();
+    				try {
+    					desktop.browse((URI) link.getValue());
+    				} catch (IOException e) {
+    					// TODO Auto-generated catch block
+    					e.printStackTrace();
+    				} 
+    				
+    				
+    			}
+    		});
+    		videoMenu.add(li);
+    	}
+    	
+    	add(videoMenu);
+    	
+    }
+    
 	/**
        Add the "Tellervo Help" menuitem.
     */
@@ -122,6 +201,20 @@ public class HelpMenu extends JMenu {
 		});
 		
 		add(helpwiki);
+		
+		addVideoMenu();
+		
+		JMenuItem checkForUpdates = Builder.makeMenuItem("menus.help.checkupdates", true, "upgrade.png");
+
+		checkForUpdates.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent ae) {
+				
+				UpdateChecker.doUpdateCheck(true);
+				
+			}
+		});
+		
+		add(checkForUpdates);
 		
 		
 		JMenuItem emailDev = Builder.makeMenuItem("menus.help.emaildevelopers", true, "email.png");
@@ -210,4 +303,6 @@ public class HelpMenu extends JMenu {
 	      AboutBox.getInstance().setVisible(true);
 	    }
 	  };
+	  
+
 }

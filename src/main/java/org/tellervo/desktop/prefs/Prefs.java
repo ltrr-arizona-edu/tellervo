@@ -186,8 +186,9 @@ public class Prefs extends AbstractSubsystem {
 		SOUND_BARCODE_FILE("tellervo.sound.barcodescan"),
 		SOUND_USE_SYSTEM_DEFAULTS("tellervo.sound.usedefaults"),
 		SOUND_ENABLED("tellervo.sound.enabled"),
-		SOUND_LAST_FOLDER("tellervo.sound.lastfolder");
+		SOUND_LAST_FOLDER("tellervo.sound.lastfolder"),
 		
+		CHECK_FOR_UPDATES("tellervo.checkforupdates");
 		
 		
 		private String key;
@@ -576,6 +577,32 @@ public class Prefs extends AbstractSubsystem {
 					return;
 			}
 		}
+	}
+	
+	/**
+	 * Deletes the preferences file so on reboot Tellervo acts as a fresh install
+	 * @return
+	 */
+	public Boolean resetPreferences()
+	{
+    	try{
+    		 
+    		File file = new File(userPrefsFilename);
+ 
+    		if(file.delete()){
+    			log.debug("Preferences file deleted");
+    			return true;
+    		}else{
+    			log.error("Unable to delete preferences file");
+    		}
+ 
+    	}catch(Exception e){
+ 
+    		e.printStackTrace();
+ 
+    	}
+    	
+    	return false;
 	}
 
 	// exception |e| thrown while saving; tell user.

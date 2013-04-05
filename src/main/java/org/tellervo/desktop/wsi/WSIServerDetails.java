@@ -39,6 +39,7 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.UpdateChecker;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
@@ -341,19 +342,28 @@ public class WSIServerDetails {
 
 	}
 	
+	
+	
 	/**
 	 * Is the server a valid Tellervo WS?
 	 * 
 	 * @return
 	 */
 	public Boolean isServerValid()
+	{
+		return isServerValid(App.earliestServerVersionSupported);
+	}
+	
+	
+	
+	public Boolean isServerValid(String earliestServerVersionSupported)
 	{		
 		log.debug("Checking if server is valid...");
 		
 		if(status==WSIServerStatus.VALID)
 		{
 			try {
-				String[] earliestServerVersion = parseVersionStr(App.earliestServerVersionSupported);
+				String[] earliestServerVersion = parseVersionStr(earliestServerVersionSupported);
 				Integer earliestMajor = null;
 				Integer earliestMinor = null;
 				String earliestRevision = null;
@@ -375,41 +385,12 @@ public class WSIServerDetails {
 				
 				log.debug("Earliest server version accepted is : "+earliestMajor + " . "+earliestMinor + " . "+earliestRevision);
 				log.debug("Actual server version is            : "+majorversion + " . "+minorversion +" . "+revision);
-				if(majorversion<earliestMajor)
-				{
-					setTooOldErrorMessage();
-					return false;
-				}
-				else if (majorversion>earliestMajor)
-				{
-					return true;
-				}
-				else
-				{
-					if(minorversion<earliestMinor)
-					{
-						setTooOldErrorMessage();
-						return false;
-					}
-					else if (minorversion>earliestMinor)
-					{
-						return true;
-					}
-					else
-					{
-						if(revision.compareTo(earliestRevision)<0)
-						{
-							setTooOldErrorMessage();
-							return false;
-						}
-						else
-						{
-							return true;
-						}
-						
-					}
-					
-				}
+
+				Boolean success = UpdateChecker.compareVersionNumbers(earliestMajor, earliestMinor, earliestRevision, majorversion, minorversion, revision);
+				
+				if(success) return true;
+				
+				setTooOldErrorMessage();
 				
 				
 				

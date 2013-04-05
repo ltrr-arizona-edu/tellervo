@@ -50,6 +50,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.tellervo.desktop.UpdateChecker;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.editor.EditorFactory;
@@ -59,6 +60,7 @@ import org.tellervo.desktop.gui.menus.FileMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.platform.Platform;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -234,6 +236,15 @@ public class TellervoMainWindow extends JFrame {
 		
 		// show
 		setVisible(true);
+		
+		// Check whether updates are available
+		if(App.prefs.getBooleanPref(PrefKey.CHECK_FOR_UPDATES, true))
+		{
+			UpdateChecker.doUpdateCheck(false);
+		}
+		
+		
+		
 	}
 	
 	// simple convenience method
