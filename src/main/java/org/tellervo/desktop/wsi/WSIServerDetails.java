@@ -39,9 +39,10 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.UpdateChecker;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.versioning.Build;
+import org.tellervo.desktop.versioning.VersionUtil;
 import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
 
 
@@ -265,34 +266,12 @@ public class WSIServerDetails {
 		return status;
 	}
 	
-	/**
-	 * Parse the version string returned from the server to extract
-	 * major, minor and revision details.
-	 * 
-	 * @param str
-	 * @throws Exception
-	 */
-	private String[] parseVersionStr(String str) throws Exception
-	{
-		if(str==null) throw new Exception("Version information returned from server is null");
-		
-		if(str=="") throw new Exception("Version information returned from server is null");
-		
-		String[] versionparts = str.split("\\.");
-		
-		if(versionparts.length==0)
-		{
-			throw new Exception("Version information returned from server is invalid");
-		}
-		
-		return versionparts;
 
-	}
 	
 	
 	private void parserThisServerVersion(String str) throws Exception
 	{
-		String[] versionparts = parseVersionStr(str);
+		String[] versionparts = VersionUtil.parseVersionStr(str);
 		
 		try{
 			if(versionparts.length>=1)
@@ -351,7 +330,7 @@ public class WSIServerDetails {
 	 */
 	public Boolean isServerValid()
 	{
-		return isServerValid(App.earliestServerVersionSupported);
+		return isServerValid(Build.earliestServerVersionSupported);
 	}
 	
 	
@@ -363,7 +342,7 @@ public class WSIServerDetails {
 		if(status==WSIServerStatus.VALID)
 		{
 			try {
-				String[] earliestServerVersion = parseVersionStr(earliestServerVersionSupported);
+				String[] earliestServerVersion = VersionUtil.parseVersionStr(earliestServerVersionSupported);
 				Integer earliestMajor = null;
 				Integer earliestMinor = null;
 				String earliestRevision = null;
@@ -386,7 +365,7 @@ public class WSIServerDetails {
 				log.debug("Earliest server version accepted is : "+earliestMajor + " . "+earliestMinor + " . "+earliestRevision);
 				log.debug("Actual server version is            : "+majorversion + " . "+minorversion +" . "+revision);
 
-				Boolean success = UpdateChecker.compareVersionNumbers(earliestMajor, earliestMinor, earliestRevision, majorversion, minorversion, revision);
+				Boolean success = VersionUtil.compareVersionNumbers(earliestMajor, earliestMinor, earliestRevision, majorversion, minorversion, revision);
 				
 				if(success) return true;
 				
@@ -412,7 +391,7 @@ public class WSIServerDetails {
 		log.debug("Server too old!");
 		errMessage = "The version of the Tellervo server ("+ getWSIVersion()+") that\n"+
 		"you are trying to connect to is too old for this client.\n"+
-		"The server needs to be version "+ App.earliestServerVersionSupported + " or later.";
+		"The server needs to be version "+ Build.earliestServerVersionSupported + " or later.";
 		log.debug(errMessage);
 		status = WSIServerStatus.TOO_OLD;
 	}

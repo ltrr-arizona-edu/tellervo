@@ -18,7 +18,7 @@
  * 	   Ken Harris   - Initial implementation
  *     Peter Brewer
  ******************************************************************************/
-package org.tellervo.desktop.core;
+package org.tellervo.desktop.versioning;
 
 import java.io.*;
 import java.net.URL;
@@ -30,7 +30,20 @@ import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
 public class Build {
-    // don't instantiate me
+
+    /** Version string. */
+    private final static String VERSION = Build.class.getPackage().getImplementationVersion(); // beta
+
+    /** Year (for copyright). */
+    public final static String YEAR = "2001-2013";
+
+    /** Author's name (for copyright). */
+    public final static String AUTHOR = "Peter Brewer, Chris Dunham, Dan Girshovich, Aaron Hamid, Ken Harris, Drew Kalina, Rocky Li, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl, Paul Sheppard and Kit Sturgeon";
+
+	/** Most primitive server version supported by this client should be a three part string e.g 1.1.1 */
+	public static final String earliestServerVersionSupported = "1.0.9";
+	
+	// don't instantiate me
     private Build() {
     }
 
@@ -148,6 +161,7 @@ public class Build {
     		
     	}
     	
+    	// Replace -SNAPSHOT with beta symbol
     	if(Build.VERSION.contains("-SNAPSHOT"))
     	{
     		return Build.VERSION.replace("-SNAPSHOT", "\u03B2");
@@ -155,12 +169,5 @@ public class Build {
     	return Build.VERSION;
     }
     
-    /** Version string. */
-    private final static String VERSION = Build.class.getPackage().getImplementationVersion(); // beta
 
-    /** Year (for copyright). */
-    public final static String YEAR = "2001-2012";
-
-    /** Author's name (for copyright). */
-    public final static String AUTHOR = "Peter Brewer, Chris Dunham, Dan Girshovich, Aaron Hamid, Ken Harris, Drew Kalina, Rocky Li, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl, Paul Sheppard and Kit Sturgeon";
 }

@@ -51,9 +51,9 @@ import org.jdom.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
+import org.tellervo.desktop.versioning.Build;
 
 
 public class BugReport {

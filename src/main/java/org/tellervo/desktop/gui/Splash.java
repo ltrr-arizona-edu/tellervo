@@ -35,10 +35,10 @@ import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.gui.ProgressMeter.ProgressEvent;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.Center;
+import org.tellervo.desktop.versioning.Build;
 
 import javax.swing.JPanel;
 

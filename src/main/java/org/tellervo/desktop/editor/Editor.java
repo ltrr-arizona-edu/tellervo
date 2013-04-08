@@ -70,7 +70,6 @@ import javax.swing.undo.UndoableEditSupport;
 
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
 import org.tellervo.desktop.gis.GISPanel;
 import org.tellervo.desktop.gis.GISViewMenu;
@@ -120,6 +119,7 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.OKCancel;
 import org.tellervo.desktop.util.Overwrite;
+import org.tellervo.desktop.versioning.Build;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;

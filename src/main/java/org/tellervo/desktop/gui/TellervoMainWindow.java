@@ -50,9 +50,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import org.tellervo.desktop.UpdateChecker;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.gui.menus.AdminMenu;
 import org.tellervo.desktop.gui.menus.EditMenu;
@@ -65,6 +63,8 @@ import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ListUtil;
+import org.tellervo.desktop.versioning.Build;
+import org.tellervo.desktop.versioning.UpdateChecker;
 
 
 public class TellervoMainWindow extends JFrame {

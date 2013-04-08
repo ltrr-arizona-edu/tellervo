@@ -53,7 +53,6 @@ import org.jdom.transform.JDOMResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.XMLDebugView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -61,6 +60,7 @@ import org.tellervo.desktop.util.BugReport;
 import org.tellervo.desktop.util.PureStringWriter;
 import org.tellervo.desktop.util.XMLBody;
 import org.tellervo.desktop.util.XMLParsingException;
+import org.tellervo.desktop.versioning.Build;
 import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;

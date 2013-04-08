@@ -1,14 +1,9 @@
-package org.tellervo.desktop;
+package org.tellervo.desktop.versioning;
 
 import java.awt.Desktop;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.text.MessageFormat;
 
 import javax.swing.JOptionPane;
@@ -16,7 +11,6 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.WSIServerDetails;
@@ -31,8 +25,8 @@ public class UpdateChecker {
 	public static void doUpdateCheck(Boolean showConfirmation)
 	{
 		// Check server for current available version
-		String availableDesktopVersion = getAvailableVersion(latestVersionURL);
-		String serverVersionRequiredForMostRecent = getAvailableVersion(serverRequiredForLatestDesktop);
+		String availableDesktopVersion = VersionUtil.getAvailableVersion(latestVersionURL);
+		String serverVersionRequiredForMostRecent = VersionUtil.getAvailableVersion(serverRequiredForLatestDesktop);
 		if(availableDesktopVersion==null)
 		{
 			if(showConfirmation)
@@ -129,88 +123,6 @@ public class UpdateChecker {
 				JOptionPane.showMessageDialog(App.mainWindow, I18n.getText("view.popup.upToDate"));
 			}
 			return;
-		}
-	}
-	
-	
-	/**
-	 * Query the tridas.org server for the latest available build number.
-	 * Returns null on IO error.
-	 * 
-	 * @return
-	 */
-	private static String getAvailableVersion(String urlOfVersionInfo)
-	{
-		URL url;
-	
-		try {
-			url = new URL(urlOfVersionInfo);
-		} catch (MalformedURLException e) {
-			return null;
-		}
-		
-		try {
-	        URLConnection conn = url.openConnection();
-	        BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-	        String inputLine;
-
-	        while ((inputLine = in.readLine()) != null) 
-	        	return inputLine;
-	        in.close();
-			 
-		} catch (IOException e) {
-			return null;
-		}
-				
-		return null;	
-	}
-
-	
-	/**
-	 * 
-	 * @param earliestMajor
-	 * @param earliestMinor
-	 * @param earliestRevision
-	 * @param majorversion
-	 * @param minorversion
-	 * @param revision
-	 * @return
-	 */
-	public static Boolean compareVersionNumbers(Integer earliestMajor, Integer earliestMinor, String earliestRevision,
-												Integer majorversion, Integer minorversion, String revision)
-	{
-		
-		if(majorversion<earliestMajor)
-		{
-			return false;
-		}
-		else if (majorversion>earliestMajor)
-		{
-			return true;
-		}
-		else
-		{
-			if(minorversion<earliestMinor)
-			{
-				return false;
-			}
-			else if (minorversion>earliestMinor)
-			{
-				return true;
-			}
-			else
-			{
-				if(revision.compareTo(earliestRevision)<0)
-				{
-					return false;
-				}
-				else
-				{
-					return true;
-				}
-				
-			}
-			
 		}
 	}
 }

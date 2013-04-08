@@ -85,7 +85,6 @@ import javax.swing.event.ChangeListener;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
-import org.tellervo.desktop.core.Build;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.PrintableDocument;
@@ -105,6 +104,7 @@ import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ColorUtils;
 import org.tellervo.desktop.util.Sort;
+import org.tellervo.desktop.versioning.Build;
 
 
 /*
