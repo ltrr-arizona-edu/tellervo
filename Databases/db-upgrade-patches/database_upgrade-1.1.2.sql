@@ -24,9 +24,9 @@ END;$BODY$
 ALTER FUNCTION cpgdb.updatepwd()
   OWNER TO pwb48;
 
-INSERT INTO tblconfig (key, value, description) VALUES ('hashAlgorithm', 'sha512', 'Algorithm to use for hashing of passwords');
+INSERT INTO tblconfig (key, value, description) VALUES ('hashAlgorithm', 'md5', 'Algorithm to use for hashing of passwords');
 
-UPDATE tblsupportedclient set value='1.0.3' where client='Tellervo WSI';
+UPDATE tblsupportedclient set value='1.0.2' where client='Tellervo WSI';
 
 
 

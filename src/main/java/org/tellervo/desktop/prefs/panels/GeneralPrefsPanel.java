@@ -1,5 +1,6 @@
 package org.tellervo.desktop.prefs.panels;
 
+import java.awt.Component;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -26,8 +27,9 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ExtensionFileFilter;
 import org.tellervo.desktop.util.SoundUtil;
 import org.tellervo.desktop.util.SoundUtil.SystemSound;
+import org.tellervo.desktop.versioning.UpdateChecker;
 
-public class SoundPrefsPanel extends AbstractPreferencesPanel {
+public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JCheckBox chkEnableSoundSystem;
@@ -49,14 +51,18 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 	private JButton btnPlayDecadeMeasured;
 	private JButton btnPlayMeasurementError;
 	private JButton btnPlayBarcodeScanned;
+	private JPanel panelPrivacy;
+	private JCheckBox chkAutoUpdate;
+	private JLabel lblAutomaticallyCheckFor;
+	private JButton btnCheckForUpdates;
 	
 	
-	public SoundPrefsPanel(final JDialog parent) {
-		super(I18n.getText("preferences.sound"), 
-				"sound.png", 
-				"Configure sounds within Tellervo",
+	public GeneralPrefsPanel(final JDialog parent) {
+		super(I18n.getText("preferences.general"), 
+				"home.png", 
+				"Configure sounds and other miscellaneous settings within Tellervo",
 				parent);
-		setLayout(new MigLayout("", "[186px,grow]", "[15px][grow]"));
+		setLayout(new MigLayout("", "[186px,grow]", "[15px][grow][grow]"));
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Sound system", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -219,6 +225,31 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 		btnBrowseBarcodeScanned.setIcon(Builder.getIcon("open.png", 16));
 		btnBrowseBarcodeScanned.setMargin(new Insets(1, 1, 1, 1));
 		panel.add(btnBrowseBarcodeScanned, "cell 3 7");
+		
+		panelPrivacy = new JPanel();
+		panelPrivacy.setBorder(new TitledBorder(null, "Privacy and Updates", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(panelPrivacy, "cell 0 1,grow");
+		panelPrivacy.setLayout(new MigLayout("", "[][21px][]", "[21px][][grow,fill]"));
+		
+		lblAutomaticallyCheckFor = new JLabel("Check for updates on startup:");
+		panelPrivacy.add(lblAutomaticallyCheckFor, "cell 0 0");
+		
+		chkAutoUpdate = new JCheckBox("");
+		panelPrivacy.add(chkAutoUpdate, "cell 1 0,alignx left,aligny top");
+		
+		btnCheckForUpdates = new JButton("Check now");
+		
+		final Component glue = this;
+		btnCheckForUpdates.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				UpdateChecker.doUpdateCheck(true, glue);				
+			}
+			
+		});
+		
+		panelPrivacy.add(btnCheckForUpdates, "cell 2 0");
 		btnBrowseBarcodeScanned.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -295,6 +326,7 @@ public class SoundPrefsPanel extends AbstractPreferencesPanel {
 		new TextComponentWrapper(txtDecadeMeasured, PrefKey.SOUND_MEASURE_DECADE_FILE, null);
 		new TextComponentWrapper(txtMeasurementError, PrefKey.SOUND_MEASURE_ERROR_FILE, null);
 		new TextComponentWrapper(txtBarcodeScanned, PrefKey.SOUND_BARCODE_FILE, null);
+		new CheckBoxWrapper(chkAutoUpdate, PrefKey.CHECK_FOR_UPDATES, true);
 
 	}
 }

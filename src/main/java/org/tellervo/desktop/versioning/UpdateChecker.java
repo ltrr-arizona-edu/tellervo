@@ -1,5 +1,6 @@
 package org.tellervo.desktop.versioning;
 
+import java.awt.Component;
 import java.awt.Desktop;
 import java.io.IOException;
 import java.net.URI;
@@ -22,7 +23,12 @@ public class UpdateChecker {
 	private static String downloadPage = "http://www.tellervo.org/download/";
 	  private final static Logger log = LoggerFactory.getLogger(UpdateChecker.class);
 
-	public static void doUpdateCheck(Boolean showConfirmation)
+	  public static void doUpdateCheck(Boolean showConfirmation)
+	  {
+		  UpdateChecker.doUpdateCheck(showConfirmation, App.mainWindow);
+	  }
+	  
+	public static void doUpdateCheck(Boolean showConfirmation, Component parent)
 	{
 		// Check server for current available version
 		String availableDesktopVersion = VersionUtil.getAvailableVersion(latestVersionURL);
@@ -31,7 +37,7 @@ public class UpdateChecker {
 		{
 			if(showConfirmation)
 			{
-				JOptionPane.showMessageDialog(App.mainWindow, I18n.getText("view.popup.updateServerIOE"));
+				JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.updateServerIOE"));
 			}
 			return;
 		}
@@ -49,7 +55,7 @@ public class UpdateChecker {
 		{
 			if(showConfirmation)
 			{	
-				JOptionPane.showMessageDialog(App.mainWindow, I18n.getText("view.popup.updateVersionParseError"));
+				JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.updateVersionParseError"));
 			}
 			return;
 		}
@@ -82,7 +88,7 @@ public class UpdateChecker {
 				                    "Maybe later",
 									"No, don't ask again"};
 				
-				int n = JOptionPane.showOptionDialog(App.mainWindow, 
+				int n = JOptionPane.showOptionDialog(parent, 
 						message,
 						"Update available",
 						JOptionPane.YES_NO_CANCEL_OPTION,
@@ -93,7 +99,7 @@ public class UpdateChecker {
 
 				if(n==JOptionPane.CANCEL_OPTION){
 					App.prefs.setBooleanPref(PrefKey.CHECK_FOR_UPDATES, false);					
-					JOptionPane.showMessageDialog(App.mainWindow, "Tellervo will no longer automatically check for updates\nhowever you may still check manually using the option\nin the help menu.");					
+					JOptionPane.showMessageDialog(parent, "Tellervo will no longer automatically check for updates\nhowever you may still check manually using the option\nin the help menu.");					
 					return;
 				}
 				
@@ -111,7 +117,7 @@ public class UpdateChecker {
 				
 				
 				// Problems opening browser so get user to download manually
-				JOptionPane.showMessageDialog(App.mainWindow, I18n.getText("view.popup.updatePleaseDownload") +
+				JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.updatePleaseDownload") +
 						"\n"+downloadPage);
 			}
 		}
@@ -120,7 +126,7 @@ public class UpdateChecker {
 			// Update not required
 			if(showConfirmation)
 			{
-				JOptionPane.showMessageDialog(App.mainWindow, I18n.getText("view.popup.upToDate"));
+				JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.upToDate"));
 			}
 			return;
 		}
