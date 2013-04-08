@@ -49,6 +49,8 @@ public class UpdateChecker {
 		try{
 
 			currentVersion = MessageFormat.format(I18n.getText("about.revision"), new Object[] { Build.REVISION_NUMBER });
+			log.debug("Current version = "+currentVersion);
+			log.debug("Available versn = "+availableDesktopVersion);
 			available = Integer.parseInt(availableDesktopVersion);
 			current = Integer.parseInt(currentVersion);
 		} catch (NumberFormatException e)
