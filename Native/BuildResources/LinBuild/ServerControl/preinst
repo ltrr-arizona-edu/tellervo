@@ -1,8 +1,12 @@
 #!/bin/bash
+echo "  " >> /var/log/tellervo-installation.log
+echo "  " >> /var/log/tellervo-installation.log
+echo "  " >> /var/log/tellervo-installation.log
+echo "*******************" >> /var/log/tellervo-installation.log
 echo "*******************" >> /var/log/tellervo-installation.log
 echo "Preinst run ${serverversion} with $1 argument" >> /var/log/tellervo-installation.log
 date '+%R.%S' >> /var/log/tellervo-installation.log
-echo "*******************" >> /var/log/tellervo-installation.log
+
 
 if [ $1 = 'upgrade' ]; then
    ## Upgrading so, move aside config.php file so
@@ -12,12 +16,21 @@ if [ $1 = 'upgrade' ]; then
    if [ -e "/var/www/tellervo/config.php" ];
    then
      echo "Backing up config.php for reinstatement after the upgrade" >> /var/log/tellervo-installation.log
-     cp /var/www/tellervo/config.php /tmp/
+     cp /var/www/tellervo/config.php /usr/share/tellervo-server/config.bak
    fi
+
+elif [ $1 = 'abort-upgrade' ]; then
+   echo "Preinst upgrade routine failed" >> /var/log/tellervo-installation.log
+fi
+
 
 #elif [ $1 = 'install' ]; then
 
-#elif [ $1 = 'abort-upgrade' ]; then
+
+echo "*******************" >> /var/log/tellervo-installation.log
+echo "  " >> /var/log/tellervo-installation.log
+echo "  " >> /var/log/tellervo-installation.log
+echo "  " >> /var/log/tellervo-installation.log
 
 
-fi
+exit 0;

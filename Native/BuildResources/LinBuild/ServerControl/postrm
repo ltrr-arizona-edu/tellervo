@@ -1,5 +1,6 @@
 #!/bin/bash
 echo "*******************" >> /var/log/tellervo-installation.log
+echo "*******************" >> /var/log/tellervo-installation.log
 echo "Postrm run ${serverversion} with $1 argument" >> /var/log/tellervo-installation.log
 date '+%R.%S' >> /var/log/tellervo-installation.log
 echo "*******************" >> /var/log/tellervo-installation.log
@@ -15,23 +16,20 @@ if [ $1 = 'remove' ]; then
    rmdir /var/www/tellervo
    
    
-elif [ $1 = 'upgrade' ]; then   
+#elif [ $1 = 'upgrade' ]; then   
    
-    if [ -e "/tmp/config.php" ]
-    then
-      echo "Reinstating config.php from previous installation" >> /var/log/tellervo-installation.log
-      mv /tmp/config.php /var/www/tellervo/
-      echo "Regenerating systemconfig.php" >> /var/log/tellervo-installation.log
-      /usr/bin/tellervo-server --sysconfig
-      echo "Testing configuration" >> /var/log/tellervo-installation.log
-      /usr/bin/tellervo-server --test
-	  exit
-    fi
+
    
 #elif [ $1 = 'deconfigure' ]; then
 
-#elif [ $1 = 'failed-upgrade' ]; then
+elif [ $1 = 'failed-upgrade' ]; then
 
+	echo "Previous version postrm script failed, but continuing anyway..." >> /var/log/tellervo-installation.log
 
 fi
+
+
+echo "*******************" >> /var/log/tellervo-installation.log
+echo "*******************\n\n\n" >> /var/log/tellervo-installation.log
+
 exit 0; 

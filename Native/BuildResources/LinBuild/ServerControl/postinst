@@ -1,30 +1,51 @@
 #!/bin/bash
 echo "*******************" >> /var/log/tellervo-installation.log
+echo "*******************" >> /var/log/tellervo-installation.log
 echo "Postinst run ${serverversion} with $1 argument" >> /var/log/tellervo-installation.log
 date '+%R.%S' >> /var/log/tellervo-installation.log
 echo "*******************" >> /var/log/tellervo-installation.log
 
    
 if [ $1 = 'configure' ]; then
-      echo "Configuring new installation" >> /var/log/tellervo-installation.log
-      /usr/bin/tellervo-server --configure
 
-elif [ $1 = 'upgrade' ]; then
-	  
-	  if [$2 = '1.1.0']; then
-	  		echo "Upgrading Tellervo database security" >> /var/log/tellervo-installation.log
-	  		echo "Admin database password reset required";
-	  		/usb/bin/tellervo-server --reset-admin-pwd
-	  elif [$2 = '1.1.1']; then
-			echo "Upgrading Tellervo database security" >> /var/log/tellervo-installation.log
-			echo "Admin database password reset required";
-			/usb/bin/tellervo-server --reset-admin-pwd
-	  elif [$2 = '1.1.2']; then
-			echo "Upgrading Tellervo database security" >> /var/log/tellervo-installation.log
-			echo "Admin database password reset required";
-			/usb/bin/tellervo-server --reset-admin-pwd
-	 
-	  fi
+	   if [ -e "/usr/share/tellervo-server/config.bak" ]
+	    then
+	      echo "Reinstating config.php from previous installation" >> /var/log/tellervo-installation.log
+	      cp /usr/share/tellervo-server/config.bak /var/www/tellervo/config.php
+	      
+	      echo "Running database upgrade scripts" >> /var/log/tellervo-installation.log
+	      /usr/bin/tellervo-server --upgrade-db
+	      
+	      echo "Regenerating systemconfig.php" >> /var/log/tellervo-installation.log
+	      /usr/bin/tellervo-server --sysconfig
+	      
+	      echo "Testing configuration" >> /var/log/tellervo-installation.log
+	      /usr/bin/tellervo-server --test
+	      
+	      echo "Removing backup config file" >> /var/log/tellervo-installation.log
+	      rm /usr/share/tellervo-server/config.bak
+	   
+      else
+            echo "Configuring new installation" >> /var/log/tellervo-installation.log
+     		/usr/bin/tellervo-server --configure
+      fi
+      
+      
+     # if [ $2 = '1.1.0' ]; then
+	 # 		echo "Upgrading Tellervo database security" >> /var/log/tellervo-installation.log
+	 # 		echo "Admin database password reset required";
+	 # 		/usb/bin/tellervo-server --reset-admin-pwd
+	 # elif [ $2 = '1.1.1' ]; then
+	 #		echo "Upgrading Tellervo database security" >> /var/log/tellervo-installation.log
+	 #		echo "Admin database password reset required";
+	 #		/usb/bin/tellervo-server --reset-admin-pwd
+	 # elif [ $2 = '1.1.2' ]; then
+	 #		echo "Upgrading Tellervo database security" >> /var/log/tellervo-installation.log
+	 #		echo "Admin database password reset required";
+	 #		/usb/bin/tellervo-server --reset-admin-pwd
+	 # fi
+
+ 
       
 #elif [ $1 = 'abort-upgrade' ]; then
 
@@ -33,3 +54,7 @@ elif [ $1 = 'upgrade' ]; then
 #elif [ $1 = 'abort-deconfigure' ]; then
 
 fi
+
+
+echo "*******************" >> /var/log/tellervo-installation.log
+echo "*******************\n\n\n" >> /var/log/tellervo-installation.log

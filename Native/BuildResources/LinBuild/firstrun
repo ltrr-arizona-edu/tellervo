@@ -83,7 +83,7 @@ if(!(trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
 exec("reset");
 echo $colors->getColoredString("\n\nStep 2 - Setting the server timezone...\n\n", "light_purple");
 
-  echo "The server timezone is currently set to America/New_York.  Would you like to\nchange it?\n";
+  echo "The server timezone is currently set to America/Phoenix.  Would you like to\nchange it?\n";
   echo "    [Y]/n  ";
   $response = fgets(STDIN); 
 

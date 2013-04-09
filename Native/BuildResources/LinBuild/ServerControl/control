@@ -4,10 +4,10 @@ Section: misc
 Priority: optional
 Architecture: all
 Depends: apache2, postgresql-9.1, postgresql-9.1-pljava-gcj, postgresql-9.1-postgis, postgresql-contrib-9.1, php5, php5-pgsql, php5-curl, php5-mhash
-Suggests: openssh-server, pgadmin3, corina
+Suggests: openssh-server, pgadmin3, tellervo
 Replaces: [[name]]-server (<<${serverversion})
-Maintainer: Peter Brewer <p.brewer@cornell.edu>
+Maintainer: Peter Brewer <p.brewer@ltrr.arizona.edu>
 Description: Database and webservice for the Tellervo dendrochronology desktop application
  The Tellervo server provides a PHP/PostgreSQL-based web service for managing dendrochronology
- samples, data and metadata alongside the Corina desktop application.  
+ samples, data and metadata alongside the Tellervo desktop application.  
 Distribution: development
