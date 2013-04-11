@@ -55,7 +55,17 @@ The server packaging is done as a secondary execution of the JDeb plugin.  JDeb 
 
 The metadata for the deb file is included in the control file located in Native/BuildResources/LinBuild/ServerControl.  JDeb makes use of Ubuntu's excellent package management system to handle the dependencies.  Adding or editing dependencies is simply a matter of changing the `depends' attribute control file.  
 
-The ServerControl folder also contains scripts called preinst, postinst, prerm and postrm, which are launched before and after installation, and before uninstalling.  These files are called with different parameters depending on whether this is part of a fresh install, an upgrade, or an aborted install.  There are a number of rules that the resulting deb package should follow (e.g.\ if a program is configured twice, then the second run should know and understand about previously provided details), the details of which can be found in the Debian Policy Manual\footnote{Debian Policy Manual -- \url{http://www.debian.org/doc/debian-policy/}}, along with information how and when each of the pre and post scripts is run.  Hopefully this side of the server packaging will not need to be touched again, but if you are making changes and are doing anything more than simple tweaks, please consult the Debian policy documentation.
+The ServerControl folder also contains scripts called preinst, postinst, prerm and postrm, which are launched before and after installation, and before uninstalling.  These files are called with different parameters depending on whether this is part of a fresh install, an upgrade, or an aborted install.  There are a number of rules that the resulting deb package should follow (e.g.\ if a program is configured twice, then the second run should know and understand about previously provided details), the details of which can be found in the Debian Policy Manual\footnote{Debian Policy Manual -- \url{http://www.debian.org/doc/debian-policy/} but a more accessible description is found at \url{http://wiki.debian.org/MaintainerScripts}}, along with information how and when each of the pre and post scripts is run.  Hopefully this side of the server packaging will not need to be touched again, but if you are making changes and are doing anything more than simple tweaks, please consult the Debian policy documentation.
+
+If changes are required, figure \ref{fig:debflowchart} highlights the order that the pre and post scripts are run and with what parameters.  
+
+
+\begin{figure}[p]
+  \centering
+  \includegraphics[width=\textwidth]{Images/install-and-upgrade-procedure.pdf}
+  \caption{Flow chart showing how the prerm, preinst, postrm, postinst scripts are run along with the parameters passed to them when installing and upgrading.  }
+  \label{fig:debflowchart}
+\end{figure}
 
 The postinst script is used to trigger the interactive script that helps the user configure the Tellervo server (described further in section \ref{txt:tellervo-server-script}).  The steps are as follows:  
 
