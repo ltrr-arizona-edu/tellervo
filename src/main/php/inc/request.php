@@ -221,7 +221,7 @@ class request
         global $firebug;
 
         $xpath = new DOMXPath($this->xmlRequestDom);
-       	$xpath->registerNamespace('cor', $tellervoNS);
+       	$xpath->registerNamespace('tvo', $tellervoNS);
        	$xpath->registerNamespace('tridas', $tridasNS);
         
        	$firebug->log($this->crudMode, "CRUD Mode");
@@ -232,12 +232,14 @@ class request
     	//******
         if($this->crudMode=='search')
         {
-        	$fragment = $xpath->query("//cor:request[(descendant::cor:searchParams)]");
+        	$fragment = $xpath->query("//tvo:request[(descendant::tvo:searchParams)]");
                 $firebug->log($fragment, "XML fragment");
 	
         	foreach ($fragment as $item)
         	{	
         		if($item->nodeType != XML_ELEMENT_NODE) continue;  
+					$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', $tellervoNS);
+					$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:tridas', $tridasNS);
         		
                     $firebug->log($item, "XML item");
 	            $parentID = NULL;
@@ -252,22 +254,26 @@ class request
         elseif ( ($this->crudMode=='read') || ($this->crudMode=='delete') || ($this->crudMode=='merge'))
         {
         	
-                if($this->xmlRequestDom->getElementsByTagName("permission")->item(0)!=NULL)
-		{
-
-		   $firebug->log("permission read or delete detected");
-			$fragment = $xpath->query("//c:permission[(descendant::c:entity)]");
-			$firebug->log($fragment, "XML fragment");	
-			
-			foreach ($fragment as $item)
-			{	
-				if($item->nodeType != XML_ELEMENT_NODE) continue;  
+            if($this->xmlRequestDom->getElementsByTagName("permission")->item(0)!=NULL)
+			{
+	
+			   $firebug->log("permission read or delete detected");
+				$fragment = $xpath->query("//tvo:permission[(descendant::tvo:entity)]");
+				$firebug->log($fragment, "XML fragment");	
 				
-			    $firebug->log($item, "XML item");	
-	           	    $myParamObj = new permissionParameters($this->xmlRequestDom->saveXML($item));
-			    array_push($this->paramObjectsArray, $myParamObj);
+				foreach ($fragment as $item)
+				{	
+					if($item->nodeType != XML_ELEMENT_NODE) continue;  
+					
+					$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', $tellervoNS);
+					$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:tridas', $tridasNS);
+					
+				    $firebug->log($item, "XML item");	
+				    
+		           	$myParamObj = new permissionParameters($this->xmlRequestDom->saveXML($item));
+				    array_push($this->paramObjectsArray, $myParamObj);
+				}
 			}
-		}
         	else if($this->xmlRequestDom->getElementsByTagName("entity")->item(0)!=NULL)
         	{
 	            foreach ($this->xmlRequestDom->getElementsByTagName("entity") as $item)
@@ -294,48 +300,47 @@ class request
 	                switch(strtolower($item->getAttribute('type')))
 	                {
 	                	case 'object':    
-	                		$newxml = "<tridas:object><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:object>";
+	                		$newxml = "<tridas:object xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier domain=\"$domain\">".$item->getAttribute('id')."</tridas:identifier></tridas:object>";
 	                		$myParamObj = new objectParameters($newxml, $parentID, $mergeWithID);
                             break;	                		
 
                         	case 'element':    
-	                		$newxml = "<tridas:element><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:element>";
+	                		$newxml = "<tridas:element xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier domain=\"$domain\">".$item->getAttribute('id')."</tridas:identifier></tridas:element>";
 	                		$myParamObj = new elementParameters($newxml, $parentID, $mergeWithID);
                             break;	                		
                             
 	                	case 'sample':
-	                		$newxml = "<tridas:sample><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:sample>";
+	                		$newxml = "<tridas:sample xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier domain=\"$domain\">".$item->getAttribute('id')."</tridas:identifier></tridas:sample>";
 	                		$myParamObj = new sampleParameters($newxml, $parentID, $mergeWithID);
                             break;
 
 	                	case 'radius':
-	                		$newxml = "<tridas:radius><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:radius>";
+	                		$newxml = "<tridas:radius xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier domain=\"$domain\">".$item->getAttribute('id')."</tridas:identifier></tridas:radius>";
 	                		$myParamObj = new radiusParameters($newxml, $parentID, $mergeWithID);
                             break;
                             
 	                	case 'measurementseries':
-
-	                		$newxml = "<tridas:measurementSeries><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:measurementSeries>";
+	                		$newxml = "<tridas:measurementseries xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier domain=\"$domain\">".$item->getAttribute('id')."</tridas:identifier></tridas:measurementseries>";
 	                		$myParamObj = new measurementParameters($newxml, $parentID, $mergeWithID);
                             break;
                             
 	                	case 'derivedseries':
-	                		$newxml = "<tridas:derivedSeries><identifier domain=\"$domain\">".$item->getAttribute('id')."</identifier></tridas:derivedSeries>";
+	                		$newxml = "<tridas:derivedseries xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier domain=\"$domain\">".$item->getAttribute('id')."</tridas:identifier></tridas:derivedseries>";
 	                		$myParamObj = new measurementParameters($newxml, $parentID, $mergeWithID);
                             break;	
 
 	                	case 'box':
-	                		$newxml = "<box><identifier>".$item->getAttribute('id')."</identifier></box>";
+	                		$newxml = "<box xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><identifier>".$item->getAttribute('id')."</identifier></box>";
 	                		$myParamObj = new boxParameters($newxml);
                             break;	
 
 	                	case 'securityuser':
-	                		$newxml = "<root><securityUser id='".$item->getAttribute('id')."'/></root>";
+	                		$newxml = "<tellervo xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\">< securityUser id='".$item->getAttribute('id')."'/></tellervo>";
 	                		$myParamObj = new securityUserParameters($newxml);
                             break;	  
 
                         case 'securitygroup':
-	                		$newxml = "<root><securityGroup id='".$item->getAttribute('id')."'/></root>";
+	                		$newxml = "<tellervo xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><securityGroup id='".$item->getAttribute('id')."'/></tellervo>";
 	                		$myParamObj = new securityGroupParameters($newxml);
                             break;	  
                             
@@ -365,11 +370,14 @@ class request
             $requestTag = $this->xmlRequestDom->getElementsByTagName("request")->item(0);
             if($requestTag!=NULL) $parentID = $requestTag->getAttribute("parentEntityID");
 			
-        	$fragment = $xpath->query("/cor:tellervo/cor:request/*");
+        	$fragment = $xpath->query("/tvo:tellervo/tvo:request/*");
 
 
             foreach ($fragment as $item)
             {
+            	$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', $tellervoNS);
+            	$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:tridas', $tridasNS);
+            	             	
             	switch($item->tagName)
             	{
             		case "tridas:element":
@@ -390,16 +398,16 @@ class request
             		case "tridas:derivedSeries":
             			$myParamObj = new measurementParameters($this->xmlRequestDom->saveXML($item), $parentID);
             			break; 
-            		case "c:securityUser":
+            		case "securityUser":
             			$myParamObj = new securityUserParameters("<root>".$this->xmlRequestDom->saveXML($item)."</root>");
 						break;
-            		case "c:securityGroup":
+            		case "securityGroup":
             			$myParamObj = new securityGroupParameters("<root>".$this->xmlRequestDom->saveXML($item)."</root>");
 						break;						
-            		case "c:box":
+            		case "box":
             			$myParamObj = new boxParameters($this->xmlRequestDom->saveXML($item));
             			break;
-              		case "c:permission":
+              		case "permission":
             			$myParamObj = new permissionParameters($this->xmlRequestDom->saveXML($item));
             			break;
             		default:
