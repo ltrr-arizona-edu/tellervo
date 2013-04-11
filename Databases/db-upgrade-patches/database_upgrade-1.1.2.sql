@@ -1,32 +1,13 @@
-INSERT INTO tlkpreadingnote (note, vocabularyid, standardisedid) VALUES ('micro ring', 2, 168);
-INSERT INTO tlkpreadingnote (note, vocabularyid, standardisedid) VALUES ('locally absent ring', 2, 168);
-UPDATE tlkpvocabulary SET name='Tellervo', url='http://www.tellervo.org' WHERE name='Corina';
+
 
 CREATE EXTENSION pgcrypto;
 ALTER TABLE tblsecurityuser ALTER COLUMN password TYPE varchar(132);
 
 
-CREATE OR REPLACE FUNCTION cpgdb.updatepwd()
-  RETURNS void AS
-$BODY$DECLARE
-  mviews RECORD;
-  query VARCHAR;
-BEGIN
-   FOR mviews IN SELECT * FROM tblsecurityuser LOOP
-     IF left(mviews.password, 1) != '\' THEN
-	     query := 'UPDATE tblsecurityuser set password=''\xc' || mviews.password || ''' WHERE securityuserid='|| mviews.securityuserid;
-	     EXECUTE query;
-     END IF;
-   END LOOP;
-END;$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION cpgdb.updatepwd()
-  OWNER TO pwb48;
 
 INSERT INTO tblconfig (key, value, description) VALUES ('hashAlgorithm', 'md5', 'Algorithm to use for hashing of passwords');
 
-UPDATE tblsupportedclient set value='1.0.2' where client='Tellervo WSI';
+UPDATE tblsupportedclient set minversion='1.0.2' where client='Tellervo WSI';
 
 
 
@@ -35,16 +16,22 @@ UPDATE tblsupportedclient set value='1.0.2' where client='Tellervo WSI';
 --
 CREATE OR REPLACE FUNCTION create_defaultreadingnotestandardisedid()
   RETURNS trigger AS
-$BODY$BEGIN
+$BODY$DECLARE
+
+newuuid uuid;
 
 
-IF NEW.vocabularyid=1 THEN
+BEGIN
+
+
+IF NEW.vocabularyid<2 THEN
   NEW.standardisedid=NEW.readingnoteid;
   RETURN NEW;
 END IF;
 
 IF NEW.standardisedid IS NULL THEN
-  NEW.standardisedid=NEW.readingnoteid;
+	newuuid = uuid_generate_v1mc();
+  NEW.standardisedid=newuuid;
 END IF;
 
 
@@ -56,10 +43,16 @@ END;$BODY$
   COST 100;
 
 
-update tlkpreadingnote set standardisedid=readingnoteid where standardisedid is null;
 
+ALTER TABLE tlkpreadingnote ALTER COLUMN standardisedid TYPE varchar(100);
+
+
+INSERT INTO tlkpreadingnote (note, vocabularyid, standardisedid) VALUES ('micro ring', 2, '066e34a2-a210-11e2-b5c3-9bdc8beec740');
+INSERT INTO tlkpreadingnote (note, vocabularyid, standardisedid) VALUES ('locally absent ring', 2, '24ae1d4c-a210-11e2-8670-335ff0d06e0c');
 
 Insert into tlkpvocabulary (vocabularyid, name, url) values (4, 'FHX', 'http://www.frames.gov/partner-sites/fhaes/fhaes-home/');
+update tlkpvocabulary set name='Tellervo', url='http://www.tellervo.org' where name='Corina';
+
 
 Insert into tlkpreadingnote (note, vocabularyid, standardisedid) values ('Fire scar - position undetermined', 4, 'U');
 Insert into tlkpreadingnote (note, vocabularyid, standardisedid) values ('Fire injury - position undetermined', 4, 'u');
@@ -73,6 +66,9 @@ Insert into tlkpreadingnote (note, vocabularyid, standardisedid) values ('Fire s
 Insert into tlkpreadingnote (note, vocabularyid, standardisedid) values ('Fire injury in middle third of earlywood', 4, 'm');
 Insert into tlkpreadingnote (note, vocabularyid, standardisedid) values ('Fire scar in last third of earlywood', 4, 'L');
 Insert into tlkpreadingnote (note, vocabularyid, standardisedid) values ('Fire injury in last third of earlywood', 4, 'l');
+Insert into tlkpreadingnote (note, vocabularyid, standardisedid) values ('Not recording fires', 4, '.');
+
+
 
 -- Function: cpgdb.resultnotestojson(integer[], integer[])
 
