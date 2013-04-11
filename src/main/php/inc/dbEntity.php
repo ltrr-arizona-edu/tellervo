@@ -2594,13 +2594,11 @@ class securityUserEntity extends dbEntity
     
     function setPassword($thePassword, $format="plain")
     {
-	global $hashAlgorithm;
-
         switch($format)
         {
         case "plain":
             // password supplied is plain text so hash first
-            $this->password=hash($hashAlgorithm, $thePassword);
+            $this->password=hash('md5', $thePassword);
             break;
         case "hash":
             // password is already hashed so just store
@@ -3378,7 +3376,7 @@ class measurementEntity extends dbEntity
 
 		global $dbconn;
 		
-		$sql = "select vwq.* from cpgdb.findObjectAncestors('$juniorObjectID', true) oa JOIN vwTblObject vwq ON oa.objectid=vwq.objectid";
+		$sql = "select vwq.* from cpgdb.findObjectAncestors('$juniorObjectID', true) oa JOIN vwTblObject vwq ON oa.objectid=vwq.objectid order by parentobjectid";
 		    
 		$dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)

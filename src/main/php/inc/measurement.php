@@ -274,9 +274,8 @@ class measurement extends measurementEntity implements IDBAccessor
 						foreach($jsonNotes as $note)
 						{			
 							$currReadingNote = new readingNote();
-							$currReadingNote->setID($note['dbid']);
+							$currReadingNote->setID($note['stdid']);
 							$currReadingNote->setNote($note['note']);
-							$currReadingNote->setStandardisedID($note['stdid']);
 							$currReadingNote->setInheritedCount($note['icnt']);
 							$currReadingNote->setControlledVoc(null, $note['std']);				
 							
@@ -1147,7 +1146,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		$xml.= "<tridas:".$this->getTridasSeriesType()." id=\"".$this->getXMLRefID()."\">";
 		$xml.= $this->getIdentifierXML();
 		
-		if($this->getComments()!=NULL)	$xml.= "<tridas:comments>".pg_escape_string($this->getComments())."</tridas:comments>\n";
+		if($this->getComments()!=NULL)	$xml.= "<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
 		if($this->getBirthDate()!=NULL)	$xml.= "<tridas:derivationDate>".pg_escape_string($this->getBirthDate())."</tridas:derivationDate>\n";	
 
 		if(isset($this->vmeasurementOp)) 			$xml.= "<tridas:type>".dbhelper::escapeXMLChars($this->vmeasurementOp->getValue())."</tridas:type>\n";
@@ -1905,25 +1904,32 @@ class measurement extends measurementEntity implements IDBAccessor
 					$transaction = array("begin;", $deleteSQL, $insertSQL, $updateSQL2, $updateSQL );
 					
 					$firebug->log($transaction, "SQL Transaction for writeToDB");
-					
+
+					$res = pg_get_result($dbconn);
+					$firebug->log($res, "PG_GET_RESULT");					
+
 					foreach($transaction as $stmt)
 					{
 						if ($stmt==NULL) continue;
+
+						$firebug->log($stmt, "Transaction statement");
 						pg_send_query($dbconn, $stmt);
-						$result = pg_get_result($dbconn);	
-						if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
-						{
-							if(substr(pg_result_error($result), 8, 21)=='EVERSIONALREADYEXISTS')
+						while ($result = pg_get_result($dbconn))
+						{	
+							if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
 							{
-								trigger_error("911"."A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
-							}	
-							else
-							{
-								trigger_error("002".pg_result_error($result)."--- SQL was $stmt", E_USER_ERROR);
+								if(substr(pg_result_error($result), 8, 21)=='EVERSIONALREADYEXISTS')
+								{
+									trigger_error("911"."A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
+								}	
+								else
+								{
+									trigger_error("002".pg_result_error($result)."--- SQL was $stmt", E_USER_ERROR);
+								}
+								
+								pg_query($dbconn, "rollback;");
+								return FALSE;
 							}
-							
-							pg_query($dbconn, "rollback;");
-							return FALSE;
 						}
 					}
 

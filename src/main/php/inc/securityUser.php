@@ -315,10 +315,10 @@ class securityUser extends securityUserEntity implements IDBAccessor
                 {
                     // New record
                     $sql = "insert into tblsecurityuser (username, password, firstName, lastName, isactive) values (";
-                    $sql.= "'".$this->username."', ";
-                    $sql.= "'".$this->password."', ";
-                    $sql.= "'".$this->firstName."', ";
-                    $sql.= "'".$this->lastName."', ";
+                    $sql.= "'".pg_escape_string($this->username)."', ";
+                    $sql.= "'".pg_escape_string($this->password)."', ";
+                    $sql.= "'".pg_escape_string($this->firstName)."', ";
+                    $sql.= "'".pg_escape_string($this->lastName)."', ";
                     $sql.= dbhelper::formatBool($this->isActive,'pg');
                     $sql.= " )";
                     $sql2 = "select * from tblsecurityuser where securityuserid=currval('tblsecurityuser_securityuserid_seq')";
@@ -327,10 +327,10 @@ class securityUser extends securityUserEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql = "update tblsecurityuser set ";
-                    $sql.= "username = '".$this->username."', ";
-                    $sql.= "password = '".$this->password."', ";
-                    $sql.= "firstName = '".$this->firstName."', ";
-                    $sql.= "lastName = '".$this->lastName."', ";
+                    $sql.= "username = '".pg_escape_string($this->username)."', ";
+                    $sql.= "password = '".pg_escape_string($this->password)."', ";
+                    $sql.= "firstName = '".pg_escape_string($this->firstName)."', ";
+                    $sql.= "lastName = '".pg_escape_string($this->lastName)."', ";
                     $sql.= "isactive = ".dbhelper::formatBool($this->isActive, 'pg');
                     $sql.= " where securityuserid = '".$this->id."'";
                 }

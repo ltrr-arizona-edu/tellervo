@@ -109,12 +109,12 @@ class searchParameters implements IParams
 		
 									'elementid' => 							array ('tbl' => 'vwtblelement', 	'field'  => 'elementid'),
 									//'elementdbid' => 						array('tbl' => 'vwtblelement', 'field' => 'elementid'),
-									'elementoriginaltaxonname' => 			array('tbl' => 'vwtblelement', 'field' => 'originaltaxonname'),
+									'elementoriginaltaxonname' => 			array('tbl' => 'vwtblelement', 'field' => 'taxonlabel'),
 									//'elementphylumname' => array('tbl' => 'vwtblelement', 'field' => ''),
 									//'elementclassname' => array('tbl' => 'vwtblelement', 'field' => ''),
-									//'elementordername' => array('tbl' => 'vwtblelement', 'field' => ''),
-									//'elementfamilyname' => array('tbl' => 'vwtblelement', 'field' => ''),
-									//'elementgenusname' => array('tbl' => 'vwtblelement', 'field' => ''),
+									'elementordername' => array('tbl' => 'vwtblelement', 'field' => 'taxonorder'),
+									'elementfamilyname' => array('tbl' => 'vwtblelement', 'field' => 'taxonfamily'),
+									'elementgenusname' => array('tbl' => 'vwtblelement', 'field' => 'taxongenus'),
 									//'elementspeciesname' => array('tbl' => 'vwtblelement', 'field' => ''),
 									//'elementinfraspeciesname' => array('tbl' => 'vwtblelement', 'field' => ''),
 									//'elementinfraspeciestype' => array('tbl' => 'vwtblelement', 'field' => ''),
@@ -179,7 +179,7 @@ class searchParameters implements IParams
 									//'seriesunit'=>							array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									//'seriespower' =>						array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									'seriesmeasuringdate' =>				array('tbl' => 'vwcomprehensivevm', 'field' => 'birthdate'),
-									'seriesanalyst' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'measuredbyid'),
+									'seriesanalyst' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'measuredby'),
 									//'seriesdendrochronologist' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									'seriescomments' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'comments'),
 
@@ -199,7 +199,7 @@ class searchParameters implements IParams
 									'seriesdatingtype' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'datingtype'),
 									//'seriesdatingerrorpositive' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									//'seriesdatingerrornegative' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
-									//'seriesvaluecount' =>					array('tbl' => 'vwcomprehensivevm', 'field' => ''),
+									'seriesvaluecount' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'readingcount'),
 									'seriescount' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'directchildcount'),
 									'seriescode' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'code')
 		
@@ -294,22 +294,22 @@ class permissionParameters extends permissionEntity implements IParams
 		   $firebug->log($child->tagName, "permissions tag name");
 		   switch ($child->tagName)
 		   {
-		   	case "permissionToCreate": 	$this->setCanCreate($child->nodeValue); break;
-		   	case "permissionToRead": 	$this->setCanRead($child->nodeValue); break;
-		   	case "permissionToUpdate": 	$this->setCanUpdate($child->nodeValue); break;
-		   	case "permissionToDelete": 	$this->setCanDelete($child->nodeValue); break;
-		   	case "permissionDenied": 	$this->setPermDenied($child->nodeValue); break;
+		   	case "c:permissionToCreate": 	$this->setCanCreate($child->nodeValue); break;
+		   	case "c:permissionToRead": 	$this->setCanRead($child->nodeValue); break;
+		   	case "c:permissionToUpdate": 	$this->setCanUpdate($child->nodeValue); break;
+		   	case "c:permissionToDelete": 	$this->setCanDelete($child->nodeValue); break;
+		   	case "c:permissionDenied": 	$this->setPermDenied($child->nodeValue); break;
 		   	
-		   	case "entity":
+		   	case "c:entity":
 		   		$entity = array("type" => $child->getAttribute("type"), "id" => $child->getAttribute("id"));
 		   		array_push($this->entityArray, $entity);		   		
 		   		break;
 		   		
-		   	case "securityGroup":
+		   	case "c:securityGroup":
 		   		array_push($this->securityGroupArray, $child->getAttribute("id"));	
 		   		break;
 		   		
-		   	case "securityUser":
+		   	case "c:securityUser":
 		   		array_push($this->securityUserArray, $child->getAttribute("id"));	
 		   		break;
 		   		
@@ -347,8 +347,9 @@ class authenticationParameters implements IParams
         else
         {
     		$this->xmlRequestDom = new DomDocument();
-    		$this->xmlRequestDom->loadXML($xmlrequest);
-        }
+    		$this->xmlRequestDom->loadXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><c:tellervo xmlns:c=\"http://www.tellervo.org/schema/1.0\""+
+    				" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\">\"$xmlrequest</c:tellervo>");
+        } 
         
         $this->setParamsFromXMLRequest();
     }
@@ -418,7 +419,8 @@ class objectParameters extends objectEntity implements IParams
         else
         {
     		$this->xmlRequestDom = new DomDocument();
-    		$this->xmlRequestDom->loadXML($xmlrequest);
+    		$this->xmlRequestDom->loadXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><c:tellervo xmlns:c=\"http://www.tellervo.org/schema/1.0\""+
+    				" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\">\""+$xmlrequest+"</c:tellervo>");
         }
      		
         $this->parentID=$parentID;
@@ -442,18 +444,18 @@ class objectParameters extends objectEntity implements IParams
         	
 		   switch ($child->tagName)
 		   {
-		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
-		   	case "description":			$this->setDescription($child->nodeValue); break;
-		   	case "creator":				$this->setCreator($child->nodeValue); break;
-		   	case "title":				$this->setTitle($child->nodeValue); break;
-		   	case "owner":				$this->setOwner($child->nodeValue); break;
-		   	case "file":				$this->addFile($child->nodeValue); break;
-		   	case "title":				$this->setTitle($child->nodeValue); break;
-		   	case "comments":			$this->setComments($child->nodeValue); break;
-		   	case "createdTimestamp":	break;
-		   	case "lastModifiedTimestamp": break;
+		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+		   	case "tridas:description":			$this->setDescription($child->nodeValue); break;
+		   	case "tridas:creator":				$this->setCreator($child->nodeValue); break;
+		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
+		   	case "tridas:owner":				$this->setOwner($child->nodeValue); break;
+		   	case "tridas:file":				$this->addFile($child->nodeValue); break;
+		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
+		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;
+		   	case "tridas:createdTimestamp":	break;
+		   	case "tridas:lastModifiedTimestamp": break;
 
-		    case "type": 				
+		    case "tridas:type": 				
 		   		if($child->hasAttribute("normalStd"))
 		   		{
 		   			if($child->getAttribute("normalStd")=="Tellervo")
@@ -468,7 +470,7 @@ class objectParameters extends objectEntity implements IParams
 		   		}
 				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
 		   	
-		   	case "location": 
+		   	case "tridas:location": 
 				$locationTags = $child->childNodes;
 				foreach($locationTags as $tag)
 				{	
@@ -476,11 +478,11 @@ class objectParameters extends objectEntity implements IParams
 		  	 		
 		  	 		switch($tag->tagName)
 		  	 		{
-		  	 			case "locationGeometry": $this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
-		  	 			case "locationComment" : $this->location->setComment($tag->nodeValue); break;
-		  	 			case "locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
-		  	 			case "locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	
-		  	 			case "address":		
+		  	 			case "tridas:locationGeometry": $this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
+		  	 			case "tridas:locationComment" : $this->location->setComment($tag->nodeValue); break;
+		  	 			case "tridas:locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
+		  	 			case "tridas:locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	
+		  	 			case "tridas:address":		
 		  	 				$addressTags = $tag->childNodes;  
 		  	 				foreach($addressTags as $addtag)
 							{	
@@ -488,12 +490,12 @@ class objectParameters extends objectEntity implements IParams
 					  	 		
 					  	 		switch($addtag->tagName)
 					  	 		{	
-					  	 			case "addressLine1":		$this->location->setAddressLine1($addtag->nodeValue); break;	  	 				
-					  	 			case "addressLine2":		$this->location->setAddressLine2($addtag->nodeValue); break;	
-					  	 			case "cityOrTown":			$this->location->setCityOrTown($addtag->nodeValue); break;	
-					  	 			case "stateProvinceRegion":	$this->location->setStateProvinceRegion($addtag->nodeValue); break;  	 				
-					  	 			case "postalCode":			$this->location->setPostalCode($addtag->nodeValue); break;
-					  	 			case "country":				$this->location->setCountry($addtag->nodeValue); break;
+					  	 			case "tridas:addressLine1":		$this->location->setAddressLine1($addtag->nodeValue); break;	  	 				
+					  	 			case "tridas:addressLine2":		$this->location->setAddressLine2($addtag->nodeValue); break;	
+					  	 			case "tridas:cityOrTown":			$this->location->setCityOrTown($addtag->nodeValue); break;	
+					  	 			case "tridas:stateProvinceRegion":	$this->location->setStateProvinceRegion($addtag->nodeValue); break;  	 				
+					  	 			case "tridas:postalCode":			$this->location->setPostalCode($addtag->nodeValue); break;
+					  	 			case "tridas:country":				$this->location->setCountry($addtag->nodeValue); break;
 					  	 			default:
 									trigger_error("901"."Unknown tag ".$addtag->tagName." in address section of the 'element' entity. This tag is being ignored", E_USER_NOTICE);		  	 			
 					  	 		}
@@ -506,7 +508,7 @@ class objectParameters extends objectEntity implements IParams
 				}
 				break;
 		   	
-		   	case "genericField":
+		   	case "tridas:genericField":
 		   		$type = $child->getAttribute("type");
 		   		$name = $child->getAttribute("name");
 		   		$value = $child->nodeValue;		   		
@@ -521,14 +523,14 @@ class objectParameters extends objectEntity implements IParams
 		   		}
 		   		break;
 			
-		   	case "coverage":			
+		   	case "tridas:coverage":			
 		   		$coverageTags = $child->childNodes;
 		   		foreach($covereageTags as $tag)
 		   		{
 		   			switch($tag->tagName)
 		   			{
-		   				case "coverageTemporal":			$coverageTemporal = $tag->nodeValue; break;
-		   				case "coverageTemporalFoundation": 	$coverageTemporalFoundation = $tag->nodeValue; break;
+		   				case "tridas:coverageTemporal":			$coverageTemporal = $tag->nodeValue; break;
+		   				case "tridas:coverageTemporalFoundation": 	$coverageTemporalFoundation = $tag->nodeValue; break;
 
 		   			}
 		   			
@@ -539,7 +541,7 @@ class objectParameters extends objectEntity implements IParams
 		   	
 		   	
 		   		
-		   	case "object":
+		   	case "tridas:object":
 		   		trigger_error("901"."Nested objects not supported in XML request.  Use parentID instead to show relationships", E_USER_ERROR);
 		   		break;
 		   		
@@ -594,12 +596,12 @@ class elementParameters extends elementEntity implements IParams
 
 		   switch ($child->tagName)
 		   {
-		   	case "title":				$this->setTitle($child->nodeValue); break;		   	
-		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;		   		
-		   	case "createdTimestamp":	  break;
-		   	case "lastModifiedTimestamp": break;	
-		   	case "comments":			$this->setComments($child->nodeValue); break;			   	
-		   	case "type": 				
+		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;		   	
+		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;		   		
+		   	case "tridas:createdTimestamp":	  break;
+		   	case "tridas:lastModifiedTimestamp": break;	
+		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;			   	
+		   	case "tridas:type": 				
 		   		if($child->hasAttribute("normalStd"))
 		   		{
 		   			if($child->getAttribute("normalStd")=="Tellervo")
@@ -615,9 +617,9 @@ class elementParameters extends elementEntity implements IParams
 				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
 		   		
 		   		
-		   	case "description":			$this->setDescription($child->nodeValue); break;
-		   	case "file": 				$this->addFile($child->nodeValue); break;
-		   	case "taxon":
+		   	case "tridas:description":			$this->setDescription($child->nodeValue); break;
+		   	case "tridas:file": 				$this->addFile($child->nodeValue); break;
+		   	case "tridas:taxon":
 		   		/* @todo Decisions need to be made as to how taxonomy and dictionaries will be handled
 		   		 * */
 
@@ -632,8 +634,8 @@ class elementParameters extends elementEntity implements IParams
 					trigger_error("901"."The Tellervo web service only supports taxonomic data that conforms to the '$taxonomicAuthorityEdition'.  Please normalise your data and try again.", E_USER_ERROR);
 		   		}
 		   		break; 
-		   	case "shape": $this->setShape(null, $child->getAttribute("normalTridas")); break; 
-		   	case "dimensions":
+		   	case "tridas:shape": $this->setShape(null, $child->getAttribute("normalTridas")); break; 
+		   	case "tridas:dimensions":
 		   		
 		   		$unitTag = $child->getElementsByTagName("unit")->item(0);
 		   		$this->setDimensionUnits($unitTag->getAttribute("normalID"), $unitTag->getAttribute("normalTridas"));
@@ -645,31 +647,31 @@ class elementParameters extends elementEntity implements IParams
 		   			if($dimension->nodeType != XML_ELEMENT_NODE) continue;
 		   			switch ($dimension->tagName)
 		   			{
-		   				case "units":
+		   				case "tridas:units":
 		   					//@todo implement
 		   					break;
-		   				case "diameter":
+		   				case "tridas:diameter":
 		   					$this->setDiameter($dimension->nodeValue);
 		   					break;
-		   				case "height":
+		   				case "tridas:height":
 		   					$this->setHeight($dimension->nodeValue);
 		   					break;
-		   				case "width":
+		   				case "tridas:width":
 		   					
 		   					$this->setWidth($dimension->nodeValue);
 		   					break;
-		   				case "depth":
+		   				case "tridas:depth":
 		   					$this->setDepth($dimension->nodeValue);
 		   					break;
 		   			}
 		   		}
 		   		break;
-		   	case "authenticity":	 	$this->setAuthenticity($child->nodeValue); break;   		   	
-		   	case "processing": 			$this->setProcessing($child->nodeValue); break;	   	
-		   	case "marks": 				$this->setMarks($child->nodeValue); break;
-		   	case "altitude":			$this->setAltitude($child->nodeValue); break;
+		   	case "tridas:authenticity":	 	$this->setAuthenticity($child->nodeValue); break;   		   	
+		   	case "tridas:processing": 			$this->setProcessing($child->nodeValue); break;	   	
+		   	case "tridas:marks": 				$this->setMarks($child->nodeValue); break;
+		   	case "tridas:altitude":			$this->setAltitude($child->nodeValue); break;
 
-		    case "location": 
+		    case "tridas:location": 
 				$locationTags = $child->childNodes;
 				foreach($locationTags as $tag)
 				{	
@@ -677,11 +679,11 @@ class elementParameters extends elementEntity implements IParams
 		  	 		
 		  	 		switch($tag->tagName)
 		  	 		{
-		  	 			case "locationGeometry": $this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
-		  	 			case "locationComment" : $this->location->setComment($tag->nodeValue); break;
-		  	 			case "locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
-		  	 			case "locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	 
-		  	 			case "address":		
+		  	 			case "tridas:locationGeometry": $this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
+		  	 			case "tridas:locationComment" : $this->location->setComment($tag->nodeValue); break;
+		  	 			case "tridas:locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
+		  	 			case "tridas:locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	 
+		  	 			case "tridas:address":		
 		  	 				$addressTags = $tag->childNodes;  
 		  	 				foreach($addressTags as $addtag)
 							{	
@@ -689,12 +691,12 @@ class elementParameters extends elementEntity implements IParams
 					  	 		
 					  	 		switch($addtag->tagName)
 					  	 		{	
-					  	 			case "addressLine1":		$this->location->setAddressLine1($addtag->nodeValue); break;	  	 				
-					  	 			case "addressLine2":		$this->location->setAddressLine2($addtag->nodeValue); break;	
-					  	 			case "cityOrTown":			$this->location->setCityOrTown($addtag->nodeValue); break;	
-					  	 			case "stateProvinceRegion":	$this->location->setStateProvinceRegion($addtag->nodeValue); break;  	 				
-					  	 			case "postalCode":			$this->location->setPostalCode($addtag->nodeValue); break;
-					  	 			case "country":				$this->location->setCountry($addtag->nodeValue); break;
+					  	 			case "tridas:addressLine1":		$this->location->setAddressLine1($addtag->nodeValue); break;	  	 				
+					  	 			case "tridas:addressLine2":		$this->location->setAddressLine2($addtag->nodeValue); break;	
+					  	 			case "tridas:cityOrTown":			$this->location->setCityOrTown($addtag->nodeValue); break;	
+					  	 			case "tridas:stateProvinceRegion":	$this->location->setStateProvinceRegion($addtag->nodeValue); break;  	 				
+					  	 			case "tridas:postalCode":			$this->location->setPostalCode($addtag->nodeValue); break;
+					  	 			case "tridas:country":				$this->location->setCountry($addtag->nodeValue); break;
 					  	 			default:
 									trigger_error("901"."Unknown tag ".$addtag->tagName." in address section of the 'element' entity. This tag is being ignored", E_USER_NOTICE);		  	 			
 					  	 		}
@@ -707,7 +709,7 @@ class elementParameters extends elementEntity implements IParams
 				}
 				break;
  	
-		   	case "slope":
+		   	case "tridas:slope":
 		   		$slopeTags = $child->childNodes;
 		   		
 		   		foreach($slopeTags as $slopeTag)
@@ -715,16 +717,16 @@ class elementParameters extends elementEntity implements IParams
 		   			if($slopeTag->nodeType != XML_ELEMENT_NODE) continue;
 		   			switch ($slopeTag->tagName)
 		   			{
-		   				case "angle":
+		   				case "tridas:angle":
 		   					$this->setSlopeAngle($slopeTag->nodeValue);
 		   					break;
-		   				case "azimuth":
+		   				case "tridas:azimuth":
 		   					$this->setSlopeAzimuth($slopeTag->nodeValue);
 		   					break;
 		   			}
 		   		}
 		   		break;
-		   	case "soil":
+		   	case "tridas:soil":
 		   		$soilTags = $child->childNodes;
 		   		
 		   		foreach($soilTags as $soilTag)
@@ -732,16 +734,16 @@ class elementParameters extends elementEntity implements IParams
 		   			if($soilTag->nodeType != XML_ELEMENT_NODE) continue;
 		   			switch ($soilTag->tagName)
 		   			{
-		   				case "depth":
+		   				case "tridas:depth":
 		   					$this->setSoilDepth($soilTag->nodeValue);
 		   					break;
-		   				case "description":
+		   				case "tridas:description":
 		   					$this->setSoilDescription($soilTag->nodeValue);
 		   					break;
 		   			}
 		   		}
 		   		break;	
-		   	case "bedrock":
+		   	case "tridas:bedrock":
 		   		$bedrockTags = $child->childNodes;
 		   		
 		   		foreach($bedrockTags as $bedrockTag)
@@ -749,7 +751,7 @@ class elementParameters extends elementEntity implements IParams
 		   			if($bedrockTag->nodeType != XML_ELEMENT_NODE) continue;
 		   			switch ($bedrockTag->tagName)
 		   			{
-		   				case "description":
+		   				case "tridas:description":
 		   					$this->setBedrockDescription($bedrockTag->nodeValue);
 		   					break;
 		   			}
@@ -758,7 +760,7 @@ class elementParameters extends elementEntity implements IParams
 
 	   	
 		   	
-		   	case "genericField":
+		   	case "tridas:genericField":
 		   		$type = $child->getAttribute("type");
 		   		$name = $child->getAttribute("name");
 		   		$value = $child->nodeValue;		   		
@@ -785,7 +787,7 @@ class elementParameters extends elementEntity implements IParams
 		   		}
 		   		break;
 	
-		   	case "sample":
+		   	case "tridas:sample":
 		   		break;
 		   		
 		   	default:
@@ -853,12 +855,12 @@ class sampleParameters extends sampleEntity implements IParams
         	
 		   switch ($child->tagName)
 		   {
-		   	case "title":				$this->setTitle($child->nodeValue); break;
-		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
-		   	case "createdTimestamp":	  break;
-		   	case "lastModifiedTimestamp": break;	
-		   	case "comments":			$this->setComments($child->nodeValue); break;
-		   	case "type": 				
+		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
+		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+		   	case "tridas:createdTimestamp":	  break;
+		   	case "tridas:lastModifiedTimestamp": break;	
+		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;
+		   	case "tridas:type": 				
 		   		if($child->hasAttribute("normalStd"))
 		   		{
 		   			if($child->getAttribute("normalStd")=="Tellervo")
@@ -872,15 +874,15 @@ class sampleParameters extends sampleEntity implements IParams
 		   			}
 		   		}
 				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
-		   	case "description":			$this->setDescription($child->nodeValue); break;	
-		   	case "file":				$this->addFile($child->nodeValue); break;		   	
-		   	case "samplingDate":		$this->setSamplingDate($child->nodeValue); break;
-		   	case "position":			$this->setPosition($child->nodeValue); break;
-		   	case "state":				$this->setState($child->nodeValue); break;
-		   	case "knots":				$this->setKnots(dbHelper::formatBool($child->nodeValue)); break;
+		   	case "tridas:description":			$this->setDescription($child->nodeValue); break;	
+		   	case "tridas:file":				$this->addFile($child->nodeValue); break;		   	
+		   	case "tridas:samplingDate":		$this->setSamplingDate($child->nodeValue); break;
+		   	case "tridas:position":			$this->setPosition($child->nodeValue); break;
+		   	case "tridas:state":				$this->setState($child->nodeValue); break;
+		   	case "tridas:knots":				$this->setKnots(dbHelper::formatBool($child->nodeValue)); break;
 		   		
 
-		   	case "genericField":
+		   	case "tridas:genericField":
 		   		$type = $child->getAttribute("type");
 		   		$name = $child->getAttribute("name");
 		   		$value = $child->nodeValue;		   		
@@ -955,31 +957,31 @@ class radiusParameters extends radiusEntity implements IParams
         	
 		   switch ($child->tagName)
 		   {
-		   	case "title":				$this->setTitle($child->nodeValue); break;
-		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
-   			case "createdTimestamp": 	  break;
-   			case "lastModifiedTimestamp": break;
-		   	case "comments":			$this->setComments($child->nodeValue); break;			
-		   	case "woodCompleteness":
+		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
+		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+   			case "tridas:createdTimestamp": 	  break;
+   			case "tridas:lastModifiedTimestamp": break;
+		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;			
+		   	case "tridas:woodCompleteness":
 		   		$woodCompletenessTags = $child->childNodes;
 		   		foreach($woodCompletenessTags as $tag)
 		   		{
 		   			if($tag->nodeType != XML_ELEMENT_NODE) continue;
 		   			switch ($tag->tagName)
 		   			{
-		   				case "nrOfUnmeasuredInnerRings":
+		   				case "tridas:nrOfUnmeasuredInnerRings":
 		   					$this->setNrOfUnmeasuredInnerRings($tag->nodeValue);
 		   					$firebug->log($tag->nodeValue, "setting unmeasured inner rings");
 		   					break;
 		   					
-		   				case "nrOfUnmeasuredOuterRings":
+		   				case "tridas:nrOfUnmeasuredOuterRings":
 		   					$this->setNrOfUnmeasuredOuterRings($tag->nodeValue);
 		   					break;		   					
 		   				
-		   				case "pith":
+		   				case "tridas:pith":
 		   					$this->setPith(NULL, $tag->getAttribute("presence"));
 		   					break;
-		   				case "heartwood":	
+		   				case "tridas:heartwood":	
 					   		$this->setHeartwood(null, $tag->getAttribute("presence"));
 					   		
 					   		$heartwoodtags = $tag->childNodes;
@@ -989,14 +991,14 @@ class radiusParameters extends radiusEntity implements IParams
 					   			if($heartwoodtag->nodeType != XML_ELEMENT_NODE) continue;
 					   			switch($heartwoodtag->tagName)
 					   			{
-					   				case "missingHeartwoodRingsToPith":				$this->setMissingHeartwoodRingsToPith($heartwoodtag->nodeValue); break;
-					   				case "missingHeartwoodRingsToPithFoundation":	$this->setMissingHeartwoodRingsToPithFoundation($heartwoodtag->nodeValue); break;	
+					   				case "tridas:missingHeartwoodRingsToPith":				$this->setMissingHeartwoodRingsToPith($heartwoodtag->nodeValue); break;
+					   				case "tridas:missingHeartwoodRingsToPithFoundation":	$this->setMissingHeartwoodRingsToPithFoundation($heartwoodtag->nodeValue); break;	
 					   				default:
 					   					trigger_error("901"."Unknown tag &lt;".$heartwoodtag->tagName."&gt; in 'radius.woodCompleteness.heartwood' entity of the XML request. Tag is being ignored", E_USER_NOTICE);	
 					   			}
 					   		}
 					   		break;		   					
-		   				case "sapwood":
+		   				case "tridas:sapwood":
 		   					$this->setSapwood(NULL, $tag->getAttribute("presence"));
 					   		$sapwoodtags = $tag->childNodes;
 					   		foreach($sapwoodtags as $sapwoodtag)
@@ -1006,8 +1008,8 @@ class radiusParameters extends radiusEntity implements IParams
 					   			switch ($sapwoodtag->tagName)
 					   			{
 					   				
-					   				case "nrOfSapwoodRings": 						$this->setNumberOfSapwoodRings($sapwoodtag->nodeValue); break;
-					   				case "lastRingUnderBark": 						
+					   				case "tridas:nrOfSapwoodRings": 						$this->setNumberOfSapwoodRings($sapwoodtag->nodeValue); break;
+					   				case "tridas:lastRingUnderBark": 						
 					   					if($sapwoodtag->nodeValue=="")
 					   					{
 					   						$this->setLastRingUnderBark("", $sapwoodtag->getAttribute("presence"));
@@ -1017,14 +1019,14 @@ class radiusParameters extends radiusEntity implements IParams
 					   						$this->setLastRingUnderBark($sapwoodtag->nodeValue, $sapwoodtag->getAttribute("presence"));
 					   					}
 					   					break;
-					   				case "missingSapwoodRingsToBark":				$this->setMissingSapwoodRingsToBark($sapwoodtag->nodeValue); break;
-					   				case "missingSapwoodRingsToBarkFoundation": 	$this->setMissingSapwoodRingsToBarkFoundation($sapwoodtag->nodeValue); break;
+					   				case "tridas:missingSapwoodRingsToBark":				$this->setMissingSapwoodRingsToBark($sapwoodtag->nodeValue); break;
+					   				case "tridas:missingSapwoodRingsToBarkFoundation": 	$this->setMissingSapwoodRingsToBarkFoundation($sapwoodtag->nodeValue); break;
 					   				default:
 					   					trigger_error("901"."Unknown tag &lt;".$sapwoodtag->tagName."&gt; in 'radius.woodCompleteness.sapwood' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
 					   			}
 					   		}		   			
 							break;
-		   				case "bark":
+		   				case "tridas:bark":
 		   					$firebug->log($tag->getAttribute("presence"), "bark tag: ");
 		   					$this->setBarkPresent($tag->getAttribute("presence"));
 		   					break;					   		
@@ -1034,8 +1036,8 @@ class radiusParameters extends radiusEntity implements IParams
 		   			}
 		   		}		   			
 				break;
-		   	case "azimuth":				$this->setAzimuth($child->nodeValue); break;
-		   	case "genericField":
+		   	case "tridas:azimuth":				$this->setAzimuth($child->nodeValue); break;
+		   	case "tridas:genericField":
 		   		$type = $child->getAttribute("type");
 		   		$name = $child->getAttribute("name");
 		   		$value = $child->nodeValue;		   		
@@ -1106,15 +1108,15 @@ class measurementParameters extends measurementEntity implements IParams
         	
 		   switch ($child->tagName)
 		   {
-		   	case "title":				$this->setTitle($child->nodeValue);
-		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
-   			case "createdTimestamp": 		break;
-   			case "lastModifiedTimestamp": 	break;			   	
-		   	case "comments":			$this->setComments($child->nodeValue); break;
-   			case "measuringDate":		$this->setMeasuringDate($child->nodeValue); break;
-   			case "derivationDate":		$this->setDerivationDate($child->nodeValue); break;
- 		   	case "type":				$this->setVMeasurementOp(null, $child->nodeValue); break;	  				   	
-   			case "linkSeries":
+		   	case "tridas:title":				$this->setTitle($child->nodeValue);
+		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+   			case "tridas:createdTimestamp": 		break;
+   			case "tridas:lastModifiedTimestamp": 	break;			   	
+		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;
+   			case "tridas:measuringDate":		$this->setMeasuringDate($child->nodeValue); break;
+   			case "tridas:derivationDate":		$this->setDerivationDate($child->nodeValue); break;
+ 		   	case "tridas:type":				$this->setVMeasurementOp(null, $child->nodeValue); break;	  				   	
+   			case "tridas:linkSeries":
    				$seriesTags = $child->childNodes;
    				foreach($seriesTags as $series)
    				{
@@ -1138,16 +1140,16 @@ class measurementParameters extends measurementEntity implements IParams
    					}
    				}
    				break;	
-		   	case "objective":			$this->setObjective($child->nodeValue); break;
-   			case "standardizingMethod":	$this->setStandardizingMethod(null, $child->nodeValue); break;
+		   	case "tridas:objective":			$this->setObjective($child->nodeValue); break;
+   			case "tridas:standardizingMethod":	$this->setStandardizingMethod(null, $child->nodeValue); break;
 		
 		   	// Ignore user name fields as we use genericField ID's for these instead
-		   	case "analyst":				break;
-		   	case "dendrochronologist":	break;
-		   	case "author":				break;
-		   	case "measuringMethod":		$this->setMeasuringMethod(NULL, $child->getAttribute("normalTridas")); break;
-		   	case "version":				$this->setVersion($child->nodeValue); break;
-		   	case "interpretation":
+		   	case "tridas:analyst":				break;
+		   	case "tridas:dendrochronologist":	break;
+		   	case "tridas:author":				break;
+		   	case "tridas:measuringMethod":		$this->setMeasuringMethod(NULL, $child->getAttribute("normalTridas")); break;
+		   	case "tridas:version":				$this->setVersion($child->nodeValue); break;
+		   	case "tridas:interpretation":
 		   		$interpTags = $child->childNodes;
 		   		foreach($interpTags as $interpTag)
 		   		{
@@ -1155,7 +1157,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   			switch($interpTag->nodeName)
 		   			{
 
-		   				case "datingReference":
+		   				case "tridas:datingReference":
 		   					$datingRefTags = $interpTag->childNodes;
 					   		foreach($datingRefTags as $datingRefTag)
 		   					{	
@@ -1163,7 +1165,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   			   			switch($datingRefTag->nodeName)
 		   						{		
 		   							
-						   			case "linkSeries":
+						   			case "tridas:linkSeries":
 						   				$seriesTags = $datingRefTag->childNodes;
 						   				foreach($seriesTags as $series)
 						   				{
@@ -1177,11 +1179,11 @@ class measurementParameters extends measurementEntity implements IParams
 		   						}
 		   					}
 		   					
-			   			case "dating":
+			   			case "tridas:dating":
 			   				$this->dating->setDatingType(null, $interpTag->getAttribute("type"));
 			   				break;
 		   					
-			   			case "firstYear": 
+			   			case "tridas:firstYear": 
 			   				// Special case.  If the series is 'direct' then user may be redating in place
 			   				// Kludgey and gross.
 			   				if($this->getVMeasurementOp()=="Direct")
@@ -1191,8 +1193,8 @@ class measurementParameters extends measurementEntity implements IParams
 								$this->setFirstYear(dateHelper::getSignedYearFromYearWithSuffix($yearwithsuff, "astronomical"));
 							}
 			   				break;
-			   			case "pithYear": break;
-			   			case "deathYear":  break;
+			   			case "tridas:pithYear": break;
+			   			case "tridas:deathYear":  break;
 		   				default:
 		   					trigger_error("901"."Unknown tag &lt;".$interpTag->tagName."&gt;. Tag is being ignored", E_USER_NOTICE);
 		   					
@@ -1200,10 +1202,10 @@ class measurementParameters extends measurementEntity implements IParams
 		   			}
 		   		}
 		   		break;
-			case "interpretationUnsolved":	break;
-			case "location": break;
+			case "tridas:interpretationUnsolved":	break;
+			case "tridas:location": break;
 			
-		    case "genericField":
+		    case "tridas:genericField":
 		   		$type = $child->getAttribute("type");
 		   		$name = $child->getAttribute("name");
 		   		$value = $child->nodeValue;		   		
@@ -1247,8 +1249,13 @@ class measurementParameters extends measurementEntity implements IParams
 		   				
 		   		}
 		   		break;
+
+			case "tridas:woodCompleteness":
+				// Ignore for now, as we expect this in radius instead.  
+				// TODO!
+				break;
 		   			   		
-		   	case "values":
+		   	case "tridas:values":
 		   		
 		   		// In a <values> group tag
 		   		
@@ -1464,15 +1471,15 @@ class boxParameters extends boxEntity implements IParams
         	
 		   switch ($child->tagName)
 		   {
-		   	case "identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
-		   	case "title":				$this->setTitle($child->nodeValue); break;
-		   	case "trackingLocation":	$this->setTrackingLocation($child->nodeValue); break;
-		   	case "curationLocation":	$this->setCurationLocation($child->nodeValue); break;
-		   	case "comments":			$this->setComments($child->nodeValue); break;
-		   	case "createdTimestamp":	break;
-		   	case "lastModifiedTimestamp": break;
-		   	case "sampleCount"			: break;
-		   	case "sample":				break;	   				   		
+		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
+		   	case "tridas:trackingLocation":	$this->setTrackingLocation($child->nodeValue); break;
+		   	case "tridas:curationLocation":	$this->setCurationLocation($child->nodeValue); break;
+		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;
+		   	case "tridas:createdTimestamp":	break;
+		   	case "tridas:lastModifiedTimestamp": break;
+		   	case "tridas:sampleCount"			: break;
+		   	case "tridas:sample":				break;	   				   		
 		   	default:
 		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'box' entity of the XML request", E_USER_NOTICE);
 		   }
@@ -1681,14 +1688,12 @@ class securityUserParameters extends parameters
     
     function getXMLParams()
     {
-	global $hashAlgorithm;
-
         if(isset($this->xmlrequest['id']))              $this->id            = (int) $this->xmlrequest['id'];
         if(isset($this->xmlrequest['isActive']))        $this->isActive      = fromStringToPHPBool($this->xmlrequest['isActive']);
         if(isset($this->xmlrequest['username']))        $this->username      = addslashes(trim($this->xmlrequest['username']));
         if(isset($this->xmlrequest['firstName']))       $this->firstName     = addslashes(trim($this->xmlrequest['firstName']));
         if(isset($this->xmlrequest['lastName']))        $this->lastName      = addslashes(trim($this->xmlrequest['lastName']));
-        if(isset($this->xmlrequest['plainPassword']))   $this->hashPassword  = hash($hashAlgorithm, addslashes(trim($this->xmlrequest['plainPassword'])));
+        if(isset($this->xmlrequest['plainPassword']))   $this->hashPassword  = hash('md5', addslashes(trim($this->xmlrequest['plainPassword'])));
         if(isset($this->xmlrequest['hashPassword']))    $this->hashPassword  = addslashes(trim($this->xmlrequest['hashPassword']));
         
         $groupArray = $this->xmlrequest->xpath('//memberOf');
