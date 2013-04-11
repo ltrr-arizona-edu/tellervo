@@ -347,8 +347,7 @@ class authenticationParameters implements IParams
         else
         {
     		$this->xmlRequestDom = new DomDocument();
-    		$this->xmlRequestDom->loadXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><c:tellervo xmlns:c=\"http://www.tellervo.org/schema/1.0\""+
-    				" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\">\"$xmlrequest</c:tellervo>");
+    		$this->xmlRequestDom->loadXML($xmlrequest);
         } 
         
         $this->setParamsFromXMLRequest();
@@ -419,8 +418,7 @@ class objectParameters extends objectEntity implements IParams
         else
         {
     		$this->xmlRequestDom = new DomDocument();
-    		$this->xmlRequestDom->loadXML("<?xml version=\"1.0\" encoding=\"UTF-8\"?><c:tellervo xmlns:c=\"http://www.tellervo.org/schema/1.0\""+
-    				" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\">\""+$xmlrequest+"</c:tellervo>");
+    		$this->xmlRequestDom->loadXML($xmlrequest);
         }
      		
         $this->parentID=$parentID;

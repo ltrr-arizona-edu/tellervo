@@ -313,6 +313,7 @@ if (isset($args["configure"]) || isset($args["c"]))
 	generateSystemsConfig();
 	include($systemconfig);
 	runDBUpgrades();
+	generateSystemsConfig();
 	apacheSetup();
 	verifySetup();
 	printComplete();
@@ -1028,6 +1029,9 @@ function postgresSetup($quick=false)
 
        // Create credentials file
        exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile"); 
+       exec("chown www-data $credentialsFile");
+       exec("chmod o-rwx $credentialsFile");
+       exec("chmod g-rwx $credentialsFile");
       }
    }
    else
@@ -1037,6 +1041,9 @@ function postgresSetup($quick=false)
 
       // Write to credentials file
       exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile"); 
+      exec("chown www-data $credentialsFile");
+      exec("chmod o-rwx $credentialsFile");
+      exec("chmod g-rwx $credentialsFile");
 
       // Create db user and set permissions
       echo "Setting database permissions...\n";
@@ -1325,8 +1332,14 @@ function verifySetup($silent=false)
 			}
 			else if(substr(getIP(), 0, 3)=="10.") 
 			{
-				if($silent!=TRUE) printResult(FALSE);
-				$runningresult = FALSE;
+				
+				if($silent!=TRUE) 
+				{
+					$colors = new Colors();
+					echo $colors->getColoredString("WARNING", "yellow");
+					echo "\n\n**Your server has a private network address which will limit accessibility**\n\n";
+				}
+				$runningresult = TRUE;
 			}
 			else
 			{

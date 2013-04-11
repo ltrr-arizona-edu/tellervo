@@ -8,7 +8,7 @@ echo "*******************" >> /var/log/tellervo-installation.log
 
    
 if [ $1 = 'remove' ]; then
-   rm /usr/share/tellervo-server/*.backup>
+   rm /usr/share/tellervo-server/*.backup
    rm /usr/share/tellervo-server/server_credentials
    rm /usr/share/tellervo-server/set_database_permission.sql
    rmdir /usr/share/tellervo-server

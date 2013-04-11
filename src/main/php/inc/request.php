@@ -421,9 +421,23 @@ class request
         }
         elseif ( ($this->crudMode=='plainlogin') || ($this->crudMode=='securelogin') || ($this->crudMode=='nonce') || ($this->crudMode=='setpassword')) 
         { 	
-        	$authTag = $this->xmlRequestDom->getElementsByTagName("authenticate")->item(0);
-       		$myParamObj = new authenticationParameters($this->xmlRequestDom->saveXML($authTag));
-       		array_push($this->paramObjectsArray, $myParamObj);  
+                $authTag = $this->xmlRequestDom->getElementsByTagName("authenticate")->item(0);
+
+                if($authTag!=null)
+                {
+
+                        $authTag->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', $tellervoNS);
+                        $authTag->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:tridas', $tridasNS);
+
+                        $myParamObj = new authenticationParameters($this->xmlRequestDom->saveXML($authTag));
+                        array_push($this->paramObjectsArray, $myParamObj);  
+                }
+                else
+                {
+                        $myParamObj = new authenticationParameters("<tellervo></tellervo>");
+                        array_push($this->paramObjectsArray, $myParamObj);  
+                }
+
         }
         
         else
