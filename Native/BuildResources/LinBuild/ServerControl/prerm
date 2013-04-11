@@ -6,11 +6,13 @@ echo "*******************" >> /var/log/tellervo-installation.log
 
 if [ $1 = 'upgrade' ]; then
 
-   ## Upgrading so, move aside config.php file so
-   ## so it doesn't get over-written
+   echo "*****************************************************************" >> /var/log/tellervo-installation.log
+   echo "*****************************************************************" >> /var/log/tellervo-installation.log
+   echo "      UPGRADING TELLERVO SERVER TO VERSION $2 ">> /var/log/tellervo-installation.log;
+   echo "*****************************************************************" >> /var/log/tellervo-installation.log
+   echo "*****************************************************************" >> /var/log/tellervo-installation.log
    
-   echo "Upgrading Tellervo server to a new version" >> /var/log/tellervo-installation.log
-
+     
 elif [ $1 = 'failed-upgrade' ]; then
 
    echo "Previous versions prerm script failed, but continuing anyway... " >> /var/log/tellervo-installation.log

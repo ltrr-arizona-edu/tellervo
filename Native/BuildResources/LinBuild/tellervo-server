@@ -91,8 +91,8 @@ if(isset($args["test"]) || isset($args["t"]))
 	// Test configuration
 	include($configfile);
 	include($dbsetupfile);
-	$setupsuccessful = verifySetup();
-	printComplete($setupsuccessful);
+	verifySetup();
+	printComplete();
 }
 if(isset($args["firstrun"]))
 {
@@ -307,7 +307,7 @@ if (isset($args["configure"]) || isset($args["c"]))
 	
 	// Setup not yet ok so configure from scratch
 	createScriptsFromTemplates();
-	postgresSetup();
+	postgresSetup();	
 	include($configfile);
 	include($dbsetupfile);
 	generateSystemsConfig();
@@ -371,8 +371,8 @@ if (isset($args["network"]) || isset($args["n"]))
 	require("$configfile");
 	require("$dbsetupfile");
 	require("$systemconfig");
-	$setupsuccessful = verifySetup();
-	printComplete($setupsuccessful);
+	verifySetup();
+	printComplete();
 	
 	if($setupsuccessful)
 	{
@@ -537,7 +537,7 @@ function showHelp($forced=false)
   echo "  -c, --configure     *Configure server\n";
   echo "  -r, --reconfigure   *Reconfigure the server overwriting existing config\n";
   echo "  -n, --network       *Check network settings and reset if necessary\n";
-  echo "  -e, --empty-log     *Clean the log files and database tables\n";
+  echo "  -e, --emptylog      *Clean the log files and database tables\n";
   echo "  -s, --sysconfig     *Generate the systems configuration file\n";
   echo "      --set-db-pwd    *Reset the PostgreSQL database password\n";
   echo "      --set-admin-pwd *Reset the Tellervo desktop login for the admin user\n"; 
@@ -575,10 +575,17 @@ function runDBUpgrades()
 {	
 	global $upgradeScripts;
 	global $logfile;
+	global $configfile;
+    global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;
 	
 	$scriptsRun = 0;
 
 	echo "Upgrading existing Tellervo database to latest version...\n";
+	
+	echo "Backing up database...\n";
+	shell_exec("pg_dump -Fc -U tellervo $dbname > /usr/share/tellervo-server/".$dbname."-".date('Ymd')."-preupgrade.backup");
 	
 	writeLogMsg("*******************");
     writeLogMsg("Upgrading existing Tellervo database to latest version...");
@@ -604,10 +611,7 @@ function runDBUpgrades()
 		}
 	}
 	
-	global $configfile;
-    global $systemconfig;
-	global $dbsetupfile;
-	global $dbconn;
+
 	
 	$f = getTellervoDPKGVersion();
 
@@ -785,7 +789,10 @@ function emptyLog()
 	global $dbconn;
 	global $logfile;
 	
-	unlink($logfile); 	
+	
+	
+	
+	echo "\nDeleting database log entries prior to the last 7 days...\n";
 	
 	$sql = "DELETE FROM tbliptracking where timestamp > (CURRENT_DATE - INTERVAL '1 week');
 	        DELETE FROM tblrequestlog where createdtimestamp > (CURRENT_DATE - INTERVAL '1 week');";
@@ -798,6 +805,12 @@ function emptyLog()
     {
     	die("Unable to connect to PostgreSQL database.\n\n");
     }
+    
+    echo "\nCleaning server log file...\n";
+    unlink($logfile); 	
+    
+    echo "\nAll Done\n";
+    
 	
 }
 
@@ -1043,7 +1056,7 @@ function postgresSetup($quick=false)
       setConfigVariable("%%DBNAME%%", "tellervo");   
       
       // Create the database and populate from the database template
-      echo "\nCreating database...\n";
+      echo "\nCreating database.  This could take a while...\n";
       exec("su - postgres -c \"createdb tellervo 2>> ".$logfile."\"");
       exec("su - postgres -c \"psql tellervo < $dbtemplate 2>> ".$logfile."\"");
       
@@ -1054,7 +1067,7 @@ function postgresSetup($quick=false)
       exec($command, $resp);
 
       // Restart postgres
-      echo "Restarting PostgreSQL...\n";
+      echo "\nRestarting PostgreSQL...\n";
       exec("/etc/init.d/postgresql restart\n");
    }
 }  
@@ -1256,31 +1269,7 @@ function verifySetup($silent=false)
 		printResult(checkServiceIsRunning("postgres"));
 		if(checkServiceIsRunning("postgres")===FALSE) $runningresult = FALSE;
 		
-		echoTruncatedString("    - Checking webservice is accessible:");
-		if(fopen($wsurl, "r"))
-		{
-			if(getIP()=="127.0.0.1")
-			{
-				printResult(FALSE);
-				$runningresult = FALSE;
-			}
-			else if(substr(getIP(), 0, 3)=="10.") 
-			{
-				printResult(FALSE);
-				$runningresult = FALSE;
-			}
-			else
-			{
-		    	printResult(TRUE);
-		    }
-		}
-		else
-		{
-		    printResult(FALSE);
-		    $runningresult = FALSE;
-		}
-		
-		echoTruncatedString("    - Checking database credentials file can be read:"); 
+		echoTruncatedString("    - Checking database credentials file is valid:"); 
 		if(fopen($cdbCredentialsFile, "r")) 
 		{ 
 		  printResult(TRUE); 
@@ -1298,6 +1287,7 @@ function verifySetup($silent=false)
 		echoTruncatedString("    - Checking webservice configuration file is valid:"); 
 		printResult(isConfigPhpValid());
 		if(isConfigPhpValid()===FALSE) $runningresult = FALSE;
+		
 	}
 	
 	if($silent!=TRUE) echoTruncatedString("    - Checking connection to PostgreSQL database:"); 
@@ -1324,6 +1314,31 @@ function verifySetup($silent=false)
 	{
 		if($dbconn===FALSE) return FALSE;
 	}
+	
+	if($silent!=TRUE)	echoTruncatedString("    - Checking webservice is accessible:");
+		if(fopen($wsurl, "r"))
+		{
+			if(getIP()=="127.0.0.1")
+			{
+				if($silent!=TRUE) printResult(FALSE);
+				$runningresult = FALSE;
+			}
+			else if(substr(getIP(), 0, 3)=="10.") 
+			{
+				if($silent!=TRUE) printResult(FALSE);
+				$runningresult = FALSE;
+			}
+			else
+			{
+		    	if($silent!=TRUE) printResult(TRUE);
+		    }
+		}
+		else
+		{
+		    if($silent!=TRUE) printResult(FALSE);
+		    $runningresult = FALSE;
+		}
+		
 	
 	// Check that webservice and database versions are in sync
 	if($silent!=TRUE) echoTruncatedString("    - Checking webservice and database versions are in sync:"); 
@@ -1421,7 +1436,7 @@ function printComplete($forceSuccess=null)
   
   if($forceSuccess===TRUE)
   {
-  	echo "Configuration was successful.  Your Tellervo webservice is now available at:\n";
+  	echo "Your Tellervo server configuration is valid.  Your webservice is accessible at:\n";
   	echo "    - $wsurl\n\n";
    	exit(0);
   }
@@ -1433,7 +1448,7 @@ function printComplete($forceSuccess=null)
   }
   else if($errorsFound===FALSE)
   {
-  	echo "Configuration was successful.  Your Tellervo webservice is now available at:\n";
+  	echo "Your Tellervo server configuration is valid.  Your webservice is accessible at:\n";
   	echo "    - $wsurl\n\n";
   	exit(0);
   }
