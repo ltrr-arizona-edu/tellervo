@@ -106,6 +106,7 @@ public class Prefs extends AbstractSubsystem {
 		EDIT_BACKGROUND("tellervo.edit.background"),
 		EDIT_FONT("tellervo.edit.font"),
 		EDIT_GRIDLINES("tellervo.edit.gridlines"),
+		
 		GRAPH_BACKGROUND("tellervo.graph.background"),
 		GRAPH_GRIDLINES("tellervo.graph.graphpaper"),
 		GRAPH_GRIDLINES_COLOR("tellervo.graph.graphpaper.color"),
@@ -134,6 +135,7 @@ public class Prefs extends AbstractSubsystem {
 		SERIAL_MEASURE_IN_REVERSE("tellervo.serial.measurereverse"),
 		SERIAL_MULTIPLIER("tellervo.serial.multiplier"),
 		SERIAL_LIBRARY_PRESENT("tellervo.serial.librarypresent"),
+		MEASURE_BARK_TO_PITH("tellervo.measure.pithtobark"),
 		
 		STATS_FORMAT_TSCORE("tellervo.cross.tscore.format"),
 		STATS_FORMAT_RVALUE("tellervo.cross.rvalue.format"),

@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import org.tellervo.desktop.editor.PopulateEditorDialog;
-import org.tellervo.desktop.editor.SampleDataView;
+import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.gui.menus.FileMenu;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -15,13 +15,13 @@ public class InitDataGridAction extends AbstractAction{
 
 	private static final long serialVersionUID = 1L;
 	private Window parent;
-	private SampleDataView dataView;
+	private SeriesDataMatrix dataView;
 	/**
 	 * Constructor for menus
 	 * 
 	 * @param frame
 	 */
-	public InitDataGridAction(Window parent, SampleDataView dataView) {
+	public InitDataGridAction(Window parent, SeriesDataMatrix dataView) {
         super(I18n.getText("menus.edit.populateditor"), Builder.getIcon("inittable.png", 22));
         
         this.parent = parent;

@@ -73,7 +73,7 @@ import javax.swing.JSplitPane;
 
 
 /**
-   A view of the raw data in a Sample.
+   A view of the raw data in a series.
 
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
@@ -83,10 +83,10 @@ import javax.swing.JSplitPane;
     // - setSelectedYear(Year) -- (why?)
     // - (the popup)
 
-public class SampleDataView extends JPanel implements SampleListener,
+public class SeriesDataMatrix extends JPanel implements SampleListener,
 		PrefsListener {
 
-	private final static Logger log = LoggerFactory.getLogger(SampleDataView.class);
+	private final static Logger log = LoggerFactory.getLogger(SeriesDataMatrix.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -151,7 +151,7 @@ public class SampleDataView extends JPanel implements SampleListener,
 	}
 	
 	
-	public SampleDataView(Sample s) {
+	public SeriesDataMatrix(Sample s) {
 		// copy data reference, add self as observer
 		mySample = s;
 		mySample.addSampleListener(this);
@@ -769,7 +769,14 @@ public class SampleDataView extends JPanel implements SampleListener,
 		Year retYear = y;
 
 		// what's the next year?
-		y = y.add(1);
+		if(App.prefs.getBooleanPref(PrefKey.MEASURE_BARK_TO_PITH, true))
+		{
+			y= y.add(-1);
+		}
+		else
+		{
+			y = y.add(1);
+		}
 
 		// where's it located?
 		int row = y.row() - mySample.getRange().getStart().row();

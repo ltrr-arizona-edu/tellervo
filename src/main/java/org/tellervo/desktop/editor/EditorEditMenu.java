@@ -104,7 +104,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	private static final long serialVersionUID = 1L;
 	private Sample sample;
 	private final Editor editor;
-	private SampleDataView dataView;
+	private SeriesDataMatrix dataView;
 	private JMenuItem insert, insertMR, delete;
 	private JMenuItem toggleMeasureMenuItem;
 	private JMenu measureModeMenu;
@@ -121,7 +121,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	 @param sample the Sample to watch
 	 @param dataView the SampleDataView to use for inserting and deleting years
 	 */
-	public EditorEditMenu(Sample sample, SampleDataView dataView, Editor editor) {
+	public EditorEditMenu(Sample sample, SeriesDataMatrix dataView, Editor editor) {
 		super(editor);
 
 		this.sample = sample;

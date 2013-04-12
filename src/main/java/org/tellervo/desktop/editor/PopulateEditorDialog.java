@@ -38,7 +38,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 
 	private final JPanel contentPanel = new JPanel();
 	private NormalTridasDatingType datingType ;
-	private SampleDataView dataView;
+	private SeriesDataMatrix dataView;
 	private JTextField startField;
 	private JSpinner spnRingCount;
 	private Window parent;
@@ -50,7 +50,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 	/**
 	 * Create the dialog.
 	 */
-	public PopulateEditorDialog( Window parent, SampleDataView dataView) {
+	public PopulateEditorDialog( Window parent, SeriesDataMatrix dataView) {
 	
 		super(parent);
 		setResizable(false);

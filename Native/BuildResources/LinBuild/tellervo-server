@@ -60,6 +60,7 @@ $args = getopt($shortopts,$longopts);
 if(isset($args["add-wms-name"]) && isset($args["add-wms-url"]) &&
    $args["add-wms-name"]!=null && $args["add-wms-url"]!=null)
 {
+	requireRoot();
 	$name = $args["add-wms-name"];
 	$url = $args["add-wms-url"];
 	include($configfile);
@@ -80,6 +81,7 @@ if(isset($args["add-wms-name"]) && isset($args["add-wms-url"]) &&
 }
 if(isset($args["del-wms-name"]) && $args["del-wms-name"]!=null)
 {
+	requireRoot();
 	include($configfile);
 	include($dbsetupfile);
 	include($systemconfig);
@@ -89,6 +91,7 @@ if(isset($args["del-wms-name"]) && $args["del-wms-name"]!=null)
 if(isset($args["test"]) || isset($args["t"]))
 {
 	// Test configuration
+	requireRoot();
 	include($configfile);
 	include($dbsetupfile);
 	verifySetup();
@@ -534,7 +537,7 @@ function showHelp($forced=false)
   echo "\nOptions:\n";
   echo "  -h, --help           Show this help\n";
   echo "  -v, --version        Show version of Tellervo server that is installed\n";
-  echo "  -t, --test           Run tests on existing setup\n";
+  echo "  -t, --test          *Run tests on existing setup\n";
   echo "  -c, --configure     *Configure server\n";
   echo "  -r, --reconfigure   *Reconfigure the server overwriting existing config\n";
   echo "  -n, --network       *Check network settings and reset if necessary\n";
@@ -546,9 +549,9 @@ function showHelp($forced=false)
   echo "      --stop          *Stop the Tellervo server\n"; 
   echo "      --restart       *Restart the Tellervo server\n";   
   echo "      --upgrade-db    *Run database upgrade scripts\n";
-  echo "      --add-wms-name   Name of a web mapping server to add to database\n";
-  echo "      --add-wms-url    URL of a web mapping server to add to database\n";
-  echo "      --del-wms-name   Name of a web mapping server to delete from database\n";
+  echo "      --add-wms-name  *Name of a web mapping server to add to database\n";
+  echo "      --add-wms-url   *URL of a web mapping server to add to database\n";
+  echo "      --del-wms-name  *Name of a web mapping server to delete from database\n";
   echo "\n";
   echo "  * Root or sudo privileges are required to run these commands\n";
   echo "\n";

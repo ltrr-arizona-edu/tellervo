@@ -46,7 +46,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.DecadalModel;
-import org.tellervo.desktop.editor.SampleDataView;
+import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.editor.support.AbstractTableCellModifier;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
@@ -57,7 +57,7 @@ import org.tellervo.desktop.util.PopupListener;
 import org.tridas.schema.NormalTridasUnit;
 
 
-public class ReconcileDataView extends SampleDataView implements SampleListener {
+public class ReconcileDataView extends SeriesDataMatrix implements SampleListener {
 	private static final long serialVersionUID = 1L;
 	private final static Logger log = LoggerFactory.getLogger(ReconcileDataView.class);
 

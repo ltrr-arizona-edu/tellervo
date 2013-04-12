@@ -15,7 +15,7 @@ import javax.swing.JFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.editor.Editor;
-import org.tellervo.desktop.editor.SampleDataView;
+import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.PrintableDocument;
 import org.tellervo.desktop.gui.SaveableDocument;
@@ -52,7 +52,7 @@ public class RemarkToggleAction extends AbstractAction{
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		
-		SampleDataView sdv = e.getSampleDataView();
+		SeriesDataMatrix sdv = e.getSampleDataView();
 		
 		if(sdv!=null)
 		{
