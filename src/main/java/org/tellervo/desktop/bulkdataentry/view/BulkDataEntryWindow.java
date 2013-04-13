@@ -35,6 +35,8 @@ import org.tellervo.desktop.ui.I18n;
 import com.dmurph.mvc.MVCEvent;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+
 import net.miginfocom.swing.MigLayout;
 
 
@@ -58,6 +60,7 @@ public class BulkDataEntryWindow extends JFrame {
 		addListeners();
 		populateLocale();
 		pack();
+		this.setMinimumSize(new Dimension(640,480));
 		this.setLocationRelativeTo(null);
 	}
 	

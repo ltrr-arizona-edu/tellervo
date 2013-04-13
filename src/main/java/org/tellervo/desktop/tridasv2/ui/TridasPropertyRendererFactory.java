@@ -20,9 +20,14 @@
  ******************************************************************************/
 package org.tellervo.desktop.tridasv2.ui;
 
+import java.util.List;
+
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.Date;
@@ -30,6 +35,7 @@ import org.tridas.schema.DateTime;
 import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDating;
 import org.tridas.schema.TridasDatingReference;
+import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasLocationGeometry;
@@ -40,6 +46,10 @@ import com.l2fprod.common.propertysheet.PropertyRendererRegistry;
 
 
 public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
+	
+	  private final static Logger log = LoggerFactory.getLogger(TridasPropertyRendererFactory.class);
+
+	
 	public TridasPropertyRendererFactory() {
 		super();
 		
@@ -63,7 +73,10 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		super.registerRenderer(TridasLocationGeometry.class, new LocationGeometryRenderer());
 		super.registerRenderer(TridasLocation.class, new TridasLocationRenderer());
 
-		
+		//nicely render file links
+		super.registerRenderer(List.class, new FileArrayRenderer());
+		super.registerRenderer(TridasFile.class, new FileArrayRenderer());
+
 		super.registerRenderer(TridasGenericField.class, new TridasObjectGenericFieldRenderer());
 
 		
@@ -100,6 +113,12 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 
 		if(!required)
 			return defaultRenderer;
+		
+		if(property.getName().equals("files"))
+		{
+			log.debug("Property class = "+property.getType());
+			return new FileArrayRenderer();
+		}
 		
 		// ok, create a renderer for it if nothing exists
 		if(defaultRenderer == null)

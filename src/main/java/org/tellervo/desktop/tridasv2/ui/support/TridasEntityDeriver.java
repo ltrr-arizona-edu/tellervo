@@ -188,6 +188,7 @@ public class TridasEntityDeriver {
 					nChildren++;
 										
 				}		
+
 				else
 				{
 					// is it machine only? skip it! But only as long as we're not ignoring the machine-only flag

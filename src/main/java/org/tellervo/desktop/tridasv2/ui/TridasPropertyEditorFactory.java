@@ -27,8 +27,10 @@ import java.beans.PropertyEditor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Date;
+import java.util.List;
 
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
+import org.tridas.io.formats.tridas.TridasFile;
 import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDatingReference;
 import org.tridas.schema.TridasGenericField;
@@ -62,6 +64,9 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		registerEditor(String.class, MemoEditor.class);
 		
 		registerEditor(org.tridas.schema.Date.class, TridasDateEditor.class);
+		
+		registerEditor(TridasFile.class, TridasFileEditor.class);
+		registerEditor(List.class, TridasFileEditor.class);
 	}
 	
 	public synchronized PropertyEditor getEditor(Property property) {
@@ -76,9 +81,19 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 				return new ListComboBoxPropertyEditor(ep.getDictionary());
 		}
 
+		if(property.getName().equals("files"))
+		{
+			return new TridasFileEditor();
+		}
+		
 		PropertyEditor defaultEditor = super.getEditor(property);
 
+		
+		
 		if(defaultEditor == null && property instanceof TridasEntityProperty) {
+			
+			
+			
 			TridasEntityProperty ep = (TridasEntityProperty) property;
 			
 			if(ep.getChildProperties().size() > 0)

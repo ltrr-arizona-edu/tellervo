@@ -291,6 +291,10 @@ public class TridasEntityProperty extends AbstractProperty {
 		{
 			return true;
 		}
+		else if (qname.equals("object.files"))
+		{
+			return true;
+		}
 		
 		if(isList || readOnly)
 			return false;
