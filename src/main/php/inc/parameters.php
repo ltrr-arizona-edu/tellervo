@@ -69,7 +69,7 @@ class searchParameters implements IParams
     	global $tellervoNS;
         global $tridasNS;
         global $firebug;
-	
+
         // Get main attributes
     	$searchParamsTag = $this->xmlRequestDom->getElementsByTagName("searchParams")->item(0); 	
 		$this->returnObject = $searchParamsTag->getAttribute("returnObject");
@@ -294,22 +294,22 @@ class permissionParameters extends permissionEntity implements IParams
 		   $firebug->log($child->tagName, "permissions tag name");
 		   switch ($child->tagName)
 		   {
-		   	case "c:permissionToCreate": 	$this->setCanCreate($child->nodeValue); break;
-		   	case "c:permissionToRead": 	$this->setCanRead($child->nodeValue); break;
-		   	case "c:permissionToUpdate": 	$this->setCanUpdate($child->nodeValue); break;
-		   	case "c:permissionToDelete": 	$this->setCanDelete($child->nodeValue); break;
-		   	case "c:permissionDenied": 	$this->setPermDenied($child->nodeValue); break;
+		   	case "tvo:permissionToCreate": 	$this->setCanCreate($child->nodeValue); break;
+		   	case "tvo:permissionToRead": 	$this->setCanRead($child->nodeValue); break;
+		   	case "tvo:permissionToUpdate": 	$this->setCanUpdate($child->nodeValue); break;
+		   	case "tvo:permissionToDelete": 	$this->setCanDelete($child->nodeValue); break;
+		   	case "tvo:permissionDenied": 	$this->setPermDenied($child->nodeValue); break;
 		   	
-		   	case "c:entity":
+		   	case "tvo:entity":
 		   		$entity = array("type" => $child->getAttribute("type"), "id" => $child->getAttribute("id"));
 		   		array_push($this->entityArray, $entity);		   		
 		   		break;
 		   		
-		   	case "c:securityGroup":
+		   	case "tvo:securityGroup":
 		   		array_push($this->securityGroupArray, $child->getAttribute("id"));	
 		   		break;
 		   		
-		   	case "c:securityUser":
+		   	case "tvo:securityUser":
 		   		array_push($this->securityUserArray, $child->getAttribute("id"));	
 		   		break;
 		   		
@@ -339,7 +339,7 @@ class authenticationParameters implements IParams
 
     function __construct($xmlrequest)
     {    	
-        // Load the xmlrequest into a DOMDocument if it isn't already
+	// Load the xmlrequest into a DOMDocument if it isn't already
         if (gettype($xmlrequest)=='object')
         {
             $this->xmlRequestDom = $xmlrequest;
@@ -409,7 +409,7 @@ class objectParameters extends objectEntity implements IParams
     function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
     {
     	parent::__construct();    	
-    	
+
     	// Load the xmlrequest into a local DOM variable
         if (gettype($xmlrequest)=='object')
         {
@@ -439,7 +439,8 @@ class objectParameters extends objectEntity implements IParams
         foreach($children as $child)
         {
 		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
-        	
+        		
+
 		   switch ($child->tagName)
 		   {
 		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
@@ -447,13 +448,20 @@ class objectParameters extends objectEntity implements IParams
 		   	case "tridas:creator":				$this->setCreator($child->nodeValue); break;
 		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
 		   	case "tridas:owner":				$this->setOwner($child->nodeValue); break;
-		   	case "tridas:file":				$this->addFile($child->nodeValue); break;
 		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
 		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;
 		   	case "tridas:createdTimestamp":	break;
 		   	case "tridas:lastModifiedTimestamp": break;
 
-		    case "tridas:type": 				
+		        case "tridas:file":				
+				if($child->hasAttribute("xlink:href"))
+				{
+					$this->addFile($child->getAttribute("xlink:href"));
+					$firebug->log($child->getAttribute("xlink:href"), "link file");
+				}
+				break;
+
+    		    	case "tridas:type": 				
 		   		if($child->hasAttribute("normalStd"))
 		   		{
 		   			if($child->getAttribute("normalStd")=="Tellervo")
@@ -618,7 +626,7 @@ class elementParameters extends elementEntity implements IParams
 		   	case "tridas:description":			$this->setDescription($child->nodeValue); break;
 		   	case "tridas:file": 				$this->addFile($child->nodeValue); break;
 		   	case "tridas:taxon":
-		   		/* @todo Decisions need to be made as to how taxonomy and dictionaries will be handled
+				/* @todo Decisions need to be made as to how taxonomy and dictionaries will be handled
 		   		 * */
 
 		   		if($child->getAttribute("normalStd")==$taxonomicAuthorityEdition)
@@ -668,7 +676,7 @@ class elementParameters extends elementEntity implements IParams
 		   	case "tridas:processing": 			$this->setProcessing($child->nodeValue); break;	   	
 		   	case "tridas:marks": 				$this->setMarks($child->nodeValue); break;
 		   	case "tridas:altitude":			$this->setAltitude($child->nodeValue); break;
-
+		   		
 		    case "tridas:location": 
 				$locationTags = $child->childNodes;
 				foreach($locationTags as $tag)
@@ -856,7 +864,7 @@ class sampleParameters extends sampleEntity implements IParams
 		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
 		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
 		   	case "tridas:createdTimestamp":	  break;
-		   	case "tridas:lastModifiedTimestamp": break;	
+		   	case "lastModifiedTimestamp": break;	
 		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;
 		   	case "tridas:type": 				
 		   		if($child->hasAttribute("normalStd"))
@@ -1119,14 +1127,14 @@ class measurementParameters extends measurementEntity implements IParams
    				foreach($seriesTags as $series)
    				{
    					if($series->nodeType != XML_ELEMENT_NODE) continue;
-   					if($series->nodeName=='series')
+   					if($series->nodeName=='tridas:series')
    					{
    						if($series->nodeType != XML_ELEMENT_NODE) continue;
    						$idTags = $series->childNodes;
    						foreach($idTags as $idTag)
 		   				{
 		   					if($idTag->nodeType != XML_ELEMENT_NODE) continue;
-		   					if($idTag->nodeName=='identifier')
+		   					if($idTag->nodeName=='tridas:identifier')
 		   					{
 		   						array_push($this->referencesArray, $idTag->nodeValue);  		
 		   					}
@@ -1168,7 +1176,7 @@ class measurementParameters extends measurementEntity implements IParams
 						   				foreach($seriesTags as $series)
 						   				{
 						   					if($series->nodeType != XML_ELEMENT_NODE) continue;
-					   					if($series->nodeName=='identifier')
+					   					if($series->nodeName=='tridas:identifier')
 						   					{						   
 						   						$this->setMasterVMeasurementID($series->nodeValue);  		
 						   					}
@@ -1181,7 +1189,7 @@ class measurementParameters extends measurementEntity implements IParams
 			   				$this->dating->setDatingType(null, $interpTag->getAttribute("type"));
 			   				break;
 		   					
-			   			case "tridas:firstYear": 
+			   			case "firstYear": 
 			   				// Special case.  If the series is 'direct' then user may be redating in place
 			   				// Kludgey and gross.
 			   				if($this->getVMeasurementOp()=="Direct")
@@ -1264,7 +1272,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   		{
 		   			if($tag->nodeType != XML_ELEMENT_NODE) continue;
 		   			
-		   			if($tag->tagName=='variable')
+		   			if($tag->tagName=='tridas:variable')
 		   			{		   				
 		   				if($tag->getAttribute("normalTridas")!=NULL)
 		   				{
@@ -1278,7 +1286,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   					trigger_error("104"."Only TRiDaS normalised variables are supported by this webservice", E_USER_ERROR);
 		   				}
 		   			}
-		   			else if($tag->tagName=='unit')
+		   			else if($tag->tagName=='tridas:unit')
 		   			{
 		   				if($tag->getAttribute("normalTridas")!=NULL)
 		   				{
@@ -1290,7 +1298,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   					trigger_error("104"."Only TRiDaS normalised units are supported by this webservice", E_USER_ERROR);
 		   				}		   				
 		   			}
-		   			else if($tag->tagName == 'value') 
+		   			else if($tag->tagName == 'tridas:value') 
 		   			{	
 		   				// Tag is a <value> tag so process
 		   				
@@ -1469,15 +1477,15 @@ class boxParameters extends boxEntity implements IParams
         	
 		   switch ($child->tagName)
 		   {
-		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
-		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
-		   	case "tridas:trackingLocation":	$this->setTrackingLocation($child->nodeValue); break;
-		   	case "tridas:curationLocation":	$this->setCurationLocation($child->nodeValue); break;
-		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;
-		   	case "tridas:createdTimestamp":	break;
-		   	case "tridas:lastModifiedTimestamp": break;
-		   	case "tridas:sampleCount"			: break;
-		   	case "tridas:sample":				break;	   				   		
+		   	case "tvo:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+		   	case "tvo:title":				$this->setTitle($child->nodeValue); break;
+		   	case "tvo:trackingLocation":	$this->setTrackingLocation($child->nodeValue); break;
+		   	case "tvo:curationLocation":	$this->setCurationLocation($child->nodeValue); break;
+		   	case "tvo:comments":			$this->setComments($child->nodeValue); break;
+		   	case "tvo:createdTimestamp"     : break;
+		   	case "tvo:lastModifiedTimestamp": break;
+		   	case "tvo:sampleCount"			: break;
+		   	case "tridas:sample"			: break;	   				   		
 		   	default:
 		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'box' entity of the XML request", E_USER_NOTICE);
 		   }
@@ -1525,7 +1533,7 @@ class securityGroupParameters extends securityGroupEntity implements IParams
         	
 		   $firebug->log($child->hasAttribute("id"), "has id?");
 		   
-		   if ($child->tagName=='securityGroup')
+		   if ($child->tagName=='tvo:securityGroup')
 		   {
 		   		$firebug->log($child->getAttribute("isActive"), "child");
 		   		if($child->hasAttribute("id")) $this->setID($child->getAttribute("id"), null);
@@ -1587,7 +1595,7 @@ class securityUserParameters extends securityUserEntity implements IParams
         	
 		   $firebug->log($child->hasAttribute("id"), "has id?");
 		   
-		   if ($child->tagName=='securityUser')
+		   if ($child->tagName=='tvo:securityUser')
 		   {
 		   		$firebug->log($child->getAttribute("isActive"), "child");
 		   		if($child->hasAttribute("id")) $this->setID($child->getAttribute("id"), null);
@@ -1617,7 +1625,7 @@ class securityUserParameters extends securityUserEntity implements IParams
 				   			foreach($groups as $group)
 				   			{
 				   				if($group->nodeType != XML_ELEMENT_NODE) continue;
-				   				if($group->tagName=='securityGroup')
+				   				if($group->tagName=='tvo:securityGroup')
 				   				{		
 				   					if($group->hasAttribute("id"))
 				   					{
@@ -1627,111 +1635,11 @@ class securityUserParameters extends securityUserEntity implements IParams
 				   			}
 				   		}
 				   }
-		 	}
-		   
-		   } 
-		   		   
+		 		}
+		   }    
         }   
     }	
 }
     
- 
-/**
- * Old stuff needs refactoring
- *
- */
-/*
-
-class parameters 
-{
-    var $xmlrequest                 = NULL;
-    var $format                     = NULL;
-    var $simplexml                  = NULL;
-    var $metaHeader                 = NULL;
-    var $auth                       = NULL;
-    var $hasChild                   = FALSE;
-
-
-    function __construct($metaHeader, $auth, $xmlrequest)
-    {
-        $this->metaHeader = $metaHeader;
-        $this->auth = $auth;
-        $this->xmlrequest = $xmlrequest;
-        $this->getXMLParams();
-    }
-
-    function getXMLParams()
-    {
-        echo "This function must be overloaded";
-        die();
-    }
-    
-}
-
-
-class securityUserParameters extends parameters
-{
-    var $id            = NULL;
-    var $username      = NULL;
-    var $firstName     = NULL;
-    var $lastName      = NULL;
-    var $hashPassword  = NULL;
-    var $isActive      = NULL;
-    var $groupArray    = array();
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))              $this->id            = (int) $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isActive']))        $this->isActive      = fromStringToPHPBool($this->xmlrequest['isActive']);
-        if(isset($this->xmlrequest['username']))        $this->username      = addslashes(trim($this->xmlrequest['username']));
-        if(isset($this->xmlrequest['firstName']))       $this->firstName     = addslashes(trim($this->xmlrequest['firstName']));
-        if(isset($this->xmlrequest['lastName']))        $this->lastName      = addslashes(trim($this->xmlrequest['lastName']));
-        if(isset($this->xmlrequest['plainPassword']))   $this->hashPassword  = hash('md5', addslashes(trim($this->xmlrequest['plainPassword'])));
-        if(isset($this->xmlrequest['hashPassword']))    $this->hashPassword  = addslashes(trim($this->xmlrequest['hashPassword']));
-        
-        $groupArray = $this->xmlrequest->xpath('//memberOf');
-        if (isset($this->xmlrequest->memberOf[0]))
-        {
-            foreach($this->xmlrequest->memberOf[0] as $item)
-            {
-                array_push($this->groupArray, (int) $item['id']);
-            }
-        }
-        else
-        {
-            $this->groupArray = array('empty');
-        }
-    }
-
-}
-
-class securityGroupParameters extends parameters
-{
-    var $id            = NULL;
-    var $name          = NULL;
-    var $description   = NULL;
-    var $isActive      = NULL;
-
-    function __construct($metaHeader, $auth, $xmlrequest, $parentID=NULL)
-    {
-        parent::__construct($metaHeader, $auth, $xmlrequest);
-    }
-    
-    function getXMLParams()
-    {
-        if(isset($this->xmlrequest['id']))              $this->id            = (int) $this->xmlrequest['id'];
-        if(isset($this->xmlrequest['isActive']))        $this->isActive      = fromStringToPHPBool($this->xmlrequest['isActive']);
-        if(isset($this->xmlrequest['name']))            $this->name          = addslashes(trim($this->xmlrequest['name']));
-        if(isset($this->xmlrequest['description']))     $this->description   = addslashes(trim($this->xmlrequest['description']));
-    }
-
-}
-*/
-
 
 ?>
