@@ -4,6 +4,9 @@
 
 
 <html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+</head>
 <form name="myform" method="post" action="index.php">
 <br/>
 XML:  <textarea name="xmlrequest" rows="20" cols="80">
