@@ -354,19 +354,28 @@ class dbHelper
 	 */
 	public static function pgStrArrayToPHPArray($strarray)
 	{
-
-		$myArray = explode('><', $strarray);
+		global $firebug;
 		
-		if(count($myArray)>1)
+		if(strlen($strarray)<5) return null;
+		if(substr($strarray, 0,1)!="{") return null;
+ 		if(substr($strarray, -1,1)!="}") return null;
+
+		$strarray = substr($strarray, 1, -1);
+
+		$arr = explode($strarray, ",");
+		$newarr = array();
+
+		foreach($arr as $v)
 		{
-			return $myArray;
+			array_push($newarr, urldecode($v));
 		}
-		else
-		{
-			return false;
-		}
+		
+			
+
+
 	}
-	
+
+
 	/**
 	 * Convert a PHP array into a >< delimited string for insertion
 	 * into PG using string_to_array()
@@ -375,9 +384,17 @@ class dbHelper
 	 */
 	public static function phpArrayToPGStrArray($array)
 	{
-		if(count($array)>1)
+		global	$firebug;
+		$return = "{";
+		if(count($array)>0)
 		{
-			return implode('><', $array);
+			foreach($array as $item)
+			{
+				$firebug->log($item, "file item");
+				$return.="\"".rawurlencode($item)."\", ";
+			}
+			$return = substr($return, 0, -2);
+			return $return."}";
 		}
 		else
 		{

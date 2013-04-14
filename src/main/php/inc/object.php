@@ -171,11 +171,15 @@ class object extends objectEntity implements IDBAccessor
      */
     function setParamsFromParamsClass($paramsClass)
     {
+
+	global $firebug;
+	$firebug->log($paramsClass, "params class");
+
     	if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());
     	if ($paramsClass->getComments()!=NULL)				$this->setComments($paramsClass->getComments());
         if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType(true), $paramsClass->getType());
     	if ($paramsClass->getDescription()!=NULL)			$this->setDescription($paramsClass->getDescription());
-    	if ($paramsClass->getFile()!=NULL)					$this->setFiles($paramsClass->getFile());      
+    	if ($paramsClass->getFiles()!=NULL)					$this->setFiles($paramsClass->getFiles());      
         if ($paramsClass->getCreator()!=NULL)		  		$this->setCreator($paramsClass->getCreator());
         if ($paramsClass->getOwner()!=NULL)					$this->setOwner($paramsClass->getOwner());
         if ($paramsClass->getTemporalCoverage()!=NULL)		$this->setCoverageTemporal($paramsClass->getTemporalCoverage(), $paramsClass->getTemporalCoverageFoundation());
@@ -456,7 +460,7 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->getComments()!=NULL)									$sql.= "comments, ";
                         if ($this->getType()!=NULL)										$sql.= "objecttypeid, ";                        
                         if ($this->getDescription()!=NULL)								$sql.= "description, ";
-                        if ($this->getFile()!=NULL)										$sql.= "file, ";
+                        if ($this->getFiles()!=NULL)										$sql.= "file, ";
                         if ($this->getCreator()!=NULL)									$sql.= "creator, ";
                         if ($this->getOwner()!=NULL)									$sql.= "owner, ";
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal, ";
@@ -482,7 +486,7 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->getComments()!=NULL)                                 $sql.= "'".pg_escape_string($this->getComments())."', ";
                         if ($this->getType()!=NULL)										$sql.= "'".pg_escape_string($this->getType(true))."', ";
                         if ($this->getDescription()!=NULL)								$sql.= "'".pg_escape_string($this->getDescription())."', ";
-                        if ($this->getFile()!=NULL)										$sql.= "'".dbHelper::phpArrayToPGStrArray($this->getFile())."', ";
+                        if ($this->getFiles()!=NULL)										$sql.= "'".dbHelper::phpArrayToPGStrArray($this->getFiles())."', ";
                         if ($this->getCreator()!=NULL)									$sql.= "'".pg_escape_string($this->getCreatedTimestamp())."', ";
                         if ($this->getOwner()!=NULL)									$sql.= "'".pg_escape_string($this->getOwner())."', ";     
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "'".pg_escape_string($this->getTemporalCoverage())."', ";
@@ -534,6 +538,7 @@ class object extends objectEntity implements IDBAccessor
                     $sql .= " where objectid='".$this->getID()."'";
                 }
                 //echo $sql;
+		$firebug->log($sql, "write sql");
 
                 // Run SQL command
                 if ($sql)

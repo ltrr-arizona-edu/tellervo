@@ -183,6 +183,7 @@ class dbEntity
     	$this->setgroupXMLTag($groupXMLTag);
     	$this->parentEntityArray = array();
     	$this->childrenEntityArray = array();
+	$this->files = array();
 
     }
 
@@ -204,7 +205,7 @@ class dbEntity
 	 */
 	function setFiles($array)
 	{
-		$this->file = $array;
+		$this->files = $array;
 
 		return true;
 	}	
@@ -229,7 +230,10 @@ class dbEntity
 	 */
 	function addFile($value)
 	{
-		array_push($this->file, $value);
+		global $firebug;
+		$firebug->log($value, "Adding file to array");
+		array_push($this->files, $value);
+		$firebug->log($this->files, "Array now contains");
 		return true;
 	}
 	    
@@ -353,7 +357,7 @@ class dbEntity
 	 *
 	 * @return array
 	 */
-	function getFile()
+	function getFiles()
 	{
 		return $this->files;
 	}    
@@ -474,9 +478,9 @@ class dbEntity
     function getFileXML()
     {
     	$xml = NULL;
-       	if(($this->getFile()!=NULL) && (count($this->getFile())>0))
+       	if(($this->getFiles()!=NULL) && (count($this->getFiles())>0))
        	{
-        	foreach($this->getFile() as $myFile)	
+        	foreach($this->getFiles() as $myFile)	
         	{
         		$xml.= "<tridas:file xlink:href=\"".$myFile."\" />\n";
         	}
@@ -758,7 +762,8 @@ class objectEntity extends dbEntity
     {  
     	$this->location = new location();
     	$this->object = new objectType();
-    	$this->file = array();
+	$this->type = new objectType();
+    	$this->files = array();
         $groupXMLTag = "objects";
         parent::__construct($groupXMLTag);  	
 	}
@@ -840,7 +845,7 @@ class objectEntity extends dbEntity
 	 */
 	function clearFiles()
 	{
-		$this->file = array();
+		$this->files = array();
 		return true;
 	}
 	
@@ -1908,7 +1913,7 @@ class sampleEntity extends dbEntity
 	
 	function getFile()
 	{
-		return $this->file;
+		return $this->files;
 	}
 }
 
