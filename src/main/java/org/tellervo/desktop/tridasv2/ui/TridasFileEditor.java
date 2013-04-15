@@ -83,7 +83,10 @@ public class TridasFileEditor extends AbstractPropertyEditor {
 	
 	@Override
 	public Object getValue() {
-		return fileList;
+		
+		
+		
+		return this.fileList;
 	}
 	
 	@Override
@@ -127,13 +130,13 @@ public class TridasFileEditor extends AbstractPropertyEditor {
 		{
 			oldFileList = null;
 		}
-		TridasFileListDialog dialog = new TridasFileListDialog(App.mainWindow, fileList);
+		TridasFileListDialog dialog = new TridasFileListDialog(editButton, fileList);
 		
 		// show the dialog...
 		dialog.setVisible(true);
 		
 		// cancelled...
-		//if(!dialog.hasResults()) return;
+		if(!dialog.hasResults()) return;
 		
 		fileList = dialog.getFileList();
 		label.setValue(fileList);

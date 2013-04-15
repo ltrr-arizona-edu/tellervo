@@ -101,7 +101,7 @@ public class TridasEntityDeriver {
 				pd.setCategoryPrefix(rootName);
 				fieldMap.put(s, pd);
 			}
-		
+			Field[] declaredFields = clazz.getDeclaredFields();
 			for (Field f : clazz.getDeclaredFields()) {
 				String fieldType = f.getGenericType().toString();
 				TridasEntityProperty pd = fieldMap.get(f.getName());
@@ -118,7 +118,9 @@ public class TridasEntityDeriver {
 					pd.setCategoryPrefix(rootName);
 					pd.required = attribute.required();
 					pd.setType(f.getType(), f);
-				} else {
+				} 
+				else 
+				{
 					// ignore this field if we don't have property data for it
 					if (pd == null) {
 						// System.out.println("No property data for " +
@@ -132,10 +134,13 @@ public class TridasEntityDeriver {
 							&& xmlElement.required())
 						pd.required = true;
 
-					if (fieldType.startsWith("class ")) {
+					if (fieldType.startsWith("class ")) 
+					{
 						// it's a java class, whew
 						pd.setType(f.getType(), f);
-					} else if (fieldType.startsWith("java.util.List<")) {
+					} 
+					else if (fieldType.startsWith("java.util.List<")) 
+					{
 						// it's a list of something, yay generics!
 						int a = fieldType.indexOf('<');
 						int b = fieldType.lastIndexOf('>');
@@ -149,7 +154,9 @@ public class TridasEntityDeriver {
 									+ listType);
 							continue;
 						}
-					} else {
+					} 
+					else 
+					{
 						System.out.println("Unknown field type: " + fieldType);
 						continue;
 					}
@@ -181,7 +188,7 @@ public class TridasEntityDeriver {
 				if(pd.qname.equals("object.genericFields"))
 				{
 					// Special case for object lab code
-					pd.setReadOnly(true);
+					pd.setReadOnly(false);
 					
 					// add type to property list
 					parent.addChildProperty(pd, 1);
@@ -216,7 +223,7 @@ public class TridasEntityDeriver {
 				// only delve deeper if it's an XML-annotated class
 				if (entType.isEnum() || 
 						entType.getAnnotation(XmlType.class) == null ||
-						pd.qname.equals("object.genericFields")) {
+						pd.qname.equals("object.genericFields") || pd.qname.equals("object.files")) {
 					continue;
 				}
 

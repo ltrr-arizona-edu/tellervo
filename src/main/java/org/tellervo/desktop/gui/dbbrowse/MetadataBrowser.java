@@ -67,6 +67,7 @@ import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.util.TridasUtils.TreeDepth;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -365,6 +366,26 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		
 		propertiesPanel.writeToObject(temporaryEditingEntity);
 		
+		
+		/**
+		 * PropertiesPanel.writeToObject() appears to have a bug and misses saving 
+		 * TridasFile array.  So... we have to manually check and set here.  Kludge-city!
+		 */
+		Property[] prop2 = propertiesPanel.getProperties();
+		
+		for(Property p : prop2)
+		{
+			if(p.getName().equals("object.files"))
+			{
+				Object files = p.getValue();
+				
+				if(temporaryEditingEntity instanceof TridasObject)
+				{
+					((TridasObject)temporaryEditingEntity).setFiles((List<TridasFile>) files);
+				}
+			}
+		}
+		
 		// the resource we'll use
 		EntityResource<? extends ITridas> resource;
 		
@@ -583,8 +604,8 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		Object n;
 		
 		try{
-		log.debug("oldval: "+evt.getOldValue().toString());
-		log.debug("newval: "+evt.getNewValue().toString());
+			log.debug("oldval: "+evt.getOldValue().toString());
+			log.debug("newval: "+evt.getNewValue().toString());
 		} catch (NullPointerException e)
 		{
 			

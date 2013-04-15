@@ -23,6 +23,8 @@ import javax.swing.AbstractListModel;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -43,6 +45,7 @@ import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.TridasFile;
 import javax.swing.JRadioButton;
 import javax.swing.JLabel;
+import java.awt.Dialog.ModalityType;
 
 public class TridasFileListDialog extends JDialog implements ActionListener{
 
@@ -51,7 +54,6 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField txtNewFile;
-	private ArrayList<TridasFile> fileList;
 
 	private JRadioButton radFile;
 	private JRadioButton radWebpage;
@@ -59,12 +61,14 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 	private JButton btnBrowse;
 	private JList<URI> lstFileList;
 	private DefaultListModel<URI> listModel;
+	private Boolean hasResults=false;
 	
 	
 	/**
 	 * Create the dialog.
 	 */
 	public TridasFileListDialog(Component parent, ArrayList<TridasFile> fileList) {
+		setModalityType(ModalityType.APPLICATION_MODAL);
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -113,6 +117,30 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 			txtNewFile = new JTextField("file:/");
 			contentPanel.add(txtNewFile, "cell 0 1,growx");
 			txtNewFile.setColumns(10);
+			txtNewFile.addKeyListener(new KeyListener(){
+
+				@Override
+				public void keyPressed(KeyEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void keyReleased(KeyEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void keyTyped(KeyEvent arg0) {
+					if(arg0.getKeyCode()==KeyEvent.VK_ENTER)
+					{
+						addToList();
+					}
+					
+				}
+				
+			});
 		}
 		{
 			btnBrowse = new JButton();
@@ -164,6 +192,7 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 			{
 				JButton okButton = new JButton("OK");
 				okButton.setActionCommand("OK");
+				okButton.addActionListener(this);
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}
@@ -174,11 +203,69 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 				cancelButton.addActionListener(this);
 			}
 		}
+		
+		setFileList(fileList);
 	}
+	
+	private void setFileList(ArrayList<TridasFile> fileList)
+	{
+		for(TridasFile f : fileList)
+		{
+			try{
+			URI uri = URI.create(f.getHref());
+					
+			((DefaultListModel<URI>) lstFileList.getModel()).addElement(uri);
+			} catch (IllegalArgumentException ex)
+			{
+				Alert.error("Illegal Link", "The file link '"+f.getHref()+"' stored in the database is not a valid URI");
+			}
+			
+		}
+	}
+	
 
 	public ArrayList<TridasFile> getFileList()
 	{
-		return this.fileList;
+		ArrayList<TridasFile> fileList = new ArrayList<TridasFile>();
+		
+		for(int i=0; i<lstFileList.getModel().getSize(); i++)
+		{
+			URI uri = lstFileList.getModel().getElementAt(i);
+			
+			TridasFile f = new TridasFile();
+			f.setHref(uri.toString());
+			
+			fileList.add(f);
+			
+		}
+		
+		return fileList;
+	}
+	
+	public Boolean hasResults()
+	{
+		return this.hasResults;
+	}
+	
+	private void addToList()
+	{
+		log.debug("Adding reference to list");
+		try{
+		URI uri = URI.create(txtNewFile.getText());
+		
+		log.debug("URI created");
+		log.debug("Host: "+ uri.getHost());
+		log.debug("Path: "+uri.getPath());
+		
+		((DefaultListModel<URI>) lstFileList.getModel()).addElement(uri);
+		
+	
+		
+		} catch (IllegalArgumentException e)
+		{
+			Alert.error("Invalid", "The reference you supplied is not valid");
+			return;
+		}
 	}
 	
 	@Override
@@ -186,7 +273,23 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 		
 		if(ev.getActionCommand()=="Cancel")
 		{
+			hasResults=false;
 			this.dispose();
+		}
+		if(ev.getActionCommand()=="OK")
+		{
+			
+			if(lstFileList.getModel().getSize()>0) 
+			{
+				hasResults=true;
+			}
+			else
+			{
+				hasResults=false;
+			}
+			
+			this.dispose();
+			
 		}
 		else if (ev.getActionCommand()=="RadioWebpage")
 		{
@@ -209,23 +312,7 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 		}
 		else if (ev.getActionCommand()=="AddToList")
 		{
-			log.debug("Adding reference to list");
-			try{
-			URI uri = URI.create(txtNewFile.getText());
-			
-			log.debug("URI created");
-			log.debug("Host: "+ uri.getHost());
-			log.debug("Path: "+uri.getPath());
-			
-			((DefaultListModel<URI>) lstFileList.getModel()).addElement(uri);
-			
-		
-			
-			} catch (IllegalArgumentException e)
-			{
-				Alert.error("Invalid", "The reference you supplied is not valid");
-				return;
-			}
+			addToList();
 		}
 		else if (ev.getActionCommand()=="DeleteFromList")
 		{
