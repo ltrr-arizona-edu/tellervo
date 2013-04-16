@@ -287,14 +287,15 @@ public class TridasEntityProperty extends AbstractProperty {
 	
 	public boolean isEditable() {
 		
-		if(qname.equals("object.genericFields"))
+		if(   (qname.equals("object.genericFields")) 
+		   || (qname.equals("object.files"))
+		   || (qname.equals("element.files"))
+		   || (qname.equals("sample.files"))
+		  )
 		{
 			return true;
 		}
-		else if (qname.equals("object.files"))
-		{
-			return true;
-		}
+
 		
 		if(isList || readOnly)
 			return false;

@@ -74,8 +74,8 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		super.registerRenderer(TridasLocation.class, new TridasLocationRenderer());
 
 		//nicely render file links
-		super.registerRenderer(List.class, new FileArrayRenderer());
-		super.registerRenderer(TridasFile.class, new FileArrayRenderer());
+		super.registerRenderer(List.class, new TridasFileArrayRenderer());
+		super.registerRenderer(TridasFile.class, new TridasFileArrayRenderer());
 
 		super.registerRenderer(TridasGenericField.class, new TridasObjectGenericFieldRenderer());
 
@@ -117,7 +117,7 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		if(property.getName().equals("files"))
 		{
 			log.debug("Property class = "+property.getType());
-			return new FileArrayRenderer();
+			return new TridasFileArrayRenderer();
 		}
 		
 		// ok, create a renderer for it if nothing exists

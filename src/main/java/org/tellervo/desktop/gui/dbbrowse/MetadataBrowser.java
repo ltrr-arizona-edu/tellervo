@@ -53,6 +53,7 @@ import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
 import org.tellervo.desktop.io.control.ExpandImportTreeEvent;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.tridasv2.TridasCloner;
+import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel;
 import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetTable;
 import org.tellervo.desktop.tridasv2.ui.TridasPropertyEditorFactory;
 import org.tellervo.desktop.tridasv2.ui.TridasPropertyRendererFactory;
@@ -93,7 +94,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 	/** Panel containing the tree view of the entities in the database	 */
 	private ManagementTreeViewPanel treepanel;
 	/** Our property sheet panel (contains table and description) */
-	private PropertySheetPanel propertiesPanel;
+	private TellervoPropertySheetPanel propertiesPanel;
 	/** Our properties table */
 	private TellervoPropertySheetTable propertiesTable;
 	/** Panel containing the edit/save changes/cancel buttons for the current entity */
@@ -199,7 +200,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		
 		// Create table and panel to hold it
 		propertiesTable = new TellervoPropertySheetTable();
-		propertiesPanel = new PropertySheetPanel(propertiesTable);
+		propertiesPanel = new TellervoPropertySheetPanel(propertiesTable);
 
 		// Set various properties of the properties panel!
 		propertiesPanel.setRestoreToggleStates(true);
@@ -365,26 +366,6 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		}
 		
 		propertiesPanel.writeToObject(temporaryEditingEntity);
-		
-		
-		/**
-		 * PropertiesPanel.writeToObject() appears to have a bug and misses saving 
-		 * TridasFile array.  So... we have to manually check and set here.  Kludge-city!
-		 */
-		Property[] prop2 = propertiesPanel.getProperties();
-		
-		for(Property p : prop2)
-		{
-			if(p.getName().equals("object.files"))
-			{
-				Object files = p.getValue();
-				
-				if(temporaryEditingEntity instanceof TridasObject)
-				{
-					((TridasObject)temporaryEditingEntity).setFiles((List<TridasFile>) files);
-				}
-			}
-		}
 		
 		// the resource we'll use
 		EntityResource<? extends ITridas> resource;

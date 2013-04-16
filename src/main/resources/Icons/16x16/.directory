@@ -1,6 +1,7 @@
 [Dolphin]
 AdditionalInfoV2=Details_Size,Details_Date,CustomizedDetails
 PreviewsShown=true
-Timestamp=2013,4,13,23,10,50
+Timestamp=2013,4,15,15,37,34
 Version=3
-ViewMode=2
+ViewMode=1
+VisibleRoles=Details_text,Details_size,Details_date,Details_type,CustomizedDetails

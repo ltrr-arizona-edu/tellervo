@@ -89,6 +89,7 @@ import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow;
 import org.tellervo.desktop.io.model.TridasRepresentationTreeModel;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 import org.tellervo.desktop.model.TellervoModelLocator;
+import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel;
 import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetTable;
 import org.tellervo.desktop.tridasv2.ui.TridasPropertyEditorFactory;
 import org.tellervo.desktop.tridasv2.ui.TridasPropertyRendererFactory;
@@ -162,7 +163,7 @@ public class ImportView extends JFrame{
 	private JSplitPane vertSplitPane;
 	
 	/** Our property sheet panel (contains table and description) */
-	private PropertySheetPanel propertiesPanel;
+	private TellervoPropertySheetPanel propertiesPanel;
 	
 	/** Our properties table */
 	private TellervoPropertySheetTable propertiesTable;
@@ -367,7 +368,7 @@ public class ImportView extends JFrame{
 				
 				// Create metadata table and panel to hold it
 				propertiesTable = new TellervoPropertySheetTable();
-				propertiesPanel = new PropertySheetPanel(propertiesTable);
+				propertiesPanel = new TellervoPropertySheetPanel(propertiesTable);
 				//propertiesPanel.getTable().setEnabled(false);
 
 				// Set various properties of the properties panel!

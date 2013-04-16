@@ -223,7 +223,10 @@ public class TridasEntityDeriver {
 				// only delve deeper if it's an XML-annotated class
 				if (entType.isEnum() || 
 						entType.getAnnotation(XmlType.class) == null ||
-						pd.qname.equals("object.genericFields") || pd.qname.equals("object.files")) {
+						pd.qname.equals("object.genericFields") || 
+						pd.qname.equals("object.files")|| 
+						pd.qname.equals("element.files") ||
+						pd.qname.equals("sample.files")) {
 					continue;
 				}
 

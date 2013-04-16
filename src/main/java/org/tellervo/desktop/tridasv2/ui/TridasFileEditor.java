@@ -46,7 +46,7 @@ import com.l2fprod.common.swing.PercentLayout;
  */
 public class TridasFileEditor extends AbstractPropertyEditor {
 	
-	private FileArrayRenderer label;
+	private TridasFileArrayRenderer label;
 	private JButton cancelButton;
 	private JButton editButton;
 	private ArrayList<TridasFile> fileList;
@@ -56,7 +56,7 @@ public class TridasFileEditor extends AbstractPropertyEditor {
 	 */
 	public TridasFileEditor() {
 		editor = new JPanel(new PercentLayout(PercentLayout.HORIZONTAL, 0));
-		((JPanel) editor).add("*", label = new FileArrayRenderer());
+		((JPanel) editor).add("*", label = new TridasFileArrayRenderer());
 		label.setOpaque(false);
 		
 		editButton = ComponentFactory.Helper.getFactory().createMiniButton();

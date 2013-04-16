@@ -35,7 +35,7 @@ import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
  * @author Lucas Madar
  *
  */
-public class FileArrayRenderer extends DefaultCellRenderer {
+public class TridasFileArrayRenderer extends DefaultCellRenderer {
 	private static final long serialVersionUID = 1L;
 
 	/* (non-Javadoc)
@@ -63,19 +63,14 @@ public class FileArrayRenderer extends DefaultCellRenderer {
 		}
 		else if(files.size()==1) 
 		{
-			ret = "[1 file] ";
+			ret = files.get(0).getHref();
 		}
 		else
 		{
 			ret = "["+files.size()+" files] ";
 		}
 		
-		
-		for(TridasFile file : files)
-		{
-			ret += file.getHref()+"; ";
-		}
-		
+				
 		return ret;
 	}
 

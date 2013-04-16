@@ -144,7 +144,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 			}
 		}
 		
-		range = new Range(new Year("1001"), (int)spnRingCount.getValue() );
+		range = new Range(new Year("1001"), Integer.parseInt(spnRingCount.getValue().toString()));
 		
 		startListener = new StartListener();
 		startField.setText(range.getStart().toString());
@@ -160,7 +160,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 			public void stateChanged(ChangeEvent arg0) {
 				// set the range
 				try {
-					range = new Range(new Year(range.getStart().toString()), (int)spnRingCount.getValue());				
+					range = new Range(new Year(range.getStart().toString()), Integer.parseInt(spnRingCount.getValue().toString()));			
 					endField.setText(range.getEnd().toString());
 				} catch (NumberFormatException nfe) {
 					endField.setText(I18n.getText("error"));
@@ -181,7 +181,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 		
 		if(event.getActionCommand().equals("OK"))
 		{
-			dataView.insertYears(0, (int) this.spnRingCount.getValue(), 0 ,2);
+			dataView.insertYears(0, Integer.parseInt(spnRingCount.getValue().toString()), 0 ,2);
 			Sample sample = dataView.getSample();
 			Range range = sample.getRange();
 			range = range.redateStartTo(new Year(this.startField.getText()));
@@ -221,7 +221,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 
 			// set the range
 			try {
-				range = new Range(new Year(range.getStart().toString()), (int)spnRingCount.getValue());				
+				range = new Range(new Year(range.getStart().toString()), Integer.parseInt(spnRingCount.getValue().toString()));	
 				range = range.redateEndTo(new Year(value));
 				startField.setText(range.getStart().toString());
 			} catch (NumberFormatException nfe) {
@@ -255,7 +255,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 
 			// set the range
 			try {
-				range = new Range(new Year(startField.getText()), (int)spnRingCount.getValue());				
+				range = new Range(new Year(startField.getText()), Integer.parseInt(spnRingCount.getValue().toString()));				
 				endField.setText(range.getEnd().toString());
 			} catch (NumberFormatException nfe) {
 				endField.setText(I18n.getText("error"));

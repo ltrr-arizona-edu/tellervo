@@ -104,7 +104,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	/** The sample we're working on */
 	private Sample sample;
 	/** Our property sheet panel (contains table and description) */
-	private PropertySheetPanel propertiesPanel;
+	private TellervoPropertySheetPanel propertiesPanel;
 	/** Our properties table */
 	private TellervoPropertySheetTable propertiesTable;
 	/** The sidebar that has buttons for sample, series, etc */
@@ -569,7 +569,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 	private void initPropertiesPanel() {
 		propertiesTable = new TellervoPropertySheetTable();
 		
-		propertiesPanel = new PropertySheetPanel(propertiesTable);
+		propertiesPanel = new TellervoPropertySheetPanel(propertiesTable);
 
 		// keep property collapse/expand states
 		propertiesPanel.setRestoreToggleStates(true);
