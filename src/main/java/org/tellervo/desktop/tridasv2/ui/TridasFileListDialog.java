@@ -77,7 +77,7 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 	private ImagePreviewPanel previewPanel;
 	
 	public static FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes());			
-	public static FileNameExtensionFilter pdfFilter = new FileNameExtensionFilter("PDF documents (*.pdf)", "pdf");
+	public static FileNameExtensionFilter pdfFilter = new FileNameExtensionFilter("PDF documents", "pdf");
 	public static FileNameExtensionFilter wordDocs = new FileNameExtensionFilter("Text documents", new String[] {"doc", "docx", "wps", "rtf", "txt", "odt", "wps", "wpd", "xml"});
 	public static FileNameExtensionFilter spreadsheetDocs = new FileNameExtensionFilter("Spreadsheet documents", new String[] {"xls", "xlsx", "ods", "csv", "wks", "wk1", "123"});
 	public static FileNameExtensionFilter zipFilter = new FileNameExtensionFilter("Archives", new String[] {"zip", "gz", "tar", "rar"});	
@@ -88,6 +88,9 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 	 * Create the dialog.
 	 */
 	public TridasFileListDialog(Component parent, ArrayList<TridasFile> fileList) {
+		
+
+		
 		radioButtons = new ButtonGroup();
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setBounds(100, 100, 619, 331);
@@ -324,7 +327,9 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 			}
 		}
 		
-		setFileList(fileList);
+		setFileList(fileList);		
+		this.setTitle("References Files");
+		this.setLocationRelativeTo(parent);
 	}
 	
 	private void previewURI()
