@@ -516,7 +516,7 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->getComments()!=NULL)                                 $sql.= "comments='".pg_escape_string($this->getComments())."', ";
                         if ($this->getType()!=NULL)										$sql.= "objecttypeid='".pg_escape_string($this->getType(true))."', ";
                         if ($this->getDescription()!=NULL)								$sql.= "description='".pg_escape_string($this->getDescription())."', ";
-                        if ($this->getFiles()!=NULL)									$sql.= "file='".dbHelper::phpArrayToPGStrArray($this->getFiles())."', ";
+                        if ($this->getFiles()!=NULL)										$sql.= "file='".dbHelper::phpArrayToPGStrArray($this->getFiles())."', ";
                         if ($this->getCreator()!=NULL)									$sql.= "creator='".pg_escape_string($this->getCreator())."', ";
                         if ($this->getOwner()!=NULL)									$sql.= "owner='".pg_escape_string($this->getOwner())."', ";
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal='".pg_escape_string($this->getTemporalCoverage())."', ";

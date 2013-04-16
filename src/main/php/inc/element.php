@@ -106,7 +106,7 @@ class element extends elementEntity implements IDBAccessor
         $this->setComments($row['comments']);        
         $this->setType($row['elementtypeid'], $row['elementtype']);
         $this->setDescription($row['description']);
-        $this->setFiles($row['file']);    
+        $this->setFilesFromStrArray($row['file']);
         
         $this->setShape($row['elementshapeid'], $row['elementshape']);        
         $this->setDimensions($row['height'], $row['width'], $row['depth']);       
@@ -505,10 +505,7 @@ class element extends elementEntity implements IDBAccessor
                 if($this->getComments()!=NULL)					$xml.="<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
                 $xml.="<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Tellervo\"/>\n";
                 if($this->getDescription()!=NULL) $xml.="<tridas:description>".dbhelper::escapeXMLChars($this->getDescription())."</tridas:description>\n";
-                if($format!="minimal")
-                {
-                	$xml.= $this->getFileXML();
-                }
+                $xml.= $this->getFileXML();
                 
                 $xml.= $this->taxon->asXML();
 

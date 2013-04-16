@@ -172,13 +172,17 @@ class sample extends sampleEntity implements IDBAccessor
      */
     function setParamsFromParamsClass($paramsClass)
     {		
+	global $firebug;
+
+	$firebug->log($paramsClass, "Params class in setParamsFromParamsClass");
+
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
         if($paramsClass->getTitle()!=NULL)         	$this->setTitle($paramsClass->getTitle());                                             	
     	if($paramsClass->getID()!=NULL)         	$this->setID($paramsClass->getID());                                          
         if($paramsClass->getComments()!=NULL)       $this->setComments($paramsClass->getComments());   
         if($paramsClass->getType()!=NULL)       	$this->setType($paramsClass->getType(true), $paramsClass->getType());         
         if($paramsClass->getDescription()!=NULL) 	$this->setDescription($paramsClass->getDescription());
-        if($paramsClass->getFile()!=NULL)			$this->setFile($paramsClass->getFile());     
+        if($paramsClass->getFiles()!=NULL)			$this->setFiles($paramsClass->getFiles());     
         if($paramsClass->getSamplingDate())     	$this->setSamplingDate($paramsClass->getSamplingDate());            
         if($paramsClass->getPosition()!=NULL)		$this->setPosition($paramsClass->getPosition());
         if($paramsClass->getState()!=NULL)			$this->setState($paramsClass->getState());
@@ -274,7 +278,7 @@ class sample extends sampleEntity implements IDBAccessor
                 if(($paramsObj->getCode() ==NULL) 
                     && ($paramsObj->getSamplingDate()==NULL) 
                     && ($paramsObj->getType()==NULL) 
-                    && ($paramsObj->getFile()==NULL)
+                    && ($paramsObj->getFiles()==NULL)
                     && ($paramsObj->getPosition()==NULL)
                     && ($paramsObj->getState()==NULL)
                     && ($paramsObj->getKnots()==NULL)
@@ -431,7 +435,7 @@ class sample extends sampleEntity implements IDBAccessor
               	$xml.= "<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Tellervo\" />\n";                     
              
                 if($this->getDescription()!=NULL)			 $xml.= "<tridas:description>".dbhelper::escapeXMLChars($this->getDescription())."</tridas:description>\n";
-            	if($this->getFile()!=NULL)					 $xml.= $this->getFileXML();
+            	if($this->getFiles()!=NULL)					 $xml.= $this->getFileXML();
             	if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate>".dbhelper::escapeXMLChars($this->getSamplingDate())."</tridas:samplingDate>\n";
                 if($this->getPosition()!=NULL)				 $xml.= "<tridas:position>".dbhelper::escapeXMLChars($this->getPosition())."</tridas:position>\n";
                 if($this->getState()!=NULL)					 $xml.= "<tridas:state>".dbhelper::escapeXMLChars($this->getState())."</tridas:state>\n";
@@ -510,7 +514,7 @@ class sample extends sampleEntity implements IDBAccessor
                         if($this->getComments()!=NULL)                  $sql.="comments, ";
                         if($this->getType()!=NULL)                   	$sql.="typeid, ";
                         if($this->getDescription()!=NULL)				$sql.="description, ";
-                        if($this->getFile()!=NULL)					 	$sql.="file, ";
+                        if($this->getFiles()!=NULL)					 	$sql.="file, ";
                         if($this->getSamplingDate()!=NULL)           	$sql.="samplingdate, ";
                         if($this->getPosition()!=NULL)					$sql.="position, ";
                         if($this->getState()!=NULL)						$sql.="state, ";
@@ -525,7 +529,7 @@ class sample extends sampleEntity implements IDBAccessor
                         if($this->getComments()!=NULL)           		$sql.="'".pg_escape_string($this->getComments())."', ";
                         if($this->getType()!=NULL)                   	$sql.="'".pg_escape_string($this->getType(true))."', ";
                         if($this->getDescription()!=NULL)				$sql.="'".pg_escape_string($this->getDescription())."', ";                        
-                        if($this->getFile()!=NULL)					 	$sql.="'".dbHelper::phpArrayToPGStrArray($this->getFile())."', ";
+                        if($this->getFiles()!=NULL)					 	$sql.="'".dbHelper::phpArrayToPGStrArray($this->getFiles())."', ";
 	                   	if($this->getSamplingDate()!=NULL)           	$sql.="'".pg_escape_string($this->getSamplingDate())."', ";
                         if($this->getPosition()!=NULL)					$sql.="'".pg_escape_string($this->getPosition())."', ";
                         if($this->getState()!=NULL)						$sql.="'".pg_escape_string($this->getState())."', ";
@@ -545,7 +549,7 @@ class sample extends sampleEntity implements IDBAccessor
                         if($this->getComments()!=NULL)          $sql.="comments='"          .pg_escape_string($this->getComments())          						."', ";
                         if($this->getType()!=NULL)          	$sql.="typeid='"     		.pg_escape_string($this->getType(true))          						."', ";
                         if($this->getDescription()!=NULL)		$sql.="description='"		.pg_escape_string($this->getDescription())		."', ";                             
-                        if($this->getFile()!=NULL)				$sql.="file='"	 			.dbHelper::phpArrayToPGStrArray($this->getFile())  								."', ";                                 
+                        if($this->getFiles()!=NULL)				$sql.="file='"	 			.dbHelper::phpArrayToPGStrArray($this->getFiles())  								."', ";                                 
                         if($this->getSamplingDate()!=NULL)     	$sql.="samplingdate='"   	.pg_escape_string($this->getSamplingDate())  						."', ";
                         if($this->getPosition()!=NULL)			$sql.="position='"			.pg_escape_string($this->getPosition())							."', ";
                         if($this->getState()!=NULL)				$sql.="state='"				.pg_escape_string($this->getState())								."', ";
