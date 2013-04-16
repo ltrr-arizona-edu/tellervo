@@ -516,7 +516,7 @@ class object extends objectEntity implements IDBAccessor
                         if ($this->getComments()!=NULL)                                 $sql.= "comments='".pg_escape_string($this->getComments())."', ";
                         if ($this->getType()!=NULL)										$sql.= "objecttypeid='".pg_escape_string($this->getType(true))."', ";
                         if ($this->getDescription()!=NULL)								$sql.= "description='".pg_escape_string($this->getDescription())."', ";
-                        if ($this->getFile()!=NULL)										$sql.= "file='".dbHelper::phpArrayToPGStrArray($this->getFile())."', ";
+                        if ($this->getFiles()!=NULL)									$sql.= "file='".dbHelper::phpArrayToPGStrArray($this->getFiles())."', ";
                         if ($this->getCreator()!=NULL)									$sql.= "creator='".pg_escape_string($this->getCreator())."', ";
                         if ($this->getOwner()!=NULL)									$sql.= "owner='".pg_escape_string($this->getOwner())."', ";
                         if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal='".pg_escape_string($this->getTemporalCoverage())."', ";
@@ -691,7 +691,7 @@ class object extends objectEntity implements IDBAccessor
                     && ($paramsClass->getCreator()==NULL) 
                     && ($paramsClass->getDescription()==NULL)
                     && ($paramsClass->getType()==NULL)
-                    && ($paramsClass->getFile()==NULL)
+                    && ($paramsClass->getFiles()==NULL)
                     && ($paramsClass->getOwner()==NULL)
                     && ($paramsClass->getTemporalCoverage()==NULL)
                     && ($paramsClass->getTemporalCoverageFoundation()==NULL)

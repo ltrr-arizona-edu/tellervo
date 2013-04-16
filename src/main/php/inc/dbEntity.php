@@ -183,7 +183,7 @@ class dbEntity
     	$this->setgroupXMLTag($groupXMLTag);
     	$this->parentEntityArray = array();
     	$this->childrenEntityArray = array();
-	$this->files = array();
+		$this->files = array();
 
     }
 

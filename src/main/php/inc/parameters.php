@@ -457,7 +457,6 @@ class objectParameters extends objectEntity implements IParams
 				if($child->hasAttribute("xlink:href"))
 				{
 					$this->addFile($child->getAttribute("xlink:href"));
-					$firebug->log($child->getAttribute("xlink:href"), "link file");
 				}
 				break;
 
@@ -624,7 +623,12 @@ class elementParameters extends elementEntity implements IParams
 		   		
 		   		
 		   	case "tridas:description":			$this->setDescription($child->nodeValue); break;
-		   	case "tridas:file": 				$this->addFile($child->nodeValue); break;
+	        case "tridas:file":				
+			if($child->hasAttribute("xlink:href"))
+			{
+				$this->addFile($child->getAttribute("xlink:href"));
+			}
+			break;
 		   	case "tridas:taxon":
 				/* @todo Decisions need to be made as to how taxonomy and dictionaries will be handled
 		   		 * */
@@ -864,7 +868,7 @@ class sampleParameters extends sampleEntity implements IParams
 		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
 		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
 		   	case "tridas:createdTimestamp":	  break;
-		   	case "lastModifiedTimestamp": break;	
+		   	case "tridas:lastModifiedTimestamp": break;	
 		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;
 		   	case "tridas:type": 				
 		   		if($child->hasAttribute("normalStd"))
@@ -881,7 +885,12 @@ class sampleParameters extends sampleEntity implements IParams
 		   		}
 				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
 		   	case "tridas:description":			$this->setDescription($child->nodeValue); break;	
-		   	case "tridas:file":				$this->addFile($child->nodeValue); break;		   	
+	        case "tridas:file":				
+			if($child->hasAttribute("xlink:href"))
+			{
+				$this->addFile($child->getAttribute("xlink:href"));
+			}
+			break;	   	
 		   	case "tridas:samplingDate":		$this->setSamplingDate($child->nodeValue); break;
 		   	case "tridas:position":			$this->setPosition($child->nodeValue); break;
 		   	case "tridas:state":				$this->setState($child->nodeValue); break;

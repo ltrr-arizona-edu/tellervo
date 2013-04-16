@@ -354,24 +354,29 @@ class dbHelper
 	 */
 	public static function pgStrArrayToPHPArray($strarray)
 	{
+		if($strarray==null) return null;
 		global $firebug;
+		$firebug->log($strarray, "String array from db");
 		
-		if(strlen($strarray)<5) return null;
-		if(substr($strarray, 0,1)!="{") return null;
- 		if(substr($strarray, -1,1)!="}") return null;
+		//if(strlen($strarray)<5) return null;
+		//if(substr($strarray, 0,1)!="{") return null;
+ 		//if(substr($strarray, -1,1)!="}") return null;
 
-		$strarray = substr($strarray, 1, -1);
+		//$strarray = substr($strarray, 1, -1);
 
-		$arr = explode($strarray, ",");
+		$arr = explode("><", $strarray);
+
+		$firebug->log($arr, "exploded");
 		$newarr = array();
 
 		foreach($arr as $v)
 		{
+			$firebug->log($v, "url item");
 			array_push($newarr, urldecode($v));
 		}
 		
 			
-
+		return $newarr;
 
 	}
 
@@ -384,6 +389,7 @@ class dbHelper
 	 */
 	public static function phpArrayToPGStrArray($array)
 	{
+		if($array==null) return null;
 		global	$firebug;
 		$return = "{";
 		if(count($array)>0)
@@ -391,7 +397,7 @@ class dbHelper
 			foreach($array as $item)
 			{
 				$firebug->log($item, "file item");
-				$return.="\"".rawurlencode($item)."\", ";
+				$return.="\"".rawurlencode($item)."\"><";
 			}
 			$return = substr($return, 0, -2);
 			return $return."}";
