@@ -389,9 +389,9 @@ class dbHelper
 	 */
 	public static function phpArrayToPGStrArray($array)
 	{
-		if($array==null) return null;
+		if($array===null) return "NULL";
 		global	$firebug;
-		$return = "{";
+		$return = "'{";
 		if(count($array)>0)
 		{
 			foreach($array as $item)
@@ -400,11 +400,41 @@ class dbHelper
 				$return.="\"".rawurlencode($item)."\"><";
 			}
 			$return = substr($return, 0, -2);
-			return $return."}";
+			return $return."}'";
 		}
 		else
 		{
-			return false;
+			return "NULL";
+		}
+	}
+
+	public static function tellervo_pg_escape_string($string)
+	{
+		if($string===null)
+		{
+			return "NULL";
+		}
+		else if (strlen($string)==0)
+		{
+			return "NULL";
+		}
+		else
+		{
+			return "'".pg_escape_string($string)."'";
+		}
+
+
+	}
+
+	public static function pg_value_wrapper($value)
+	{
+		if($value===null)
+		{
+			return "NULL";
+		}
+		else
+		{
+			return "'".$value."'";
 		}
 	}
 	

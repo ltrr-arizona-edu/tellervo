@@ -44,6 +44,7 @@ class geometry
 	function setGeometryFromGML($gml)
 	{
 
+		global $firebug;
 		global $gmlNS;
 				
 		// Wrap GML tags in root elements
@@ -53,17 +54,18 @@ class geometry
     	$end =  "</featureMember></tellervo>"; 
         $doc = new DomDocument;
         $doc->loadXML($start.$gml.$end);
+	$firebug->log($start.$gml.$end, "GML");
 
         // Handle validation errors ourselves
         libxml_use_internal_errors(true);		
 		
         // Do various checks for unsupported GML data
-        $tags = $doc->getElementsByTagName("locationGeometry")->item(0)->childNodes;
+        $tags = $doc->getElementsByTagName("tridas:locationGeometry")->item(0)->childNodes;
         foreach($tags as $tag)
         {
 		   if($tag->nodeType != XML_ELEMENT_NODE) continue;   
 			
-		   if(strtolower($tag->tagName)!="point")
+		   if(strtolower($tag->tagName)!="gml:point")
 		   {
 		   		trigger_error("104"."This webservice does not accept gml:".$tag->tagName.". Please resubmit your request with either no GML data or with gml:point data.", E_USER_ERROR);
 		   		return false;
@@ -79,7 +81,7 @@ class geometry
 		   }
 		   
 		   // Extract coordinates from point GML
-		   $coords = explode(" ", $doc->getElementsByTagName("pos")->item(0)->nodeValue, 2);
+		   $coords = explode(" ", $doc->getElementsByTagName("gml:pos")->item(0)->nodeValue, 2);
 		     
 		   
 		   // Calculate geometry value and store
@@ -323,7 +325,7 @@ class location extends geometry
 	
 	function setComment($value)
 	{
-		$this->comment = addslashes($value);
+		$this->comment = $value;
 		return true;
 	}	
 	
@@ -401,8 +403,10 @@ class location extends geometry
 	 * @param unknown_type $value
 	 * @return unknown
 	 */
-	function setType($value=NULL)
+	function setType($value)
 	{
+		global $firebug;
+		$firebug->log($value, "setType called on location type object with value");
 		return $this->type->setLocationType(NULL, $value);
 	}
 	
@@ -495,17 +499,20 @@ class location extends geometry
 	 */
 	function hasAddress()
 	{
-		if ($this->addressline1!=NULL ||
-			$this->addressline2!=NULL ||
-			$this->cityortown!=NULL ||
-			$this->stateprovinceregion!=NULL ||
-			$this->postalcode!=NULL ||
-			$this->country!=NULL)
+	global $firebug;
+		if ($this->getAddressLine1()!=NULL ||
+			$this->getAddressLine2()!=NULL ||
+			$this->getCityOrTown()!=NULL ||
+			$this->getStateProvinceRegion!=NULL ||
+			$this->getPostalCode!=NULL ||
+			$this->getCountry!=NULL)
 			{
+				$firebug->log("has address");
 				return true;
 			}
 		else
 		{
+				$firebug->log("does not have address");
 			return false;
 		}
 	}
@@ -513,9 +520,12 @@ class location extends geometry
 	function asXML()
 	{
         $xml = "<tridas:location>\n";
-       	$xml.= "<tridas:locationGeometry>\n";
-       	$xml.= $this->asGML();
-       	$xml.= "\n</tridas:locationGeometry>\n";
+	if($this->geometry!=null)
+	{
+       		$xml.= "<tridas:locationGeometry>\n";
+       		$xml.= $this->asGML();
+	       	$xml.= "\n</tridas:locationGeometry>\n";
+	}
        	if($this->getType()!=NULL) $xml .= "<tridas:locationType>".dbHelper::escapeXMLChars($this->getType())."</tridas:locationType>\n";
         if($this->getPrecision()!=NULL) $xml .= "<tridas:locationPrecision>".$this->getPrecision()."</tridas:locationPrecision>\n";
         if($this->getComment()!=NULL) $xml .= "<tridas:locationComment>".dbHelper::escapeXMLChars($this->getComment())."</tridas:locationComment>\n"; 

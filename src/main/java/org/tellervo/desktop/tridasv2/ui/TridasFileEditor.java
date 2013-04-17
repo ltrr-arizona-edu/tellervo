@@ -130,7 +130,7 @@ public class TridasFileEditor extends AbstractPropertyEditor {
 		{
 			oldFileList = null;
 		}
-		TridasFileListDialog dialog = new TridasFileListDialog(editButton, fileList);
+		TridasFileListDialog dialog = new TridasFileListDialog(label, fileList);
 		
 		// show the dialog...
 		dialog.setVisible(true);

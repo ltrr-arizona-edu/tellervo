@@ -1179,20 +1179,7 @@ class elementEntity extends dbEntity
 	 */
 	function setAuthenticity($value)
 	{
-		if( (strtolower($value)=='original') || (strtolower($value)=='repair') || (strtolower($value)=='later addition'))
-		{
-			$this->authenticity = strtolower($value);
-			return true;
-		}
-                elseif($value==NULL)
-                {
-                        return false;
-                }
-		else
-		{
-                        trigger_error("901"."Authenticity must be one of 'original, 'repair' or 'later addtion'. You specified '".strtolower($value)."'", E_USER_ERROR);
-			return false;
-		}
+		$this->authenticity = $value;
 	}
 
 	/**
@@ -1220,7 +1207,14 @@ class elementEntity extends dbEntity
 	 */
 	function setDiameter($diameter)
 	{
-		$this->diameter = (double) $diameter;
+		if($diameter===NULL)
+		{
+			$this->diameter = NULL;
+		}
+		else
+		{
+			$this->diameter = (double) $diameter;
+		}
 		return true;
 	}
 	
@@ -1232,7 +1226,14 @@ class elementEntity extends dbEntity
 	 */
 	function setHeight($height)
 	{
-		$this->height = (double) $height;
+		if($height===NULL)
+		{
+			$this->height = NULL;
+		}
+		else
+		{
+			$this->height = (double) $height;
+		}
 		return true;
 	}
 	/**
@@ -1243,7 +1244,14 @@ class elementEntity extends dbEntity
 	 */
 	function setWidth($width)
 	{
-		$this->width = (double) $width;
+		if($width===NULL)
+		{
+			$this->width = NULL;
+		}
+		else
+		{
+			$this->width = (double) $width;
+		}
 		return true;
 	}
 	/**
@@ -1254,7 +1262,14 @@ class elementEntity extends dbEntity
 	 */
 	function setDepth($depth)
 	{
-		$this->depth = (double) $depth;
+		if($depth===NULL)
+		{
+			$this->depth = NULL;
+		}
+		else
+		{
+			$this->depth = (double) $depth;
+		}
 		return true;
 	}	
 	
@@ -1471,16 +1486,9 @@ class elementEntity extends dbEntity
 	 * @param Boolean $asKey
 	 * @return unknown
 	 */
-	function getAuthenticity($asKey=false)
+	function getAuthenticity()
 	{
-		if($asKey)
-		{
-			return dbHelper::getKeyFromValue("elementauthenticity", $this->authenticity);
-		}
-		else
-		{
-			return $this->authenticity;
-		}
+		return $this->authenticity;
 	}
 
 	/**

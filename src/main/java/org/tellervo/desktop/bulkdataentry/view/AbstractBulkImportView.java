@@ -41,6 +41,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.ScrollPaneConstants;
 
 import org.tellervo.desktop.bulkdataentry.control.AddRowEvent;
 import org.tellervo.desktop.bulkdataentry.control.CopyRowEvent;
@@ -109,11 +110,14 @@ public abstract class AbstractBulkImportView extends JPanel{
 		//add(setupToolbar(showHideColumns, selectAll, selectNone), "West");
 
 		JScrollPane panel = new JScrollPane(table);
+		panel.getViewport().setBackground(Color.WHITE);	
 		panel.setPreferredSize(new Dimension(500, 400));
 		table.setAutoCreateRowSorter(true);
 		table.setFillsViewportHeight(true); 
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		// editors for combo box stuff
 		setupTableCells(table);
+
 		
 		add(panel, "Center");
 		

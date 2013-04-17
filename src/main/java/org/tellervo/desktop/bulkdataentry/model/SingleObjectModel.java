@@ -30,6 +30,7 @@ import net.opengis.gml.schema.Pos;
 
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasLocation;
@@ -55,10 +56,27 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	public static final String LONGTITUDE = "Longtitude";
 	public static final String WAYPOINT = "Waypoint";
 	public static final String PARENT_OBJECT = "Parent Object";
+	public static final String ADDRESSLINE1 = "Address 1";
+	public static final String ADDRESSLINE2 = "Address 2";
+	public static final String CITY_TOWN = "City/Town";
+	public static final String STATE_PROVINCE_REGION = "State/Province/Region";
+	public static final String POSTCODE = "Postal Code";
+	public static final String COUNTRY = "Country";
+	public static final String LOCATION_PRECISION = "Location precision";
+	public static final String LOCATION_COMMENT = "Location comment";
+	public static final String OWNER = "Owner";
+	public static final String CREATOR = "Creator";
+	
+	// Not implemented yet
+	//public static final String LOCATION_TYPE = "Location type";
+	//public static final String FILES = "File references";
+	//public static final String COVERAGE_TEMPORAL = "Time period";
+	//public static final String COVERAGE_TEMPORAL_FOUNDATION = "Time period foundation";
 	
 	
 	public static final String[] TABLE_PROPERTIES = {
-		OBJECT_CODE, TITLE, COMMENTS, TYPE, DESCRIPTION, LATITUDE, LONGTITUDE, WAYPOINT, PARENT_OBJECT
+		OBJECT_CODE, TITLE, COMMENTS, TYPE, DESCRIPTION, LATITUDE, LONGTITUDE, WAYPOINT, PARENT_OBJECT, ADDRESSLINE1, ADDRESSLINE2,
+		CITY_TOWN, STATE_PROVINCE_REGION, POSTCODE, COUNTRY, LOCATION_PRECISION, LOCATION_COMMENT, OWNER, CREATOR
 	};
 	
 	public SingleObjectModel(){
@@ -129,6 +147,70 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 			setProperty(LONGTITUDE, null);
 		}
 		
+		if(argObject.isSetLocation() &&
+				argObject.getLocation().isSetAddress() &&
+				argObject.getLocation().getAddress().isSetAddressLine1())
+		{
+			setProperty(ADDRESSLINE1, argObject.getLocation().getAddress().getAddressLine1());
+		}
+		
+		if(argObject.isSetLocation() &&
+				argObject.getLocation().isSetAddress() &&
+				argObject.getLocation().getAddress().isSetAddressLine2())
+		{
+			setProperty(ADDRESSLINE2, argObject.getLocation().getAddress().getAddressLine2());
+		}
+		
+		if(argObject.isSetLocation() &&
+				argObject.getLocation().isSetAddress() &&
+				argObject.getLocation().getAddress().isSetCityOrTown())
+		{
+			setProperty(CITY_TOWN, argObject.getLocation().getAddress().getCityOrTown());
+		}
+		
+		if(argObject.isSetLocation() &&
+				argObject.getLocation().isSetAddress() &&
+				argObject.getLocation().getAddress().isSetCountry())
+		{
+			setProperty(COUNTRY, argObject.getLocation().getAddress().getCountry());
+		}
+		
+		if(argObject.isSetLocation() &&
+				argObject.getLocation().isSetAddress() &&
+				argObject.getLocation().getAddress().isSetPostalCode())
+		{
+			setProperty(POSTCODE, argObject.getLocation().getAddress().getPostalCode());
+		}
+		
+		if(argObject.isSetLocation() &&
+				argObject.getLocation().isSetAddress() &&
+				argObject.getLocation().getAddress().isSetStateProvinceRegion())
+		{
+			setProperty(STATE_PROVINCE_REGION, argObject.getLocation().getAddress().getStateProvinceRegion());
+		}
+		
+		if(argObject.isSetLocation() &&
+				argObject.getLocation().isSetLocationPrecision())
+		{
+			setProperty(LOCATION_PRECISION, argObject.getLocation().getLocationPrecision());
+		}
+		
+		if(argObject.isSetLocation() &&
+				argObject.getLocation().isSetLocationComment())
+		{
+			setProperty(LOCATION_COMMENT, argObject.getLocation().getLocationComment());
+		}
+		
+		if(argObject.isSetOwner())
+		{
+			setProperty(OWNER, argObject.getOwner());
+		}
+		
+		if(argObject.isSetCreator())
+		{
+			setProperty(CREATOR, argObject.getCreator());
+		}
+		
 		setProperty(IMPORTED, argObject.getIdentifier());
 	}
 	
@@ -143,26 +225,80 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		argObject.setComments((String)getProperty(COMMENTS));
 		argObject.setType((ControlledVoc) getProperty(TYPE));
 		argObject.setDescription((String) getProperty(DESCRIPTION));
+		argObject.setOwner((String) getProperty(OWNER));
+		argObject.setCreator((String) getProperty(CREATOR));
+		
 		
 		Object latitude = getProperty(LATITUDE);
 		Object longitude = getProperty(LONGTITUDE);
+		Object addressline1 = getProperty(ADDRESSLINE1);
+		Object addressline2 = getProperty(ADDRESSLINE2);
+		Object city = getProperty(CITY_TOWN);
+		Object state = getProperty(STATE_PROVINCE_REGION);
+		Object postcode = getProperty(POSTCODE);
+		Object country = getProperty(COUNTRY);
+		Object locprecision = getProperty(LOCATION_PRECISION);
+		Object loccomment = getProperty(LOCATION_COMMENT);
+
 		
-		if(latitude != null && longitude != null){
-			// Lat/Long is set so use these
-			double lat = (Double)latitude;
-			double lon = (Double)longitude;
-			Pos p = new Pos();
-			p.getValues().add(lat);
-			p.getValues().add(lon);
-			
-			PointType pt = new PointType();
-			pt.setPos(p);
-			
-			TridasLocationGeometry locgeo = new TridasLocationGeometry();
-			locgeo.setPoint(pt);
+		if((latitude != null && longitude != null) || 
+			addressline1 !=null ||
+			addressline2 !=null ||
+			city != null ||
+			state != null ||
+			postcode != null ||
+			country != null ||
+			locprecision != null ||
+			loccomment != null
+			){
 			
 			TridasLocation loc = new TridasLocation();
-			loc.setLocationGeometry(locgeo);
+			
+			loc.setLocationPrecision((String) locprecision);
+			loc.setLocationComment((String) loccomment);
+			
+			if(latitude != null && longitude != null)
+			{
+				// Lat/Long is set so use these
+				double lat = (Double)latitude;
+				double lon = (Double)longitude;
+				Pos p = new Pos();
+				p.getValues().add(lat);
+				p.getValues().add(lon);
+				
+				PointType pt = new PointType();
+				pt.setPos(p);
+				
+				TridasLocationGeometry locgeo = new TridasLocationGeometry();
+				locgeo.setPoint(pt);
+				
+				
+				loc.setLocationGeometry(locgeo);
+			}
+					
+			if(addressline1 !=null ||
+				addressline2 !=null ||
+				city != null ||
+				state != null ||
+				postcode != null ||
+				country != null ||
+				locprecision != null ||
+				loccomment != null
+			)
+			{
+				TridasAddress addr = new TridasAddress();
+				addr.setAddressLine1((String)addressline1);
+				addr.setAddressLine2((String)addressline2);
+				addr.setCityOrTown((String)city);
+				addr.setCountry((String) country);
+				addr.setPostalCode((String)postcode);
+				addr.setStateProvinceRegion((String)state);
+				loc.setAddress(addr);
+			}
+			else
+			{
+				loc.setAddress(null);
+			}
 			argObject.setLocation(loc);		
 		}else{
 			argObject.setLocation(null);

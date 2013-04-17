@@ -430,8 +430,9 @@ class objectParameters extends objectEntity implements IParams
     
     function setParamsFromXMLRequest()
     {
-		global $tellervoNS;
+	global $tellervoNS;
         global $tridasNS;
+	global $firebug;
 	
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
@@ -484,9 +485,9 @@ class objectParameters extends objectEntity implements IParams
 		  	 		switch($tag->tagName)
 		  	 		{
 		  	 			case "tridas:locationGeometry": $this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
-		  	 			case "tridas:locationComment" : $this->location->setComment($tag->nodeValue); break;
+		  	 			case "tridas:locationComment" : $this->location->setComment($tag->nodeValue); $firebug->log($tag->nodeValue, "Location comment"); break;
 		  	 			case "tridas:locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
-		  	 			case "tridas:locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	
+		  	 			case "tridas:locationType":		$this->location->setType($tag->nodeValue); break;  	
 		  	 			case "tridas:address":		
 		  	 				$addressTags = $tag->childNodes;  
 		  	 				foreach($addressTags as $addtag)
@@ -680,8 +681,7 @@ class elementParameters extends elementEntity implements IParams
 		   	case "tridas:processing": 			$this->setProcessing($child->nodeValue); break;	   	
 		   	case "tridas:marks": 				$this->setMarks($child->nodeValue); break;
 		   	case "tridas:altitude":			$this->setAltitude($child->nodeValue); break;
-		   		
-		    case "tridas:location": 
+		   	case "tridas:location": 
 				$locationTags = $child->childNodes;
 				foreach($locationTags as $tag)
 				{	
@@ -690,9 +690,9 @@ class elementParameters extends elementEntity implements IParams
 		  	 		switch($tag->tagName)
 		  	 		{
 		  	 			case "tridas:locationGeometry": $this->location->setGeometryFromGML($this->xmlRequestDom->saveXML($tag)); break;
-		  	 			case "tridas:locationComment" : $this->location->setComment($tag->nodeValue); break;
+		  	 			case "tridas:locationComment" : $this->location->setComment($tag->nodeValue); $firebug->log($tag->nodeValue, "Location comment"); break;
 		  	 			case "tridas:locationPrecision" : $this->location->setPrecision($tag->nodeValue); break;
-		  	 			case "tridas:locationType":		$this->location->setType(NULL, $tag->nodeValue); break;  	 
+		  	 			case "tridas:locationType":		$this->location->setType($tag->nodeValue); break;  	
 		  	 			case "tridas:address":		
 		  	 				$addressTags = $tag->childNodes;  
 		  	 				foreach($addressTags as $addtag)
@@ -711,14 +711,14 @@ class elementParameters extends elementEntity implements IParams
 									trigger_error("901"."Unknown tag ".$addtag->tagName." in address section of the 'element' entity. This tag is being ignored", E_USER_NOTICE);		  	 			
 					  	 		}
 							}
-					  	 	break;  
+					  	 	break;  		  	 			 
 		  	 			default:
-						trigger_error("901"."Unknown tag ".$tag->tagName." in location section of the 'element' entity. This tag is being ignored", E_USER_NOTICE);
+						trigger_error("901"."Unknown tag ".$tag->tagName." in location section of the 'object' entity. This tag is being ignored", E_USER_NOTICE);
 		  	 				
 		  	 		}	  	 		
 				}
 				break;
- 	
+		   		
 		   	case "tridas:slope":
 		   		$slopeTags = $child->childNodes;
 		   		

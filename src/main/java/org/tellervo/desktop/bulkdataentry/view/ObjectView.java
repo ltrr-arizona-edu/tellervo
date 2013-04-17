@@ -141,6 +141,8 @@ public class ObjectView extends AbstractBulkImportView{
 				super.setValue(object.getLabCode());
 			}
 		});
+		
+		
 	}
 	
 	/**

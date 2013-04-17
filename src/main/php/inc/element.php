@@ -107,12 +107,11 @@ class element extends elementEntity implements IDBAccessor
         $this->setType($row['elementtypeid'], $row['elementtype']);
         $this->setDescription($row['description']);
         $this->setFilesFromStrArray($row['file']);
-        
         $this->setShape($row['elementshapeid'], $row['elementshape']);        
         $this->setDimensions($row['height'], $row['width'], $row['depth']);       
         $this->setDimensionUnits($row['unitid'], $row['units']);
         $this->setDiameter($row['diameter']);        
-        $this->setAuthenticity($row['elementauthenticity']);
+        $this->setAuthenticity($row['authenticity']);
         $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision']);
         $this->location->setComment($row['locationcomment']);
         $this->location->setAddressLine1($row['locationaddressline1']);
@@ -237,50 +236,49 @@ class element extends elementEntity implements IDBAccessor
     {   
    	
         // Alter the parameter values based upon values supplied by the user and passed as a parameters class
-        if ($paramsClass->getTitle()!=NULL)             	$this->setTitle($paramsClass->getTitle());
-        if ($paramsClass->getComments()!=NULL)             	$this->setComments($paramsClass->getComments());
-        if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType(true), $paramsClass->getType());
-        if ($paramsClass->getDescription()!=NULL)			$this->setDescription($paramsClass->getDescription());
-        if ($paramsClass->getFile()!=NULL)					$this->setFiles($paramsClass->getFile());  
-		if ($paramsClass->taxon->getOriginalTaxon()!=NULL)	$this->taxon->setOriginalTaxon($paramsClass->taxon->getOriginalTaxon());
-		if ($paramsClass->taxon->getCoLID()!=NULL)			$this->taxon->setParamsFromCoL($paramsClass->taxon->getCoLID(), $paramsClass->taxon->getLabel());
-		if ($paramsClass->getShape()!=NULL)					$this->setShape(null, $paramsClass->getShape());
-        if ($paramsClass->hasDimensions())   				$this->setDimensions($paramsClass->getDimension('height'), 
-        																		 $paramsClass->getDimension('width'), 
-        																		 $paramsClass->getDimension('depth'));
-		if ($paramsClass->getDimensionUnits()!=NULL)		$this->setDimensionUnits($paramsClass->getDimensionUnits(true), $paramsClass->getDimensionUnits(false));       
-        if ($paramsClass->getDiameter()!=NULL)				$this->setDiameter($paramsClass->getDiameter());
-        if ($paramsClass->getAuthenticity()!=NULL)			$this->setAuthenticity($paramsClass->getAuthenticity());
-		if ($paramsClass->hasGeometry())					
-		{
-															$this->location->setGeometry($paramsClass->location->getLocationGeometry(),
-																						 $paramsClass->location->getType(),
-																						 $paramsClass->location->getPrecision(),
-																						 $paramsClass->location->getComment());
-
-			if ($paramsClass->location->getAddressLine1()!=NULL)	$this->location->setAddressLine1($paramsClass->location->getAddressLine1());
-			if ($paramsClass->location->getAddressLine2()!=NULL)	$this->location->setAddressLine2($paramsClass->location->getAddressLine2());
-			if ($paramsClass->location->getCityOrTown()!=NULL)		$this->location->setCityOrTown($paramsClass->location->getCityOrTown());
-			if ($paramsClass->location->getStateProvinceRegion()!=NULL)	$this->location->setStateProvinceRegion($paramsClass->location->getStateProvinceRegion());
-			if ($paramsClass->location->getPostalCode()!=NULL)		$this->location->setPostalCode($paramsClass->location->getPostalCode());
-			if ($paramsClass->location->getCountry()!=NULL)			$this->location->setCountry($paramsClass->location->getCountry());
-		}  
-        if ($paramsClass->getProcessing()!=NULL)			$this->setProcessing($paramsClass->getProcessing());
-		if ($paramsClass->getMarks()!=NULL)					$this->setMarks($paramsClass->getMarks());
-        if ($paramsClass->getAltitude()!=NULL)				$this->setAltitude($paramsClass->getAltitude());
-        if ($paramsClass->getSlopeAngle()!=NULL)			$this->setSlopeAngle($paramsClass->getSlopeAngle());
-        if ($paramsClass->getSlopeAzimuth()!=NULL)			$this->setSlopeAzimuth($paramsClass->getSlopeAzimuth());
-        if ($paramsClass->getSoilDepth()!=NULL)				$this->setSoilDepth($paramsClass->getSoilDepth());
-        if ($paramsClass->getSoilDescription()!=NULL)		$this->setSoilDescription($paramsClass->getSoilDescription());
-        if ($paramsClass->getBedrockDescription()!=NULL)	$this->setBedrockDescription($paramsClass->getBedrockDescription());
-        if ($paramsClass->getCode()!=NULL)             		$this->setCode($paramsClass->getCode());																				 
+        $this->setTitle($paramsClass->getTitle());
+        $this->setComments($paramsClass->getComments());
+        $this->setType($paramsClass->getType(true), $paramsClass->getType());
+        $this->setDescription($paramsClass->getDescription());
+        $this->setFiles($paramsClass->getFile());  
+	$this->setShape(null, $paramsClass->getShape());
+	$this->setDimensionUnits($paramsClass->getDimensionUnits(true), $paramsClass->getDimensionUnits(false));       
+        $this->setDiameter($paramsClass->getDiameter());
+        $this->setAuthenticity($paramsClass->getAuthenticity());
+      	$this->setProcessing($paramsClass->getProcessing());
+      	$this->setMarks($paramsClass->getMarks());
+      	$this->setAltitude($paramsClass->getAltitude());
+      	$this->setSlopeAngle($paramsClass->getSlopeAngle());
+      	$this->setSlopeAzimuth($paramsClass->getSlopeAzimuth());
+      	$this->setSoilDepth($paramsClass->getSoilDepth());
+      	$this->setSoilDescription($paramsClass->getSoilDescription());
+      	$this->setBedrockDescription($paramsClass->getBedrockDescription());
+      	$this->setCode($paramsClass->getCode());																				 
+	$this->setDimensions($paramsClass->getDimension('height'), 
+        	             $paramsClass->getDimension('width'), 
+        		     $paramsClass->getDimension('depth'));
+        $this->location->setGeometry($paramsClass->location->getGeometry());
+        $this->location->setType($paramsClass->location->getType());
+        $this->location->setPrecision($paramsClass->location->getPrecision());
+        $this->location->setComment($paramsClass->location->getComment());
+	$this->location->setAddressLine1($paramsClass->location->getAddressLine1());
+	$this->location->setAddressLine2($paramsClass->location->getAddressLine2());
+	$this->location->setCityOrTown($paramsClass->location->getCityOrTown());
+	$this->location->setStateProvinceRegion($paramsClass->location->getStateProvinceRegion());
+	$this->location->setPostalCode($paramsClass->location->getPostalCode());
+	$this->location->setCountry($paramsClass->location->getCountry());
+	  
+	if (isset($paramsClass->taxon)){
+		$this->taxon->setOriginalTaxon($paramsClass->taxon->getOriginalTaxon());
+		$this->taxon->setParamsFromCoL($paramsClass->taxon->getCoLID(), $paramsClass->taxon->getLabel());
+	}
         if ($paramsClass->parentID!=NULL)
         {
         	$parentObj = new object();
         	$parentObj->setParamsFromDB($paramsClass->parentID);
         	array_push($this->parentEntityArray, $parentObj);
         }																				 
-		return true;        																		 
+	return true;        																		 
 
     }
 
@@ -534,10 +532,8 @@ class element extends elementEntity implements IDBAccessor
                     	$xml.="</tridas:dimensions>";                    	
                     }                                     
                     if($this->getAuthenticity()!=NULL)      $xml.= "<tridas:authenticity>".dbhelper::escapeXMLChars($this->getAuthenticity())."</tridas:authenticity>\n";
-                    if($this->hasGeometry()) 
-                    {
-                        $xml.=$this->location->asXML();
-                    }                 
+                     
+                   $xml.=$this->location->asXML();
                     
                     if($this->getProcessing()!=NULL) $xml.="<tridas:processing>".dbhelper::escapeXMLChars($this->getProcessing())."</tridas:processing>\n";
                     if($this->getMarks()!=NULL) $xml.="<tridas:marks>".dbhelper::escapeXMLChars($this->getMarks())."</tridas:marks>\n";
@@ -652,82 +648,81 @@ class element extends elementEntity implements IDBAccessor
                 	$this->setID(uuid::getUUID(), $domain);                    
                 	
                     $sql = "insert into tblelement ( ";
-                    															$sql.= "elementid, ";
-                    	if ($this->getTitle()!=NULL)							$sql.= "code, ";
-                    	if ($this->getComments()!=NULL)							$sql.= "comments, ";                    	
-                    	if ($this->getType()!=NULL)								$sql.= "elementtypeid, ";
-                        if ($this->getDescription()!=NULL)						$sql.= "description, ";	
-                        if ($this->getFile()!=NULL)								$sql.= "file, ";                    	
-                        if ($this->taxon->getID()!=NULL)                        $sql.= "taxonid, ";
-                        if ($this->getShape()!=NULL)							$sql.= "elementshapeid, ";
+             		$sql.= "elementid, ";
+                    	$sql.= "code, ";
+                    	$sql.= "comments, ";                    	
+                    	$sql.= "elementtypeid, ";
+                        $sql.= "description, ";	
+                        $sql.= "file, ";                    	
+                        $sql.= "taxonid, ";
+                        $sql.= "elementshapeid, ";
                         if ($this->hasDimensions())								
 	                    {
-	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "units, ";
-	                    	if($this->getDimension('height')!=NULL)   			$sql.= "height, ";
-	                    	if($this->getDimension('width')!=NULL)    			$sql.= "width, ";
-	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "depth, ";
-	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter, ";              	
+	                    	$sql.= "units, ";
+	                    	$sql.= "height, ";
+	                    	$sql.= "width, ";
+	                    	$sql.= "depth, ";
+	                    	$sql.= "diameter, ";              	
 	                    }
-                        if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid, ";	                    
-                        if ($this->location->getType()!=NULL)					$sql.= "locationtypeid, ";
-                        if ($this->location->getPrecision()!=NULL)				$sql.= "locationprecision, ";
-                        if ($this->location->getComment()!=NULL)				$sql.= "locationcomment, ";
-                        if ($this->location->getGeometry()!=NULL)				$sql.= "locationgeometry, ";
-                        if ($this->location->getAddressLine1()!=NULL)			$sql.= "locationaddressline1, ";
-                        if ($this->location->getAddressLine2()!=NULL)			$sql.= "locationaddressline2, ";
-                        if ($this->location->getCityOrTown()!=NULL)				$sql.= "locationcityortown, ";
-                        if ($this->location->getStateProvinceRegion()!=NULL)	$sql.= "locationstateprovinceregion, ";
-                        if ($this->location->getPostalCode()!=NULL)				$sql.= "locationpostalcode, ";
-                        if ($this->location->getCountry()!=NULL)				$sql.= "locationcountry, ";                                                                        
-                        
-                        if ($this->getProcessing()!=NULL)						$sql.= "processing, ";
-                        if ($this->getMarks()!=NULL)							$sql.= "marks, ";
-                        if ($this->getAltitude()!=NULL)							$sql.= "altitude, ";                        
-                        if ($this->getSlopeAngle()!=NULL)						$sql.= "slopeangle, "; 
-                        if ($this->getSlopeAzimuth()!=NULL)						$sql.= "slopeazimuth, ";    
-                        if ($this->getSoilDepth()!=NULL)						$sql.= "soildepth, ";    
-						if ($this->getSoilDescription()!=NULL)					$sql.= "soildescription, ";                                            
-						if ($this->getBedrockDescription()!=NULL)				$sql.= "bedrockdescription, ";      
+                       	$sql.= "authenticity, ";	                    
+                       	$sql.= "locationtypeid, ";
+                       	$sql.= "locationprecision, ";
+                       	$sql.= "locationcomment, ";
+                       	$sql.= "locationgeometry, ";
+                       	$sql.= "locationaddressline1, ";
+                       	$sql.= "locationaddressline2, ";
+                       	$sql.= "locationcityortown, ";
+                        $sql.= "locationstateprovinceregion, ";
+                       	$sql.= "locationpostalcode, ";
+                       	$sql.= "locationcountry, ";                                                                        
+                       	$sql.= "processing, ";
+                       	$sql.= "marks, ";
+                       	$sql.= "altitude, ";                        
+                       	$sql.= "slopeangle, "; 
+                       	$sql.= "slopeazimuth, ";    
+                       	$sql.= "soildepth, ";    
+		       	$sql.= "soildescription, ";                                            
+		       	$sql.= "bedrockdescription, ";      
                     	if (isset($this->parentEntityArray[0]))					$sql.= "objectid, ";                                                    
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                    	if ($this->getID()!=NULL)								$sql.= "'".pg_escape_string($this->getID()). "', ";										
-                    	if ($this->getTitle()!=NULL)							$sql.= "'".pg_escape_string($this->getTitle()).  "', ";                    
-                    	if ($this->getComments()!=NULL)							$sql.= "'".pg_escape_string($this->getComments()).  "', ";                    
-                        if ($this->getType()!=NULL)								$sql.= "'".pg_escape_string($this->getType(true))."', ";
-                        if ($this->getDescription()!=NULL)						$sql.= "'".pg_escape_string($this->getDescription())."', ";                     
-                        if ($this->getFile()!=NULL)								$sql.= "'".dbHelper::phpArrayToPGStrArray($this->getFile())."', ";
-                        if ($this->taxon->getID()!=NULL)                        $sql.= "'".pg_escape_string($this->taxon->getID()).   "', ";
-                        if ($this->getShape()!=NULL)							$sql.= "'".pg_escape_string($this->getShape(true))."', ";
+                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getID()). ", ";										
+                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getTitle()).  ", ";                    
+                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getComments()). ", ";                    
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->getType(true)).", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->getDescription()).", ";                     
+                       	$sql.= dbHelper::phpArrayToPGStrArray($this->getFile()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->taxon->getID()). ", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->getShape(true)).", ";
                         if ($this->hasDimensions())								
 	                    {
-	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "'".pg_escape_string($this->getDimensionUnits(true))."', ";
-	                    	if($this->getDimension('height')!=NULL)   			$sql.= "'".pg_escape_string($this->getDimension('height'))."', ";
-	                    	if($this->getDimension('width')!=NULL)    			$sql.= "'".pg_escape_string($this->getDimension('width'))."', ";
-	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "'".pg_escape_string($this->getDimension('depth'))."', ";
-	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "'".pg_escape_string($this->getDimension('diameter'))."', ";;              	
+	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimensionUnits(true))."', ";
+	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('height'))."', ";
+	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('width'))."', ";
+	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('depth'))."', ";
+	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('diameter'))."', ";;              	
 	                    }                        
-                        if ($this->getAuthenticity()!=NULL)						$sql.= "'".pg_escape_string($this->getAuthenticity(true))."', ";
-                        if ($this->location->getType()!=NULL)					$sql.= "'".pg_escape_string($this->location->getTypeID())."', ";
-                        if ($this->location->getPrecision()!=NULL)				$sql.= "'".pg_escape_string($this->location->getPrecision())."', ";
-                        if ($this->location->getComment()!=NULL)				$sql.= "'".pg_escape_string($this->location->getComment())."', ";
-                        if ($this->location->getGeometry()!=NULL)				$sql.= "'".pg_escape_string($this->location->getGeometry())."', ";
-                        if ($this->location->getAddressLine1()!=NULL)			$sql.= "'".pg_escape_string($this->location->getAddressLine1())."', ";
-                        if ($this->location->getAddressLine2()!=NULL)			$sql.= "'".pg_escape_string($this->location->getAddressLine2())."', ";
-                        if ($this->location->getCityOrTown()!=NULL)				$sql.= "'".pg_escape_string($this->location->getCityOrTown())."', ";
-                        if ($this->location->getStateProvinceRegion()!=NULL)	$sql.= "'".pg_escape_string($this->location->getStateProvinceRegion())."', ";
-                        if ($this->location->getPostalCode()!=NULL)				$sql.= "'".pg_escape_string($this->location->getPostalCode())."', ";
-                        if ($this->location->getCountry()!=NULL)				$sql.= "'".pg_escape_string($this->location->getCountry())."', ";
-                        if ($this->getProcessing()!=NULL)						$sql.= "'".pg_escape_string($this->getProcessing())."', ";
-                        if ($this->getMarks()!=NULL)							$sql.= "'".pg_escape_string($this->getMarks())."', ";
-                        if ($this->getAltitude()!=NULL)							$sql.= "'".pg_escape_string($this->getAltitude())."', ";
-                        if ($this->getSlopeAngle()!=NULL)						$sql.= "'".pg_escape_string($this->getSlopeAngle())."', ";
-                        if ($this->getSlopeAzimuth()!=NULL)						$sql.= "'".pg_escape_string($this->getSlopeAzimuth())."', ";
-                        if ($this->getSoilDepth()!=NULL)						$sql.= "'".pg_escape_string($this->getSoilDepth())."', ";
-                        if ($this->getSoilDescription()!=NULL)					$sql.= "'".pg_escape_string($this->getSoilDescription())."', ";
-                        if ($this->getBedrockDescription()!=NULL)				$sql.= "'".pg_escape_string($this->getBedrockDescription())."', ";
-                        if (isset($this->parentEntityArray[0]))					$sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                    
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->getAuthenticity()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getTypeID()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getPrecision()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getComment()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getGeometry()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getAddressLine1()).", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->location->getAddressLine2()).", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->location->getCityOrTown()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getStateProvinceRegion()).", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->location->getPostalCode()).", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->location->getCountry()).", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->getProcessing()).", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->getMarks()).", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->getAltitude()).", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->getSlopeAngle()).", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->getSlopeAzimuth()).", ";
+                       	$sql.= dbHelper::tellervo_pg_escape_string($this->getSoilDepth()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getSoilDescription()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getBedrockDescription()).", ";
+                        if (isset($this->parentEntityArray[0]))	$sql.= dbHelper::tellervo_pg_escape_string($this->parentEntityArray[0]->getID()).", ";                    
                         
                      // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
@@ -738,48 +733,50 @@ class element extends elementEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql = "update tblelement set ";
-                    	if ($this->getTitle()!=NULL)							$sql.= "code='".pg_escape_string($this->getTitle())."', ";
-                    	if ($this->getComments()!=NULL)							$sql.= "comments='".pg_escape_string($this->getComments())."', ";
-                        if ($this->getType()!=NULL)								$sql.= "elementtypeid='".pg_escape_string($this->getType(true))."', ";
-                        if ($this->getDescription()!=NULL)						$sql.= "description='".pg_escape_string($this->getDescription())."', ";	  
-                        if ($this->getFile()!=NULL)								$sql.= "file='".dbHelper::phpArrayToPGStrArray($this->getFile())."', ";
-                    	if ($this->taxon->getID()!=NULL)                        $sql.= "taxonid='".pg_escape_string($this->taxon->getID())."', ";
-                        if ($this->getShape()!=NULL)							$sql.= "elementshapeid='".pg_escape_string($this->getShape(true))."', ";
+                    	$sql.= "code=".dbHelper::tellervo_pg_escape_string($this->getTitle()).", ";
+                    	$sql.= "comments=".dbHelper::tellervo_pg_escape_string($this->getComments()).", ";
+                       	$sql.= "elementtypeid=".dbHelper::tellervo_pg_escape_string($this->getType(true)).", ";
+                       	$sql.= "description=".dbHelper::tellervo_pg_escape_string($this->getDescription()).", ";	  
+                       	$sql.= "file=".dbHelper::phpArrayToPGStrArray($this->getFile()).", ";
+                        $sql.= "taxonid=".dbHelper::tellervo_pg_escape_string($this->taxon->getID()).", ";
+                    	$sql.= "elementshapeid=".dbHelper::tellervo_pg_escape_string($this->getShape(true)).", ";
                         if ($this->hasDimensions())								
 	                    {
-	                    	if($this->getDimensionUnits()!=NULL)				$sql.= "units='".pg_escape_string($this->getDimensionUnits(true))."', ";
-	                    	if($this->getDimension('height')!=NULL)   			$sql.= "height='".pg_escape_string($this->getDimension('height'))."', ";
-	                    	if($this->getDimension('width')!=NULL)    			$sql.= "width='".pg_escape_string($this->getDimension('width'))."', ";
-	                    	if($this->getDimension('depth')!=NULL)    			$sql.= "depth='".pg_escape_string($this->getDimension('depth'))."', ";
-	                    	if($this->getDimension('diameter')!=NULL) 			$sql.= "diameter='".pg_escape_string($this->getDimension('diameter'))."', ";            	
+	                    	$sql.= "units=".dbHelper::tellervo_pg_escape_string($this->getDimensionUnits(true)).", ";
+	                    	$sql.= "height=".dbHelper::tellervo_pg_escape_string($this->getDimension('height')).", ";
+	                    	$sql.= "width=".dbHelper::tellervo_pg_escape_string($this->getDimension('width')).", ";
+	                    	$sql.= "depth=".dbHelper::tellervo_pg_escape_string($this->getDimension('depth')).", ";
+	                    	$sql.= "diameter=".dbHelper::tellervo_pg_escape_string($this->getDimension('diameter')).", ";            	
 	                    }                    	
-                    	if ($this->getAuthenticity()!=NULL)						$sql.= "elementauthenticityid='".pg_escape_string($this->getAuthenticity(true))."', ";
-                        if ($this->location->getType()!=NULL)					$sql.= "locationtypeid='".pg_escape_string($this->location->getTypeID())."', ";
-                        if ($this->location->getPrecision()!=NULL)				$sql.= "locationprecision='".pg_escape_string($this->location->getPrecision())."', ";
-                        if ($this->location->getComment()!=NULL)				$sql.= "locationcomment='".pg_escape_string($this->location->getComment())."', ";
-                        if ($this->location->getGeometry()!=NULL)				$sql.= "locationgeometry='".pg_escape_string($this->location->getGeometry())."', ";
-                        if ($this->location->getAddressLine1()!=NULL)			$sql.= "locationaddressline1='".pg_escape_string($this->location->getAddressLine1())."', ";
-                        if ($this->location->getAddressLine2()!=NULL)			$sql.= "locationaddressline2='".pg_escape_string($this->location->getAddressLine2())."', ";
-                        if ($this->location->getCityOrTown()!=NULL)				$sql.= "locationcityortown='".pg_escape_string($this->location->getCityOrTown())."', ";
-                        if ($this->location->getStateProvinceRegion()!=NULL)	$sql.= "locationstateprovinceregion='".pg_escape_string($this->location->getStateProvinceRegion())."', ";
-                        if ($this->location->getPostalCode()!=NULL)				$sql.= "locationpostalcode='".pg_escape_string($this->location->getPostalCode())."', ";
-                        if ($this->location->getCountry()!=NULL)				$sql.= "locationcountry='".pg_escape_string($this->location->getCountry())."', ";
-                        if ($this->getProcessing()!=NULL)						$sql.= "processing='".pg_escape_string($this->getProcessing())."', ";
-                        if ($this->getMarks()!=NULL)							$sql.= "marks='".pg_escape_string($this->getMarks())."', ";
-                        if ($this->getAltitude()!=NULL)							$sql.= "altitude='".pg_escape_string($this->getAltitude())."', ";
-                        if ($this->getSlopeAngle()!=NULL)						$sql.= "slopeangle='".pg_escape_string($this->getSlopeAngle())."', ";
-                        if ($this->getSlopeAzimuth()!=NULL)						$sql.= "slopeazimuth='".pg_escape_string($this->getSlopeAzimuth())."', ";
-                        if ($this->getSoilDepth()!=NULL)						$sql.= "soildepth='".pg_escape_string($this->getSoilDepth())."', ";
-                        if ($this->getSoilDescription()!=NULL)					$sql.= "soildescription='".pg_escape_string($this->getSoilDescription())."', ";
-                        if ($this->getBedrockDescription()!=NULL)				$sql.= "bedrockdescription='".pg_escape_string($this->getBedrockDescription())."', ";
-                        if (isset($this->parentEntityArray[0]))					$sql.= "objectid='".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
+                    	$sql.= "authenticity=".dbHelper::tellervo_pg_escape_string($this->getAuthenticity()).", ";
+                    	$sql.= "locationtypeid=".dbHelper::tellervo_pg_escape_string($this->location->getTypeID()).", ";
+                    	$sql.= "locationprecision=".dbHelper::tellervo_pg_escape_string($this->location->getPrecision()).", ";
+                    	$sql.= "locationcomment=".dbHelper::tellervo_pg_escape_string($this->location->getComment()).", ";
+                    	$sql.= "locationgeometry=".dbHelper::tellervo_pg_escape_string($this->location->getGeometry()).", ";
+                        $sql.= "locationaddressline1=".dbHelper::tellervo_pg_escape_string($this->location->getAddressLine1()).", ";
+                        $sql.= "locationaddressline2=".dbHelper::tellervo_pg_escape_string($this->location->getAddressLine2()).", ";
+                        $sql.= "locationcityortown=".dbHelper::tellervo_pg_escape_string($this->location->getCityOrTown()).", ";
+                        $sql.= "locationstateprovinceregion=".dbHelper::tellervo_pg_escape_string($this->location->getStateProvinceRegion()).", ";
+                        $sql.= "locationpostalcode=".dbHelper::tellervo_pg_escape_string($this->location->getPostalCode()).", ";
+                        $sql.= "locationcountry=".dbHelper::tellervo_pg_escape_string($this->location->getCountry()).", ";
+                        $sql.= "processing=".dbHelper::tellervo_pg_escape_string($this->getProcessing()).", ";
+                        $sql.= "marks=".dbHelper::tellervo_pg_escape_string($this->getMarks()).", ";
+                        $sql.= "altitude=".dbHelper::tellervo_pg_escape_string($this->getAltitude()).", ";
+                        $sql.= "slopeangle=".dbHelper::tellervo_pg_escape_string($this->getSlopeAngle()).", ";
+                        $sql.= "slopeazimuth=".dbHelper::tellervo_pg_escape_string($this->getSlopeAzimuth()).", ";
+                        $sql.= "soildepth=".dbHelper::tellervo_pg_escape_string($this->getSoilDepth()).", ";
+                        $sql.= "soildescription=".dbHelper::tellervo_pg_escape_string($this->getSoilDescription()).", ";
+                        $sql.= "bedrockdescription=".dbHelper::tellervo_pg_escape_string($this->getBedrockDescription()).", ";
+                        if (isset($this->parentEntityArray[0]))	$sql.= "objectid=".dbHelper::tellervo_pg_escape_string($this->parentEntityArray[0]->getID()).", ";
                         
                      // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql .= " where elementid='".pg_escape_string($this->getID())."'";
+	
                 }
+global $firebug;
                 
-                //$firebug->log($sql, "SQL");
+                $firebug->log($sql, "SQL");
                 //echo $sql;
 
                 // Run SQL command
@@ -794,9 +791,11 @@ class element extends elementEntity implements IDBAccessor
                         switch($PHPErrorCode)
                         {
                         case 23514:
-                                // Foreign key violation
-                                $this->setErrorMessage("909", "Check constraint violation.  The location precision specified must be a postive integer.");
-                                break;
+				if(strpos(pg_result_error($result), "enforce_valid_dimensions")!==FALSE)
+				{
+					$this->setErrorMessage("909", "Invalid dimensions.  If dimensions are included they should include height and diameter; or height, width and depth.");
+	                                break;
+				}
                         default:
                                 // Any other error
                                 $this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");

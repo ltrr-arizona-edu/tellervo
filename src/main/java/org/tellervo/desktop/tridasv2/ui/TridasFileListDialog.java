@@ -89,8 +89,6 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 	 */
 	public TridasFileListDialog(Component parent, ArrayList<TridasFile> fileList) {
 		
-
-		
 		radioButtons = new ButtonGroup();
 		setModalityType(ModalityType.APPLICATION_MODAL);
 		setBounds(100, 100, 619, 331);
@@ -328,8 +326,13 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 		}
 		
 		setFileList(fileList);		
-		this.setTitle("References Files");
-		this.setLocationRelativeTo(parent);
+		this.setTitle("File references");
+		this.setIconImage(Builder.getApplicationIcon());
+		this.setBounds(parent.getLocationOnScreen().x, 
+				parent.getLocationOnScreen().y, 
+				500, 
+				200);
+		this.pack();
 	}
 	
 	private void previewURI()
@@ -346,6 +349,7 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 		Desktop desktop = Desktop.getDesktop();
 		
 		try{
+			// Handle different schemes here
 			if(uri.getScheme().equals("urn"))
 			{
 				URI uri2 = URI.create("http://wm-urn.org/"+uri.toString());

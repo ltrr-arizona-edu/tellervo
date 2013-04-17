@@ -175,28 +175,28 @@ class object extends objectEntity implements IDBAccessor
 	global $firebug;
 	$firebug->log($paramsClass, "params class");
 
-    	if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());
-    	if ($paramsClass->getComments()!=NULL)				$this->setComments($paramsClass->getComments());
-        if ($paramsClass->getType()!=NULL)					$this->setType($paramsClass->getType(true), $paramsClass->getType());
-    	if ($paramsClass->getDescription()!=NULL)			$this->setDescription($paramsClass->getDescription());
-    	if ($paramsClass->getFiles()!=NULL)					$this->setFiles($paramsClass->getFiles());      
-        if ($paramsClass->getCreator()!=NULL)		  		$this->setCreator($paramsClass->getCreator());
-        if ($paramsClass->getOwner()!=NULL)					$this->setOwner($paramsClass->getOwner());
-        if ($paramsClass->getTemporalCoverage()!=NULL)		$this->setCoverageTemporal($paramsClass->getTemporalCoverage(), $paramsClass->getTemporalCoverageFoundation());
-        if ($paramsClass->location->getGeometry()!=NULL)	$this->location->setGeometry($paramsClass->location->getGeometry());
-        if ($paramsClass->location->getType()!=NULL)		$this->location->setType($paramsClass->location->getType());
-        if ($paramsClass->location->getPrecision()!=NULL)	$this->location->setPrecision($paramsClass->location->getPrecision());
-        if ($paramsClass->location->getComment()!=NULL)		$this->location->setComment($paramsClass->location->getComment());
-		if ($paramsClass->location->getAddressLine1()!=NULL)	$this->location->setAddressLine1($paramsClass->location->getAddressLine1());
-		if ($paramsClass->location->getAddressLine2()!=NULL)	$this->location->setAddressLine2($paramsClass->location->getAddressLine2());
-		if ($paramsClass->location->getCityOrTown()!=NULL)		$this->location->setCityOrTown($paramsClass->location->getCityOrTown());
-		if ($paramsClass->location->getStateProvinceRegion()!=NULL)	$this->location->setStateProvinceRegion($paramsClass->location->getStateProvinceRegion());
-		if ($paramsClass->location->getPostalCode()!=NULL)		$this->location->setPostalCode($paramsClass->location->getPostalCode());
-		if ($paramsClass->location->getCountry()!=NULL)			$this->location->setCountry($paramsClass->location->getCountry());
+    			$this->setTitle($paramsClass->getTitle());
+    		$this->setComments($paramsClass->getComments());
+        		$this->setType($paramsClass->getType(true), $paramsClass->getType());
+    		$this->setDescription($paramsClass->getDescription());
+    			$this->setFiles($paramsClass->getFiles());      
+        	$this->setCreator($paramsClass->getCreator());
+        		$this->setOwner($paramsClass->getOwner());
+        $this->setCoverageTemporal($paramsClass->getTemporalCoverage(), $paramsClass->getTemporalCoverageFoundation());
+        $this->location->setGeometry($paramsClass->location->getGeometry());
+        $this->location->setType($paramsClass->location->getType());
+        $this->location->setPrecision($paramsClass->location->getPrecision());
+        $this->location->setComment($paramsClass->location->getComment());
+	$this->location->setAddressLine1($paramsClass->location->getAddressLine1());
+	$this->location->setAddressLine2($paramsClass->location->getAddressLine2());
+		$this->location->setCityOrTown($paramsClass->location->getCityOrTown());
+		$this->location->setStateProvinceRegion($paramsClass->location->getStateProvinceRegion());
+		$this->location->setPostalCode($paramsClass->location->getPostalCode());
+			$this->location->setCountry($paramsClass->location->getCountry());
 		
         
         
-        if ($paramsClass->getCode()!=NULL)             		$this->setCode($paramsClass->getCode());
+          		$this->setCode($paramsClass->getCode());
         
         if ($paramsClass->parentID!=NULL)
         {
@@ -360,7 +360,7 @@ class object extends objectEntity implements IDBAccessor
                 $xml.= $this->getIdentifierXML(); 
                 if($this->getComments()!=NULL)		$xml.= "<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";    
                 									$xml.= "<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Tellervo\" />\n";        	
-            	if($this->getDescription()!=NULL)	$xml.= "<tridas:description>".dbHelper::escapeXMLChars($this->getDescription())."</tridas:description>";
+            	if($this->getDescription()!==NULL)	$xml.= "<tridas:description>".dbHelper::escapeXMLChars($this->getDescription())."</tridas:description>";
                	if($this->getCreator()!=NULL)		$xml.= "<tridas:creator>".dbHelper::escapeXMLChars($this->getCreator())."</tridas:creator>";
             	if($this->getOwner()!=NULL)			$xml.= "<tridas:owner>".dbHelper::escapeXMLChars($this->getOwner())."</tridas:owner>";         	
             	
@@ -455,56 +455,53 @@ class object extends objectEntity implements IDBAccessor
                 	$this->setID(uuid::getUUID(), $domain);
                 	
                     $sql = "insert into tblobject ( ";
-                        if ($this->getTitle()!=NULL)                                    $sql.= "title, ";
-																	                    $sql.= "objectid, ";
-                        if ($this->getComments()!=NULL)									$sql.= "comments, ";
-                        if ($this->getType()!=NULL)										$sql.= "objecttypeid, ";                        
-                        if ($this->getDescription()!=NULL)								$sql.= "description, ";
-                        if ($this->getFiles()!=NULL)										$sql.= "file, ";
-                        if ($this->getCreator()!=NULL)									$sql.= "creator, ";
-                        if ($this->getOwner()!=NULL)									$sql.= "owner, ";
-                        if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal, ";
-                        if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "coveragetemporalfoundation, ";
-                        if ($this->location->getGeometry()!=NULL)						$sql.= "locationgeometry, ";
-                        if ($this->location->getComment()!=NULL)						$sql.= "locationcomment, ";
-                        if ($this->location->getType()!=NULL)							$sql.= "locationtype, ";
-                        if ($this->location->getPrecision()!=NULL)						$sql.= "locationprecision, ";
-                        if ($this->location->getAddressLine1()!=NULL)					$sql.= "locationaddressline1, ";
-                        if ($this->location->getAddressLine2()!=NULL)					$sql.= "locationaddressline2, ";
-                        if ($this->location->getCityOrTown()!=NULL)						$sql.= "locationcityortown, ";
-                        if ($this->location->getStateProvinceRegion()!=NULL)			$sql.= "locationstateprovinceregion, ";
-                        if ($this->location->getPostalCode()!=NULL)						$sql.= "locationpostalcode, ";
-                        if ($this->location->getCountry()!=NULL)						$sql.= "locationcountry, ";                            
-                        
-                        if ($this->getCode()!=NULL)										$sql.= "code, ";
-                        if (count($this->parentEntityArray)>0)							$sql.= "parentobjectid, ";
-                    // Trim off trailing space and comma
-                    $sql = substr($sql, 0, -2);
+                        $sql.= "title, ";
+			$sql.= "objectid, ";
+                        $sql.= "comments, ";
+                       	$sql.= "objecttypeid, ";                        
+                       	$sql.= "description, ";
+                       	$sql.= "file, ";
+                        $sql.= "creator, ";
+                        $sql.= "owner, ";
+                        $sql.= "coveragetemporal, ";
+                        $sql.= "coveragetemporalfoundation, ";
+                        $sql.= "locationgeometry, ";
+                        $sql.= "locationcomment, ";
+                        $sql.= "locationtypeid, ";
+                        $sql.= "locationprecision, ";
+                        $sql.= "locationaddressline1, ";
+                        $sql.= "locationaddressline2, ";
+                        $sql.= "locationcityortown, ";
+                        $sql.= "locationstateprovinceregion, ";
+                        $sql.= "locationpostalcode, ";
+                        $sql.= "locationcountry, ";                            
+                        $sql.= "code, ";
+                        if(isset($this->parentEntityArray) && count($this->parentEntityArray)>0) $sql.= "parentobjectid, ";
+			$sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if ($this->getTitle()!=NULL)                                    $sql.= "'".pg_escape_string($this->getTitle())."', ";
-	                    if ($this->getID()!=NULL)                                       $sql.= "'".pg_escape_string($this->getID())."', ";
-                        if ($this->getComments()!=NULL)                                 $sql.= "'".pg_escape_string($this->getComments())."', ";
-                        if ($this->getType()!=NULL)										$sql.= "'".pg_escape_string($this->getType(true))."', ";
-                        if ($this->getDescription()!=NULL)								$sql.= "'".pg_escape_string($this->getDescription())."', ";
-                        if ($this->getFiles()!=NULL)										$sql.= "'".dbHelper::phpArrayToPGStrArray($this->getFiles())."', ";
-                        if ($this->getCreator()!=NULL)									$sql.= "'".pg_escape_string($this->getCreatedTimestamp())."', ";
-                        if ($this->getOwner()!=NULL)									$sql.= "'".pg_escape_string($this->getOwner())."', ";     
-                        if ($this->getTemporalCoverage()!=NULL)							$sql.= "'".pg_escape_string($this->getTemporalCoverage())."', ";
-                        if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "'".pg_escape_string($this->getTemporalCoverageFoundation())."', ";
-                        if ($this->location->getGeometry()!=NULL)						$sql.= "'".$this->location->getGeometry()."', ";
-                        if ($this->location->getComment()!=NULL)						$sql.= "'".pg_escape_string($this->location->getComment())."', ";
-                        if ($this->location->getTypeID()!=NULL)							$sql.= "'".pg_escape_string($this->location->getTypeID())."', ";
-                        if ($this->location->getPrecision()!=NULL)						$sql.= "'".pg_escape_string($this->location->getPrecision())."', ";
-                        if ($this->location->getAddressLine1()!=NULL)					$sql.= "'".pg_escape_string($this->location->getAddressLine1())."', ";
-                        if ($this->location->getAddressLine2()!=NULL)					$sql.= "'".pg_escape_string($this->location->getAddressLine2())."', ";
-                        if ($this->location->getCityOrTown()!=NULL)						$sql.= "'".pg_escape_string($this->location->getCityOrTown())."', ";
-                        if ($this->location->getStateProvinceRegion()!=NULL)			$sql.= "'".pg_escape_string($this->location->getStateProvinceRegion())."', ";
-                        if ($this->location->getPostalCode()!=NULL)						$sql.= "'".pg_escape_string($this->location->getPostalCode())."', ";
-                        if ($this->location->getCountry()!=NULL)						$sql.= "'".pg_escape_string($this->location->getCountry())."', ";                        
-                        if ($this->getCode()!=NULL)										$sql.= "'".pg_escape_string($this->getCode())."', ";      
-                        if (count($this->parentEntityArray)>0)							$sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
-                    // Trim off trailing space and comma
-                    $sql = substr($sql, 0, -2);
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getTitle()).", ";
+	                $sql.= dbHelper::tellervo_pg_escape_string($this->getID()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getComments()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getType(true)).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getDescription()).", ";
+                        $sql.= dbHelper::phpArrayToPGStrArray($this->getFiles()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getCreatedTimestamp()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getOwner()).", ";     
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getTemporalCoverage()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getTemporalCoverageFoundation()).", ";
+                        $sql.= dbHelper::pg_value_wrapper($this->location->getGeometry()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getComment()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getTypeID()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getPrecision()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getAddressLine1()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getAddressLine2()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getCityOrTown()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getStateProvinceRegion()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getPostalCode()).", ";
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->location->getCountry()).", ";                        
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getCode()).", ";      
+                        if(isset($this->parentEntityArray) && count($this->parentEntityArray)>0) $sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID()).", ";
+			$sql = substr($sql, 0, -2);
                     $sql.=")";
                     $sql2 = "select * from tblobject where objectid='".$this->getID()."'";
                 }
@@ -512,29 +509,28 @@ class object extends objectEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql = "update tblobject set ";
-                        if ($this->getTitle()!=NULL)                                    $sql.= "title='".pg_escape_string($this->getTitle())."', ";
-                        if ($this->getComments()!=NULL)                                 $sql.= "comments='".pg_escape_string($this->getComments())."', ";
-                        if ($this->getType()!=NULL)										$sql.= "objecttypeid='".pg_escape_string($this->getType(true))."', ";
-                        if ($this->getDescription()!=NULL)								$sql.= "description='".pg_escape_string($this->getDescription())."', ";
-                        if ($this->getFiles()!=NULL)										$sql.= "file='".dbHelper::phpArrayToPGStrArray($this->getFiles())."', ";
-                        if ($this->getCreator()!=NULL)									$sql.= "creator='".pg_escape_string($this->getCreator())."', ";
-                        if ($this->getOwner()!=NULL)									$sql.= "owner='".pg_escape_string($this->getOwner())."', ";
-                        if ($this->getTemporalCoverage()!=NULL)							$sql.= "coveragetemporal='".pg_escape_string($this->getTemporalCoverage())."', ";
-                        if ($this->getTemporalCoverageFoundation()!=NULL)				$sql.= "coveragetemporalfoundation='".pg_escape_string($this->getTemporalCoverageFoundation())."', ";
-                        if ($this->location->getGeometry()!=NULL)						$sql.= "locationgeometry='".$this->location->getGeometry()."', ";
-                        if ($this->location->getComment()!=NULL)						$sql.= "locationcomment='".pg_escape_string($this->location->getComment())."', ";
-                        if ($this->location->getTypeID()!=NULL)							$sql.= "locationtypeid='".$this->location->getTypeID()."', ";
-                        if ($this->location->getPrecision()!=NULL)						$sql.= "locationprecision='".pg_escape_string($this->location->getPrecision())."', ";
-                        if ($this->location->getAddressLine1()!=NULL)					$sql.= "locationaddressline1='".pg_escape_string($this->location->getAddressLine1())."', ";
-                        if ($this->location->getAddressLine2()!=NULL)					$sql.= "locationaddressline2='".pg_escape_string($this->location->getAddressLine2())."', ";
-                        if ($this->location->getCityOrTown()!=NULL)						$sql.= "locationcityortown='".pg_escape_string($this->location->getCityOrTown())."', ";
-                        if ($this->location->getStateProvinceRegion()!=NULL)			$sql.= "locationstateprovinceregion='".pg_escape_string($this->location->getStateProvinceRegion())."', ";
-                        if ($this->location->getPostalCode()!=NULL)						$sql.= "locationpostalcode='".pg_escape_string($this->location->getPostalCode())."', ";
-                        if ($this->location->getCountry()!=NULL)						$sql.= "locationcountry='".pg_escape_string($this->location->getCountry())."', ";
-                        if ($this->getCode()!=NULL)										$sql.= "code='".pg_escape_string($this->getCode())."', ";             
-                        if (count($this->parentEntityArray)>0)							$sql.= "parentobject='".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                    
-                        // Trim off trailing space and comma
-                    $sql = substr($sql, 0, -2);
+                        $sql.= "title=".dbHelper::tellervo_pg_escape_string($this->getTitle()).", ";
+                        $sql.= "comments=".dbHelper::tellervo_pg_escape_string($this->getComments()).", ";
+                      	$sql.= "objecttypeid=".dbHelper::tellervo_pg_escape_string($this->getType(true)).", ";
+                      	$sql.= "description=".dbHelper::tellervo_pg_escape_string($this->getDescription()).", ";
+                      	$sql.= "file=".dbHelper::phpArrayToPGStrArray($this->getFiles()).", ";
+                        $sql.= "creator=".dbHelper::tellervo_pg_escape_string($this->getCreator()).", ";
+                        $sql.= "owner=".dbHelper::tellervo_pg_escape_string($this->getOwner()).", ";
+                       	$sql.= "coveragetemporal=".dbHelper::tellervo_pg_escape_string($this->getTemporalCoverage()).", ";
+                       	$sql.= "coveragetemporalfoundation=".dbHelper::tellervo_pg_escape_string($this->getTemporalCoverageFoundation()).", ";
+                       	$sql.= "locationgeometry=".dbHelper::pg_value_wrapper($this->location->getGeometry()).", ";
+                       	$sql.= "locationcomment=".dbHelper::tellervo_pg_escape_string($this->location->getComment()).", ";
+                       	$sql.= "locationtypeid=".dbHelper::pg_value_wrapper($this->location->getTypeID()).", ";
+                       	$sql.= "locationprecision=".dbHelper::tellervo_pg_escape_string($this->location->getPrecision()).", ";
+                        $sql.= "locationaddressline1=".dbHelper::tellervo_pg_escape_string($this->location->getAddressLine1()).", ";
+                        $sql.= "locationaddressline2=".dbHelper::tellervo_pg_escape_string($this->location->getAddressLine2()).", ";
+                        $sql.= "locationcityortown=".dbHelper::tellervo_pg_escape_string($this->location->getCityOrTown()).", ";
+                        $sql.= "locationstateprovinceregion=".dbHelper::tellervo_pg_escape_string($this->location->getStateProvinceRegion()).", ";
+                        $sql.= "locationpostalcode=".dbHelper::tellervo_pg_escape_string($this->location->getPostalCode()).", ";
+                        $sql.= "locationcountry=".dbHelper::tellervo_pg_escape_string($this->location->getCountry()).", ";
+                        $sql.= "code=".dbHelper::tellervo_pg_escape_string($this->getCode()).", ";             
+                        if(isset($this->parentEntityArrayi)) $sql.= "parentobject='".pg_escape_string($this->parentEntityArray[0]->getID()).", ";                    
+			$sql = substr($sql, 0, -2);
                     $sql .= " where objectid='".$this->getID()."'";
                 }
                 //echo $sql;
@@ -689,7 +685,7 @@ class object extends objectEntity implements IDBAccessor
                 }
                 if(    ($paramsClass->getCode()==NULL)
                     && ($paramsClass->getCreator()==NULL) 
-                    && ($paramsClass->getDescription()==NULL)
+                    && ($paramsClass->getDescription()===NULL)
                     && ($paramsClass->getType()==NULL)
                     && ($paramsClass->getFiles()==NULL)
                     && ($paramsClass->getOwner()==NULL)
