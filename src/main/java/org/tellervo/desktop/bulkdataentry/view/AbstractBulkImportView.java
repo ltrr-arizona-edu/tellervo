@@ -53,6 +53,8 @@ import org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportTableModel;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.util.ExcelAdapter;
+import org.tellervo.desktop.util.RowNumberTable;
 
 
 /**
@@ -115,9 +117,19 @@ public abstract class AbstractBulkImportView extends JPanel{
 		table.setAutoCreateRowSorter(true);
 		table.setFillsViewportHeight(true); 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		table.setRowSelectionAllowed(true);
+		table.setColumnSelectionAllowed(true);
+		
+		// Enable copynpaste
+		ExcelAdapter myAd = new ExcelAdapter(table);
 		// editors for combo box stuff
 		setupTableCells(table);
 
+		JTable rowTable = new RowNumberTable(table);
+		panel.setRowHeaderView(rowTable);
+		panel.setCorner(JScrollPane.UPPER_LEFT_CORNER,
+		    rowTable.getTableHeader());
+		
 		
 		add(panel, "Center");
 		
