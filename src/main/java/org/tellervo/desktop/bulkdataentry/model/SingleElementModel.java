@@ -54,6 +54,7 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 	public static final String COMMENTS = "Comments";
 	public static final String TYPE = "Type";
 	public static final String DESCRIPTION = "Description";
+	//public static final String FILES = "Files";
 	public static final String TAXON = "Taxon";
 	public static final String SHAPE = "Shape";
 	public static final String HEIGHT = "Height";
@@ -61,14 +62,26 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 	public static final String DIAMETER = "Diameter";
 	public static final String DEPTH = "Depth";
 	public static final String UNIT = "Unit";
+	//public static final String AUTHENTICITY = "Authenticity";
+	public static final String WAYPOINT = "Waypoint";
 	public static final String LATITUDE = "Latitude";
 	public static final String LONGTITUDE = "Longtitude";
+	//public static final String LOCATION_PRECISION = "Location precision";
+	//public static final String LOCATION_COMMENT = "Location comment";
+	//public static final String ADDRESSLINE1 = "Address 1";
+	//public static final String ADDRESSLINE2 = "Address 2";
+	//public static final String CITY_TOWN = "City/Town";
+	//public static final String STATE_PROVINCE_REGION = "State/Province/Region";
+	//public static final String POSTCODE = "Postal Code";
+	//public static final String COUNTRY = "Country";
+	//public static final String MARKS = "Marks";
+	//public static final String ALTITUDE = "Altitude";
 	public static final String SLOPE_ANGLE = "Slope Angle";
 	public static final String SLOPE_AZIMUTH = "Slope Azimuth";
 	public static final String SOIL_DESCRIPTION = "Soil Description";
 	public static final String SOIL_DEPTH = "Soil Depth";
 	public static final String BEDROCK_DESCRIPTION = "Bedrock Description";
-	public static final String WAYPOINT = "Waypoint";
+	
 
 	public static final String[] TABLE_PROPERTIES = {
 		TITLE, OBJECT, COMMENTS, TYPE, DESCRIPTION, TAXON,

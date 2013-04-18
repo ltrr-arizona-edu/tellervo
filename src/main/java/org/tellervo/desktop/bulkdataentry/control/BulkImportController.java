@@ -38,6 +38,8 @@ import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.view.BulkDataEntryWindow;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.FrontController;
@@ -117,33 +119,29 @@ public class BulkImportController extends FrontController {
 	}
 	
 	private void populateObjectDefaults(ColumnChooserModel ccmodel){
-		//ccmodel.add(SingleObjectModel.PARENT_OBJECT);
-		ccmodel.add(SingleObjectModel.OBJECT_CODE);
+		
+		
+		// TODO adding choice of columns to preferences.  
+		if (App.prefs.getBooleanPref(PrefKey.OBJECT_FIELD_VISIBLE_PARENT_OBJECT, false)) ccmodel.add(SingleObjectModel.PARENT_OBJECT);
+		if (App.prefs.getBooleanPref(PrefKey.OBJECT_FIELD_VISIBLE_OBJECT_CODE, true)) ccmodel.add(SingleObjectModel.OBJECT_CODE);
 		ccmodel.add(SingleObjectModel.TITLE);
 		ccmodel.add(SingleObjectModel.TYPE);
 		ccmodel.add(SingleObjectModel.IMPORTED);
-		
-
 		ccmodel.add(SingleObjectModel.COMMENTS);
-
 		ccmodel.add(SingleObjectModel.DESCRIPTION);
 		ccmodel.add(SingleObjectModel.LATITUDE);
 		ccmodel.add(SingleObjectModel.LONGTITUDE);
 		ccmodel.add(SingleObjectModel.LOCATION_PRECISION);
 		ccmodel.add(SingleObjectModel.LOCATION_COMMENT);
 		//ccmodel.add(SingleObjectModel.WAYPOINT);
-
 		ccmodel.add(SingleObjectModel.ADDRESSLINE1);
 		ccmodel.add(SingleObjectModel.ADDRESSLINE2);
 		ccmodel.add(SingleObjectModel.CITY_TOWN);
 		ccmodel.add(SingleObjectModel.STATE_PROVINCE_REGION);
 		ccmodel.add(SingleObjectModel.POSTCODE);
 		ccmodel.add(SingleObjectModel.COUNTRY);
-
 		ccmodel.add(SingleObjectModel.OWNER);
 		ccmodel.add(SingleObjectModel.CREATOR);
-		
-		
 	}
 	
 	private void populateElementDefaults(ColumnChooserModel ccmodel){

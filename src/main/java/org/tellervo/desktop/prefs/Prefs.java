@@ -190,7 +190,32 @@ public class Prefs extends AbstractSubsystem {
 		SOUND_ENABLED("tellervo.sound.enabled"),
 		SOUND_LAST_FOLDER("tellervo.sound.lastfolder"),
 		
-		CHECK_FOR_UPDATES("tellervo.checkforupdates");
+		CHECK_FOR_UPDATES("tellervo.checkforupdates"),
+		
+		OBJECT_FIELD_VISIBLE_OBJECT_CODE("tellervo.object.field.visible.objectcode"),
+		OBJECT_FIELD_VISIBLE_TITLE("tellervo.object.field.visible.title"),
+		OBJECT_FIELD_VISIBLE_COMMENTS("tellervo.object.field.visible.comments"),
+		OBJECT_FIELD_VISIBLE_TYPE("tellervo.object.field.visible.type"),
+		OBJECT_FIELD_VISIBLE_DESCRIPTION("tellervo.object.field.visible.description"),
+		OBJECT_FIELD_VISIBLE_LATITUDE("tellervo.object.field.visible.latitude"),
+		OBJECT_FIELD_VISIBLE_LONGTITUDE("tellervo.object.field.visible.longtitude"),
+		OBJECT_FIELD_VISIBLE_WAYPOINT("tellervo.object.field.visible.waypoint"),
+		OBJECT_FIELD_VISIBLE_PARENT_OBJECT("tellervo.object.field.visible.parentobject"),
+		OBJECT_FIELD_VISIBLE_ADDRESSLINE1("tellervo.object.field.visible.address1"),
+		OBJECT_FIELD_VISIBLE_ADDRESSLINE2("tellervo.object.field.visible.address2"),
+		OBJECT_FIELD_VISIBLE_CITY_TOWN("tellervo.object.field.visible.citytown"),
+		OBJECT_FIELD_VISIBLE_STATE_PROVINCE_REGION("tellervo.object.field.visible.stateprovinceregion"),
+		OBJECT_FIELD_VISIBLE_POSTCODE("tellervo.object.field.visible.postalcode"),
+		OBJECT_FIELD_VISIBLE_COUNTRY("tellervo.object.field.visible.country"),
+		OBJECT_FIELD_VISIBLE_LOCATION_PRECISION("tellervo.object.field.visible.locationprecision"),
+		OBJECT_FIELD_VISIBLE_LOCATION_COMMENT("tellervo.object.field.visible.locationcomment"),
+		OBJECT_FIELD_VISIBLE_OWNER("tellervo.object.field.visible.owner"),
+		OBJECT_FIELD_VISIBLE_CREATOR("tellervo.object.field.visible.creator"),
+		
+		;
+		
+		
+
 		
 		
 		private String key;

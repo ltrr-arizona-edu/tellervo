@@ -50,6 +50,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	public static final String COMMENTS = "Comments";
 	public static final String TYPE = "Type";
 	public static final String DESCRIPTION = "Description";
+	//public static final String FILES = "Files";
 	public static final String SAMPLING_DATE = "Sampling Date";
 	public static final String POSITION = "Position";
 	public static final String STATE = "State";

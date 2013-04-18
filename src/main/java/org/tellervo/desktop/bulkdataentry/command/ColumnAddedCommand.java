@@ -57,6 +57,8 @@ public class ColumnAddedCommand implements ICommand{
 		for(String s: model.getPossibleColumns()){
 			if(s.equals(event.getValue())){
 				model.add(i, event.getValue());
+				
+				
  				return;
 			}
 			if(model.contains(s)){
