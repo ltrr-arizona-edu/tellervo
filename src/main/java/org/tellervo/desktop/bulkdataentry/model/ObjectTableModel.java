@@ -23,9 +23,13 @@
  */
 package org.tellervo.desktop.bulkdataentry.model;
 
+import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
 import org.tellervo.schema.WSIObjectTypeDictionary;
+import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasObject;
+
+import com.dmurph.mvc.model.MVCArrayList;
 
 
 /**
@@ -81,6 +85,31 @@ public class ObjectTableModel extends AbstractBulkImportTableModel {
 		if(argColumn.equals(SingleObjectModel.LATITUDE) || argColumn.equals(SingleObjectModel.LONGTITUDE)){
 			argModel.setProperty(SingleObjectModel.WAYPOINT, null);
 		}
+		
+		
+		// Handle casting from String
+		if(argColumn.equals(SingleObjectModel.TYPE) && argAValue instanceof String)
+		{
+			String strValue = (String) argAValue;
+			MVCArrayList<ControlledVoc> dictionary = Dictionary.getMutableDictionary("objectTypeDictionary");
+			
+			for(ControlledVoc entry : dictionary)
+			{
+				if(entry.isSetNormal())
+				{
+					if(entry.getNormal().toLowerCase().equals(strValue.toLowerCase()))
+					{
+						argAValue = entry;
+						break;
+					}
+				}
+				else if (entry.getValue().toLowerCase().equals(strValue.toLowerCase()))
+				{
+					argAValue = entry;
+				}
+			}
+		}
+		
 				
 		argModel.setProperty(argColumn, argAValue);
 	}

@@ -268,7 +268,7 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 	 */
 	@Override
 	public void setValueAt(Object argAValue, int argRowIndex, int argColumnIndex) {
-		IBulkImportSingleRowModel som = models.get(argRowIndex);
+ 		IBulkImportSingleRowModel som = models.get(argRowIndex);
 		if(argColumnIndex == 0){
 			selected.put(som, (Boolean) argAValue);
 			return;

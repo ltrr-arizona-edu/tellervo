@@ -117,10 +117,33 @@ public class BulkImportController extends FrontController {
 	}
 	
 	private void populateObjectDefaults(ColumnChooserModel ccmodel){
+		//ccmodel.add(SingleObjectModel.PARENT_OBJECT);
 		ccmodel.add(SingleObjectModel.OBJECT_CODE);
 		ccmodel.add(SingleObjectModel.TITLE);
 		ccmodel.add(SingleObjectModel.TYPE);
 		ccmodel.add(SingleObjectModel.IMPORTED);
+		
+
+		ccmodel.add(SingleObjectModel.COMMENTS);
+
+		ccmodel.add(SingleObjectModel.DESCRIPTION);
+		ccmodel.add(SingleObjectModel.LATITUDE);
+		ccmodel.add(SingleObjectModel.LONGTITUDE);
+		ccmodel.add(SingleObjectModel.LOCATION_PRECISION);
+		ccmodel.add(SingleObjectModel.LOCATION_COMMENT);
+		//ccmodel.add(SingleObjectModel.WAYPOINT);
+
+		ccmodel.add(SingleObjectModel.ADDRESSLINE1);
+		ccmodel.add(SingleObjectModel.ADDRESSLINE2);
+		ccmodel.add(SingleObjectModel.CITY_TOWN);
+		ccmodel.add(SingleObjectModel.STATE_PROVINCE_REGION);
+		ccmodel.add(SingleObjectModel.POSTCODE);
+		ccmodel.add(SingleObjectModel.COUNTRY);
+
+		ccmodel.add(SingleObjectModel.OWNER);
+		ccmodel.add(SingleObjectModel.CREATOR);
+		
+		
 	}
 	
 	private void populateElementDefaults(ColumnChooserModel ccmodel){

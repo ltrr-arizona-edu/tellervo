@@ -207,17 +207,18 @@ public class ColumnChooserView extends JWindow{
 		@Override
 		public void setValueAt(Object argAValue, int argRowIndex, int argColumnIndex) {
 			Boolean val = (Boolean) argAValue;
-			if(val == Boolean.TRUE){
-				System.out.println("true");
-				ColumnsModifiedEvent event = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_ADDED,
-						columns.get(argRowIndex),
-									model);
-				event.dispatch();
-			}else{
+			if(val == Boolean.FALSE){
 				System.out.println("false");
 				ColumnsModifiedEvent event = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_REMOVED,
 						columns.get(argRowIndex),
 						  model);
+				event.dispatch();
+
+			}else{
+				System.out.println("true");
+				ColumnsModifiedEvent event = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_ADDED,
+						columns.get(argRowIndex),
+									model);
 				event.dispatch();
 			}
 		}

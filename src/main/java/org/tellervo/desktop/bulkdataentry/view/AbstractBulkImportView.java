@@ -53,8 +53,8 @@ import org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportTableModel;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.util.ExcelAdapter;
-import org.tellervo.desktop.util.RowNumberTable;
+import org.tellervo.desktop.util.JTableSpreadsheetAdapter;
+import org.tellervo.desktop.util.JTableRowHeader;
 
 
 /**
@@ -75,14 +75,16 @@ public abstract class AbstractBulkImportView extends JPanel{
 	protected JButton copyRow;
 	protected JPopupMenu tablePopupMenu;
 	private JMenuItem addrow;
-	private JMenuItem copyrow;
+	private JMenuItem duplicateRow;
 	private JMenuItem deleterow;
-
+	private JMenuItem copy;
+	private JMenuItem paste;
+	private JTableSpreadsheetAdapter adapter;
 	
 	public AbstractBulkImportView(IBulkImportSectionModel argModel){
 		model = argModel;
-		initComponents();
 		initPopupMenu();
+		initComponents();
 		linkModel();
 		addListeners();
 		populateLocale();
@@ -91,7 +93,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 
 	private void initComponents(){
 		table = new JTable();
-		table.setCellSelectionEnabled(true);
+		//table.setCellSelectionEnabled(true);
 		table.setShowGrid(true);
 		table.setGridColor(Color.GRAY);
 		addRow = new JButton();
@@ -118,14 +120,15 @@ public abstract class AbstractBulkImportView extends JPanel{
 		table.setFillsViewportHeight(true); 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setRowSelectionAllowed(true);
-		table.setColumnSelectionAllowed(true);
+		table.setCellSelectionEnabled(true);
+		//table.setColumnSelectionAllowed(true);
 		
 		// Enable copynpaste
-		ExcelAdapter myAd = new ExcelAdapter(table);
+		adapter = new JTableSpreadsheetAdapter(table);
 		// editors for combo box stuff
 		setupTableCells(table);
 
-		JTable rowTable = new RowNumberTable(table);
+		JTable rowTable = new JTableRowHeader(table, tablePopupMenu);
 		panel.setRowHeaderView(rowTable);
 		panel.setCorner(JScrollPane.UPPER_LEFT_CORNER,
 		    rowTable.getTableHeader());
@@ -212,8 +215,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 			    if (evt.isPopupTrigger())
 				{		    	
 			    	// Select the whole row
-			    	table.setRowSelectionInterval(table.rowAtPoint(evt.getPoint()), table.rowAtPoint(evt.getPoint()));
-			    	table.setColumnSelectionInterval(0, table.getColumnCount()-1);
+			    	//table.setRowSelectionInterval(table.rowAtPoint(evt.getPoint()), table.rowAtPoint(evt.getPoint()));
+			    	//table.setColumnSelectionInterval(0, table.getColumnCount()-1);
 
 			    	// Show popup
 					tablePopupMenu.show(evt.getComponent(), evt.getX(), evt.getY()); 
@@ -288,38 +291,61 @@ public abstract class AbstractBulkImportView extends JPanel{
 		// Add row 
 		addrow = new JMenuItem(I18n.getText("bulkimport.addrow")); 
 		addrow.addActionListener(new ActionListener(){
-
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				addRowPressed();	
 			}
-			
 		}); 
-		tablePopupMenu.add(addrow); 
+		addrow.setIcon(Builder.getIcon("insertrow.png", 22));
 		
-		// Copy row 
-		copyrow = new JMenuItem(I18n.getText("bulkimport.copyrow")); 
-		copyrow.addActionListener(new ActionListener(){
-
+		// Duplicate row 
+		duplicateRow = new JMenuItem(I18n.getText("bulkimport.copyrow")); 
+		duplicateRow.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				copyRowPressed();	
 			}
-			
 		}); 
-		tablePopupMenu.add(copyrow); 
+		duplicateRow.setIcon(Builder.getIcon("copyrow.png", 22));
+		
 		
 		// Delete row 
 		deleterow = new JMenuItem(I18n.getText("bulkimport.deleterow")); 
 		deleterow.addActionListener(new ActionListener(){
-
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				deleteRowPressed();	
 			}
-			
 		}); 
+		deleterow.setIcon(Builder.getIcon("deleterow.png", 22));
+
+		
+		// Copy
+		copy = new JMenuItem(I18n.getText("menus.edit.copy"));
+		copy.setActionCommand("Copy");
+		copy.setIcon(Builder.getIcon("editcopy.png", 22));
+		copy.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				adapter.doCopy();	
+			}
+			
+		});
+		
+		// Paste
+		paste = new JMenuItem(I18n.getText("menus.edit.paste"));
+		paste.setActionCommand("Paste");
+		paste.setIcon(Builder.getIcon("editpaste.png", 22));
+		paste.addActionListener(adapter);
+		
+		
+		tablePopupMenu.add(copy);
+		tablePopupMenu.add(paste);
 		tablePopupMenu.addSeparator();
+		
+		tablePopupMenu.add(addrow);
+		tablePopupMenu.add(duplicateRow); 
 		tablePopupMenu.add(deleterow); 
 		tablePopupMenu.setLightWeightPopupEnabled(false);
 	}
