@@ -33,9 +33,17 @@ public class AddRowEvent extends MVCEvent {
 	private static final long serialVersionUID = 1L;
 
 	public final IBulkImportSectionModel model;
+	public final Integer rowCountToAdd;
 	
 	public AddRowEvent(IBulkImportSectionModel argModel){
 		super(BulkImportController.ADD_ROW);
+		rowCountToAdd=1;
+		model = argModel;
+	}
+	
+	public AddRowEvent(IBulkImportSectionModel argModel, Integer rowCountToAdd){
+		super(BulkImportController.ADD_ROW);
+		this.rowCountToAdd=rowCountToAdd;
 		model = argModel;
 	}
 }

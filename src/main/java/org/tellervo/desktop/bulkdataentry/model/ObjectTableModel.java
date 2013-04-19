@@ -23,11 +23,13 @@
  */
 package org.tellervo.desktop.bulkdataentry.model;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
 import org.tellervo.schema.WSIObjectTypeDictionary;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasObject;
+import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.MVCArrayList;
 
@@ -56,7 +58,9 @@ public class ObjectTableModel extends AbstractBulkImportTableModel {
 			return Boolean.class;
 		}else if(argColumn.equals(SingleObjectModel.LATITUDE)){
 			return Double.class;
-		}else if(argColumn.equals(SingleObjectModel.LONGTITUDE)){
+		}else if(argColumn.equals(SingleObjectModel.LONGITUDE)){
+			return Double.class;
+		}else if(argColumn.equals(SingleObjectModel.LOCATION_PRECISION)){
 			return Double.class;
 		}else if(argColumn.equals(SingleObjectModel.WAYPOINT)){
 			return GPXWaypoint.class;
@@ -76,41 +80,16 @@ public class ObjectTableModel extends AbstractBulkImportTableModel {
 		
 		// If it's a waypoint set the lat and long
 		if(argColumn.equals(SingleObjectModel.WAYPOINT))
-		{
+		{		
 			GPXWaypoint wp = (GPXWaypoint) argAValue;
 			argModel.setProperty(SingleObjectModel.LATITUDE, wp.getLatitude());
-			argModel.setProperty(SingleObjectModel.LONGTITUDE, wp.getLongitude());
+			argModel.setProperty(SingleObjectModel.LONGITUDE, wp.getLongitude());
 		}
 		// If it's lat/long data, remove the waypoint
-		if(argColumn.equals(SingleObjectModel.LATITUDE) || argColumn.equals(SingleObjectModel.LONGTITUDE)){
-			argModel.setProperty(SingleObjectModel.WAYPOINT, null);
+		if(argColumn.equals(SingleObjectModel.LATITUDE) || argColumn.equals(SingleObjectModel.LONGITUDE)){
+			if(argAValue!= null && argAValue instanceof Double)	argModel.setProperty(SingleObjectModel.WAYPOINT, null);
 		}
-		
-		
-		// Handle casting from String
-		if(argColumn.equals(SingleObjectModel.TYPE) && argAValue instanceof String)
-		{
-			String strValue = (String) argAValue;
-			MVCArrayList<ControlledVoc> dictionary = Dictionary.getMutableDictionary("objectTypeDictionary");
-			
-			for(ControlledVoc entry : dictionary)
-			{
-				if(entry.isSetNormal())
-				{
-					if(entry.getNormal().toLowerCase().equals(strValue.toLowerCase()))
-					{
-						argAValue = entry;
-						break;
-					}
-				}
-				else if (entry.getValue().toLowerCase().equals(strValue.toLowerCase()))
-				{
-					argAValue = entry;
-				}
-			}
-		}
-		
-				
+						
 		argModel.setProperty(argColumn, argAValue);
 	}
 }

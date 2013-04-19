@@ -24,7 +24,9 @@
 package org.tellervo.desktop.bulkdataentry.view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -32,12 +34,16 @@ import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JWindow;
+import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 
 import org.tellervo.desktop.bulkdataentry.control.ColumnChooserController;
 import org.tellervo.desktop.bulkdataentry.control.ColumnsModifiedEvent;
@@ -66,6 +72,8 @@ public class ColumnChooserView extends JWindow{
 
 		model = argModel;
 		tableModel = new TableModel();
+		this.setMinimumSize(new Dimension(200,200));
+		
 		columns = argModel.getPossibleColumns();
 		columns.addPropertyChangeListener(new PropertyChangeListener() {
 			
@@ -88,21 +96,38 @@ public class ColumnChooserView extends JWindow{
 		addListeners();
 		populateLocale();
 		pack();
-		setLocationRelativeTo(argLocationComponent);
+		//setLocationRelativeTo(argLocationComponent);
+		
+		setBounds(argLocationComponent.getLocationOnScreen().x, 
+				argLocationComponent.getLocationOnScreen().y+argLocationComponent.getHeight(), 
+				200, 
+				200);
 	}
 	
 	public void initComponents() {
+		JPanel panel = new JPanel();
+		panel.setBorder(BorderFactory.createEtchedBorder());
+		panel.setLayout(new BorderLayout());
+		
 		checkboxList = new JTable();
+		checkboxList.setOpaque(false);
+		checkboxList.setTableHeader(null);
+		checkboxList.setBackground(UIManager.getColor("ToolBar.dockingBackground"));
+		checkboxList.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+		ToolbarColorRenderer renderer = new ToolbarColorRenderer();
+		checkboxList.setDefaultRenderer(String.class, renderer);
+		
 		okButton = new JButton();
 		setLayout(new BorderLayout());
+
+		panel.add(checkboxList, "Center");
 		
-		add(checkboxList.getTableHeader(), "North");
-		add(checkboxList, "Center");
+		add(panel, "Center");
 		
-		Box box = Box.createHorizontalBox();
+		/*Box box = Box.createHorizontalBox();
 		box.add(Box.createHorizontalGlue());
 		box.add(okButton);
-		add(box, "South");
+		add(box, "South");*/
 	}
 	
 	PropertyChangeListener pclistener = new PropertyChangeListener() {
@@ -118,7 +143,8 @@ public class ColumnChooserView extends JWindow{
 	
 	private void linkModel() {
 		checkboxList.setModel(tableModel);
-		
+		checkboxList.getColumnModel().getColumn(0).setPreferredWidth(20);
+		checkboxList.getColumnModel().getColumn(0).setMaxWidth(20);
 		model.addPropertyChangeListener(pclistener);
 	}
 	
@@ -223,5 +249,36 @@ public class ColumnChooserView extends JWindow{
 			}
 		}
 	}
+	
+	class ToolbarColorRenderer extends DefaultTableCellRenderer {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		   public Component getTableCellRendererComponent(JTable table, Object value,
+		            boolean isSelected, boolean hasFocus, int row, int col) {
+
+			   System.out.println("Called");
+		      Component c = super.getTableCellRendererComponent(table, value,
+		               isSelected, hasFocus, row, col);
+		      
+		      c.setForeground(Color.black);
+		      
+		      System.out.println("Background color: "+c.getBackground());
+		      
+		      c.setBackground(UIManager.getColor("ToolBar.dockingBackground"));
+
+		      System.out.println("Background color now: "+c.getBackground());
+		      
+		      
+		      
+		      return c;
+		   }
+		
+	}
 }
+
+
 

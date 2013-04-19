@@ -65,17 +65,17 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 	//public static final String AUTHENTICITY = "Authenticity";
 	public static final String WAYPOINT = "Waypoint";
 	public static final String LATITUDE = "Latitude";
-	public static final String LONGTITUDE = "Longtitude";
-	//public static final String LOCATION_PRECISION = "Location precision";
-	//public static final String LOCATION_COMMENT = "Location comment";
-	//public static final String ADDRESSLINE1 = "Address 1";
-	//public static final String ADDRESSLINE2 = "Address 2";
-	//public static final String CITY_TOWN = "City/Town";
-	//public static final String STATE_PROVINCE_REGION = "State/Province/Region";
-	//public static final String POSTCODE = "Postal Code";
-	//public static final String COUNTRY = "Country";
-	//public static final String MARKS = "Marks";
-	//public static final String ALTITUDE = "Altitude";
+	public static final String LONGITUDE = "Longtitude";
+	public static final String LOCATION_PRECISION = "Location precision";
+	public static final String LOCATION_COMMENT = "Location comment";
+	public static final String ADDRESSLINE1 = "Address 1";
+	public static final String ADDRESSLINE2 = "Address 2";
+	public static final String CITY_TOWN = "City/Town";
+	public static final String STATE_PROVINCE_REGION = "State/Province/Region";
+	public static final String POSTCODE = "Postal Code";
+	public static final String COUNTRY = "Country";
+	public static final String MARKS = "Marks";
+	public static final String ALTITUDE = "Altitude";
 	public static final String SLOPE_ANGLE = "Slope Angle";
 	public static final String SLOPE_AZIMUTH = "Slope Azimuth";
 	public static final String SOIL_DESCRIPTION = "Soil Description";
@@ -85,9 +85,11 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 
 	public static final String[] TABLE_PROPERTIES = {
 		TITLE, OBJECT, COMMENTS, TYPE, DESCRIPTION, TAXON,
-		SHAPE, HEIGHT, WIDTH, DEPTH, UNIT, LATITUDE, LONGTITUDE,
-		SLOPE_ANGLE, SLOPE_AZIMUTH, SOIL_DESCRIPTION, SOIL_DEPTH,
-		BEDROCK_DESCRIPTION, WAYPOINT
+		SHAPE, HEIGHT, WIDTH, DEPTH, UNIT, LATITUDE, LONGITUDE,WAYPOINT,
+		LOCATION_PRECISION, LOCATION_COMMENT,
+		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, 
+		POSTCODE, COUNTRY, SLOPE_ANGLE, SLOPE_AZIMUTH, SOIL_DESCRIPTION, SOIL_DEPTH,
+		BEDROCK_DESCRIPTION, MARKS, ALTITUDE,
 	};
 	
 	public SingleElementModel(){
@@ -124,6 +126,8 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		argElement.setDescription((String) getProperty(DESCRIPTION));
 		argElement.setTaxon((ControlledVoc) getProperty(TAXON));
 		argElement.setShape((TridasShape) getProperty(SHAPE));
+		argElement.setMarks((String) getProperty(MARKS));
+		argElement.setAltitude((Double) getProperty(ALTITUDE));
 		
 		TridasDimensions d = new TridasDimensions();
 
@@ -139,26 +143,72 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 			argElement.setDimensions(null);
 		}
 		
-		if(getProperty(LATITUDE) != null && getProperty(LONGTITUDE) != null){
-			double lat = (Double)getProperty(LATITUDE);
-			double lon = (Double)getProperty(LONGTITUDE);
-			Pos p = new Pos();
-			p.getValues().add(lat);
-			p.getValues().add(lon);
-			
-			PointType pt = new PointType();
-			pt.setPos(p);
-			
-			TridasLocationGeometry locgeo = new TridasLocationGeometry();
-			locgeo.setPoint(pt);
-			
-			TridasLocation loc = new TridasLocation();
-			loc.setLocationGeometry(locgeo);
-			argElement.setLocation(loc);
+		// i love how nested this is!
+		if(argElement.getLocation() != null &&
+				argElement.getLocation().getLocationGeometry() != null&&
+				argElement.getLocation().getLocationGeometry().getPoint() != null &&
+				argElement.getLocation().getLocationGeometry().getPoint().getPos() != null &&
+				argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().size() == 2){
+			setProperty(LATITUDE, argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(0));
+			setProperty(LONGITUDE, argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(1));
 		}else{
-			argElement.setLocation(null);
+			setProperty(LATITUDE, null);
+			setProperty(LONGITUDE, null);
 		}
 		
+		if(argElement.isSetLocation() &&
+				argElement.getLocation().isSetAddress() &&
+				argElement.getLocation().getAddress().isSetAddressLine1())
+		{
+			setProperty(ADDRESSLINE1, argElement.getLocation().getAddress().getAddressLine1());
+		}
+		
+		if(argElement.isSetLocation() &&
+				argElement.getLocation().isSetAddress() &&
+				argElement.getLocation().getAddress().isSetAddressLine2())
+		{
+			setProperty(ADDRESSLINE2, argElement.getLocation().getAddress().getAddressLine2());
+		}
+		
+		if(argElement.isSetLocation() &&
+				argElement.getLocation().isSetAddress() &&
+				argElement.getLocation().getAddress().isSetCityOrTown())
+		{
+			setProperty(CITY_TOWN, argElement.getLocation().getAddress().getCityOrTown());
+		}
+		
+		if(argElement.isSetLocation() &&
+				argElement.getLocation().isSetAddress() &&
+				argElement.getLocation().getAddress().isSetCountry())
+		{
+			setProperty(COUNTRY, argElement.getLocation().getAddress().getCountry());
+		}
+		
+		if(argElement.isSetLocation() &&
+				argElement.getLocation().isSetAddress() &&
+				argElement.getLocation().getAddress().isSetPostalCode())
+		{
+			setProperty(POSTCODE, argElement.getLocation().getAddress().getPostalCode());
+		}
+		
+		if(argElement.isSetLocation() &&
+				argElement.getLocation().isSetAddress() &&
+				argElement.getLocation().getAddress().isSetStateProvinceRegion())
+		{
+			setProperty(STATE_PROVINCE_REGION, argElement.getLocation().getAddress().getStateProvinceRegion());
+		}
+		
+		if(argElement.isSetLocation() &&
+				argElement.getLocation().isSetLocationPrecision())
+		{
+			setProperty(LOCATION_PRECISION, argElement.getLocation().getLocationPrecision());
+		}
+		
+		if(argElement.isSetLocation() &&
+				argElement.getLocation().isSetLocationComment())
+		{
+			setProperty(LOCATION_COMMENT, argElement.getLocation().getLocationComment());
+		}
 		TridasSlope slope = new TridasSlope();
 		slope.setAngle((Integer)getProperty(SLOPE_ANGLE));
 		slope.setAzimuth((Integer) getProperty(SLOPE_AZIMUTH));
@@ -211,10 +261,10 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 				argElement.getLocation().getLocationGeometry().getPoint().getPos() != null &&
 				argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().size() == 2){
 			setProperty(LATITUDE, argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(0));
-			setProperty(LONGTITUDE, argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(1));
+			setProperty(LONGITUDE, argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(1));
 		}else{
 			setProperty(LATITUDE, null);
-			setProperty(LONGTITUDE, null);
+			setProperty(LONGITUDE, null);
 		}
 		
 		if(argElement.getSlope() != null){

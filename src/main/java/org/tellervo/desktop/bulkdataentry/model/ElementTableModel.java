@@ -64,7 +64,7 @@ public class ElementTableModel extends AbstractBulkImportTableModel {
 			return BigDecimal.class;
 		}else if(argColumn.equals(SingleElementModel.LATITUDE)){
 			return Double.class;
-		}else if(argColumn.equals(SingleElementModel.LONGTITUDE)){
+		}else if(argColumn.equals(SingleElementModel.LONGITUDE)){
 			return Double.class;
 		}else if(argColumn.equals(SingleElementModel.SLOPE_ANGLE)){
 			return Integer.class;
@@ -72,6 +72,8 @@ public class ElementTableModel extends AbstractBulkImportTableModel {
 			return Integer.class;
 		}else if(argColumn.equals(SingleElementModel.SOIL_DEPTH)){
 			return Double.class;
+		}else if(argColumn.equals(SingleElementModel.ALTITUDE)){
+			return Double.class;			
 		}else if(argColumn.equals(SingleElementModel.SHAPE)){
 			return TridasShape.class;
 		}else if(argColumn.equals(SingleElementModel.TAXON)){
@@ -96,10 +98,10 @@ public class ElementTableModel extends AbstractBulkImportTableModel {
 		{
 			GPXWaypoint wp = (GPXWaypoint) argAValue;
 			argModel.setProperty(SingleElementModel.LATITUDE, wp.getLatitude());
-			argModel.setProperty(SingleElementModel.LONGTITUDE, wp.getLongitude());
+			argModel.setProperty(SingleElementModel.LONGITUDE, wp.getLongitude());
 		}
 		// If it's lat/long data, remove the waypoint
-		if(argColumn.equals(SingleElementModel.LATITUDE) || argColumn.equals(SingleElementModel.LONGTITUDE)){
+		if(argColumn.equals(SingleElementModel.LATITUDE) || argColumn.equals(SingleElementModel.LONGITUDE)){
 			argModel.setProperty(SingleElementModel.WAYPOINT, null);
 		}
 		

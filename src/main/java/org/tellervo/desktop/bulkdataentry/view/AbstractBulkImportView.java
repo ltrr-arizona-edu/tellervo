@@ -43,6 +43,8 @@ import javax.swing.JTable;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.AddRowEvent;
 import org.tellervo.desktop.bulkdataentry.control.CopyRowEvent;
 import org.tellervo.desktop.bulkdataentry.control.CopySelectedRowsEvent;
@@ -51,6 +53,7 @@ import org.tellervo.desktop.bulkdataentry.control.DisplayColumnChooserEvent;
 import org.tellervo.desktop.bulkdataentry.control.RemoveSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportTableModel;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.JTableSpreadsheetAdapter;
@@ -63,7 +66,8 @@ import org.tellervo.desktop.util.JTableRowHeader;
  */
 public abstract class AbstractBulkImportView extends JPanel{
 	private static final long serialVersionUID = 1L;
-	
+	private final static Logger log = LoggerFactory.getLogger(AbstractBulkImportView.class);
+
 	protected IBulkImportSectionModel model;
 	protected JTable table;
 	private JButton addRow;
@@ -79,6 +83,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 	private JMenuItem deleterow;
 	private JMenuItem copy;
 	private JMenuItem paste;
+	private JMenuItem pasteAppend;
 	private JTableSpreadsheetAdapter adapter;
 	
 	public AbstractBulkImportView(IBulkImportSectionModel argModel){
@@ -328,6 +333,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				log.debug("about to call adapter.doCopy");
 				adapter.doCopy();	
 			}
 			
@@ -337,11 +343,55 @@ public abstract class AbstractBulkImportView extends JPanel{
 		paste = new JMenuItem(I18n.getText("menus.edit.paste"));
 		paste.setActionCommand("Paste");
 		paste.setIcon(Builder.getIcon("editpaste.png", 22));
-		paste.addActionListener(adapter);
+		paste.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				log.debug("about to call adapter.doPaste");
+				adapter.doPaste();	
+			}
+			
+		});
+		
+		pasteAppend = new JMenuItem(I18n.getText("menus.edit.pasteappend"));
+		pasteAppend.setActionCommand("Paste append");
+		pasteAppend.setIcon(Builder.getIcon("editpaste.png", 22));
+		pasteAppend.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				log.debug("1. Table row count = " +table.getRowCount());
+				Integer originalRowCount = table.getRowCount();
+				Integer rowCountToPaste = adapter.getRowCountFromClipboard();
+				
+				if(rowCountToPaste!=null && rowCountToPaste>0)
+				{
+					log.debug(rowCountToPaste +" rows about to be pasted");
+
+					AddRowEvent event = new AddRowEvent(model, rowCountToPaste);
+					event.dispatch();
+					
+				}
+			
+				// Oooo this is so naughty... 
+				/*while (table.getRowCount()< originalRowCount+rowCountToPaste){
+				    //log.debug("Waiting... row count: "+table.getRowCount());
+				}*/
+				
+				log.debug("2. Table row count = " +table.getRowCount());
+				
+				table.setRowSelectionInterval(originalRowCount, originalRowCount);
+				table.setColumnSelectionInterval(0, 0);
+				adapter.doPaste();	
+			}
+			
+		});
+		
 		
 		
 		tablePopupMenu.add(copy);
 		tablePopupMenu.add(paste);
+		tablePopupMenu.add(pasteAppend);
 		tablePopupMenu.addSeparator();
 		
 		tablePopupMenu.add(addrow);

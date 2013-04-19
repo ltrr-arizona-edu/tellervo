@@ -53,7 +53,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	public static final String TYPE = "Type";
 	public static final String DESCRIPTION = "Description";
 	public static final String LATITUDE = "Latitude";
-	public static final String LONGTITUDE = "Longtitude";
+	public static final String LONGITUDE = "Longitude";
 	public static final String WAYPOINT = "Waypoint";
 	public static final String PARENT_OBJECT = "Parent Object";
 	public static final String ADDRESSLINE1 = "Address 1";
@@ -75,7 +75,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	
 	
 	public static final String[] TABLE_PROPERTIES = {
-		PARENT_OBJECT, OBJECT_CODE, TITLE, TYPE, DESCRIPTION, COMMENTS, LATITUDE, LONGTITUDE, WAYPOINT, LOCATION_PRECISION, LOCATION_COMMENT,
+		PARENT_OBJECT, OBJECT_CODE, TITLE, TYPE, DESCRIPTION, COMMENTS, LATITUDE, LONGITUDE, WAYPOINT, LOCATION_PRECISION, LOCATION_COMMENT,
 		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, POSTCODE, COUNTRY,  OWNER, CREATOR
 	};
 	
@@ -141,10 +141,10 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 				argObject.getLocation().getLocationGeometry().getPoint().getPos() != null &&
 				argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().size() == 2){
 			setProperty(LATITUDE, argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(0));
-			setProperty(LONGTITUDE, argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(1));
+			setProperty(LONGITUDE, argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(1));
 		}else{
 			setProperty(LATITUDE, null);
-			setProperty(LONGTITUDE, null);
+			setProperty(LONGITUDE, null);
 		}
 		
 		if(argObject.isSetLocation() &&
@@ -230,7 +230,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		
 		
 		Object latitude = getProperty(LATITUDE);
-		Object longitude = getProperty(LONGTITUDE);
+		Object longitude = getProperty(LONGITUDE);
 		Object addressline1 = getProperty(ADDRESSLINE1);
 		Object addressline2 = getProperty(ADDRESSLINE2);
 		Object city = getProperty(CITY_TOWN);

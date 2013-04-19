@@ -145,7 +145,7 @@ public class SampleView  extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSIBoxDictionary.class, new WSIBoxRenderer());
 		
 		
-		MVCJComboBox<TridasObjectEx> box = new MVCJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(),
+		MVCJComboBox<TridasObjectEx> obj = new MVCJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(),
 				new Comparator<TridasObjectEx>() {
 			public int compare(TridasObjectEx argO1, TridasObjectEx argO2) {
 				if(argO1 == null){
@@ -157,7 +157,7 @@ public class SampleView  extends AbstractBulkImportView{
 				return argO1.getLabCode().compareToIgnoreCase(argO2.getLabCode());
 			}
 		});
-		box.setKeySelectionManager(new DynamicKeySelectionManager() {
+		obj.setKeySelectionManager(new DynamicKeySelectionManager() {
 			@Override
 			public String convertToString(Object argO) {
 				if(argO == null){
@@ -168,9 +168,9 @@ public class SampleView  extends AbstractBulkImportView{
 			}
 		});
 		
-		box.setRenderer(new TridasObjectExRenderer());
+		obj.setRenderer(new TridasObjectExRenderer());
 		
-		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(box));
+		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(obj));
 		argTable.setDefaultRenderer(TridasObject.class, new TridasObjectExRenderer());
 	}
 

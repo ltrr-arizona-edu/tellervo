@@ -114,9 +114,9 @@ public class ImportSelectedElementsCommand implements ICommand {
 			}
 			
 			// lat/long
-			if(definedProps.contains(SingleElementModel.LATITUDE) || definedProps.contains(SingleElementModel.LONGTITUDE)){
-				if(!definedProps.contains(SingleElementModel.LATITUDE) || !definedProps.contains(SingleElementModel.LONGTITUDE)){
-					requiredMessages.add("Element cannot have either a latitude or a longtitude.  Both or none must be provided");
+			if(definedProps.contains(SingleElementModel.LATITUDE) || definedProps.contains(SingleElementModel.LONGITUDE)){
+				if(!definedProps.contains(SingleElementModel.LATITUDE) || !definedProps.contains(SingleElementModel.LONGITUDE)){
+					requiredMessages.add("Element cannot have either a latitude or a longitude.  Both or none must be provided");
 					incomplete = true;
 				}else{
 					String attempt = som.getProperty(SingleElementModel.LATITUDE).toString().trim();
@@ -126,7 +126,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
 						incomplete = true;
 					}
-					attempt = som.getProperty(SingleElementModel.LONGTITUDE).toString().trim();
+					attempt = som.getProperty(SingleElementModel.LONGITUDE).toString().trim();
 					try{
 						Double.parseDouble(attempt);
 					}catch(NumberFormatException e){

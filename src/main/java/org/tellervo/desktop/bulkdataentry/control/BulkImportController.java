@@ -122,15 +122,15 @@ public class BulkImportController extends FrontController {
 		
 		
 		// TODO adding choice of columns to preferences.  
+		ccmodel.add(SingleObjectModel.IMPORTED);
 		if (App.prefs.getBooleanPref(PrefKey.OBJECT_FIELD_VISIBLE_PARENT_OBJECT, false)) ccmodel.add(SingleObjectModel.PARENT_OBJECT);
 		if (App.prefs.getBooleanPref(PrefKey.OBJECT_FIELD_VISIBLE_OBJECT_CODE, true)) ccmodel.add(SingleObjectModel.OBJECT_CODE);
 		ccmodel.add(SingleObjectModel.TITLE);
 		ccmodel.add(SingleObjectModel.TYPE);
-		ccmodel.add(SingleObjectModel.IMPORTED);
 		ccmodel.add(SingleObjectModel.COMMENTS);
 		ccmodel.add(SingleObjectModel.DESCRIPTION);
 		ccmodel.add(SingleObjectModel.LATITUDE);
-		ccmodel.add(SingleObjectModel.LONGTITUDE);
+		ccmodel.add(SingleObjectModel.LONGITUDE);
 		ccmodel.add(SingleObjectModel.LOCATION_PRECISION);
 		ccmodel.add(SingleObjectModel.LOCATION_COMMENT);
 		//ccmodel.add(SingleObjectModel.WAYPOINT);
@@ -145,14 +145,16 @@ public class BulkImportController extends FrontController {
 	}
 	
 	private void populateElementDefaults(ColumnChooserModel ccmodel){
+		ccmodel.add(SingleElementModel.IMPORTED);
 		ccmodel.add(SingleElementModel.OBJECT);
 		ccmodel.add(SingleElementModel.TITLE);
 		ccmodel.add(SingleElementModel.TYPE);
 		ccmodel.add(SingleElementModel.TAXON);
-		ccmodel.add(SingleElementModel.IMPORTED);
+		
 	}
 	
 	private void populateSampleDefaults(ColumnChooserModel ccmodel){
+		ccmodel.add(SingleSampleModel.IMPORTED);
 		ccmodel.add(SingleSampleModel.OBJECT);
 		ccmodel.add(SingleSampleModel.ELEMENT);
 		ccmodel.add(SingleSampleModel.TITLE);
@@ -161,6 +163,6 @@ public class BulkImportController extends FrontController {
 	}
 	
 	private void populateRadiusDefaults(ColumnChooserModel ccmodel){
-		ccmodel.add(SingleElementModel.IMPORTED);
+		
 	}
 }

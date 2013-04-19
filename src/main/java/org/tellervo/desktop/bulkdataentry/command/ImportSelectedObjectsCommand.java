@@ -112,9 +112,9 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			}
 			
 			// lat/long
-			if(definedProps.contains(SingleObjectModel.LATITUDE) || definedProps.contains(SingleObjectModel.LONGTITUDE)){
-				if(!definedProps.contains(SingleObjectModel.LATITUDE) || !definedProps.contains(SingleObjectModel.LONGTITUDE)){
-					requiredMessages.add("Object cannot have either a latitude or a longtitude.  Both or none must be provided");
+			if(definedProps.contains(SingleObjectModel.LATITUDE) || definedProps.contains(SingleObjectModel.LONGITUDE)){
+				if(!definedProps.contains(SingleObjectModel.LATITUDE) || !definedProps.contains(SingleObjectModel.LONGITUDE)){
+					requiredMessages.add("Object cannot have either a latitude or a longitude.  Both or none must be provided");
 					incomplete = true;
 				}
 			}

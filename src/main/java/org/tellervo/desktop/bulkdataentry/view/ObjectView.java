@@ -79,7 +79,6 @@ public class ObjectView extends AbstractBulkImportView{
 	protected void setupTableCells(JTable argTable) {
 		
 		argTable.setDefaultEditor(String.class, new StringCellEditor());
-		
 		argTable.setDefaultEditor(WSIObjectTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("objectTypeDictionary")));
 		argTable.setDefaultRenderer(WSIObjectTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
@@ -141,7 +140,7 @@ public class ObjectView extends AbstractBulkImportView{
 				super.setValue(object.getLabCode());
 			}
 		});
-		
+				
 		
 	}
 	

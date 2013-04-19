@@ -45,7 +45,7 @@ public class AddRowCommand implements ICommand {
 	@Override
 	public void execute(MVCEvent argEvent) {
 		
-		try {
+		/*try {
 	        MVC.splitOff(); // so other mvc events can execute
 		} catch (IllegalThreadException e) {
 		        // this means that the thread that called splitOff() was not an MVC thread, and the next event's won't be blocked anyways.
@@ -53,16 +53,22 @@ public class AddRowCommand implements ICommand {
 		} catch (IncorrectThreadException e) {
 		        // this means that this MVC thread is not the main thread, it was already splitOff() previously
 		        e.printStackTrace();
-		}
+		}*/
 		
 		AddRowEvent event = (AddRowEvent) argEvent;
 		MVCArrayList<Object> rows = (MVCArrayList<Object>) event.model.getRows();
-		IBulkImportSingleRowModel newrow = event.model.createRowInstance();
 		
-		try{AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
-		otm.setSelected(newrow, false);
-		} catch (Exception e){}
-		rows.add(newrow);
+		for(int i=0; i<event.rowCountToAdd; i++)
+		{
+			IBulkImportSingleRowModel newrow = event.model.createRowInstance();
+			try{AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
+			otm.setSelected(newrow, false);
+			} catch (Exception e){}
+			rows.add(newrow);
+		}
+		
+		
+
 	}
 	
 }
