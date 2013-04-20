@@ -49,7 +49,7 @@ import com.dmurph.mvc.model.HashModel;
 public class SingleElementModel extends HashModel implements IBulkImportSingleRowModel{
 	private static final long serialVersionUID = 1L;	
 	
-	public static final String OBJECT = "Parent Object";
+	public static final String OBJECT = "Object code";
 	public static final String TITLE = "Element code";
 	public static final String COMMENTS = "Comments";
 	public static final String TYPE = "Type";
@@ -84,8 +84,8 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 	
 
 	public static final String[] TABLE_PROPERTIES = {
-		TITLE, OBJECT, COMMENTS, TYPE, DESCRIPTION, TAXON,
-		SHAPE, HEIGHT, WIDTH, DEPTH, UNIT, LATITUDE, LONGITUDE,WAYPOINT,
+		OBJECT, TITLE, TYPE, TAXON, COMMENTS, DESCRIPTION, LATITUDE, LONGITUDE,WAYPOINT,
+		SHAPE, HEIGHT, WIDTH, DEPTH, UNIT, 
 		LOCATION_PRECISION, LOCATION_COMMENT,
 		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, 
 		POSTCODE, COUNTRY, SLOPE_ANGLE, SLOPE_AZIMUTH, SOIL_DESCRIPTION, SOIL_DEPTH,

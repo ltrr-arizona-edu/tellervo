@@ -393,7 +393,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						}
 						else
 						{
-							tablemodel.setValueAt(null,rowIndex,startCol+j);
+							//tablemodel.setValueAt(null,rowIndex,startCol+j);
 						}
 						
 					}
@@ -476,8 +476,8 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							tablemodel.setValueAt(null,rowIndex,startCol+j);
 						}
 					}
-					else if (clazz.equals(TridasElement.class))
-					{
+					//else if (clazz.equals(TridasElement.class))
+					//{
 						
 						/*if(value!=null && value.toLowerCase()!="null")
 						{
@@ -499,7 +499,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						{
 							tablemodel.setValueAt(null,rowIndex,startCol+j);
 						}*/
-					}
+					//}
 					else if (clazz.equals(GPXWaypoint.class))
 					{
 						// ignore

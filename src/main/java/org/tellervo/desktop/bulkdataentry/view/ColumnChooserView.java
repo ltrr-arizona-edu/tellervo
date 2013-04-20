@@ -112,7 +112,7 @@ public class ColumnChooserView extends JWindow{
 		checkboxList = new JTable();
 		checkboxList.setOpaque(false);
 		checkboxList.setTableHeader(null);
-		checkboxList.setBackground(UIManager.getColor("ToolBar.dockingBackground"));
+		checkboxList.setBackground(UIManager.getColor("ToolBar.background"));
 		checkboxList.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		ToolbarColorRenderer renderer = new ToolbarColorRenderer();
 		checkboxList.setDefaultRenderer(String.class, renderer);

@@ -2,6 +2,7 @@ package org.tellervo.desktop.util;
 
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
+import javax.swing.UIManager;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -250,14 +251,14 @@ public class JTableRowHeader extends JTable
 						
 			if(isSelected)
 			{
-				setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
+				setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 			}
 			else
 			{
-				setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+				setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));	
 			}
 			
-			Color c = new Color(221,223,228);
+			Color c = UIManager.getColor("ToolBar.background");
 			setBackground(c);
 
 			return this;

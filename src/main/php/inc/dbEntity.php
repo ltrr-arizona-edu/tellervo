@@ -1791,16 +1791,7 @@ class sampleEntity extends dbEntity
 	 */
 	function setKnots($value)
 	{
-		$value = dbHelper::formatBool($value);
-		if($value!='error')
-		{
-			$this->knots = $value;
-			return TRUE;		
-		}
-		else
-		{
-			return FALSE;
-		}
+		$this->knots = $value;
 	}
 	
 	function setFile($file)
@@ -1904,9 +1895,9 @@ class sampleEntity extends dbEntity
 	 * @param String $format (php, pg, english)
 	 * @return Boolean or String
 	 */
-	function getKnots($format="php")
+	function getKnots()
 	{
-		return dbHelper::formatBool($this->knots, $format);
+		return $this->knots;
 	}
 	
 	/**

@@ -44,9 +44,9 @@ import com.dmurph.mvc.model.MVCArrayList;
 public class SingleSampleModel extends HashModel implements IBulkImportSingleRowModel {
 	private static final long serialVersionUID = 1L;
 
-	public static final String OBJECT = "Parent Object";
-	public static final String ELEMENT = "Parent Element";
-	public static final String TITLE = "Sample Code";
+	public static final String OBJECT = "Object code";
+	public static final String ELEMENT = "Element code";
+	public static final String TITLE = "Sample code";
 	public static final String COMMENTS = "Comments";
 	public static final String TYPE = "Type";
 	public static final String DESCRIPTION = "Description";

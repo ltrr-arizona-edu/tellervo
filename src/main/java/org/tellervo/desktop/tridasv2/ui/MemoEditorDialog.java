@@ -3,12 +3,19 @@ package org.tellervo.desktop.tridasv2.ui;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
 
 import net.miginfocom.swing.MigLayout;
@@ -61,6 +68,27 @@ public class MemoEditorDialog extends JPanel {
 		scrollPane.setViewportView(textArea);
 		textArea.setText(theString);
 		
+		 //remove enter pressed
+        KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
+        InputMap inputMap = textArea.getInputMap();
+        textArea.getInputMap(JComponent.WHEN_FOCUSED).put(enter, "Enter pressed");
+        textArea.getActionMap().put("Enter pressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                commit();
+            }
+        });
+        
+        
+        //add shift+enter keybinding can be on pressed or released i.e false or true
+        textArea.getInputMap(JComponent.WHEN_FOCUSED).put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, KeyEvent.SHIFT_DOWN_MASK, true), "Shift+Enter released");
+        textArea.getActionMap().put("Shift+Enter released", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                textArea.setText(textArea.getText()+"\n");
+            }
+        });
+		
 		JPanel panel = new JPanel();
 		add(panel, "cell 0 1,alignx right,aligny top");
 		panel.setLayout(new MigLayout("", "[234.00,grow,fill][98.00px][117px]", "[25px]"));
@@ -86,10 +114,7 @@ public class MemoEditorDialog extends JPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// Close window and return string
-				hasResults = true;
-				theString = textArea.getText();
-				dialog.dispose();
-				dialog = null;
+				commit();
 			}			
 		});
 		
@@ -103,6 +128,14 @@ public class MemoEditorDialog extends JPanel {
 			log.debug("Unable to determine location of parent for memo editor. Show anyway.");
 		}
 		dialog.setVisible(true);
+	}
+	
+	private void commit()
+	{
+		hasResults = true;
+		theString = textArea.getText();
+		dialog.dispose();
+		dialog = null;
 	}
 	
 	/**

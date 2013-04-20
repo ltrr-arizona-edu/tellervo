@@ -357,6 +357,8 @@ public class LoginDialog extends JDialog {
 		// finally, make it so when we press enter we choose to log in
 		getRootPane().setDefaultButton(loginButton);
 		setLocationRelativeTo(null);
+		this.setModal(true);
+		this.setModalityType(ModalityType.APPLICATION_MODAL);
 		
 		
 		

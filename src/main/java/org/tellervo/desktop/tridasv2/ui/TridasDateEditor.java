@@ -16,7 +16,6 @@ import org.tridas.schema.Date;
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import com.michaelbaranov.microba.calendar.*;
 
-//import com.toedter.calendar.JDateChooser;
 
 public class TridasDateEditor extends AbstractPropertyEditor {
 

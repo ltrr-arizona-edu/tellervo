@@ -81,10 +81,12 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 	 */
 	@Override
 	public void setValueAt(Object argAValue, String argColumn, IBulkImportSingleRowModel argModel, int argRowIndex) {
-		argModel.setProperty(argColumn, argAValue);
+		
 		
 		// FIXME this all should be in a command!!!
 		if(argColumn.equals(SingleSampleModel.OBJECT)){
+			argModel.setProperty(argColumn, argAValue);
+			
 			if(argAValue != null){
 				final TridasObject o = (TridasObject) argAValue;
 				final SingleSampleModel ssm = (SingleSampleModel) argModel;
@@ -107,7 +109,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 						
 						if(!dialog.isSuccessful()) 
 						{ 
-							System.out.println("oopsey doopsey.  Error getting elements");
+							System.out.println("Error getting elements");
 							return;
 						}
 						
@@ -118,6 +120,25 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 				
 				t.start();
 			}
+			return;
 		}
+		
+		else if (argColumn.equals(SingleSampleModel.ELEMENT))
+		{
+			if(argAValue instanceof String)
+			{
+				final SingleSampleModel ssm = (SingleSampleModel) argModel;
+				for(TridasElement el : ssm.getPossibleElements())
+				{
+					if(el.getTitle().equals(argAValue))
+					{
+						argModel.setProperty(argColumn, el);
+					}
+				}
+				return;
+			}
+		}
+		
+		argModel.setProperty(argColumn, argAValue);
 	}
 }

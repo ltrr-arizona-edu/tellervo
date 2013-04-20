@@ -123,8 +123,8 @@ public class BulkImportController extends FrontController {
 		
 		// TODO adding choice of columns to preferences.  
 		ccmodel.add(SingleObjectModel.IMPORTED);
-		if (App.prefs.getBooleanPref(PrefKey.OBJECT_FIELD_VISIBLE_PARENT_OBJECT, false)) ccmodel.add(SingleObjectModel.PARENT_OBJECT);
-		if (App.prefs.getBooleanPref(PrefKey.OBJECT_FIELD_VISIBLE_OBJECT_CODE, true)) ccmodel.add(SingleObjectModel.OBJECT_CODE);
+		ccmodel.add(SingleObjectModel.PARENT_OBJECT);
+		ccmodel.add(SingleObjectModel.OBJECT_CODE);
 		ccmodel.add(SingleObjectModel.TITLE);
 		ccmodel.add(SingleObjectModel.TYPE);
 		ccmodel.add(SingleObjectModel.COMMENTS);
@@ -150,7 +150,34 @@ public class BulkImportController extends FrontController {
 		ccmodel.add(SingleElementModel.TITLE);
 		ccmodel.add(SingleElementModel.TYPE);
 		ccmodel.add(SingleElementModel.TAXON);
-		
+		ccmodel.add(SingleElementModel.COMMENTS);
+		ccmodel.add(SingleElementModel.DESCRIPTION);
+		//ccmodel.add(SingleElementModel.FILES);
+		ccmodel.add(SingleElementModel.SHAPE);
+		ccmodel.add(SingleElementModel.HEIGHT);
+		ccmodel.add(SingleElementModel.WIDTH);
+		ccmodel.add(SingleElementModel.DEPTH);
+		ccmodel.add(SingleElementModel.DIAMETER);
+		ccmodel.add(SingleElementModel.UNIT);
+		//ccmodel.add(SingleElementModel.AUTHENTICITY);
+		//ccmodel.add(SingleElementModel.WAYPOINT);
+		ccmodel.add(SingleElementModel.LATITUDE);
+		ccmodel.add(SingleElementModel.LONGITUDE);
+		ccmodel.add(SingleElementModel.LOCATION_PRECISION);
+		ccmodel.add(SingleElementModel.LOCATION_COMMENT);
+		ccmodel.add(SingleElementModel.ADDRESSLINE1);
+		ccmodel.add(SingleElementModel.ADDRESSLINE2);
+		ccmodel.add(SingleElementModel.CITY_TOWN);
+		ccmodel.add(SingleElementModel.STATE_PROVINCE_REGION);
+		ccmodel.add(SingleElementModel.POSTCODE);
+		ccmodel.add(SingleElementModel.COUNTRY);
+		ccmodel.add(SingleElementModel.MARKS);
+		ccmodel.add(SingleElementModel.ALTITUDE);
+		ccmodel.add(SingleElementModel.SLOPE_ANGLE);
+		ccmodel.add(SingleElementModel.SLOPE_AZIMUTH);
+		ccmodel.add(SingleElementModel.SOIL_DESCRIPTION);
+		ccmodel.add(SingleElementModel.SOIL_DEPTH);
+		ccmodel.add(SingleElementModel.BEDROCK_DESCRIPTION);
 	}
 	
 	private void populateSampleDefaults(ColumnChooserModel ccmodel){
@@ -160,6 +187,15 @@ public class BulkImportController extends FrontController {
 		ccmodel.add(SingleSampleModel.TITLE);
 		ccmodel.add(SingleSampleModel.TYPE);
 		ccmodel.add(SingleSampleModel.BOX);
+		ccmodel.add(SingleSampleModel.COMMENTS);
+		ccmodel.add(SingleSampleModel.DESCRIPTION);
+		//ccmodel.add(SingleSampleModel.FILES);
+		ccmodel.add(SingleSampleModel.SAMPLING_DATE);
+		ccmodel.add(SingleSampleModel.POSITION);
+		ccmodel.add(SingleSampleModel.STATE);
+		ccmodel.add(SingleSampleModel.KNOTS);
+
+
 	}
 	
 	private void populateRadiusDefaults(ColumnChooserModel ccmodel){

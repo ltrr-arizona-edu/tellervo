@@ -503,9 +503,9 @@ class location extends geometry
 		if ($this->getAddressLine1()!=NULL ||
 			$this->getAddressLine2()!=NULL ||
 			$this->getCityOrTown()!=NULL ||
-			$this->getStateProvinceRegion!=NULL ||
-			$this->getPostalCode!=NULL ||
-			$this->getCountry!=NULL)
+			$this->getStateProvinceRegion()!=NULL ||
+			$this->getPostalCode()!=NULL ||
+			$this->getCountry()!=NULL)
 			{
 				$firebug->log("has address");
 				return true;

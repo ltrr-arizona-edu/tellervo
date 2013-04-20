@@ -7,9 +7,13 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.AbstractAction;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 
 import org.tellervo.desktop.ui.Builder;
 
@@ -68,27 +72,40 @@ public class MemoEditor extends AbstractPropertyEditor {
 		});
 		
 
-		textField.addKeyListener(new KeyListener(){
+		 //remove enter pressed
+        KeyStroke up = KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0, false);
+        KeyStroke tab = KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0, false);
+        KeyStroke down = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false);
+        KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
+        textField.getInputMap(JComponent.WHEN_FOCUSED).put(up, "Up pressed");
+        textField.getInputMap(JComponent.WHEN_FOCUSED).put(tab, "tab pressed");
+        textField.getInputMap(JComponent.WHEN_FOCUSED).put(down, "Down pressed");
+        textField.getInputMap(JComponent.WHEN_FOCUSED).put(enter, "Enter pressed");
 
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-	
-				int id = arg0.getKeyCode();
-				if(id == KeyEvent.VK_ENTER || id == KeyEvent.VK_TAB)
-				{
-					String oldValue = theString;
-					theString = textField.getText();
-					firePropertyChange(oldValue, theString);
-				}
-			}
+        textField.getActionMap().put("Up pressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
 
-			@Override
-			public void keyReleased(KeyEvent arg0) { }
-			@Override
-			public void keyTyped(KeyEvent arg0) { }
-
-		});
-		
+            }
+        });
+        textField.getActionMap().put("Tab pressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+        		commit();
+            }
+        });
+        textField.getActionMap().put("Down pressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+        		commit();
+            }
+        });
+        textField.getActionMap().put("Enter pressed", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+        		commit();
+            }
+        });
 		textField.addMouseListener(new MouseListener(){
 
 			@Override
@@ -122,6 +139,14 @@ public class MemoEditor extends AbstractPropertyEditor {
 			
 		});
 
+	}
+	
+	
+	private void commit()
+	{
+		String oldValue = theString;
+		theString = textField.getText();
+		firePropertyChange(oldValue, theString);
 	}
 	
 	@Override

@@ -397,9 +397,9 @@ class dbHelper
 			foreach($array as $item)
 			{
 				$firebug->log($item, "file item");
-				$return.="\"".rawurlencode($item)."\"><";
+				$return.="\"".rawurlencode($item)."\",";
 			}
-			$return = substr($return, 0, -2);
+			$return = substr($return, 0, -1);
 			return $return."}'";
 		}
 		else

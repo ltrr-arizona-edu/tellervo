@@ -71,6 +71,8 @@ class sample extends sampleEntity implements IDBAccessor
 
         global $dbconn;
         global $domain;    
+	global $firebug;
+	$firebug->log($theID, "Setting sample params for ID");
 
         $this->setID($theID);
         $sql = "SELECT * FROM vwtblsample WHERE sampleid='".$theID."'";
@@ -82,7 +84,7 @@ class sample extends sampleEntity implements IDBAccessor
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified id");
+                $this->setErrorMessage("903", "No records match the specified sample id");
                 return FALSE;
             }
             else
@@ -177,19 +179,21 @@ class sample extends sampleEntity implements IDBAccessor
 	$firebug->log($paramsClass, "Params class in setParamsFromParamsClass");
 
         // Alters the parameter values based upon values supplied by the user and passed as a parameters class
-        if($paramsClass->getTitle()!=NULL)         	$this->setTitle($paramsClass->getTitle());                                             	
-    	if($paramsClass->getID()!=NULL)         	$this->setID($paramsClass->getID());                                          
-        if($paramsClass->getComments()!=NULL)       $this->setComments($paramsClass->getComments());   
-        if($paramsClass->getType()!=NULL)       	$this->setType($paramsClass->getType(true), $paramsClass->getType());         
-        if($paramsClass->getDescription()!=NULL) 	$this->setDescription($paramsClass->getDescription());
-        if($paramsClass->getFiles()!=NULL)			$this->setFiles($paramsClass->getFiles());     
-        if($paramsClass->getSamplingDate())     	$this->setSamplingDate($paramsClass->getSamplingDate());            
-        if($paramsClass->getPosition()!=NULL)		$this->setPosition($paramsClass->getPosition());
-        if($paramsClass->getState()!=NULL)			$this->setState($paramsClass->getState());
-        if($paramsClass->getKnots()!=NULL)			$this->setKnots($paramsClass->getKnots());        
-    	if($paramsClass->getCode()!=NULL)       	$this->setCode($paramsClass->getCode());        
-    	if($paramsClass->getBoxID()!=NULL)			$this->setBoxID($paramsClass->getBoxID());              
-        if ($paramsClass->parentID!=NULL)
+        $this->setTitle($paramsClass->getTitle());                                             	
+    	$this->setID($paramsClass->getID());                                          
+        $this->setComments($paramsClass->getComments());   
+        $this->setType($paramsClass->getType(true), $paramsClass->getType());         
+        $this->setDescription($paramsClass->getDescription());
+        $this->setFiles($paramsClass->getFiles());     
+        $this->setSamplingDate($paramsClass->getSamplingDate());            
+        $this->setPosition($paramsClass->getPosition());
+        $this->setState($paramsClass->getState());
+
+        $this->setKnots($paramsClass->getKnots());        
+    	$this->setCode($paramsClass->getCode());        
+    	$this->setBoxID($paramsClass->getBoxID());              
+     
+	if ($paramsClass->parentID!=NULL)
         {
         	$parentObj = new element();
         	$parentObj->setParamsFromDB($paramsClass->parentID);
@@ -257,12 +261,12 @@ class sample extends sampleEntity implements IDBAccessor
         switch($crudMode)
         {
             case "read":
-                if($paramsObj->getID()==NULL)
+                if($paramsObj->getID()===NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required when reading a sample.");
                     return false;
                 }
-                if(!(uuid::isUUID($paramsObj->getID())) && !($paramsObj->getID()==NULL))
+                if(!(uuid::isUUID($paramsObj->getID())) && !($paramsObj->getID()===NULL))
                 {
                     $this->setErrorMessage("901","Invalid parameter - 'id' field must be a UUID.");
                     return false;
@@ -270,19 +274,19 @@ class sample extends sampleEntity implements IDBAccessor
                 return true;
          
             case "update":
-                if($paramsObj->getID() == NULL)
+                if($paramsObj->getID() === NULL)
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
                     return false;
                 }
-                if(($paramsObj->getCode() ==NULL) 
-                    && ($paramsObj->getSamplingDate()==NULL) 
-                    && ($paramsObj->getType()==NULL) 
-                    && ($paramsObj->getFiles()==NULL)
-                    && ($paramsObj->getPosition()==NULL)
-                    && ($paramsObj->getState()==NULL)
-                    && ($paramsObj->getKnots()==NULL)
-                    && ($paramsObj->getDescription()==NULL)
+                if(($paramsObj->getCode() ===NULL) 
+                    && ($paramsObj->getSamplingDate()===NULL) 
+                    && ($paramsObj->getType()===NULL) 
+                    && ($paramsObj->getFiles()===NULL)
+                    && ($paramsObj->getPosition()===NULL)
+                    && ($paramsObj->getState()===NULL)
+                    && ($paramsObj->getKnots()===NULL)
+                    && ($paramsObj->getDescription()===NULL)
                     && ($paramsObj->hasChild!=True))
                 {
                     $this->setErrorMessage("902","Missing parameters - you haven't specified any parameters to update.");
@@ -291,7 +295,7 @@ class sample extends sampleEntity implements IDBAccessor
                 return true;
 
             case "delete":
-                if($paramsObj->getID() == NULL) 
+                if($paramsObj->getID() === NULL) 
                 {
                     $this->setErrorMessage("902","Missing parameter - 'id' field is required.");
                     return false;
@@ -309,12 +313,12 @@ class sample extends sampleEntity implements IDBAccessor
                 }
                 else
                 {
-                    if($paramsObj->getCode() == NULL) 
+                    if($paramsObj->getCode() === NULL) 
                     {
                         $this->setErrorMessage("902","Missing parameter - 'code' field is required when creating a sample.");
                         return false;
                     }
-                    if($paramsObj->getParentID() == NULL) 
+                    if($paramsObj->getParentID() === NULL) 
                     {
                         $this->setErrorMessage("902","Missing parameter - parentID field is required when creating a sample.");
                         return false;
@@ -323,12 +327,12 @@ class sample extends sampleEntity implements IDBAccessor
                 return true;
 
             case "merge":
-                if($paramsObj->getID() == NULL) 
+                if($paramsObj->getID() === NULL) 
                 {
                     trigger_error("902"."Missing parameter - 'id' field is required when merging.", E_USER_ERROR);
                     return false;
                 }
-                if($paramsObj->mergeWithID == NULL)
+                if($paramsObj->mergeWithID === NULL)
                 {
                 	trigger_error("902"."Missing parameter - 'mergeWithID' field is required when merging.", E_USER_ERROR);
                     return false;
@@ -434,12 +438,12 @@ class sample extends sampleEntity implements IDBAccessor
                 $xml.= "<tridas:comments>".dbhelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
               	$xml.= "<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Tellervo\" />\n";                     
              
-                if($this->getDescription()!=NULL)			 $xml.= "<tridas:description>".dbhelper::escapeXMLChars($this->getDescription())."</tridas:description>\n";
-            	if($this->getFiles()!=NULL)					 $xml.= $this->getFileXML();
-            	if($this->getSamplingDate()!=NULL)           $xml.= "<tridas:samplingDate>".dbhelper::escapeXMLChars($this->getSamplingDate())."</tridas:samplingDate>\n";
-                if($this->getPosition()!=NULL)				 $xml.= "<tridas:position>".dbhelper::escapeXMLChars($this->getPosition())."</tridas:position>\n";
-                if($this->getState()!=NULL)					 $xml.= "<tridas:state>".dbhelper::escapeXMLChars($this->getState())."</tridas:state>\n";
-                if($this->getKnots()!=NULL)					 $xml.= "<tridas:knots>".dbhelper::escapeXMLChars($this->getKnots('english'))."</tridas:knots>\n";
+                if($this->getDescription()!==NULL)			 $xml.= "<tridas:description>".dbhelper::escapeXMLChars($this->getDescription())."</tridas:description>\n";
+            	if($this->getFiles()!==NULL)					 $xml.= $this->getFileXML();
+            	if($this->getSamplingDate()!==NULL)           $xml.= "<tridas:samplingDate>".dbhelper::escapeXMLChars($this->getSamplingDate())."</tridas:samplingDate>\n";
+                if($this->getPosition()!==NULL)				 $xml.= "<tridas:position>".dbhelper::escapeXMLChars($this->getPosition())."</tridas:position>\n";
+                if($this->getState()!==NULL)					 $xml.= "<tridas:state>".dbhelper::escapeXMLChars($this->getState())."</tridas:state>\n";
+                if($this->getKnots()!==NULL)					 $xml.= "<tridas:knots>".dbhelper::formatBool($this->getKnots(), "english")."</tridas:knots>\n";
       
             }
 
@@ -509,33 +513,33 @@ class sample extends sampleEntity implements IDBAccessor
                 	$this->setID(uuid::getUUID(), $domain);       
                 	
                     $sql = "INSERT INTO tblsample ( ";
-                        if($this->getTitle()!=NULL)                   	$sql.="code, ";
-                    													$sql.="sampleid, ";
-                        if($this->getComments()!=NULL)                  $sql.="comments, ";
-                        if($this->getType()!=NULL)                   	$sql.="typeid, ";
-                        if($this->getDescription()!=NULL)				$sql.="description, ";
-                        if($this->getFiles()!=NULL)					 	$sql.="file, ";
-                        if($this->getSamplingDate()!=NULL)           	$sql.="samplingdate, ";
-                        if($this->getPosition()!=NULL)					$sql.="position, ";
-                        if($this->getState()!=NULL)						$sql.="state, ";
-                        if($this->getKnots()!=NULL)						$sql.="knots, ";
-                        if($this->getBoxID()!=NULL)						$sql.="boxid, ";
-                        if(isset($this->parentEntityArray[0]))		 	$sql.="elementid, ";                        
+                        $sql.="code, ";
+                    	$sql.="sampleid, ";
+                        $sql.="comments, ";
+                        $sql.="typeid, ";
+                       	$sql.="description, ";
+                       	$sql.="file, ";
+                        $sql.="samplingdate, ";
+                       	$sql.="position, ";
+                       	$sql.="state, ";
+                       	$sql.="knots, ";
+                       	$sql.="boxid, ";
+                        if(isset($this->parentEntityArray[0]))	$sql.="elementid, ";                        
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") VALUES (";
-                        if($this->getTitle()!=NULL)                   	$sql.="'".pg_escape_string($this->getTitle())."', ";
-	                    						                  		$sql.="'".pg_escape_string($this->getID())."', "; 
-                        if($this->getComments()!=NULL)           		$sql.="'".pg_escape_string($this->getComments())."', ";
-                        if($this->getType()!=NULL)                   	$sql.="'".pg_escape_string($this->getType(true))."', ";
-                        if($this->getDescription()!=NULL)				$sql.="'".pg_escape_string($this->getDescription())."', ";                        
-                        if($this->getFiles()!=NULL)					 	$sql.="'".dbHelper::phpArrayToPGStrArray($this->getFiles())."', ";
-	                   	if($this->getSamplingDate()!=NULL)           	$sql.="'".pg_escape_string($this->getSamplingDate())."', ";
-                        if($this->getPosition()!=NULL)					$sql.="'".pg_escape_string($this->getPosition())."', ";
-                        if($this->getState()!=NULL)						$sql.="'".pg_escape_string($this->getState())."', ";
-                        if($this->getKnots()!=NULL)						$sql.="'".pg_escape_string($this->getKnots("pg"))."', ";
-                        if($this->getBoxID()!=NULL)						$sql.="'".pg_escape_string($this->getBoxID())."', ";
-                        if(isset($this->parentEntityArray[0]))      	$sql.="'".pg_escape_string($this->parentEntityArray[0]->getID())."', ";                        
+                        $sql.=dbHelper::tellervo_pg_escape_string($this->getTitle()).", ";
+	               	$sql.=dbHelper::tellervo_pg_escape_string($this->getID()).", "; 
+                       	$sql.=dbHelper::tellervo_pg_escape_string($this->getComments()).", ";
+                        $sql.=dbHelper::tellervo_pg_escape_string($this->getType(true)).", ";
+                       	$sql.=dbHelper::tellervo_pg_escape_string($this->getDescription()).", ";                        
+                       	$sql.=dbHelper::phpArrayToPGStrArray($this->getFiles()).", ";
+	                $sql.=dbHelper::tellervo_pg_escape_string($this->getSamplingDate()).", ";
+                        $sql.=dbHelper::tellervo_pg_escape_string($this->getPosition()).", ";
+                        $sql.=dbHelper::tellervo_pg_escape_string($this->getState()).", ";
+                        $sql.=dbHelper::formatBool($this->getKnots(),"pg").", ";
+                        $sql.=dbHelper::tellervo_pg_escape_string($this->getBoxID()).", ";
+                        if(isset($this->parentEntityArray[0])) $sql.=dbHelper::tellervo_pg_escape_string($this->parentEntityArray[0]->getID()).", ";                        
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -545,20 +549,20 @@ class sample extends sampleEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql.="update tblsample set ";
-                        if($this->getTitle()!=NULL)             $sql.="code='"           	.pg_escape_string($this->getTitle())          						."', ";
-                        if($this->getComments()!=NULL)          $sql.="comments='"          .pg_escape_string($this->getComments())          						."', ";
-                        if($this->getType()!=NULL)          	$sql.="typeid='"     		.pg_escape_string($this->getType(true))          						."', ";
-                        if($this->getDescription()!=NULL)		$sql.="description='"		.pg_escape_string($this->getDescription())		."', ";                             
-                        if($this->getFiles()!=NULL)				$sql.="file='"	 			.dbHelper::phpArrayToPGStrArray($this->getFiles())  								."', ";                                 
-                        if($this->getSamplingDate()!=NULL)     	$sql.="samplingdate='"   	.pg_escape_string($this->getSamplingDate())  						."', ";
-                        if($this->getPosition()!=NULL)			$sql.="position='"			.pg_escape_string($this->getPosition())							."', ";
-                        if($this->getState()!=NULL)				$sql.="state='"				.pg_escape_string($this->getState())								."', ";
-                        if($this->getKnots()!=NULL)				$sql.="knots='"				.pg_escape_string($this->getKnots("pg"))			."', ";
-                        if($this->getBoxID()!=NULL)				$sql.="boxid='"				.pg_escape_string($this->getBoxID()) ."', ";
-                        if(isset($this->parentEntityArray[0])) 	$sql.="elementid='"      	.pg_escape_string($this->parentEntityArray[0]->getID()) 	."', ";
+                        $sql.="code="          .dbHelper::tellervo_pg_escape_string($this->getTitle()).", ";
+                        $sql.="comments="      .dbHelper::tellervo_pg_escape_string($this->getComments()).", ";
+                        $sql.="typeid="     	.dbHelper::tellervo_pg_escape_string($this->getType(true)).", ";
+                        $sql.="description="	.dbHelper::tellervo_pg_escape_string($this->getDescription()).", ";                             
+                       	$sql.="file="	 	.dbHelper::phpArrayToPGStrArray($this->getFiles()).", ";                                 
+                        $sql.="samplingdate=" 	.dbHelper::tellervo_pg_escape_string($this->getSamplingDate()).", ";
+                       	$sql.="position="	.dbHelper::tellervo_pg_escape_string($this->getPosition()).", ";
+                        $sql.="state="		.dbHelper::tellervo_pg_escape_string($this->getState()).", ";
+                        $sql.="knots="		.dbHelper::formatBool($this->getKnots(),"pg").", ";
+                        $sql.="boxid="		.dbHelper::tellervo_pg_escape_string($this->getBoxID()).", ";
+                        if(isset($this->parentEntityArray[0])) 	$sql.="elementid='"	.pg_escape_string($this->parentEntityArray[0]->getID()) 	.", ";
                         
                     $sql = substr($sql, 0, -2);
-                    $sql.= " WHERE sampleid='".pg_escape_string($this->getID())."'";
+                    $sql.= " WHERE sampleid=".dbHelper::tellervo_pg_escape_string($this->getID());
                 }
 
                 // Run SQL command
