@@ -3,21 +3,19 @@ package org.tellervo.desktop.tridasv2.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.AbstractAction;
-import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
-import org.tellervo.desktop.ui.Builder;
-
 import net.miginfocom.swing.MigLayout;
+
+import org.tellervo.desktop.ui.Builder;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
 import com.l2fprod.common.swing.ComponentFactory;
@@ -78,29 +76,33 @@ public class MemoEditor extends AbstractPropertyEditor {
         KeyStroke down = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false);
         KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false);
         textField.getInputMap(JComponent.WHEN_FOCUSED).put(up, "Up pressed");
-        textField.getInputMap(JComponent.WHEN_FOCUSED).put(tab, "tab pressed");
+        textField.getInputMap(JComponent.WHEN_FOCUSED).put(tab, "Tab pressed");
         textField.getInputMap(JComponent.WHEN_FOCUSED).put(down, "Down pressed");
         textField.getInputMap(JComponent.WHEN_FOCUSED).put(enter, "Enter pressed");
 
         textField.getActionMap().put("Up pressed", new AbstractAction() {
-            @Override
+			private static final long serialVersionUID = 1L;
+			@Override
             public void actionPerformed(ActionEvent ae) {
-
+            	commit();
             }
         });
         textField.getActionMap().put("Tab pressed", new AbstractAction() {
-            @Override
+        	private static final long serialVersionUID = 1L;
+        	@Override
             public void actionPerformed(ActionEvent ae) {
         		commit();
             }
         });
         textField.getActionMap().put("Down pressed", new AbstractAction() {
+        	private static final long serialVersionUID = 1L;
             @Override
             public void actionPerformed(ActionEvent ae) {
         		commit();
             }
         });
         textField.getActionMap().put("Enter pressed", new AbstractAction() {
+        	private static final long serialVersionUID = 1L;
             @Override
             public void actionPerformed(ActionEvent ae) {
         		commit();

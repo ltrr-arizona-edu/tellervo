@@ -127,6 +127,15 @@ public class WSIServerDetails {
 			String path = App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid-url!");
 			
 			url = new URI(path.trim());
+			
+			// Check we're accessing HTTP or HTTPS connection
+			if(url.getScheme()==null || ((!url.getScheme().equals("http")) && !url.getScheme().equals("https")))
+			{
+				errMessage="The webservice URL is invalid.  It should begin http or https";
+				log.debug(errMessage);
+				status = WSIServerStatus.STATUS_ERROR;
+				return false;
+			}
 	    	
 			// load cookies
 			client.setCookieStore(WSCookieStoreHandler.getCookieStore().toCookieStore());

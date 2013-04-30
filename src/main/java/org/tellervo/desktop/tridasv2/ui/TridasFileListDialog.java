@@ -56,6 +56,9 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.TridasFile;
+import javax.swing.JEditorPane;
+import javax.swing.JTextPane;
+import javax.swing.JTextArea;
 
 public class TridasFileListDialog extends JDialog implements ActionListener{
 
@@ -91,183 +94,185 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 		
 		radioButtons = new ButtonGroup();
 		setModalityType(ModalityType.APPLICATION_MODAL);
-		setBounds(100, 100, 619, 331);
+		setBounds(100, 100, 491, 368);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new MigLayout("", "[285.00px,grow,left][][]", "[grow]"));
+		contentPanel.setLayout(new MigLayout("", "[285.00px,grow,left]", "[200px,grow][][39.00]"));
 		{
+			JPanel panel = new JPanel();
+			panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+			contentPanel.add(panel, "cell 0 0,grow");
+			panel.setLayout(new MigLayout("", "[285.00px,grow,left]", "[200px,grow]"));
 			JSplitPane splitPane = new JSplitPane();
-			contentPanel.add(splitPane, "cell 0 0 3 1,grow");
+			panel.add(splitPane, "cell 0 0,grow");
+			splitPane.setOneTouchExpandable(true);
+			JPanel panel_2 = new JPanel();
+			splitPane.setLeftComponent(panel_2);
+			panel_2.setLayout(new MigLayout("", "[][grow]", "[][][grow,fill][]"));
+			JPanel panel_1 = new JPanel();
+			panel_2.add(panel_1, "cell 1 0");
+			FlowLayout fl_panel_1 = (FlowLayout) panel_1.getLayout();
+			fl_panel_1.setAlignment(FlowLayout.LEFT);
 			{
-				JPanel panel = new JPanel();
-				splitPane.setLeftComponent(panel);
-				panel.setLayout(new MigLayout("", "[][grow]", "[][][grow,fill][]"));
-				JPanel panel_1 = new JPanel();
-				panel.add(panel_1, "cell 1 0");
-				FlowLayout fl_panel_1 = (FlowLayout) panel_1.getLayout();
-				fl_panel_1.setAlignment(FlowLayout.LEFT);
-				{
-					radFile = new JRadioButton("File from file system");
-					radFile.setFont(new Font("Dialog", Font.PLAIN, 12));
-					radFile.setSelected(true);
-					radFile.setActionCommand("RadioFile");
-					radFile.addActionListener(this);
-					panel_1.add(radFile);
-				}
-				{
-					radWebpage = new JRadioButton("Webpage");
-					radWebpage.setActionCommand("RadioWebpage");
-					radWebpage.addActionListener(this);
-					radWebpage.setFont(new Font("Dialog", Font.PLAIN, 12));
-					panel_1.add(radWebpage);
-				}
-				{
-					radURN = new JRadioButton("URN");
-					radURN.setActionCommand("RadioURN");
-					radURN.addActionListener(this);
-					radURN.setFont(new Font("Dialog", Font.PLAIN, 12));
-					panel_1.add(radURN);
-				}
-				radioButtons.add(radFile);
-				radioButtons.add(radWebpage);
-				radioButtons.add(radURN);
-				{
-					JLabel lblAddANew = new JLabel("Add:");
-					panel.add(lblAddANew, "cell 0 1");
-					lblAddANew.setFont(new Font("Dialog", Font.PLAIN, 12));
-				}
-				{
-					txtNewFile = new JTextField("");
-					panel.add(txtNewFile, "flowx,cell 1 1,growx");
-					txtNewFile.setColumns(10);
-					txtNewFile.setActionCommand("AddToList");
-					txtNewFile.addActionListener(this);
-					JScrollPane scrollPane = new JScrollPane();
-					panel.add(scrollPane, "cell 0 2 2 1,growx");
-					tblFileList = new JTable();
-					tblFileList.setModel(new URIListTableModel());
-					tblFileList.setRowSelectionAllowed(true);
-					tblFileList.setColumnSelectionAllowed(false);
-					tblFileList.setShowVerticalLines(false);
-					tblFileList.setShowHorizontalLines(false);
-					tblFileList.setBackground(Color.WHITE);
-					tblFileList.setOpaque(true);
-					tblFileList.getColumnModel().getColumn(0).setCellRenderer(new TableCellIconRenderer());
-					tblFileList.setTableHeader(null);
-					tblFileList.getColumnModel().getColumn(0).setMinWidth(18);
-					tblFileList.getColumnModel().getColumn(0).setMaxWidth(18);
-					tblFileList.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+				radFile = new JRadioButton("File from file system");
+				radFile.setFont(new Font("Dialog", Font.PLAIN, 12));
+				radFile.setSelected(true);
+				radFile.setActionCommand("RadioFile");
+				radFile.addActionListener(this);
+				panel_1.add(radFile);
+			}
+			{
+				radWebpage = new JRadioButton("Webpage");
+				radWebpage.setActionCommand("RadioWebpage");
+				radWebpage.addActionListener(this);
+				radWebpage.setFont(new Font("Dialog", Font.PLAIN, 12));
+				panel_1.add(radWebpage);
+			}
+			{
+				radURN = new JRadioButton("URN");
+				radURN.setActionCommand("RadioURN");
+				radURN.addActionListener(this);
+				radURN.setFont(new Font("Dialog", Font.PLAIN, 12));
+				panel_1.add(radURN);
+			}
+			radioButtons.add(radFile);
+			radioButtons.add(radWebpage);
+			radioButtons.add(radURN);
+			{
+				JLabel lblAddANew = new JLabel("Add:");
+				panel_2.add(lblAddANew, "cell 0 1");
+				lblAddANew.setFont(new Font("Dialog", Font.PLAIN, 12));
+			}
+			txtNewFile = new JTextField("");
+			panel_2.add(txtNewFile, "flowx,cell 1 1,growx");
+			txtNewFile.setColumns(10);
+			txtNewFile.setActionCommand("AddToList");
+			txtNewFile.addActionListener(this);
+			JScrollPane scrollPane = new JScrollPane();
+			panel_2.add(scrollPane, "cell 0 2 2 1,growx");
+			tblFileList = new JTable();
+			tblFileList.setModel(new URIListTableModel());
+			tblFileList.setRowSelectionAllowed(true);
+			tblFileList.setColumnSelectionAllowed(false);
+			tblFileList.setShowVerticalLines(false);
+			tblFileList.setShowHorizontalLines(false);
+			tblFileList.setBackground(Color.WHITE);
+			tblFileList.setOpaque(true);
+			tblFileList.getColumnModel().getColumn(0).setCellRenderer(new TableCellIconRenderer());
+			tblFileList.setTableHeader(null);
+			tblFileList.getColumnModel().getColumn(0).setMinWidth(18);
+			tblFileList.getColumnModel().getColumn(0).setMaxWidth(18);
+			tblFileList.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+			
+			tblFileList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+
+				@Override
+				public void valueChanged(ListSelectionEvent arg0) {
+					if(tblFileList.getSelectedRows().length>0)
+					{
+						btnOpen.setEnabled(true);
+						btnRemove.setEnabled(true);
+					}
+					else
+					{
+						btnOpen.setEnabled(false);
+						btnRemove.setEnabled(false);
+					}
+
 					
-					tblFileList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+				}
+			});
+			
+			tblFileList.addMouseListener(new MouseListener(){
 
-						@Override
-						public void valueChanged(ListSelectionEvent arg0) {
-							if(tblFileList.getSelectedRows().length>0)
-							{
-								btnOpen.setEnabled(true);
-								btnRemove.setEnabled(true);
-							}
-							else
-							{
-								btnOpen.setEnabled(false);
-								btnRemove.setEnabled(false);
-							}
-
-							
-						}
-					});
+				@Override
+				public void mouseClicked(MouseEvent ev) {
+					int row = tblFileList.rowAtPoint(ev.getPoint());
+					URI uri = ((URIListTableModel)tblFileList.getModel()).getURI(row);
 					
-					tblFileList.addMouseListener(new MouseListener(){
+					if(ev.getClickCount()>1)
+					{
+						TridasFileListDialog.openURI(uri);
+					}
+					else
+					{
+						previewURI();
+					}
+				}
 
-						@Override
-						public void mouseClicked(MouseEvent ev) {
-							int row = tblFileList.rowAtPoint(ev.getPoint());
-							URI uri = ((URIListTableModel)tblFileList.getModel()).getURI(row);
-							
-							if(ev.getClickCount()>1)
-							{
-								TridasFileListDialog.openURI(uri);
-							}
-							else
-							{
-								previewURI();
-							}
-						}
+				@Override
+				public void mouseEntered(MouseEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
 
-						@Override
-						public void mouseEntered(MouseEvent arg0) {
-							// TODO Auto-generated method stub
-							
-						}
+				@Override
+				public void mouseExited(MouseEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
 
-						@Override
-						public void mouseExited(MouseEvent arg0) {
-							// TODO Auto-generated method stub
-							
-						}
+				@Override
+				public void mousePressed(MouseEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
 
-						@Override
-						public void mousePressed(MouseEvent arg0) {
-							// TODO Auto-generated method stub
-							
-						}
-
-						@Override
-						public void mouseReleased(MouseEvent arg0) {
-							// TODO Auto-generated method stub
-							
-						}
-						
-					});
-							
-							scrollPane.setViewportView(tblFileList);
-							scrollPane.getViewport().setBackground(Color.WHITE);
-							scrollPane.getViewport().setOpaque(true);
-							tblFileList.setFont(new Font("Dialog", Font.PLAIN, 12));
-							tblFileList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-							
-							{
-								btnBrowse = new JButton();
-								panel.add(btnBrowse, "cell 1 1");
-								btnBrowse.setActionCommand("Browse");
-								btnBrowse.addActionListener(this);
-								btnBrowse.setIcon(Builder.getIcon("open.png", 16));
-							}
-							JButton btnAdd = new JButton();
-							panel.add(btnAdd, "cell 1 1");
-							btnAdd.setIcon(Builder.getIcon("edit_add.png", 16));
-							btnAdd.setActionCommand("AddToList");
-							btnRemove = new JButton();
-							panel.add(btnRemove, "flowx,cell 1 3,alignx right");
-							btnRemove.setIcon(Builder.getIcon("cancel.png", 16));
-							btnRemove.setActionCommand("DeleteFromList");
-							btnRemove.setEnabled(false);
-							{
-								btnOpen = new JButton();
-								panel.add(btnOpen, "cell 1 3,alignx right");
-								btnOpen.setIcon(Builder.getIcon("document_preview.png", 16));
-								btnOpen.setToolTipText("View document");
-								btnOpen.setActionCommand("Open");
-								btnOpen.addActionListener(this);
-								btnOpen.setEnabled(false);
-							}
-							btnRemove.addActionListener(this);
-							btnAdd.addActionListener(this);
-							{
-								JPanel previewPanelHolder = new JPanel();
-								splitPane.setRightComponent(previewPanelHolder);
-								splitPane.setResizeWeight(1.0);
-								previewPanelHolder.setLayout(new MigLayout("", "[grow,fill]", "[grow,fill]"));
-								{
-									previewPanelHolder.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.RAISED, null, null), "Image preview", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-								}
-								previewPanelHolder.setMinimumSize(new Dimension(128,128));
-																
+				@Override
+				public void mouseReleased(MouseEvent arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			});
+			
+			scrollPane.setViewportView(tblFileList);
+			scrollPane.getViewport().setBackground(Color.WHITE);
+			scrollPane.getViewport().setOpaque(true);
+			tblFileList.setFont(new Font("Dialog", Font.PLAIN, 12));
+			tblFileList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+			
+			{
+				btnBrowse = new JButton();
+				panel_2.add(btnBrowse, "cell 1 1");
+				btnBrowse.setActionCommand("Browse");
+				btnBrowse.addActionListener(this);
+				btnBrowse.setIcon(Builder.getIcon("open.png", 16));
+			}
+			JButton btnAdd = new JButton();
+			panel_2.add(btnAdd, "cell 1 1");
+			btnAdd.setIcon(Builder.getIcon("edit_add.png", 16));
+			btnAdd.setActionCommand("AddToList");
+			btnRemove = new JButton();
+			panel_2.add(btnRemove, "flowx,cell 1 3,alignx right");
+			btnRemove.setIcon(Builder.getIcon("cancel.png", 16));
+			btnRemove.setActionCommand("DeleteFromList");
+			btnRemove.setEnabled(false);
+			{
+				btnOpen = new JButton();
+				panel_2.add(btnOpen, "cell 1 3,alignx right");
+				btnOpen.setIcon(Builder.getIcon("document_preview.png", 16));
+				btnOpen.setToolTipText("View document");
+				btnOpen.setActionCommand("Open");
+				btnOpen.addActionListener(this);
+				btnOpen.setEnabled(false);
+			}
+			btnRemove.addActionListener(this);
+			btnAdd.addActionListener(this);
+			JPanel previewPanelHolder = new JPanel();
+			splitPane.setRightComponent(previewPanelHolder);
+			splitPane.setResizeWeight(1.0);
+			{
+				previewPanelHolder.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.RAISED, null, null), "Image preview", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+			}
+			previewPanelHolder.setMinimumSize(new Dimension(128,128));
+			previewPanelHolder.setLayout(new BorderLayout(0, 0));
+			
 								previewPanel = new ImagePreviewPanel();
-								previewPanel.setLayout(new MigLayout("", "[grow]", "[grow,fill]"));
+								previewPanel.setLayout(new MigLayout("", "[200px,grow]", "[grow,fill]"));
 								
-								previewPanelHolder.add(previewPanel, "cell 0 0,grow");
+								previewPanelHolder.add(previewPanel);
 								
 								previewPanelHolder.addComponentListener(new ComponentListener(){
 
@@ -300,39 +305,70 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 									}
 									
 								});
+		}
+		{
+			{
+				{
+							{
+								{
+									JPanel warningPanel = new JPanel();
+									contentPanel.add(warningPanel, "cell 0 1,grow");
+									warningPanel.setLayout(new MigLayout("", "[][100px,grow,fill]", "[]"));
+									{
+										JLabel lblWarningIcon = new JLabel("");
+										warningPanel.add(lblWarningIcon, "cell 0 0,aligny top");
+										lblWarningIcon.setIcon(Builder.getIcon("warning.png", 22));
+									}
+									{
+										
+										JTextArea txtWarning = new JTextArea();
+										txtWarning.setBackground(null);
+										txtWarning.setOpaque(false);
+										txtWarning.setFont(new Font("Dialog", Font.PLAIN, 9));
+										txtWarning.setEditable(false);
+										txtWarning.setWrapStyleWord(true);
+										txtWarning.setLineWrap(true);
+										txtWarning.setBorder(new EmptyBorder(5, 5, 5, 5));
+										txtWarning.setBackground(new Color(0,0,0,0));
+										txtWarning.setText("Tellervo saves references to files, not the files themselves.  Please ensure files are securely stored,  and not moved, deleted or renamed.  References should also be accessible to other users. References to files stored on your local hard disk will not be accessible to others accessing this database from another computer.");
+
+										warningPanel.add(txtWarning, "cell 1 0,growx,wmin 10,aligny top");
+
+									}
+								}
+								{
+									JPanel buttonPanel = new JPanel();
+									FlowLayout fl_buttonPanel = (FlowLayout) buttonPanel.getLayout();
+									fl_buttonPanel.setAlignment(FlowLayout.RIGHT);
+									contentPanel.add(buttonPanel, "cell 0 2,grow");
+									JButton okButton = new JButton("OK");
+									buttonPanel.add(okButton);
+									okButton.setActionCommand("OK");
+									okButton.addActionListener(this);
+									getRootPane().setDefaultButton(okButton);
+									{
+										JButton cancelButton = new JButton("Cancel");
+										buttonPanel.add(cancelButton);
+										cancelButton.setActionCommand("Cancel");
+										cancelButton.addActionListener(this);
+									}
+								}
 								
 
 							}
 				}
 			}
 		}
-		{
-			JPanel buttonPane = new JPanel();
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				okButton.setActionCommand("OK");
-				okButton.addActionListener(this);
-				buttonPane.setLayout(new MigLayout("", "[149px][grow][54px][81px]", "[25px]"));
-				buttonPane.add(okButton, "cell 2 0,alignx left,aligny top");
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton, "cell 3 0,alignx left,aligny top");
-				cancelButton.addActionListener(this);
-			}
-		}
 		
 		setFileList(fileList);		
+		this.pack();
 		this.setTitle("File references");
 		this.setIconImage(Builder.getApplicationIcon());
 		this.setBounds(parent.getLocationOnScreen().x, 
 				parent.getLocationOnScreen().y, 
-				500, 
-				200);
-		this.pack();
+				580, 
+				440);
+		
 	}
 	
 	private void previewURI()
@@ -409,17 +445,36 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 	
 	private void addToList()
 	{
+		addToList(null);
+	}
+	
+	private void addToList(URI uri)
+	{
 		log.debug("Adding reference to list");
 		try{
-		URI uri = URI.create(txtNewFile.getText());
 		
-		log.debug("URI created");
-		log.debug("Host: "+ uri.getHost());
-		log.debug("Path: "+uri.getPath());
+			if(uri==null)
+			{
+				uri = URI.create(txtNewFile.getText());
+			}
 		
-		((URIListTableModel) tblFileList.getModel()).addURI(uri);
+			log.debug("URI created");
+			log.debug("Host: "+ uri.getHost());
+			log.debug("Path: "+uri.getPath());
+			
+			// If URI is in list already just silently return
+			for(int i=0; i<tblFileList.getModel().getRowCount(); i++)
+			{
+				URI u = ((URIListTableModel) tblFileList.getModel()).getURI(i);
+				if(u.toString().equals(uri.toString()))
+				{
+					return;
+				}
+			}
+			
+			((URIListTableModel) tblFileList.getModel()).addURI(uri);
+			
 		
-	
 		
 		} catch (IllegalArgumentException e)
 		{
@@ -525,7 +580,8 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 		        
 		        for(File file : files)
 		        {
-		        	((URIListTableModel)tblFileList.getModel()).addURI(file.toURI());
+		        	addToList(file.toURI());
+		        	//((URIListTableModel)tblFileList.getModel()).addURI(file.toURI());
 		        }
 		       
 		        
@@ -560,7 +616,6 @@ public class TridasFileListDialog extends JDialog implements ActionListener{
 		    return label;
 		  }
 		}
-	
 }
 
 	
