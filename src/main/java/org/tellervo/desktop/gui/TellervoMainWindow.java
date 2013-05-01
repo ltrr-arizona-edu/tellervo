@@ -22,6 +22,7 @@ package org.tellervo.desktop.gui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.datatransfer.DataFlavor;
@@ -43,6 +44,7 @@ import java.net.URL;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -175,13 +177,22 @@ public class TellervoMainWindow extends JFrame {
 		panel.setMinimumSize(d);
 		panel.setMaximumSize(d);
 		panel.setSize(d);
+		panel.setLayout(null);
+		//addQuickLinkButtons(panel, d);
 		
-		addQuickLinkButtons(panel, d);
+		QuickLaunchButtonPanel testPanel = new QuickLaunchButtonPanel();
+		
+		testPanel.setBorder(BorderFactory.createBevelBorder(1));
+		
+		panel.add(testPanel);
+		testPanel.setBounds(10, 10, 470, 300);
+		
 		
 		String version = "version "+Build.getVersion();
 		JLabel lblVersion = new JLabel(version);
+		lblVersion.setFont(new Font(Font.DIALOG, Font.PLAIN, 8));
 		lblVersion.setForeground(Color.white);
-		lblVersion.setBounds(195,83, 90,110);
+		lblVersion.setBounds(10,340, 90,110);
 		panel.add(lblVersion);
 		
 		
@@ -250,7 +261,6 @@ public class TellervoMainWindow extends JFrame {
 	// simple convenience method
 	private void qlbutton(JButton button) {
 		button.setFocusable(false);
-		button.setContentAreaFilled(false);
 		button.setRolloverEnabled(true);
 		button.setBorderPainted(false);
 		button.setContentAreaFilled(false);

@@ -140,6 +140,8 @@ public class MemoEditor extends AbstractPropertyEditor {
 			public void mouseReleased(MouseEvent arg0) { }
 			
 		});
+		
+		textField.requestFocusInWindow();
 
 	}
 	
