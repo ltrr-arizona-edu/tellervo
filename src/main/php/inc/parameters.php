@@ -1202,7 +1202,7 @@ class measurementParameters extends measurementEntity implements IParams
 			   				$this->dating->setDatingType(null, $interpTag->getAttribute("type"));
 			   				break;
 		   					
-			   			case "firstYear": 
+			   			case "tridas:firstYear": 
 			   				// Special case.  If the series is 'direct' then user may be redating in place
 			   				// Kludgey and gross.
 			   				if($this->getVMeasurementOp()=="Direct")

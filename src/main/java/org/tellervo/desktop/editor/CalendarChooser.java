@@ -75,7 +75,7 @@ public class CalendarChooser extends JLabel implements SampleListener {
     	
     	sample.addSampleListener(this);
 
-    	final JLabel label = this; // ...
+    	JLabel label = this; // ...
 
     	/*addMouseListener(new MouseAdapter() {
     		@Override
@@ -160,23 +160,18 @@ public class CalendarChooser extends JLabel implements SampleListener {
     //
 
     public void sampleDataChanged(SampleEvent e) {
-    	// compute all?
+    	init();
 
     }
     
     
     public void sampleRedated(SampleEvent e) {
-    	// doesn't change any stats
+    	init();
     }
     
     
     public void sampleMetadataChanged(SampleEvent e) {
-		sampleDataChanged(e); // because if "indexed" is set, some
-				      // stats become N/A -- inefficient,
-				      // true, but simple
-		// (Q: how much other work am i doing?  setting indexed->raw
-		// seems simple enough, but if i do too many "simple" things
-		// it could turn into a problem.)		
+		sampleDataChanged(e); 	
 	
     }
     

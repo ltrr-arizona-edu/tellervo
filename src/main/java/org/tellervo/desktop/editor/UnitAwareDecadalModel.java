@@ -39,7 +39,7 @@ public class UnitAwareDecadalModel extends DecadalModel {
 	private static final long serialVersionUID = 1L;
 	private NormalTridasUnit displayUnits = NormalTridasUnit.MICROMETRES;
 	private DatingSuffix datingSuffix = DatingSuffix.AD;
-	private final ITridasSeries series;
+	private ITridasSeries series;
 	
 	public UnitAwareDecadalModel() {
 		setDisplayUnits(null);
@@ -120,7 +120,7 @@ public class UnitAwareDecadalModel extends DecadalModel {
 			NormalTridasDatingType datingtype = null;
 
 			try{
-				datingtype = series.getInterpretation().getDating().getType();
+				datingtype = s.getSeries().getInterpretation().getDating().getType();
 			} catch (Exception e)
 			{
 				

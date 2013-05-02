@@ -173,6 +173,12 @@ public class WSIServerDetails {
 				    	  status = WSIServerStatus.VALID;
 				    	  return true;
 				      }
+				      else if (s.startsWith("<b>Parse error</b>:"))
+				      {
+				    	  status = WSIServerStatus.STATUS_ERROR;
+				    	  errMessage=s.replace("<b>", "").replace("</b>", "").replace("<br />", "");											    	  
+				    	  return false;
+				      }
 				}
 			}
 			else if (response.getStatusLine().getStatusCode() == 403)

@@ -70,6 +70,11 @@ import org.tridas.schema.NormalTridasDatingType;
 import org.tridas.schema.TridasDating;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasInterpretation;
+import net.miginfocom.swing.MigLayout;
+import java.awt.FlowLayout;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import java.awt.Font;
 
 
 /**
@@ -98,23 +103,23 @@ public class RedateDialog extends JDialog {
 
 		private void update() {
 			// disable StartListener
-			startField.getDocument().removeDocumentListener(startListener);
+			txtStartYear.getDocument().removeDocumentListener(startListener);
 
 			// get text
-			String value = endField.getText();
+			String value = txtEndYear.getText();
 
 			// if it's the same, do nothing -- (not worth the code)
 
 			// set the range
 			try {
 				range = range.redateEndTo(new Year(value));
-				startField.setText(range.getStart().toString());
+				txtStartYear.setText(range.getStart().toString());
 			} catch (NumberFormatException nfe) {
-				startField.setText(I18n.getText("error"));
+				txtStartYear.setText(I18n.getText("error"));
 			}
 
 			// re-enable startListener
-			startField.getDocument().addDocumentListener(startListener);
+			txtStartYear.getDocument().addDocumentListener(startListener);
 		}
 	}
 
@@ -134,23 +139,23 @@ public class RedateDialog extends JDialog {
 
 		private void update() {
 			// disable EndListener
-			endField.getDocument().removeDocumentListener(endListener);
+			txtEndYear.getDocument().removeDocumentListener(endListener);
 
 			// get text
-			String value = startField.getText();
+			String value = txtStartYear.getText();
 
 			// if it's the same, do nothing -- (not worth the code)
 
 			// set the range
 			try {
 				range = range.redateStartTo(new Year(value));
-				endField.setText(range.getEnd().toString());
+				txtEndYear.setText(range.getEnd().toString());
 			} catch (NumberFormatException nfe) {
-				endField.setText(I18n.getText("error"));
+				txtEndYear.setText(I18n.getText("error"));
 			}
 
 			// re-enable endListener
-			endField.getDocument().addDocumentListener(endListener);
+			txtEndYear.getDocument().addDocumentListener(endListener);
 		}
 	}
 
@@ -169,7 +174,7 @@ public class RedateDialog extends JDialog {
 	private NormalTridasDatingType datingType;
 
 	/** The name, version, and justificaiton panel */
-	private NameVersionJustificationPanel info;
+	private NameVersionJustificationPanel infoPanel;
 
 	/** Text field document listeners to auto-update each other */
 	private DocumentListener startListener, endListener;
@@ -178,7 +183,8 @@ public class RedateDialog extends JDialog {
 	protected JComboBox cboDatingType;
 	
 	/** The text boxes that hold our start/end year */
-	protected JTextField startField, endField;
+	protected JTextField txtStartYear, txtEndYear;
+	private JComboBox combo;
 
 	/**
 	 * @param sample
@@ -215,7 +221,7 @@ public class RedateDialog extends JDialog {
 
 		// all done
 		pack();
-		endField.requestFocusInWindow();
+		txtEndYear.requestFocusInWindow();
 		
 		Center.center(this, owner);
 	}
@@ -277,7 +283,7 @@ public class RedateDialog extends JDialog {
 			//return performCorinaWsiRedate(newDating);
 			
 			return Redate.performTellervoWsiRedate(sample, 
-					info.getName(), info.getVersion(), info.getJustification(), 
+					infoPanel.getName(), infoPanel.getVersion(), infoPanel.getJustification(), 
 					datingType, originalDatingType, range);
 		}
 		
@@ -297,7 +303,7 @@ public class RedateDialog extends JDialog {
 	}
 	
 	private JComboBox getDatingTypeComboBox() {
-		final JComboBox combo = new ComboBoxFilterable(NormalTridasDatingType.values());
+		combo = new ComboBoxFilterable(NormalTridasDatingType.values());
 		
 		combo.setRenderer(new EnumComboBoxItemRenderer());
 		combo.setSelectedItem(datingType);
@@ -305,6 +311,7 @@ public class RedateDialog extends JDialog {
 		combo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				datingType = (NormalTridasDatingType) combo.getSelectedItem();
+				
 			}
 		});
 		
@@ -322,62 +329,68 @@ public class RedateDialog extends JDialog {
 		range = startRange;
 
 		// dialog is a boxlayout
-		JPanel p = new JPanel();
-		p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
-		p.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
-		setContentPane(p);
+		JPanel mainPanel = new JPanel();
+		mainPanel.setBorder(BorderFactory.createEmptyBorder(14, 20, 20, 20));
+		setContentPane(mainPanel);
+		mainPanel.setLayout(new MigLayout("", "[468px,grow]", "[][grow,fill][]"));
 
-		p.add(getTopPanel());
+		mainPanel.add(getTopPanel(), "cell 0 0,alignx left,aligny center");
 		
-		p.add(Box.createVerticalStrut(8));
-		p.add(new JSeparator(JSeparator.HORIZONTAL));
-		p.add(Box.createVerticalStrut(8));
-
-		// name, version, justificaiton panel
-		info = new NameVersionJustificationPanel(sample, false, true);
-		p.add(info);
-
-		p.add(Box.createVerticalStrut(8));
-		p.add(new JSeparator(JSeparator.HORIZONTAL));
-		p.add(Box.createVerticalStrut(8));
-		
-		// cancel, ok
-		JButton cancel = Builder.makeButton("general.cancel");
-		final JButton ok = Builder.makeButton("general.ok");
-
-		// (listen for cancel, ok)
-		ActionListener buttonListener = new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				boolean isOk = e.getSource() == ok;
-				boolean rangeChanged = !sample.getRange().equals(range);
-
-				if (isOk && (rangeChanged || datingType != originalDatingType)) {
-					if(!performRedate())
-						return;
-				}
+				// name, version, justificaiton panel
+				infoPanel = new NameVersionJustificationPanel(sample, false, true);
+				mainPanel.add(infoPanel, "cell 0 1,grow");
 				
-				sample.fireDisplayCalendarChanged();
-				dispose();
-			}
-		};
-		cancel.addActionListener(buttonListener);
-		ok.addActionListener(buttonListener);
+				JPanel panel = new JPanel();
+				FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+				flowLayout.setAlignment(FlowLayout.RIGHT);
+				mainPanel.add(panel, "cell 0 2,grow");
+				
+				JButton btnOk = new JButton("OK");
+				btnOk.setFont(new Font("Dialog", Font.PLAIN, 12));
+				btnOk.addActionListener(new ActionListener(){
 
-		// in panel
-		p.add(Box.createVerticalStrut(14));
-		p.add(Layout.buttonLayout(cancel, ok));
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+
+						boolean isOk = true;
+						boolean rangeChanged = !sample.getRange().equals(range);
+
+						if (isOk && (rangeChanged || datingType != originalDatingType)) {
+							if(!performRedate())
+								return;
+						}
+						sample.fireDisplayCalendarChanged();
+						dispose();
+					}
+				});
+				panel.add(btnOk);
+				
+				JButton btnCancel = new JButton("Cancel");
+				btnCancel.setFont(new Font("Dialog", Font.PLAIN, 12));
+				
+				btnCancel.addActionListener(new ActionListener(){
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+						dispose();
+					}
+					
+				});
+				panel.add(btnCancel);
 
 		// esc => cancel, return => ok
-		OKCancel.addKeyboardDefaults(ok);
+		OKCancel.addKeyboardDefaults(btnOk);
 	}
 
 	private JPanel getTopPanel() {
-		JPanel p = new JPanel();
+		JPanel variablePanel = new JPanel();
 		
 		JLabel lblNewRange = new JLabel();
-		startField = new JTextField(6);
+		txtStartYear = new JTextField(6);
 		JLabel lblTo = new JLabel();
-		endField = new JTextField(6);
+		txtEndYear = new JTextField(6);
 		JLabel lblDating = new JLabel();
 		cboDatingType = getDatingTypeComboBox();
 
@@ -386,50 +399,22 @@ public class RedateDialog extends JDialog {
 		lblTo.setText(I18n.getText("general.to"));
 
 		startListener = new StartListener();
-		startField.setText(range.getStart().toString());
-		startField.getDocument().addDocumentListener(startListener);
+		txtStartYear.setText(range.getStart().toString());
+		txtStartYear.getDocument().addDocumentListener(startListener);
 
 		endListener = new EndListener();
-		endField.setText(range.getEnd().toString());
-		endField.getDocument().addDocumentListener(endListener);
+		txtEndYear.setText(range.getEnd().toString());
+		txtEndYear.getDocument().addDocumentListener(endListener);
 
 		lblDating.setText(I18n.getText("general.dating") + ":");
+		variablePanel.setLayout(new MigLayout("", "[83px][70px][10px:10px:10px][78px][10px:10px:10px][159px]", "[19px][24px]"));
+		variablePanel.add(lblNewRange, "cell 0 0,alignx left,aligny center");
+		variablePanel.add(lblDating, "cell 0 1,alignx left,aligny center");
+		variablePanel.add(txtStartYear, "cell 1 0,alignx left,aligny top");
+		variablePanel.add(lblTo, "cell 3 0,alignx left,aligny center");
+		variablePanel.add(txtEndYear, "cell 5 0,alignx left,aligny top");
+		variablePanel.add(combo, "cell 1 1 5 1,growx,aligny top");
 
-		GroupLayout layout = new GroupLayout(p);
-		p.setLayout(layout);
-		layout.setHorizontalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-								.addComponent(lblNewRange)
-								.addComponent(lblDating))
-								.addGap(18, 18, 18)
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-										.addGroup(layout.createSequentialGroup()
-												.addComponent(startField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-												.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-												.addComponent(lblTo)
-												.addPreferredGap(LayoutStyle.ComponentPlacement.UNRELATED)
-												.addComponent(endField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-												.addContainerGap(89, Short.MAX_VALUE))
-												.addComponent(cboDatingType, 0, 191, Short.MAX_VALUE)))
-		);
-		layout.setVerticalGroup(
-				layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-				.addGroup(layout.createSequentialGroup()
-						.addContainerGap()
-						.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-								.addComponent(lblNewRange)
-								.addComponent(startField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
-								.addComponent(lblTo)
-								.addComponent(endField, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-								.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED)
-								.addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-										.addComponent(lblDating)
-										.addComponent(cboDatingType, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
-										.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-		);
-
-		return p;
+		return variablePanel;
 	}
 }

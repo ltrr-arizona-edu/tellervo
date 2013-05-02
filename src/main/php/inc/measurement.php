@@ -368,9 +368,9 @@ class measurement extends measurementEntity implements IDBAccessor
 		global $firebug;
 		
 		// Alters the parameter values based upon values supplied by the user and passed as a parameters class
-		if ($paramsClass->getTitle()!=NULL)					$this->setTitle($paramsClass->getTitle());	
-		if ($paramsClass->getComments()!=NULL)				$this->setComments($paramsClass->getComments());
-		if ($paramsClass->getMeasuringDate()!=NULL)			$this->setMeasuringDate($paramsClass->getMeasuringDate());
+		$this->setTitle($paramsClass->getTitle());	
+		$this->setComments($paramsClass->getComments());
+		$this->setMeasuringDate($paramsClass->getMeasuringDate());
 			// Set Owner and Measurer IDs if specified otherwise use current user details
 		if ($paramsClass->getAuthor()!=NULL)
 		{
@@ -396,8 +396,8 @@ class measurement extends measurementEntity implements IDBAccessor
 		{
 			$this->setDendrochronologist($auth->getID());
 		}		
-		if ($paramsClass->getMeasuringMethod()!=NULL)		$this->setMeasuringMethod($paramsClass->getMeasuringMethod(TRUE), NULL);		
-		if ($paramsClass->getDerivationDate()!=NULL)		$this->setDerivationDate($paramsClass->getDerivationDate());
+		$this->setMeasuringMethod($paramsClass->getMeasuringMethod(TRUE), NULL);		
+		$this->setDerivationDate($paramsClass->getDerivationDate());
 		if (isset($paramsClass->vmeasurementOp))
 		{
 			$this->setVMeasurementOp($paramsClass->vmeasurementOp->getID(), $paramsClass->vmeasurementOp->getValue());
@@ -410,7 +410,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		
 		$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
 		// Interpretation fields
-		if($paramsClass->getFirstYear()!=NULL)
+		$paramsClass->getFirstYear()!=NULL)
 		{
 			$this->setFirstYear($paramsClass->getFirstYear());
 		}
@@ -430,7 +430,7 @@ class measurement extends measurementEntity implements IDBAccessor
 			
 			}
 		}
-		if ($paramsClass->getProvenance()!=NULL)			$this->setProvenance($paramsClass->getProvenance());
+		$this->setProvenance($paramsClass->getProvenance());
 		
 		// Value fields
 		if($paramsClass->getUnits()!=NULL)					$this->setUnits(NULL, $paramsClass->getUnits());

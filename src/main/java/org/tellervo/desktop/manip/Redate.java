@@ -50,10 +50,10 @@ public class Redate extends AbstractUndoableEdit {
 	private static final long serialVersionUID = 1L;
 
 	// redate-force-relative (do i ever even use this?)
-	public static Redate redate(Sample s, Range r) {
+	/*public static Redate redate(Sample s, Range r) {
 		return new Redate(s, r, getSampleDating(s));
 		// (shouldn't this be a constant somewhere?)
-	}
+	}*/
 
 	public static Redate redate(Sample s, Range r, TridasDating dating) {
 		return new Redate(s, r, dating);
@@ -71,8 +71,8 @@ public class Redate extends AbstractUndoableEdit {
 	
 	// ----------------------------------------
 
-	private Redate(Sample s, Range range, TridasDating dating) {
-		this.s = s;
+	private Redate(Sample sample, Range range, TridasDating dating) {
+		this.s = sample;
 		this.oldRange = s.getRange();
 		this.oldDating = getSampleDating(s);
 		this.oldMod = s.isModified();
