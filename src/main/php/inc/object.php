@@ -53,6 +53,7 @@ class object extends objectEntity implements IDBAccessor
         $this->setFilesFromStrArray($row['file']);
         $this->setCreator($row['creator']);
         $this->setOwner($row['owner']);
+        $this->setVegetationType($row['vegetationtype']);
         $this->setCoverageTemporal($row['coveragetemporal'], $row['coveragetemporalfoundation']);
         $this->location->setGeometry($row['locationgeometry'], $row['locationtype'], $row['locationprecision']);
         $this->location->setComment($row['locationcomment']);
@@ -182,6 +183,7 @@ class object extends objectEntity implements IDBAccessor
     			$this->setFiles($paramsClass->getFiles());      
         	$this->setCreator($paramsClass->getCreator());
         		$this->setOwner($paramsClass->getOwner());
+        		$this->setVegetationType($paramsClass->getVegetationType());
         $this->setCoverageTemporal($paramsClass->getTemporalCoverage(), $paramsClass->getTemporalCoverageFoundation());
         $this->location->setGeometry($paramsClass->location->getGeometry());
         $this->location->setType($paramsClass->location->getType());
@@ -378,7 +380,7 @@ class object extends objectEntity implements IDBAccessor
             	if($this->hasGeometry())			$xml.="<tridas:genericField name=\"tellervo.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
             	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"tellervo.objectLabCode\" type=\"xs:string\">".$this->getCode()."</tridas:genericField>\n";
             	if($this->getCountOfChildVMeasurements()!=NULL) $xml.="<tridas:genericField name=\"tellervo.countOfChildSeries\" type=\"xs:int\">".$this->getCountOfChildVMeasurements()."</tridas:genericField>\n";
-            	
+            	if($this->getVegetationType()!=NULL) 		$xml.="<tridas:genericField name=\"tellervo.vegetationType\" type=\"xs:string\">".$this->getVegetationType()."</tridas:genericField>\n";	
             
             }  
             
@@ -477,6 +479,7 @@ class object extends objectEntity implements IDBAccessor
                         $sql.= "locationpostalcode, ";
                         $sql.= "locationcountry, ";                            
                         $sql.= "code, ";
+                        $sql.= "vegetationtype, ";
                         if(isset($this->parentEntityArray) && count($this->parentEntityArray)>0) $sql.= "parentobjectid, ";
 			$sql = substr($sql, 0, -2);
                     $sql.=") values (";
@@ -501,6 +504,7 @@ class object extends objectEntity implements IDBAccessor
                         $sql.= dbHelper::tellervo_pg_escape_string($this->location->getPostalCode()).", ";
                         $sql.= dbHelper::tellervo_pg_escape_string($this->location->getCountry()).", ";                        
                         $sql.= dbHelper::tellervo_pg_escape_string($this->getCode()).", ";      
+                        $sql.= dbHelper::tellervo_pg_escape_string($this->getVegetationType()).", ";      
                         if(isset($this->parentEntityArray) && count($this->parentEntityArray)>0) $sql.= "'".pg_escape_string($this->parentEntityArray[0]->getID()).", ";
 			$sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -530,6 +534,7 @@ class object extends objectEntity implements IDBAccessor
                         $sql.= "locationpostalcode=".dbHelper::tellervo_pg_escape_string($this->location->getPostalCode()).", ";
                         $sql.= "locationcountry=".dbHelper::tellervo_pg_escape_string($this->location->getCountry()).", ";
                         $sql.= "code=".dbHelper::tellervo_pg_escape_string($this->getCode()).", ";             
+                        $sql.= "vegetationtype=".dbHelper::tellervo_pg_escape_string($this->getVegetationType()).", ";             
                         if(isset($this->parentEntityArrayi)) $sql.= "parentobject='".pg_escape_string($this->parentEntityArray[0]->getID()).", ";                    
 			$sql = substr($sql, 0, -2);
                     $sql .= " where objectid='".$this->getID()."'";

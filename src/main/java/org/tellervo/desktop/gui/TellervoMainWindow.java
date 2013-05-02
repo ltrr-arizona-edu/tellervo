@@ -192,7 +192,7 @@ public class TellervoMainWindow extends JFrame {
 		JLabel lblVersion = new JLabel(version);
 		lblVersion.setFont(new Font(Font.DIALOG, Font.PLAIN, 8));
 		lblVersion.setForeground(Color.white);
-		lblVersion.setBounds(10,340, 90,110);
+		lblVersion.setBounds(10,343, 90,110);
 		panel.add(lblVersion);
 		
 		

@@ -111,6 +111,7 @@ public class GISPanel extends JPanel implements SelectListener{
 	            ApplicationTemplate.insertBeforePlacenames(this.getWwd(), this.annotationLayer);
 	
 	        	this.getWwd().addSelectListener(this);
+	        	
 	        	            
 	            // Create and install the view controls layer and register a controller for it with the World Window.
 	            ViewControlsLayer viewControlsLayer = new ViewControlsLayer();

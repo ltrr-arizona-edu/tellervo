@@ -26,6 +26,8 @@ import javax.swing.border.LineBorder;
 
 public class QuickLaunchButtonPanel extends JPanel implements ActionListener{
 
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Create the panel.
 	 */
@@ -41,51 +43,26 @@ public class QuickLaunchButtonPanel extends JPanel implements ActionListener{
 		panel.setBorder(new TitledBorder(new LineBorder(new Color(128, 128, 128), 1, true), "Quick link tasks", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(255, 255, 255)));
 		add(panel, "cell 0 0,grow");
 		panel.setLayout(new MigLayout("", "[fill]", "[][][][]"));
-		
-		
-		JButton btnNewButton = new JButton(I18n.getText("workspace.createNewSeries"));
-		btnNewButton.addActionListener(this);
-		btnNewButton.setActionCommand("newSeries");
-		btnNewButton.setFont(new Font("Dialog", Font.BOLD, 13));
-		panel.add(btnNewButton, "cell 0 0,growx");
-		btnNewButton.setForeground(Color.WHITE);
-		btnNewButton.setContentAreaFilled(false);
-		btnNewButton.setHorizontalAlignment(SwingConstants.LEFT);
-		btnNewButton.setIcon(Builder.getIcon("filenew.png", 48));
-		btnNewButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		
-		JButton btnOpenSeries = new JButton(I18n.getText("workspace.openExistingSeries"));
-		btnOpenSeries.setForeground(Color.WHITE);
-		btnOpenSeries.addActionListener(this);
-		btnOpenSeries.setActionCommand("openSeries");
-		btnOpenSeries.setContentAreaFilled(false);
-		btnOpenSeries.setFont(new Font("Dialog", Font.BOLD, 13));
-		panel.add(btnOpenSeries, "cell 0 1,growx");
-		btnOpenSeries.setHorizontalAlignment(SwingConstants.LEFT);
-		btnOpenSeries.setIcon(Builder.getIcon("fileopen.png", 48));
-		btnOpenSeries.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		
-		JButton btnMetadatabase = new JButton("Browse metadatabase");
-		btnMetadatabase.setContentAreaFilled(false);
-		btnMetadatabase.addActionListener(this);
-		btnMetadatabase.setActionCommand("metadatabase");
-		btnMetadatabase.setForeground(Color.WHITE);
-		btnMetadatabase.setFont(new Font("Dialog", Font.BOLD, 13));
-		panel.add(btnMetadatabase, "cell 0 2");
-		btnMetadatabase.setHorizontalAlignment(SwingConstants.LEFT);
-		btnMetadatabase.setIcon(Builder.getIcon("database.png", 48));
-		btnMetadatabase.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		
-		JButton button = new JButton("Browse map");
-		button.setIcon(Builder.getIcon("globe.png", 48));
-		button.setHorizontalAlignment(SwingConstants.LEFT);
+			
+		panel.add(getQuickLinkButton(I18n.getText("workspace.createNewSeries"), "newSeries", "filenew.png"), "cell 0 0,growx");
+		panel.add(getQuickLinkButton(I18n.getText("workspace.openExistingSeries"), "openSeries", "fileopen.png"), "cell 0 1,growx");
+		panel.add(getQuickLinkButton("Browse metadatabase", "metadatabase", "database.png"), "cell 0 2,growx");		
+		panel.add(getQuickLinkButton("Browse map", "map", "globe.png"), "cell 0 3,growx");
+
+	}
+	
+	private JButton getQuickLinkButton(String text, String action, String icon)
+	{
+		JButton button = new JButton(text);
+		button.setContentAreaFilled(false);
+		button.addActionListener(this);
+		button.setActionCommand(action);
 		button.setForeground(Color.WHITE);
 		button.setFont(new Font("Dialog", Font.BOLD, 13));
-		button.setContentAreaFilled(false);
-		button.setActionCommand("map");
-		panel.add(button, "cell 0 3,growx");
+		button.setHorizontalAlignment(SwingConstants.LEFT);
+		button.setIcon(Builder.getIcon(icon, 48));
 		button.setCursor(new Cursor(Cursor.HAND_CURSOR));
-		
+		return button;
 	}
 
 	@Override

@@ -48,6 +48,7 @@ public class VMeasurementResultSet implements ResultSetHandle {
 	 * @param VMeasurementID
 	 */
 	public VMeasurementResultSet(String VMeasurementID) {
+		System.out.println("VMeasurementResultSet() called");
 		this.VMeasurementID = UUID.fromString(VMeasurementID);
 	}
 

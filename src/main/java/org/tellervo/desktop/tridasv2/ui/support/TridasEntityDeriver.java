@@ -36,6 +36,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.tridasv2.ui.TellervoGenericFieldProperty;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasEditProperties;
 import org.tridas.interfaces.NormalTridasVoc;
@@ -63,12 +64,7 @@ public class TridasEntityDeriver {
 		ignoreClasses.add(TridasDerivedSeries.class);
 		ignoreClasses.add(BaseSeries.class);
 	}
-	
-	private static int buildDerivationList(String entityName, Class<?> clazz,
-			TridasEntityProperty parent, String rootName) {
-		return buildDerivationList(entityName, clazz, parent, rootName, false);
-	}
-	
+
 	
 	/**
 	 * Builds a PropertyData derivation list
@@ -81,10 +77,9 @@ public class TridasEntityDeriver {
 	 */
 	private static int buildDerivationList(String entityName, Class<?> clazz,
 			TridasEntityProperty parent, String rootName, Boolean ignoreMachineOnlyFlag) {
-		
+				
 		Map<String, TridasEntityProperty> fieldMap = new HashMap<String, TridasEntityProperty>();
 		int nChildren = 0;
-				
 		
 		// get any property names and stick them at the head of the list
 		XmlType type = clazz.getAnnotation(XmlType.class);
@@ -101,6 +96,7 @@ public class TridasEntityDeriver {
 				pd.setCategoryPrefix(rootName);
 				fieldMap.put(s, pd);
 			}
+			
 			Field[] declaredFields = clazz.getDeclaredFields();
 			for (Field f : clazz.getDeclaredFields()) {
 				String fieldType = f.getGenericType().toString();
@@ -185,7 +181,7 @@ public class TridasEntityDeriver {
 				 * THIS IS A HORRIBLE MULTI-LOCATION KLUDGE FIX
 				 * to show lab codes in objects. 
 				 */
-				if(pd.qname.equals("object.genericFields"))
+				/*if(pd.qname.equals("object.genericFields")) 
 				{
 					// Special case for object lab code
 					pd.setReadOnly(false);
@@ -197,7 +193,7 @@ public class TridasEntityDeriver {
 				}		
 
 				else
-				{
+				{*/
 					// is it machine only? skip it! But only as long as we're not ignoring the machine-only flag
 					if((classprops != null && classprops.machineOnly()) || (fieldprops != null && fieldprops.machineOnly()))
 						continue;
@@ -210,7 +206,7 @@ public class TridasEntityDeriver {
 					parent.addChildProperty(pd);
 					nChildren++;
 
-				}
+				//}
 
 
 				
@@ -223,7 +219,8 @@ public class TridasEntityDeriver {
 				// only delve deeper if it's an XML-annotated class
 				if (entType.isEnum() || 
 						entType.getAnnotation(XmlType.class) == null ||
-						pd.qname.equals("object.genericFields") || 
+						pd.qname.equals("object.genericFields") ||
+						pd.qname.equals("sample.genericFields") || 
 						pd.qname.equals("object.files")|| 
 						pd.qname.equals("element.files") ||
 						pd.qname.equals("sample.files")) {
@@ -242,6 +239,35 @@ public class TridasEntityDeriver {
 					parent.replaceChildProperty(pd, new TridasNormalProperty(pd));
 				}
 			}
+		}
+		
+		// Adding in TellervoSpecificGenericFields
+		
+		if(clazz.equals(TridasSample.class))
+		{
+			// External sample id
+			TellervoGenericFieldProperty pd =  TellervoGenericFieldProperty.getSampleExternalIDProperty();
+			pd.setCategoryPrefix(rootName);
+			fieldMap.put(pd.getName(), pd);
+			parent.addChildProperty(pd);
+			nChildren++;			
+		}
+		
+		if(clazz.equals(TridasObject.class))
+		{
+			// Object lab code
+			TellervoGenericFieldProperty pd =  TellervoGenericFieldProperty.getObjectCodeProperty();
+			pd.setCategoryPrefix(rootName);
+			fieldMap.put(pd.getName(), pd);
+			parent.addChildProperty(pd);
+			nChildren++;	
+			
+			// Vegetation type
+			TellervoGenericFieldProperty pd2 =  TellervoGenericFieldProperty.getVegetationTypeProperty();
+			pd2.setCategoryPrefix(rootName);
+			fieldMap.put(pd2.getName(), pd2);
+			parent.addChildProperty(pd2);
+			nChildren++;		
 		}
 		
 		return nChildren;
@@ -268,15 +294,10 @@ public class TridasEntityDeriver {
 		Collections.reverse(classDerivationTree);
 
 		for (Class<?> myClass : classDerivationTree)
-		{
-			
+		{			
 			buildDerivationList(rootEntityName, myClass, rootEntity, rootEntityName, false);
-
 		}
 
-		
-		
-		
 		return rootEntity.getChildProperties();
 	}
 	
@@ -301,7 +322,7 @@ public class TridasEntityDeriver {
 	public static void main(String[] args) {
 		List<TridasEntityProperty> propertyList = new ArrayList<TridasEntityProperty>();
 
-		propertyList = buildDerivationList(TridasMeasurementSeries.class);
+		propertyList = buildDerivationList(TridasSample.class);
 		
 		dumpPropertyList(propertyList, 0);
 	}

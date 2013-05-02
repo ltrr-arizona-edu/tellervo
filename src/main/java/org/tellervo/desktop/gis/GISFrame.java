@@ -19,11 +19,15 @@
  ******************************************************************************/
 package org.tellervo.desktop.gis;
 
+import gov.nasa.worldwind.Configuration;
+import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.layers.MarkerLayer;
 import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.ogc.kml.KMLRoot;
 import gov.nasa.worldwind.ogc.kml.impl.KMLController;
+import gov.nasa.worldwind.view.orbit.OrbitViewInputHandler;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -59,7 +63,7 @@ public class GISFrame extends JFrame {
 	{
 		this.isMiniMap = isMiniMap;
 		
-		
+
 		
 		
 			setupGui(TridasMarkerLayerBuilder.getMarkerLayerForAllSites());
@@ -85,7 +89,18 @@ public class GISFrame extends JFrame {
 		setupMenus();
 	}
 	
+	public GISFrame(MarkerLayer layer, Boolean isMiniMap, Double initLat, Double initLong)
+	{
+		this.isMiniMap = isMiniMap;
+		Configuration.setValue(AVKey.INITIAL_LATITUDE, initLat);
+		Configuration.setValue(AVKey.INITIAL_LONGITUDE, initLong);
+		Configuration.setValue(AVKey.INITIAL_PITCH, 45);
+		Configuration.setValue(AVKey.INITIAL_ALTITUDE, 180000);
+		setupGui(layer);
+		setupMenus();
+	}
 	
+
 	private void setupGui(MarkerLayer layer)
 	{
 		wwMapPanel = new GISPanel(new Dimension(300,300),true, layer);
@@ -141,11 +156,7 @@ public class GISFrame extends JFrame {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
-		
-
-		
-		
-		
+				
 	}
 	
 	private void setupMenus()
@@ -158,6 +169,8 @@ public class GISFrame extends JFrame {
 		menuBar.add(new GISEditMenu(this));
 		
 		menuBar.add(new GISViewMenu(wwMapPanel.getWwd()));
+				
+
 	
 		if (Platform.isMac())
 			menuBar.add(new WindowMenu(this));
@@ -167,6 +180,15 @@ public class GISFrame extends JFrame {
 		
         this.setJMenuBar(menuBar);
 
+	}
+	
+	public void panToPos(Position pos)
+	{
+        long timeInMilliseconds = 3000L; // Time in milliseconds you want the animation to take.
+        View view = wwMapPanel.getWwd().getView(); // How you get the view depends on the context.
+        OrbitViewInputHandler ovih = (OrbitViewInputHandler) view.getViewInputHandler();
+        ovih.addPanToAnimator(pos, view.getHeading(), view.getPitch(), 8000000, timeInMilliseconds, true);
+		
 	}
 	
     /**

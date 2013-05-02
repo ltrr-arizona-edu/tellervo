@@ -521,6 +521,7 @@ class objectParameters extends objectEntity implements IParams
 		   		switch($name)
 		   		{	   			
 		   			case "tellervo.objectLabCode" : $this->setCode($value); break;
+		   			case "tellervo.vegetationType" : $this->setVegetationType($value); break;
 		   			case "tellervo.countOfChildSeries" : break;
 		   			case "tellervo.mapLink" :		break;
 		   			
@@ -903,8 +904,11 @@ class sampleParameters extends sampleEntity implements IParams
 		   		$value = $child->nodeValue;		   		
 		   		switch($name)
 		   		{	  
-		   			case "tellervo.boxID":
-		   				$this->setBoxID($value);
+		   			case "tellervo.boxid":
+		   				$this->setboxid($value);
+		   				break; 			
+		   			case "tellervo.externalID":
+		   				$this->setExternalID($value);
 		   				break; 			
 		   			default:
 		   			//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'sample' entity of the XML request. Tag is being ignored", E_USER_NOTICE);

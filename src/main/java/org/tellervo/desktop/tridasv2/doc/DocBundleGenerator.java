@@ -94,9 +94,33 @@ public class DocBundleGenerator {
 				return;
 			}
 		}
+		writeHardcodedDocumentation();
+		
 		
 		closeWriters();
 		System.out.println("XML Documentation bundle created successfully!");
+	}
+	
+	
+	private static void writeHardcodedDocumentation()
+	{
+		try {
+			PrintWriter w = getWriterForLang("en");
+			
+			w.println("externalId = Identifier for this sample in an external database or repository such as Park Service or Archaeological Service databases");
+			w.println("files = References to files, webpages or URNs containing associated information");
+			w.println("objectCode = Short code used to identify the site.  Traditionally this is three characters long, but there is no reason it can't be longer");
+			w.println("presence = Pick list of options to indicate whether this feature is present or not");
+			w.println("certainty = Information regarding how precise this date is");
+			w.println("suffix = Whether the year is AD, BC or BP");
+			w.println("vegetationType = Only applicable when object is associated with live trees.  Records the type of vegetation at a site");
+			
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 	}
 	
 	private static Map<String, PrintWriter> writers;

@@ -20,6 +20,9 @@
  ******************************************************************************/
 package org.tellervo.desktop.tridasv2.ui;
 
+import gov.nasa.worldwind.geom.LatLon;
+import gov.nasa.worldwind.geom.Position;
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -358,14 +361,17 @@ public class LocationGeometry extends LocationGeometryUI implements
 			
 			map = new GISFrame(TridasMarkerLayerBuilder.getMarkerLayerForLatLong(
 							(Double)this.spnDDLat.getValue(),
-							(Double)this.spnDDLong.getValue()), true);
+							(Double)this.spnDDLong.getValue()), true,
+							(Double)this.spnDDLat.getValue(),
+							(Double)this.spnDDLong.getValue()
+					);
 			
 			// Remove modality so we can see map dialog
 			dialog.setModal(false);
 			dialog.setVisible(false);
 			dialog.setVisible(true);
 			map.setVisible(true);
-
+			
 		}
 
 		if (evt.getSource() == btnCancel) {			

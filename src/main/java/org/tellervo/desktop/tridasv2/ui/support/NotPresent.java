@@ -24,7 +24,7 @@
 package org.tellervo.desktop.tridasv2.ui.support;
 
 /**
- * Dummy interface that should be inhereted by all objects representing "not present" in combo boxes
+ * Dummy interface that should be inherited by all objects representing "not present" in combo boxes
  * 
  * @author Lucas Madar
  *

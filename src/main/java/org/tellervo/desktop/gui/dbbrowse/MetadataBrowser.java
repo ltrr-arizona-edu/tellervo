@@ -583,14 +583,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		}
 		
 		Object n;
-		
-		try{
-			log.debug("oldval: "+evt.getOldValue().toString());
-			log.debug("newval: "+evt.getNewValue().toString());
-		} catch (NullPointerException e)
-		{
-			
-		}
+
 		
 		if(evt.getOldValue()!=null)
 		{

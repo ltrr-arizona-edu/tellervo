@@ -757,6 +757,8 @@ class objectEntity extends dbEntity
 	 * @var Integer
 	 */
 	protected $countOfChildVMeasurements= NULL;
+
+	protected $vegetationType=NULL;
 	
     function __construct()
     {  
@@ -771,7 +773,12 @@ class objectEntity extends dbEntity
 	/***********/
     /* SETTERS */
     /***********/   	
-	
+
+	function setVegetationType($type)
+	{
+		$this->vegetationType = $type;
+	}	
+
 	function setCountOfChildVMeasurements($count)
 	{
 		$this->countOfChildVMeasurements = (int) $count;
@@ -875,6 +882,11 @@ class objectEntity extends dbEntity
 	/***********/
     /* GETTERS */
     /***********/ 	
+
+	function getVegetationType()
+	{
+		return $this->vegetationType;
+	}
 
 	function getCountOfChildVMeasurements()
 	{
@@ -1688,6 +1700,8 @@ class sampleEntity extends dbEntity
 	 */
 	protected $knots = NULL;
 	
+	protected $externalID = NULL;
+	
 	protected $summaryObjectCode = NULL;
 	protected $summaryElementCode = NULL;
 
@@ -1704,6 +1718,11 @@ class sampleEntity extends dbEntity
     /* SETTERS */
     /***********/ 
     
+	function setExternalID($id)
+	{
+		$this->externalID = $id;
+	}
+	
 	function setSummaryObjectCode($code)
 	{
 		$this->summaryObjectCode=$code;
@@ -1825,6 +1844,11 @@ class sampleEntity extends dbEntity
 	/***********/
     /* GETTERS */
     /***********/  	
+
+	function getExternalID()
+	{
+		return $this->externalID;
+	}
     
 	function getSummaryObjectCode()
 	{
