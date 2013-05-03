@@ -1272,4 +1272,69 @@ UPDATE tlkpelementtype SET vocabularyid=0 where elementtype='[Custom]';
 
 
 
+CREATE TABLE tblloan
+(
+  loanid uuid NOT NULL,
+  firstname character varying,
+  lastname character varying,
+  organisation character varying,
+  duedate timestamp with time zone,
+  issuedate timestamp with time zone,
+  files character varying[],
+  notes character varying,
+  CONSTRAINT pkey_tblloan PRIMARY KEY (loanid)
+)
+WITH (
+  OIDS=FALSE
+);
+
+CREATE TABLE tlkpcurationstatus
+(
+  curationstatusid serial NOT NULL,
+  curationstatus character varying,
+  CONSTRAINT pkey_curationstatus PRIMARY KEY (curationstatusid)
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+CREATE TABLE tblcuration
+(
+  curationid bigserial NOT NULL,
+  curationstatusid integer NOT NULL,
+  sampleid uuid NOT NULL,
+  createdtimestamp timestamp with time zone NOT NULL DEFAULT now(),
+  curatorid integer NOT NULL,
+  loanid uuid,
+  notes character varying,
+  storagelocation character varying,
+  CONSTRAINT pkey_tblcuration PRIMARY KEY (curationid),
+  CONSTRAINT "fkey_tblcuration-tblloan" FOREIGN KEY (loanid)
+      REFERENCES tblloan (loanid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT "fkey_tblcuration-tblsample" FOREIGN KEY (sampleid)
+      REFERENCES tblsample (sampleid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT "fkey_tblcuration-tblsecurityuser" FOREIGN KEY (curatorid)
+      REFERENCES tblsecurityuser (securityuserid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT "fkey_tblcuration-tlkpcurationstatus" FOREIGN KEY (curationstatusid)
+      REFERENCES tlkpcurationstatus (curationstatusid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);
+
+INSERT INTO tlkpcurationstatus (curationstatus) VALUES ('Archived');
+INSERT INTO tlkpcurationstatus (curationstatus) VALUES ('On loan (internal)');
+INSERT INTO tlkpcurationstatus (curationstatus) VALUES ('On loan (external)');
+INSERT INTO tlkpcurationstatus (curationstatus) VALUES ('Missing');
+INSERT INTO tlkpcurationstatus (curationstatus) VALUES ('On display');
+INSERT INTO tlkpcurationstatus (curationstatus) VALUES ('Destroyed');
+INSERT INTO tlkpcurationstatus (curationstatus) VALUES ('Returned to owner');
+INSERT INTO tlkpcurationstatus (curationstatus) VALUES ('Active research');
+INSERT INTO tlkpcurationstatus (curationstatus) VALUES ('Data only');
+
   
