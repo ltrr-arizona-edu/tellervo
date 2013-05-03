@@ -255,9 +255,22 @@ public class DecadalKeyListener extends KeyAdapter {
 				}
 				((UnitAwareDecadalModel)_table.getModel()).fireTableCellUpdated(row, col);
 			}
+			
+			
 			e.consume();
 			_table.repaint();
-			return;
+			
+			if(getSelectedYears().size()>1)
+			{
+				return;
+			}
+			else if (getSelectedYears().size()==1)
+			{
+				y = (_table.isEditing() ? stopEditing() : getSelectedYear()); 
+				target = y.add(+1);
+				eventHandled = true;
+			}
+					
 		
 		}		
 		
