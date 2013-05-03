@@ -197,6 +197,7 @@ public class Remarks {
 		tellervoRemarkIconMap.put("Fire injury in last third of earlywood", "fire-l.png");
 		tellervoRemarkIconMap.put("Fire scar - position undetermined", "fire-U.png");
 		tellervoRemarkIconMap.put("Fire injury - position undetermined", "fire-u.png");
+		tellervoRemarkIconMap.put("Not recording fires", "fire-not-recording.png");
 
 		
 	}

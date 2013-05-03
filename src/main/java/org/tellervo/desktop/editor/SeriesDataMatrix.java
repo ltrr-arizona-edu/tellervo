@@ -28,6 +28,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Collections;
 
 import javax.swing.AbstractAction;
@@ -53,6 +54,7 @@ import org.tellervo.desktop.editor.support.ModifiableTableCellRenderer;
 import org.tellervo.desktop.editor.support.TableCellModifier;
 import org.tellervo.desktop.editor.support.TableCellModifierListener;
 import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.manip.RedateDialog;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.prefs.PrefsListener;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -102,7 +104,8 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	private JPanel panelLeft;
 	private JPanel panelRight;
 	private RemarkPanel remarkPanel;
-
+	private Editor e;
+	
 	// pass this along to the table
 	@Override
 	public void requestFocus() {
@@ -151,11 +154,12 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	}
 	
 	
-	public SeriesDataMatrix(Sample s) {
+	public SeriesDataMatrix(Sample s, Editor e) {
 		// copy data reference, add self as observer
 		mySample = s;
 		mySample.addSampleListener(this);
-
+		this.e = e;
+		
 		// create table
 		myModel = new UnitAwareDecadalModel(mySample);
 		/*
@@ -186,16 +190,65 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		myTable.setGridColor(new Color(240, 240, 240)); 
 
 		// mouse listener for table
-		myTable.addMouseListener(new PopupListener() {
-			@Override
-			public void showPopup(MouseEvent e) {
-				int row = myTable.rowAtPoint(e.getPoint());
-				int col = myTable.columnAtPoint(e.getPoint());
+		
+		final Editor glue = e;
+		myTable.addMouseListener(new MouseListener() {
 
-				JPopupMenu menu = createPopupMenu(row, col);
+
+			@Override
+			public void mouseClicked(MouseEvent ev) {
 				
-				if(menu != null)
-					menu.show(myTable, e.getX(), e.getY());
+				if(ev.getButton() == MouseEvent.BUTTON3)
+				{
+					// Right click popup
+					int row = myTable.rowAtPoint(ev.getPoint());
+					int col = myTable.columnAtPoint(ev.getPoint());
+
+					JPopupMenu menu = createPopupMenu(row, col);
+					
+					if(menu != null)
+						menu.show(myTable, ev.getX(), ev.getY());
+					
+					ev.consume();
+					return;
+				}
+				
+				if ((ev.getClickCount()==2) && (!ev.isConsumed()))
+				{
+					if(glue!=null)
+					{
+						if(myTable.columnAtPoint(ev.getPoint())==0)
+						{
+							showRedateDialog();
+						}
+					}
+					ev.consume();
+				}
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
 			}
 		});
 
@@ -284,34 +337,38 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 	}
 	
+	private void showRedateDialog()
+	{
+		if(e!=null)	new RedateDialog(mySample, e).setVisible(true);
+	}
+	
 	protected JPopupMenu createPopupMenu(int row, int col) {
-		// clicked on a row header?  don't do anything.
-		if (col == 0)
-			return null;
+		
+		JPopupMenu popup = new JPopupMenu();
+		
+		JMenuItem redate = new JMenuItem("Redate series");
+		redate.setIcon(Builder.getIcon("redate.png", 22));
+		redate.addActionListener(new ActionListener(){
 
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				showRedateDialog();
+			}
+			
+		});
+		popup.add(redate);
+		popup.addSeparator();
+		
+		// Clicked on year column
+		if (col == 0)
+		{
+			// That's all we need.
+			return popup;
+		}
+			
 		// select the cell at e.getPoint()
 		myTable.setRowSelectionInterval(row, row);
 		myTable.setColumnSelectionInterval(col, col);
-		// (does this work?  it does, but
-		// the table doesn't get hilited
-		// immediately..)
-
-		// TODO: if it's not a valid data cell, don't show popup
-		// TODO: if you can't ins/del a year here, dim those menuitems [done?]
-
-		// show a popup here.
-		JPopupMenu popup = new JPopupMenu();
-		// PERF: build this popup lazily here, and hold on to it.
-
-		// TODO: use buttongroup (what for? -- oh, the marks)
-
-		/* DISABLED
-		 JMenu marks = new JMenu("Mark with");
-		 for (int i=0; i<Mark.defaults.length; i++)
-		 marks.add(new JRadioButtonMenuItem(Mark.defaults[i].icon, false));
-		 marks.addSeparator();
-		 marks.add(new JRadioButtonMenuItem("None", true));
-		 */
 
 		addAddDeleteMenu(popup);
 		popup.addSeparator();

@@ -25,17 +25,28 @@ package org.tellervo.desktop.editor;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.JTable;
 import javax.swing.DefaultCellEditor;
 import javax.swing.table.TableCellEditor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Year;
+import org.tellervo.desktop.remarks.Remark;
+import org.tellervo.desktop.remarks.RemarkPanel;
+import org.tellervo.desktop.remarks.Remarks;
 import org.tellervo.desktop.sample.Sample;
+import org.tridas.schema.TridasRemark;
+import org.tridas.schema.TridasValue;
 
 // BUG: NOT UNDOABLE!
 // BUG: DOESN'T SET MODIFIED FLAG!
 
 public class DecadalKeyListener extends KeyAdapter {
+	private final static Logger log = LoggerFactory.getLogger(DecadalKeyListener.class);
 
 	private JTable _table;
 
@@ -58,6 +69,23 @@ public class DecadalKeyListener extends KeyAdapter {
 		}
 		return ((DecadalModel) _table.getModel()).getYear(row, col);
 	}
+	
+	private ArrayList<Year> getSelectedYears(){
+		
+		ArrayList<Year> list = new ArrayList<Year>();
+		
+		for(int col :_table.getSelectedColumns())
+		{
+			for(int row : _table.getSelectedRows())
+			{
+				list.add(((DecadalModel) _table.getModel()).getYear(row, col));
+			}
+		}
+		
+		return list;
+		
+	}
+	
 
 	private void selectYear(Year y) {
 		// compute (row,col)
@@ -99,30 +127,20 @@ public class DecadalKeyListener extends KeyAdapter {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		Year y, target = null;
+		Boolean eventHandled = false;
+		
 
-		// ignore modifier keys -- if user presses "control" (and nothing else),
-		// we shouldn't start editing because of it.
-		/*
-		 * What??
-		 * This throws out shift-based events, which we use below?!
-		if (e.getModifiers() != 0) {
-			e.consume();
-			return;
-		}
-		*/
 		
-		// just ignore any modifiers that aren't shift
-		int notshiftdown = ~InputEvent.SHIFT_DOWN_MASK;
-		if(!((e.getModifiers() & notshiftdown) == 0)) {
-			return;
-		}
-		
+		// just ignore any modifiers that aren't shift		
+		if(e.isControlDown() || e.isAltDown()) { e.consume(); return;}
+				
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_TAB: // but shift-tab goes LEFT!
 			if (e.isShiftDown()) {
 				y = (_table.isEditing() ? stopEditing() : getSelectedYear());
 				target = y.add(-1);
 				e.consume();
+				eventHandled = true;
 				break;
 			}
 			// fall-through to...
@@ -131,32 +149,125 @@ public class DecadalKeyListener extends KeyAdapter {
 			y = (_table.isEditing() ? stopEditing() : getSelectedYear()); // this series is common, functionize it?
 			target = y.add(+1);
 			e.consume();
+			eventHandled = true;
 			break;
 		case KeyEvent.VK_LEFT:
 			y = (_table.isEditing() ? stopEditing() : getSelectedYear());
 			target = y.add(-1);
 			e.consume();
+			eventHandled = true;
 			break;
 		case KeyEvent.VK_UP:
 			y = (_table.isEditing() ? stopEditing() : getSelectedYear());
 			target = y.add(-10);
 			e.consume();
+			eventHandled = true;
 			break;
 		case KeyEvent.VK_DOWN:
 			y = (_table.isEditing() ? stopEditing() : getSelectedYear());
 			target = y.add(+10);
 			e.consume();
+			eventHandled = true;
 			break;
 		case KeyEvent.VK_HOME:
 			target = _sample.getRange().getStart();
 			e.consume();
+			eventHandled = true;
 			break;
 		case KeyEvent.VK_END:
 			target = _sample.getRange().getEnd();
 			e.consume();
+			eventHandled = true;
 			break;
+		case KeyEvent.VK_U:		
+		case KeyEvent.VK_D:
+		case KeyEvent.VK_E:
+		case KeyEvent.VK_L:
+		case KeyEvent.VK_A:
+		case KeyEvent.VK_M:
+		case KeyEvent.VK_X:
+			// FHX characters
+			log.debug("FHX Remark key pressed");
+			log.debug("Shift = "+e.isShiftDown());
+			List<Remark> remarks = Remarks.getRemarks();
+			
+			for(Year yr : getSelectedYears())
+			{
+				TridasValue val;
+				try{
+					val = _sample.getRingWidthValueForYear(yr);				
+				} catch (IndexOutOfBoundsException ex )
+				{
+					return;
+				}
+				
+				for(Remark r : remarks)
+				{
+					if(
+						((r.getDisplayName().equals("Fire scar in latewood") && e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_A))            ||
+					    ((r.getDisplayName().equals("Fire injury in latewood") && !e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_A))         ||
+					    ((r.getDisplayName().equals("Fire scar in dormant position") && e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_D))    ||
+					    ((r.getDisplayName().equals("Fire injury in dormant position") && !e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_D)) || 
+					    ((r.getDisplayName().equals("Fire scar in first third of earlywood") && e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_E))    ||
+					    ((r.getDisplayName().equals("Fire injury in first third of earlywood") && !e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_E)) || 
+					    ((r.getDisplayName().equals("Fire scar in middle third of earlywood") && e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_M))    ||
+					    ((r.getDisplayName().equals("Fire injury in middle third of earlywood") && !e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_M)) || 
+					    ((r.getDisplayName().equals("Fire scar in last third of earlywood") && e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_L))    ||
+					    ((r.getDisplayName().equals("Fire injury in last third of earlywood") && !e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_L)) || 
+					    ((r.getDisplayName().equals("Fire scar - position undetermined") && e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_U))    ||
+					    ((r.getDisplayName().equals("Fire injury - position undetermined") && !e.isShiftDown() && e.getKeyCode()==KeyEvent.VK_U)) ||
+					    ((r.getDisplayName().equals("Not recording fires") && e.getKeyCode()==KeyEvent.VK_X)) 
+					   ) 
+					{
+						Boolean alreadyMarked = false;
+						for(TridasRemark currRem : val.getRemarks())
+						{
+							
+							if(currRem.getNormal().equals(r.getDisplayName()))
+							{
+								alreadyMarked = true;
+							}
+						}
+						
+						if(alreadyMarked)
+						{
+							log.debug("FHX Remark removed");
+							r.removeRemark(val);
+						}
+						else
+						{
+							log.debug("FHX Remark applied");
+							r.applyRemark(val);
+						}
+						
+						
+					}
+					
+				}			
+				int row;
+				int col;
+				if (_table.isEditing()) {
+					row = _table.getEditingRow();
+					col = _table.getEditingColumn();
+				} else {
+					row = _table.getSelectedRow();
+					col = _table.getSelectedColumn();
+				}
+				((UnitAwareDecadalModel)_table.getModel()).fireTableCellUpdated(row, col);
+			}
+			e.consume();
+			_table.repaint();
+			return;
+		
+		}		
+		
+		// Fudge to cope with e.consume() not stopping alpha chars being entered into matrix
+		if(eventHandled==false && (!Character.isDigit(e.getKeyChar())))
+		{
+			e.consume();
+			return;
 		}
-
+		
 		// move to target, if set
 		if (target != null) {
 			if (target.compareTo(_sample.getRange().getStart()) < 0)
@@ -180,7 +291,6 @@ public class DecadalKeyListener extends KeyAdapter {
 			_table.editCellAt(row, col);
 			return;
 		}
-
 		// unknown -- ignore
 	}
 

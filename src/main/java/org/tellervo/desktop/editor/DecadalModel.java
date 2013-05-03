@@ -289,9 +289,9 @@ public abstract class DecadalModel extends AbstractTableModel {
 		if(editingOff)
 			return false;
 
-		// feature: (0,0) is editable (it's the start year, and editing it redates the sample)
-		if (row == 0 && col == 0)
-			return true;
+		// Year column is not editable
+		if (col == 0)
+			return false;
 
 		// if bad column, is indexed, or is summed, NOT editable
 		if ((col < 1) || (col > 10) || (!s.isEditable()))

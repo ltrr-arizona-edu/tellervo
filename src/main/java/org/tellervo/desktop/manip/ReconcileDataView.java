@@ -73,7 +73,7 @@ public class ReconcileDataView extends SeriesDataMatrix implements SampleListene
 	private ReconcileWindow parent;
 	
 	public ReconcileDataView(Sample newSample, Sample reference, Boolean showInfo, ReconcileWindow p) {
-		super(newSample);		
+		super(newSample, null);		
 		parent = p;
 		
 		greenColor = Color.getHSBColor(0.305f, 0.23f, 0.89f);

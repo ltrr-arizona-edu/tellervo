@@ -105,7 +105,7 @@ public class RemarkPanel extends JPanel implements ListSelectionListener, TableC
 	{		
 		if(value==null) return;
 				
-		log.debug("Removing existing remarks from panel");
+		//log.debug("Removing existing remarks from panel");
 		panelRemarkList.removeAll();
 		panelRemarkList.repaint();
 		
@@ -421,7 +421,7 @@ public class RemarkPanel extends JPanel implements ListSelectionListener, TableC
 		
 		row = table.getSelectedRow();
 		col = table.getSelectedColumn();
-		log.debug("New cell clicked... ("+row+","+col+")");
+		//log.debug("New cell clicked... ("+row+","+col+")");
 		
 		setForTridasValue(getCurrentTridasValue());
 	}
@@ -435,13 +435,13 @@ public class RemarkPanel extends JPanel implements ListSelectionListener, TableC
         if (e.getSource() == table.getSelectionModel()
                 && table.getRowSelectionAllowed()) {
               // Column selection changed
-        	  log.debug("Row selection event");
+        	 // log.debug("Row selection event");
               int first = e.getFirstIndex();
               int last = e.getLastIndex();
           } else if (e.getSource() == table.getColumnModel().getSelectionModel()
                  && table.getColumnSelectionAllowed() ){
               // Row selection changed
-        	  log.debug("column selection event");
+        	  //log.debug("column selection event");
 
               int first = e.getFirstIndex();
               int last = e.getLastIndex();
@@ -452,7 +452,7 @@ public class RemarkPanel extends JPanel implements ListSelectionListener, TableC
 		
 		if(thisrow>-1 && thiscol>-1)
 		{
-			log.debug("New cell clicked... ("+row+","+col+")");
+			//log.debug("New cell clicked... ("+row+","+col+")");
 			row = thisrow;
 			col = thiscol;
 			setForTridasValue(getCurrentTridasValue());

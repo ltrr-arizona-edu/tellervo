@@ -455,11 +455,14 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 		// END HACK
 		//
 		 
+		
+		
+		
 		//
 		// ANOTHER HACK!!
 		//		
 		// If it's a new object, then ask for a lab code
-		String code = null;
+		/*String code = null;
 		if(  (temporarySelectingEntity instanceof TridasObject) && 
 			 (cboTopChooser.getSelectedItem() == EntityListComboBox.NEW_ITEM))
 		{
@@ -473,7 +476,7 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 				gf.setType("xs:string");
 				((TridasObject)temporarySelectingEntity).getGenericFields().add(gf);
 			}
-		}
+		}*/
 		//
 		// END HACK
 		// 
@@ -509,6 +512,8 @@ public class TridasMetadataPanel extends JPanel implements PropertyChangeListene
 					for(EditType et = next; et != null; et = et.next())
 						et.setEntity(sample, null);
 				}
+				
+				currentMode.clearChanged();
 			}
 			
 			// we modified the series...

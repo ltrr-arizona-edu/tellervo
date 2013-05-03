@@ -499,7 +499,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		tabbedPanel.removeAll();
 
 		// all samples get data and metadata tabs
-		dataView = new SeriesDataMatrix(sample);
+		dataView = new SeriesDataMatrix(sample, this);
 		tabbedPanel.addTab(I18n.getText("editor.tab_data")+" ", Builder.getIcon("data.png", 16), dataView);
 		tabbedPanel.addTab(I18n.getText("editor.tab_metadata")+" ", Builder.getIcon("database.png", 16), metaView);
 		
