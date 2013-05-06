@@ -97,7 +97,7 @@ The basic procedure for installation is as follows:
 
 
 
-\section{Desktop application}
+\section{Installing the desktop application}
 \label{txt:desktopinstall}
 \index{Installation!Desktop application}
 Installation packages for the Tellervo desktop application are available for Windows, MacOSX and Ubuntu Linux.  Tellervo can also be run on other operating systems as long as they support Java 6 or later\footnote{Tellervo was initially developed against Sun Java 6 JRE, however, now OpenJDK6 is routinely used.  See section \ref{txt:java}, page \pageref{txt:java} for more information.}.
@@ -160,16 +160,23 @@ All MacOSX computers should automatically support OpenGL.  Most Windows and Linu
 
 The mapping component of Tellervo makes use of NASA's open source World Wind Java.  NASA's website \url{http://worldwind.arc.nasa.gov/} contains further information and instructions that you may find helpful if you are having problems getting the mapping to work.  
 
-\section{Upgrading}
 
-\subsection{Upgrading Tellervo desktop}
+\section{Upgrading Tellervo desktop}
 
 There are no special requirements for upgrading the Tellervo desktop client.  You need simply install the new version over the top of your previous version.  Any personal settings will be maintained after the upgrade.
 
-\subsection{Upgrading Tellervo Server}
 
+\section{Upgrading Tellervo Server}
 
+The process for upgrading your server is the same regardless of whether it is running in a VirtualBox virtual machine or on a native Linux server.  As with any upgrade, the first thing you need to do is backup your data (see section \ref{txt:BackupVA}, page \pageref{txt:BackupVA}).  We cannot be held responsible for loss of data in the event something goes wrong during the upgrade process.  
 
+Open your Tellervo server and log in to the command line.  Then type the following commands:
+
+\code{cd /tmp}
+\code{wget http://www.tellervo.org/url-of-the-updated-package.deb}
+\code{sudo dpkg --install tellervo.x.x.x.deb}
+
+The first line changes your current directory to the temporary folder.  The second command downloads the new package from the Tellervo server.  Make sure you enter the correct URL to the package you are upgrading to.  The final command installs the new package.  Again make sure you have the correct file name specified here. If all goes well, your webservice and database will be upgraded to the latest version and the server test routine will run to confirm all is correct.  If the server gives you any errors or warnings, please contact the developers for further assistance.
 
 \section{Uninstalling}
 
