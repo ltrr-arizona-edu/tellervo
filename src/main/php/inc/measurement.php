@@ -410,7 +410,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		
 		$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
 		// Interpretation fields
-		$paramsClass->getFirstYear()!=NULL)
+		if ($paramsClass->getFirstYear()!=NULL)
 		{
 			$this->setFirstYear($paramsClass->getFirstYear());
 		}

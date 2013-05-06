@@ -1199,13 +1199,14 @@ class measurementParameters extends measurementEntity implements IParams
 		   					}
 		   					
 			   			case "tridas:dating":
+							$firebug->log($interpTag->getAttribute("type"), "dating type");
 			   				$this->dating->setDatingType(null, $interpTag->getAttribute("type"));
 			   				break;
 		   					
 			   			case "tridas:firstYear": 
 			   				// Special case.  If the series is 'direct' then user may be redating in place
 			   				// Kludgey and gross.
-			   				if($this->getVMeasurementOp()=="Direct")
+			   				if($this->getVMeasurementOp()=="Direct" || $this->getVMeasurementOp()==false)
 							{
 								$yearwithsuff = $interpTag->nodeValue.$interpTag->getAttribute("suffix");
 								$firebug->log(dateHelper::getSignedYearFromYearWithSuffix($yearwithsuff, "astronomical"), "First Year in parameters");

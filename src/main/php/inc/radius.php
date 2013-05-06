@@ -107,7 +107,6 @@ class radius extends radiusEntity implements IDBAccessor
 
     function setParentsFromDB()
     {
-		$firebug->log("here");
 	global $firebug;
         require_once('sample.php');
 		if($this->getSampleID()==NULL)
