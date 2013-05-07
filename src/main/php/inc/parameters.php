@@ -1290,9 +1290,9 @@ class measurementParameters extends measurementEntity implements IParams
 		   			{		   				
 		   				if($tag->getAttribute("normalTridas")!=NULL)
 		   				{
-		   					//$firebug->log($tag->getAttribute("normalTridas"), "Setting measurement variable");
+		   					$firebug->log($tag->getAttribute("normalTridas"), "Setting measurement variable");
 		   					$this->setVariable(NULL, $tag->getAttribute("normalTridas"));
-		   					//$firebug->log($this->getVariable(), "Variable now set to ...");
+		   					$firebug->log($this->getVariable(), "Variable now set to ...");
 		   					continue;
 		   				}
 		   				else
@@ -1324,6 +1324,8 @@ class measurementParameters extends measurementEntity implements IParams
 		   				
 		   				// get the value fields
 			   			$value = $tag->getAttribute("value");  
+
+						$firebug->log($value, "Ring width value");
 			   			
 			   			
 			   			// If this is the ring width variable, see if it has child nodes (notes)
@@ -1334,8 +1336,10 @@ class measurementParameters extends measurementEntity implements IParams
 				   			foreach($valuechildren as $valuechild)
 				   			{			   				
 				   				if($valuechild->nodeType != XML_ELEMENT_NODE) continue;
-				   				if($valuechild->tagName == 'remark')
+				   				if($valuechild->tagName == 'tridas:remark')
 				   				{
+
+									$firebug->log($valuechild, "Remark tag");
 				   					// Create a notes object to hold note
 				   					$currReadingNote = new readingNote();
 				   					
