@@ -293,7 +293,7 @@ public class RedateDialog extends JDialog {
 			//return performCorinaWsiRedate(newDating);
 			
 			return Redate.performTellervoWsiRedate(sample, 
-					infoPanel.getName(), infoPanel.getVersion(), infoPanel.getJustification(), 
+					infoPanel.getSeriesName(), infoPanel.getVersion(), infoPanel.getJustification(), 
 					datingType, originalDatingType, range);
 		}
 		
