@@ -247,11 +247,9 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		addDelete();
 		addInsertYears();
 
-		if (AbstractSerialMeasuringDevice.hasMeasuringDeviceCapability())
-		{
-			addSeparator();
-			addMeasure();
-		}
+		addSeparator();
+		addMeasure();
+
 
 		addPreferences();
 		
@@ -265,10 +263,10 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			toggleMeasureMenuItem.setEnabled(b);
 		}
 		
-		if(measureModeMenu != null)
+		/*if(measureModeMenu != null)
 		{
 			measureModeMenu.setEnabled(b);
-		}
+		}*/
 		
 		
 	}
@@ -362,8 +360,15 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			
 		});
 		
-		
-		
+
+		// Only enable measure button if we have serial device capabilities
+		if(!AbstractSerialMeasuringDevice.hasMeasuringDeviceCapability())
+		{
+			toggleMeasureMenuItem.setEnabled(false);
+			btnRingWidth.setEnabled(false);
+			btnEWLWWidth.setEnabled(false);
+		}
+
 		add(measureModeMenu);
 	}
 

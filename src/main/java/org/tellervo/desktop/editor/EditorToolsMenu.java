@@ -237,7 +237,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		});
 		
 		// Crossdating against file series
-		crossAgainstFileSeries = Builder.makeMenuItem("menus.tools.new_crossdate_file", true, "file.png");
+		crossAgainstFileSeries = Builder.makeMenuItem("menus.tools.new_crossdate_file", true, "filenew.png");
 		crossAgainstFileSeries.setEnabled(false);
 		crossAgainstFileSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {

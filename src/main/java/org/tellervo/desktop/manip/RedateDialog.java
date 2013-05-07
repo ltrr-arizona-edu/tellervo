@@ -43,9 +43,12 @@ import javax.swing.LayoutStyle;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.EditorEditMenu;
 import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.NameVersionJustificationPanel;
 import org.tellervo.desktop.io.Metadata;
@@ -88,6 +91,10 @@ import java.awt.Font;
  */
 public class RedateDialog extends JDialog {
 	/** A DocumentListener for the end value */
+	
+	private final static Logger log = LoggerFactory.getLogger(RedateDialog.class);
+
+	
 	private class EndListener implements DocumentListener {
 		public void changedUpdate(DocumentEvent e) {
 			update();
@@ -253,6 +260,9 @@ public class RedateDialog extends JDialog {
 		newDating.setType(datingType);
 
 		// if it's not derived and has no children, we can truncate in place
+		log.debug("Does sample have childcount metadata? : "+sample.hasMeta(Metadata.CHILD_COUNT));
+		log.debug("Child count? : "+sample.getMeta(Metadata.CHILD_COUNT, Integer.class));
+
 		if (!sample.getSampleType().isDerived()
 				&& (!sample.hasMeta(Metadata.CHILD_COUNT) || sample.getMeta(Metadata.CHILD_COUNT, Integer.class) == 0)) {
 
