@@ -19,6 +19,8 @@
  ******************************************************************************/
 package org.tellervo.desktop.editor;
 
+import gov.noaa.ncdc.paleo.FHXPlot.FHXPlotWindow;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -85,7 +87,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	private JMenuItem redate = new JMenuItem();
 	private JMenuItem crossAgainstDBSeries = new JMenuItem();
 	private JMenuItem crossAgainstFileSeries = new JMenuItem();
-
+	
 	private JMenu crossMenu;
 	
 	public EditorToolsMenu(Sample s, Editor e) {
@@ -294,7 +296,12 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 			add(crossMenu);	
 		}
 		
+	
+		
+		
 		linkModel();
+		
+		
 	}
 
 
@@ -345,6 +352,8 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		// TODO Auto-generated method stub
 		
 	}
+
+
 }
 
 
