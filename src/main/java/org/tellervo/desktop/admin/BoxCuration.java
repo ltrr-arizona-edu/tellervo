@@ -191,45 +191,51 @@ public class BoxCuration extends javax.swing.JDialog
      */
     private boolean saveBoxDetailsForSample(TridasSample s)
     {
+    	
+    	Boolean valueSet = false;
     	// Update boxid in sample genericField
-    	if(s.isSetGenericFields())
-    	{
-    		for(TridasGenericField gf: s.getGenericFields())
-    		{
-    			if(gf.getName().equals("tellervo.boxID"))
-    			{
-    				if(gf.getValue().equals(box.getIdentifier().getValue()))
-    				{
-    					// This sample already belongs in this box
-    					JOptionPane.showConfirmDialog(null,
-        						"This sample is already assigned to this box!",
-        						"Information",
-        						JOptionPane.OK_OPTION, 
-        						JOptionPane.INFORMATION_MESSAGE);
-    					return true;
-    				}
-    				
-    				int response =  JOptionPane.showConfirmDialog(null,
-    						"This sample is already assigned to a box.\n"
-    						+"Do you want to reassign to box "+box.getTitle()+"?",
-    						"Sample already assigned to box",
-    						JOptionPane.YES_NO_CANCEL_OPTION, 
-    						JOptionPane.ERROR_MESSAGE);
-    				
-    				switch(response)
-    				{    					
-    				case JOptionPane.NO_OPTION:
-    				case JOptionPane.CANCEL_OPTION:
-    					return false;  					
-    				}
-    				
-    				gf.setValue(box.getIdentifier().getValue());
-    			}
-    		}
-    	}
-    	else
+    	if(!s.isSetGenericFields())
     	{
     		s.setGenericFields(new ArrayList<TridasGenericField>());
+    	}
+    	
+		for(TridasGenericField gf: s.getGenericFields())
+		{
+			if(gf.getName().equals("tellervo.boxID"))
+			{
+				if(gf.getValue().equals(box.getIdentifier().getValue()))
+				{
+					// This sample already belongs in this box
+					JOptionPane.showConfirmDialog(null,
+    						"This sample is already assigned to this box!",
+    						"Information",
+    						JOptionPane.OK_OPTION, 
+    						JOptionPane.INFORMATION_MESSAGE);
+					return true;
+				}
+				
+				int response =  JOptionPane.showConfirmDialog(null,
+						"This sample is already assigned to a box.\n"
+						+"Do you want to reassign to box "+box.getTitle()+"?",
+						"Sample already assigned to box",
+						JOptionPane.YES_NO_CANCEL_OPTION, 
+						JOptionPane.ERROR_MESSAGE);
+				
+				switch(response)
+				{    					
+				case JOptionPane.NO_OPTION:
+				case JOptionPane.CANCEL_OPTION:
+					return false;  					
+				}
+				
+				gf.setValue(box.getIdentifier().getValue());
+				valueSet = true;
+			}
+		}
+    	
+    	
+    	if(valueSet==false)
+    	{
     		TridasGenericField gf= new TridasGenericField();
     		gf.setName("tellervo.boxID");
     		gf.setType("xs:string");
@@ -482,6 +488,9 @@ public class BoxCuration extends javax.swing.JDialog
 				dispose();
 			}	
 		}
+		
+		
+		this.setModal(true);
     }
     
     /**
@@ -933,12 +942,13 @@ public class BoxCuration extends javax.swing.JDialog
 			dialog.setResizable(false);
 			dialog.pack();
 			dialog.setModal(true);
-			this.setLocationRelativeTo(null);
+			dialog.setLocationRelativeTo(null);
 			dialog.setVisible(true);
 			BarcodeDialogResult result = barcodeUI.getResult();
 			
 			// no success, so just ignore..
 			if(!result.success){
+				Alert.error("Not found", "Sample not found");
 				return;
 			}
 			
@@ -947,7 +957,10 @@ public class BoxCuration extends javax.swing.JDialog
 			{
 				box.setSamples(new ArrayList<TridasSample>());
 			}
+			
+			log.debug("Adding sample "+result.sample.getTitle()+" to box");
 			box.getSamples().add(result.sample);
+			
 			saveBoxDetailsForSample(result.sample);
 						
 			this.getComprehensiveWSIBox(box.getIdentifier().getValue());
