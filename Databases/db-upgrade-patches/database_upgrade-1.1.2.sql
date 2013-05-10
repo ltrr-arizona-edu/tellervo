@@ -273,7 +273,8 @@ CREATE OR REPLACE VIEW vwtblobject AS
 
 INSERT INTO tlkpvocabulary (vocabularyid, name, url) VALUES (5, 'DCCD', 'http://www.dendrochronology.eu');
 
-INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'barge');
+ALTER TABLE tlkpobjecttype ADD CONSTRAINT "tlkpobjecttype-nodupsinvocab" UNIQUE (objecttype, vocabularyid);
+
 INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, '(tree-)trunk');
 INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'abbey');
 INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'abbey church');
@@ -305,7 +306,7 @@ INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'bailey');
 INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'baldachin');
 INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'balustrade');
 INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'bar');
-INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'barge');
+INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'barge');	
 INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'bark, barque');
 INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'barkentine');
 INSERT INTO tlkpobjecttype (vocabularyid, objecttype) VALUES (5, 'barn');
@@ -1267,7 +1268,7 @@ ALTER TABLE tlkpelementtype ADD COLUMN vocabularyid INTEGER;
 ALTER TABLE tlkpelementtype ADD CONSTRAINT "fkey_elementtype-vocabulary" FOREIGN KEY (vocabularyid) 
 REFERENCES tlkpvocabulary (vocabularyid) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-UPDATE tlkpelementtype SET vocabularyid=2 where vocabularyid IS NULL;
+UPDATE TABLE tlkpelementtype SET vocabularyid=2 where vocabularyid IS NULL;
 UPDATE tlkpelementtype SET vocabularyid=0 where elementtype='[Custom]';
 
 
@@ -1322,6 +1323,7 @@ CREATE TABLE tblcuration
   CONSTRAINT "fkey_tblcuration-tlkpcurationstatus" FOREIGN KEY (curationstatusid)
       REFERENCES tlkpcurationstatus (curationstatusid) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
+  CONSTRAINT "uniq_curationstatus" UNIQUE (curationstatus)
 )
 WITH (
   OIDS=FALSE

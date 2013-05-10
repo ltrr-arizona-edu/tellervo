@@ -826,7 +826,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		Year retYear = y;
 
 		// what's the next year?
-		if(App.prefs.getBooleanPref(PrefKey.MEASURE_BARK_TO_PITH, true))
+		if(App.prefs.getBooleanPref(PrefKey.MEASURE_BARK_TO_PITH, false))
 		{
 			y= y.add(-1);
 		}

@@ -41,6 +41,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.editor.ScanBarcodeUI;
@@ -53,6 +55,7 @@ import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.desktop.tridasv2.TridasComparator;
+import org.tellervo.desktop.tridasv2.ui.TridasFileListDialog;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -76,6 +79,8 @@ import com.dmurph.mvc.model.MVCArrayList;
 public class BoxCuration extends javax.swing.JDialog 
 		implements KeyListener, ActionListener, TableModelListener{
     
+	private final static Logger log = LoggerFactory.getLogger(BoxCuration.class);
+
 	private static final long serialVersionUID = 1L;
 	private boolean isNewRecord = false;
 	private WSIBox box = null;
@@ -430,6 +435,8 @@ public class BoxCuration extends javax.swing.JDialog
      */
     private void getComprehensiveWSIBox(String idstr)
     {
+    	
+    	log.debug("Getting details of box (id"+idstr+") from the webservice");
 		// Set return type to box
     	SearchParameters param = new SearchParameters(SearchReturnObject.BOX);
 		
@@ -449,7 +456,7 @@ public class BoxCuration extends javax.swing.JDialog
 		
 		if(!dialog.isSuccessful()) 
 		{ 
-			System.out.println("Error getting boxes");
+			log.error("Error getting boxes");
 			return;
 		}
 		
