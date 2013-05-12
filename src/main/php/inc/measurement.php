@@ -274,7 +274,8 @@ class measurement extends measurementEntity implements IDBAccessor
 						foreach($jsonNotes as $note)
 						{			
 							$currReadingNote = new readingNote();
-							$currReadingNote->setID($note['stdid']);
+							$currReadingNote->setID($note['dbid']);
+							$currReadingNote->setStandardisedID($note['stdid']);
 							$currReadingNote->setNote($note['note']);
 							$currReadingNote->setInheritedCount($note['icnt']);
 							$currReadingNote->setControlledVoc(null, $note['std']);				
@@ -409,7 +410,8 @@ class measurement extends measurementEntity implements IDBAccessor
 		$this->setVersion($paramsClass->getVersion());
 	
 		$firebug->log($paramsClass->dating, "dating class");	
-		$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
+		$this->dating = $paramsClass->dating;
+		//$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
 		$this->setFirstYear($paramsClass->getFirstYear());
 		if ($paramsClass->getFirstYear()===NULL)
 		{
@@ -1631,6 +1633,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						if($this->getIsReconciled()!=NULL)    				$sql.= "isreconciled, ";
 										            $sql.= "startyear, ";
 						if(isset($this->analyst))					        $sql.= "measuredbyid, ";
+						$firebug->log($this->dating, "Dating being written to db");
 						if($this->dating->getID()!=NULL)
 						{
 							$sql.= "datingtypeid, ";

@@ -175,7 +175,7 @@ class readingNote
 			}
 			else
 			{
-                $xml.= "normalStd=\"".$this->getControlledVocName()."\" normal=\"".$this->getNote()."\" normalId=\"".$this->getID()."\"/>";
+                $xml.= "normalStd=\"".$this->getControlledVocName()."\" normal=\"".$this->getNote()."\" normalId=\"".$this->getStandardisedID()."\"/>";
 			}
 			return $xml;
 		}
