@@ -26,8 +26,8 @@ class measurement extends measurementEntity implements IDBAccessor
 	function __construct()
 	{
 		// Constructor for this class.
-		//$this->setVMeasurementOp(5);
 		parent::__construct();
+		$this->setVMeasurementOp(5, 'Direct');
 	}
 
 	/***********/
@@ -366,12 +366,13 @@ class measurement extends measurementEntity implements IDBAccessor
 	function setParamsFromParamsClass($paramsClass, $auth)
 	{
 		global $firebug;
+		$firebug->log("SetParamsFromParamsClass called");
 		
 		// Alters the parameter values based upon values supplied by the user and passed as a parameters class
 		$this->setTitle($paramsClass->getTitle());	
 		$this->setComments($paramsClass->getComments());
 		$this->setMeasuringDate($paramsClass->getMeasuringDate());
-			// Set Owner and Measurer IDs if specified otherwise use current user details
+		// Set Owner and Measurer IDs if specified otherwise use current user details
 		if ($paramsClass->getAuthor()!=NULL)
 		{
 			$this->setAuthor($paramsClass->getAuthor(true));
@@ -404,17 +405,13 @@ class measurement extends measurementEntity implements IDBAccessor
 			$this->vmeasurementOp->setStandardizingMethod($paramsClass->vmeasurementOp->getParamID(), $paramsClass->vmeasurementOp->getStandardizingMethod());
 		}
 		if (sizeof($paramsClass->referencesArray)>0)   		$this->setReferencesArray($paramsClass->referencesArray);
-		if ($paramsClass->getObjective()!=NULL)				$this->setObjective($paramsClass->getObjective());
-		if ($paramsClass->getAuthor()!=NULL)				$this->setAuthor($paramsClass->getAuthor(TRUE));
-		if ($paramsClass->getVersion()!=NULL)				$this->setVersion($paramsClass->getVersion());
-		
+		$this->setObjective($paramsClass->getObjective());
+		$this->setVersion($paramsClass->getVersion());
+	
+		$firebug->log($paramsClass->dating, "dating class");	
 		$this->setDatingType($paramsClass->dating->getID(), $paramsClass->dating->getValue());
-		// Interpretation fields
-		if ($paramsClass->getFirstYear()!=NULL)
-		{
-			$this->setFirstYear($paramsClass->getFirstYear());
-		}
-		else
+		$this->setFirstYear($paramsClass->getFirstYear());
+		if ($paramsClass->getFirstYear()===NULL)
 		{
 			if($this->dating->getValue()=='relative' || $this->dating->getValue()=="")
 			{
@@ -433,26 +430,22 @@ class measurement extends measurementEntity implements IDBAccessor
 		$this->setProvenance($paramsClass->getProvenance());
 		
 		// Value fields
-		if($paramsClass->getUnits()!=NULL)					$this->setUnits(NULL, $paramsClass->getUnits());
-		//if (isset($paramsClass->readingsUnits))        $this->setUnits($paramsClass->readingsUnits);
-		
-		$firebug->log($paramsClass->readingsArray, "Readings array as paramsClass");
-
+		$this->setUnits(NULL, $paramsClass->getUnits());
 		if (sizeof($paramsClass->readingsArray)>0)     $this->setReadingsArray($paramsClass->readingsArray);
 		
 		// Tellervo specific genericFields
-		if ($paramsClass->getIsReconciled()!=NULL)         	$this->setIsReconciled($paramsClass->getIsReconciled());
-		if ($paramsClass->getMasterVMeasurementID()!=NULL)  $this->setMasterVMeasurementID($paramsClass->getMasterVMeasurementID());
-		if ($paramsClass->getJustification()!=NULL)			$this->setJustification($paramsClass->getJustification());
-		if ($paramsClass->getConfidenceLevel()!=NULL)		$this->setConfidenceLevel($paramsClass->getConfidenceLevel());
-		if ($paramsClass->getNewStartYear()!=NULL)			$this->setNewStartYear($paramsClass->getNewStartYear());
+		$this->setIsReconciled($paramsClass->getIsReconciled());
+		$this->setMasterVMeasurementID($paramsClass->getMasterVMeasurementID());
+		$this->setJustification($paramsClass->getJustification());
+		$this->setConfidenceLevel($paramsClass->getConfidenceLevel());
+		$this->setNewStartYear($paramsClass->getNewStartYear());
 
 		// Only read dating type from user if doing a redate
-		if (($paramsClass->getVMeasurementOp()=='Redate') && ($paramsClass->dating->getValue()!=NULL))
+		//if (($paramsClass->getVMeasurementOp()=='Redate') && ($paramsClass->dating->getValue()!==NULL))
 		
 															//if ($paramsClass->dating->getDatingErrorPositive()!=NULL) $this->dating->setDatingErrors($paramsClass->dating->getDatingErrorPositive(), $paramsClass->dating->getDatingErrorNegative());
 
-		if ($paramsClass->getNewEndYear()!=NULL)			$this->setNewEndYear($paramsClass->getNewEndYear());
+		if ($paramsClass->getNewEndYear()!==NULL)			$this->setNewEndYear($paramsClass->getNewEndYear());
 		
 		if ($paramsClass->parentID!=NULL)
 		{
@@ -574,11 +567,11 @@ class measurement extends measurementEntity implements IDBAccessor
 					$this->setErrorMessage("902","Missing parameter - a new measurement requires the title parameter.");
 					return false;
 				}
-				if(($paramsObj->readingsArray) && ($paramsObj->getFirstYear()== NULL) && (isset($paramsObj->dating)) )
+				if(($paramsObj->readingsArray) && ($paramsObj->getFirstYear()=== NULL) && (isset($paramsObj->dating)) )
 				{
 					if ($paramsObj->dating->getID()==1)
 					{
-						$this->setErrorMessage("902","Missing parameter - a new absolute direct measurement must include a startYear.");
+						$this->setErrorMessage("902","Missing parameter - a new absolute direct measurement must include a firstYear.");
 						return false;
 					}
 				}
@@ -1450,10 +1443,11 @@ class measurement extends measurementEntity implements IDBAccessor
 	 */
 	private function getCreateNewVMeasurementSQL()
 	{
+		global $firebug;
 		/*
 		 -- VMeasurementOp          - Varchar - From tlkpVMeasurementOp
 		 -- VMeasurementOpParameter - Integer - Must be specified for REDATE or INDEX; otherwise NULL
-         -- OwerUserID				- Integer - 
+	         -- OwerUserID              - Integer - 
 		 -- Name                    - Varchar - Must be specified
 		 -- Comments                - Varchar - May be NULL
 		 -- MeasurementID           - Integer - For direct only; the measurement derived from.
@@ -1514,6 +1508,7 @@ class measurement extends measurementEntity implements IDBAccessor
 		}
 
 		// Constituents
+		$firebug->log($this->getVMeasurementOp(), "VmeasurementOp");
 		if($this->getVMeasurementOp()!='Direct')
 		{
 			$sql.= "ARRAY[";
@@ -1638,7 +1633,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						if(isset($this->analyst))					        $sql.= "measuredbyid, ";
 						if($this->dating->getID()!=NULL)
 						{
-							//$sql.= "datingtypeid, ";
+							$sql.= "datingtypeid, ";
 							if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "datingerrornegative, ";
 							if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "datingerrorpositive, ";
 						}
@@ -1655,7 +1650,7 @@ class measurement extends measurementEntity implements IDBAccessor
 						if(isset($this->analyst))					        $sql.= "'".pg_escape_string($this->analyst->getID())."', ";
 						if($this->dating->getID()!=NULL)
 						{
-							//$sql.= "'".pg_escape_string($this->dating->getID())."', ";
+							$sql.= "'".pg_escape_string($this->dating->getID())."', ";
 							if($this->dating->getDatingErrorNegative()!=NULL)   $sql.= "'".pg_escape_string($this->dating->getDatingErrorNegative())."', ";
 							if($this->dating->getDatingErrorPositive()!=NULL)   $sql.= "'".pg_escape_string($this->dating->getDatingErrorPositive())."', ";
 						}
