@@ -1245,5 +1245,5 @@
 		<url>https://sourceforge.net/p/tellervo/tickets/</url>
 		<system>Sourceforge.net</system>
 	</issueManagement>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.0.2</version>
 </project>

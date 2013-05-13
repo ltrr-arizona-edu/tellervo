@@ -3,7 +3,7 @@
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "Tellervo"
 !define PRODUCT_VERSION "${project.version}"
-!define PRODUCT_PUBLISHER "Cornell University"
+!define PRODUCT_PUBLISHER "Laboratory of Tree-Ring Research"
 !define PRODUCT_WEB_SITE "http://www.tellervo.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\Tellervo.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
