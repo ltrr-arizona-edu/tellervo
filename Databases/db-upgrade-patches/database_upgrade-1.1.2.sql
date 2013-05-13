@@ -1268,7 +1268,7 @@ ALTER TABLE tlkpelementtype ADD COLUMN vocabularyid INTEGER;
 ALTER TABLE tlkpelementtype ADD CONSTRAINT "fkey_elementtype-vocabulary" FOREIGN KEY (vocabularyid) 
 REFERENCES tlkpvocabulary (vocabularyid) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
 
-UPDATE TABLE tlkpelementtype SET vocabularyid=2 where vocabularyid IS NULL;
+UPDATE tlkpelementtype SET vocabularyid=2 where vocabularyid IS NULL;
 UPDATE tlkpelementtype SET vocabularyid=0 where elementtype='[Custom]';
 
 
