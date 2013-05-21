@@ -77,6 +77,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 	protected JButton selectNone;
 	private JButton importSelected;
 	protected JButton copyRow;
+	protected JButton populateFromDB;
+	
 	protected JPopupMenu tablePopupMenu;
 	private JMenuItem addrow;
 	private JMenuItem duplicateRow;
@@ -108,6 +110,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		selectAll = new JButton();
 		selectNone = new JButton();
 		importSelected = new JButton();
+		populateFromDB = new JButton();
 		importSelected.putClientProperty("JButton.buttonType", "bevel");
 		
 		table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
@@ -115,7 +118,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		setLayout(new BorderLayout());
 		
 	
-		add(setupHeaderElements(addRow, removeSelected, copyRow, showHideColumns), "North");
+		add(setupHeaderElements(addRow, removeSelected, copyRow, showHideColumns, populateFromDB), "North");
 		//add(setupToolbar(showHideColumns, selectAll, selectNone), "West");
 
 		JScrollPane panel = new JScrollPane(table);
@@ -191,6 +194,18 @@ public abstract class AbstractBulkImportView extends JPanel{
 			public void actionPerformed(ActionEvent argE) {
 				copySelectedPressed();
 			}
+		});
+		
+		populateFromDB.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				populateFromDatabase();
+				
+			}
+			
+			
+			
 		});
 		
 		table.addMouseListener(new MouseListener(){
@@ -401,7 +416,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 	}
 	
 	protected JToolBar setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyButton, JButton argShowHideColumnButton){
+			JButton argCopyButton, JButton argShowHideColumnButton, JButton argPopulateFromDB){
 		
 		 JToolBar toolbar = new JToolBar();
 		 
@@ -409,6 +424,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		 toolbar.add(argDeleteRowButton);
 		 toolbar.add(argCopyButton);
 		 toolbar.add(argShowHideColumnButton);
+		 toolbar.add(argPopulateFromDB);
 		 
 		 return toolbar;
 		/*
@@ -449,6 +465,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 	}
 	
 	protected abstract void importSelectedPressed();
+	
+	protected abstract void populateFromDatabase();
 	
 	protected void addRowPressed(){
 		AddRowEvent event = new AddRowEvent(model);
@@ -494,6 +512,12 @@ public abstract class AbstractBulkImportView extends JPanel{
 		selectNone.setToolTipText(I18n.getText("dbbrowser.selectNone"));
 		selectNone.setIcon(Builder.getIcon("selectnone.png", 22));
 
+		populateFromDB.setToolTipText("Populate from db");
+		populateFromDB.setIcon(Builder.getIcon("database.png", 22));
+		
+		
 		importSelected.setText(I18n.getText("bulkimport.importselected"));
+		
+		
 	}
 }

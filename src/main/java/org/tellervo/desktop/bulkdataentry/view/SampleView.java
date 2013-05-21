@@ -176,7 +176,7 @@ public class SampleView  extends AbstractBulkImportView{
 
 	@Override
 	protected JToolBar setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyRow, JButton argShowHideColumnButton){
+			JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB){
 	
 		 JToolBar toolbar = new JToolBar();
 		 toolbar.add(selectAll);
@@ -219,6 +219,12 @@ public class SampleView  extends AbstractBulkImportView{
 	protected void importSelectedPressed() {
 		ImportSelectedEvent event = new ImportSelectedEvent(BulkImportController.IMPORT_SELECTED_SAMPLES);
 		event.dispatch();
+	}
+	
+	@Override
+	protected void populateFromDatabase() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

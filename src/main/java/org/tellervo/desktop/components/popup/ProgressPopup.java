@@ -30,9 +30,11 @@ import java.beans.PropertyChangeListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import net.miginfocom.swing.MigLayout;
 
 /**
  * Popup progress window, updates from model and sets the cancelled value
@@ -49,12 +51,21 @@ public class ProgressPopup extends JDialog {
 	
 	private final ProgressPopupModel model;
 	
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public ProgressPopup(Frame argParent, boolean argModal, ProgressPopupModel argModel){
 		this(argParent, argModal, argModel, null);
 	}
 	
 	public ProgressPopup(Frame argParent, boolean argModal, ProgressPopupModel argModel, Dimension argPrefSize){
 		super(argParent, argModal);
+		
+		if(argModal)
+		{
+			    setUndecorated(true);
+		}
+		
 		model = argModel;
 		initializeComponents();
 		linkModel();
@@ -65,6 +76,8 @@ public class ProgressPopup extends JDialog {
 		pack();
 		setLocationRelativeTo(argParent);
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+		
+
 	}
 	
 	private void initializeComponents() {
@@ -72,18 +85,17 @@ public class ProgressPopup extends JDialog {
 		progress = new JProgressBar();
 		cancelButton = new JButton();
 		
-		setLayout(new GridLayout(0, 1));
-		
 		progress.setMinimum(0);
 		progress.setMaximum(100);
 		progress.setStringPainted(true);
+		getContentPane().setLayout(new MigLayout("", "[260px]", "[][25px]"));
 		
-		add(label);
+		getContentPane().add(label, "cell 0 0,grow");
 		JPanel bottom = new JPanel();
 		bottom.setLayout(new BorderLayout());
 		bottom.add(progress, "Center");
 		bottom.add(cancelButton, "East");
-		add(bottom);
+		getContentPane().add(bottom, "cell 0 1,grow");
 	}
 	
 	private void linkModel(){

@@ -39,6 +39,7 @@ import org.tellervo.desktop.bulkdataentry.control.ColumnChooserController;
 import org.tellervo.desktop.bulkdataentry.control.ColumnsModifiedEvent;
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
+import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
@@ -169,7 +170,7 @@ public class ObjectView extends AbstractBulkImportView{
 	}*/
 	
 	protected JToolBar setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
-				JButton argCopyRow, JButton argShowHideColumnButton){
+				JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB){
 		/*Box box = Box.createHorizontalBox();
 		box.add(argAddRowButton);
 		box.add(argDeleteRowButton);
@@ -185,6 +186,7 @@ public class ObjectView extends AbstractBulkImportView{
 		 toolbar.add(argAddRowButton);
 		 toolbar.add(argDeleteRowButton);
 		 toolbar.add(argCopyRow);
+		 toolbar.add(argPopulateFromDB);
 		
 		 
 		 
@@ -215,5 +217,14 @@ public class ObjectView extends AbstractBulkImportView{
 				//ev.dispatch();
 			}
 		});
+	}
+
+	@Override
+	protected void populateFromDatabase() {
+		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
+		PopulateFromDatabaseEvent event = new PopulateFromDatabaseEvent(model);
+		
+		event.dispatch();
+		
 	}
 }

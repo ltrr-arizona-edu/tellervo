@@ -39,8 +39,10 @@ import org.tellervo.desktop.bulkdataentry.control.ColumnChooserController;
 import org.tellervo.desktop.bulkdataentry.control.ColumnsModifiedEvent;
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
+import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
+import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.components.table.DynamicJComboBox;
@@ -155,7 +157,7 @@ public class ElementView extends AbstractBulkImportView{
 	
 	@Override
 	protected JToolBar setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyRowButton, JButton argShowHideColumnButton){
+			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB){
 
 		
 		 JToolBar toolbar = new JToolBar();
@@ -164,6 +166,8 @@ public class ElementView extends AbstractBulkImportView{
 		 toolbar.add(argAddRowButton);
 		 toolbar.add(argDeleteRowButton);
 		 toolbar.add(argCopyRowButton);
+		 toolbar.add(argPopulateFromDB);
+		 
 			browseGPX = new JButton();
 			browseGPX.setIcon(Builder.getIcon("satellite.png", 22));
 			browseGPX.setToolTipText(I18n.getText("bulkimport.browseGPXFile"));
@@ -202,5 +206,14 @@ public class ElementView extends AbstractBulkImportView{
 	protected void importSelectedPressed() {
 		ImportSelectedEvent event = new ImportSelectedEvent(BulkImportController.IMPORT_SELECTED_ELEMENTS);
 		event.dispatch();
+	}
+	
+	@Override
+	protected void populateFromDatabase() {
+		ElementModel model = BulkImportModel.getInstance().getElementModel();
+		PopulateFromDatabaseEvent event = new PopulateFromDatabaseEvent(model);
+		
+		event.dispatch();
+		
 	}
 }
