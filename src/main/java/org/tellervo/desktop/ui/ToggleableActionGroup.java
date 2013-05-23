@@ -32,7 +32,7 @@ import java.util.List;
  * A ButtonGroup-like interface for actions
  * 
  * Allows a simple implementation of radio buttons.
- * Uses CorinaAction incase it's extended, maybe? :)
+ * Uses TellervoAction in case it's extended, maybe? :)
  * 
  * @author Lucas Madar
  *
