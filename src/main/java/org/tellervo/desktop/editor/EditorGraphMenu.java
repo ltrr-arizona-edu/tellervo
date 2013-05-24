@@ -85,10 +85,10 @@ import org.tridas.schema.TridasSample;
 // - bargraph elements
 
 @SuppressWarnings("serial")
-public class EditorGraphMenu extends JMenu implements SampleListener, ActionListener {
+public class EditorGraphMenu extends JMenu implements SampleListener {
 	private static final Logger log = LoggerFactory.getLogger(EditorGraphMenu.class);
 
-	private JMenuItem plot, plotElements, plotAll, bargraphAll;
+	private JMenuItem plot, plotElements, plotAll, bargraphAll, fhxPlot;
 
 	private Sample sample;
 
@@ -150,13 +150,19 @@ public class EditorGraphMenu extends JMenu implements SampleListener, ActionList
 		
 		this.addSeparator();
 		
-		// FHX Plot
-		JMenuItem fhxPlot = new JMenuItem("Create fire history plot");
-		fhxPlot.setIcon(Builder.getIcon("fhaes.png", 22));
+		// Fire history plot
+		fhxPlot = new JMenuItem(new TellervoAction("menus.graph.createfhplot", "fhaes.png", 22){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				createFHPlot();
+			}
+			
+		});
 		add(fhxPlot);
 		
-		fhxPlot.setActionCommand("fhxPlot");
-		fhxPlot.addActionListener(this);
+
+
 		
 		
 	}
@@ -202,244 +208,232 @@ public class EditorGraphMenu extends JMenu implements SampleListener, ActionList
 		// TODO Auto-generated method stub
 		
 	}
-	
 
-	@Override
-	public void actionPerformed(ActionEvent evt) {
+	public static void createFHPlot()
+	{
+		DBBrowser browser = new DBBrowser((Frame) null, true, true);
+		browser.setVisible(true);
+
 		
-		
-		if(evt.getActionCommand().equals("fhxPlot"))
-		{
-			DBBrowser browser = new DBBrowser((Frame) null, true, true);
-			browser.setVisible(true);
-
+		if(browser.getReturnStatus() == DBBrowser.RET_OK) {
+			ElementList elements = browser.getSelectedElements();
 			
-			if(browser.getReturnStatus() == DBBrowser.RET_OK) {
-				ElementList elements = browser.getSelectedElements();
-				
-				int groupingType = 0;
-						    	    	
-		    	// Get defaults for creating project
-		    	TridasMetadataFieldSet defaults = new TridasMetadataFieldSet();
-				
-		    	// Create sample list from elements
-				List<Sample> samples = new ArrayList<Sample>();
-				for(Element e : elements) {		
-					// load it
-					Sample s;
-					try {
-						s = e.load();
-						
-					} catch (IOException ioe) {
-						Alert.error("Error Loading Sample",
-								"Can't open this file: " + ioe.getMessage());
-						continue;
-					}
-					
-					samples.add(s);
-
-					OpenRecent.sampleOpened(new SeriesDescriptor(s));
-				}
-				
-				// no samples => don't bother doing anything
-				if (samples.isEmpty()) {
-					return;
-				}
-		    	
-				// Create a list of projects 
-				ArrayList<TridasProject> projList = new ArrayList<TridasProject>();
-				ArrayList<LabCode> labCodeList = new ArrayList<LabCode>();
-				TridasProject project = defaults.getProjectWithDefaults();
-				for (Sample s : samples)
-				{
-					if(groupingType==1)
-					{
-						// User wants separate files so create a new project for each sample
-						project = defaults.getProjectWithDefaults();
-					}
-					
-					TridasObject tobj = (TridasObject) s.getMeta(Metadata.OBJECT, TridasObject.class);
-					TridasElement telem = s.getMeta(Metadata.ELEMENT, TridasElement.class);
-					TridasSample tsamp = s.getMeta(Metadata.SAMPLE, TridasSample.class);
-					TridasRadius trad = s.getMeta(Metadata.RADIUS, TridasRadius.class);
-					ITridasSeries tseries = s.getSeries();
-					
-					if(tseries instanceof TridasMeasurementSeries)
-					{
-						// Set all the standard mSeries entities
-						trad.getMeasurementSeries().add((TridasMeasurementSeries) tseries);
-						tsamp.getRadiuses().add(trad);
-						telem.getSamples().add(tsamp);
-						tobj.getElements().add(telem);
-						project.getObjects().add(tobj);
-					}
-					else
-					{
-						// Derived series so no other entities
-						project.getDerivedSeries().add((TridasDerivedSeries) tseries);
-					}
-					
-					if(groupingType==1)
-					{
-						// Add project to list
-						projList.add(project);
-						LabCode code = s.getMeta(Metadata.LABCODE, LabCode.class);
-						labCodeList.add(code);
-					}		
-				}
-				
-				if(groupingType==0)
-				{
-					// Add project to list as there user wants seperate files for each series
-					projList.add(project);
-					
-					if (samples.size()==1)
-					{
-						LabCode code = samples.get(0).getMeta(Metadata.LABCODE, LabCode.class);
-						labCodeList.add(code);
-					}
-				}
-				
-				// Loop through projects writing them out as we go
-				String messages = "";
-				int i=-1;
-				for(TridasProject p : projList)
-				{
-					i++;
-					// Create the writer based on the requested format
-			    	AbstractDendroCollectionWriter writer = TridasIO.getFileWriter("FHX2");
-			    	
-			    	// Create and set the naming convention
-			    	AbstractNamingConvention nc;
-			    	if(labCodeList.size()==projList.size())
-			    	{
-			    		// We have a Tellervo lab code for each project so use this as the base filename
-			    		nc = new NumericalNamingConvention();
-			    		((NumericalNamingConvention)nc).setBaseFilename(
-			    				LabCodeFormatter.getDefaultFormatter().format(labCodeList.get(i)).toString());
-			    	}
-			    	else
-			    	{
-			    		// We don't have labcodes for the project(s) so use the hierarchical naming convention instead
-			    		nc = new HierarchicalNamingConvention();
-			    	}
-			    	writer.setNamingConvention(nc);
-			    	
-			    	// Get the writer to load the project
-					try {
-						writer.loadProject(p);
-					} catch (IncompleteTridasDataException e1) {
-						e1.printStackTrace();
-					} catch (ConversionWarningException e1) {
-						e1.printStackTrace();
+			int groupingType = 0;
+					    	    	
+	    	// Get defaults for creating project
+	    	TridasMetadataFieldSet defaults = new TridasMetadataFieldSet();
 			
-					}
+	    	// Create sample list from elements
+			List<Sample> samples = new ArrayList<Sample>();
+			for(Element e : elements) {		
+				// load it
+				Sample s;
+				try {
+					s = e.load();
 					
-						
-					
-					// Get output folder
-					String outputFolder = null;
-					File outputFolder2 = null;
-					try {
-						outputFolder2 = IOUtils.createTempDirectory();
-						outputFolder2.deleteOnExit();
-						outputFolder = outputFolder2.toString();
-						if (!outputFolder.endsWith(File.separator) && !outputFolder.equals("")) {
-							outputFolder += File.separator;
-						}
-						
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+				} catch (IOException ioe) {
+					Alert.error("Error Loading Sample",
+							"Can't open this file: " + ioe.getMessage());
+					continue;
+				}
+				
+				samples.add(s);
 
-
-
-					IDendroFile[] files = writer.getFiles();
-					for (int j=0; j<files.length; j++) {
-						IDendroFile dof = files[j];
-						writer.saveFileToDisk(outputFolder, dof);
-						
-						// Add any warnings to our warning message cache
-						if(writer.getWarnings().length>0)
-						{
-							messages += "Warning for file blah\n";
-						}
-
-						for(ConversionWarning warning : dof.getDefaults().getWarnings())
-						{
-							messages += "- "+warning.getMessage()+"\n";
-						}
-						
-						for(ConversionWarning warning : writer.getWarnings())
-						{
-							messages += "- "+warning.getMessage()+"\n";
-						}
-					}
-					
-					final File[] filescreated = outputFolder2.listFiles();
-					
-					
-					
-					outputFolder2.deleteOnExit();
-					if(filescreated.length>0)
-					{
-						log.debug("Opening plot window with file: "+filescreated[0]);
-						FHXPlotWindow plotwindow = new FHXPlotWindow(filescreated[0]);
-						
-						plotwindow.addWindowListener(new WindowListener(){
-
-							@Override
-							public void windowActivated(WindowEvent arg0) {
-							}
-
-							@Override
-							public void windowClosed(WindowEvent arg0) {
-								log.debug("FHXPlot window closed");
-								for(File f : filescreated)
-								{
-									f.delete();
-								}
-							}
-
-							@Override
-							public void windowClosing(WindowEvent arg0) {								
-							}
-
-							@Override
-							public void windowDeactivated(WindowEvent arg0) {
-							}
-
-							@Override
-							public void windowDeiconified(WindowEvent arg0) {
-							}
-
-							@Override
-							public void windowIconified(WindowEvent arg0) {
-							}
-
-							@Override
-							public void windowOpened(WindowEvent arg0) {								
-							}
-							
-						});
-						
-					}
-					else
-					{
-						Alert.error("FHX Conversion", "Error converting series to FHX format");
-						
-					}
-					
-		    	}
-			
+				OpenRecent.sampleOpened(new SeriesDescriptor(s));
 			}
 			
+			// no samples => don't bother doing anything
+			if (samples.isEmpty()) {
+				return;
+			}
+	    	
+			// Create a list of projects 
+			ArrayList<TridasProject> projList = new ArrayList<TridasProject>();
+			ArrayList<LabCode> labCodeList = new ArrayList<LabCode>();
+			TridasProject project = defaults.getProjectWithDefaults();
+			for (Sample s : samples)
+			{
+				if(groupingType==1)
+				{
+					// User wants separate files so create a new project for each sample
+					project = defaults.getProjectWithDefaults();
+				}
+				
+				TridasObject tobj = (TridasObject) s.getMeta(Metadata.OBJECT, TridasObject.class);
+				TridasElement telem = s.getMeta(Metadata.ELEMENT, TridasElement.class);
+				TridasSample tsamp = s.getMeta(Metadata.SAMPLE, TridasSample.class);
+				TridasRadius trad = s.getMeta(Metadata.RADIUS, TridasRadius.class);
+				ITridasSeries tseries = s.getSeries();
+				
+				if(tseries instanceof TridasMeasurementSeries)
+				{
+					// Set all the standard mSeries entities
+					trad.getMeasurementSeries().add((TridasMeasurementSeries) tseries);
+					tsamp.getRadiuses().add(trad);
+					telem.getSamples().add(tsamp);
+					tobj.getElements().add(telem);
+					project.getObjects().add(tobj);
+				}
+				else
+				{
+					// Derived series so no other entities
+					project.getDerivedSeries().add((TridasDerivedSeries) tseries);
+				}
+				
+				if(groupingType==1)
+				{
+					// Add project to list
+					projList.add(project);
+					LabCode code = s.getMeta(Metadata.LABCODE, LabCode.class);
+					labCodeList.add(code);
+				}		
+			}
 			
+			if(groupingType==0)
+			{
+				// Add project to list as there user wants seperate files for each series
+				projList.add(project);
+				
+				if (samples.size()==1)
+				{
+					LabCode code = samples.get(0).getMeta(Metadata.LABCODE, LabCode.class);
+					labCodeList.add(code);
+				}
+			}
 			
-			
-		}
-
+			// Loop through projects writing them out as we go
+			String messages = "";
+			int i=-1;
+			for(TridasProject p : projList)
+			{
+				i++;
+				// Create the writer based on the requested format
+		    	AbstractDendroCollectionWriter writer = TridasIO.getFileWriter("FHX2");
+		    	
+		    	// Create and set the naming convention
+		    	AbstractNamingConvention nc;
+		    	if(labCodeList.size()==projList.size())
+		    	{
+		    		// We have a Tellervo lab code for each project so use this as the base filename
+		    		nc = new NumericalNamingConvention();
+		    		((NumericalNamingConvention)nc).setBaseFilename(
+		    				LabCodeFormatter.getDefaultFormatter().format(labCodeList.get(i)).toString());
+		    	}
+		    	else
+		    	{
+		    		// We don't have labcodes for the project(s) so use the hierarchical naming convention instead
+		    		nc = new HierarchicalNamingConvention();
+		    	}
+		    	writer.setNamingConvention(nc);
+		    	
+		    	// Get the writer to load the project
+				try {
+					writer.loadProject(p);
+				} catch (IncompleteTridasDataException e1) {
+					e1.printStackTrace();
+				} catch (ConversionWarningException e1) {
+					e1.printStackTrace();
 		
+				}
+				
+					
+				
+				// Get output folder
+				String outputFolder = null;
+				File outputFolder2 = null;
+				try {
+					outputFolder2 = IOUtils.createTempDirectory();
+					outputFolder2.deleteOnExit();
+					outputFolder = outputFolder2.toString();
+					if (!outputFolder.endsWith(File.separator) && !outputFolder.equals("")) {
+						outputFolder += File.separator;
+					}
+					
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
+
+
+				IDendroFile[] files = writer.getFiles();
+				for (int j=0; j<files.length; j++) {
+					IDendroFile dof = files[j];
+					writer.saveFileToDisk(outputFolder, dof);
+					
+					// Add any warnings to our warning message cache
+					if(writer.getWarnings().length>0)
+					{
+						messages += "Warning for file blah\n";
+					}
+
+					for(ConversionWarning warning : dof.getDefaults().getWarnings())
+					{
+						messages += "- "+warning.getMessage()+"\n";
+					}
+					
+					for(ConversionWarning warning : writer.getWarnings())
+					{
+						messages += "- "+warning.getMessage()+"\n";
+					}
+				}
+				
+				final File[] filescreated = outputFolder2.listFiles();
+				
+				
+				
+				outputFolder2.deleteOnExit();
+				if(filescreated.length>0)
+				{
+					log.debug("Opening plot window with file: "+filescreated[0]);
+					FHXPlotWindow plotwindow = new FHXPlotWindow(filescreated[0]);
+					
+					plotwindow.addWindowListener(new WindowListener(){
+
+						@Override
+						public void windowActivated(WindowEvent arg0) {
+						}
+
+						@Override
+						public void windowClosed(WindowEvent arg0) {
+							log.debug("FHXPlot window closed");
+							for(File f : filescreated)
+							{
+								f.delete();
+							}
+						}
+
+						@Override
+						public void windowClosing(WindowEvent arg0) {								
+						}
+
+						@Override
+						public void windowDeactivated(WindowEvent arg0) {
+						}
+
+						@Override
+						public void windowDeiconified(WindowEvent arg0) {
+						}
+
+						@Override
+						public void windowIconified(WindowEvent arg0) {
+						}
+
+						@Override
+						public void windowOpened(WindowEvent arg0) {								
+						}
+						
+					});
+					
+				}
+				else
+				{
+					Alert.error("FHX Conversion", "Error converting series to FHX format");
+					
+				}
+				
+	    	}
+		
+		}
 	}
 }
