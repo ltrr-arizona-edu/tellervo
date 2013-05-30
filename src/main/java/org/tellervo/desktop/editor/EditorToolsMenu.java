@@ -19,23 +19,14 @@
  ******************************************************************************/
 package org.tellervo.desktop.editor;
 
-import gov.noaa.ncdc.paleo.FHXPlot.FHXPlotWindow;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.File;
 import java.io.IOException;
-import java.security.AccessControlException;
-import java.security.AccessController;
-import java.util.ArrayList;
-import java.util.Collections;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -46,13 +37,10 @@ import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.gui.menus.actions.TruncateAction;
 import org.tellervo.desktop.index.IndexDialog;
 import org.tellervo.desktop.io.Metadata;
-import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.manip.ReconcileWindow;
 import org.tellervo.desktop.manip.RedateDialog;
 import org.tellervo.desktop.manip.Reverse;
 import org.tellervo.desktop.manip.SumCreationDialog;
-import org.tellervo.desktop.manip.TruncateDialog;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
@@ -66,8 +54,6 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 import org.tridas.interfaces.ITridasSeries;
-import org.tridas.io.DendroFileFilter;
-import org.tridas.io.TridasIO;
 import org.tridas.schema.TridasDerivedSeries;
 
 

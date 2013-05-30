@@ -19,11 +19,10 @@
  ******************************************************************************/
 package org.tellervo.desktop.editor;
 
-import gov.noaa.ncdc.paleo.FHXPlot.FHXPlotWindow;
+import gov.noaa.ncdc.paleo.fhchart.gui.PlotWindow;
 
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
@@ -43,7 +42,6 @@ import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
 import org.tellervo.desktop.io.Metadata;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
@@ -52,9 +50,8 @@ import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.ui.Alert;
-import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.util.IOUtils;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
@@ -66,7 +63,6 @@ import org.tridas.io.defaults.TridasMetadataFieldSet;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.exceptions.IncompleteTridasDataException;
-import org.tridas.io.formats.fhx2.FHX2Writer;
 import org.tridas.io.naming.AbstractNamingConvention;
 import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
@@ -386,7 +382,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 				if(filescreated.length>0)
 				{
 					log.debug("Opening plot window with file: "+filescreated[0]);
-					FHXPlotWindow plotwindow = new FHXPlotWindow(filescreated[0]);
+					PlotWindow plotwindow = new PlotWindow(App.mainWindow, filescreated[0]);
 					
 					plotwindow.addWindowListener(new WindowListener(){
 
