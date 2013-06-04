@@ -229,9 +229,12 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
 				  
 		// Remove the lab acronym part (e.g. "C-")  from beginning if present
 		String prefix = App.getLabCodePrefix();
-		if(labcodestr.length()>2)
+		if(labcodestr.length()> prefix.length())
 		{
-			if (labcodestr.substring(0, prefix.length()).compareToIgnoreCase(prefix)==0) labcodestr = labcodestr.substring(prefix.length(), labcodestr.length());
+			if (labcodestr.substring(0, prefix.length()).compareToIgnoreCase(prefix)==0) 
+			{
+				labcodestr = labcodestr.substring(prefix.length(), labcodestr.length());
+			}
 		}
 		  
 		// Explode based on '-' delimiter

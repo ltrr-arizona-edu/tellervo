@@ -320,9 +320,9 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		
 		// expand all nodes in tree
 		// note: tree.getRowCount() changes as we expand each node!
-		for(int i = 0; i < tree.getRowCount(); i++) {
+		/*for(int i = 0; i < tree.getRowCount(); i++) {
 			tree.expandRow(i);
-		}
+		}*/
 	}
 	
 	private void setStatus(String status, boolean inProgress) {

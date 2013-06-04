@@ -134,7 +134,10 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
         
     	// Set up lists of series and initialize gui
     	this.firstFloating = firstFloating;
-    	setSeriesPoolFromGUI(parent, preexistingElements);
+    	if(setSeriesPoolFromGUI(parent, preexistingElements)==false)
+    	{
+    		return;
+    	}
         initialize();
     }
     
@@ -251,13 +254,15 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
      * @param parent
      * @param preexistingElements
      */
-    private void setSeriesPoolFromGUI(Frame parent, ElementList preexistingElements)
+    private boolean setSeriesPoolFromGUI(Frame parent, ElementList preexistingElements)
     {
     	// let user choose crossdates, exit if they close quietly
     	if((crossdatingElements = showOpenDialog(parent, true, preexistingElements)) == null) {
     		window.dispose();
-    		return;
+    		return false;
     	}
+    	
+    	return true;
     }
     
     /**
