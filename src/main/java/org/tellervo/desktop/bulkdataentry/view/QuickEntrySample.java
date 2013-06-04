@@ -23,16 +23,18 @@ import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasElement;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 
 public class QuickEntrySample extends JDialog implements ActionListener {
 
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
-	private JTextField txtSampleCode;
 	private IBulkImportSectionModel sampleModel;
 	private IBulkImportSectionModel elementModel;
 	private JComboBox<ControlledVoc> cboSampleType;
+	private JSpinner spnSampleNumber;
 
 	/**
 	 * Create the dialog.
@@ -50,17 +52,16 @@ public class QuickEntrySample extends JDialog implements ActionListener {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new MigLayout("", "[right][grow]", "[][][grow,fill]"));
 		{
-			JLabel lblSampleCode = new JLabel("Sample code:");
+			JLabel lblSampleCode = new JLabel("Number of samples per element:");
 			contentPanel.add(lblSampleCode, "cell 0 0,alignx trailing");
 		}
 		{
-			txtSampleCode = new JTextField();
-			txtSampleCode.setText("A");
-			contentPanel.add(txtSampleCode, "cell 1 0,growx");
-			txtSampleCode.setColumns(10);
+			spnSampleNumber = new JSpinner();
+			spnSampleNumber.setModel(new SpinnerNumberModel(1, 0, 10, 1));
+			contentPanel.add(spnSampleNumber, "cell 1 0");
 		}
 		{
-			JLabel lblType = new JLabel("Type:");
+			JLabel lblType = new JLabel("Sample type:");
 			contentPanel.add(lblType, "cell 0 1,alignx trailing");
 		}
 		{
@@ -102,16 +103,19 @@ public class QuickEntrySample extends JDialog implements ActionListener {
 			
 			elementRow.populateToTridasElement(element);
 			
+			String[] codes = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
+			for(int i=0; i<((Integer)spnSampleNumber.getValue()); i++)
+			{
 			
-			
-			
-			IBulkImportSingleRowModel sample = sampleModel.createRowInstance();
-			sample.setProperty(SingleSampleModel.OBJECT, elementRow.getProperty(SingleElementModel.OBJECT));
-			sample.setProperty(SingleSampleModel.ELEMENT, element);
-			sample.setProperty(SingleSampleModel.TYPE, cboSampleType.getSelectedItem());
-			sample.setProperty(SingleSampleModel.TITLE, txtSampleCode.getText());
-
-			sampleModel.getRows().add(sample);
+				
+				IBulkImportSingleRowModel sample = sampleModel.createRowInstance();
+				sample.setProperty(SingleSampleModel.OBJECT, elementRow.getProperty(SingleElementModel.OBJECT));
+				sample.setProperty(SingleSampleModel.ELEMENT, element);
+				sample.setProperty(SingleSampleModel.TYPE, cboSampleType.getSelectedItem());
+				sample.setProperty(SingleSampleModel.TITLE, codes[i]);
+	
+				sampleModel.getRows().add(sample);
+			}
 		}
 	}
 	
@@ -132,4 +136,7 @@ public class QuickEntrySample extends JDialog implements ActionListener {
 	}
 	
 
+	protected JSpinner getSpinner() {
+		return spnSampleNumber;
+	}
 }
