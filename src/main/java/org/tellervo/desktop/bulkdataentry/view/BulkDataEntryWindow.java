@@ -75,7 +75,7 @@ public class BulkDataEntryWindow extends JFrame {
 		
 		objects = new ObjectView(BulkImportModel.getInstance().getObjectModel());
 		elements = new ElementView(BulkImportModel.getInstance().getElementModel());
-		samples = new SampleView(BulkImportModel.getInstance().getSampleModel());
+		samples = new SampleView(BulkImportModel.getInstance().getSampleModel(), BulkImportModel.getInstance().getElementModel());
 		tabs.addTab(I18n.getText("tridas.object")+"s", Builder.getIcon("object.png", 22), objects);
 		tabs.addTab(I18n.getText("tridas.element")+"s", Builder.getIcon("element.png", 22), elements);
 		tabs.addTab(I18n.getText("tridas.sample")+"s", Builder.getIcon("sample.png", 22), samples);

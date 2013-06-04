@@ -75,7 +75,9 @@ import org.tridas.util.TridasObjectEx;
 public class ElementView extends AbstractBulkImportView{
 	
 	private JButton browseGPX;
-
+	private JButton quickFill;
+	
+	
 	public ElementView(ElementModel argModel){
 		super(argModel);
 	}
@@ -168,6 +170,14 @@ public class ElementView extends AbstractBulkImportView{
 		 toolbar.add(argCopyRowButton);
 		 toolbar.add(argPopulateFromDB);
 		 
+		 quickFill = new JButton();
+		 quickFill.setIcon(Builder.getIcon("quickfill.png", 22));
+		 quickFill.setToolTipText("Open quick fill dialog");
+		 
+		 
+		 toolbar.add(quickFill);
+		
+		 
 			browseGPX = new JButton();
 			browseGPX.setIcon(Builder.getIcon("satellite.png", 22));
 			browseGPX.setToolTipText(I18n.getText("bulkimport.browseGPXFile"));
@@ -197,6 +207,23 @@ public class ElementView extends AbstractBulkImportView{
 				
 			}
 		});
+		
+		final ElementView glue = this;
+		quickFill.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				QuickEntryElement dialog = new QuickEntryElement(glue, model);
+				
+				dialog.setVisible(true);
+				
+			}
+			
+			
+			
+		});
+		
+		
 	}
 	
 	/**

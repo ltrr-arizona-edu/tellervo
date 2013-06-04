@@ -36,6 +36,8 @@ import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.control.PrintSampleBarcodesEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
+import org.tellervo.desktop.bulkdataentry.model.ElementModel;
+import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
@@ -70,9 +72,14 @@ import com.dmurph.mvc.gui.combo.MVCJComboBox;
 public class SampleView  extends AbstractBulkImportView{
 
 	private JButton printBarcodes;
+	private JButton quickFill;
 	
-	public SampleView(SampleModel argModel) {
+	private ElementModel elementModel;
+
+	
+	public SampleView(SampleModel argModel, ElementModel elementModel) {
 		super(argModel);
+		this.elementModel = elementModel;
 	}
 
 	/**
@@ -184,6 +191,12 @@ public class SampleView  extends AbstractBulkImportView{
 		 toolbar.add(argAddRowButton);
 		 toolbar.add(argDeleteRowButton);
 		 toolbar.add(argCopyRow);
+		 
+		 quickFill = new JButton();
+		 quickFill.setIcon(Builder.getIcon("quickfill.png", 22));
+		 quickFill.setToolTipText("Open sample quick fill dialog");
+		 toolbar.add(quickFill);
+		 
 			printBarcodes = new JButton();
 			printBarcodes.setIcon(Builder.getIcon("barcode.png", 22));
 			printBarcodes.setToolTipText(I18n.getText("bulkimport.printBarcodes"));
@@ -208,6 +221,21 @@ public class SampleView  extends AbstractBulkImportView{
 				PrintSampleBarcodesEvent event = new PrintSampleBarcodesEvent(model);
 				event.dispatch();
 			}
+		});
+		
+		
+		final SampleView glue = this;
+		quickFill.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				QuickEntrySample dialog = new QuickEntrySample(glue, model, elementModel);
+				dialog.setVisible(true);
+				
+			}
+			
+			
+			
 		});
 	}
 	
