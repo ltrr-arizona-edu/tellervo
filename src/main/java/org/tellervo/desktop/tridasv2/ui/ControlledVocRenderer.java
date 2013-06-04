@@ -48,10 +48,13 @@ public class ControlledVocRenderer extends DefaultCellRenderer {
 		 *    value
 		 */
 		DEFAULT,
+		
 		/** normal (<i>normalStandard</i>) */
 		NORMAL,
+		
 		/** normal */
 		NORMAL_ONLY,
+		
 		/** value */
 		VALUE
 	}

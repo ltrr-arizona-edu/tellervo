@@ -18,6 +18,31 @@ import org.tridas.schema.ControlledVoc;
 public class ControlledVocDictionaryComboBox extends DynamicJComboBox<ControlledVoc>{
 	private static final long serialVersionUID = 1L;
 	
+	
+	public ControlledVocDictionaryComboBox(String argDictionary, ControlledVocRenderer.Behavior behaviour)
+	{
+		super(Dictionary.getMutableDictionary(argDictionary), new Comparator<ControlledVoc>(){
+			@Override
+			public int compare(ControlledVoc argO1, ControlledVoc argO2) {
+				return argO1.getNormal().compareToIgnoreCase(argO2.getNormal());
+			}
+		});
+		this.setKeySelectionManager(new DynamicKeySelectionManager(){
+			/**
+			 * @see org.tellervo.desktop.components.table.DynamicKeySelectionManager#convertToString(java.lang.Object)
+			 */
+			@Override
+			public String convertToString(Object argO) {
+				if(argO == null){
+					return "";
+				}
+				ControlledVoc cv = (ControlledVoc) argO;
+				return cv.getNormal();
+			}
+		});
+		this.setRenderer(new ControlledVocRenderer(behaviour));
+	}
+	
 	@SuppressWarnings("unchecked")
 	public ControlledVocDictionaryComboBox(String argDictionary){
 		super(Dictionary.getMutableDictionary(argDictionary), new Comparator<ControlledVoc>(){

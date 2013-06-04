@@ -131,7 +131,8 @@ public class PrintBarcodesCommand implements ICommand {
 		}
 		else
 		{
-			Alert.error(I18n.getText("error"), "There are no selected samples that can have their barcodes printed");
+			Alert.error(I18n.getText("error"), "There are no selected samples that can have their barcodes printed. " +
+											   "Barcodes can only be created for samples that have been imported into the database.");
 		}
 		
 	}
