@@ -112,6 +112,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		importSelected = new JButton();
 		populateFromDB = new JButton();
 		importSelected.putClientProperty("JButton.buttonType", "bevel");
+		importSelected.setIcon(Builder.getIcon("importtodatabase.png", 22));
 		
 		table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
 		
@@ -512,7 +513,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		selectNone.setToolTipText(I18n.getText("dbbrowser.selectNone"));
 		selectNone.setIcon(Builder.getIcon("selectnone.png", 22));
 
-		populateFromDB.setToolTipText("Populate from db");
+		populateFromDB.setToolTipText("Populate table from database");
 		populateFromDB.setIcon(Builder.getIcon("database.png", 22));
 		
 		

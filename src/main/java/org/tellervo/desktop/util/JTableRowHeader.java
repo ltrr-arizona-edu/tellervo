@@ -245,22 +245,21 @@ public class JTableRowHeader extends JTable
 		public Component getTableCellRendererComponent(
 			JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
 		{
-
+			//Color c = table.getTableHeader().getBackground();
+			Color c = new Color(214,217,223);
+			
 			setText((value == null) ? "" : value.toString());
-			//setBorder(UIManager.getBorder("TableHeader.cellBorder"));\
-						
+									
 			if(isSelected)
 			{
 				setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 			}
 			else
 			{
-				setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));	
+				setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 			}
-			
-			Color c = UIManager.getColor("ToolBar.background");
+				
 			setBackground(c);
-
 			return this;
 		}
 	}
