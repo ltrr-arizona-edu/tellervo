@@ -63,6 +63,8 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	
 	// list of possible elements from the chosen parent object
 	public static final String POSSIBLE_ELEMENTS = "POSSIBLE_ELEMENTS";
+	public static final String POPULATING_ELEMENT_LIST = "POPULATING_ELEMENT_LIST";
+	
 
 	public static final String[] TABLE_PROPERTIES = {
 		OBJECT, ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION,
@@ -77,6 +79,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, null);
 		registerProperty(RADIUS_MODEL, PropertyType.READ_ONLY, null);
 		registerProperty(POSSIBLE_ELEMENTS, PropertyType.READ_WRITE, new MVCArrayList<TridasElement>());
+		registerProperty(POPULATING_ELEMENT_LIST, PropertyType.READ_WRITE, false);
 	}
 	
 	/**
@@ -142,6 +145,18 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	
 	public MVCArrayList<TridasElement> getPossibleElements(){
 		return (MVCArrayList<TridasElement>) getProperty(POSSIBLE_ELEMENTS);
+	}
+	
+	public boolean isElementListReady()
+	{
+		MVCArrayList<TridasElement> list = (MVCArrayList<TridasElement>) getProperty(POSSIBLE_ELEMENTS);
+		Boolean isPopulating = (Boolean) getProperty(POPULATING_ELEMENT_LIST);
+		if(isPopulating) return false;
+		
+		if(isPopulating==false && list.size()>0) return true;
+		
+		return false;
+		
 	}
 	
 	public void populateToTridasSample(TridasSample argSample){

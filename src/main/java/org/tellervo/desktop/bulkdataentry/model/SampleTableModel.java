@@ -84,7 +84,8 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 		
 		
 		// FIXME this all should be in a command!!!
-		if(argColumn.equals(SingleSampleModel.OBJECT)){
+		if(argColumn.equals(SingleSampleModel.OBJECT))
+		{
 			argModel.setProperty(argColumn, argAValue);
 			
 			if(argAValue != null){
@@ -99,8 +100,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 						SearchParameters param = new SearchParameters(SearchReturnObject.ELEMENT);
 				    	param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, o.getIdentifier().getValue().toString());
 
-				    	// we want an object return here, so we get a list of object->elements->samples when we use comprehensive
-						EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
+				    	EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
 						resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
 						
 						TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(BulkImportModel.getInstance().getMainView(), resource);
@@ -125,17 +125,52 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 		
 		else if (argColumn.equals(SingleSampleModel.ELEMENT))
 		{
-			if(argAValue instanceof String)
+			if(argAValue instanceof TridasElement)
 			{
-				final SingleSampleModel ssm = (SingleSampleModel) argModel;
-				for(TridasElement el : ssm.getPossibleElements())
+				
+				if(!((TridasElement)argAValue).isSetIdentifier())
 				{
-					if(el.getTitle().equals(argAValue))
-					{
-						argModel.setProperty(argColumn, el);
-					}
+					final SingleSampleModel ssm = (SingleSampleModel) argModel;
+					final String col = argColumn;
+					final String val = ((TridasElement) argAValue).getTitle();
+					Thread t = new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							
+							
+							
+							int i=0;
+							while(!ssm.isElementListReady())
+							{
+								try {
+									Thread.sleep(10);
+									i++;	
+									if(i>500) return;
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+									return;
+								}
+	
+							}
+							
+							// Possible element list is populated so try and find item in list
+							for(TridasElement el : ssm.getPossibleElements())
+							{
+								if(el.getTitle().equals(val))
+								{
+									ssm.setProperty(col, el);
+								}
+							}
+							return;
+						}
+					}, "Element populate thread");
+					
+					t.start();
+				
 				}
-				return;
+				
 			}
 		}
 		

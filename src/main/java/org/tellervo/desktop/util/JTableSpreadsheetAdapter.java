@@ -476,30 +476,21 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							tablemodel.setValueAt(null,rowIndex,startCol+j);
 						}
 					}
-					//else if (clazz.equals(TridasElement.class))
-					//{
+					else if (clazz.equals(TridasElement.class))
+					{
 						
-						/*if(value!=null && value.toLowerCase()!="null")
+						if(value!=null && value.toLowerCase()!="null")
 						{
-							List<TridasElement> types = ??
-							Boolean match = false;
-							for(TridasElement obj : types)
-							{
+							TridasElement tempElement = new TridasElement();
+							tempElement.setTitle(value);
 			
-									tablemodel.setValueAt(obj,rowIndex,startCol+j);
-									match = true;
-								
-							}
-							if(match==false) {
-								System.out.println("Error in TridasElement");
-								errorsEncountered = true;
-							}
+							tablemodel.setValueAt(tempElement,rowIndex,startCol+j);
 						}
 						else
 						{
 							tablemodel.setValueAt(null,rowIndex,startCol+j);
-						}*/
-					//}
+						}
+					}
 					else if (clazz.equals(GPXWaypoint.class))
 					{
 						// ignore
