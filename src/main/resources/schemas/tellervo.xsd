@@ -98,6 +98,22 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+
+	<xs:simpleType name="curationStatus">
+		<xs:annotation>
+			<xs:documentation>Status of a sample in terms of its location</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Archived"/>
+			<xs:enumeration value="On loan (internal)"/>
+			<xs:enumeration value="On loan (external)"/>
+			<xs:enumeration value="Missing"/>
+			<xs:enumeration value="On display"/>
+			<xs:enumeration value="Destroyed"/>
+			<xs:enumeration value="Returned to owner"/>
+		</xs:restriction>
+	</xs:simpleType>
+
 	<xs:simpleType name="searchParameterName">
 		<xs:restriction base="xs:string">
 
@@ -902,5 +918,60 @@
 			<xs:attribute name="url" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
+	
+	<!--
+		%%%%%%%%%%%%%%
+		% CURATION
+		%%%%%%%%%%%%%% -->
+	
+	<xs:element name="curation">
+		<xs:annotation>
+			<xs:documentation>
+				Details of a curation event, such as making a loan, archving, logging a missing sample etc
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+					<xs:element ref="loan" minOccurs="0" maxOccurs="1"/>
+					<xs:element name="notes" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="entity" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="status" type="curationStatus" use="required" />
+
+			
+		</xs:complexType>
 		
+	</xs:element>
+	
+	<!--
+		%%%%%%%%%%%%%%
+		% LOAN
+		%%%%%%%%%%%%%% -->
+	<xs:element name="loan">
+		<xs:annotation>
+			<xs:documentation>
+				Details of a loan of one or more samples
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>	
+			<xs:sequence>
+				<xs:element name="file" minOccurs="0" maxOccurs="unbounded">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Filename of a file associated with this loan.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:complexType>
+						<xs:attribute ref="xlink:href" use="required"/>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="notes" minOccurs="0" maxOccurs="1"/>
+			</xs:sequence>
+			<xs:attribute name="firstname" type="xs:string" use="optional"/>
+			<xs:attribute name="lastname" type="xs:string" use="optional"/>
+			<xs:attribute name="organisation" type="xs:string" use="optional"/>
+			<xs:attribute name="duedate" type="xs:dateTime" use="required"/>
+			<xs:attribute name="issuedate" type="xs:dateTime" use="required"/>
+		</xs:complexType>
+		</xs:element>
 </xs:schema>
