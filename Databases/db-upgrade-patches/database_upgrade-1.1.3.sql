@@ -1,0 +1,1 @@
+create view vwloan as select l.loanid, l.firstname, l.lastname, l.organisation, l.duedate, l.issuedate, l.files, l.notes from tblloan l;

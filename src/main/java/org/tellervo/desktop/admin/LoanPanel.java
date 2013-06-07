@@ -9,6 +9,9 @@ import javax.swing.JTextArea;
 import javax.swing.JList;
 import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
+
+import org.tellervo.schema.WSILoan;
+
 import java.awt.BorderLayout;
 
 public class LoanPanel extends JPanel {
@@ -17,11 +20,19 @@ public class LoanPanel extends JPanel {
 	private JTextField txtOrganisation;
 	private JTextField textField;
 	private JTextField txtDueDate;
+	private JTextArea textArea;
+	private JList lstSamples;
+	private JList lstFiles;
 
 	/**
 	 * Create the panel.
 	 */
 	public LoanPanel() {
+		
+		initGUI();
+	}
+
+	private void initGUI() {
 		setLayout(new BorderLayout(0, 0));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
@@ -70,7 +81,7 @@ public class LoanPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane();
 		panelDetails.add(scrollPane, "cell 1 3 3 1,grow");
 		
-		JTextArea textArea = new JTextArea();
+		textArea = new JTextArea();
 		scrollPane.setViewportView(textArea);
 		
 		JPanel panelSamples = new JPanel();
@@ -80,8 +91,8 @@ public class LoanPanel extends JPanel {
 		JScrollPane scrollPaneSamples = new JScrollPane();
 		panelSamples.add(scrollPaneSamples, "cell 0 0 1 4,grow");
 		
-		JList list = new JList();
-		scrollPaneSamples.setViewportView(list);
+		lstSamples = new JList();
+		scrollPaneSamples.setViewportView(lstSamples);
 		
 		JButton btnAddSample = new JButton("+");
 		panelSamples.add(btnAddSample, "cell 1 0");
@@ -99,8 +110,8 @@ public class LoanPanel extends JPanel {
 		JScrollPane scrollPaneFiles = new JScrollPane();
 		panelFiles.add(scrollPaneFiles, "cell 0 0 1 4,grow");
 		
-		JList list_1 = new JList();
-		scrollPaneFiles.setViewportView(list_1);
+		lstFiles = new JList();
+		scrollPaneFiles.setViewportView(lstFiles);
 		
 		JButton btnAddFile = new JButton("+");
 		panelFiles.add(btnAddFile, "cell 1 0");
@@ -110,7 +121,17 @@ public class LoanPanel extends JPanel {
 		
 		JButton btnViewFile = new JButton("View");
 		panelFiles.add(btnViewFile, "cell 1 3");
-
+		
+	}
+	
+	public void setLoan(WSILoan loan)
+	{
+		if(loan==null) return;
+		
+		txtFirstname.setText(loan.getFirstname());
+		txtLastName.setText(loan.getLastname());
+		txtOrganisation.setText(loan.getOrganisation());
+		
 	}
 
 }

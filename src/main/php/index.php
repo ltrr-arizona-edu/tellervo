@@ -40,6 +40,7 @@ require_once("inc/permission.php");
 require_once("inc/authenticate.php");
 require_once("inc/dictionaries.php");
 require_once("inc/search.php");
+require_once("inc/loan.php");
 
 
 $xmldata 		= NULL;
@@ -118,6 +119,8 @@ if($myMetaHeader->status != "Error")
             case "securityGroupParameters":		$myObject = new securityGroup(); break;
             case "boxParameters":				$myObject = new box(); break;
             case "permissionParameters":		$myObject = new permission(); break;
+            case "loanParameters":				$myObject = new loan(); break;
+            //case "curationEventParameters":		$myObject = new curationEventParameters; break;
             default:
             	trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
             	echo "Object type not supported";
@@ -201,6 +204,12 @@ if($myMetaHeader->status != "Error")
                 case "permission":
                 	$myID = null;
                 	break;
+                case "loan":
+                	$myID = null;
+                	break;
+                case "curationEvent":
+                	$myID = null;
+                	break;
                 default:
                 	$firebug->log($objectType, "Unknown object type");
              
@@ -219,7 +228,7 @@ if($myMetaHeader->status != "Error")
 			$firebug->log("Beginning permissions check...");
 			
 
-	    $hasPermission = $myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID);
+	    	$hasPermission = $myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID);
             if($hasPermission!=TRUE)
             {
                 // Permission denied

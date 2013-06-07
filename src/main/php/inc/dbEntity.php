@@ -277,6 +277,9 @@ class dbEntity
      */
     protected function setID($identifier, $domain=NULL)
     {
+    	global $firebug;
+    	
+    	$firebug->log($identifier, "setting entity id to");
     	$this->id = $identifier;
     	$this->identifierDomain = $domain;	
     	return true;	
@@ -3100,6 +3103,81 @@ class taxonEntity extends dbEntity
     
 }
 
+
+class loanEntity extends dbEntity
+{
+	protected $firstname = NULL;
+	protected $lastname = NULL;
+	protected $organisation = NULL;
+	protected $notes = NULL;
+	protected $duedate = NULL;
+	public $entityIdArray = NULL;
+	
+	function __construct()
+	{
+		$this->entityIdArray = array();
+	}
+	
+	function setFirstName($name)
+	{
+		$this->firstname = $name;
+	}
+	
+	function setLastName($name)
+	{
+		$this->lastname = $name;
+	}
+	
+	function setOrganisation($org)
+	{
+		$this->organisation = $org;
+	}
+	
+	function setNotes($notes)
+	{
+		$this->notes = $notes;
+	}
+	
+	function setDueDate($date)
+	{
+		$this->duedate = $date;
+	}
+	
+	function getFirstName()
+	{
+		return $this->firstname;
+	}
+	
+	function getLastName()
+	{
+		return $this->lastname;
+	}
+	
+	function getOrganisation()
+	{
+		return $this->organisation;
+	}
+	
+	function getNotes()
+	{
+		return $this->notes;
+	}
+	
+	function getDueDate()
+	{
+		return $this->duedate;
+	}
+}
+
+class curationEventEntity extends dbEntity
+{
+	protected $curationstatus = NULL;
+	protected $notes = NULL;
+	protected $curator = NULL;
+	
+	
+	
+}
 
 /**
  * A class representing TRiDaS measurementSeries and derivedSeries in the database.  This class also includes representations of TRiDaS values.

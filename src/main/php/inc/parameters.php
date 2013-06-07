@@ -261,6 +261,66 @@ class dictionariesParameters implements IParams
     }
 }
 
+
+class loanParameters extends loanEntity implements IParams
+{
+ 	var $xmlRequestDom = NULL;
+	var $mergeWithID = NULL;
+	
+    function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
+    {
+    	global $firebug;
+    	
+    	
+    	$firebug->log($xmlrequest, "XML request received by loanParameters");
+    	
+    	parent::__construct();    	
+    	
+    	
+    	
+
+    	$this->xmlRequestDom = new DomDocument();
+    	$this->xmlRequestDom->loadXML($xmlrequest);
+        
+     		            		
+        // Extract parameters from the XML request
+        $this->setParamsFromXMLRequest();
+    }
+    
+    function setParamsFromXMLRequest()
+    {
+		global $tellervoNS;
+        global $tridasNS;
+		global $firebug;
+
+        $children = $this->xmlRequestDom->documentElement->childNodes;
+        
+        foreach($children as $child)
+        {
+		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
+        	
+        	$firebug->log($child->tagName, "XML tag name");
+        	$firebug->log($child->nodeValue, "XML tag value");
+        	
+		   switch ($child->tagName)
+		   {
+		   		case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+		   		case "tvo:firstname":			$this->setFirstName($child->nodeValue); break;
+		   		case "tvo:lastname":			$this->setLastName($child->nodeValue); break;
+		   		case "tvo:organisation":			$this->setOrganisation($child->nodeValue); break;
+		   		case "tvo:notes":			$this->setNotes($child->nodeValue); break;
+		   		case "tvo:duedate":			$this->setDueDate($child->nodeValue); break;
+		   		case "tvo:issuedate":			break;
+		
+		   }
+        }
+        
+    }
+	
+}
+
+
+
 class permissionParameters extends permissionEntity implements IParams
 {
     function __construct($xmlrequest)

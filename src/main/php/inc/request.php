@@ -116,6 +116,7 @@ class request
     	global $myAuth;      
         global $firebug;
     	
+	$firebug->log($tellervoXSD, "Tellervo Schema");
 
         $origErrorLevel = error_reporting(E_ERROR);
         $xmlrequest = trim(dbHelper::xmlSpecialCharReplace($xmlrequest));
@@ -343,6 +344,11 @@ class request
 	                		$newxml = "<tellervo xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><securityGroup id='".$item->getAttribute('id')."'/></tellervo>";
 	                		$myParamObj = new securityGroupParameters($newxml);
                             break;	  
+                            
+	                	case 'loan':
+	                		$newxml = "<loan xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier>".$item->getAttribute('id')."</tridas:identifier></loan>";
+	                		$myParamObj = new loanParameters($newxml);
+                            break;		  
                             
                                                         
 	                	default:

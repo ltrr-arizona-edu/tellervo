@@ -21,6 +21,7 @@
 package org.tellervo.desktop.gui.menus;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -29,6 +30,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.tellervo.desktop.admin.LoanDialog;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.gis.GISFrame;
@@ -196,6 +198,20 @@ public class AdminMenu extends JMenu {
 	            "org.tellervo.desktop.util.labels.ui.PrintingDialog.proSheetPrintingDialog()");
 	    inventory.setEnabled(false);
 	    //curationmenu.add(inventory); 
+	    
+	    JMenuItem loanDialog = new JMenuItem("Loans");
+	    loanDialog.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				LoanDialog dialog = new LoanDialog();
+				dialog.setVisible(true);
+			}
+	    	
+	    });
+	    curationmenu.add(loanDialog);
+	    
 	    
 	 	add(curationmenu);
 	 	addSeparator();
