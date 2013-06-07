@@ -924,7 +924,7 @@
 		% CURATION
 		%%%%%%%%%%%%%% -->
 	
-	<xs:element name="curation">
+	<xs:element name="curationEvent">
 		<xs:annotation>
 			<xs:documentation>
 				Details of a curation event, such as making a loan, archving, logging a missing sample etc
@@ -932,15 +932,17 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-					<xs:element ref="loan" minOccurs="0" maxOccurs="1"/>
-					<xs:element name="notes" minOccurs="0" maxOccurs="1"/>
-					<xs:element ref="entity" minOccurs="1" maxOccurs="unbounded"/>
+				<xs:element ref="securityUser"/>
+				<xs:element name="curationTimeStamp" type="xs:dateTime"/>
+				<xs:element name="notes" minOccurs="0" maxOccurs="1"/>
+				<xs:choice>
+					<xs:element ref="loan" minOccurs="1" maxOccurs="1"/>
+					<xs:element ref="entity" minOccurs="1" maxOccurs="1"/>
+				</xs:choice>		
 			</xs:sequence>
-			<xs:attribute name="status" type="curationStatus" use="required" />
-
 			
+			<xs:attribute name="status" type="curationStatus" use="required" />
 		</xs:complexType>
-		
 	</xs:element>
 	
 	<!--
@@ -955,6 +957,9 @@
 		</xs:annotation>
 		<xs:complexType>	
 			<xs:sequence>
+				<xs:element name="firstname" type="xs:string" />
+				<xs:element name="lastname" type="xs:string" />
+				<xs:element name="organisation" type="xs:string"/>
 				<xs:element name="file" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation xml:lang="EN">
@@ -966,10 +971,9 @@
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="notes" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="entity" minOccurs="1" maxOccurs="unbounded"/>
 			</xs:sequence>
-			<xs:attribute name="firstname" type="xs:string" use="optional"/>
-			<xs:attribute name="lastname" type="xs:string" use="optional"/>
-			<xs:attribute name="organisation" type="xs:string" use="optional"/>
+
 			<xs:attribute name="duedate" type="xs:dateTime" use="required"/>
 			<xs:attribute name="issuedate" type="xs:dateTime" use="required"/>
 		</xs:complexType>
