@@ -1,4 +1,4 @@
-package org.tellervo.desktop.admin;
+package org.tellervo.desktop.admin.curation;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -16,6 +16,9 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.JSplitPane;
 import javax.swing.JSeparator;
 
@@ -34,7 +37,7 @@ import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSILoan;
 import org.tridas.schema.TridasIdentifier;
 
-public class LoanDialog extends JDialog {
+public class LoanDialog extends JDialog implements ActionListener{
 
 
 	private static final long serialVersionUID = 1L;
@@ -44,19 +47,7 @@ public class LoanDialog extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JTable table;
 	private LoanPanel loanPanel;
-
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			LoanDialog dialog = new LoanDialog();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	private LoanTableModel loanTableModel;
 
 	/**
 	 * Create the dialog.
@@ -120,15 +111,8 @@ public class LoanDialog extends JDialog {
 				{
 					table = new JTable();
 					table.setMinimumSize(new Dimension(100,100));
-					table.setModel(new DefaultTableModel(
-						new Object[][] {
-							{"Peter", "Brewer", "LTRR", "01/05/2013", "01/05/2014"},
-							{"Joe", "Bloggs", "ACME University", "01/01/2013", "01/01/2015"},
-						},
-						new String[] {
-							"First name", "Last name", "Organisation", "Issue date", "Due data"
-						}
-					));
+					loanTableModel = new LoanTableModel();
+					table.setModel(loanTableModel);
 					scrollPane.setViewportView(table);
 				}
 			}
@@ -164,13 +148,25 @@ public class LoanDialog extends JDialog {
 			toolbar.add(btnNewButton_1);
 		}
 		{
-			JButton btnNewButton_2 = new JButton("All");
-			toolbar.add(btnNewButton_2);
+			JButton btnAll = new JButton("All");
+			btnAll.setActionCommand("All");
+			btnAll.addActionListener(this);
+			toolbar.add(btnAll);
 		}
 		{
 			JButton btnNewButton_3 = new JButton("Search");
 			toolbar.add(btnNewButton_3);
 		}
+	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent event) {
+		if(event.getActionCommand().equals("All"))
+		{
+			
+		}
+		
 	}
 
 

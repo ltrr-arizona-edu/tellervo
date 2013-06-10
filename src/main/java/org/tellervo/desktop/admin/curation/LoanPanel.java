@@ -1,4 +1,4 @@
-package org.tellervo.desktop.admin;
+package org.tellervo.desktop.admin.curation;
 
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
@@ -40,7 +40,7 @@ public class LoanPanel extends JPanel {
 		
 		JPanel panelDetails = new JPanel();
 		tabbedPane.addTab("Details", null, panelDetails, null);
-		panelDetails.setLayout(new MigLayout("", "[right][grow,fill][grow,fill][]", "[][][][grow]"));
+		panelDetails.setLayout(new MigLayout("", "[right][135px,grow,fill][135px,grow,fill][]", "[][][][grow]"));
 		
 		JLabel lblName = new JLabel("Name:");
 		panelDetails.add(lblName, "cell 0 0");

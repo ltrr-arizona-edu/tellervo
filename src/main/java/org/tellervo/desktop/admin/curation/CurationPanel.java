@@ -1,4 +1,4 @@
-package org.tellervo.desktop.admin;
+package org.tellervo.desktop.admin.curation;
 
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
@@ -16,6 +16,8 @@ import java.awt.Dimension;
 import javax.swing.JButton;
 
 public class CurationPanel extends JPanel {
+
+	private static final long serialVersionUID = 1L;
 	private JTable table;
 	private JTextField txtBox;
 	private JTextField txtStorageLocation;
