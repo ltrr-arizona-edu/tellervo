@@ -22,7 +22,7 @@ public class LoanTableModel extends AbstractTableModel {
 	
 	public LoanTableModel(ArrayList<WSILoan> loans)
 	{
-		this.loans = loans;
+		setLoans(loans);
 	}
 	
 	

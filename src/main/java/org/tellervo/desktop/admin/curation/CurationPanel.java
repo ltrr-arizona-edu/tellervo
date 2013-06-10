@@ -21,11 +21,20 @@ public class CurationPanel extends JPanel {
 	private JTable table;
 	private JTextField txtBox;
 	private JTextField txtStorageLocation;
+	private CurationTableModel curationTableModel;
 
 	/**
 	 * Create the panel.
 	 */
 	public CurationPanel() {
+		
+		setupGUI();
+		
+	}
+	
+	
+	private void setupGUI()
+	{
 		setLayout(new MigLayout("", "[54.00,grow,right][grow]", "[][74.00,grow]"));
 		
 		JPanel panel = new JPanel();
@@ -65,22 +74,17 @@ public class CurationPanel extends JPanel {
 		panel_1.add(scrollPane, "cell 1 1");
 		
 		table = new JTable();
+		curationTableModel = new CurationTableModel();
+		
+		 
+		
 		scrollPane.setViewportView(table);
-		table.setModel(new DefaultTableModel(
-			new Object[][] {
-				{"1 Jan 2013", "Archived", "Brewer, Peter", "", null},
-				{"1 Jul 2012", "On loan", "Brewer, Peter", null, null},
-			},
-			new String[] {
-				"Date", "Status", "Curated by", "Notes", "Loan"
-			}
-		));
+		table.setModel(curationTableModel);
 		
 		JButton btnApply = new JButton("Apply");
 		btnApply.setMinimumSize(new Dimension(70,10));
 		btnApply.setMaximumSize(new Dimension(70,70));
 		panel_1.add(btnApply, "cell 1 0");
-
 	}
 
 }
