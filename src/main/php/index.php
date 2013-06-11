@@ -35,6 +35,7 @@ require_once("inc/element.php");
 require_once("inc/sample.php");
 require_once("inc/radius.php");
 require_once("inc/measurement.php");
+require_once("inc/loan.php");
 require_once("inc/box.php");
 require_once("inc/permission.php");
 require_once("inc/authenticate.php");

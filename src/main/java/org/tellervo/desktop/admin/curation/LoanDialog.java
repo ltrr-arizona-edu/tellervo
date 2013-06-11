@@ -15,9 +15,14 @@ import javax.swing.JScrollPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.JSplitPane;
 import javax.swing.JSeparator;
@@ -25,17 +30,26 @@ import javax.swing.JSeparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.admin.BoxCuration.BoxCurationType;
+import org.tellervo.desktop.ui.Alert;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.schema.EntityType;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSILoan;
 import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasSample;
+
+import com.ibm.icu.text.DateFormat;
+import com.ibm.icu.text.SimpleDateFormat;
 
 public class LoanDialog extends JDialog implements ActionListener{
 
@@ -45,7 +59,7 @@ public class LoanDialog extends JDialog implements ActionListener{
 	private final static Logger log = LoggerFactory.getLogger(LoanDialog.class);
 
 	private final JPanel contentPanel = new JPanel();
-	private JTable table;
+	private JTable tblLoans;
 	private LoanPanel loanPanel;
 	private LoanTableModel loanTableModel;
 
@@ -54,7 +68,6 @@ public class LoanDialog extends JDialog implements ActionListener{
 	 */
 	public LoanDialog() {
 		initGUI();
-		setLoan(getLoanFromWS("4b9bdb67-6c4e-445c-87df-f5a8fd5926b4"));
 	}
 	
 	
@@ -90,6 +103,77 @@ public class LoanDialog extends JDialog implements ActionListener{
 		return loan;
     }
 
+    private void loadAllLoans()
+    {
+		// Set return type to loan
+    	SearchParameters param = new SearchParameters(SearchReturnObject.LOAN);
+    	param.addSearchForAll();
+
+    	// we want a loan returned here
+		EntitySearchResource<WSILoan> resource = new EntitySearchResource<WSILoan>(param, WSILoan.class);
+		
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting loans");
+			return;
+		}
+		
+		List<WSILoan> loanList = resource.getAssociatedResult();
+		
+		// Check to see if any samples were found
+		if (loanList.size()==0) 
+		{
+			Alert.error("None found", "No loans were found");
+			return;
+		}
+		
+	/*	TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(sampList, numSorter);
+		*/
+		
+		loanTableModel.setLoans(loanList); 
+		loanTableModel.fireTableDataChanged();
+    	
+    }
+    
+    private void loadDelinquentLoans()
+    {
+		// Set return type to loan
+    	SearchParameters param = new SearchParameters(SearchReturnObject.LOAN);
+    	
+    	
+    	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	Date date = new Date();
+    	
+    	param.addSearchConstraint(SearchParameterName.LOANDUEDATE, SearchOperator.LESS_THAN, dateFormat.format(date) );
+    	param.addSearchConstraint(SearchParameterName.LOANRETURNDATE, SearchOperator.IS,  "NULL");
+
+    	// we want a loan returned here
+		EntitySearchResource<WSILoan> resource = new EntitySearchResource<WSILoan>(param, WSILoan.class);
+		
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting loans");
+			return;
+		}
+		
+		List<WSILoan> loanList = resource.getAssociatedResult();
+		
+		
+		loanTableModel.setLoans(loanList); 
+		loanTableModel.fireTableDataChanged();
+    	
+    }
 	
 	
 	
@@ -109,11 +193,24 @@ public class LoanDialog extends JDialog implements ActionListener{
 				scrollPane.setMinimumSize(new Dimension(100,100));
 				splitPane.setLeftComponent(scrollPane);
 				{
-					table = new JTable();
-					table.setMinimumSize(new Dimension(100,100));
+					tblLoans = new JTable();
+					tblLoans.setMinimumSize(new Dimension(100,100));
 					loanTableModel = new LoanTableModel();
-					table.setModel(loanTableModel);
-					scrollPane.setViewportView(table);
+					tblLoans.setModel(loanTableModel);
+					
+					tblLoans.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+
+						@Override
+						public void valueChanged(ListSelectionEvent event) {
+							WSILoan loan = ((LoanTableModel)tblLoans.getModel()).getRow(tblLoans.getSelectedRow());
+							setLoan(loan);
+							
+						}
+						
+					});
+					
+					
+					scrollPane.setViewportView(tblLoans);
 				}
 			}
 			
@@ -140,12 +237,16 @@ public class LoanDialog extends JDialog implements ActionListener{
 			toolbar.add(separator);
 		}
 		{
-			JButton btnNewButton = new JButton("Current");
-			toolbar.add(btnNewButton);
+			JButton btnCurrent = new JButton("Current");
+			btnCurrent.setActionCommand("Current");
+			btnCurrent.addActionListener(this);
+			toolbar.add(btnCurrent);
 		}
 		{
-			JButton btnNewButton_1 = new JButton("Delinquent");
-			toolbar.add(btnNewButton_1);
+			JButton btnDelinquent = new JButton("Delinquent");
+			btnDelinquent.setActionCommand("Delinquent");
+			btnDelinquent.addActionListener(this);
+			toolbar.add(btnDelinquent);
 		}
 		{
 			JButton btnAll = new JButton("All");
@@ -157,6 +258,8 @@ public class LoanDialog extends JDialog implements ActionListener{
 			JButton btnNewButton_3 = new JButton("Search");
 			toolbar.add(btnNewButton_3);
 		}
+		
+		this.setIconImage(Builder.getApplicationIcon());
 	}
 
 
@@ -164,9 +267,16 @@ public class LoanDialog extends JDialog implements ActionListener{
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("All"))
 		{
-			
+			loadAllLoans();
 		}
-		
+		else if(event.getActionCommand().equals("Current"))
+		{
+			//loadActiveLoans();
+		}
+		else if(event.getActionCommand().equals("Delinquent"))
+		{
+			loadDelinquentLoans();
+		}
 	}
 
 

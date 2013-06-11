@@ -1,6 +1,7 @@
 package org.tellervo.desktop.admin.curation;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
@@ -20,17 +21,33 @@ public class LoanTableModel extends AbstractTableModel {
 		
 	}
 	
-	public LoanTableModel(ArrayList<WSILoan> loans)
+	public LoanTableModel(List<WSILoan> loans)
 	{
 		setLoans(loans);
 	}
 	
 	
-	public void setLoans(ArrayList<WSILoan> loans)
+	public void setLoans(List<WSILoan> loans)
 	{
-		this.loans = loans;
+		this.loans = new ArrayList<WSILoan>(loans);
 	}
 
+	/**
+	 * Get the loan representation of a row
+	 * 
+	 * @param row
+	 * @return
+	 */
+	public WSILoan getRow(int row)
+	{		
+		try{
+			return loans.get(row);	
+		} catch (IndexOutOfBoundsException e)
+		{
+			return null;
+		}
+	}
+	
 	@Override
 	public int getColumnCount() {
 		return columns.length;
@@ -53,14 +70,9 @@ public class LoanTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int row, int col) {
 		
-		WSILoan loan = null;
+		WSILoan loan = getRow(row);
 		
-		try{
-			loan = loans.get(row);	
-		} catch (IndexOutOfBoundsException e)
-		{
-			return null;
-		}
+		if(loan==null) return null;
 		
 		switch(col)
 		{

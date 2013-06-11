@@ -262,7 +262,14 @@
 			
 			<!-- LOAN ATTRIBUTES-->
 			<xs:enumeration value="loanid"/>
-
+			<xs:enumeration value="loanissuedate"/>
+			<xs:enumeration value="loanduedate"/>
+			<xs:enumeration value="loanreturndate"/>
+			<xs:enumeration value="loanfirstname"/>
+			<xs:enumeration value="loanlastname"/>
+			<xs:enumeration value="loanorganisation"/>
+			<xs:enumeration value="loannotes"/>
+			
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -984,12 +991,13 @@
 						<xs:attribute ref="xlink:href" use="required"/>
 					</xs:complexType>
 				</xs:element>
-				<xs:element name="notes" minOccurs="0" maxOccurs="1"/>
-				<xs:element ref="entity" minOccurs="1" maxOccurs="unbounded"/>
+				<xs:element name="notes" minOccurs="0" maxOccurs="1" type="xs:string"/>
+				<xs:element ref="entity" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 
 			<xs:attribute name="duedate" type="xs:dateTime" use="optional"/>
-			<xs:attribute name="issuedate" type="xs:dateTime" use="required"/>
+			<xs:attribute name="issuedate" type="xs:dateTime" use="optional"/>
+			<xs:attribute name="returndate" type="xs:dateTime" use="optional"/>
 		</xs:complexType>
 		</xs:element>
 </xs:schema>

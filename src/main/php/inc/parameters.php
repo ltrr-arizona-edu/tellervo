@@ -201,9 +201,17 @@ class searchParameters implements IParams
 									//'seriesdatingerrornegative' =>			array('tbl' => 'vwcomprehensivevm', 'field' => ''),
 									'seriesvaluecount' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'readingcount'),
 									'seriescount' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'directchildcount'),
-									'seriescode' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'code')
+									'seriescode' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'code'),
 		
-								
+									
+									'loanid' =>						array('tbl' => 'vwtblloan', 'field' => 'loanid'),
+									'loanduedate' =>						array('tbl' => 'vwtblloan', 'field' => 'duedate'),
+									'loanissuedate' =>						array('tbl' => 'vwtblloan', 'field' => 'issuedate'),
+									'loanreturndate' =>						array('tbl' => 'vwtblloan', 'field' => 'returndate'),
+									'loanfirstname' =>						array('tbl' => 'vwtblloan', 'field' => 'firstname'),
+									'loanlastname' =>						array('tbl' => 'vwtblloan', 'field' => 'lastname'),
+									'loanorganisation' =>						array('tbl' => 'vwtblloan', 'field' => 'organisation'),
+									'loannotes' =>						array('tbl' => 'vwtblloan', 'field' => 'notes'),
 								  );
 		
 		// Loop through each param tag

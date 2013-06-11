@@ -3111,6 +3111,8 @@ class loanEntity extends dbEntity
 	protected $organisation = NULL;
 	protected $notes = NULL;
 	protected $duedate = NULL;
+	protected $returndate = NULL;
+	
 	public $entityIdArray = NULL;
 	
 	function __construct()
@@ -3140,7 +3142,12 @@ class loanEntity extends dbEntity
 	
 	function setDueDate($date)
 	{
-		$this->duedate = $date;
+		$this->duedate= dbHelper::pgDateTimeToCompliantISO($date);
+	}
+	
+	function setReturnDate($date)
+	{
+		$this->returndate =  dbHelper::pgDateTimeToCompliantISO($date);	
 	}
 	
 	function getFirstName()
@@ -3163,9 +3170,36 @@ class loanEntity extends dbEntity
 		return $this->notes;
 	}
 	
-	function getDueDate()
+	function getDueDate($format=NULL)
 	{
-		return $this->duedate;
+		if($this->duedate==null)
+		{
+			return "";
+		}
+		elseif($format == NULL)
+		{
+			return $this->duedate;
+		}
+		else
+		{
+			return date($format, $this->duedate);
+		}
+	}
+	
+	function getReturnDate($format=NULL)
+	{
+		if($this->returndate==null)
+		{
+			return "";
+		}
+		elseif($format==NULL)
+		{
+			return $this->returndate;
+		}
+		else
+		{
+			return date($format, $this->returndate);
+		}
 	}
 }
 

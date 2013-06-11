@@ -109,7 +109,7 @@ class search Implements IDBAccessor
         $limitSQL     = NULL;
         $xmldata      = NULL;
 
-        // Overide return object to vmeasurement if measurement requested
+        // Override return object to vmeasurement if measurement requested
         if(($myRequest->returnObject=='measurementSeries') || ($myRequest->returnObject=='derivedSeries'))
         {
             $myRequest->returnObject='vmeasurement';
@@ -195,6 +195,16 @@ class search Implements IDBAccessor
                 	$firebug->log($row['sampleid'], "Permission denied on sampleid");	 
                 	continue;
                 }              
+            }
+            elseif($this->returnObject=="loan")
+            {
+            	$myReturnObject = new loan();
+            	$hasPermission = $myAuth->getPermission("read", "loan", $row['loanid']);
+            	if($hasPermission===FALSE) {
+            		array_push($this->deniedRecArray, $row['loanid']);
+            		$firebug->log($row['loanid'], "Permission denied on loanid");
+            		continue;
+            	}
             }
             elseif($this->returnObject=="radius") 
             {
@@ -426,20 +436,16 @@ class search Implements IDBAccessor
         switch($objectName)
         {
         case "object":
-            return "object";
-            break;
         case "element":
-            return "element";
-            break;
         case "sample":
-            return "sample";
-            break;
         case "radius":
-            return "radius";
+        case "loan":   
+        case "curation":
+            return $objectName;
             break;
         case "vmeasurement":
             return "vmeasurement";
-            break;
+            break;     			
         default:
             return false;
         }
@@ -480,6 +486,12 @@ class search Implements IDBAccessor
             break;
         case "box":
         	return "vwtblbox";
+        	break;
+        case "loan":
+        	return "vwtblloan";
+        	break;
+        case "curation":
+        	return "vwtblcuration";
         	break;
         default:
         	echo "unable to determine table name.  Fatal error.";
@@ -540,7 +552,14 @@ class search Implements IDBAccessor
             }
         }        
         
-        if( (($this->getLowestRelationshipLevel($tables)<=3) && ($this->getHighestRelationshipLevel($tables)>=3)) || ($this->returnObject == 'sample'))
+        if($this->returnObject == 'loan')
+        {
+
+        	$fromSQL .= $this->tableName("loan")." \n";
+        	$withinJoin = TRUE;
+        	
+        }
+        elseif( (($this->getLowestRelationshipLevel($tables)<=3) && ($this->getHighestRelationshipLevel($tables)>=3)) || ($this->returnObject == 'sample'))
         {
             if($withinJoin)
             {
@@ -611,7 +630,7 @@ class search Implements IDBAccessor
         // tblproject      -- 6 -- most senior
         // tblobject       -- 5 --
         // tblelement      -- 4 --
-        // tblsample       -- 3 --
+        // tblsample       -- 3 --  
         // tblradius       -- 2 --
         // tblmeasurement  -- 1 -- most junior
     	
@@ -628,6 +647,10 @@ class search Implements IDBAccessor
         elseif ((in_array('vwtblsample', $tables)) || ($this->returnObject == 'sample'))
         {
             return 3;
+        }
+        elseif ((in_array('vwtblloan', $tables)) || ($this->returnObject == 'loan'))
+        {
+        	return 3;
         }
         elseif ((in_array('vwtblelement', $tables)) || ($this->returnObject == 'element'))
         {
@@ -672,6 +695,10 @@ class search Implements IDBAccessor
         elseif ((in_array('vwtblsample', $tables)) || ($this->returnObject == 'sample'))
         {
             return 3;
+        }
+        elseif ((in_array('vwtblloan', $tables)) || ($this->returnObject == 'loan'))
+        {
+        	return 3;
         }
         elseif ((in_array('vwtblradius', $tables)) || ($this->returnObject == 'radius'))
         {

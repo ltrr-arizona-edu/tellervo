@@ -261,7 +261,7 @@
 			
 			
 			<!-- LOAN ATTRIBUTES-->
-			
+			<xs:enumeration value="loanid"/>
 
 		</xs:restriction>
 	</xs:simpleType>
@@ -534,6 +534,7 @@
 				<xs:element ref="tridas:measurementSeries" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="loan" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded" />
@@ -938,11 +939,12 @@
 	<xs:element name="curationEvent">
 		<xs:annotation>
 			<xs:documentation>
-				Details of a curation event, such as making a loan, archving, logging a missing sample etc
+				Details of a curation event, such as making a loan, archiving, logging a missing sample etc
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="tridas:identifier" />
 				<xs:element ref="securityUser"/>
 				<xs:element name="curationTimeStamp" type="xs:dateTime"/>
 				<xs:element name="notes" minOccurs="0" maxOccurs="1"/>
@@ -968,6 +970,7 @@
 		</xs:annotation>
 		<xs:complexType>	
 			<xs:sequence>
+				<xs:element ref="tridas:identifier"/>
 				<xs:element name="firstname" type="xs:string" />
 				<xs:element name="lastname" type="xs:string" />
 				<xs:element name="organisation" type="xs:string"/>
@@ -985,7 +988,7 @@
 				<xs:element ref="entity" minOccurs="1" maxOccurs="unbounded"/>
 			</xs:sequence>
 
-			<xs:attribute name="duedate" type="xs:dateTime" use="required"/>
+			<xs:attribute name="duedate" type="xs:dateTime" use="optional"/>
 			<xs:attribute name="issuedate" type="xs:dateTime" use="required"/>
 		</xs:complexType>
 		</xs:element>

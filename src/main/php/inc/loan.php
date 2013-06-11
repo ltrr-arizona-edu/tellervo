@@ -45,6 +45,7 @@ class loan extends loanEntity implements IDBAccessor
      	$this->setNotes($row['notes']);
 		$this->setDueDate($row['duedate']);
 		$this->setFilesFromStrArray($row['files']);
+		$this->setReturnDate($row['returndate']);
 		
         return true;
     }
@@ -61,7 +62,7 @@ class loan extends loanEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "SELECT * FROM vwloan WHERE loanid='".pg_escape_string($this->getID())."'";
+        $sql = "SELECT * FROM vwtblloan WHERE loanid='".pg_escape_string($this->getID())."'";
 		$firebug->log($sql, "loan sql");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -229,7 +230,16 @@ class loan extends loanEntity implements IDBAccessor
             // Only return XML when there are no errors.
             if( ($parts=="all") || ($parts=="beginning"))
             {
-                $xml.= "<loan issuedate=\"".$this->getCreatedTimestamp()."\">\n";
+                $xml.= "<loan issuedate=\"".$this->getCreatedTimestamp()."\"";
+                if($this->getReturnDate()!=null)
+                {
+                	$xml.=" returndate=\"".$this->getReturnDate()."\"";
+                }
+                if($this->getDueDate()!=null)
+                {
+                	$xml.=" duedate=\"".$this->getDueDate()."\"";
+                }
+                $xml.= ">\n";
                 $xml.= "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n";
                 $xml.= "<firstname>".$this->getFirstName()."</firstname>\n";
                 $xml.= "<lastname>".$this->getLastName()."</lastname>\n";

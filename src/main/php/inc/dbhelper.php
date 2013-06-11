@@ -343,6 +343,8 @@ class dbHelper
 	
 	public static function pgDateTimeToCompliantISO($datetime)
 	{		
+		if($datetime==null) return "";
+		
 		return date('c', strtotime($datetime));
 	}
 	
