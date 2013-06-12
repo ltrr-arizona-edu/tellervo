@@ -2,6 +2,8 @@ package org.tellervo.desktop.admin.curation;
 
 import javax.swing.JPanel;
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JButton;
@@ -9,18 +11,25 @@ import javax.swing.JTextArea;
 import javax.swing.JList;
 import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
+import javax.swing.ListModel;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.tridasv2.ui.TridasFileListPanel;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.ui.I18n.TellervoLocale;
 import org.tellervo.schema.WSILoan;
 import org.tridas.io.util.DateUtils;
+import org.tridas.schema.TridasFile;
+import org.tridas.schema.TridasSample;
+
 import static java.text.DateFormat.*;
 import com.ibm.icu.text.SimpleDateFormat;
 
 import java.awt.BorderLayout;
+import java.io.File;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Locale;
 
 public class LoanPanel extends JPanel {
@@ -31,8 +40,8 @@ public class LoanPanel extends JPanel {
 	private JTextField txtDueDate;
 	private JTextArea txtNotes;
 	private JList lstSamples;
-	private JList lstFiles;
 	private JTextField txtReturned;
+	private TridasFileListPanel panelFiles;
 
 	/**
 	 * Create the panel.
@@ -48,55 +57,55 @@ public class LoanPanel extends JPanel {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
 		add(tabbedPane);
 		
-		JPanel panelDetails = new JPanel();
-		tabbedPane.addTab("Details", null, panelDetails, null);
-		panelDetails.setLayout(new MigLayout("", "[right][135px,grow,fill][135px,grow,fill]", "[][][][][][grow]"));
+		JPanel panelSummary = new JPanel();
+		tabbedPane.addTab("Summary", null, panelSummary, null);
+		panelSummary.setLayout(new MigLayout("", "[right][135px,grow,fill][135px,grow,fill]", "[][][][][][grow]"));
 		
 		JLabel lblName = new JLabel("Name:");
-		panelDetails.add(lblName, "cell 0 0");
+		panelSummary.add(lblName, "cell 0 0");
 		
 		txtFirstname = new JTextField();
-		panelDetails.add(txtFirstname, "cell 1 0");
+		panelSummary.add(txtFirstname, "cell 1 0");
 		txtFirstname.setColumns(10);
 		
 		txtLastName = new JTextField();
-		panelDetails.add(txtLastName, "cell 2 0");
+		panelSummary.add(txtLastName, "cell 2 0");
 		txtLastName.setColumns(10);
 		
 		JLabel lblOrganisation = new JLabel("Organisation:");
-		panelDetails.add(lblOrganisation, "cell 0 1");
+		panelSummary.add(lblOrganisation, "cell 0 1");
 		
 		txtOrganisation = new JTextField();
-		panelDetails.add(txtOrganisation, "cell 1 1 2 1");
+		panelSummary.add(txtOrganisation, "cell 1 1 2 1");
 		txtOrganisation.setColumns(10);
 		
 		JLabel lblIssued = new JLabel("Date issued");
-		panelDetails.add(lblIssued, "cell 0 2");
+		panelSummary.add(lblIssued, "cell 0 2");
 		
 		txtIssueDate = new JTextField();
-		panelDetails.add(txtIssueDate, "cell 1 2");
+		panelSummary.add(txtIssueDate, "cell 1 2");
 		txtIssueDate.setEditable(false);
 		txtIssueDate.setColumns(10);
 		
 		JLabel lblDateDue = new JLabel("Date due:");
-		panelDetails.add(lblDateDue, "cell 0 3,alignx trailing");
+		panelSummary.add(lblDateDue, "cell 0 3,alignx trailing");
 		
 		txtDueDate = new JTextField();
-		panelDetails.add(txtDueDate, "flowx,cell 1 3");
+		panelSummary.add(txtDueDate, "flowx,cell 1 3");
 		txtDueDate.setColumns(10);
 		
 		JLabel lblDateReturned = new JLabel("Date returned:");
-		panelDetails.add(lblDateReturned, "cell 0 4,alignx trailing");
+		panelSummary.add(lblDateReturned, "cell 0 4,alignx trailing");
 		
 		txtReturned = new JTextField();
 		txtReturned.setColumns(10);
-		panelDetails.add(txtReturned, "cell 1 4,growx");
+		panelSummary.add(txtReturned, "cell 1 4,growx");
 		
 		JLabel lblNotes = new JLabel("Notes:");
-		panelDetails.add(lblNotes, "cell 0 5,aligny top");
+		panelSummary.add(lblNotes, "cell 0 5,aligny top");
 		
 		JScrollPane scrollPane = new JScrollPane();
-		panelDetails.add(scrollPane, "cell 1 5 2 1,grow");
+		panelSummary.add(scrollPane, "cell 1 5 2 1,grow");
 		
 		txtNotes = new JTextArea();
 		scrollPane.setViewportView(txtNotes);
@@ -108,7 +117,7 @@ public class LoanPanel extends JPanel {
 		JScrollPane scrollPaneSamples = new JScrollPane();
 		panelSamples.add(scrollPaneSamples, "cell 0 0 1 4,grow");
 		
-		lstSamples = new JList();
+		lstSamples = new JList<TridasSample>();
 		scrollPaneSamples.setViewportView(lstSamples);
 		
 		JButton btnAddSample = new JButton("+");
@@ -120,24 +129,8 @@ public class LoanPanel extends JPanel {
 		JButton btnViewSample = new JButton("View");
 		panelSamples.add(btnViewSample, "cell 1 3");
 		
-		JPanel panelFiles = new JPanel();
+		panelFiles = new TridasFileListPanel();
 		tabbedPane.addTab("Associated Files", null, panelFiles, null);
-		panelFiles.setLayout(new MigLayout("", "[grow][fill]", "[][][grow][]"));
-		
-		JScrollPane scrollPaneFiles = new JScrollPane();
-		panelFiles.add(scrollPaneFiles, "cell 0 0 1 4,grow");
-		
-		lstFiles = new JList();
-		scrollPaneFiles.setViewportView(lstFiles);
-		
-		JButton btnAddFile = new JButton("+");
-		panelFiles.add(btnAddFile, "cell 1 0");
-		
-		JButton btnRemoveFile = new JButton("-");
-		panelFiles.add(btnRemoveFile, "cell 1 1");
-		
-		JButton btnViewFile = new JButton("View");
-		panelFiles.add(btnViewFile, "cell 1 3");
 		
 	}
 	
@@ -184,8 +177,14 @@ public class LoanPanel extends JPanel {
 			txtReturned.setText("");
 		}
 		
+		panelFiles.setFileList((ArrayList<TridasFile>) loan.getFiles());
+		
+		
 		
 	}
 
 
+	public TridasFileListPanel getPanelFiles() {
+		return panelFiles;
+	}
 }

@@ -37,6 +37,7 @@ import org.tellervo.desktop.wsi.ResourceException;
 import org.tellervo.desktop.wsi.tellervo.TellervoAssociatedResource;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tridas.interfaces.ICoreTridas;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -51,11 +52,11 @@ import org.tridas.schema.TridasSample;
  * @author Lucas Madar
  *
  */
-public class EntitySearchResource<T extends ITridas> extends
+public class EntitySearchResource<T extends ICoreTridas> extends
 		TellervoAssociatedResource<List<T>> {
 	
 	private SearchParameters searchParameters;
-	private Class<? extends ITridas> returnType;
+	private Class<? extends ICoreTridas> returnType;
 
 	/**
 	 * Search for all direct children of this entity
@@ -63,7 +64,7 @@ public class EntitySearchResource<T extends ITridas> extends
 	 * (children: element, sample, radius)
 	 * @param parent
 	 */
-	public EntitySearchResource(ITridas parent) {
+	public EntitySearchResource(ICoreTridas parent) {
 		super(getDirectChildSearchType(parent) + "Search", TellervoRequestType.SEARCH);
 		
 		searchParameters = new SearchParameters(getDirectChildSearchType(parent));
@@ -79,7 +80,7 @@ public class EntitySearchResource<T extends ITridas> extends
 	 * (children: element, sample, radius)
 	 * @param parent
 	 */
-	public EntitySearchResource(ITridas parent, Boolean minimal) {
+	public EntitySearchResource(ICoreTridas parent, Boolean minimal) {
 		super(getDirectChildSearchType(parent) + "Search", TellervoRequestType.SEARCH);
 		
 		searchParameters = new SearchParameters(getDirectChildSearchType(parent));
@@ -124,7 +125,7 @@ public class EntitySearchResource<T extends ITridas> extends
 	 * @param parent
 	 * @return
 	 */
-	private static SearchReturnObject getDirectChildSearchType(ITridas parent) {
+	private static SearchReturnObject getDirectChildSearchType(ICoreTridas parent) {
 		if(parent instanceof TridasObject)
 			return SearchReturnObject.ELEMENT;
 		if(parent instanceof TridasElement)
@@ -142,7 +143,7 @@ public class EntitySearchResource<T extends ITridas> extends
 	 * @param parent
 	 * @return
 	 */
-	private static SearchParameterName getIdNameForEntity(ITridas parent) {
+	private static SearchParameterName getIdNameForEntity(ICoreTridas parent) {
 		if(parent instanceof TridasObject)
 			return SearchParameterName.OBJECTID;
 		if(parent instanceof TridasElement)
@@ -159,7 +160,7 @@ public class EntitySearchResource<T extends ITridas> extends
 	 * @param value
 	 * @return
 	 */
-	private static Class<? extends ITridas> entityForSearchReturnObject(SearchReturnObject value) {
+	private static Class<? extends ICoreTridas> entityForSearchReturnObject(SearchReturnObject value) {
 		switch(value) {
 		case OBJECT:
 			return TridasObject.class;

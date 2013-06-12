@@ -30,6 +30,7 @@ import org.tellervo.schema.EntityType;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIEntity;
 import org.tellervo.schema.WSIRequest;
+import org.tridas.interfaces.ICoreTridas;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.schema.TridasDerivedSeries;
@@ -49,7 +50,7 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 		TellervoAssociatedResource<T> {
 	
 	private WSIEntity readDeleteOrMergeEntity;
-	private ITridas createOrUpdateEntity;
+	private ICoreTridas createOrUpdateEntity;
 	private String parentEntityID;
 	private String correctEntityIDForMerge;
 
@@ -60,7 +61,7 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 	 * @param parentEntity the parent object
 	 * @param queryType one of create, update, or delete
 	 */
-	public TellervoEntityAssociatedResource(ITridas entity, ITridas parentEntity) {
+	public TellervoEntityAssociatedResource(ICoreTridas entity, ICoreTridas parentEntity) {
 		super(getXMLName(entity), TellervoRequestType.CREATE);
 		
 		// objects can have null parents
@@ -78,7 +79,7 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 	 * @param entity
 	 * @param correctEntityID
 	 */
-	public TellervoEntityAssociatedResource(ITridas entity, String correctEntityID, EntityType entityType)
+	public TellervoEntityAssociatedResource(ICoreTridas entity, String correctEntityID, EntityType entityType)
 	{
 		super(getXMLName(entity), TellervoRequestType.MERGE);
 		correctEntityIDForMerge = correctEntityID;
@@ -99,7 +100,7 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 	 * @param parentEntityID the parent object id, requred only for create, optional for update
 	 * @param queryType one of create, update, or delete
 	 */
-	public TellervoEntityAssociatedResource(ITridas entity, String parentEntityID, 
+	public TellervoEntityAssociatedResource(ICoreTridas entity, String parentEntityID, 
 			TellervoRequestType queryType) {
 		super(getXMLName(entity), queryType);
 		
@@ -109,7 +110,7 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 		initializeForCUD(entity, parentEntityID, queryType);
 	}
 	
-	private final void initializeForCUD(ITridas entity, String parentEntityID, 
+	private final void initializeForCUD(ICoreTridas entity, String parentEntityID, 
 			TellervoRequestType queryType) {
 		switch(queryType) {
 		case CREATE:
@@ -270,7 +271,7 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 	 * 
 	 * @return the create or update entity, or null if it isn't present
 	 */
-	protected ITridas getCreateOrUpdateEntity() {
+	protected ICoreTridas getCreateOrUpdateEntity() {
 		return createOrUpdateEntity;
 	}
 }

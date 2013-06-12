@@ -977,27 +977,20 @@
 		</xs:annotation>
 		<xs:complexType>	
 			<xs:sequence>
-				<xs:element ref="tridas:identifier"/>
+			
+				<xs:element ref="tridas:identifier" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="issuedate" minOccurs="0" type="xs:dateTime" />
+				<xs:element name="duedate" minOccurs="0" type="xs:dateTime" />
+				<xs:element name="returndate" minOccurs="0" type="xs:dateTime" />
 				<xs:element name="firstname" type="xs:string" />
 				<xs:element name="lastname" type="xs:string" />
 				<xs:element name="organisation" type="xs:string"/>
-				<xs:element name="file" minOccurs="0" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							Filename of a file associated with this loan.
-						</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:attribute ref="xlink:href" use="required"/>
-					</xs:complexType>
+				<xs:element ref="tridas:file" minOccurs="0" maxOccurs="unbounded">
+	
 				</xs:element>
 				<xs:element name="notes" minOccurs="0" maxOccurs="1" type="xs:string"/>
-				<xs:element ref="entity" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-
-			<xs:attribute name="duedate" type="xs:dateTime" use="optional"/>
-			<xs:attribute name="issuedate" type="xs:dateTime" use="optional"/>
-			<xs:attribute name="returndate" type="xs:dateTime" use="optional"/>
 		</xs:complexType>
 		</xs:element>
 </xs:schema>

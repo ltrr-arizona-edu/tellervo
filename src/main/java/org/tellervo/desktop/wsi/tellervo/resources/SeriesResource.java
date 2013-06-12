@@ -48,6 +48,7 @@ import org.tellervo.desktop.wsi.ResourceException;
 import org.tellervo.desktop.wsi.tellervo.TellervoEntityAssociatedResource;
 import org.tellervo.desktop.wsi.tellervo.WebInterfaceCode;
 import org.tellervo.desktop.wsi.tellervo.WebInterfaceException;
+import org.tridas.interfaces.ICoreTridas;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
@@ -209,7 +210,7 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 			if(!(getQueryType() == TellervoRequestType.CREATE || getQueryType() == TellervoRequestType.UPDATE))
 				throw wie;
 			
-			ITridas entity = getCreateOrUpdateEntity();
+			ICoreTridas entity = getCreateOrUpdateEntity();
 			
 			// doesn't make sense if it's not a derived series...
 			if(!(entity instanceof ITridasDerivedSeries))

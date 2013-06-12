@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
@@ -32,6 +33,7 @@ import org.tridas.schema.DateTime;
 import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasLaboratory;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
@@ -123,6 +125,22 @@ public class ExportCommand implements ICommand {
 			TridasSample tsamp = s.getMeta(Metadata.SAMPLE, TridasSample.class);
 			TridasRadius trad = s.getMeta(Metadata.RADIUS, TridasRadius.class);
 			ITridasSeries tseries = s.getSeries();
+			
+			// Set Generic 'Keycode' field as this is useful for some export formats
+			TridasGenericField gf = new TridasGenericField();
+			gf.setName("keycode");
+			gf.setType("xs:string");
+			String keycode;
+			if(StringUtils.countMatches(s.getDisplayTitle(), "-")==5)
+			{
+				keycode = s.getDisplayTitle().substring(s.getDisplayTitle().indexOf("-")+1);	
+			}
+			else {
+				keycode = s.getDisplayTitle();
+			}
+			keycode = keycode.replace("-", "");
+			gf.setValue(keycode);
+			tseries.getGenericFields().add(gf);
 			
 			if(tseries instanceof TridasMeasurementSeries)
 			{

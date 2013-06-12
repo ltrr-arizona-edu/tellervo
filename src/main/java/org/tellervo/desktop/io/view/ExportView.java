@@ -193,7 +193,7 @@ public class ExportView extends JFrame {
 		
 		naming = new JComboBox(namings);
 		naming.setModel(new DefaultComboBoxModel(new String[] {"Labcodes", "Hierarchical", "UUID", "Tellervo hierarchical"}));
-		naming.setSelectedIndex(3);
+		naming.setSelectedIndex(0);
 		panelAdv.add(naming, "cell 1 2");
 		
 		JLabel lblEncoding = new JLabel(I18n.getText("io.convert.lblEncoding"));

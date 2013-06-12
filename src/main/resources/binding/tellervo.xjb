@@ -78,7 +78,7 @@
 		<!-- Add ITridas interface to loan (kludge) -->
 		<jaxb:bindings node="//xs:element[@name='loan']/xs:complexType">
 			<ai:interfaces check="false">
-				org.tridas.interfaces.ITridas
+				org.tridas.interfaces.ICoreTridas
 			</ai:interfaces>
 		</jaxb:bindings>
 	

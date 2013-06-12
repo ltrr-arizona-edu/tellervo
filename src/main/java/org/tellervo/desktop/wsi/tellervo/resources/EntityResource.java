@@ -29,6 +29,7 @@ import org.tellervo.schema.WSIRootElement;
 import org.tellervo.desktop.util.ListUtil;
 import org.tellervo.desktop.wsi.ResourceException;
 import org.tellervo.desktop.wsi.tellervo.TellervoEntityAssociatedResource;
+import org.tridas.interfaces.ICoreTridas;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasIdentifier;
 
@@ -37,7 +38,7 @@ import org.tridas.schema.TridasIdentifier;
  * @author Lucas Madar
  * 
  */
-public class EntityResource<T extends ITridas> extends
+public class EntityResource<T extends ICoreTridas> extends
 		TellervoEntityAssociatedResource<T> {
 
 	/** The expected return type */
@@ -53,7 +54,7 @@ public class EntityResource<T extends ITridas> extends
 	 * @param entityType
 	 *            The class of the entity to create
 	 */
-	public EntityResource(ITridas entity, ITridas parentEntity,
+	public EntityResource(ICoreTridas entity, ICoreTridas parentEntity,
 			Class<T> entityType) {
 		super(entity, parentEntity);
 
@@ -68,7 +69,7 @@ public class EntityResource<T extends ITridas> extends
 	 * @param entityType
 	 *            Class of the entity to update/delete
 	 */
-	public EntityResource(ITridas entity, TellervoRequestType queryType,
+	public EntityResource(ICoreTridas entity, TellervoRequestType queryType,
 			Class<T> entityType) {
 		super(entity, null, queryType);
 
@@ -111,7 +112,7 @@ public class EntityResource<T extends ITridas> extends
 	 * @param newParentEntityID
 	 * @param entityType
 	 */
-	public EntityResource(ITridas entity, String newParentEntityID,
+	public EntityResource(ICoreTridas entity, String newParentEntityID,
 			Class<T> entityType) {
 		super(entity, newParentEntityID, TellervoRequestType.UPDATE);
 		this.entityType = entityType;

@@ -47,6 +47,7 @@ class loan extends loanEntity implements IDBAccessor
 		$this->setFilesFromStrArray($row['files']);
 		$this->setReturnDate($row['returndate']);
 		
+		$this->setChildParamsFromDB();
         return true;
     }
 
@@ -105,8 +106,13 @@ class loan extends loanEntity implements IDBAccessor
         // RadiusRadiusNotes
 
         global $dbconn;
+        global $firebug;
 
+      
+        
         $sql  = "select sampleid from tblcuration where loanid='".pg_escape_string($this->getID())."'";
+        
+        $firebug->log($sql, "Setting samples associated with a loan");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -230,26 +236,28 @@ class loan extends loanEntity implements IDBAccessor
             // Only return XML when there are no errors.
             if( ($parts=="all") || ($parts=="beginning"))
             {
-                $xml.= "<loan issuedate=\"".$this->getCreatedTimestamp()."\"";
+                $xml.= "<loan>\n";
+				$xml.="<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n";
+				$xml.="<issuedate>".$this->getCreatedTimestamp()."</issuedate>\n";
+				if($this->getDueDate()!=null)
+				{
+					$xml.="<duedate>".$this->getDueDate()."</duedate>";
+				}
                 if($this->getReturnDate()!=null)
                 {
-                	$xml.=" returndate=\"".$this->getReturnDate()."\"";
+                	$xml.="<returndate>".$this->getReturnDate()."</returndate>\n";
                 }
-                if($this->getDueDate()!=null)
-                {
-                	$xml.=" duedate=\"".$this->getDueDate()."\"";
-                }
-                $xml.= ">\n";
-                $xml.= "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n";
-                $xml.= "<firstname>".$this->getFirstName()."</firstname>\n";
-                $xml.= "<lastname>".$this->getLastName()."</lastname>\n";
-                $xml.= "<organisation>".$this->getOrganisation()."</organisation>\n";
+
+                $xml.= "<firstname>".dbhelper::escapeXMLChars($this->getFirstName())."</firstname>\n";
+                $xml.= "<lastname>".dbhelper::escapeXMLChars($this->getLastName())."</lastname>\n";
+                $xml.= "<organisation>".dbhelper::escapeXMLChars($this->getOrganisation())."</organisation>\n";
                 $xml.= $this->getFileXML();
-                $xml.= "<notes>".$this->getNotes()."</notes>\n";
+                
+                $xml.= "<notes>".dbhelper::escapeXMLChars($this->getNotes())."</notes>\n";
                 
                 foreach ($this->entityIdArray as $entityid)
                 {
-                	$xml.="<entity type=\"sample\" id=\"".$entityid."\"/>\n";
+                	//$xml.="<entity type=\"sample\" id=\"".$entityid."\"/>\n";
                 }
                 
             }

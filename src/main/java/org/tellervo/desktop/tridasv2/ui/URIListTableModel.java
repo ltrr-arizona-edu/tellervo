@@ -84,23 +84,23 @@ public class URIListTableModel extends AbstractTableModel {
 				
 				if(extension!=null)
 				{
-					if(Arrays.asList(TridasFileListDialog.imageFilter.getExtensions()).contains(extension.toLowerCase()))
+					if(Arrays.asList(TridasFileListPanel.imageFilter.getExtensions()).contains(extension.toLowerCase()))
 					{
 						return imageIcon;
 					}
-					else if(Arrays.asList(TridasFileListDialog.wordDocs.getExtensions()).contains(extension.toLowerCase()))
+					else if(Arrays.asList(TridasFileListPanel.wordDocs.getExtensions()).contains(extension.toLowerCase()))
 					{
 						return textIcon;
 					}
-					else if(Arrays.asList(TridasFileListDialog.pdfFilter.getExtensions()).contains(extension.toLowerCase()))
+					else if(Arrays.asList(TridasFileListPanel.pdfFilter.getExtensions()).contains(extension.toLowerCase()))
 					{
 						return pdfIcon;
 					}
-					else if(Arrays.asList(TridasFileListDialog.spreadsheetDocs.getExtensions()).contains(extension.toLowerCase()))
+					else if(Arrays.asList(TridasFileListPanel.spreadsheetDocs.getExtensions()).contains(extension.toLowerCase()))
 					{
 						return spreadsheetIcon;
 					}
-					else if(Arrays.asList(TridasFileListDialog.zipFilter.getExtensions()).contains(extension.toLowerCase()))
+					else if(Arrays.asList(TridasFileListPanel.zipFilter.getExtensions()).contains(extension.toLowerCase()))
 					{
 						return zipIcon;
 					}
