@@ -483,6 +483,22 @@ class locationType extends lookupEntity
 	
 }
 
+class curationStatus extends lookupEntity
+{
+
+	function __construct()
+	{
+		parent::__construct("tlkpcurationstatus", "curationstatus", "curationstatusid");
+	}
+
+	function setCurationStatus($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
+	}
+
+}
+
+
 class controlledVoc extends lookupEntity
 {
 

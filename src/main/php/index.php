@@ -36,6 +36,7 @@ require_once("inc/sample.php");
 require_once("inc/radius.php");
 require_once("inc/measurement.php");
 require_once("inc/loan.php");
+require_once("inc/curation.php");
 require_once("inc/box.php");
 require_once("inc/permission.php");
 require_once("inc/authenticate.php");
@@ -121,7 +122,7 @@ if($myMetaHeader->status != "Error")
             case "boxParameters":				$myObject = new box(); break;
             case "permissionParameters":		$myObject = new permission(); break;
             case "loanParameters":				$myObject = new loan(); break;
-            //case "curationEventParameters":		$myObject = new curationEventParameters; break;
+            case "curationParameters":			$myObject = new curation(); break;
             default:
             	trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
             	echo "Object type not supported";
@@ -208,7 +209,7 @@ if($myMetaHeader->status != "Error")
                 case "loan":
                 	$myID = null;
                 	break;
-                case "curationEvent":
+                case "curation":
                 	$myID = null;
                 	break;
                 default:

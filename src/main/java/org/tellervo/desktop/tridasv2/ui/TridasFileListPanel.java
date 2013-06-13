@@ -75,6 +75,8 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 	private JButton btnBrowse;
 	private JButton btnOpen;
 	private JButton btnRemove;
+	private JButton btnAdd;
+	private JLabel lblAddANew;
 	protected JTable tblFileList;
 	private Boolean hasResults=false;
 	private ImagePreviewPanel previewPanel;
@@ -86,6 +88,18 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 	public static FileNameExtensionFilter zipFilter = new FileNameExtensionFilter("Archives", new String[] {"zip", "gz", "tar", "rar"});	
 
 	
+	
+	public void setReadOnly(Boolean b)
+	{
+		radFile.setVisible(!b);
+		radWebpage.setVisible(!b);
+		radURN.setVisible(!b);
+		btnBrowse.setVisible(!b);
+		btnRemove.setVisible(!b);
+		btnAdd.setVisible(!b);
+		lblAddANew.setVisible(!b);
+		txtNewFile.setVisible(!b);
+	}
 	
 	/**
 	 * Create the dialog.
@@ -110,18 +124,18 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 		this.setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		this.add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new MigLayout("", "[285.00px,grow,left]", "[200px,grow][]"));
+		contentPanel.setLayout(new MigLayout("hidemode 3", "[285.00px,grow,left]", "[200px,grow][]"));
 		{
 			JPanel panel = new JPanel();
 			panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 			contentPanel.add(panel, "cell 0 0,grow");
-			panel.setLayout(new MigLayout("", "[285.00px,grow,left]", "[200px,grow]"));
+			panel.setLayout(new MigLayout("hidemode 3", "[285.00px,grow,left]", "[200px,grow]"));
 			JSplitPane splitPane = new JSplitPane();
 			panel.add(splitPane, "cell 0 0,grow");
 			splitPane.setOneTouchExpandable(true);
 			JPanel panel_2 = new JPanel();
 			splitPane.setLeftComponent(panel_2);
-			panel_2.setLayout(new MigLayout("", "[][grow]", "[][][grow,fill][]"));
+			panel_2.setLayout(new MigLayout("hidemode 3", "[][grow]", "[][][grow,fill][]"));
 			JPanel panel_1 = new JPanel();
 			panel_2.add(panel_1, "cell 1 0");
 			FlowLayout fl_panel_1 = (FlowLayout) panel_1.getLayout();
@@ -152,7 +166,7 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 			radioButtons.add(radWebpage);
 			radioButtons.add(radURN);
 			{
-				JLabel lblAddANew = new JLabel("Add:");
+				lblAddANew = new JLabel("Add:");
 				panel_2.add(lblAddANew, "cell 0 1");
 				lblAddANew.setFont(new Font("Dialog", Font.PLAIN, 12));
 			}
@@ -252,7 +266,7 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 				btnBrowse.addActionListener(this);
 				btnBrowse.setIcon(Builder.getIcon("open.png", 16));
 			}
-			JButton btnAdd = new JButton();
+			btnAdd = new JButton();
 			panel_2.add(btnAdd, "cell 1 1");
 			btnAdd.setIcon(Builder.getIcon("edit_add.png", 16));
 			btnAdd.setActionCommand("AddToList");
@@ -282,7 +296,7 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 			previewPanelHolder.setLayout(new BorderLayout(0, 0));
 			
 								previewPanel = new ImagePreviewPanel();
-								previewPanel.setLayout(new MigLayout("", "[200px,grow]", "[grow,fill]"));
+								previewPanel.setLayout(new MigLayout("hidemode 3", "[200px,grow]", "[grow,fill]"));
 								
 								previewPanelHolder.add(previewPanel);
 								

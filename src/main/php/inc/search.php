@@ -29,6 +29,8 @@ class search Implements IDBAccessor
     var $returnObject= NULL;
     var $format = NULL;
     var $recordHits = 0;
+    var $includeLoan = false;
+    var $includeCuration = false;
 
     /***************/
     /* CONSTRUCTOR */
@@ -515,6 +517,8 @@ class search Implements IDBAccessor
     
     private function fromSQL($paramsArray)
     {    
+    	global $firebug;
+    	
     	$tables = $this->tablesFromParams($paramsArray);	
         $fromSQL = "\nFROM ";
         $withinJoin = FALSE;
@@ -525,6 +529,8 @@ class search Implements IDBAccessor
             $withinJoin = TRUE;
         }*/
               
+        $firebug->log($this->getLowestRelationshipLevel($tables), "Lowest Relationship Level");
+        $firebug->log($this->getHighestRelationshipLevel($tables), "Highest Relationship Level");
         
         if( (($this->getLowestRelationshipLevel($tables)<=5) && ($this->getHighestRelationshipLevel($tables)>=5)) || ($this->returnObject == 'object'))  
         {
@@ -551,15 +557,8 @@ class search Implements IDBAccessor
                 $withinJoin = TRUE;
             }
         }        
-        
-        if($this->returnObject == 'loan')
-        {
 
-        	$fromSQL .= $this->tableName("loan")." \n";
-        	$withinJoin = TRUE;
-        	
-        }
-        elseif( (($this->getLowestRelationshipLevel($tables)<=3) && ($this->getHighestRelationshipLevel($tables)>=3)) || ($this->returnObject == 'sample'))
+        if( (($this->getLowestRelationshipLevel($tables)<=3) && ($this->getHighestRelationshipLevel($tables)>=3)) || ($this->returnObject == 'sample'))
         {
             if($withinJoin)
             {
@@ -570,7 +569,28 @@ class search Implements IDBAccessor
                 $fromSQL .= $this->tableName("sample")." \n";
                 $withinJoin = TRUE;
             }
+            
+            if($this->includeLoan($tables))
+            {
+            		$fromSQL .= "INNER JOIN ".$this->tableName("curation")." ON ".$this->tableName("sample").".sampleid = ".$this->tableName("curation").".sampleid \n";
+            		$fromSQL .= "INNER JOIN ".$this->tableName("loan")." ON ".$this->tableName("curation").".loanid = ".$this->tableName("loan").".loanid \n";
+            }
         }
+        else if ($this->includeLoan($tables))
+        {
+        	if($withinJoin)
+        	{
+        		$fromSQL .= "INNER JOIN ".$this->tableName("curation")." ON ".$this->tableName("sample").".sampleid = ".$this->tableName("curation").".sampleid \n";
+            	$fromSQL .= "INNER JOIN ".$this->tableName("loan")." ON ".$this->tableName("curation").".loanid = ".$this->tableName("loan").".loanid \n";
+           	}
+        	else
+        	{
+        		$fromSQL .= $this->tableName("loan")." \n";
+        		$withinJoin = TRUE;
+        	}
+        }
+        
+        
         
         if( (($this->getLowestRelationshipLevel($tables)<=2) && ($this->getHighestRelationshipLevel($tables)>=2)) || ($this->returnObject == 'radius'))
         {
@@ -602,6 +622,8 @@ class search Implements IDBAccessor
 
         }
 
+
+        
         /*
         if( (($this->getLowestRelationshipLevel($tables)<=1) && ($this->getHighestRelationshipLevel($tables)>=1)) || ($this->returnObject == 'vmeasurement'))  
         {
@@ -624,6 +646,18 @@ class search Implements IDBAccessor
         return $fromSQL;
     }
 
+    
+    /**
+     * Whether or not the Loan table should be included
+     */
+    private function includeLoan($tables)
+    {
+    	if ((in_array('vwtblloan', $tables)) || ($this->returnObject == 'loan'))
+    	{
+    		return true;
+    	}
+    }
+    
     private function getLowestRelationshipLevel($tables)
     {
         // This function returns an interger representing the most junior level of relationship required in this query
@@ -647,10 +681,6 @@ class search Implements IDBAccessor
         elseif ((in_array('vwtblsample', $tables)) || ($this->returnObject == 'sample'))
         {
             return 3;
-        }
-        elseif ((in_array('vwtblloan', $tables)) || ($this->returnObject == 'loan'))
-        {
-        	return 3;
         }
         elseif ((in_array('vwtblelement', $tables)) || ($this->returnObject == 'element'))
         {
@@ -695,10 +725,6 @@ class search Implements IDBAccessor
         elseif ((in_array('vwtblsample', $tables)) || ($this->returnObject == 'sample'))
         {
             return 3;
-        }
-        elseif ((in_array('vwtblloan', $tables)) || ($this->returnObject == 'loan'))
-        {
-        	return 3;
         }
         elseif ((in_array('vwtblradius', $tables)) || ($this->returnObject == 'radius'))
         {

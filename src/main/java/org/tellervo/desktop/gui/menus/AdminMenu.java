@@ -20,6 +20,7 @@
 
 package org.tellervo.desktop.gui.menus;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -200,12 +201,13 @@ public class AdminMenu extends JMenu {
 	    //curationmenu.add(inventory); 
 	    
 	    JMenuItem loanDialog = new JMenuItem("Loans");
+	    final Component glue = this;
 	    loanDialog.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				LoanDialog dialog = new LoanDialog();
+				LoanDialog dialog = new LoanDialog(glue);
 				dialog.setVisible(true);
 			}
 	    	

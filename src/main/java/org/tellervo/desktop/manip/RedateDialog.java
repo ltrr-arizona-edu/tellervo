@@ -226,6 +226,12 @@ public class RedateDialog extends JDialog {
 		// pass
 		setup(startRange);
 
+		// hide justification panel for new series that must be redated in place
+		if(sample.getIdentifier().getValue().equals("newSeries"))
+		{
+			infoPanel.setVisible(false);
+		}
+		
 		// all done
 		pack();
 		txtEndYear.requestFocusInWindow();
@@ -259,6 +265,16 @@ public class RedateDialog extends JDialog {
 		// set the new dating type
 		newDating.setType(datingType);
 
+		
+		if(sample.getSeries().getIdentifier().getValue().equals("newSeries"))
+		{
+			// This is a brand new unsaved series so *must* be redate in place
+			performRedateInPlace(newDating);
+			return true;
+			
+		}
+		
+			
 		// if it's not derived and has no children, we can truncate in place
 		log.debug("Does sample have childcount metadata? : "+sample.hasMeta(Metadata.CHILD_COUNT));
 		log.debug("Child count? : "+sample.getMeta(Metadata.CHILD_COUNT, Integer.class));
@@ -290,7 +306,6 @@ public class RedateDialog extends JDialog {
 		}
 		
 		if(sample.getLoader() instanceof TellervoWsiTridasElement) {
-			//return performCorinaWsiRedate(newDating);
 			
 			return Redate.performTellervoWsiRedate(sample, 
 					infoPanel.getSeriesName(), infoPanel.getVersion(), infoPanel.getJustification(), 

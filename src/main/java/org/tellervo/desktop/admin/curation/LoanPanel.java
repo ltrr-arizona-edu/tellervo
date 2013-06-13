@@ -13,27 +13,47 @@ import javax.swing.JTabbedPane;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.tridasv2.ui.TridasFileListPanel;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.ui.I18n.TellervoLocale;
+import org.tellervo.desktop.util.ArrayListModel;
+import org.tellervo.desktop.util.labels.ui.SampleLabelPrintingUI;
+import org.tellervo.desktop.util.labels.ui.TridasListCellRenderer;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.WSILoan;
 import org.tridas.io.util.DateUtils;
 import org.tridas.schema.TridasFile;
+import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 
 import static java.text.DateFormat.*;
+import antlr.collections.List;
+
 import com.ibm.icu.text.SimpleDateFormat;
 
 import java.awt.BorderLayout;
 import java.io.File;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 
 public class LoanPanel extends JPanel {
-	private JTextField txtFirstname;
+
+	private static final long serialVersionUID = 1L;
+	private JTextField txtFirstName;
 	private JTextField txtLastName;
 	private JTextField txtOrganisation;
 	private JTextField txtIssueDate;
@@ -42,7 +62,8 @@ public class LoanPanel extends JPanel {
 	private JList lstSamples;
 	private JTextField txtReturned;
 	private TridasFileListPanel panelFiles;
-
+	private final static Logger log = LoggerFactory.getLogger(LoanPanel.class);
+	private ArrayListModel<TridasSample> sampleModel;
 	/**
 	 * Create the panel.
 	 */
@@ -51,6 +72,18 @@ public class LoanPanel extends JPanel {
 		initGUI();
 	}
 
+	public void setEditable(Boolean b)
+	{
+		txtFirstName.setEditable(b);
+		txtLastName.setEditable(b);
+		txtOrganisation.setEditable(b);
+		txtIssueDate.setEditable(b);
+		txtDueDate.setEditable(b);
+		txtReturned.setEditable(b);
+		txtNotes.setEditable(b);
+		panelFiles.setReadOnly(!b);
+	}
+	
 	private void initGUI() {
 		setLayout(new BorderLayout(0, 0));
 		
@@ -64,9 +97,9 @@ public class LoanPanel extends JPanel {
 		JLabel lblName = new JLabel("Name:");
 		panelSummary.add(lblName, "cell 0 0");
 		
-		txtFirstname = new JTextField();
-		panelSummary.add(txtFirstname, "cell 1 0");
-		txtFirstname.setColumns(10);
+		txtFirstName = new JTextField();
+		panelSummary.add(txtFirstName, "cell 1 0");
+		txtFirstName.setColumns(10);
 		
 		txtLastName = new JTextField();
 		panelSummary.add(txtLastName, "cell 2 0");
@@ -118,7 +151,14 @@ public class LoanPanel extends JPanel {
 		panelSamples.add(scrollPaneSamples, "cell 0 0 1 4,grow");
 		
 		lstSamples = new JList<TridasSample>();
+		sampleModel = new ArrayListModel<TridasSample>();
+		lstSamples.setModel(sampleModel);
+		lstSamples.setCellRenderer(new TridasListCellRenderer());
+		
 		scrollPaneSamples.setViewportView(lstSamples);
+		
+		JLabel lblSamplesIncludedIn = new JLabel("Samples included in this loan:");
+		scrollPaneSamples.setColumnHeaderView(lblSamplesIncludedIn);
 		
 		JButton btnAddSample = new JButton("+");
 		panelSamples.add(btnAddSample, "cell 1 0");
@@ -134,12 +174,55 @@ public class LoanPanel extends JPanel {
 		
 	}
 	
+	
+	private void setSamples(WSILoan loan)
+	{
+		// Set return type to loan
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
+    	
+
+    	
+    	param.addSearchConstraint(SearchParameterName.LOANID, SearchOperator.EQUALS, loan.getIdentifier().getValue() );
+
+		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
+		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting loans");
+			return;
+		}
+		
+		java.util.List<TridasObject> objList = resource.getAssociatedResult();
+		java.util.List<TridasSample> sampList = SampleLabelPrintingUI.getSamplesList(objList, null, null);
+		
+		
+		sampleModel.replaceContents(sampList);	
+		sampleModel.setSelectedItem(null);
+		sortAvailableSamples();
+		
+	}
+	
+    private void sortAvailableSamples(){
+		// Sort list intelligently
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		
+		Collections.sort(sampleModel, numSorter);
+		
+		
+		
+
+    }
+	
 	public void setLoan(WSILoan loan)
 	{
 		if(loan==null) return;
-		
-		
-		
 		
 		String country = App.prefs.getPref(PrefKey.LOCALE_COUNTRY_CODE, "xxx");
 		String language = App.prefs.getPref(PrefKey.LOCALE_LANGUAGE_CODE, "xxx");
@@ -147,7 +230,7 @@ public class LoanPanel extends JPanel {
 		
 		DateFormat dateFormat =  getDateInstance(LONG, loc.getLocale());
 		
-		txtFirstname.setText(loan.getFirstname());
+		txtFirstName.setText(loan.getFirstname());
 		txtLastName.setText(loan.getLastname());
 		txtOrganisation.setText(loan.getOrganisation());
 		
@@ -179,12 +262,8 @@ public class LoanPanel extends JPanel {
 		
 		panelFiles.setFileList((ArrayList<TridasFile>) loan.getFiles());
 		
-		
+		setSamples(loan);
 		
 	}
 
-
-	public TridasFileListPanel getPanelFiles() {
-		return panelFiles;
-	}
 }

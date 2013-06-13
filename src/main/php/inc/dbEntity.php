@@ -3203,14 +3203,68 @@ class loanEntity extends dbEntity
 	}
 }
 
-class curationEventEntity extends dbEntity
+class curationEntity extends dbEntity
 {
-	protected $curationstatus = NULL;
+	public $curationstatus = NULL;
 	protected $notes = NULL;
-	protected $curator = NULL;
+	public $curator = NULL;
+	protected $loan = NULL;
+	protected $sample = NULL;
 	
+	function __construct()
+	{
+		$groupXMLTag = "curation";
+		parent::__construct($groupXMLTag);
+		$this->curationstatus = new curationStatus();
+		$this->curator = new SecurityUser();
+
+	}
 	
+	function setNotes($notes)
+	{
+		$this->notes = $notes;
+	}
 	
+	function getNotes()
+	{
+		return $this->notes;
+	}
+	
+	/**
+	 * Set the curation status
+	 *
+	 * @param Integer $id
+	 * @param String $value
+	 * @return Boolean
+	 */
+	function setCurationStatus($id, $value)
+	{
+		if(!isset($this->curationstatus))
+		{
+			$this->curationstatus = new curationStatus();
+		}
+	
+		return $this->curationstatus->setCurationstatus($id, $value);
+	}
+	
+	/**
+	 * Get the type of object
+	 *
+	 * @param Boolean $asKey
+	 * @return unknown
+	 */
+	function getCurationStatus($asKey=false)
+	{
+		if($asKey)
+		{
+			return $this->curationstatus->getID();
+		}
+		else
+		{
+			return $this->curationstatus->getValue();
+		}
+	}
+		
 }
 
 /**

@@ -1,52 +1,43 @@
 package org.tellervo.desktop.admin.curation;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import net.miginfocom.swing.MigLayout;
-import javax.swing.JToolBar;
-import javax.swing.JTable;
-import javax.swing.JScrollPane;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
 import java.util.List;
 
-import javax.swing.JSplitPane;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.JToolBar;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.admin.BoxCuration.BoxCurationType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.schema.EntityType;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
-import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
-import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSILoan;
 import org.tridas.schema.TridasIdentifier;
-import org.tridas.schema.TridasSample;
 
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
@@ -62,11 +53,15 @@ public class LoanDialog extends JDialog implements ActionListener{
 	private JTable tblLoans;
 	private LoanPanel loanPanel;
 	private LoanTableModel loanTableModel;
-
+	private Component parent;
+	private JSplitPane splitPane;
+	
+	
 	/**
 	 * Create the dialog.
 	 */
-	public LoanDialog() {
+	public LoanDialog(Component parent) {
+		this.parent = parent;
 		initGUI();
 	}
 	
@@ -74,7 +69,8 @@ public class LoanDialog extends JDialog implements ActionListener{
 	private void setLoan(WSILoan loan)
 	{
 		loanPanel.setLoan(loan);
-		
+		expandDetailsPanel();
+
 	}
 	
     private WSILoan getLoanFromWS(String idstr)
@@ -139,7 +135,6 @@ public class LoanDialog extends JDialog implements ActionListener{
 		
 		loanTableModel.setLoans(loanList); 
 		loanTableModel.fireTableDataChanged();
-    	
     }
     
     private void loadDelinquentLoans()
@@ -172,21 +167,48 @@ public class LoanDialog extends JDialog implements ActionListener{
 		
 		loanTableModel.setLoans(loanList); 
 		loanTableModel.fireTableDataChanged();
-    	
+	
     }
 	
+    private void loadCurrentLoans()
+    {
+		// Set return type to loan
+    	SearchParameters param = new SearchParameters(SearchReturnObject.LOAN);
+    	
+    	param.addSearchConstraint(SearchParameterName.LOANRETURNDATE, SearchOperator.IS,  "NULL");
+
+    	// we want a loan returned here
+		EntitySearchResource<WSILoan> resource = new EntitySearchResource<WSILoan>(param, WSILoan.class);
+		
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting loans");
+			return;
+		}
+		
+		List<WSILoan> loanList = resource.getAssociatedResult();
+		
+		
+		loanTableModel.setLoans(loanList); 
+		loanTableModel.fireTableDataChanged();
 	
+    }
 	
 	private void initGUI(){
-		setBounds(100, 100, 498, 520);
+		setBounds(100, 100, 688, 520);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new MigLayout("", "[grow]", "[grow]"));
 		{
-			JSplitPane splitPane = new JSplitPane();
+			splitPane = new JSplitPane();
 			splitPane.setOneTouchExpandable(true);
 			splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+			
 			contentPanel.add(splitPane, "cell 0 0,grow");
 			{
 				JScrollPane scrollPane = new JScrollPane();
@@ -217,7 +239,8 @@ public class LoanDialog extends JDialog implements ActionListener{
 			{
 				loanPanel = new LoanPanel();
 				splitPane.setRightComponent(loanPanel);
-				loanPanel.setBorder(null);
+				loanPanel.setBorder(new TitledBorder(null, "Loan Details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+				loanPanel.setEditable(false);
 			}
 		}
 		
@@ -259,7 +282,14 @@ public class LoanDialog extends JDialog implements ActionListener{
 			toolbar.add(btnNewButton_3);
 		}
 		
-		this.setIconImage(Builder.getApplicationIcon());
+		
+		
+		setIconImage(Builder.getApplicationIcon());
+		setTitle("Loans");
+		setLocationRelativeTo(parent);
+		this.setVisible(true);
+		splitPane.getRightComponent().setMinimumSize(new Dimension());
+		splitPane.setDividerLocation(1.0d);
 	}
 
 
@@ -271,11 +301,23 @@ public class LoanDialog extends JDialog implements ActionListener{
 		}
 		else if(event.getActionCommand().equals("Current"))
 		{
-			//loadActiveLoans();
+			loadCurrentLoans();
 		}
 		else if(event.getActionCommand().equals("Delinquent"))
 		{
 			loadDelinquentLoans();
+		}
+	}
+	
+	
+	/**
+	 * If the details panel is hidden or very small then expand
+	 */
+	private void expandDetailsPanel()
+	{
+		if(splitPane.getDividerLocation()>splitPane.getHeight()-100)
+		{
+			splitPane.setDividerLocation(0.2d);
 		}
 	}
 

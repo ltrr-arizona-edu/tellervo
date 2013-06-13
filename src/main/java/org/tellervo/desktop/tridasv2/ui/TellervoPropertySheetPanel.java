@@ -97,7 +97,7 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 						for(Property p : prop)
 						{
 							TridasEntityProperty tep = (TridasEntityProperty) p;
-							log.debug("Property name : "+tep.qname);
+							//log.debug("Property name : "+tep.qname);
 							if(tep.qname.equals(externalID.qname))
 							{
 								p.setValue(gf.getValue());

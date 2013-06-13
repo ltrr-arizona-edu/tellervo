@@ -56,7 +56,7 @@ class sample extends sampleEntity implements IDBAccessor
         $this->setPosition($row['position']);
         $this->setState($row['state']);
         $this->setKnots($row['knots']);
-	$this->setExternalID($row['externalid']);
+		$this->setExternalID($row['externalid']);
 		$this->setElementID($row['elementid']);
 		$this->setCode($row['code']);
 		$this->setBoxID($row['boxid']);

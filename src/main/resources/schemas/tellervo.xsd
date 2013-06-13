@@ -43,7 +43,7 @@
 			<xs:enumeration value="box"/>
 			<xs:enumeration value="securityUser"/>
 			<xs:enumeration value="securityGroup"/>
-			<xs:enumeration value="curationEvent"/>
+			<xs:enumeration value="curation"/>
 			<xs:enumeration value="loan"/>
 		</xs:restriction>
 	</xs:simpleType>
@@ -943,7 +943,7 @@
 		% CURATION
 		%%%%%%%%%%%%%% -->
 	
-	<xs:element name="curationEvent">
+	<xs:element name="curation">
 		<xs:annotation>
 			<xs:documentation>
 				Details of a curation event, such as making a loan, archiving, logging a missing sample etc
@@ -952,16 +952,13 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="tridas:identifier" />
+				<xs:element name="status" type="curationStatus" minOccurs="1" maxOccurs="1"/>
 				<xs:element ref="securityUser"/>
-				<xs:element name="curationTimeStamp" type="xs:dateTime"/>
+				<xs:element name="curationtimestamp" type="xs:dateTime"/>
 				<xs:element name="notes" minOccurs="0" maxOccurs="1"/>
-				<xs:choice>
-					<xs:element ref="loan" minOccurs="1" maxOccurs="1"/>
-					<xs:element ref="entity" minOccurs="1" maxOccurs="1"/>
-				</xs:choice>		
+				<xs:element ref="tridas:sample" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="loan" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
-			
-			<xs:attribute name="status" type="curationStatus" use="required" />
 		</xs:complexType>
 	</xs:element>
 	
