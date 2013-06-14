@@ -290,6 +290,8 @@ public class LoanDialog extends JDialog implements ActionListener{
 		this.setVisible(true);
 		splitPane.getRightComponent().setMinimumSize(new Dimension());
 		splitPane.setDividerLocation(1.0d);
+		
+		loanPanel.pack();
 	}
 
 

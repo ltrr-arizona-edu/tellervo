@@ -1,24 +1,38 @@
 package org.tellervo.desktop.admin.curation;
 
+import static java.text.DateFormat.LONG;
+import static java.text.DateFormat.getDateInstance;
+
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JButton;
-import javax.swing.JTextArea;
-import javax.swing.JList;
-import javax.swing.JTabbedPane;
-import javax.swing.JScrollPane;
-import javax.swing.ListModel;
-
+import org.joda.time.LocalDate;
+import org.joda.time.Period;
+import org.joda.time.format.PeriodFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.tridasv2.ui.TridasFileListPanel;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.ui.I18n.TellervoLocale;
 import org.tellervo.desktop.util.ArrayListModel;
@@ -33,22 +47,9 @@ import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.WSILoan;
-import org.tridas.io.util.DateUtils;
 import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
-
-import static java.text.DateFormat.*;
-import antlr.collections.List;
-
-import com.ibm.icu.text.SimpleDateFormat;
-
-import java.awt.BorderLayout;
-import java.io.File;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Locale;
 
 public class LoanPanel extends JPanel {
 
@@ -60,10 +61,15 @@ public class LoanPanel extends JPanel {
 	private JTextField txtDueDate;
 	private JTextArea txtNotes;
 	private JList lstSamples;
+	private JLabel lblperiod;
 	private JTextField txtReturned;
 	private TridasFileListPanel panelFiles;
 	private final static Logger log = LoggerFactory.getLogger(LoanPanel.class);
 	private ArrayListModel<TridasSample> sampleModel;
+	private JPanel panelSummary;
+	private JButton btnAddSample;
+	private JButton btnRemoveSample;
+	private JButton btnViewSample;
 	/**
 	 * Create the panel.
 	 */
@@ -81,6 +87,9 @@ public class LoanPanel extends JPanel {
 		txtDueDate.setEditable(b);
 		txtReturned.setEditable(b);
 		txtNotes.setEditable(b);
+		btnAddSample.setVisible(!b);
+		btnRemoveSample.setVisible(!b);
+		
 		panelFiles.setReadOnly(!b);
 	}
 	
@@ -90,7 +99,7 @@ public class LoanPanel extends JPanel {
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
 		add(tabbedPane);
 		
-		JPanel panelSummary = new JPanel();
+		panelSummary = new JPanel();
 		tabbedPane.addTab("Summary", null, panelSummary, null);
 		panelSummary.setLayout(new MigLayout("", "[right][135px,grow,fill][135px,grow,fill]", "[][][][][][grow]"));
 		
@@ -127,6 +136,9 @@ public class LoanPanel extends JPanel {
 		panelSummary.add(txtDueDate, "flowx,cell 1 3");
 		txtDueDate.setColumns(10);
 		
+		lblperiod = new JLabel("");
+		panelSummary.add(lblperiod, "cell 2 3");
+		
 		JLabel lblDateReturned = new JLabel("Date returned:");
 		panelSummary.add(lblDateReturned, "cell 0 4,alignx trailing");
 		
@@ -155,18 +167,58 @@ public class LoanPanel extends JPanel {
 		lstSamples.setModel(sampleModel);
 		lstSamples.setCellRenderer(new TridasListCellRenderer());
 		
+		lstSamples.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				if(arg0.getClickCount()>1)
+				{
+					showCurationHistoryForSelectedSample();
+				}
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {		
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {				
+			}
+			
+		});
+		
 		scrollPaneSamples.setViewportView(lstSamples);
 		
 		JLabel lblSamplesIncludedIn = new JLabel("Samples included in this loan:");
 		scrollPaneSamples.setColumnHeaderView(lblSamplesIncludedIn);
 		
-		JButton btnAddSample = new JButton("+");
+		btnAddSample = new JButton();
+		btnAddSample.setIcon(Builder.getIcon("edit_add.png", 16));
 		panelSamples.add(btnAddSample, "cell 1 0");
 		
-		JButton btnRemoveSample = new JButton("-");
+		btnRemoveSample = new JButton();
+		btnRemoveSample.setIcon(Builder.getIcon("cancel.png", 16));
 		panelSamples.add(btnRemoveSample, "cell 1 1");
 		
-		JButton btnViewSample = new JButton("View");
+		btnViewSample = new JButton();
+		btnViewSample.setIcon(Builder.getIcon("document_preview.png", 16));
+		btnViewSample.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				showCurationHistoryForSelectedSample();
+			}
+			
+		});
 		panelSamples.add(btnViewSample, "cell 1 3");
 		
 		panelFiles = new TridasFileListPanel();
@@ -174,6 +226,11 @@ public class LoanPanel extends JPanel {
 		
 	}
 	
+	private void showCurationHistoryForSelectedSample()
+	{
+		CurationDialog dialog = new CurationDialog((TridasSample) lstSamples.getSelectedValue(), this);
+		dialog.setVisible(true);
+	}
 	
 	private void setSamples(WSILoan loan)
 	{
@@ -219,6 +276,11 @@ public class LoanPanel extends JPanel {
 		
 
     }
+    
+    public void pack()
+    {
+    	panelFiles.hidePreviewPanel();
+    }
 	
 	public void setLoan(WSILoan loan)
 	{
@@ -260,10 +322,23 @@ public class LoanPanel extends JPanel {
 			txtReturned.setText("");
 		}
 		
+		if(loan.isSetIssuedate() && loan.isSetDuedate())
+		{
+			Period period = new Period(LocalDate.fromCalendarFields(loan.getIssuedate().toGregorianCalendar()), 
+							 LocalDate.fromCalendarFields(loan.getDuedate().toGregorianCalendar()));
+						
+			lblperiod.setText("Loan period: "+PeriodFormat.getDefault().print(period));
+			
+			
+		}
+		
+		
+		
 		panelFiles.setFileList((ArrayList<TridasFile>) loan.getFiles());
 		
 		setSamples(loan);
 		
 	}
+
 
 }

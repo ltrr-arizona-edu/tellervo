@@ -29,7 +29,11 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.tridasv2.doc.Documentation;
+import org.tellervo.desktop.tridasv2.ui.ImagePreviewPanel;
 
 import com.l2fprod.common.beans.BeanUtils;
 import com.l2fprod.common.propertysheet.AbstractProperty;
@@ -39,6 +43,7 @@ import com.l2fprod.common.propertysheet.Property;
 
 public class TridasEntityProperty extends AbstractProperty {
 	private static final long serialVersionUID = 1L;
+	private final static Logger log = LoggerFactory.getLogger(TridasEntityProperty.class);
 
 	/** The fully qualified name of this property (e.g. object.title) */
 	public final String qname;
@@ -71,6 +76,12 @@ public class TridasEntityProperty extends AbstractProperty {
 	protected Object rootObject;
 	
 	protected String categoryPrefix = "Entity";
+	
+	
+	public Object getRootObject()
+	{
+		return rootObject;
+	}
 	
 	/**
 	 * Construct a tridas entity property
@@ -233,6 +244,7 @@ public class TridasEntityProperty extends AbstractProperty {
 		if(docs != null)
 			return docs;
 		
+		log.debug("No documentation available for qname: "+qname);
 		return "<i>No documentation is available for this entity</i>";
 	}
 	

@@ -30,11 +30,13 @@ import java.sql.Date;
 import java.util.List;
 
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
+import org.tellervo.schema.WSICuration;
 import org.tridas.io.formats.tridas.TridasFile;
 import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDatingReference;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasLocationGeometry;
+import org.tridas.schema.TridasSample;
 
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertyEditorRegistry;
@@ -67,6 +69,9 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		
 		registerEditor(TridasFile.class, TridasFileEditor.class);
 		registerEditor(List.class, TridasFileEditor.class);
+		
+		
+		registerEditor(WSICuration.class, WSICurationEditor.class);
 	}
 	
 	public synchronized PropertyEditor getEditor(Property property) {
@@ -79,21 +84,26 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 			
 			if(ep.isDictionaryAttached())
 				return new ListComboBoxPropertyEditor(ep.getDictionary());
+			
+			if(ep.lname.equals("curationStatus"))
+			{
+				return new WSICurationEditor((TridasSample) ep.getRootObject());
+			}
 		}
 
-		if(property.getName().equals("files"))
+		/*if(property.getName().equals("files"))
 		{
 			return new TridasFileEditor();
-		}
+		}*/
+		
+		
+
 		
 		PropertyEditor defaultEditor = super.getEditor(property);
 
 		
 		
 		if(defaultEditor == null && property instanceof TridasEntityProperty) {
-			
-			
-			
 			TridasEntityProperty ep = (TridasEntityProperty) property;
 			
 			if(ep.getChildProperties().size() > 0)

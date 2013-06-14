@@ -23,7 +23,7 @@
 			<xs:enumeration value="measurementSeries" />
 			<xs:enumeration value="derivedSeries" />
 			<xs:enumeration value="box"/>
-			<xs:enumeration value="curationEvent"/>
+			<xs:enumeration value="curation"/>
 			<xs:enumeration value="loan"/>
 		</xs:restriction>
 	</xs:simpleType>
@@ -420,6 +420,8 @@
 					<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 					<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="curation" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="loan" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:annotation>
@@ -542,6 +544,7 @@
 				<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="loan" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="curation" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded" />
@@ -955,7 +958,7 @@
 				<xs:element name="status" type="curationStatus" minOccurs="1" maxOccurs="1"/>
 				<xs:element ref="securityUser"/>
 				<xs:element name="curationtimestamp" type="xs:dateTime"/>
-				<xs:element name="notes" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="notes" minOccurs="0" maxOccurs="1" type="xs:string"/>
 				<xs:element ref="tridas:sample" minOccurs="1" maxOccurs="1"/>
 				<xs:element ref="loan" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>

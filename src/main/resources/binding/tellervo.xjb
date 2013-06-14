@@ -81,6 +81,13 @@
 				org.tridas.interfaces.ICoreTridas
 			</ai:interfaces>
 		</jaxb:bindings>
+		
+		<!-- Add ITridas interface to loan (kludge) -->
+		<jaxb:bindings node="//xs:element[@name='curation']/xs:complexType">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.ICoreTridas
+			</ai:interfaces>
+		</jaxb:bindings>
 	
 		<jaxb:schemaBindings>
 			<jaxb:package name="org.tellervo.schema"/>

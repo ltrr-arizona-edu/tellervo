@@ -1707,7 +1707,8 @@ class sampleEntity extends dbEntity
 	
 	protected $summaryObjectCode = NULL;
 	protected $summaryElementCode = NULL;
-
+	protected $curationstatus = null;
+	
 	
     function __construct()
     {  
@@ -1715,6 +1716,7 @@ class sampleEntity extends dbEntity
         parent::__construct($groupXMLTag);
         $this->type = new sampleType();  	
         $this->box = new box();
+
 	}	
 	
 	/***********/
@@ -1735,6 +1737,8 @@ class sampleEntity extends dbEntity
 	{
 		$this->summaryElementCode=$code;
 	}
+	
+
 	
 	function setBoxID($id)
     {
@@ -1844,6 +1848,11 @@ class sampleEntity extends dbEntity
 		return TRUE;
 	}
 	
+	function setCurationStatus($string)
+	{
+		$this->curationstatus = $string;
+	}
+	
 	/***********/
     /* GETTERS */
     /***********/  	
@@ -1867,6 +1876,12 @@ class sampleEntity extends dbEntity
 	function getBoxID()
     {
     	return $this->box->getID();
+    }
+
+    
+    function getCurationStatus()
+    {
+    	return $this->curationstatus;
     }
     
 	/**
@@ -3244,7 +3259,7 @@ class curationEntity extends dbEntity
 			$this->curationstatus = new curationStatus();
 		}
 	
-		return $this->curationstatus->setCurationstatus($id, $value);
+		return $this->curationstatus->setCurationStatus($id, $value);
 	}
 	
 	/**

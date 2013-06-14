@@ -66,12 +66,12 @@ public class ImagePreviewPanel extends JPanel {
     	
     }
     
-    public void loadImage(URI uri)
+    public boolean loadImage(URI uri)
     {
     	if(uri==null) 
     	{
     		loadPlaceholderImage();
-    		return;
+    		return false;
     	}
     	
     	File f = null;
@@ -80,7 +80,7 @@ public class ImagePreviewPanel extends JPanel {
     	} catch (IllegalArgumentException ex)
     	{
     		loadPlaceholderImage();
-    		return;
+    		return false;
     	}
     	
     	if(f.length() > 3145728.0)
@@ -88,7 +88,7 @@ public class ImagePreviewPanel extends JPanel {
     		// > 3mb
     		log.debug("Image too large to preview.");
     		loadPlaceholderImage();
-    		return;
+    		return false;
     	}
     	else
     	{
@@ -97,7 +97,7 @@ public class ImagePreviewPanel extends JPanel {
     		} catch (IOException ex)
     		{
         		loadPlaceholderImage();
-        		return;
+        		return false;
 
     		}
     	}
@@ -105,11 +105,13 @@ public class ImagePreviewPanel extends JPanel {
     	if(image==null) {
     		
     		loadPlaceholderImage();
+    		return false;
     	}
     	
         imageWidth = image.getWidth(this);
         imageHeight = image.getHeight(this);
         setScaledImage();
+        return true;
     }
     
     //e.g., containing frame might call this from formComponentResized

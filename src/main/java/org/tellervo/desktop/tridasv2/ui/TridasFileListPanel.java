@@ -5,17 +5,13 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -24,9 +20,7 @@ import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.ButtonGroup;
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -34,17 +28,15 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
-import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import net.miginfocom.swing.MigLayout;
@@ -56,9 +48,6 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.TridasFile;
-import javax.swing.JEditorPane;
-import javax.swing.JTextPane;
-import javax.swing.JTextArea;
 
 public class TridasFileListPanel extends JPanel implements ActionListener{
 
@@ -80,6 +69,7 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 	protected JTable tblFileList;
 	private Boolean hasResults=false;
 	private ImagePreviewPanel previewPanel;
+	private JSplitPane splitPane ;
 	
 	public static FileNameExtensionFilter imageFilter = new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes());			
 	public static FileNameExtensionFilter pdfFilter = new FileNameExtensionFilter("PDF documents", "pdf");
@@ -130,53 +120,53 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 			panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 			contentPanel.add(panel, "cell 0 0,grow");
 			panel.setLayout(new MigLayout("hidemode 3", "[285.00px,grow,left]", "[200px,grow]"));
-			JSplitPane splitPane = new JSplitPane();
+			splitPane = new JSplitPane();
 			panel.add(splitPane, "cell 0 0,grow");
 			splitPane.setOneTouchExpandable(true);
-			JPanel panel_2 = new JPanel();
-			splitPane.setLeftComponent(panel_2);
-			panel_2.setLayout(new MigLayout("hidemode 3", "[][grow]", "[][][grow,fill][]"));
-			JPanel panel_1 = new JPanel();
-			panel_2.add(panel_1, "cell 1 0");
-			FlowLayout fl_panel_1 = (FlowLayout) panel_1.getLayout();
-			fl_panel_1.setAlignment(FlowLayout.LEFT);
+			splitPane.setDividerSize(8);
+			JPanel panelMain = new JPanel();
+			splitPane.setLeftComponent(panelMain);
+			panelMain.setLayout(new MigLayout("hidemode 3", "[][grow]", "[][][grow,fill][]"));
+			JPanel panelRadioButtons = new JPanel();
+			panelMain.add(panelRadioButtons, "cell 1 0");
 			{
 				radFile = new JRadioButton("File from file system");
 				radFile.setFont(new Font("Dialog", Font.PLAIN, 12));
 				radFile.setSelected(true);
 				radFile.setActionCommand("RadioFile");
 				radFile.addActionListener(this);
-				panel_1.add(radFile);
+				panelRadioButtons.setLayout(new MigLayout("hidemode 3", "[145px][81px][48px]", "[18px]"));
+				panelRadioButtons.add(radFile, "cell 0 0,alignx left,aligny top");
 			}
 			{
 				radWebpage = new JRadioButton("Webpage");
 				radWebpage.setActionCommand("RadioWebpage");
 				radWebpage.addActionListener(this);
 				radWebpage.setFont(new Font("Dialog", Font.PLAIN, 12));
-				panel_1.add(radWebpage);
+				panelRadioButtons.add(radWebpage, "cell 1 0,alignx left,aligny top");
 			}
 			{
 				radURN = new JRadioButton("URN");
 				radURN.setActionCommand("RadioURN");
 				radURN.addActionListener(this);
 				radURN.setFont(new Font("Dialog", Font.PLAIN, 12));
-				panel_1.add(radURN);
+				panelRadioButtons.add(radURN, "cell 2 0,alignx left,aligny top");
 			}
 			radioButtons.add(radFile);
 			radioButtons.add(radWebpage);
 			radioButtons.add(radURN);
 			{
 				lblAddANew = new JLabel("Add:");
-				panel_2.add(lblAddANew, "cell 0 1");
+				panelMain.add(lblAddANew, "cell 0 1");
 				lblAddANew.setFont(new Font("Dialog", Font.PLAIN, 12));
 			}
 			txtNewFile = new JTextField("");
-			panel_2.add(txtNewFile, "flowx,cell 1 1,growx");
+			panelMain.add(txtNewFile, "flowx,cell 1 1,growx");
 			txtNewFile.setColumns(10);
 			txtNewFile.setActionCommand("AddToList");
 			txtNewFile.addActionListener(this);
 			JScrollPane scrollPane = new JScrollPane();
-			panel_2.add(scrollPane, "cell 0 2 2 1,growx");
+			panelMain.add(scrollPane, "cell 0 2 2 1,growx");
 			tblFileList = new JTable();
 			tblFileList.setModel(new URIListTableModel());
 			tblFileList.setRowSelectionAllowed(true);
@@ -261,23 +251,26 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 			
 			{
 				btnBrowse = new JButton();
-				panel_2.add(btnBrowse, "cell 1 1");
+				btnBrowse.setToolTipText("Browse for file");
+				panelMain.add(btnBrowse, "cell 1 1");
 				btnBrowse.setActionCommand("Browse");
 				btnBrowse.addActionListener(this);
 				btnBrowse.setIcon(Builder.getIcon("open.png", 16));
 			}
 			btnAdd = new JButton();
-			panel_2.add(btnAdd, "cell 1 1");
+			btnAdd.setToolTipText("Add file reference to list");
+			panelMain.add(btnAdd, "cell 1 1");
 			btnAdd.setIcon(Builder.getIcon("edit_add.png", 16));
 			btnAdd.setActionCommand("AddToList");
 			btnRemove = new JButton();
-			panel_2.add(btnRemove, "flowx,cell 1 3,alignx right");
+			btnRemove.setToolTipText("Delete file reference");
+			panelMain.add(btnRemove, "flowx,cell 1 3,alignx right");
 			btnRemove.setIcon(Builder.getIcon("cancel.png", 16));
 			btnRemove.setActionCommand("DeleteFromList");
 			btnRemove.setEnabled(false);
 			{
 				btnOpen = new JButton();
-				panel_2.add(btnOpen, "cell 1 3,alignx right");
+				panelMain.add(btnOpen, "cell 1 3,alignx right");
 				btnOpen.setIcon(Builder.getIcon("document_preview.png", 16));
 				btnOpen.setToolTipText("View document");
 				btnOpen.setActionCommand("Open");
@@ -368,6 +361,10 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 				}
 			}
 		}
+		
+	
+		splitPane.setDividerLocation(1.0d);
+		
 	}
 	
 	private void previewURI()
@@ -375,8 +372,15 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 		int row = tblFileList.getSelectedRow();
 		
 		URI uri = ((URIListTableModel)tblFileList.getModel()).getURI(row);
-		previewPanel.loadImage(uri);
-		previewPanel.repaint();
+		if(previewPanel.loadImage(uri))
+		{
+			previewPanel.repaint();
+			expandPreviewPanel();
+		}
+		else
+		{
+			hidePreviewPanel();
+		}
 	}
 	
 	public static void openURI(URI uri)
@@ -456,6 +460,8 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 		
 			if(uri==null)
 			{
+				if(txtNewFile.getText().trim().length()==0) return;
+				
 				uri = URI.create(txtNewFile.getText());
 			}
 		
@@ -577,6 +583,23 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 		
 	}
 
+	/**
+	 * If the preview panel is hidden or very small then expand
+	 */
+	public void expandPreviewPanel()
+	{
+		if(splitPane.getDividerLocation()>splitPane.getWidth()-100)
+		{
+			splitPane.setDividerLocation(0.7d);
+		}
+	}
+	
+	public void hidePreviewPanel()
+	{
+		splitPane.setDividerLocation(1.0d);
+	}
+
+	
 	public Boolean getHasResults() {
 		return hasResults;
 	}

@@ -60,6 +60,7 @@ class sample extends sampleEntity implements IDBAccessor
 		$this->setElementID($row['elementid']);
 		$this->setCode($row['code']);
 		$this->setBoxID($row['boxid']);
+		$this->setCurationStatus($row['curationstatus']);
 		$this->setSummaryObjectCode($row['objectcode']);
 		$this->setSummaryElementCode($row['elementcode']);
 		
@@ -459,6 +460,8 @@ class sample extends sampleEntity implements IDBAccessor
             	$xml.="<tridas:genericField name=\"tellervo.boxCurationLocation\" type=\"xs:string\">".$thisbox->getCurationLocation()."</tridas:genericField>\n";
             	$xml.="<tridas:genericField name=\"tellervo.boxTrackingLocation\" type=\"xs:string\">".$thisbox->getTrackingLocation()."</tridas:genericField>\n";
             }
+            
+            $xml.="<tridas:genericField name=\"tellervo.curationStatus\" type=\"xs:string\">".$this->getCurationStatus()."</tridas:genericField>\n";
             
             if ($format=="summary")
             {

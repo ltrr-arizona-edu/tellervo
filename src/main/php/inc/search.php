@@ -208,6 +208,26 @@ class search Implements IDBAccessor
             		continue;
             	}
             }
+            elseif($this->returnObject=="box")
+            {
+            	$myReturnObject = new box();
+            	$hasPermission = $myAuth->getPermission("read", "box", $row['boxid']);
+            	if($hasPermission===FALSE) {
+            		array_push($this->deniedRecArray, $row['boxid']);
+            		$firebug->log($row['boxid'], "Permission denied on boxid");
+            		continue;
+            	}
+            }
+            elseif($this->returnObject=="curation")
+            {
+            	$myReturnObject = new curation();
+            	$hasPermission = $myAuth->getPermission("read", "curation", $row['curationid']);
+            	if($hasPermission===FALSE) {
+            		array_push($this->deniedRecArray, $row['curationid']);
+            		$firebug->log($row['curationid'], "Permission denied on curationid");
+            		continue;
+            	}
+            }
             elseif($this->returnObject=="radius") 
             {
                 $myReturnObject = new radius();
@@ -442,6 +462,7 @@ class search Implements IDBAccessor
         case "sample":
         case "radius":
         case "loan":   
+        case "box":
         case "curation":
             return $objectName;
             break;
@@ -570,27 +591,57 @@ class search Implements IDBAccessor
                 $withinJoin = TRUE;
             }
             
+            if($this->includeLoan($tables) || $this->includeCuration($tables))
+            {
+            	$fromSQL .= "INNER JOIN ".$this->tableName("curation")." ON ".$this->tableName("sample").".sampleid = ".$this->tableName("curation").".sampleid \n";
+            }
+            
             if($this->includeLoan($tables))
             {
-            		$fromSQL .= "INNER JOIN ".$this->tableName("curation")." ON ".$this->tableName("sample").".sampleid = ".$this->tableName("curation").".sampleid \n";
-            		$fromSQL .= "INNER JOIN ".$this->tableName("loan")." ON ".$this->tableName("curation").".loanid = ".$this->tableName("loan").".loanid \n";
+            	$fromSQL .= "INNER JOIN ".$this->tableName("loan")." ON ".$this->tableName("curation").".loanid = ".$this->tableName("loan").".loanid \n";
             }
         }
-        else if ($this->includeLoan($tables))
+        else 
         {
-        	if($withinJoin)
+        	if($this->includeCuration($tables))
         	{
-        		$fromSQL .= "INNER JOIN ".$this->tableName("curation")." ON ".$this->tableName("sample").".sampleid = ".$this->tableName("curation").".sampleid \n";
-            	$fromSQL .= "INNER JOIN ".$this->tableName("loan")." ON ".$this->tableName("curation").".loanid = ".$this->tableName("loan").".loanid \n";
-           	}
-        	else
+        		if($withinJoin)
+        		{
+        			$fromSQL .= "INNER JOIN ".$this->tableName("curation")." ON ".$this->tableName("sample").".sampleid = ".$this->tableName("curation").".sampleid \n";
+        		}
+        		else
+        		{
+        			$fromSQL .= $this->tableName("curation")." \n";
+        			$withinJoin = TRUE;
+        		}
+        	}
+        	
+        	if($this->includeLoan($tables))
         	{
-        		$fromSQL .= $this->tableName("loan")." \n";
-        		$withinJoin = TRUE;
+        		if($withinJoin)
+        		{
+        			$fromSQL .= "INNER JOIN ".$this->tableName("loan")." ON ".$this->tableName("curation").".loanid = ".$this->tableName("loan").".loanid \n";
+        		}
+        		else
+        		{
+        			$fromSQL .= $this->tableName("loan")." \n";
+        			$withinJoin = TRUE;
+        		}
         	}
         }
         
-        
+        if ($this->includeBox($tables))
+        {
+        	if($withinJoin)
+        	{
+        		$fromSQL .= "INNER JOIN ".$this->tableName("box")." ON ".$this->tableName("sample").".boxid = ".$this->tableName("box").".boxid \n";
+        	}
+        	else
+        	{
+        		$fromSQL .= $this->tableName("box")." \n";
+        		$withinJoin = TRUE;
+        	}
+        }
         
         if( (($this->getLowestRelationshipLevel($tables)<=2) && ($this->getHighestRelationshipLevel($tables)>=2)) || ($this->returnObject == 'radius'))
         {
@@ -653,6 +704,28 @@ class search Implements IDBAccessor
     private function includeLoan($tables)
     {
     	if ((in_array('vwtblloan', $tables)) || ($this->returnObject == 'loan'))
+    	{
+    		return true;
+    	}
+    }
+    
+    /**
+     * Whether or not the Box table should be included
+     */
+    private function includeBox($tables)
+    {
+    	if ((in_array('vwtblbox', $tables)) || ($this->returnObject == 'box'))
+    	{
+    		return true;
+    	}
+    }
+    
+    /**
+     * Whether or not the Curation table should be included
+     */
+    private function includeCuration($tables)
+    {
+    	if ((in_array('vwtblcuration', $tables)) || ($this->returnObject == 'curation'))
     	{
     		return true;
     	}
