@@ -143,6 +143,11 @@ class loan extends loanEntity implements IDBAccessor
     {    	
     	global $firebug;
     	
+    	$this->setFirstName($paramsClass->getFirstName());
+    	$this->setLastName($paramsClass->getLastName());
+    	$this->setOrganisation($paramsClass->getOrganisation());
+    	
+    	
     	$firebug->log($paramsClass, "params class");
   															 
 		return true;  
@@ -187,15 +192,7 @@ class loan extends loanEntity implements IDBAccessor
                 return true;
 
             case "create":
-                if($paramsObj->hasChild===TRUE)
-                {
-                    if($paramsObj->getID() ===NULL) 
-                    {
-                        trigger_error("902"."Missing parameter - 'loanid' field is required when creating a loan.", E_USER_ERROR);
-                        return false;
-                    }
-                }
-                
+
                 return true;
 
             default:
@@ -280,9 +277,109 @@ class loan extends loanEntity implements IDBAccessor
 
     function writeToDB()
     {
-  
-        // Return true as write to DB went ok.
-        return TRUE;
+
+    	global $dbconn;
+    	global $domain;
+    	$sql = NULL;
+    	$sql2 = NULL;
+    	
+    	//Only attempt to run SQL if there are no errors so far
+    	if($this->getLastErrorCode() == NULL)
+    	{
+    		$dbconnstatus = pg_connection_status($dbconn);
+    		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    		{
+    			// If ID has not been set then we assume that we are writing a new record to the DB.  Otherwise updating.
+    			if($this->getID() == NULL)
+    			{
+    				// New record
+    	
+    				// Generate a new UUID pkey
+    				$this->setID(uuid::getUUID(), $domain);
+    				 
+    				$sql = "INSERT INTO tblloan ( ";
+    				$sql.="loanid, ";
+    				$sql.="firstname, ";
+    				$sql.="lastname, ";
+    				$sql.="organisation, ";
+    				$sql.="duedate, ";
+    				$sql.="files, ";
+    				$sql.="notes, ";
+    				$sql.="returndate, ";
+    				$sql = substr($sql, 0, -2);
+    				$sql.=") VALUES (";
+    				$sql.=dbHelper::tellervo_pg_escape_string($this->getID()).", ";
+    				
+    				$sql.=dbHelper::tellervo_pg_escape_string($this->getFirstName()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($this->getLastName()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($this->getOrganisation()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($this->getDueDate()).", ";
+    				$sql.=dbHelper::phpArrayToPGStrArray($this->getFiles()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($this->getNotes()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($this->getReturnDate()).", ";
+    				
+    				// Trim off trailing space and comma
+    				$sql = substr($sql, 0, -2);
+    				$sql.=")";
+    				$sql2 = "SELECT * FROM tblloan WHERE loanid='".$this->getID()."'";
+    			}
+    			else
+    			{
+    				// Updating DB
+    				$sql.="update tblsample set ";
+    				$sql.="loanid="         .dbHelper::tellervo_pg_escape_string($this->getID()).", ";
+    				$sql.="firstname="      .dbHelper::tellervo_pg_escape_string($this->getFirstName()).", ";
+    				$sql.="lastname="     	.dbHelper::tellervo_pg_escape_string($this->getLastName()).", ";
+    				$sql.="organisation="	.dbHelper::tellervo_pg_escape_string($this->getOrganisation()).", ";
+    				$sql.="duedate="		.dbHelper::tellervo_pg_escape_string($this->getDueDate()).", ";
+    				$sql.="files="	 		.dbHelper::phpArrayToPGStrArray($this->getFiles()).", ";
+    				$sql.="notes="			.dbHelper::tellervo_pg_escape_string($this->getNotes()).", ";
+    				$sql.="returndate="		.dbHelper::tellervo_pg_escape_string($this->getReturnDate()).", ";
+    				
+    				$sql = substr($sql, 0, -2);
+    				$sql.= " WHERE sampleid=".dbHelper::tellervo_pg_escape_string($this->getID());
+    			}
+    	
+    			// Run SQL command
+    			if ($sql)
+    			{
+    				// Run SQL
+    				pg_send_query($dbconn, $sql);
+    				$result = pg_get_result($dbconn);
+    				if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+    				{
+    					$PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+    					switch($PHPErrorCode)
+    					{
+
+    						default:
+    							// Any other error
+    							$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+    					}
+    					return FALSE;
+    				}
+    			}
+    			// Retrieve automated field values when a new record has been inserted
+    			if ($sql2)
+    			{
+    				// Run SQL
+    				$result = pg_query($dbconn, $sql2);
+    				while ($row = pg_fetch_array($result))
+    				{
+    					$this->setCreatedTimestamp($row['issuedate']);
+    				}
+    			}
+    		}
+    		else
+    		{
+    			// Connection bad
+    			$this->setErrorMessage("001", "Error connecting to database");
+    			return FALSE;
+    		}
+    	}
+    	
+    	// Return true as write to DB went ok.
+    	return TRUE;
     }
 
     function deleteFromDB()

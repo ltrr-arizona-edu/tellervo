@@ -673,13 +673,22 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	// setup common to both constructors
 	private void setup() {
 		
-		
-		
 		// first, make sure we stop measuring if the window is closed.
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosed(java.awt.event.WindowEvent evt) {
+				if(measurePanel!=null)
+				{
+					measurePanel.cleanup();
+				}
+			}
+		});
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowClosing(WindowEvent we) {
-				stopMeasuring();
+				if(measurePanel!=null)
+				{
+					measurePanel.cleanup();
+				}
 			}
 		});
 		

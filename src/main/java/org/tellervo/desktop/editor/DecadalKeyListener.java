@@ -179,6 +179,39 @@ public class DecadalKeyListener extends KeyAdapter {
 			e.consume();
 			eventHandled = true;
 			break;
+				
+		case KeyEvent.VK_BACK_SPACE:
+			log.debug("Backspace pressed");
+			int rw = _table.getSelectedRow();
+			int c = _table.getSelectedColumn();
+			if (!_table.isCellEditable(rw, c))
+				return;
+			_table.editCellAt(rw, c);			
+			return;
+		case KeyEvent.VK_1:
+		case KeyEvent.VK_2:
+		case KeyEvent.VK_3:
+		case KeyEvent.VK_4:
+		case KeyEvent.VK_5:
+		case KeyEvent.VK_6:
+		case KeyEvent.VK_7:
+		case KeyEvent.VK_8:
+		case KeyEvent.VK_9:
+		case KeyEvent.VK_0:
+			log.debug("Digit pressed");
+			if (!_table.isCellEditable(_table.getSelectedRow(), _table.getSelectedColumn()))
+				return;
+			
+			if(!_table.isEditing())
+			{
+				
+				_table.setValueAt(e.getKeyChar(), _table.getEditingRow(), _table.getEditingColumn());
+				_table.editCellAt(_table.getEditingRow(), _table.getEditingColumn());
+				e.consume();
+			}
+			break;
+			
+			
 		case KeyEvent.VK_U:		
 		case KeyEvent.VK_D:
 		case KeyEvent.VK_E:
@@ -300,10 +333,14 @@ public class DecadalKeyListener extends KeyAdapter {
 			int col = _table.getSelectedColumn();
 			if (!_table.isCellEditable(row, col))
 				return;
+			
 			_table.setValueAt("", row, col);
 			_table.editCellAt(row, col);
+			
 			return;
 		}
+		
+		
 		// unknown -- ignore
 	}
 

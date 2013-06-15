@@ -591,55 +591,42 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	
 	 public void eventDispatched(AWTEvent e)
 	    {
-	    	if(e instanceof KeyEvent)
+	    	if(e instanceof KeyEvent && btnMouseTrigger.isSelected())
 	    	{
 				if(((KeyEvent)e).getKeyCode() == KeyEvent.VK_ESCAPE)
 				{
-					log.debug("Escape pressed");
-					if(btnMouseTrigger.isSelected())
-					{
-						// Escape pressed so cancel mouse trigger
-						toggleMouseTrigger(false);
-					}
-				}
-				
-				if(((KeyEvent)e).getKeyCode() == KeyEvent.VK_LEFT)
-				{
-					log.debug("Left pressed");
-				}
-				else
-				{
-					((KeyEvent) e).consume();
+					// Escape pressed so cancel mouse trigger
+					toggleMouseTrigger(false);
 				}
 	    	}
-			else if (e instanceof MouseEvent)
+	    	
+			else if (e instanceof MouseEvent && btnMouseTrigger.isSelected())
 			{
-				if(btnMouseTrigger.isSelected())
+				
+				MouseEvent me = (MouseEvent) e;
+				if(me.getID()==MouseEvent.MOUSE_CLICKED)
 				{
-					MouseEvent me = (MouseEvent) e;
-					if(me.getID()==MouseEvent.MOUSE_CLICKED)
+					if(me.getButton() == MouseEvent.BUTTON1)
 					{
-						if(me.getButton() == MouseEvent.BUTTON1)
-						{
-							// Left click
-							dev.requestMeasurement();	
-							updateInfoText();
-						}
-						if(me.getButton() == MouseEvent.BUTTON3)
-						{
-							// Right click
-							dev.zeroMeasurement();	
-							updateInfoText();
-						}
+						// Left click
+						dev.requestMeasurement();	
+						updateInfoText();
 					}
-					else if (me.getID()==MouseEvent.MOUSE_MOVED || me.getID()==MouseEvent.MOUSE_DRAGGED)
+					if(me.getButton() == MouseEvent.BUTTON3)
 					{
-						// Mouse was moved, so move it back
-						moveMouseBackToButton();
+						// Right click
+						dev.zeroMeasurement();	
+						updateInfoText();
 					}
-					
-					me.consume();
 				}
+				else if (me.getID()==MouseEvent.MOUSE_MOVED || me.getID()==MouseEvent.MOUSE_DRAGGED)
+				{
+					// Mouse was moved, so move it back
+					moveMouseBackToButton();
+				}
+				
+				me.consume();
+				
 			}
 	    }
 	

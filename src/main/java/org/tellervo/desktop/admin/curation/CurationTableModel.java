@@ -1,23 +1,24 @@
 package org.tellervo.desktop.admin.curation;
 
-import java.util.ArrayList;
-import java.text.DateFormat;
 import static java.text.DateFormat.LONG;
 import static java.text.DateFormat.getDateInstance;
-import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.ui.I18n.TellervoLocale;
+
+import java.text.DateFormat;
+import java.util.ArrayList;
+
 import javax.swing.table.AbstractTableModel;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.SecurityUser;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.ui.I18n.TellervoLocale;
 import org.tellervo.schema.CurationStatus;
 import org.tellervo.schema.WSICuration;
-import org.tellervo.schema.WSILoan;
 import org.tridas.schema.DateTime;
 
 public class CurationTableModel extends AbstractTableModel {
-	public static final String[] columns = {"Date", "Curation status", "Curator", "Notes", "Loan"};
+	public static final String[] columns = {"Date", "Curation status", "Curator", "Notes"};
 	
 	private ArrayList<WSICuration> events = new ArrayList<WSICuration>();
 	
@@ -63,6 +64,16 @@ public class CurationTableModel extends AbstractTableModel {
 		return events.size();
 	}
 
+	public WSICuration getRowAsWSICuration(int row)
+	{
+		try{
+			return events.get(row);
+		} catch (Exception e)
+		{
+			return null;
+		}
+	}
+	
 	@Override
 	public Object getValueAt(int row, int col) {
 		
@@ -85,21 +96,11 @@ public class CurationTableModel extends AbstractTableModel {
 				DateFormat dateFormat =  getDateInstance(LONG, loc.getLocale());
 				return dateFormat.format(event.getCurationtimestamp().toGregorianCalendar().getTime());
 			case 1:
-				return event.getStatus().name();
+				return event.getStatus().value();
 			case 2:
 				return event.getSecurityUser().getLastName()+", "+event.getSecurityUser().getFirstName();
 			case 3:
 				return event.getNotes();
-			case 4: 
-				if(event.isSetLoan())
-				{
-					return true;
-				}
-				else
-				{
-					return null;
-				}
-				
 			default:
 				return null;
 		}
@@ -121,8 +122,6 @@ public class CurationTableModel extends AbstractTableModel {
 				return SecurityUser.class;
 			case 3:
 				return String.class;
-			case 4: 
-				return WSILoan.class;
 			default:
 				return null;
 		}

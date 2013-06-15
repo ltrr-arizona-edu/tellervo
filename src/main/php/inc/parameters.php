@@ -283,9 +283,6 @@ class loanParameters extends loanEntity implements IParams
     	$firebug->log($xmlrequest, "XML request received by loanParameters");
     	
     	parent::__construct();    	
-    	
-    	
-    	
 
     	$this->xmlRequestDom = new DomDocument();
     	$this->xmlRequestDom->loadXML($xmlrequest);
@@ -313,12 +310,12 @@ class loanParameters extends loanEntity implements IParams
 		   switch ($child->tagName)
 		   {
 		   		case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
-		   		case "tvo:firstname":			$this->setFirstName($child->nodeValue); break;
-		   		case "tvo:lastname":			$this->setLastName($child->nodeValue); break;
-		   		case "tvo:organisation":			$this->setOrganisation($child->nodeValue); break;
-		   		case "tvo:notes":			$this->setNotes($child->nodeValue); break;
-		   		case "tvo:duedate":			$this->setDueDate($child->nodeValue); break;
-		   		case "tvo:issuedate":			break;
+		   		case "firstname":			$this->setFirstName($child->nodeValue); break;
+		   		case "lastname":			$this->setLastName($child->nodeValue); break;
+		   		case "organisation":			$this->setOrganisation($child->nodeValue); break;
+		   		case "notes":			$this->setNotes($child->nodeValue); break;
+		   		case "duedate":			$this->setDueDate($child->nodeValue); break;
+		   		case "issuedate":			break;
 		
 		   }
         }

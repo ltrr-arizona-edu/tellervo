@@ -100,6 +100,7 @@ public class GraphToolbar extends JToolBar {
 	public static class TitlelessButton extends JButton {
 		public TitlelessButton(Action action) {
 			super(action);
+			this.setFocusable(false);
 		}
 		
 		@Override
@@ -119,11 +120,13 @@ public class GraphToolbar extends JToolBar {
 	private static class TitlelessToggleButton extends JToggleButton {
 		public TitlelessToggleButton(Action action) {
 			super(action);
+			this.setFocusable(false);
 			
 		}
 		
 		public TitlelessToggleButton(Action action, String tooltip) {
 			super(action);
+			this.setFocusable(false);
 			this.setToolTipText(tooltip);
 			
 		}

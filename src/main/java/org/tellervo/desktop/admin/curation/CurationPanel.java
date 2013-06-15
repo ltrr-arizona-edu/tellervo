@@ -2,6 +2,8 @@ package org.tellervo.desktop.admin.curation;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
@@ -64,9 +66,11 @@ public class CurationPanel extends JPanel {
 
 		txtBox.setText(box.getTitle());
 		txtStorageLocation.setText(box.getCurationLocation());		
-		if(TridasUtils.getGenericFieldByName(sample, "curationStatus")!=null)
+		
+		
+		if(TridasUtils.getGenericFieldByName(sample, "tellervo.curationStatus")!=null)
 		{
-			txtCurationStatus.setText(TridasUtils.getGenericFieldByName(sample, "curationStatus").getValue());
+			txtCurationStatus.setText(TridasUtils.getGenericFieldByName(sample, "tellervo.curationStatus").getValue());
 		}
 	}
 
@@ -166,7 +170,6 @@ public class CurationPanel extends JPanel {
 		txtCurationStatus = new JTextField();
 		txtCurationStatus.setEditable(false);
 		historyPanel.add(txtCurationStatus, "cell 1 0,growx");
-		txtCurationStatus.setColumns(10);
 		
 		JLabel lblCurationHistory = new JLabel("History:");
 		historyPanel.add(lblCurationHistory, "cell 0 1");
@@ -176,6 +179,38 @@ public class CurationPanel extends JPanel {
 		
 		table = new JTable();
 		curationTableModel = new CurationTableModel();
+		
+		table.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent evt) {
+				if(evt.getClickCount()>1)
+				{
+					WSICuration curationEvent = ((CurationTableModel)table.getModel()).getRowAsWSICuration(table.getSelectedRow());
+					if(curationEvent!=null && curationEvent.isSetLoan())
+					{
+						LoanDialog dialog = new LoanDialog(null);
+						dialog.setLoan(curationEvent.getLoan());
+						dialog.setVisible(true);
+						dialog.expandDetailsPanel(0.0d);
+						
+					}
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {	}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) { }
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {	}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) { }
+			
+		});
 		
 		 
 		

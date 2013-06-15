@@ -28,7 +28,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.EntityType;
 import org.tellervo.schema.WSIBox;
+import org.tellervo.schema.WSICuration;
 import org.tellervo.schema.WSIEntity;
+import org.tellervo.schema.WSILoan;
 import org.tellervo.schema.WSIRequest;
 import org.tridas.interfaces.ICoreTridas;
 import org.tridas.interfaces.ITridas;
@@ -141,7 +143,8 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 		
 		// derived series, objects and box don't have a parent entity ID
 		if (queryType == TellervoRequestType.CREATE && parentEntityID == null) {
-			if (!(entity instanceof ITridasDerivedSeries || entity instanceof TridasObject || entity instanceof WSIBox))
+			if (!(entity instanceof ITridasDerivedSeries || entity instanceof TridasObject 
+				|| entity instanceof WSIBox || entity instanceof WSILoan || entity instanceof WSICuration))
 				throw new IllegalArgumentException("CREATE called with ParentObjectID == null!");
 		}
 	}
@@ -235,6 +238,10 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 			request.getDerivedSeries().add((TridasDerivedSeries) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof WSIBox)
 			request.getBoxes().add((WSIBox) createOrUpdateEntity);
+		else if(createOrUpdateEntity instanceof WSILoan)
+			request.getLoen().add((WSILoan) createOrUpdateEntity);
+		else if(createOrUpdateEntity instanceof WSICuration)
+			request.getCurations().add((WSICuration) createOrUpdateEntity);
 		else 
 			throw new IllegalArgumentException("Unknown/invalid entity type for update/create: " + 
 					createOrUpdateEntity.toString());

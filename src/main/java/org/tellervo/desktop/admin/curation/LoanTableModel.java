@@ -5,8 +5,17 @@ import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.ui.I18n.TellervoLocale;
+import org.tellervo.desktop.ui.I18n;
+
 import org.tellervo.schema.WSILoan;
 import org.tridas.schema.DateTime;
+
+import static java.text.DateFormat.SHORT;
+import static java.text.DateFormat.getDateInstance;
+import java.text.DateFormat;
 
 public class LoanTableModel extends AbstractTableModel {
 	
@@ -74,6 +83,13 @@ public class LoanTableModel extends AbstractTableModel {
 		
 		if(loan==null) return null;
 		
+		String country = App.prefs.getPref(PrefKey.LOCALE_COUNTRY_CODE, "xxx");
+		String language = App.prefs.getPref(PrefKey.LOCALE_LANGUAGE_CODE, "xxx");
+		TellervoLocale loc = I18n.getTellervoLocale(country, language);
+		
+		DateFormat dateFormat =  getDateInstance(SHORT, loc.getLocale());
+		
+		
 		switch(col)
 		{
 			case 0:
@@ -83,9 +99,23 @@ public class LoanTableModel extends AbstractTableModel {
 			case 2:
 				return loan.getOrganisation();
 			case 3:
-				return loan.getIssuedate();
+				if(loan.isSetIssuedate())
+				{
+					return dateFormat.format(loan.getIssuedate().toGregorianCalendar().getTime());
+				}
+				else
+				{
+					return null;
+				}
 			case 4: 
-				return loan.getDuedate();		
+				if(loan.isSetDuedate())
+				{
+					return dateFormat.format(loan.getDuedate().toGregorianCalendar().getTime());
+				}
+				else
+				{
+					return null;
+				}
 			default:
 				return null;
 		}
