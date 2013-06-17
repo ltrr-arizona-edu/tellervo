@@ -54,6 +54,12 @@ public class URIListTableModel extends AbstractTableModel {
 		return uris.size();
 	}
 
+	public void clear()
+	{
+		uris = new ArrayList<URI>();
+		this.fireTableDataChanged();
+	}
+	
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
 

@@ -146,7 +146,8 @@ class loan extends loanEntity implements IDBAccessor
     	$this->setFirstName($paramsClass->getFirstName());
     	$this->setLastName($paramsClass->getLastName());
     	$this->setOrganisation($paramsClass->getOrganisation());
-    	
+    	$this->setDueDate($paramsClass->getDueDate());
+    	$this->setReturnDate($paramsClass->getReturnDate());
     	
     	$firebug->log($paramsClass, "params class");
   															 

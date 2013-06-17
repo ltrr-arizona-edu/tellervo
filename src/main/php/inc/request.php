@@ -331,7 +331,7 @@ class request
                             break;	
 
 	                	case 'box':
-	                		$newxml = "<box xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><identifier>".$item->getAttribute('id')."</identifier></box>";
+	                		$newxml = "<box xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier>".$item->getAttribute('id')."</tridas:identifier></box>";
 	                		$myParamObj = new boxParameters($newxml);
                             break;	
 

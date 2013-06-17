@@ -976,6 +976,7 @@ class sampleParameters extends sampleEntity implements IParams
     {
 		global $tellervoNS;
         global $tridasNS;
+        global $firebug;
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
         
@@ -1020,10 +1021,14 @@ class sampleParameters extends sampleEntity implements IParams
 		   	case "tridas:genericField":
 		   		$type = $child->getAttribute("type");
 		   		$name = $child->getAttribute("name");
-		   		$value = $child->nodeValue;		   		
+		   		$value = $child->nodeValue;		   	
+		   		
+		   		$firebug->log($name, "GenericFieldName");
+		   		$firebug->log($value, "GenericFieldValue");	
 		   		switch($name)
 		   		{	  
-		   			case "tellervo.boxid":
+		   			case "tellervo.boxID":
+		   				$firebug->log($value, "Setting boxid");
 		   				$this->setboxid($value);
 		   				break; 			
 		   			case "tellervo.externalID":
@@ -1614,13 +1619,13 @@ class boxParameters extends boxEntity implements IParams
         	
 		   switch ($child->tagName)
 		   {
-		   	case "tvo:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
-		   	case "tvo:title":				$this->setTitle($child->nodeValue); break;
+		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
 		   	case "tvo:trackingLocation":	$this->setTrackingLocation($child->nodeValue); break;
 		   	case "tvo:curationLocation":	$this->setCurationLocation($child->nodeValue); break;
 		   	case "tvo:comments":			$this->setComments($child->nodeValue); break;
-		   	case "tvo:createdTimestamp"     : break;
-		   	case "tvo:lastModifiedTimestamp": break;
+		   	case "tridas:createdTimestamp"     : break;
+		   	case "tridas:lastModifiedTimestamp": break;
 		   	case "tvo:sampleCount"			: break;
 		   	case "tridas:sample"			: break;	   				   		
 		   	default:

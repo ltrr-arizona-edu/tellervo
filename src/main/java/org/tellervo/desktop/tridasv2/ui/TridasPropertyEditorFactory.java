@@ -91,18 +91,13 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 			}
 		}
 
-		/*if(property.getName().equals("files"))
+		if(property.getName().equals("files"))
 		{
 			return new TridasFileEditor();
-		}*/
-		
-		
-
-		
+		}
+				
 		PropertyEditor defaultEditor = super.getEditor(property);
-
-		
-		
+	
 		if(defaultEditor == null && property instanceof TridasEntityProperty) {
 			TridasEntityProperty ep = (TridasEntityProperty) property;
 			

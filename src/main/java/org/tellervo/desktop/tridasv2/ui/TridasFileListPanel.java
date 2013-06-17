@@ -410,6 +410,8 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 	{
 		if(fileList == null) return;
 		
+		
+		((URIListTableModel)tblFileList.getModel()).clear();
 		for(TridasFile f : fileList)
 		{
 			try{

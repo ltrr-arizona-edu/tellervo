@@ -200,7 +200,7 @@ public class AdminMenu extends JMenu {
 	    inventory.setEnabled(false);
 	    //curationmenu.add(inventory); 
 	    
-	    JMenuItem loanDialog = new JMenuItem("Loans");
+	    JMenuItem loanDialog = new JMenuItem("Browse loans...");
 	    final Component glue = this;
 	    loanDialog.addActionListener(new ActionListener(){
 
@@ -213,6 +213,15 @@ public class AdminMenu extends JMenu {
 	    	
 	    });
 	    curationmenu.add(loanDialog);
+	    
+	    JMenuItem newLoan = new JMenuItem("New loan...");
+	    newLoan.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				LoanDialog.showNewLoanDialog(glue);
+			}
+	    });
+	    curationmenu.add(newLoan);
 	    
 	    
 	 	add(curationmenu);

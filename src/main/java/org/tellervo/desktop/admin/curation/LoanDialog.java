@@ -3,6 +3,7 @@ package org.tellervo.desktop.admin.curation;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -10,16 +11,16 @@ import java.awt.event.ItemListener;
 import java.util.Date;
 import java.util.List;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JToolBar;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -29,27 +30,18 @@ import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
-import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
-import org.tellervo.schema.EntityType;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
-import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSILoan;
-import org.tridas.schema.TridasIdentifier;
 
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import java.awt.FlowLayout;
 
 public class LoanDialog extends JDialog implements ActionListener{
 
@@ -68,12 +60,44 @@ public class LoanDialog extends JDialog implements ActionListener{
 	private JPanel buttonPanel;
 	private JButton btnOk;
 	private JButton btnCancel;
+	private final LoanDialogMode mode;
+	
+	
+	public enum LoanDialogMode{
+			
+			NEW,
+			BROWSE;
+			
+	};
+	
+	
+	public static void showNewLoanDialog(Component parent)
+	{
+		LoanDialog dialog = new LoanDialog(parent, LoanDialogMode.NEW);
+		dialog.setVisible(true);
+		dialog.expandDetailsPanel(0.0d);
+	}
 	
 	/**
-	 * Create the dialog.
+	 * Create the dialog in standard 'browse' mode
 	 */
 	public LoanDialog(Component parent) {
 		this.parent = parent;
+		mode = LoanDialogMode.BROWSE;
+		initGUI();
+		loadCurrentLoans();
+	}
+	
+	/**
+	 * Create dialog in the specified mode
+	 * 
+	 * @param parent
+	 * @param mode
+	 */
+	public LoanDialog(Component parent, LoanDialogMode mode)
+	{
+		this.parent = parent;
+		this.mode= mode;
 		initGUI();
 		loadCurrentLoans();
 	}
@@ -84,6 +108,11 @@ public class LoanDialog extends JDialog implements ActionListener{
 		loanPanel.setLoan(loan);
 		expandDetailsPanel();
 
+	}
+
+	private void setGUIForMode()
+	{
+		this.loanPanel.setGUIForMode(mode);
 	}
 	
 	private void loadLoansBySearchParam(SearchParameters param)
@@ -274,6 +303,7 @@ public class LoanDialog extends JDialog implements ActionListener{
 			}
 		}
 		
+		setGUIForMode();
 		loanPanel.pack();
 	}
 
@@ -296,10 +326,11 @@ public class LoanDialog extends JDialog implements ActionListener{
 		{
 			if(loanPanel.hasUnsavedEdits())
 			{
-				loanPanel.saveChanges();
+				if (loanPanel.saveChanges())
+				{
+					dispose();
+				}
 			}
-			
-			dispose();
 		}
 		else if (event.getActionCommand().equals("Cancel"))
 		{
@@ -330,7 +361,10 @@ public class LoanDialog extends JDialog implements ActionListener{
 				
 				if(n==JOptionPane.YES_OPTION)
 				{
-					loanPanel.saveChanges();
+					if (loanPanel.saveChanges())
+					{
+						dispose();
+					}
 				}
 
 			}
@@ -341,10 +375,6 @@ public class LoanDialog extends JDialog implements ActionListener{
 		}
 	}
 	
-	
-	/**
-	 * If the details panel is hidden or very small then expand
-	 */
 	public void expandDetailsPanel(Double overridepos)
 	{
 		splitPane.setDividerLocation(overridepos);

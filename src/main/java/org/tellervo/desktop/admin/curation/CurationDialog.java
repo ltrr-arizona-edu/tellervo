@@ -31,6 +31,8 @@ public class CurationDialog extends JDialog {
 	 */
 	public CurationDialog(TridasSample sample, Component parent) {
 		
+		
+		
 		if(sample.isSetIdentifier())
 		{
 			log.debug("CurationDialog instantiated with sample id:"+sample.getIdentifier().getValue());
