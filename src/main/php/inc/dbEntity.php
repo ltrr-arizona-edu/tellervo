@@ -183,7 +183,7 @@ class dbEntity
     	$this->setgroupXMLTag($groupXMLTag);
     	$this->parentEntityArray = array();
     	$this->childrenEntityArray = array();
-	$this->files = array();
+		$this->files = array();
 
     }
 
@@ -231,6 +231,12 @@ class dbEntity
 	function addFile($value)
 	{
 		global $firebug;
+		
+		if($this->files==null)
+		{
+			$this->files = array();
+		}
+		
 		$firebug->log($value, "Adding file to array");
 		array_push($this->files, $value);
 		$firebug->log($this->files, "Array now contains");

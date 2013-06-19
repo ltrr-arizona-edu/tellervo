@@ -282,7 +282,7 @@ class loanParameters extends loanEntity implements IParams
     	
     	$firebug->log($xmlrequest, "XML request received by loanParameters");
     	
-    	parent::__construct();    	
+    	parent::__construct("loan");    	
 
     	$this->xmlRequestDom = new DomDocument();
     	$this->xmlRequestDom->loadXML($xmlrequest);
@@ -299,7 +299,7 @@ class loanParameters extends loanEntity implements IParams
 		global $firebug;
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
-        
+        $this->entityIdArray = array();
         foreach($children as $child)
         {
 		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
@@ -309,14 +309,36 @@ class loanParameters extends loanEntity implements IParams
         	
 		   switch ($child->tagName)
 		   {
-		   		case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+		   		case "tridas:identifier": 	$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
 		   		case "firstname":			$this->setFirstName($child->nodeValue); break;
 		   		case "lastname":			$this->setLastName($child->nodeValue); break;
-		   		case "organisation":			$this->setOrganisation($child->nodeValue); break;
-		   		case "notes":			$this->setNotes($child->nodeValue); break;
-		   		case "duedate":			$this->setDueDate($child->nodeValue); break;
+		   		case "organisation":		$this->setOrganisation($child->nodeValue); break;
+		   		case "notes":				$this->setNotes($child->nodeValue); break;
+		   		case "duedate":				$this->setDueDate($child->nodeValue); break;
 		   		case "issuedate":			break;
-		
+		   		case "tridas:sample":	
+		   				$firebug->log("Found a sample in a loan... looping through sample tags...");			   		
+		   				$sampleTags = $child->childNodes;
+		   				foreach($sampleTags as $tag)
+		   				{
+		   					if($tag->nodeType != XML_ELEMENT_NODE) continue;
+		   					switch ($tag->tagName)
+		   					{
+		   						case "tridas:identifier" : 
+		   							$firebug->log($tag->nodeValue, "Found sample id");
+		   							array_push($this->entityIdArray, $tag->nodeValue );
+		   					}
+		   				}
+		   				break;
+		   		case "tridas:file" :		
+		   				if($child->hasAttribute("xlink:href"))
+						{
+							$this->addFile($child->getAttribute("xlink:href"));
+						}
+						break;
+		   		
+		   		default : 		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'loan' entity of the XML request", E_USER_NOTICE);
+		   			return;
 		   }
         }
         

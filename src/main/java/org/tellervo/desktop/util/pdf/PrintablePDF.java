@@ -63,7 +63,7 @@ public class PrintablePDF implements Printable, Pageable {
 		this.pageFormat = (pageFormat == null) ? printJob.defaultPage() : pageFormat;
 		
 		printJob.setPageable(this);
-		printJob.setJobName("CORINA Series Report");
+		printJob.setJobName("Tellervo Report");
 	}
 	
 	/**

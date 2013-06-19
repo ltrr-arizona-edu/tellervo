@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -23,6 +24,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -44,6 +46,7 @@ import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.tridasv2.ui.TridasFileListPanel;
 import org.tellervo.desktop.ui.Alert;
@@ -71,6 +74,7 @@ import org.tellervo.schema.WSILoan;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasFile;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
@@ -143,12 +147,18 @@ public class LoanPanel extends JPanel implements ActionListener{
 	{
 		log.debug("Setting LoanPanel to be editable: " +b);
 		txtFirstName.setEditable(b);
+		txtFirstName.setFocusable(b);
 		txtLastName.setEditable(b);
+		txtLastName.setFocusable(b);
 		txtOrganisation.setEditable(b);
+		txtOrganisation.setFocusable(b);
+
 		dpIssueDate.setEnabled(b);
-		
+		dpDueDate.setEnabled(b);
 		dpReturnDate.setEnabled(b);
+		
 		txtNotes.setEditable(b);
+		txtNotes.setFocusable(b);
 		btnAddSample.setVisible(b);
 		btnRemoveSample.setVisible(b);
 		
@@ -515,11 +525,84 @@ public class LoanPanel extends JPanel implements ActionListener{
 		java.util.List<TridasObject> objList = resource.getAssociatedResult();
 		java.util.List<TridasSample> sampList = SampleLabelPrintingUI.getSamplesList(objList, null, null);
 				
-		for(TridasSample s : sampList)
+		addSamplesToList(sampList);
+		
+	}
+	
+	private void addSamplesToList(Collection<TridasSample> sampList)
+	{
+		addSamplesToList(sampList, false);
+	}
+	
+	private void addSamplesToList(Collection<TridasSample> sampList, Boolean warnOnLoaned)
+	{
+		ArrayList<TridasSample> alreadyLoanedSamples = new ArrayList<TridasSample>();
+		
+		for(TridasSample s : sampList){
+			
+        	TridasGenericField curationStatus = GenericFieldUtils.findField(s, "tellervo.curationStatus");
+        	if(curationStatus.isSetValue() && curationStatus.getValue().startsWith("On loan"))
+        	{
+        		alreadyLoanedSamples.add(s);
+        	}
+        	else
+        	{
+        		sampleModel.addElement(s);
+        	}
+		}
+				
+		if(alreadyLoanedSamples.size()>0)
 		{
-			sampleModel.addElement(s);
-		}	
+			
+			if(!warnOnLoaned)
+			{
+				for (TridasSample s : alreadyLoanedSamples)
+				{
+					sampleModel.addElement(s);
+				}
+			}
+			else
+			{
+			
+				String question = "";
+				if(alreadyLoanedSamples.size()==1)
+				{
+					question = "The sample that you selected is already on loan and cannot be included in this loan.\n" +
+							   "Would you like this added to the list so that you can investigate it? Note it will \n"+
+							   "need to be removed before you can confirm the loan.";
+				}
+				else
+				{
+					question = alreadyLoanedSamples.size()+ " samples that you selected are already on loan and cannot be included in this loan.\n" +
+							   "Would you like these added to the list so that you can see which they are? Note they \n"+
+							   "will need to be removed before you can confirm the loan.";
+				}
+				
+				
+				Object[] options = {"Yes", "No"};
+	
+				int n = JOptionPane.showOptionDialog(this, 
+						question,
+					"Confirm add to list",
+					JOptionPane.YES_NO_OPTION,
+					JOptionPane.WARNING_MESSAGE,
+					null,
+					options,
+					options[1]);
+				
+				if(n==JOptionPane.YES_OPTION)
+				{
+					for (TridasSample s : alreadyLoanedSamples)
+					{
+						sampleModel.addElement(s);
+					}
+				}
+			}
+
+		}
+		
 		lstSamples.clearSelection();
+
 		
 	}
 	
@@ -686,17 +769,9 @@ public class LoanPanel extends JPanel implements ActionListener{
 		return true;
 	}
 	
-	public Boolean saveChanges()
+	private void  setLoanRepresentationFromGUI()
 	{
-		if(!modified) return true;
-		
-		if(lstSamples.getModel().getSize()==0)
-		{
-			Alert.error("No samples", "No samples have been included in this loan.");
-			return false;
-		}
-		
-		
+		 
 		loan.setFirstname(txtFirstName.getText());
 		loan.setLastname(txtLastName.getText());
 		loan.setOrganisation(txtOrganisation.getText());
@@ -722,6 +797,25 @@ public class LoanPanel extends JPanel implements ActionListener{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+
+		loan.setSamples(sampleModel.getAllSamples());
+		
+		loan.setFiles(panelFiles.getFileList());
+
+	}
+	
+	public Boolean saveChanges()
+	{
+		if(!modified) return true;
+		
+		if(lstSamples.getModel().getSize()==0)
+		{
+			Alert.error("No samples", "No samples have been included in this loan.");
+			return false;
+		}
+		
+		this.setLoanRepresentationFromGUI();
 
 
 		
@@ -773,7 +867,7 @@ public class LoanPanel extends JPanel implements ActionListener{
 		
 		setLoan(loan);
 		modified = false;
-
+		
 		return true;
 	}
 
@@ -792,12 +886,19 @@ public class LoanPanel extends JPanel implements ActionListener{
 		{
 			saveChanges();
 		}
+		else if (event.getActionCommand().equals("EditLoan"))
+		{
+			setEditable(true);
+			txtFirstName.requestFocusInWindow();
+		}
 		else if (event.getActionCommand().equals("AddSample"))
 		{
 			ITridas returned = TridasEntityPickerDialog.pickEntity(null, "Pick Sample", TridasSample.class, EntitiesAccepted.SPECIFIED_ENTITY_UP_TO_PROJECT);
 			if(returned instanceof TridasSample)
 			{
-				sampleModel.addElement((TridasSample) returned);
+				ArrayList<TridasSample> list = new ArrayList<TridasSample>();
+				list.add((TridasSample) returned);
+				addSamplesToList(list, true);				
 			}
 			else if (returned instanceof TridasElement)
 			{
@@ -854,16 +955,9 @@ public class LoanPanel extends JPanel implements ActionListener{
 			return;
 		}
 		
-		java.util.List<TridasObject> objList = resource.getAssociatedResult();
-		java.util.List<TridasSample> sampList = SampleLabelPrintingUI.getSamplesList(objList, null, null);
-		
-		
-		for(TridasSample s : sampList){
-			sampleModel.addElement(s);
-		}
-		
-		lstSamples.setSelectedIndex(-1);
-		log.debug("Samples list has "+lstSamples.getModel().getSize()+ " samples");
+		java.util.List<TridasSample> sampList = SampleLabelPrintingUI.getSamplesList(resource.getAssociatedResult(), null, null);
+		addSamplesToList(sampList, true);
+
 	}
 	
 

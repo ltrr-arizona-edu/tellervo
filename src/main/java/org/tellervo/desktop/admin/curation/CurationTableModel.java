@@ -93,7 +93,7 @@ public class CurationTableModel extends AbstractTableModel {
 				String language = App.prefs.getPref(PrefKey.LOCALE_LANGUAGE_CODE, "xxx");
 				TellervoLocale loc = I18n.getTellervoLocale(country, language);
 				
-				DateFormat dateFormat =  getDateInstance(LONG, loc.getLocale());
+				DateFormat dateFormat =  DateFormat.getDateTimeInstance(LONG, LONG, loc.getLocale());
 				return dateFormat.format(event.getCurationtimestamp().toGregorianCalendar().getTime());
 			case 1:
 				return event.getStatus().value();

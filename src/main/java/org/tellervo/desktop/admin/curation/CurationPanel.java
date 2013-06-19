@@ -7,6 +7,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.DefaultListModel;
+import javax.swing.DefaultRowSorter;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -14,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
@@ -21,24 +24,32 @@ import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.ui.Alert;
+import org.tellervo.desktop.util.labels.ui.SampleLabelPrintingUI;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.schema.CurationStatus;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSICuration;
 import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.TridasGenericField;
+import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
+
+import antlr.collections.List;
 
 public class CurationPanel extends JPanel {
 	private final static Logger log = LoggerFactory.getLogger(CurationPanel.class);
 
 	private static final long serialVersionUID = 1L;
-	private JTable table;
+	private JTable tblCurationHistory;
 	private JTextField txtBox;
 	private JTextField txtStorageLocation;
 	private CurationTableModel curationTableModel;
@@ -47,6 +58,7 @@ public class CurationPanel extends JPanel {
 	private WSIBox box;
 	private JScrollPane scrollPane;
 	private JTextField txtCurationStatus;
+	private JPanel historyPanel;
 	
 	
 	
@@ -76,7 +88,34 @@ public class CurationPanel extends JPanel {
 
 	public void setSample(TridasSample sample)
 	{
-		this.sample = sample;
+		SearchParameters param2 = new SearchParameters(SearchReturnObject.SAMPLE);
+		param2.addSearchConstraint(SearchParameterName.SAMPLEDBID, SearchOperator.EQUALS, sample.getIdentifier().getValue());		
+		
+		EntitySearchResource<TridasObject> resource2 = new EntitySearchResource<TridasObject>(param2, TridasObject.class);
+		resource2.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+
+		TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(resource2);
+		resource2.query();	
+		dialog2.setVisible(true);
+		
+		if(!dialog2.isSuccessful()) 
+		{ 
+			log.error("Error getting sample information");
+			return;
+		}
+		
+		
+		java.util.List<TridasSample> sampList = SampleLabelPrintingUI.getSamplesList(resource2.getAssociatedResult(), null, null);
+		
+		this.sample = sampList.get(0);
+		
+    	TridasGenericField f = GenericFieldUtils.findField(this.sample, "tellervo.internal.labcodeText");
+    	
+    	String title = (f != null) ? f.getValue() : this.sample.getTitle();
+		
+		
+		historyPanel.setBorder(new TitledBorder(new LineBorder(new Color(99, 130, 191)), "Curation details for "+title, TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		
 		
 		SearchParameters param = new SearchParameters(SearchReturnObject.BOX);
     	param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, sample.getIdentifier().getValue());
@@ -104,27 +143,32 @@ public class CurationPanel extends JPanel {
 		}
 		
 		
-		SearchParameters param2 = new SearchParameters(SearchReturnObject.CURATION);
-    	param2.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, sample.getIdentifier().getValue());
-		EntitySearchResource<WSICuration> resource2 = new EntitySearchResource<WSICuration>(param2, WSICuration.class);
-		TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(resource2);
-		resource2.query();	
-		dialog2.setVisible(true);
+		SearchParameters param3 = new SearchParameters(SearchReturnObject.CURATION);
+    	param3.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, sample.getIdentifier().getValue());
+		EntitySearchResource<WSICuration> resource3 = new EntitySearchResource<WSICuration>(param3, WSICuration.class);
+		TellervoResourceAccessDialog dialog3 = new TellervoResourceAccessDialog(resource3);
+		resource3.query();	
+		dialog3.setVisible(true);
 		
-		if(!dialog2.isSuccessful()) 
+		if(!dialog3.isSuccessful()) 
 		{ 
 			log.error("Error getting loans");
 			return;
 		}
 		
-		java.util.List<WSICuration> curationHistory = resource2.getAssociatedResult();
+		java.util.List<WSICuration> curationHistory = resource3.getAssociatedResult();
 		
 		for(WSICuration curation : curationHistory)
 		{
 			curationTableModel.addCurationEvent(curation);
 		}
 		
-		table.repaint();
+		RowSorter sorter = tblCurationHistory.getRowSorter();
+		ArrayList sortKeys = new ArrayList();
+		sortKeys.add(new RowSorter.SortKey(0, SortOrder.DESCENDING));
+		sorter.setSortKeys(sortKeys);		
+		
+		tblCurationHistory.repaint();
 		
 		populate();
 		
@@ -137,17 +181,18 @@ public class CurationPanel extends JPanel {
 	private void setupGUI()
 	{
 		setLayout(new MigLayout("", "[54.00,grow,right][grow]", "[][74.00,grow]"));
-		
 		JPanel boxPanel = new JPanel();
-		boxPanel.setBorder(new TitledBorder(new LineBorder(new Color(99, 130, 191)), "Box details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(boxPanel, "cell 0 0 2 1,grow");
+		boxPanel.setBorder(new TitledBorder(new LineBorder(new Color(99, 130, 191)), "Sample stored in box", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		add(boxPanel, "cell 0 1 2 1,grow");
 		boxPanel.setLayout(new MigLayout("", "[135px:135px,right][grow,fill]", "[][]"));
 		
 		JLabel lblBox = new JLabel("Name");
 		boxPanel.add(lblBox, "cell 0 0");
 		
 		txtBox = new JTextField();
+		txtBox.setFocusable(false);
 		txtBox.setEditable(false);
+		
 		boxPanel.add(txtBox, "cell 1 0");
 		txtBox.setColumns(10);
 		
@@ -155,13 +200,13 @@ public class CurationPanel extends JPanel {
 		boxPanel.add(lblStorageLocation, "cell 0 1");
 		
 		txtStorageLocation = new JTextField();
+		txtStorageLocation.setFocusable(false);
 		txtStorageLocation.setEditable(false);
 		boxPanel.add(txtStorageLocation, "cell 1 1");
-		txtStorageLocation.setColumns(10);
-		
-		JPanel historyPanel = new JPanel();
+		txtStorageLocation.setColumns(10);	
+		historyPanel = new JPanel();
 		historyPanel.setBorder(new TitledBorder(new LineBorder(new Color(99, 130, 191)), "Curation details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		add(historyPanel, "cell 0 1 2 1,grow");
+		add(historyPanel, "cell 0 0 2 1,grow");
 		historyPanel.setLayout(new MigLayout("", "[135px:135px,right][grow,fill]", "[][100px:150px,grow]"));
 		
 		JLabel lblCurationStatus = new JLabel("Current status:");
@@ -169,6 +214,7 @@ public class CurationPanel extends JPanel {
 		
 		txtCurationStatus = new JTextField();
 		txtCurationStatus.setEditable(false);
+		txtCurationStatus.setFocusable(false);
 		historyPanel.add(txtCurationStatus, "cell 1 0,growx");
 		
 		JLabel lblCurationHistory = new JLabel("History:");
@@ -177,16 +223,18 @@ public class CurationPanel extends JPanel {
 		scrollPane = new JScrollPane();
 		historyPanel.add(scrollPane, "cell 1 1");
 		
-		table = new JTable();
-		curationTableModel = new CurationTableModel();
+		tblCurationHistory = new JTable();
+		tblCurationHistory.setAutoCreateRowSorter(true);
+		curationTableModel = new CurationTableModel();			
 		
-		table.addMouseListener(new MouseListener(){
+		tblCurationHistory.addMouseListener(new MouseListener(){
 
 			@Override
 			public void mouseClicked(MouseEvent evt) {
 				if(evt.getClickCount()>1)
 				{
-					WSICuration curationEvent = ((CurationTableModel)table.getModel()).getRowAsWSICuration(table.getSelectedRow());
+					WSICuration curationEvent = ((CurationTableModel)tblCurationHistory.getModel()).getRowAsWSICuration(tblCurationHistory.getSelectedRow());
+					log.debug("Curation event loan"+curationEvent.getLoan());
 					if(curationEvent!=null && curationEvent.isSetLoan())
 					{
 						LoanDialog dialog = new LoanDialog(null);
@@ -195,6 +243,12 @@ public class CurationPanel extends JPanel {
 						dialog.expandDetailsPanel(0.0d);
 						
 					}
+				}
+				else
+				{
+					WSICuration curationEvent = ((CurationTableModel)tblCurationHistory.getModel()).getRowAsWSICuration(tblCurationHistory.getSelectedRow());
+					log.debug("Curation event loan: "+curationEvent.getLoan());
+
 				}
 			}
 
@@ -211,12 +265,9 @@ public class CurationPanel extends JPanel {
 			public void mouseReleased(MouseEvent arg0) { }
 			
 		});
-		
-		 
-		
-		scrollPane.setViewportView(table);
-		table.setModel(curationTableModel);
+
+		scrollPane.setViewportView(tblCurationHistory);
+		tblCurationHistory.setModel(curationTableModel);
 	}
 	
-
 }

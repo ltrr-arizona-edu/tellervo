@@ -34,6 +34,11 @@ public class UniqueListModel extends AbstractListModel<TridasSample> {
 	}
 	
 	
+	public ArrayList<TridasSample> getAllSamples()
+	{
+		return data;
+	}
+	
 	public void addElement(TridasSample item)
 	{
 		for(TridasSample s : data)

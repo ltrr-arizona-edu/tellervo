@@ -103,13 +103,10 @@ class loan extends loanEntity implements IDBAccessor
     function setChildParamsFromDB()
     {
         // Add the id's of the current objects direct children from the database
-        // RadiusRadiusNotes
 
         global $dbconn;
         global $firebug;
-
-      
-        
+                
         $sql  = "select sampleid from tblcuration where loanid='".pg_escape_string($this->getID())."'";
         
         $firebug->log($sql, "Setting samples associated with a loan");
@@ -148,6 +145,9 @@ class loan extends loanEntity implements IDBAccessor
     	$this->setOrganisation($paramsClass->getOrganisation());
     	$this->setDueDate($paramsClass->getDueDate());
     	$this->setReturnDate($paramsClass->getReturnDate());
+    	
+    	$this->setFiles($paramsClass->getFiles());
+    	$this->entityIdArray = $paramsClass->entityIdArray;
     	
     	$firebug->log($paramsClass, "params class");
   															 
@@ -225,8 +225,7 @@ class loan extends loanEntity implements IDBAccessor
 
     private function _asXML($format, $parts)
     {
-
-            global $domain;
+		global $domain;
         $xml ="";
         // Return a string containing the current object in XML format
         if ($this->getLastErrorCode()===NULL)
@@ -255,7 +254,9 @@ class loan extends loanEntity implements IDBAccessor
                 
                 foreach ($this->entityIdArray as $entityid)
                 {
-                	//$xml.="<entity type=\"sample\" id=\"".$entityid."\"/>\n";
+                	$sample = new sample();
+                	$sample->setParamsFromDB($entityid);	            	
+                	$xml.= $sample->asXML();
                 }
                 
             }
@@ -281,6 +282,8 @@ class loan extends loanEntity implements IDBAccessor
 
     	global $dbconn;
     	global $domain;
+    	global $firebug;
+    	global $myMetaHeader;
     	$sql = NULL;
     	$sql2 = NULL;
     	
@@ -360,6 +363,8 @@ class loan extends loanEntity implements IDBAccessor
     					return FALSE;
     				}
     			}
+    			
+    			
     			// Retrieve automated field values when a new record has been inserted
     			if ($sql2)
     			{
@@ -368,6 +373,100 @@ class loan extends loanEntity implements IDBAccessor
     				while ($row = pg_fetch_array($result))
     				{
     					$this->setCreatedTimestamp($row['issuedate']);
+    				}
+    			}
+    			
+    			$transaction = array("BEGIN;");
+				// Now add tblcuration records for each sample
+    			foreach ($this->entityIdArray as $entityid)
+    			{
+    				$curationsql = "INSERT INTO tblcuration (curationstatusid, curatorid, sampleid, loanid) values (";
+    				$curationsql .= "2, ".$myMetaHeader->securityUserID.", '".$entityid."', '".$this->getID()."')";
+    				
+    				array_push($transaction, $curationsql);
+    			}
+    			
+    			foreach($transaction as $stmt)
+    			{
+    				if ($stmt==NULL) continue;
+    			
+    				$firebug->log($stmt, "Transaction statement");
+    				pg_send_query($dbconn, $stmt);
+    				while ($result = pg_get_result($dbconn))
+    				{
+    					if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+    					{
+    						trigger_error("002".pg_result_error($result)."--- SQL was $stmt", E_USER_ERROR);
+    						    			
+    						pg_query($dbconn, "rollback;");
+    						
+    						$this->internalDeleteFromDB();
+    						return FALSE;
+    					}
+    				}
+    			}
+    			
+    			// All gone well so commit transaction to db
+    			$result = pg_query($dbconn, "commit;");
+    			
+    			
+    			
+    		}
+    		else
+    		{
+    			// Connection bad
+    			$this->setErrorMessage("001", "Error connecting to database");
+    			return FALSE;
+    		}
+    	}
+    	
+    	// Return true as write to DB went ok.
+    	return TRUE;
+    }
+
+    
+    function internalDeleteFromDB()
+    {
+    	// Delete the record in the database matching the current object's ID
+    	
+    	global $dbconn;
+    	
+    	// Check for required parameters
+    	if($this->getID() == NULL)
+    	{
+    		$this->setErrorMessage("902", "Missing parameter - 'id' field is required.");
+    		return FALSE;
+    	}
+    	
+    	//Only attempt to run SQL if there are no errors so far
+    	if($this->getLastErrorCode() == NULL)
+    	{
+    		$dbconnstatus = pg_connection_status($dbconn);
+    		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    		{
+    	
+    			$sql = "DELETE FROM tblloan WHERE loanid='".pg_escape_string($this->getID())."'";
+    	
+    			// Run SQL command
+    			if ($sql)
+    			{
+    				// Run SQL
+    				pg_send_query($dbconn, $sql);
+    				$result = pg_get_result($dbconn);
+    				if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+    				{
+    					$PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+    					switch($PHPErrorCode)
+    					{
+    						case 23503:
+    							// Foreign key violation
+    							$this->setErrorMessage("907", "Foreign key violation.  You must delete all associated records before deleting this loan.");
+    							break;
+    						default:
+    							// Any other error
+    							$this->setErrorMessage("002", pg_result_error($result)."--- SQL was $sql");
+    					}
+    					return FALSE;
     				}
     			}
     		}
@@ -382,7 +481,8 @@ class loan extends loanEntity implements IDBAccessor
     	// Return true as write to DB went ok.
     	return TRUE;
     }
-
+    
+    
     function deleteFromDB()
     {
     

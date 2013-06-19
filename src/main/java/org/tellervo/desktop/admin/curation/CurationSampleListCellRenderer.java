@@ -25,12 +25,8 @@ import java.awt.Component;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import org.tellervo.schema.WSIBox;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
-import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
-import org.tridas.schema.TridasMeasurementSeries;
-import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
 
@@ -52,14 +48,14 @@ public class CurationSampleListCellRenderer extends DefaultListCellRenderer {
         	
         	if(curationStatus!=null && curationStatus.getValue()!=null && curationStatus.getValue().length()>0)
         	{
-        		value = value + " ["+curationStatus.getValue() +"]";
-        		
+        		value = value + " ["+curationStatus.getValue() +"]";        		
         	}
         	else
         	{
         		value = value + " [curation status unknown]";
         	}
-        }
+        	
+       }
         
      
 
