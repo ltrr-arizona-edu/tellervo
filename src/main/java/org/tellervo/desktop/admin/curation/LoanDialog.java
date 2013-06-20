@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +25,8 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -30,6 +34,7 @@ import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.admin.curation.LoanPanel.LoanListener;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
@@ -43,7 +48,7 @@ import org.tellervo.schema.WSILoan;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 
-public class LoanDialog extends JDialog implements ActionListener{
+public class LoanDialog extends JDialog implements ActionListener, LoanListener, WindowListener{
 
 
 	private static final long serialVersionUID = 1L;
@@ -60,14 +65,12 @@ public class LoanDialog extends JDialog implements ActionListener{
 	private JPanel buttonPanel;
 	private JButton btnOk;
 	private JButton btnCancel;
-	private final LoanDialogMode mode;
+	private LoanDialogMode mode;
 	
 	
-	public enum LoanDialogMode{
-			
+	public enum LoanDialogMode{		
 			NEW,
-			BROWSE;
-			
+			BROWSE_EDIT;		
 	};
 	
 	
@@ -83,10 +86,23 @@ public class LoanDialog extends JDialog implements ActionListener{
 	 */
 	public LoanDialog(Component parent) {
 		this.parent = parent;
-		mode = LoanDialogMode.BROWSE;
+		mode = LoanDialogMode.BROWSE_EDIT;
 		initGUI();
 		loadCurrentLoans();
 	}
+	
+	
+	/**
+	 * Set the display mode for this dialog
+	 * 
+	 * @param mode
+	 */
+	public void setLoanDialogMode(LoanDialogMode mode)
+	{
+		this.mode = mode;
+		setGUIForMode();
+	}
+	
 	
 	/**
 	 * Create dialog in the specified mode
@@ -103,18 +119,37 @@ public class LoanDialog extends JDialog implements ActionListener{
 	}
 	
 	
+	/**
+	 * Set the loan to display in the loan panel.  
+	 * 
+	 * @param loan
+	 */
 	public void setLoan(WSILoan loan)
 	{
 		loanPanel.setLoan(loan);
-		expandDetailsPanel();
-
+		
+		if(loan==null)
+		{
+			loanPanel.setEditable(false);	
+		}
+		else
+		{
+			expandDetailsPanel();
+		}
 	}
 
+	
 	private void setGUIForMode()
 	{
 		this.loanPanel.setGUIForMode(mode);
 	}
 	
+	/**
+	 * Set the loans list according to the SearchParameters passed.  A WS query
+	 * is performed at the results displayed
+	 * 
+	 * @param param
+	 */
 	private void loadLoansBySearchParam(SearchParameters param)
 	{
 		if(!param.getReturnObject().equals(SearchReturnObject.LOAN))
@@ -141,9 +176,12 @@ public class LoanDialog extends JDialog implements ActionListener{
 		
 		loanTableModel.setLoans(loanList); 
 		loanTableModel.fireTableDataChanged();
-		tblLoans.clearSelection();
+		//tblLoans.clearSelection();
 	}
 	
+	/**
+	 * Load all the loans that have been returned into the loan list
+	 */
     private void loadReturnedLoans()
     {
     	SearchParameters param = new SearchParameters(SearchReturnObject.LOAN);    	
@@ -151,6 +189,9 @@ public class LoanDialog extends JDialog implements ActionListener{
     	loadLoansBySearchParam(param);
     }
     
+    /**
+     * Load all loans into the loan list
+     */
     private void loadAllLoans()
     {
     	SearchParameters param = new SearchParameters(SearchReturnObject.LOAN);
@@ -158,6 +199,9 @@ public class LoanDialog extends JDialog implements ActionListener{
     	loadLoansBySearchParam(param);
     }
     
+    /**
+     * Load all delinquent loans into the loan list
+     */
     private void loadDelinquentLoans()
     {
     	SearchParameters param = new SearchParameters(SearchReturnObject.LOAN);
@@ -168,6 +212,9 @@ public class LoanDialog extends JDialog implements ActionListener{
     	loadLoansBySearchParam(param);
     }
 	
+    /**
+     * Populate the loan list with all currently active loans
+     */
     private void loadCurrentLoans()
     {
     	SearchParameters param = new SearchParameters(SearchReturnObject.LOAN);
@@ -175,6 +222,10 @@ public class LoanDialog extends JDialog implements ActionListener{
     	loadLoansBySearchParam(param);
     }
 	
+    
+    /**
+     * Initialise the GUI 
+     */
 	private void initGUI(){
 		setBounds(100, 100, 688, 614);
 		getContentPane().setLayout(new BorderLayout());
@@ -203,27 +254,9 @@ public class LoanDialog extends JDialog implements ActionListener{
 					cboLoanFilter.addItemListener(new ItemListener(){
 
 						@Override
-						public void itemStateChanged(ItemEvent arg0) {
-							if(cboLoanFilter.getSelectedItem().equals("Current loans"))
-							{
-								loadCurrentLoans();
-							}
-							else if(cboLoanFilter.getSelectedItem().equals("All loans"))
-							{
-								loadAllLoans();
-							}
-							else if(cboLoanFilter.getSelectedItem().equals("Returned loans"))
-							{
-								loadReturnedLoans();
-							}
-							else if(cboLoanFilter.getSelectedItem().equals("Delinquent loans"))
-							{
-								loadDelinquentLoans();
-							}
-							
+						public void itemStateChanged(ItemEvent arg0) {			
+							updateLoanTable();
 						}
-						
-						
 					});
 					
 					cboLoanFilter.setSelectedItem("Current loans");
@@ -236,6 +269,7 @@ public class LoanDialog extends JDialog implements ActionListener{
 				topPanel.add(scrollPane, "cell 0 1 2 1,grow");
 				{
 					tblLoans = new JTable();
+					tblLoans.setAutoCreateRowSorter(true);
 					tblLoans.setMinimumSize(new Dimension(100,100));
 					loanTableModel = new LoanTableModel();
 					tblLoans.setModel(loanTableModel);
@@ -245,15 +279,24 @@ public class LoanDialog extends JDialog implements ActionListener{
 						@Override
 						public void valueChanged(ListSelectionEvent event) {
 							
+							
+							if(loanPanel.isModified())
+							{
+								if(!confirmOKToChangeLoan()) return;
+							}
+							
 							if(tblLoans.getSelectedRowCount()==0) 
 							{
-								setLoan(null);
+								setLoan(null);	
 							}
 							else
 							{
 								WSILoan loan = ((LoanTableModel)tblLoans.getModel()).getRow(tblLoans.getSelectedRow());
 								setLoan(loan);
+								setLoanDialogMode(LoanDialogMode.BROWSE_EDIT);
 							}
+							
+							loanPanel.setEditable(false);
 							
 						}
 						
@@ -270,6 +313,7 @@ public class LoanDialog extends JDialog implements ActionListener{
 			
 			{
 				loanPanel = new LoanPanel();
+				loanPanel.addListener(this);
 				splitPane.setRightComponent(loanPanel);
 				loanPanel.setBorder(new TitledBorder(null, "Loan Details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 				loanPanel.setEditable(false);
@@ -305,9 +349,94 @@ public class LoanDialog extends JDialog implements ActionListener{
 		
 		setGUIForMode();
 		loanPanel.pack();
+		
+		this.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+		this.addWindowListener(this);
 	}
 
 
+
+	private void updateLoanTable()
+	{
+
+		if(!confirmOKToChangeLoan()) return;
+				
+		
+		if(cboLoanFilter.getSelectedItem().equals("Current loans"))
+		{
+			loadCurrentLoans();
+		}
+		else if(cboLoanFilter.getSelectedItem().equals("All loans"))
+		{
+			loadAllLoans();
+		}
+		else if(cboLoanFilter.getSelectedItem().equals("Returned loans"))
+		{
+			loadReturnedLoans();
+		}
+		else if(cboLoanFilter.getSelectedItem().equals("Delinquent loans"))
+		{
+			loadDelinquentLoans();
+		}
+	}
+	
+	/**
+	 * Check whether there are unsaved changes, if so confirm with the user
+	 * whether they should be saved. 
+	 * 
+	 * Returns boolean to indicate whether user is happy to continue
+	 * 
+	 * @return
+	 */
+	public Boolean confirmOKToChangeLoan()
+	{
+		if(loanPanel.isModified())
+		{
+			Object[] options = {I18n.getText("general.save"),
+					I18n.getText("general.discard"),
+	                I18n.getText("general.cancel")};
+
+			int n = JOptionPane.showOptionDialog(this, 
+				"This loan has been modified.\nDo you want to save your changes?",
+				"Save changes?",
+				JOptionPane.YES_NO_CANCEL_OPTION,
+				JOptionPane.QUESTION_MESSAGE,
+				null,
+				options,
+				options[0]);
+			
+			if(n==JOptionPane.CANCEL_OPTION)
+			{
+				return false;
+			}
+			
+			if(n==JOptionPane.NO_OPTION)
+			{
+				return true;
+			}
+			
+			if(n==JOptionPane.YES_OPTION)
+			{
+				if (loanPanel.saveChanges())
+				{
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
+			
+			return false;
+
+		}
+		else
+		{
+			return true;
+		}
+	}
+	
+	
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		if(event.getActionCommand().equals("All"))
@@ -324,7 +453,7 @@ public class LoanDialog extends JDialog implements ActionListener{
 		}
 		else if (event.getActionCommand().equals("OK"))
 		{
-			if(loanPanel.hasUnsavedEdits())
+			if(loanPanel.isModified())
 			{
 				if (loanPanel.saveChanges())
 				{
@@ -334,44 +463,8 @@ public class LoanDialog extends JDialog implements ActionListener{
 		}
 		else if (event.getActionCommand().equals("Cancel"))
 		{
-			if(loanPanel.hasUnsavedEdits())
-			{
-				Object[] options = {I18n.getText("general.save"),
-						I18n.getText("general.discard"),
-		                I18n.getText("general.cancel")};
-
-				int n = JOptionPane.showOptionDialog(parent, 
-					"This loan has been modified.\nDo you want to save your changes?",
-					"Save changes?",
-					JOptionPane.YES_NO_CANCEL_OPTION,
-					JOptionPane.QUESTION_MESSAGE,
-					null,
-					options,
-					options[0]);
-				
-				if(n==JOptionPane.CANCEL_OPTION)
-				{
-					return;
-				}
-				
-				if(n==JOptionPane.NO_OPTION)
-				{
-					dispose();
-				}
-				
-				if(n==JOptionPane.YES_OPTION)
-				{
-					if (loanPanel.saveChanges())
-					{
-						dispose();
-					}
-				}
-
-			}
-			else
-			{
-				dispose();
-			}
+			
+			dispose();
 		}
 	}
 	
@@ -387,9 +480,52 @@ public class LoanDialog extends JDialog implements ActionListener{
 	{
 		if(splitPane.getDividerLocation()>splitPane.getHeight()-100)
 		{
-			splitPane.setDividerLocation(0.4d);
+			splitPane.setDividerLocation(0.3d);
 		}
 	}
+
+	@Override
+	public void changesMadeToLoan() {
+		log.debug("LoanPanel notified LoanDialog that the loan was changed");
+		int ind = tblLoans.getSelectedRow();
+		
+		updateLoanTable();
+		
+		// Try and reselect the same row
+		try{
+			tblLoans.setRowSelectionInterval(ind, ind);
+		} catch (IllegalArgumentException e )
+		{
+			tblLoans.clearSelection();
+		}
+	}
+
+	@Override
+	public void windowActivated(WindowEvent arg0)  { }
+
+	@Override
+	public void windowClosed(WindowEvent arg0)  { }
+
+	@Override
+	public void windowClosing(WindowEvent event) {
+		
+		if(confirmOKToChangeLoan())
+		{
+			dispose();
+		}		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent arg0)  { }
+
+	@Override
+	public void windowDeiconified(WindowEvent arg0)  { }
+
+	@Override
+	public void windowIconified(WindowEvent arg0)  { }
+
+	@Override
+	public void windowOpened(WindowEvent arg0) { }
 	
 
 

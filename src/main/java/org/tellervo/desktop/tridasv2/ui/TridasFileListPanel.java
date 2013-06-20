@@ -126,8 +126,9 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 			splitPane.setDividerSize(8);
 			JPanel panelMain = new JPanel();
 			splitPane.setLeftComponent(panelMain);
-			panelMain.setLayout(new MigLayout("hidemode 3", "[][grow]", "[][][grow,fill][]"));
+			panelMain.setLayout(new MigLayout("hidemode 3", "[][grow]", "[fill][][grow,fill][]"));
 			JPanel panelRadioButtons = new JPanel();
+			panelRadioButtons.setLayout(new MigLayout("hidemode 3", "[145px][81px][48px]", "[]"));
 			panelMain.add(panelRadioButtons, "cell 1 0");
 			{
 				radFile = new JRadioButton("File from file system");
@@ -135,7 +136,6 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 				radFile.setSelected(true);
 				radFile.setActionCommand("RadioFile");
 				radFile.addActionListener(this);
-				panelRadioButtons.setLayout(new MigLayout("hidemode 3", "[145px][81px][48px]", "[18px]"));
 				panelRadioButtons.add(radFile, "cell 0 0,alignx left,aligny top");
 			}
 			{
@@ -424,6 +424,8 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 			}
 			
 		}
+		
+		previewURI();
 	}
 	
 

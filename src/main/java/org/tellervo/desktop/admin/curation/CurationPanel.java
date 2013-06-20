@@ -59,6 +59,7 @@ public class CurationPanel extends JPanel {
 	private JScrollPane scrollPane;
 	private JTextField txtCurationStatus;
 	private JPanel historyPanel;
+	private JButton btnAssignToBox;
 	
 	
 	
@@ -74,15 +75,28 @@ public class CurationPanel extends JPanel {
 		
 	}
 	
+	/**
+	 * Set GUI components to reflect current sample and box info
+	 */
 	private void populate() {
 
-		txtBox.setText(box.getTitle());
-		txtStorageLocation.setText(box.getCurationLocation());		
-		
-		
-		if(TridasUtils.getGenericFieldByName(sample, "tellervo.curationStatus")!=null)
+		if(sample!=null)
 		{
-			txtCurationStatus.setText(TridasUtils.getGenericFieldByName(sample, "tellervo.curationStatus").getValue());
+			if(TridasUtils.getGenericFieldByName(sample, "tellervo.curationStatus")!=null)
+			{
+				txtCurationStatus.setText(TridasUtils.getGenericFieldByName(sample, "tellervo.curationStatus").getValue());
+			}		
+		}
+
+		if(box==null)
+		{
+			txtBox.setText("");
+			txtStorageLocation.setText("");
+		}
+		else
+		{		
+			txtBox.setText(box.getTitle());
+			txtStorageLocation.setText(box.getCurationLocation());		
 		}
 	}
 
@@ -138,8 +152,7 @@ public class CurationPanel extends JPanel {
 		}
 		else
 		{
-			Alert.error("Unexpected", "Expecting one box result from database.  Received "+objList.size());
-			return;
+			box = null;
 		}
 		
 		
@@ -180,11 +193,11 @@ public class CurationPanel extends JPanel {
 	
 	private void setupGUI()
 	{
-		setLayout(new MigLayout("", "[54.00,grow,right][grow]", "[][74.00,grow]"));
+		setLayout(new MigLayout("", "[54.00,grow,right][grow]", "[grow][74.00]"));
 		JPanel boxPanel = new JPanel();
 		boxPanel.setBorder(new TitledBorder(new LineBorder(new Color(99, 130, 191)), "Sample stored in box", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		add(boxPanel, "cell 0 1 2 1,grow");
-		boxPanel.setLayout(new MigLayout("", "[135px:135px,right][grow,fill]", "[][]"));
+		boxPanel.setLayout(new MigLayout("", "[135px:135px,right][grow,fill]", "[][][]"));
 		
 		JLabel lblBox = new JLabel("Name");
 		boxPanel.add(lblBox, "cell 0 0");
@@ -202,8 +215,12 @@ public class CurationPanel extends JPanel {
 		txtStorageLocation = new JTextField();
 		txtStorageLocation.setFocusable(false);
 		txtStorageLocation.setEditable(false);
-		boxPanel.add(txtStorageLocation, "cell 1 1");
+		boxPanel.add(txtStorageLocation, "flowy,cell 1 1");
 		txtStorageLocation.setColumns(10);	
+		
+		btnAssignToBox = new JButton("Assign sample to a box");
+		btnAssignToBox.setEnabled(false);
+		boxPanel.add(btnAssignToBox, "cell 1 2");
 		historyPanel = new JPanel();
 		historyPanel.setBorder(new TitledBorder(new LineBorder(new Color(99, 130, 191)), "Curation details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		add(historyPanel, "cell 0 0 2 1,grow");

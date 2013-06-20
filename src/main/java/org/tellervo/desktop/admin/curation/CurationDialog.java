@@ -76,6 +76,7 @@ public class CurationDialog extends JDialog {
 		this.setIconImage(Builder.getApplicationIcon());
 		this.setLocationRelativeTo(parent);
 		this.setTitle("Sample Curation");
+		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 	}
 
 }

@@ -315,6 +315,7 @@ class loanParameters extends loanEntity implements IParams
 		   		case "organisation":		$this->setOrganisation($child->nodeValue); break;
 		   		case "notes":				$this->setNotes($child->nodeValue); break;
 		   		case "duedate":				$this->setDueDate($child->nodeValue); break;
+		   		case "returndate":			$this->setReturnDate($child->nodeValue); break;
 		   		case "issuedate":			break;
 		   		case "tridas:sample":	
 		   				$firebug->log("Found a sample in a loan... looping through sample tags...");			   		

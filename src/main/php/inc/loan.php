@@ -250,7 +250,10 @@ class loan extends loanEntity implements IDBAccessor
                 $xml.= "<organisation>".dbhelper::escapeXMLChars($this->getOrganisation())."</organisation>\n";
                 $xml.= $this->getFileXML();
                 
-                $xml.= "<notes>".dbhelper::escapeXMLChars($this->getNotes())."</notes>\n";
+                if($this->getNotes()!=null)
+                {
+                	$xml.= "<notes>".dbhelper::escapeXMLChars($this->getNotes())."</notes>\n";
+                }
                 
                 foreach ($this->entityIdArray as $entityid)
                 {
@@ -286,6 +289,7 @@ class loan extends loanEntity implements IDBAccessor
     	global $myMetaHeader;
     	$sql = NULL;
     	$sql2 = NULL;
+    	$newRecord = false;
     	
     	//Only attempt to run SQL if there are no errors so far
     	if($this->getLastErrorCode() == NULL)
@@ -297,7 +301,7 @@ class loan extends loanEntity implements IDBAccessor
     			if($this->getID() == NULL)
     			{
     				// New record
-    	
+    				$newRecord = true;
     				// Generate a new UUID pkey
     				$this->setID(uuid::getUUID(), $domain);
     				 
@@ -330,7 +334,7 @@ class loan extends loanEntity implements IDBAccessor
     			else
     			{
     				// Updating DB
-    				$sql.="update tblsample set ";
+    				$sql.="UPDATE tblloan SET ";
     				$sql.="loanid="         .dbHelper::tellervo_pg_escape_string($this->getID()).", ";
     				$sql.="firstname="      .dbHelper::tellervo_pg_escape_string($this->getFirstName()).", ";
     				$sql.="lastname="     	.dbHelper::tellervo_pg_escape_string($this->getLastName()).", ";
@@ -341,7 +345,7 @@ class loan extends loanEntity implements IDBAccessor
     				$sql.="returndate="		.dbHelper::tellervo_pg_escape_string($this->getReturnDate()).", ";
     				
     				$sql = substr($sql, 0, -2);
-    				$sql.= " WHERE sampleid=".dbHelper::tellervo_pg_escape_string($this->getID());
+    				$sql.= " WHERE loanid=".dbHelper::tellervo_pg_escape_string($this->getID());
     			}
     	
     			// Run SQL command
@@ -376,18 +380,62 @@ class loan extends loanEntity implements IDBAccessor
     				}
     			}
     			
-    			$transaction = array("BEGIN;");
-				// Now add tblcuration records for each sample
-    			foreach ($this->entityIdArray as $entityid)
-    			{
-    				$curationsql = "INSERT INTO tblcuration (curationstatusid, curatorid, sampleid, loanid) values (";
-    				$curationsql .= "2, ".$myMetaHeader->securityUserID.", '".$entityid."', '".$this->getID()."')";
-    				
-    				array_push($transaction, $curationsql);
+    			
+    			if($newRecord)
+    			{    				
+    				// Add tblcuration records when creating a new loan.  Note that tblcuration records cannot be edited    				
+    				$firebug->log("Writing new loan curation events");
+	    			$transaction = array("BEGIN;");
+					// Now add tblcuration records for each sample
+	    			foreach ($this->entityIdArray as $entityid)
+	    			{
+	    				$curationsql = "INSERT INTO tblcuration (curationstatusid, curatorid, sampleid, loanid) values (";
+	    				$curationsql .= "2, ".$myMetaHeader->securityUserID.", '".$entityid."', '".$this->getID()."')";
+	    				
+	    				array_push($transaction, $curationsql);
+	    			}
+
     			}
+    			else
+    			{
+    				// Editing an existing record.  
+    				// If returnDate is set, then set the curation status of any samples marked as 'on loan' to 'archived'
+    				
+    				$firebug->log("Editing existing record...");
+    				
+    				$transaction = array("BEGIN;");
+    				$getSampleIDSQL = "SELECT * from tblcuration where loanid='".$this->getID()."'";
+
+
+    				pg_send_query($dbconn, $getSampleIDSQL);
+    				$result = pg_get_result($dbconn);
+    				if(pg_num_rows($result)==0)
+    				{
+    					// No records match
+    					$this->setErrorMessage("903", "No records match when trying to find curation events for loan ".$this->getID());
+    					return FALSE;
+    				}
+    				else
+    				{
+   						while ($row = pg_fetch_array($result))
+   						{
+   							if($row['curationstatusid']==2 || $row['curationstatusid']==3)
+    						{
+    							$curationsql = "INSERT INTO tblcuration (curationstatusid, curatorid, sampleid) values (";
+	    						$curationsql .= "1, ".$myMetaHeader->securityUserID.", '".$row['sampleid']."')";
+	    			
+	    						array_push($transaction, $curationsql);
+    						}
+    					}
+   					}    					
+    			}
+    			
+
+    			$firebug->log($transaction, "Curation event transactions");
     			
     			foreach($transaction as $stmt)
     			{
+    				$firebug->log("Processing curation event transaction...");
     				if ($stmt==NULL) continue;
     			
     				$firebug->log($stmt, "Transaction statement");
@@ -397,9 +445,9 @@ class loan extends loanEntity implements IDBAccessor
     					if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
     					{
     						trigger_error("002".pg_result_error($result)."--- SQL was $stmt", E_USER_ERROR);
-    						    			
+    			
     						pg_query($dbconn, "rollback;");
-    						
+    							
     						$this->internalDeleteFromDB();
     						return FALSE;
     					}
@@ -408,8 +456,6 @@ class loan extends loanEntity implements IDBAccessor
     			
     			// All gone well so commit transaction to db
     			$result = pg_query($dbconn, "commit;");
-    			
-    			
     			
     		}
     		else

@@ -16,6 +16,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
@@ -96,7 +97,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 
-public class LoanPanel extends JPanel implements ActionListener{
+public class LoanPanel extends JPanel implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField txtFirstName;
@@ -123,18 +124,27 @@ public class LoanPanel extends JPanel implements ActionListener{
 	
 	
 	private WSILoan loan;
-	private Boolean modified = false;
 	private TridasFileListPanel panelFiles;
 	private JList<TridasSample> lstSamples;
 	private UniqueListModel sampleModel;
 	private JPanel panelBarcodeInstructions;
 	private JLabel lblInfoIcon;
-	private JTextArea txtrToQuicklyAdd;
+	private JTextArea txtSampleInstructions;
+
+	private WSILoan nonDirtyLoan;
 	
 	private String keyBuffer = "";
 	private JLabel lblSampleCount;
 	private JButton btnNewButton;
+	private JButton btnCancelChanges;
 
+	private static String barcodeInstructions = "To quickly add multiple samples to this loan, highlight the list above and scan sample barcodes.  You can also scan box barcodes to loan all samples from a specific box.";
+	private static String samplesAreFinal = "The samples associated with a loan cannot be changed.  If changes are required this loan should be returned and a new loan set up.";
+	private JLabel lblLoanId;
+	private JTextField txtLoanID;
+    private List<LoanListener> listeners = new ArrayList<LoanListener>();
+    
+    
 	/**
 	 * Create the panel.
 	 */
@@ -143,37 +153,82 @@ public class LoanPanel extends JPanel implements ActionListener{
 		initGUI();
 	}
 
+	public void addListener(LoanListener toAdd) {
+	        listeners.add(toAdd);
+	}
+	
+	public void fireChangesMadeToLoan() {
+	        // Notify everybody that may be interested.
+	        for (LoanListener l : listeners) l.changesMadeToLoan();
+	}
+	 
+	 
+	/**
+	 * Set whether the GUI is editable or not.  Should be called *after* 
+	 * the loan has been set.
+	 * 
+	 * @param b
+	 */
 	public void setEditable(Boolean b)
 	{
-		log.debug("Setting LoanPanel to be editable: " +b);
+		
+		// First tab 
 		txtFirstName.setEditable(b);
 		txtFirstName.setFocusable(b);
 		txtLastName.setEditable(b);
 		txtLastName.setFocusable(b);
 		txtOrganisation.setEditable(b);
 		txtOrganisation.setFocusable(b);
-
-		dpIssueDate.setEnabled(b);
+		dpIssueDate.setEnabled(false);
+		dpReturnDate.setEnabled(false);
 		dpDueDate.setEnabled(b);
-		dpReturnDate.setEnabled(b);
-		
+		btnCancelChanges.setEnabled(b);
+		btnSave.setEnabled(b);
+		btnEditLoan.setEnabled(!b);
+		btnReturnLoan.setEnabled(!b);
 		txtNotes.setEditable(b);
 		txtNotes.setFocusable(b);
+		
+		
+		// Second tab
 		btnAddSample.setVisible(b);
 		btnRemoveSample.setVisible(b);
-		
 		panelBarcodeInstructions.setVisible(b);
+		if(loan!=null && loan.isSetIdentifier() && b)
+		{
+			// Override and set false when editing an existing loan
+			btnAddSample.setVisible(false);
+			btnRemoveSample.setVisible(false);
+			panelBarcodeInstructions.setVisible(true);
+			txtSampleInstructions.setText(samplesAreFinal);
+		}
+		else
+		{
+			txtSampleInstructions.setText(barcodeInstructions);
+		}
+		
+		
+		// Third tab
 		panelFiles.setReadOnly(!b);
+		
+
 	}
 	
 	public void setGUIForMode(LoanDialogMode mode)
 	{
 		if(mode.equals(LoanDialogMode.NEW))
 		{
-			btnNewLoan.setVisible(false);
-			btnReturnLoan.setVisible(false);
-			btnEditLoan.setVisible(false);
-			setForNewLoan();
+			setLoan(new WSILoan());
+			nonDirtyLoan = new WSILoan();
+			setEditable(true);
+			btnNewLoan.setEnabled(false);
+			btnReturnLoan.setEnabled(false);
+			btnEditLoan.setEnabled(false);
+		}
+		else
+		{
+			setEditable(false);
+
 		}
 	}
 	
@@ -186,58 +241,67 @@ public class LoanPanel extends JPanel implements ActionListener{
 		
 		panelSummary = new JPanel();
 		tabbedPane.addTab("Summary", null, panelSummary, null);
-		panelSummary.setLayout(new MigLayout("", "[right][135px,grow,fill][135px,grow,fill]", "[][][][][][grow]"));
+		panelSummary.setLayout(new MigLayout("", "[right][135px,grow,fill][135px,grow,fill]", "[][][][][][][grow]"));
+		
+		lblLoanId = new JLabel("Loan ID:");
+		panelSummary.add(lblLoanId, "cell 0 0,alignx trailing");
+		
+		txtLoanID = new JTextField();
+		txtLoanID.setEnabled(false);
+		txtLoanID.setEditable(false);
+		panelSummary.add(txtLoanID, "cell 1 0 2 1,growx");
+		txtLoanID.setColumns(10);
 		
 		JLabel lblName = new JLabel("Name:");
-		panelSummary.add(lblName, "cell 0 0");
+		panelSummary.add(lblName, "cell 0 1");
 		
 		txtFirstName = new JTextField();
 		txtFirstName.setToolTipText("First name of borrower");
-		panelSummary.add(txtFirstName, "cell 1 0");
+		panelSummary.add(txtFirstName, "cell 1 1");
 		txtFirstName.setColumns(10);
 		
 		txtLastName = new JTextField();
 		txtLastName.setToolTipText("Last name of borrower");
-		panelSummary.add(txtLastName, "cell 2 0");
+		panelSummary.add(txtLastName, "cell 2 1");
 		txtLastName.setColumns(10);
 		
 		JLabel lblOrganisation = new JLabel("Organisation:");
-		panelSummary.add(lblOrganisation, "cell 0 1");
+		panelSummary.add(lblOrganisation, "cell 0 2");
 		
 		txtOrganisation = new JTextField();
 		txtOrganisation.setToolTipText("Borrowing organisation");
-		panelSummary.add(txtOrganisation, "cell 1 1 2 1");
+		panelSummary.add(txtOrganisation, "cell 1 2 2 1");
 		txtOrganisation.setColumns(10);
 		
 		JLabel lblIssued = new JLabel("Date issued");
-		panelSummary.add(lblIssued, "cell 0 2");
+		panelSummary.add(lblIssued, "cell 0 3");
 		
 		dpIssueDate = new DatePicker();
 		dpIssueDate.setToolTipText("Date the loan was issued");
-		panelSummary.add(dpIssueDate, "cell 1 2");
+		panelSummary.add(dpIssueDate, "cell 1 3");
 		dpIssueDate.setEnabled(false);
 		
 		JLabel lblDateDue = new JLabel("Date due:");
-		panelSummary.add(lblDateDue, "cell 0 3,alignx trailing");
+		panelSummary.add(lblDateDue, "cell 0 4,alignx trailing");
 		
 		lblperiod = new JLabel("");
-		panelSummary.add(lblperiod, "cell 2 3");
+		panelSummary.add(lblperiod, "cell 2 4");
 		
 		JLabel lblDateReturned = new JLabel("Date returned:");
-		panelSummary.add(lblDateReturned, "cell 0 4,alignx trailing");
+		panelSummary.add(lblDateReturned, "cell 0 5,alignx trailing");
 		
 		dpReturnDate = new DatePicker();
 		dpReturnDate.setToolTipText("Date the loan was returned");
-		panelSummary.add(dpReturnDate, "cell 1 4,growx");
+		panelSummary.add(dpReturnDate, "cell 1 5,growx");
 		
 		lblOverdue = new JLabel("");
-		panelSummary.add(lblOverdue, "cell 2 4");
+		panelSummary.add(lblOverdue, "cell 2 5");
 		
 		JLabel lblNotes = new JLabel("Notes:");
-		panelSummary.add(lblNotes, "cell 0 5,aligny top");
+		panelSummary.add(lblNotes, "cell 0 6,aligny top");
 		
 		JScrollPane scrollPane = new JScrollPane();
-		panelSummary.add(scrollPane, "cell 1 5 2 1,grow");
+		panelSummary.add(scrollPane, "cell 1 6 2 1,grow");
 		
 		txtNotes = new JTextArea();
 		txtNotes.setWrapStyleWord(true);
@@ -246,7 +310,7 @@ public class LoanPanel extends JPanel implements ActionListener{
 		scrollPane.setViewportView(txtNotes);
 		
 		dpDueDate = new DatePicker();
-		panelSummary.add(dpDueDate, "cell 1 3");
+		panelSummary.add(dpDueDate, "cell 1 4");
 		
 		JPanel panelSamples = new JPanel();
 		tabbedPane.addTab("Samples", null, panelSamples, null);
@@ -412,18 +476,18 @@ public class LoanPanel extends JPanel implements ActionListener{
 		lblInfoIcon.setIcon(Builder.getIcon("info.png", 16));
 		panelBarcodeInstructions.add(lblInfoIcon, "cell 0 0");
 		
-		txtrToQuicklyAdd = new JTextArea();
-		txtrToQuicklyAdd.setWrapStyleWord(true);
-		txtrToQuicklyAdd.setText("To quickly add multiple samples to this loan, highlight the list above and scan sample barcodes.  You can also scan box barcodes to loan all samples from a specific box.");
-		txtrToQuicklyAdd.setOpaque(false);
-		txtrToQuicklyAdd.setLineWrap(true);
-		txtrToQuicklyAdd.setFont(new Font("Dialog", Font.PLAIN, 9));
-		txtrToQuicklyAdd.setEditable(false);
-		txtrToQuicklyAdd.setBorder(new EmptyBorder(5, 5, 5, 5));
-		txtrToQuicklyAdd.setBackground(new Color(0,0,0,0));
+		txtSampleInstructions = new JTextArea();
+		txtSampleInstructions.setWrapStyleWord(true);
+		txtSampleInstructions.setText(barcodeInstructions);
+		txtSampleInstructions.setOpaque(false);
+		txtSampleInstructions.setLineWrap(true);
+		txtSampleInstructions.setFont(new Font("Dialog", Font.PLAIN, 9));
+		txtSampleInstructions.setEditable(false);
+		txtSampleInstructions.setBorder(new EmptyBorder(5, 5, 5, 5));
+		txtSampleInstructions.setBackground(new Color(0,0,0,0));
 				
 	
-		panelBarcodeInstructions.add(txtrToQuicklyAdd, "cell 1 0,growx,wmin 10,aligny top");
+		panelBarcodeInstructions.add(txtSampleInstructions, "cell 1 0,growx,wmin 10,aligny top");
 		
 		panelFiles = new TridasFileListPanel();
 		tabbedPane.addTab("Associated Files", null, panelFiles, null);
@@ -464,6 +528,14 @@ public class LoanPanel extends JPanel implements ActionListener{
 		btnSave.addActionListener(this);
 		toolBar.add(btnSave);
 		
+		btnCancelChanges = new JButton("Cancel changes");
+		btnCancelChanges.setIcon(Builder.getIcon("button_cancel.png", 22));
+		btnCancelChanges.setActionCommand("CancelChanges");
+		btnCancelChanges.setToolTipText("Cancel changes to loan");
+		btnCancelChanges.setFocusable(false);
+		btnCancelChanges.addActionListener(this);
+		toolBar.add(btnCancelChanges);
+		
 	}
 	
 	private void showCurationHistoryForSelectedSample()
@@ -496,6 +568,7 @@ public class LoanPanel extends JPanel implements ActionListener{
 
 		if(loan==null) 
 		{
+			log.debug("Loan is null in setSamples() so returning");
 			return;
 		}
 		
@@ -503,6 +576,7 @@ public class LoanPanel extends JPanel implements ActionListener{
 		if(!loan.isSetIdentifier())
 		{
 			// No identifier so this must be a fresh local loan
+			log.debug("Loan has no identifier so must be a fresh local loan");
 			return;
 		}
 		
@@ -621,12 +695,15 @@ public class LoanPanel extends JPanel implements ActionListener{
      */
 	public void setLoan(WSILoan loan)
 	{
-		setEditable(false);
-		
 		this.loan= loan; 
+		nonDirtyLoan = loan;
+		
+		
+		setEditable(false);
 		
 		if(loan==null)
 		{
+			txtLoanID.setText("");
 			txtFirstName.setText("");
 			txtLastName.setText("");
 			txtOrganisation.setText("");
@@ -657,6 +734,12 @@ public class LoanPanel extends JPanel implements ActionListener{
 		TellervoLocale loc = I18n.getTellervoLocale(country, language);
 		
 		DateFormat dateFormat =  getDateInstance(LONG, loc.getLocale());
+		
+		
+		if(loan.isSetIdentifier())
+		{
+			txtLoanID.setText(loan.getIdentifier().getValue());
+		}
 		
 		txtFirstName.setText(loan.getFirstname());
 		txtLastName.setText(loan.getLastname());
@@ -762,20 +845,37 @@ public class LoanPanel extends JPanel implements ActionListener{
 		setSamples();
 		
 	}
-
-
-	public Boolean hasUnsavedEdits()
-	{
-		return true;
-	}
 	
-	private void  setLoanRepresentationFromGUI()
+	private WSILoan getLoanRepresentationFromGUI()
 	{
-		 
-		loan.setFirstname(txtFirstName.getText());
-		loan.setLastname(txtLastName.getText());
-		loan.setOrganisation(txtOrganisation.getText());
-		loan.setNotes(txtNotes.getText());
+		
+		WSILoan guiRepOfLoan = new WSILoan();
+
+		
+		if(loan.isSetIdentifier())
+		{
+			guiRepOfLoan.setIdentifier(loan.getIdentifier());
+		}
+		
+		if(txtFirstName.getText()!=null && txtFirstName.getText().length()>0)
+		{
+			guiRepOfLoan.setFirstname(txtFirstName.getText());
+		}
+		
+		if(txtLastName.getText()!=null && txtLastName.getText().length()>0)
+		{
+			guiRepOfLoan.setLastname(txtLastName.getText());
+		}
+		
+		if(txtOrganisation.getText()!=null && txtOrganisation.getText().length()>0)
+		{
+			guiRepOfLoan.setOrganisation(txtOrganisation.getText());
+		}
+		
+		if(txtNotes.getText()!=null && txtNotes.getText().length()>0)
+		{
+			guiRepOfLoan.setNotes(txtNotes.getText());
+		}
 		
 
 		try {
@@ -784,13 +884,13 @@ public class LoanPanel extends JPanel implements ActionListener{
 			if(dpDueDate.getDate()!=null)
 			{
 				c.setTime(dpDueDate.getDate());
-				loan.setDuedate(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
+				guiRepOfLoan.setDuedate(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
 			}
 			
 			if(dpReturnDate.getDate()!=null)
 			{
 				c.setTime(dpReturnDate.getDate());
-				loan.setReturndate(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
+				guiRepOfLoan.setReturndate(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
 			}
 			
 		} catch (DatatypeConfigurationException e) {
@@ -799,15 +899,102 @@ public class LoanPanel extends JPanel implements ActionListener{
 		}
 		
 
-		loan.setSamples(sampleModel.getAllSamples());
+		guiRepOfLoan.setSamples(sampleModel.getAllSamples());
 		
-		loan.setFiles(panelFiles.getFileList());
+		guiRepOfLoan.setFiles(panelFiles.getFileList());
+		
+		return guiRepOfLoan;
 
+	}
+	
+	
+	/**
+	 * Has the loan been changed in the GUI?
+	 * 
+	 * @return
+	 */
+	public Boolean isModified()
+	{
+		WSILoan currentRep = null;
+		WSILoan oldRep = null;
+		
+		try{
+			currentRep = getLoanRepresentationFromGUI();
+			oldRep = (WSILoan) nonDirtyLoan.clone();
+		} catch (NullPointerException e)
+		{
+			// Means one or other is not set 
+			//log.debug("One or other copies of loan is not set so returning isModified as false");
+			return false;
+		}
+		
+		try{
+			if(oldRep.isSetFirstname() || currentRep.isSetFirstname())	{
+				if(!oldRep.getFirstname().equals(currentRep.getFirstname())) 
+				{
+					//log.debug("Firstname different");
+					return true;
+				}
+			}
+			if(oldRep.isSetLastname() || currentRep.isSetLastname()){
+				if(!oldRep.getLastname().equals(currentRep.getLastname())) {
+					//log.debug("Lastname different");
+					return true;
+				}
+			}
+			if(oldRep.isSetOrganisation() || currentRep.isSetOrganisation()){ 
+				if(!oldRep.getOrganisation().equals(currentRep.getOrganisation())) {
+					//log.debug("Organisation different");
+					return true;
+				}
+			}
+			if(oldRep.isSetDuedate() || currentRep.isSetDuedate()){ 	   
+				if(!oldRep.getDuedate().equals(currentRep.getDuedate())) {
+					//log.debug("Duedate different");
+					return true;
+				}
+			}
+			if(oldRep.isSetReturndate() || currentRep.isSetReturndate()){   
+				if(!oldRep.getReturndate().equals(currentRep.getReturndate())){
+					//log.debug("Returndate different");
+					return true;
+				}
+			}
+			if(oldRep.isSetNotes() || currentRep.isSetNotes()){
+				if(!oldRep.getNotes().equals(currentRep.getNotes())) {
+					//log.debug("Notes different");
+					return true;
+				}
+			}
+			if(oldRep.isSetFiles() || currentRep.isSetFiles()){
+				if(!oldRep.getFiles().equals(currentRep.getFiles())) {
+					//log.debug("Files different");
+					return true;
+				}
+			}
+					
+			// All seems to be the same so return false
+			return false;
+		
+			
+		}
+		catch (NullPointerException e)
+		{
+			// This means that one or other was null when the other was populated 
+			//log.debug("One or other value was null when the other was populated");
+			return true;
+		}
+		
+		
 	}
 	
 	public Boolean saveChanges()
 	{
-		if(!modified) return true;
+		if(!isModified()) {
+			log.debug("Loan not modified, so no need to save changes");
+			setEditable(false);
+			return true;
+		}
 		
 		if(lstSamples.getModel().getSize()==0)
 		{
@@ -815,23 +1002,19 @@ public class LoanPanel extends JPanel implements ActionListener{
 			return false;
 		}
 		
-		this.setLoanRepresentationFromGUI();
+		WSILoan guiRepOfloan = getLoanRepresentationFromGUI();
 
-
-		
-		
-		
 		// Create resource
 		EntityResource<WSILoan> resource;
 		
-		Boolean isNewRecord = !loan.isSetIdentifier();
+		Boolean isNewRecord = !guiRepOfloan.isSetIdentifier();
 		if(isNewRecord)
 		{
-			resource = new EntityResource<WSILoan>(loan, TellervoRequestType.CREATE, WSILoan.class);
+			resource = new EntityResource<WSILoan>(guiRepOfloan, TellervoRequestType.CREATE, WSILoan.class);
 		}
 		else
 		{
-			resource = new EntityResource<WSILoan>(loan, TellervoRequestType.UPDATE, WSILoan.class);
+			resource = new EntityResource<WSILoan>(guiRepOfloan, TellervoRequestType.UPDATE, WSILoan.class);
 		}
 		
 		// set up a dialog...
@@ -848,29 +1031,58 @@ public class LoanPanel extends JPanel implements ActionListener{
 		}
 		
 		loan = resource.getAssociatedResult();
-		
-		/*if(isNewRecord)
-		{
-			boxList.add(box);
-		}
-		else
-		{
-			for (WSIBox bx: boxList)
-			{
-				if(box.getIdentifier().equals(bx.getIdentifier()))
-				{
-					bx=box;
-				}
-			}
-		}*/
-		
-		
+				
 		setLoan(loan);
-		modified = false;
-		
+		setEditable(false);
+		fireChangesMadeToLoan();
+		this.setGUIForMode(LoanDialogMode.BROWSE_EDIT);
 		return true;
 	}
 
+	/**
+	 * Check in the current loan marking all samples as 'archived'
+	 * again.
+	 * 
+	 */
+	private void checkInLoan()
+	{
+		
+		if(loan.getReturndate()!=null){
+			log.debug("Loan already returned");
+			return;
+		}
+		
+		Object[] options = {"Yes",
+				"No",
+                I18n.getText("general.cancel")};
+
+		int n = JOptionPane.showOptionDialog(this, 
+			"All samples covered by this loan and currently marked as 'on loan' will be marked as 'archived'.\n" +
+			"If any samples are missing you should cancel and mark them as so on the samples tab before\n" +
+			"proceeding." +
+			"Are you sure you want to continue? ",
+			"Confirm check in",
+			JOptionPane.YES_NO_CANCEL_OPTION,
+			JOptionPane.QUESTION_MESSAGE,
+			null,
+			options,
+			options[0]);
+		
+		if(n==JOptionPane.CANCEL_OPTION || n==JOptionPane.NO_OPTION) return;
+		
+		Date now = new Date();
+		try {
+			dpReturnDate.setDate(now);
+		} catch (PropertyVetoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		saveChanges();
+		
+	}
+	
+	
 	@Override
 	public void actionPerformed(ActionEvent event) {
 		
@@ -880,7 +1092,7 @@ public class LoanPanel extends JPanel implements ActionListener{
 		}
 		else if (event.getActionCommand().equals("NewLoan"))
 		{
-			setForNewLoan();
+			setGUIForMode(LoanDialogMode.NEW);
 		}
 		else if (event.getActionCommand().equals("Save"))
 		{
@@ -888,8 +1100,21 @@ public class LoanPanel extends JPanel implements ActionListener{
 		}
 		else if (event.getActionCommand().equals("EditLoan"))
 		{
+			if(loan!=null)
+			{
+				nonDirtyLoan = (WSILoan) loan.clone();
+			}
+			else
+			{
+				nonDirtyLoan = loan;
+			}
 			setEditable(true);
 			txtFirstName.requestFocusInWindow();
+		}
+		else if (event.getActionCommand().equals("CancelChanges"))
+		{
+			setLoan(nonDirtyLoan);
+			setEditable(false);
 		}
 		else if (event.getActionCommand().equals("AddSample"))
 		{
@@ -922,15 +1147,17 @@ public class LoanPanel extends JPanel implements ActionListener{
 		          } 
 		    } 
 		}
+		else if (event.getActionCommand().equals("ReturnLoan"))
+		{
+			checkInLoan();
+		}
+		else
+		{
+			log.error("Unknown ActionCommnad: "+event.getActionCommand());
+		}
 	}
 	
-	private void setForNewLoan()
-	{
-		setLoan(new WSILoan());
-		modified = true;
-		setEditable(true);
-	}
-	
+
 	private void addSamplesByScan(SearchParameters param)
 	{
 		
@@ -960,5 +1187,9 @@ public class LoanPanel extends JPanel implements ActionListener{
 
 	}
 	
+	
+	interface LoanListener {
+	    public void changesMadeToLoan();
+	}
 
 }
