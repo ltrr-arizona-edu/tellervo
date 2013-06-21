@@ -37,7 +37,7 @@ import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
  * 
  * @author Lucas Madar
  */
-public class TridasObjectGenericFieldRenderer extends DefaultCellRenderer {
+public class TridasGenericFieldRenderer extends DefaultCellRenderer {
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -54,6 +54,10 @@ public class TridasObjectGenericFieldRenderer extends DefaultCellRenderer {
 					{
 						return ((TridasGenericField)v).getValue();
 					}
+					else if(((TridasGenericField)v).getName().equals("tellervo.curationStatus"))
+					{
+						return ((TridasGenericField)v).getValue();
+					}					
 				}
 			}
 		}

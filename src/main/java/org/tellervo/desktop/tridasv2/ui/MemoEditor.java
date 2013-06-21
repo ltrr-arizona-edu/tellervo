@@ -48,7 +48,7 @@ public class MemoEditor extends AbstractPropertyEditor {
 		textField.setColumns(10);
 		
 		btnEdit = ComponentFactory.Helper.getFactory().createMiniButton();
-		btnEdit.setIcon(Builder.getIcon("note.png", 16));
+		btnEdit.setIcon(Builder.getIcon("edit.png", 16));
 		btnEdit.setText("");
 		((JPanel)editor).add(btnEdit, "cell 1 0,alignx right,aligny top");
 		

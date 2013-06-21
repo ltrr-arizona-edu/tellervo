@@ -77,7 +77,7 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		super.registerRenderer(List.class, new TridasFileArrayRenderer());
 		super.registerRenderer(TridasFile.class, new TridasFileArrayRenderer());
 
-		super.registerRenderer(TridasGenericField.class, new TridasObjectGenericFieldRenderer());
+		super.registerRenderer(TridasGenericField.class, new TridasGenericFieldRenderer());
 
 		
 	}

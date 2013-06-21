@@ -58,7 +58,7 @@ public class LocationGeometryEditor extends AbstractPropertyEditor {
 		
 		gpsbutton = ComponentFactory.Helper.getFactory().createMiniButton();
 		gpsbutton.setText("");
-		gpsbutton.setIcon(Builder.getIcon("note.png", 16));
+		gpsbutton.setIcon(Builder.getIcon("edit.png", 16));
 		
 		((JPanel) editor).add(gpsbutton);
 		gpsbutton.addActionListener(new ActionListener() {

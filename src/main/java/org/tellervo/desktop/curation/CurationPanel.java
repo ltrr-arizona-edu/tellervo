@@ -64,7 +64,7 @@ public class CurationPanel extends JPanel {
 	private JPanel historyPanel;
 	private JButton btnAssignToBox;
 	private JButton btnUpdate;
-	
+	private Boolean wasChanged = false;
 	
 	
 	/**
@@ -104,6 +104,11 @@ public class CurationPanel extends JPanel {
 		}
 	}
 
+	public String getCurrentCurationStatus()
+	{
+		return txtCurationStatus.getText();
+	}
+	
 	public void setSample(TridasSample sample)
 	{
 		SearchParameters param2 = new SearchParameters(SearchReturnObject.SAMPLE);
@@ -299,11 +304,22 @@ public class CurationPanel extends JPanel {
 			public void actionPerformed(ActionEvent arg0) {
 				CurationEventDialog dialog = new CurationEventDialog(historyPanel, sample);				
 				dialog.setVisible(true);
-				setSample(sample);			
+				
+				if(dialog.wasChanged())
+				{
+					wasChanged=true;
+					setSample(sample);
+				}
 				
 			}
 		});
 		historyPanel.add(btnUpdate, "cell 1 0");
+		
+	}
+	
+	public boolean wasChanged()
+	{
+		return wasChanged;
 	}
 	
 }

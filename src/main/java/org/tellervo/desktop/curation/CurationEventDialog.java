@@ -2,7 +2,6 @@ package org.tellervo.desktop.curation;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -10,28 +9,36 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
+
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JLabel;
-import javax.swing.JTextArea;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.JComboBox;
-import javax.swing.SwingUtilities;
-
+import org.tellervo.desktop.admin.BoxCuration.BoxCurationType;
 import org.tellervo.desktop.tridasv2.ui.EnumComboBoxItemRenderer;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.schema.CurationStatus;
+import org.tellervo.schema.EntityType;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSICuration;
+import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasSample;
 
 public class CurationEventDialog extends JDialog implements ActionListener{
@@ -45,6 +52,7 @@ public class CurationEventDialog extends JDialog implements ActionListener{
 	private JButton btnAdd;
 	private JButton btnCancel;
 	private final Component parent;
+	private boolean wasChanged = false;
 
 	/**
 	 * Create the dialog.
@@ -72,11 +80,16 @@ public class CurationEventDialog extends JDialog implements ActionListener{
 
 		if(samples==null || samples.size()==0)
 		{
-			dispose();
+			this.setVisible(false);
 		}
 		
 		sampleList.addAll(samples);
 		setupGUI();
+	}
+	
+	public boolean wasChanged()
+	{
+		return wasChanged;
 	}
 	
 	private void setupGUI()
@@ -135,6 +148,7 @@ public class CurationEventDialog extends JDialog implements ActionListener{
 		this.setTitle("Add curation event");
 		this.setLocationRelativeTo(parent);
 		this.setModal(true);
+		this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
 		
 	}
 
@@ -147,12 +161,17 @@ public class CurationEventDialog extends JDialog implements ActionListener{
 		else if (event.getActionCommand().equals("Add"))
 		{
 			if(addCurationEvent())
-			{
+			{				
 				dispose();
 			}
 			
 		}
 		
+	}
+	
+	public CurationStatus getCurationStatus()
+	{
+		return (CurationStatus) cboCurationStatus.getSelectedItem();
 	}
 	
 	private boolean addCurationEvent()
@@ -194,10 +213,12 @@ public class CurationEventDialog extends JDialog implements ActionListener{
 		if(!dialog.isSuccessful()) 
 		{ 
 			Alert.error("Error", dialog.getFailException().getMessage());
+			wasChanged = false;
 			return false;
 		}
 		else
 		{
+			wasChanged = true;
 			return true;
 		}
 	}

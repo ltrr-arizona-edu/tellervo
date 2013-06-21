@@ -32,12 +32,11 @@ import javax.swing.JPanel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.curation.CurationDialog;
 import org.tellervo.desktop.curation.CurationEventDialog;
 import org.tellervo.desktop.ui.Builder;
-import org.tridas.schema.TridasFile;
-import org.tridas.schema.TridasLocationGeometry;
+import org.tellervo.schema.CurationStatus;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasSample;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
@@ -52,23 +51,25 @@ import com.l2fprod.common.swing.PercentLayout;
 public class WSICurationEditor extends AbstractPropertyEditor {
 	  private final static Logger log = LoggerFactory.getLogger(WSICurationEditor.class);
 
-	private TridasObjectGenericFieldRenderer label;
+	private TridasGenericFieldRenderer label;
 	private JButton editButton;
 	private JButton viewButton;
 	private String value;
+	private TridasSample sample;
 
 	
 	/**
 	 * 
 	 */
 	public WSICurationEditor(final TridasSample sample) {
+		this.sample = sample;
 		editor = new JPanel(new PercentLayout(PercentLayout.HORIZONTAL, 0));
-		((JPanel) editor).add("*", label = new TridasObjectGenericFieldRenderer());
+		((JPanel) editor).add("*", label = new TridasGenericFieldRenderer());
 		label.setOpaque(false);
 		
 		editButton = ComponentFactory.Helper.getFactory().createMiniButton();
 		editButton.setText("");
-		editButton.setIcon(Builder.getIcon("note.png", 16));
+		editButton.setIcon(Builder.getIcon("edit.png", 16));
 		editButton.setToolTipText("Edit curation status");
 
 		viewButton = ComponentFactory.Helper.getFactory().createMiniButton();
@@ -81,82 +82,106 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 			public void actionPerformed(ActionEvent e) {
 				CurationDialog dialog = new CurationDialog(sample, viewButton);
 				dialog.setVisible(true);
+				
+				if(dialog.wasChanged())
+				{
+					String newLabel = dialog.getCurrentCurationStatus();
+					setValue(newLabel);
+				}
+				else
+				{
+					return;
+				}
+				
+				
 			}
 		});
 		
 		((JPanel) editor).add(editButton);
-		WSICurationEditor glue = this;
+
 		editButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				CurationEventDialog dialog = new CurationEventDialog(editButton, sample);
 				dialog.setUndecorated(true);
 				dialog.setVisible(true);
+				
+				if(dialog.wasChanged())
+				{
+					String newLabel = dialog.getCurationStatus().value();
+					setValue(newLabel);
+				}
+				else
+				{
+					return;
+				}
 			}
 		});
 		
 		((JPanel) editor).setOpaque(false);
 	}
-	
-	@Override
-	public Object getValue() {
-		
-		
-		
-		return value;
-	}
+
 	
 	@Override
 	public void setValue(Object value) {
 		
 		log.debug("setValue in WSICurationEditor passed: "+value);
+		TridasGenericFieldRenderer oldLabel = label;
+
+		if(value ==null)
+		{
+			log.debug("Value is null");
+
+			label.setValue(null);
+			
 		
+		}
 		if(value instanceof String)
 		{
+			log.debug("Value is a string");
 			this.value = (String) value;
-		}
-		else
-		{
+			
+			TridasGenericField gf = new TridasGenericField();
+			gf.setName("tellervo.curationStatus");
+			gf.setValue((String) value);
+			ArrayList<TridasGenericField> gfs = new ArrayList<TridasGenericField>();
+			gfs.add(gf);
+			label.setValue(gfs);
+			
+			firePropertyChange(oldLabel, label);
 			
 		}
+		else if (value instanceof CurationStatus)
+		{
+			log.debug("Value is a CurationStatus");
+			this.value = ((CurationStatus) value).value();
+			
+			TridasGenericField gf = new TridasGenericField();
+			gf.setName("tellervo.curationStatus");
+			gf.setValue(this.value);
+			ArrayList<TridasGenericField> gfs = new ArrayList<TridasGenericField>();
+			gfs.add(gf);
+			label.setValue(gfs);
+			
+			firePropertyChange(oldLabel, label);
+		}
+		else 
+		{
+			log.debug("Value is "+value.getClass());
+		}
 		
-		label.setValue(value);
+
 	} 
 	
 	/**
 	 * Remove the current list
 	 */
 	private void selectNull() {
-		/*ArrayList<TridasFile> oldFileList = (ArrayList<TridasFile>) fileList.clone();
+		String oldValue = value;
 		label.setValue(null);
-		fileList = null;
+		value = null;
 		
-		firePropertyChange(oldFileList, fileList);*/
+		firePropertyChange(oldValue, value);
 	}
 	
-	/**
-	 * Pop up a dialog and select a new list
-	 */
-	@SuppressWarnings("unchecked")
-	private void setFileList() {
-		/*ArrayList<TridasFile> oldFileList;
-		if(fileList!=null)
-		{
-			oldFileList = (ArrayList<TridasFile>) fileList.clone();
-		}
-		else
-		{
-			oldFileList = null;
-		}
-		TridasFileListDialog dialog = new TridasFileListDialog(label, fileList);
-		
-		// show the dialog...
-		dialog.setVisible(true);
-		
-		// cancelled...
-		if(!dialog.hasResults()) return;
-		
-		fileList = dialog.getFileList();
-		label.setValue(fileList);
-		firePropertyChange(oldFileList, fileList);*/
-	}
+
 }

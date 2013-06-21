@@ -61,7 +61,7 @@ public class TridasFileEditor extends AbstractPropertyEditor {
 		
 		editButton = ComponentFactory.Helper.getFactory().createMiniButton();
 		editButton.setText("");
-		editButton.setIcon(Builder.getIcon("note.png", 16));
+		editButton.setIcon(Builder.getIcon("edit.png", 16));
 		
 		((JPanel) editor).add(editButton);
 		editButton.addActionListener(new ActionListener() {
@@ -69,8 +69,7 @@ public class TridasFileEditor extends AbstractPropertyEditor {
 				setFileList();
 			}
 		});
-		((JPanel) editor).add(cancelButton = ComponentFactory.Helper.getFactory()
-				.createMiniButton());
+		((JPanel) editor).add(cancelButton = ComponentFactory.Helper.getFactory().createMiniButton());
 		cancelButton.setText("");
 		cancelButton.setIcon(Builder.getIcon("cancel.png", 16));
 		cancelButton.addActionListener(new ActionListener() {

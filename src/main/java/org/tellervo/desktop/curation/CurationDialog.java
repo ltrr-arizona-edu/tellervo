@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.TridasSample;
 
-public class CurationDialog extends JDialog {
+public class CurationDialog extends JDialog implements ActionListener{
 
 	private final static Logger log = LoggerFactory.getLogger(CurationDialog.class);
 
@@ -44,6 +44,11 @@ public class CurationDialog extends JDialog {
 
 	}
 	
+	public boolean wasChanged()
+	{
+		return curationPanel.wasChanged();
+	}
+	
 	private void setupGUI( TridasSample sample){
 		setBounds(100, 100, 632, 300);
 		getContentPane().setLayout(new BorderLayout());
@@ -61,17 +66,7 @@ public class CurationDialog extends JDialog {
 			{
 				okButton = new JButton("OK");
 				okButton.setActionCommand("OK");
-				okButton.addActionListener(new ActionListener(){
-
-					@Override
-					public void actionPerformed(ActionEvent arg0) {
-						
-						dispose();
-						
-					}
-					
-					
-				});
+				okButton.addActionListener(this);
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
 			}
@@ -81,7 +76,24 @@ public class CurationDialog extends JDialog {
 		this.setIconImage(Builder.getApplicationIcon());
 		this.setLocationRelativeTo(parent);
 		this.setTitle("Sample Curation");
-		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+		this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+		this.setModal(true);
+	}
+
+	
+	public String getCurrentCurationStatus()
+	{
+		return curationPanel.getCurrentCurationStatus();
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent event) {
+		
+		if (event.getActionCommand().equals("OK"))
+		{
+			this.setVisible(false);
+		}
+		
 	}
 
 }
