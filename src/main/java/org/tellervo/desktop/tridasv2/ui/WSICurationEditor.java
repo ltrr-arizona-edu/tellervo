@@ -32,8 +32,9 @@ import javax.swing.JPanel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.admin.curation.CurationDialog;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.curation.CurationDialog;
+import org.tellervo.desktop.curation.CurationEventDialog;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasLocationGeometry;
@@ -53,6 +54,7 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 
 	private TridasObjectGenericFieldRenderer label;
 	private JButton editButton;
+	private JButton viewButton;
 	private String value;
 
 	
@@ -67,11 +69,27 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 		editButton = ComponentFactory.Helper.getFactory().createMiniButton();
 		editButton.setText("");
 		editButton.setIcon(Builder.getIcon("note.png", 16));
+		editButton.setToolTipText("Edit curation status");
+
+		viewButton = ComponentFactory.Helper.getFactory().createMiniButton();
+		viewButton.setText("");
+		viewButton.setIcon(Builder.getIcon("clock.png", 16));
+		viewButton.setToolTipText("View curation history");
+		
+		((JPanel) editor).add(viewButton);
+		viewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				CurationDialog dialog = new CurationDialog(sample, viewButton);
+				dialog.setVisible(true);
+			}
+		});
 		
 		((JPanel) editor).add(editButton);
+		WSICurationEditor glue = this;
 		editButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CurationDialog dialog = new CurationDialog(sample, editButton);
+				CurationEventDialog dialog = new CurationEventDialog(editButton, sample);
+				dialog.setUndecorated(true);
 				dialog.setVisible(true);
 			}
 		});

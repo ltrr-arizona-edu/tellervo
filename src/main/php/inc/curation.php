@@ -107,35 +107,9 @@ class curation extends curationEntity implements IDBAccessor
     
     function setChildParamsFromDB()
     {
-        // Add the id's of the current objects direct children from the database
-        // RadiusRadiusNotes
 
-     /*   global $dbconn;
-        global $firebug;
 
-      
-        
-        $sql  = "select sampleid from tblcuration where loanid='".pg_escape_string($this->getID())."'";
-        
-        $firebug->log($sql, "Setting samples associated with a loan");
-        $dbconnstatus = pg_connection_status($dbconn);
-        if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-        {
-
-            $result = pg_query($dbconn, $sql);
-            while ($row = pg_fetch_array($result))
-            {
-                array_push($this->entityIdArray, $row['sampleid']);
-            }
-        }
-        else
-        {
-            // Connection bad
-            $this->setErrorMessage("001", "Error connecting to database");
-            return FALSE;
-        }
-
-        return TRUE;*/
+        return TRUE;
     }
     
     /**
@@ -147,6 +121,14 @@ class curation extends curationEntity implements IDBAccessor
     function setParamsFromParamsClass($paramsClass)
     {    	
     	global $firebug;
+    	
+    	$this->setCurationStatus(NULL, $paramsClass->getCurationStatus());
+		// securityuser
+		// createdtimestamp
+    	$this->setNotes($paramsClass->getNotes());    	
+    	
+    	$this->sample = new sample();
+    	$this->sample->setParamsFromDB($paramsClass->entityIdArray[0]);
     	
     	$firebug->log($paramsClass, "params class");
   															 
@@ -192,14 +174,11 @@ class curation extends curationEntity implements IDBAccessor
                 return true;
 
             case "create":
-                if($paramsObj->hasChild===TRUE)
-                {
-                    if($paramsObj->getID() ===NULL) 
-                    {
-                        trigger_error("902"."Missing parameter - 'curationid' field is required when creating a curation record.", E_USER_ERROR);
-                        return false;
-                    }
-                }
+				if($paramsObj->getCurationStatus()===NULL)
+				{
+					trigger_error("902"."Missing parameter - 'status' field is required.", E_USER_ERROR);
+						
+				}
                 
                 return true;
 
@@ -275,23 +254,46 @@ class curation extends curationEntity implements IDBAccessor
 
     function writeToDB()
     {
-  
-        // Return true as write to DB went ok.
+    	global $dbconn;
+    	global $firebug;
+		global $myMetaHeader;
+			
+    	$curationsql = "INSERT INTO tblcuration (curationstatusid, curatorid, sampleid, notes) values (";
+    	$curationsql .= $this->getCurationStatus(true).", ".$myMetaHeader->securityUserID.", '".$this->sample->getID()."', ".dbHelper::tellervo_pg_escape_string($this->getNotes()).") RETURNING curationid";
+    	
+    	$firebug->log($curationsql, "Curation SQL");
+    	$query = pg_query($dbconn, $curationsql);
+    	
+    	$row = pg_fetch_row($query); 
+    	$new_id = $row['0'];
+
+    	$sql2 = "SELECT * from tblcuration where curationid=$new_id";
+    	
+    	// Retrieve automated field values when a new record has been inserted
+    	if ($sql2)
+    	{
+    		// Run SQL
+    		$result = pg_query($dbconn, $sql2);
+    		while ($row = pg_fetch_array($result))
+    		{
+    			$this->setCreatedTimestamp($row['createdtimestamp']);
+    			$this->setID($row['curationid']);
+    			$this->curation = new curation();
+     			$this->curator->setParamsFromDB($row['curatorid']);
+    		}
+    	}
+    	
         return TRUE;
     }
 
     function deleteFromDB()
     {
-    
 
-        // Return true as write to DB went ok.
-        return TRUE;
     }
 
     function mergeRecords($mergeWithID)
     {
 
-	
     }
     
 // End of Class

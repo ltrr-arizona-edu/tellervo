@@ -356,19 +356,13 @@ class curationParameters extends curationEntity implements IParams
 	function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
 	{
 		global $firebug;
-		 
-		 
 		$firebug->log($xmlrequest, "XML request received by curationParameters");
 		 
 		parent::__construct();
-		 
-		 
-		 
 
 		$this->xmlRequestDom = new DomDocument();
 		$this->xmlRequestDom->loadXML($xmlrequest);
 
-		 
 		// Extract parameters from the XML request
 		$this->setParamsFromXMLRequest();
 	}
@@ -391,10 +385,24 @@ class curationParameters extends curationEntity implements IParams
 			switch ($child->tagName)
 			{
 				case "tridas:identifier": 		$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
-				case "tvo:status":				$this->setCurationStatus($child->nodeValue); break;
+				case "status":				$this->setCurationStatus(NULL, $child->nodeValue); break;
 				case "tridas:securityUser":		break;
-				case "tvo:curationtimestamp":	break;
-				case "tvo:notes":				$this->setNotes($child->nodeValue); break;
+				case "curationtimestamp":	break;
+				case "notes":				$this->setNotes($child->nodeValue); break;
+				case "tridas:sample":
+					$firebug->log("Found a sample in a loan... looping through sample tags...");
+					$sampleTags = $child->childNodes;
+					foreach($sampleTags as $tag)
+					{
+						if($tag->nodeType != XML_ELEMENT_NODE) continue;
+						switch ($tag->tagName)
+						{
+							case "tridas:identifier" :
+								$firebug->log($tag->nodeValue, "Found sample id");
+								array_push($this->entityIdArray, $tag->nodeValue );
+						}
+					}
+					break;
 			}
 		}
 

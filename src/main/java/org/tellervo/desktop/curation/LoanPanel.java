@@ -1,38 +1,39 @@
-package org.tellervo.desktop.admin.curation;
-
-import static java.text.DateFormat.LONG;
-import static java.text.DateFormat.getDateInstance;
+package org.tellervo.desktop.curation;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.text.DateFormat;
+import java.beans.PropertyVetoException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.ListModel;
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
+import javax.swing.border.EmptyBorder;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -41,25 +42,19 @@ import org.joda.time.Period;
 import org.joda.time.format.PeriodFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.admin.curation.LoanDialog.LoanDialogMode;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.TridasSelectEvent;
+import org.tellervo.desktop.curation.LoanDialog.LoanDialogMode;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
-import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.tridasv2.ui.TridasFileListPanel;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.ui.I18n.TellervoLocale;
-import org.tellervo.desktop.util.ArrayListModel;
-import org.tellervo.desktop.util.SoundUtil;
-import org.tellervo.desktop.util.SoundUtil.SystemSound;
 import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tellervo.desktop.util.labels.ui.SampleLabelPrintingUI;
-import org.tellervo.desktop.util.labels.ui.TridasListCellRenderer;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
@@ -70,32 +65,15 @@ import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
-import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSILoan;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasGenericField;
-import org.tridas.schema.TridasIdentifier;
-import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 
 import com.michaelbaranov.microba.calendar.DatePicker;
-
-import javax.swing.JToolBar;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import java.awt.Font;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
 
 public class LoanPanel extends JPanel implements ActionListener {
 
@@ -119,14 +97,13 @@ public class LoanPanel extends JPanel implements ActionListener {
 	private JLabel lblOverdue;
 	private JLabel lblperiod;
 	private DatePicker dpReturnDate;
-	
+	private JScrollPane scrollPaneSamples;
 	private final static Logger log = LoggerFactory.getLogger(LoanPanel.class);
 	
 	
 	private WSILoan loan;
 	private TridasFileListPanel panelFiles;
-	private JList<TridasSample> lstSamples;
-	private UniqueListModel sampleModel;
+	private SampleListTableModel sampleModel;
 	private JPanel panelBarcodeInstructions;
 	private JLabel lblInfoIcon;
 	private JTextArea txtSampleInstructions;
@@ -134,8 +111,6 @@ public class LoanPanel extends JPanel implements ActionListener {
 	private WSILoan nonDirtyLoan;
 	
 	private String keyBuffer = "";
-	private JLabel lblSampleCount;
-	private JButton btnNewButton;
 	private JButton btnCancelChanges;
 
 	private static String barcodeInstructions = "To quickly add multiple samples to this loan, highlight the list above and scan sample barcodes.  You can also scan box barcodes to loan all samples from a specific box.";
@@ -143,6 +118,7 @@ public class LoanPanel extends JPanel implements ActionListener {
 	private JLabel lblLoanId;
 	private JTextField txtLoanID;
     private List<LoanListener> listeners = new ArrayList<LoanListener>();
+    private JTable tblSamples;
     
     
 	/**
@@ -184,6 +160,7 @@ public class LoanPanel extends JPanel implements ActionListener {
 		dpDueDate.setEnabled(b);
 		btnCancelChanges.setEnabled(b);
 		btnSave.setEnabled(b);
+		btnNewLoan.setEnabled(!b);
 		btnEditLoan.setEnabled(!b);
 		btnReturnLoan.setEnabled(!b);
 		txtNotes.setEditable(b);
@@ -206,10 +183,11 @@ public class LoanPanel extends JPanel implements ActionListener {
 		{
 			txtSampleInstructions.setText(barcodeInstructions);
 		}
-		
+		handleSampleTableBorder();
 		
 		// Third tab
 		panelFiles.setReadOnly(!b);
+		
 		
 
 	}
@@ -228,11 +206,9 @@ public class LoanPanel extends JPanel implements ActionListener {
 		else
 		{
 			setEditable(false);
-
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void initGUI() {
 		setLayout(new BorderLayout(0, 0));
 		
@@ -300,7 +276,7 @@ public class LoanPanel extends JPanel implements ActionListener {
 		JLabel lblNotes = new JLabel("Notes:");
 		panelSummary.add(lblNotes, "cell 0 6,aligny top");
 		
-		JScrollPane scrollPane = new JScrollPane();
+		final JScrollPane scrollPane = new JScrollPane();
 		panelSummary.add(scrollPane, "cell 1 6 2 1,grow");
 		
 		txtNotes = new JTextArea();
@@ -316,48 +292,61 @@ public class LoanPanel extends JPanel implements ActionListener {
 		tabbedPane.addTab("Samples", null, panelSamples, null);
 		panelSamples.setLayout(new MigLayout("hidemode 3", "[grow][fill]", "[][][grow][][]"));
 		
-		JScrollPane scrollPaneSamples = new JScrollPane();
+		scrollPaneSamples = new JScrollPane();
 		panelSamples.add(scrollPaneSamples, "cell 0 0 1 4,grow");
 		
-		lstSamples = new JList();
-		sampleModel = new UniqueListModel();
-		lstSamples.setModel(sampleModel);
-		lstSamples.setCellRenderer(new CurationSampleListCellRenderer());
-		
-		lstSamples.getModel().addListDataListener(new ListDataListener(){
+		scrollPaneSamples.addMouseListener(new MouseListener(){
 
 			@Override
-			public void contentsChanged(ListDataEvent arg0) {
-				setSampleCountLabel();
+			public void mouseClicked(MouseEvent arg0) {
+				tblSamples.requestFocusInWindow();
+				
 			}
 
 			@Override
-			public void intervalAdded(ListDataEvent arg0) {
-				setSampleCountLabel();
+			public void mouseEntered(MouseEvent arg0) {
+				tblSamples.requestFocusInWindow();
+				
 			}
 
 			@Override
-			public void intervalRemoved(ListDataEvent arg0) {
-				setSampleCountLabel();
+			public void mouseExited(MouseEvent arg0) {
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				tblSamples.requestFocusInWindow();
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				tblSamples.requestFocusInWindow();
+				
 			}
 			
 		});
 		
-		
-		lstSamples.addKeyListener(new KeyListener(){
+		tblSamples = new JTable();
+		tblSamples.setShowGrid(false);
+		scrollPaneSamples.setViewportView(tblSamples);
+		sampleModel = new SampleListTableModel();
+		tblSamples.setModel(sampleModel);
+		tblSamples.setAutoCreateRowSorter(true);
+		tblSamples.addKeyListener(new KeyListener(){
 
 			@Override
-			public void keyPressed(KeyEvent e) { }
+			public void keyPressed(KeyEvent arg0) {	}
 
 			@Override
-			public void keyReleased(KeyEvent e) { }
+			public void keyReleased(KeyEvent arg0) { }
 
 			@Override
 			public void keyTyped(KeyEvent e) {
-				
 				if(!btnAddSample.isVisible()) return;
 				
-			
+				
 				if(keyBuffer.length()==24)
 				{
 					// A barcode was probably just scanned
@@ -409,43 +398,25 @@ public class LoanPanel extends JPanel implements ActionListener {
 				    }
 				 }
 				
+				
 			}
 			
 		});
 		
-		lstSamples.addMouseListener(new MouseListener(){
+		tblSamples.addFocusListener(new FocusListener(){
 
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				if(arg0.getClickCount()>1)
-				{
-					showCurationHistoryForSelectedSample();
-				}
+			public void focusGained(FocusEvent arg0) {
+				handleSampleTableBorder();
 				
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent arg0) {		
-			}
-
-			@Override
-			public void mouseExited(MouseEvent arg0) {				
-			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {				
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {				
+			public void focusLost(FocusEvent arg0) {
+				handleSampleTableBorder();
 			}
 			
 		});
-		
-		scrollPaneSamples.setViewportView(lstSamples);
-		
-		lblSampleCount = new JLabel("0 samples included in this loan");
-		scrollPaneSamples.setColumnHeaderView(lblSampleCount);
 		
 		btnAddSample = new JButton();
 		btnAddSample.setActionCommand("AddSample");
@@ -538,28 +509,25 @@ public class LoanPanel extends JPanel implements ActionListener {
 		
 	}
 	
-	private void showCurationHistoryForSelectedSample()
+	private void handleSampleTableBorder()
 	{
-		if(lstSamples.getSelectedValue()!=null)
+		if(btnSave.isEnabled())
 		{
-			CurationDialog dialog = new CurationDialog(lstSamples.getSelectedValue(), this);
-			dialog.setVisible(true);
-		}
-	}
-	
-	private void setSampleCountLabel()
-	{
-		if(lstSamples.getModel().getSize()==1)
-		{
-			lblSampleCount.setText( lstSamples.getModel().getSize()+ " sample included in this loan");
-
+			scrollPaneSamples.setBorder(new StrokeBorder(Color.YELLOW, 4));
 		}
 		else
 		{
-			lblSampleCount.setText( lstSamples.getModel().getSize()+ " samples included in this loan");
-
+			scrollPaneSamples.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, false));		
 		}
-
+	}
+	
+	private void showCurationHistoryForSelectedSample()
+	{
+		if(tblSamples.getSelectedRow()!=-1)
+		{
+			CurationDialog dialog = new CurationDialog(sampleModel.getSample(tblSamples.getSelectedRow()), this);
+			dialog.setVisible(true);
+		}
 	}
 	
 	private void setSamples()
@@ -621,7 +589,7 @@ public class LoanPanel extends JPanel implements ActionListener {
         	}
         	else
         	{
-        		sampleModel.addElement(s);
+        		sampleModel.addSample(s);
         	}
 		}
 				
@@ -632,7 +600,7 @@ public class LoanPanel extends JPanel implements ActionListener {
 			{
 				for (TridasSample s : alreadyLoanedSamples)
 				{
-					sampleModel.addElement(s);
+					sampleModel.addSample(s);
 				}
 			}
 			else
@@ -668,14 +636,14 @@ public class LoanPanel extends JPanel implements ActionListener {
 				{
 					for (TridasSample s : alreadyLoanedSamples)
 					{
-						sampleModel.addElement(s);
+						sampleModel.addSample(s);
 					}
 				}
 			}
 
 		}
 		
-		lstSamples.clearSelection();
+		tblSamples.clearSelection();
 
 		
 	}
@@ -715,7 +683,6 @@ public class LoanPanel extends JPanel implements ActionListener {
 				dpReturnDate.setDate(null);
 
 			} catch (PropertyVetoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -733,8 +700,6 @@ public class LoanPanel extends JPanel implements ActionListener {
 		String language = App.prefs.getPref(PrefKey.LOCALE_LANGUAGE_CODE, "xxx");
 		TellervoLocale loc = I18n.getTellervoLocale(country, language);
 		
-		DateFormat dateFormat =  getDateInstance(LONG, loc.getLocale());
-		
 		
 		if(loan.isSetIdentifier())
 		{
@@ -751,7 +716,6 @@ public class LoanPanel extends JPanel implements ActionListener {
 			try {
 				dpDueDate.setDate(loan.getDuedate().toGregorianCalendar().getTime());
 			} catch (PropertyVetoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -760,7 +724,6 @@ public class LoanPanel extends JPanel implements ActionListener {
 			try {
 				dpDueDate.setDate(null);
 			} catch (PropertyVetoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -769,7 +732,6 @@ public class LoanPanel extends JPanel implements ActionListener {
 			try {
 				dpIssueDate.setDate(loan.getIssuedate().toGregorianCalendar().getTime());
 			} catch (PropertyVetoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -783,7 +745,6 @@ public class LoanPanel extends JPanel implements ActionListener {
 			try {
 				dpIssueDate.setDate(null);
 			} catch (PropertyVetoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -792,7 +753,6 @@ public class LoanPanel extends JPanel implements ActionListener {
 			try {
 				dpReturnDate.setDate(loan.getReturndate().toGregorianCalendar().getTime());
 			} catch (PropertyVetoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -801,7 +761,6 @@ public class LoanPanel extends JPanel implements ActionListener {
 			try {
 				dpReturnDate.setDate(null);
 			} catch (PropertyVetoException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -894,12 +853,11 @@ public class LoanPanel extends JPanel implements ActionListener {
 			}
 			
 		} catch (DatatypeConfigurationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 
-		guiRepOfLoan.setSamples(sampleModel.getAllSamples());
+		guiRepOfLoan.setSamples(sampleModel.getTridasSamples());
 		
 		guiRepOfLoan.setFiles(panelFiles.getFileList());
 		
@@ -996,7 +954,7 @@ public class LoanPanel extends JPanel implements ActionListener {
 			return true;
 		}
 		
-		if(lstSamples.getModel().getSize()==0)
+		if(tblSamples.getModel().getRowCount()==0)
 		{
 			Alert.error("No samples", "No samples have been included in this loan.");
 			return false;
@@ -1074,7 +1032,6 @@ public class LoanPanel extends JPanel implements ActionListener {
 		try {
 			dpReturnDate.setDate(now);
 		} catch (PropertyVetoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -1140,10 +1097,10 @@ public class LoanPanel extends JPanel implements ActionListener {
 		}
 		else if (event.getActionCommand().equals("RemoveSample"))
 		{
-			if(this.lstSamples.getSelectedIndices().length > 0) {
-		          int[] selectedIndices = lstSamples.getSelectedIndices();
+			if(this.tblSamples.getSelectedRows().length > 0) {
+		          int[] selectedIndices = tblSamples.getSelectedRows();
 		          for (int i = selectedIndices.length-1; i >=0; i--) {
-		              sampleModel.removeElementAt(selectedIndices[i]);
+		              sampleModel.removeSample(selectedIndices[i]);
 		          } 
 		    } 
 		}

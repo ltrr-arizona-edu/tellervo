@@ -31,9 +31,9 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import org.tellervo.desktop.admin.curation.LoanDialog;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
+import org.tellervo.desktop.curation.LoanDialog;
 import org.tellervo.desktop.gis.GISFrame;
 import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;

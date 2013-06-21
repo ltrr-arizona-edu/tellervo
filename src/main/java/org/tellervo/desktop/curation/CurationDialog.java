@@ -1,8 +1,10 @@
-package org.tellervo.desktop.admin.curation;
+package org.tellervo.desktop.curation;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -21,7 +23,6 @@ public class CurationDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private JButton okButton;
-	private JButton cancelButton;
 	private CurationPanel curationPanel;
 	private Component parent;
 	
@@ -30,9 +31,7 @@ public class CurationDialog extends JDialog {
 	 * Create the dialog.
 	 */
 	public CurationDialog(TridasSample sample, Component parent) {
-		
-		
-		
+			
 		if(sample.isSetIdentifier())
 		{
 			log.debug("CurationDialog instantiated with sample id:"+sample.getIdentifier().getValue());
@@ -62,13 +61,19 @@ public class CurationDialog extends JDialog {
 			{
 				okButton = new JButton("OK");
 				okButton.setActionCommand("OK");
+				okButton.addActionListener(new ActionListener(){
+
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						
+						dispose();
+						
+					}
+					
+					
+				});
 				buttonPane.add(okButton);
 				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				cancelButton = new JButton("Cancel");
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
 			}
 		}
 		

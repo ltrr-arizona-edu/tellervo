@@ -1,4 +1,4 @@
-package org.tellervo.desktop.admin.curation;
+package org.tellervo.desktop.curation;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -34,7 +34,7 @@ import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.admin.curation.LoanPanel.LoanListener;
+import org.tellervo.desktop.curation.LoanPanel.LoanListener;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
@@ -306,8 +306,9 @@ public class LoanDialog extends JDialog implements ActionListener, LoanListener,
 					scrollPane.setViewportView(tblLoans);
 				}
 				{
-					JButton btnNewButton_3 = new JButton("Search");
-					topPanel.add(btnNewButton_3, "cell 1 0");
+					JButton btnSearch = new JButton("Search");
+					btnSearch.setEnabled(false);
+					topPanel.add(btnSearch, "cell 1 0");
 				}
 			}
 			

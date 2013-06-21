@@ -1,4 +1,4 @@
-package org.tellervo.desktop.admin.curation;
+package org.tellervo.desktop.curation;
 
 import static java.text.DateFormat.LONG;
 import static java.text.DateFormat.getDateInstance;

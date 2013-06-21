@@ -1,7 +1,10 @@
-package org.tellervo.desktop.admin.curation;
+package org.tellervo.desktop.curation;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -60,6 +63,7 @@ public class CurationPanel extends JPanel {
 	private JTextField txtCurationStatus;
 	private JPanel historyPanel;
 	private JButton btnAssignToBox;
+	private JButton btnUpdate;
 	
 	
 	
@@ -157,7 +161,7 @@ public class CurationPanel extends JPanel {
 		
 		
 		SearchParameters param3 = new SearchParameters(SearchReturnObject.CURATION);
-    	param3.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, sample.getIdentifier().getValue());
+    	param3.addSearchConstraint(SearchParameterName.SAMPLEDBID, SearchOperator.EQUALS, sample.getIdentifier().getValue());
 		EntitySearchResource<WSICuration> resource3 = new EntitySearchResource<WSICuration>(param3, WSICuration.class);
 		TellervoResourceAccessDialog dialog3 = new TellervoResourceAccessDialog(resource3);
 		resource3.query();	
@@ -170,7 +174,8 @@ public class CurationPanel extends JPanel {
 		}
 		
 		java.util.List<WSICuration> curationHistory = resource3.getAssociatedResult();
-		
+		curationTableModel = new CurationTableModel();
+		tblCurationHistory.setModel(curationTableModel);
 		for(WSICuration curation : curationHistory)
 		{
 			curationTableModel.addCurationEvent(curation);
@@ -232,12 +237,13 @@ public class CurationPanel extends JPanel {
 		txtCurationStatus = new JTextField();
 		txtCurationStatus.setEditable(false);
 		txtCurationStatus.setFocusable(false);
-		historyPanel.add(txtCurationStatus, "cell 1 0,growx");
+		historyPanel.add(txtCurationStatus, "flowx,cell 1 0,growx");
 		
 		JLabel lblCurationHistory = new JLabel("History:");
 		historyPanel.add(lblCurationHistory, "cell 0 1");
 		
 		scrollPane = new JScrollPane();
+		scrollPane.setBackground(Color.WHITE);
 		historyPanel.add(scrollPane, "cell 1 1");
 		
 		tblCurationHistory = new JTable();
@@ -285,6 +291,19 @@ public class CurationPanel extends JPanel {
 
 		scrollPane.setViewportView(tblCurationHistory);
 		tblCurationHistory.setModel(curationTableModel);
+		
+		btnUpdate = new JButton("Update");
+		btnUpdate.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				CurationEventDialog dialog = new CurationEventDialog(historyPanel, sample);				
+				dialog.setVisible(true);
+				setSample(sample);			
+				
+			}
+		});
+		historyPanel.add(btnUpdate, "cell 1 0");
 	}
 	
 }

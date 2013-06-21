@@ -1,4 +1,4 @@
-package org.tellervo.desktop.admin.curation;
+package org.tellervo.desktop.curation;
 
 import java.util.ArrayList;
 import java.util.Collections;

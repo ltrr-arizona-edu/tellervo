@@ -3231,6 +3231,7 @@ class curationEntity extends dbEntity
 	public $curator = NULL;
 	protected $loan = NULL;
 	protected $sample = NULL;
+	protected $entityIdArray = NULL;
 	
 	function __construct()
 	{
@@ -3238,6 +3239,7 @@ class curationEntity extends dbEntity
 		parent::__construct($groupXMLTag);
 		$this->curationstatus = new curationStatus();
 		$this->curator = new SecurityUser();
+		$this->entityIdArray = array();
 
 	}
 	
@@ -3268,12 +3270,7 @@ class curationEntity extends dbEntity
 		return $this->curationstatus->setCurationStatus($id, $value);
 	}
 	
-	/**
-	 * Get the type of object
-	 *
-	 * @param Boolean $asKey
-	 * @return unknown
-	 */
+
 	function getCurationStatus($asKey=false)
 	{
 		if($asKey)
@@ -3285,6 +3282,7 @@ class curationEntity extends dbEntity
 			return $this->curationstatus->getValue();
 		}
 	}
+
 		
 }
 

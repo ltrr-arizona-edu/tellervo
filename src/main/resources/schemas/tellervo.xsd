@@ -954,10 +954,10 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="tridas:identifier" />
+				<xs:element ref="tridas:identifier" minOccurs="0"/>
 				<xs:element name="status" type="curationStatus" minOccurs="1" maxOccurs="1"/>
-				<xs:element ref="securityUser"/>
-				<xs:element name="curationtimestamp" type="xs:dateTime"/>
+				<xs:element ref="securityUser" minOccurs="0"/>
+				<xs:element name="curationtimestamp" type="xs:dateTime" minOccurs="0"/>
 				<xs:element name="notes" minOccurs="0" maxOccurs="1" type="xs:string"/>
 				<xs:element ref="tridas:sample" minOccurs="1" maxOccurs="1"/>
 				<xs:element ref="loan" minOccurs="0" maxOccurs="1"/>
