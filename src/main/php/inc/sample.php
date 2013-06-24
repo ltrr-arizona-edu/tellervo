@@ -452,7 +452,7 @@ class sample extends sampleEntity implements IDBAccessor
 
             if($this->getBoxID()!=NULL)							$xml.="<tridas:genericField name=\"tellervo.boxID\" type=\"xs:string\">".$this->getBoxID()."</tridas:genericField>\n";
             
-            if ($this->getBoxID()!=NULL && $format=="summary")
+            if ($this->getBoxID()!=NULL )//&& $format=="summary")
             {
             	$thisbox = new Box();
             	$thisbox->setParamsFromDB($this->getBoxID());

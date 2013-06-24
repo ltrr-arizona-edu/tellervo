@@ -80,7 +80,7 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 		((JPanel) editor).add(viewButton);
 		viewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CurationDialog dialog = new CurationDialog(sample, viewButton);
+				CurationDialog dialog = new CurationDialog(sample, editor);
 				dialog.setVisible(true);
 				
 				if(dialog.wasChanged())
@@ -101,8 +101,9 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 
 		editButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				CurationEventDialog dialog = new CurationEventDialog(editButton, sample);
+				CurationEventDialog dialog = new CurationEventDialog(editor, sample);
 				dialog.setUndecorated(true);
+				
 				dialog.setVisible(true);
 				
 				if(dialog.wasChanged())

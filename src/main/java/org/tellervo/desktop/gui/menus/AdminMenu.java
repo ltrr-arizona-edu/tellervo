@@ -187,7 +187,7 @@ public class AdminMenu extends JMenu {
 	            "org.tellervo.desktop.admin.BoxCuration.showDialog()", "box.png");
 	    curationmenu.add(boxdetails); 
 	    
-	    JMenuItem checkoutbox = Builder.makeMenuItem("menus.admin.checkoutbox",
+	    /*JMenuItem checkoutbox = Builder.makeMenuItem("menus.admin.checkoutbox",
 	            "org.tellervo.desktop.admin.BoxCuration.checkoutBox()", "checkout.png");
 	    curationmenu.add(checkoutbox); 
 	    
@@ -198,7 +198,9 @@ public class AdminMenu extends JMenu {
 	    JMenuItem inventory = Builder.makeMenuItem("menus.admin.inventory",
 	            "org.tellervo.desktop.util.labels.ui.PrintingDialog.proSheetPrintingDialog()");
 	    inventory.setEnabled(false);
-	    //curationmenu.add(inventory); 
+	    curationmenu.add(inventory); */
+	    
+	    curationmenu.addSeparator();
 	    
 	    JMenuItem loanDialog = new JMenuItem("Browse loans...");
 	    final Component glue = this;

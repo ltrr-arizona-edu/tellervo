@@ -511,7 +511,7 @@ public class LoanPanel extends JPanel implements ActionListener {
 	
 	private void handleSampleTableBorder()
 	{
-		if(btnSave.isEnabled())
+		if(btnAddSample.isVisible())
 		{
 			scrollPaneSamples.setBorder(new StrokeBorder(Color.YELLOW, 4));
 		}
@@ -1123,11 +1123,10 @@ public class LoanPanel extends JPanel implements ActionListener {
 			log.error("Return object type passed to addSamplesByScan() must be a sample");
 			return;
 		}
-		
-		
+
 		// we want an object returned here
 		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
-		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
 
 		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
 		resource.query();	

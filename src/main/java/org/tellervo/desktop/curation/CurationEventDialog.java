@@ -104,7 +104,7 @@ public class CurationEventDialog extends JDialog implements ActionListener{
 			contentPanel.add(lblCurationStatus, "cell 0 0,alignx trailing");
 		}
 		{
-			CurationStatus[] statuses = {null, CurationStatus.ARCHIVED, CurationStatus.DESTROYED, CurationStatus.MISSING, CurationStatus.ON___DISPLAY, CurationStatus.RETURNED___TO___OWNER};
+			CurationStatus[] statuses = {null, CurationStatus.ARCHIVED, CurationStatus.DESTROYED, CurationStatus.MISSING, CurationStatus.ON___DISPLAY, CurationStatus.RETURNED___TO___OWNER, CurationStatus.ACTIVE___RESEARCH};
 			cboCurationStatus = new JComboBox<CurationStatus>();
 			cboCurationStatus.setModel(new DefaultComboBoxModel<CurationStatus>(statuses));
 			cboCurationStatus.setRenderer(new EnumComboBoxItemRenderer());

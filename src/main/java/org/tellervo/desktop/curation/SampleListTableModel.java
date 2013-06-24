@@ -22,7 +22,7 @@ public class SampleListTableModel extends AbstractTableModel {
 
 	private static final long serialVersionUID = 1L;
 	private final static Logger log = LoggerFactory.getLogger(SampleListTableModel.class);
-    private Object[] columnNames= {"Sample code", "Current curation status"};
+    private Object[] columnNames= {"Sample code", "Current curation status", "Box"};
 	private ArrayList<TridasSample> samples = new ArrayList<TridasSample>();
 
 	
@@ -69,15 +69,24 @@ public class SampleListTableModel extends AbstractTableModel {
 		
     	TridasGenericField labcodeField = GenericFieldUtils.findField(sample, "tellervo.internal.labcodeText");
     	TridasGenericField curationStatusField = GenericFieldUtils.findField(sample, "tellervo.curationStatus");
+    	TridasGenericField boxField = GenericFieldUtils.findField(sample, "tellervo.boxCode");
     	
 		if(columnIndex==0)
 		{
 			return (labcodeField != null) ? labcodeField.getValue() : sample.getTitle();	
 		}
-		else 
+		else if(columnIndex==1) 
 		{
 			return (curationStatusField != null) ? curationStatusField.getValue() : "Unknown";
 		}	
+		else if(columnIndex==2) 
+		{
+			return (boxField != null) ? boxField.getValue() : null;
+		}
+		else
+		{
+			return null;
+		}
 		
 	}
 	

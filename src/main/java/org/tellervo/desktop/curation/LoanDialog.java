@@ -83,6 +83,7 @@ public class LoanDialog extends JDialog implements ActionListener, LoanListener,
 	
 	/**
 	 * Create the dialog in standard 'browse' mode
+	 * @wbp.parser.constructor
 	 */
 	public LoanDialog(Component parent) {
 		this.parent = parent;
@@ -242,7 +243,7 @@ public class LoanDialog extends JDialog implements ActionListener, LoanListener,
 				JPanel topPanel = new JPanel();
 				topPanel.setBorder(new TitledBorder(null, "Loan list", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 				splitPane.setLeftComponent(topPanel);
-				topPanel.setLayout(new MigLayout("", "[64.00px][grow]", "[][100px,grow,fill]"));
+				topPanel.setLayout(new MigLayout("", "[64.00px][grow]", "[][60px:n,grow,fill]"));
 				{
 					JLabel lblFilterLoans = new JLabel("Filter loan list:");
 					topPanel.add(lblFilterLoans, "cell 0 0,alignx trailing");
@@ -265,7 +266,7 @@ public class LoanDialog extends JDialog implements ActionListener, LoanListener,
 				}
 				
 				JScrollPane scrollPane = new JScrollPane();
-				scrollPane.setMinimumSize(new Dimension(100,100));
+				scrollPane.setMinimumSize(new Dimension(100, 40));
 				topPanel.add(scrollPane, "cell 0 1 2 1,grow");
 				{
 					tblLoans = new JTable();
@@ -307,7 +308,8 @@ public class LoanDialog extends JDialog implements ActionListener, LoanListener,
 				}
 				{
 					JButton btnSearch = new JButton("Search");
-					btnSearch.setEnabled(false);
+					btnSearch.setActionCommand("Search");
+					btnSearch.addActionListener(this);
 					topPanel.add(btnSearch, "cell 1 0");
 				}
 			}
@@ -466,6 +468,17 @@ public class LoanDialog extends JDialog implements ActionListener, LoanListener,
 		{
 			
 			dispose();
+		}
+		else if (event.getActionCommand().equals("Search"))
+		{
+			LoanSearchDialog dialog = new LoanSearchDialog();
+			dialog.setVisible(true);
+			
+			if(dialog.getSearchResult()!=null && dialog.getSearchResult().size()>0)
+			{
+				loanTableModel.setLoans(dialog.getSearchResult()); 
+				loanTableModel.fireTableDataChanged();
+			}
 		}
 	}
 	

@@ -51,7 +51,7 @@ END IF;
 -- Otherwise we need to check it's previous status is not incompatable with loaning
 FOR prevcurationstatusid IN SELECT curationstatusid FROM tblcuration WHERE sampleid = NEW.sampleid ORDER BY createdtimestamp desc LIMIT 1 LOOP
 
-	IF prevcurationstatusid = 2 OR prevcurationstatusid = 3 THEN
+	IF prevcurationstatusid = 2 THEN
 		RAISE EXCEPTION 'Cannot loan a sample that is already on loan';
 		RETURN NULL;
 	END IF;
@@ -101,7 +101,7 @@ $BODY$DECLARE
 
 BEGIN
 
-IF NEW.curationstatusid=2 OR NEW.curationstatusid=3 THEN
+IF NEW.curationstatusid=2 THEN
 
   IF NEW.loanid IS NULL THEN
 	RAISE EXCEPTION 'Loan information not specified for loan curation record';
@@ -116,7 +116,9 @@ ELSE
   END IF;
   
 END IF;
-
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
 
 
 CREATE TRIGGER trig_no_status_update
@@ -136,4 +138,8 @@ CREATE TRIGGER trig_loanid_when_loaned
   ON tblcuration
   FOR EACH ROW
   EXECUTE PROCEDURE check_tblcuration_loanid_is_not_null_when_loaned();
+  
+  UPDATE tlkpcurationstatus set curationstatus='On loan' where curationstatusid=2;
+  UPDATE tlkpcurationstatus set curationstatus='Active research' where curationstatusid=3;
+  
   

@@ -109,8 +109,8 @@
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Archived"/>
-			<xs:enumeration value="On loan (internal)"/>
-			<xs:enumeration value="On loan (external)"/>
+			<xs:enumeration value="On loan"/>
+			<xs:enumeration value="Active research"/>
 			<xs:enumeration value="Missing"/>
 			<xs:enumeration value="On display"/>
 			<xs:enumeration value="Destroyed"/>
