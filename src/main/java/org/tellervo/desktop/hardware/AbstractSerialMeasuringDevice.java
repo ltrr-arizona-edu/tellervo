@@ -2,6 +2,7 @@ package org.tellervo.desktop.hardware;
 
 import gnu.io.CommPort;
 import gnu.io.CommPortIdentifier;
+import gnu.io.CommPortOwnershipListener;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
@@ -26,7 +27,7 @@ import org.tellervo.desktop.ui.I18n;
  */
 public abstract class AbstractSerialMeasuringDevice extends
 		AbstractMeasuringDevice implements 
-		SerialPortEventListener{
+		SerialPortEventListener, CommPortOwnershipListener{
 	
 	protected final static Logger log = LoggerFactory.getLogger(AbstractSerialMeasuringDevice.class);
 
@@ -108,6 +109,22 @@ public abstract class AbstractSerialMeasuringDevice extends
 			return false;
 		}
 	}
+	
+    public void ownershipChange(int type) {
+        switch (type) {
+            case CommPortOwnershipListener.PORT_OWNED:
+                log.debug("Tellervo has successfully taken ownership of the serial port");
+                break;
+            case CommPortOwnershipListener.PORT_UNOWNED:
+            	log.debug("Tellervo has just lost ownership of the serial port");
+            	close();
+                break;
+            case CommPortOwnershipListener.PORT_OWNERSHIP_REQUESTED:
+            	log.debug("Someone is asking for ownership of the serial port");
+            	close();
+                break;
+        }
+    }
 	
 	/**
 	 * Returns true if a USB measuring device known to Tellervo
@@ -275,6 +292,17 @@ public abstract class AbstractSerialMeasuringDevice extends
 	
 	public SerialPort getSerialPort()
 	{
+		if(port==null)
+		{
+			try {
+				openPort(this.portName);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		
 		return (SerialPort) port;
 	}
 	
@@ -394,7 +422,7 @@ public abstract class AbstractSerialMeasuringDevice extends
 			// get the port by name.
 			portId = CommPortIdentifier.getPortIdentifier(portName);
 			
-			//portId.addPortOwnershipListener(this);
+			portId.addPortOwnershipListener(this);
 			
 			// take ownership...
 			CommPort basePort = portId.open("Tellervo", 1000);
@@ -430,11 +458,11 @@ public abstract class AbstractSerialMeasuringDevice extends
 			throw new IOException(I18n.getText("preferences.hardware.portdoesntexist"));
 		}
 		catch (PortInUseException e) {
-			try{
+			try{				
 				throw new IOException(I18n.getText("preferences.hardware.portinuse", portId.getCurrentOwner()));
 			} catch (Exception e2)
 			{
-				throw new IOException(I18n.getText("preferences.hardware.portinuse", "Unknown"));
+				throw new IOException(I18n.getText("preferences.hardware.portinuse", "(most likely) another Tellervo screen"));
 			}
 			
 		}

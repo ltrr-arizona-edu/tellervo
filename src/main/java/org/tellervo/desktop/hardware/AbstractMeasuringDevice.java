@@ -296,25 +296,6 @@ public abstract class AbstractMeasuringDevice
 		this.state = state;
 	}
 	
-
-	
-	
-    public void ownershipChange(int type) {
-        switch (type) {
-            case CommPortOwnershipListener.PORT_OWNED:
-                log.debug("Tellervo has successfully taken ownership of the serial port");
-                break;
-            case CommPortOwnershipListener.PORT_UNOWNED:
-            	log.debug("Tellervo has just lost ownership of the serial port");
-                break;
-            case CommPortOwnershipListener.PORT_OWNERSHIP_REQUESTED:
-            	log.debug("Someone is asking for ownership of the serial port");
-                break;
-        }
-    }
-	
-
-	
 	/**
 	 * On shutdown, make sure we closed the port.
 	 */
