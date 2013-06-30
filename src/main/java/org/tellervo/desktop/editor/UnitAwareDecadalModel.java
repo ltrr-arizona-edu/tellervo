@@ -21,6 +21,8 @@ package org.tellervo.desktop.editor;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -35,6 +37,7 @@ import org.tridas.schema.NormalTridasUnit;
 
 public class UnitAwareDecadalModel extends DecadalModel {
 
+	private final static Logger log = LoggerFactory.getLogger(UnitAwareDecadalModel.class);
 
 	private static final long serialVersionUID = 1L;
 	private NormalTridasUnit displayUnits = NormalTridasUnit.MICROMETRES;
@@ -290,13 +293,19 @@ public class UnitAwareDecadalModel extends DecadalModel {
 	
 	public void setValueAt(Object value, int row, int col) {
 	
+
+		
 		if (value==null)
 		{
 			// Ignore null values
+			log.debug("UnitAwareDecadalModel.setValueAt() called with null value");
 			return;
 		}
 		
-		else if (col==0 || col==11)
+		log.debug("UnitAwareDecadalModel.setValueAt() called for a value of type "+value.getClass());
+		log.debug("Value was: "+value.toString());
+		
+		if (col==0 || col==11)
 		{
 			// First and last columns don't need to be unit handled
 			super.setValueAt(value, row, col);
@@ -310,41 +319,36 @@ public class UnitAwareDecadalModel extends DecadalModel {
 				val = (Number) value;
 			} catch (Exception e)
 			{
+				
+				if(value instanceof String && ((String)value).contains("/"))
+				{
+					String[] split = ((String)value).split("/");
+					
+					if(split.length!=2)
+					{
+						super.setValueAt(value, row, col);
+						return;
+					}
+					else
+					{
+						Number ew = convertToMicrons(Integer.valueOf(split[0]));
+						Number lw =  convertToMicrons(Integer.valueOf(split[1]));
+						
+						EWLWValue ewlw = new EWLWValue(ew, lw);
+						super.setValueAt(ewlw, row, col);
+						return;
+						
+					}
+				}
+				
 				// Not a number so forget about units and just use the super class
 				super.setValueAt(value, row, col);
+				return;
 			}
 			
 			if(val!=null) 
 			{
-				if (displayUnits.equals(NormalTridasUnit.MILLIMETRES))
-				{
-					val = val.doubleValue() * 1000;
-				}
-				else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
-				{
-					val = val.doubleValue() * 100;
-				}
-				else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
-				{
-					val = val.doubleValue() * 50;
-				}
-				else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
-				{
-					val = val.doubleValue() * 20;
-				}
-				
-				if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
-				{
-					val = val.doubleValue() * 10;
-				}
-				else if (displayUnits.equals(NormalTridasUnit.MICROMETRES))
-				{
-					// do nothing as microns is the internal default units
-				}
-				else
-				{
-					System.out.println("Unsupported display units. Ignoring and defaulting to microns");
-				}
+				val = convertToMicrons(val);
 				super.setValueAt(val, row, col);
 
 			}
@@ -356,4 +360,38 @@ public class UnitAwareDecadalModel extends DecadalModel {
 		
 	}
 	
+	private Number convertToMicrons(Number val)
+	{
+		if (displayUnits.equals(NormalTridasUnit.MILLIMETRES))
+		{
+			val = val.doubleValue() * 1000;
+		}
+		else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
+		{
+			val = val.doubleValue() * 100;
+		}
+		else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
+		{
+			val = val.doubleValue() * 50;
+		}
+		else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
+		{
+			val = val.doubleValue() * 20;
+		}
+		
+		if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+		{
+			val = val.doubleValue() * 10;
+		}
+		else if (displayUnits.equals(NormalTridasUnit.MICROMETRES))
+		{
+			// do nothing as microns is the internal default units
+		}
+		else
+		{
+			System.out.println("Unsupported display units. Ignoring and defaulting to microns");
+		}
+		
+		return val;
+	}
 }

@@ -41,6 +41,7 @@ import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tridas.io.TridasIO;
 import org.tridas.io.naming.TellervoHierarchicalNamingConvention;
+import org.tridas.io.naming.TellervoHierarchicalWithVariableNamingConvention;
 import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.INamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
@@ -192,7 +193,7 @@ public class ExportView extends JFrame {
 		panelAdv.add(lblNaming, "cell 0 2");
 		
 		naming = new JComboBox(namings);
-		naming.setModel(new DefaultComboBoxModel(new String[] {"Labcodes", "Hierarchical", "UUID", "Tellervo hierarchical"}));
+		naming.setModel(new DefaultComboBoxModel(new String[] {"Labcodes", "Hierarchical", "UUID", "Tellervo hierarchical", "Labcodes with variable"}));
 		naming.setSelectedIndex(0);
 		panelAdv.add(naming, "cell 1 2");
 		
@@ -237,9 +238,17 @@ public class ExportView extends JFrame {
 				else if (naming.getSelectedIndex() == 2){
 					name = new UUIDNamingConvention();
 				}
-				else
+				else if (naming.getSelectedIndex() == 3)
 				{
 					name = new TellervoHierarchicalNamingConvention();
+				}
+				else if (naming.getSelectedIndex() == 4)
+				{
+					name = new TellervoHierarchicalWithVariableNamingConvention();
+				}
+				else
+				{
+					name = new NumericalNamingConvention();
 				}
 				ExportEvent evt = new ExportEvent(model, charset.getSelectedItem().toString(), format.getSelectedItem().toString(), name, groupings.getSelectedIndex() == 0);
 				evt.dispatch();

@@ -105,7 +105,7 @@ public class DecadalKeyListener extends KeyAdapter {
 
 		// stop editing
 		TableCellEditor ed = _table.getCellEditor(row, col);
-		((DefaultCellEditor) ed).stopCellEditing();
+		((TableCellEditor) ed).stopCellEditing();
 
 		// compute year
 		return ((DecadalModel) _table.getModel()).getYear(row, col);
@@ -207,7 +207,7 @@ public class DecadalKeyListener extends KeyAdapter {
 				
 				_table.setValueAt(e.getKeyChar(), _table.getEditingRow(), _table.getEditingColumn());
 				_table.editCellAt(_table.getEditingRow(), _table.getEditingColumn());
-				e.consume();
+				//e.consume();
 			}
 			break;
 			
@@ -328,17 +328,17 @@ public class DecadalKeyListener extends KeyAdapter {
 		}
 
 		// [0-9] on keyboard/keypad -> start editing
-		if (Character.isDigit(e.getKeyChar())) {
+		/*if (Character.isDigit(e.getKeyChar())) {
 			int row = _table.getSelectedRow();
 			int col = _table.getSelectedColumn();
 			if (!_table.isCellEditable(row, col))
 				return;
 			
-			_table.setValueAt("", row, col);
+			//_table.setValueAt("", row, col);
 			_table.editCellAt(row, col);
 			
 			return;
-		}
+		}*/
 		
 		
 		// unknown -- ignore

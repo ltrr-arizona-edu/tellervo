@@ -48,7 +48,7 @@ ALTER TABLE tlkpreadingnote ALTER COLUMN standardisedid TYPE varchar(100);
 
 
 INSERT INTO tlkpreadingnote (note, vocabularyid, standardisedid) VALUES ('micro ring', 2, '066e34a2-a210-11e2-b5c3-9bdc8beec740');
-INSERT INTO tlkpreadingnote (note, vocabularyid, standardisedid) VALUES ('locally absent ring', 2, '24ae1d4c-a210-11e2-8670-335ff0d06e0c');
+---INSERT INTO tlkpreadingnote (note, vocabularyid, standardisedid) VALUES ('locally absent ring', 2, '24ae1d4c-a210-11e2-8670-335ff0d06e0c');
 
 Insert into tlkpvocabulary (vocabularyid, name, url) values (4, 'FHX', 'http://www.frames.gov/partner-sites/fhaes/fhaes-home/');
 update tlkpvocabulary set name='Tellervo', url='http://www.tellervo.org' where name='Corina';

@@ -39,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -188,6 +189,8 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		 }
 		 }; */
 		myTable.setGridColor(new Color(240, 240, 240)); 
+		
+		myTable.setDefaultEditor(EWLWValue.class, new EWLWCellEditor(new JTextField()));
 
 		// mouse listener for table
 		
@@ -578,7 +581,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		if(remark!=null)
 		{
 			TridasValue value = mySample.getRingWidthValueForYear(yearToInsert);
-			remark.overrideRemark(value);
+			remark.applyRemark(value);
 		}	
 		
 		// select this cell again?  edit it

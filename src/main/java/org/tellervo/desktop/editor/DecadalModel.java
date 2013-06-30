@@ -45,10 +45,6 @@ import org.tellervo.desktop.util.Years;
 /**
    Table model for a decadal dataset.
 
-   <p>Left to do: it might be simpler to make the data table actually
-   3 tables (year, data, count) that scroll together, so tabbing
-   always stays in the same table.</p>
-
    @author Ken Harris &lt;kbh7 <i style="color: gray">at</i> cornell <i style="color: gray">dot</i> edu&gt;
    @version $Id$
 */
@@ -261,13 +257,26 @@ public abstract class DecadalModel extends AbstractTableModel {
 	@Override
 	public Class<?> getColumnClass(int col) {
 		
-		// If we're doing 
-		if(App.prefs.getPref(PrefKey.MEASUREMENT_VARIABLE, MeasurementVariable.RING_WIDTH.toString()).equals(MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH))
-		{
-			return String.class;
-		}
+		// Normally the first and last columns are Strings and the data columns are integers		
+		Class ret = ((col >= 1 && col <= 10) ? Integer.class : String.class);
 		
-		return ((col >= 1 && col <= 10) ? Integer.class : String.class);
+		// If the sample contains sub-annual data, then we need to check if the user is viewing data as ew/lw style
+		if(s.containsSubAnnualData())
+		{
+			log.debug("The measurement variable according to DecadalModel is "+App.prefs.getPref(PrefKey.MEASUREMENT_VARIABLE, "unknown"));
+			log.debug("MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH.toString() = "+MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH.toString());
+			log.debug("MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH="+MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH);
+			
+			if(App.prefs.getPref(PrefKey.MEASUREMENT_VARIABLE, null).equals(MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH.toString()))
+			{
+				// User is looking at ew/lw so 
+				ret = ((col >= 1 && col <= 10) ? EWLWValue.class : String.class);
+			}
+		}
+
+		log.debug("Class for column : "+col+" is "+ret.getSimpleName());
+		
+		return ret;
 	}
 
 	/**
@@ -313,6 +322,12 @@ public abstract class DecadalModel extends AbstractTableModel {
 	 */
 	@Override
 	public void setValueAt(Object value, int row, int col) {
+		
+		
+		log.debug("DecadalModel.setValueAt() called for a value of type "+value.getClass());
+		log.debug("Value was: "+value.toString());
+		
+		
 		
 		// Redate series if the cell 0,0 (i.e. cell 1001) is altered 
 		if (row == 0 && col == 0) {
@@ -570,7 +585,6 @@ public abstract class DecadalModel extends AbstractTableModel {
 			@Override
 			public String getPresentationName() {
 				return I18n.getText("edit");
-				// that's silly, that's the edit menu title -- well, it works...
 			}
 		});
 	}
