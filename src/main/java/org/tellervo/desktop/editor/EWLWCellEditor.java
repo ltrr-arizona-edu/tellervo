@@ -39,6 +39,8 @@ import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
 import javax.swing.table.TableCellEditor;
 import javax.swing.tree.TreeCellEditor;
 
@@ -87,7 +89,9 @@ public class EWLWCellEditor extends AbstractCellEditor implements TableCellEdito
      *
      * @param textField  a <code>JTextField</code> object
      */
-    public EWLWCellEditor(final JTextField textField) {
+    public EWLWCellEditor() {
+    	final JTextField textField = new JTextField();
+    	
         editorComponent = textField;
         this.clickCountToStart = 2;
         delegate = new EWLWEditorDelegate() {
@@ -99,6 +103,12 @@ public class EWLWCellEditor extends AbstractCellEditor implements TableCellEdito
                 return textField.getText();
             }
         };
+        
+        Border border = UIManager.getBorder("Table.cellNoFocusBorder");
+        if (border != null) {
+            textField.setBorder(border);
+        }
+        
         textField.addActionListener(delegate);
     }
 
@@ -195,27 +205,23 @@ public class EWLWCellEditor extends AbstractCellEditor implements TableCellEdito
                                                  int row, int column) {
        
     	
-    	delegate.setValue(null);
-    	
-    	if(value!=null && value instanceof String)
+    	if(value instanceof String)
     	{
-    	
-	    	String[] arr = ((String)value).split("/");
-	    	
-	    	if(arr.length==2)
+	    	try{
+	    		EWLWValue v = new EWLWValue((String)value);
+	    		delegate.setValue(v);
+	    	} catch (NumberFormatException e)
 	    	{
-	    		try{
-		    		Number ew = Integer.parseInt(arr[0]);
-		    		Number lw = Integer.parseInt(arr[1]);
-		    		EWLWValue v = new EWLWValue(ew,lw);
-		    		
-		    		delegate.setValue(v);
-	    		} catch (NumberFormatException e)
-	    		{
-	    			delegate.setValue(null);
-	    		}
-	    		
+	    		delegate.setValue(null);
 	    	}
+    	}
+    	else if (value instanceof EWLWValue)
+    	{
+    		delegate.setValue((EWLWValue)value);
+    	}
+    	else
+    	{
+    		delegate.setValue(null);
     	}
     	
         return editorComponent;

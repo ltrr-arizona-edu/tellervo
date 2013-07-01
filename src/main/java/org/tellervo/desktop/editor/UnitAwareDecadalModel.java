@@ -320,25 +320,15 @@ public class UnitAwareDecadalModel extends DecadalModel {
 			} catch (Exception e)
 			{
 				
-				if(value instanceof String && ((String)value).contains("/"))
+				if(value instanceof String)
 				{
-					String[] split = ((String)value).split("/");
+					try{
+						EWLWValue ewlw = new EWLWValue((String)value);
 					
-					if(split.length!=2)
-					{
-						super.setValueAt(value, row, col);
-						return;
-					}
-					else
-					{
-						Number ew = convertToMicrons(Integer.valueOf(split[0]));
-						Number lw =  convertToMicrons(Integer.valueOf(split[1]));
-						
-						EWLWValue ewlw = new EWLWValue(ew, lw);
 						super.setValueAt(ewlw, row, col);
 						return;
+					} catch (NumberFormatException ex){};
 						
-					}
 				}
 				
 				// Not a number so forget about units and just use the super class

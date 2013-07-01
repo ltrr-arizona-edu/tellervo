@@ -190,7 +190,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		 }; */
 		myTable.setGridColor(new Color(240, 240, 240)); 
 		
-		myTable.setDefaultEditor(EWLWValue.class, new EWLWCellEditor(new JTextField()));
+		myTable.setDefaultEditor(EWLWValue.class, new EWLWCellEditor());
 
 		// mouse listener for table
 		
