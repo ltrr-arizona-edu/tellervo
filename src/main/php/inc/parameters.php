@@ -444,22 +444,22 @@ class permissionParameters extends permissionEntity implements IParams
 		   $firebug->log($child->tagName, "permissions tag name");
 		   switch ($child->tagName)
 		   {
-		   	case "tvo:permissionToCreate": 	$this->setCanCreate($child->nodeValue); break;
-		   	case "tvo:permissionToRead": 	$this->setCanRead($child->nodeValue); break;
-		   	case "tvo:permissionToUpdate": 	$this->setCanUpdate($child->nodeValue); break;
-		   	case "tvo:permissionToDelete": 	$this->setCanDelete($child->nodeValue); break;
-		   	case "tvo:permissionDenied": 	$this->setPermDenied($child->nodeValue); break;
+		   	case "permissionToCreate": 	$this->setCanCreate($child->nodeValue); break;
+		   	case "permissionToRead": 	$this->setCanRead($child->nodeValue); break;
+		   	case "permissionToUpdate": 	$this->setCanUpdate($child->nodeValue); break;
+		   	case "permissionToDelete": 	$this->setCanDelete($child->nodeValue); break;
+		   	case "permissionDenied": 	$this->setPermDenied($child->nodeValue); break;
 		   	
-		   	case "tvo:entity":
+		   	case "entity":
 		   		$entity = array("type" => $child->getAttribute("type"), "id" => $child->getAttribute("id"));
 		   		array_push($this->entityArray, $entity);		   		
 		   		break;
 		   		
-		   	case "tvo:securityGroup":
+		   	case "securityGroup":
 		   		array_push($this->securityGroupArray, $child->getAttribute("id"));	
 		   		break;
 		   		
-		   	case "tvo:securityUser":
+		   	case "securityUser":
 		   		array_push($this->securityUserArray, $child->getAttribute("id"));	
 		   		break;
 		   		
@@ -1677,7 +1677,7 @@ class securityGroupParameters extends securityGroupEntity implements IParams
     	parent::__construct();    	
     	
     	// Load the xmlrequest into a local DOM variable
-        if (gettype($xmlrequest)=='box')
+        if (gettype($xmlrequest)=='root')
         {
             $this->xmlRequestDom = $xmlrequest;
         }
@@ -1706,7 +1706,7 @@ class securityGroupParameters extends securityGroupEntity implements IParams
         	
 		   $firebug->log($child->hasAttribute("id"), "has id?");
 		   
-		   if ($child->tagName=='tvo:securityGroup')
+		   if ($child->tagName=='securityGroup')
 		   {
 		   		$firebug->log($child->getAttribute("isActive"), "child");
 		   		if($child->hasAttribute("id")) $this->setID($child->getAttribute("id"), null);
@@ -1739,7 +1739,7 @@ class securityUserParameters extends securityUserEntity implements IParams
     	parent::__construct();    	
     	
     	// Load the xmlrequest into a local DOM variable
-        if (gettype($xmlrequest)=='box')
+        if (gettype($xmlrequest)=='root')
         {
             $this->xmlRequestDom = $xmlrequest;
         }
@@ -1768,7 +1768,7 @@ class securityUserParameters extends securityUserEntity implements IParams
         	
 		   $firebug->log($child->hasAttribute("id"), "has id?");
 		   
-		   if ($child->tagName=='tvo:securityUser')
+		   if ($child->tagName=='securityUser')
 		   {
 		   		$firebug->log($child->getAttribute("isActive"), "child");
 		   		if($child->hasAttribute("id")) $this->setID($child->getAttribute("id"), null);
@@ -1798,7 +1798,7 @@ class securityUserParameters extends securityUserEntity implements IParams
 				   			foreach($groups as $group)
 				   			{
 				   				if($group->nodeType != XML_ELEMENT_NODE) continue;
-				   				if($group->tagName=='tvo:securityGroup')
+				   				if($group->tagName=='securityGroup')
 				   				{		
 				   					if($group->hasAttribute("id"))
 				   					{
