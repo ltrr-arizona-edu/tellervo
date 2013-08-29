@@ -8,9 +8,17 @@ echo "*******************" >> /var/log/tellervo-installation.log
    
 if [ $1 = 'configure' ]; then
 
-	   if [ $# = 2 ]
+	   echo "Number of args passed = "
+	   echo $#
+	   echo "Arg 0 = " $0
+	   echo "Arg 1 = " $1
+	   echo "Arg 2 = " $2
+	   echo "Arg 3 = " $3
+
+	   if [[ $2 ]]  
 	    then
 	      ##
+	      ##  Three args given so...
 	      ##  Configure being run during upgrade sequence
 	      ##
 	      

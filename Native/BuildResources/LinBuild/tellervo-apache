@@ -1,3 +1,4 @@
+ServerName localhost 
 <Directory /var/www/tellervo/>
                 Options Indexes FollowSymLinks MultiViews
                 AllowOverride None

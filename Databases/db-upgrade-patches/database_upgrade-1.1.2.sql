@@ -1,6 +1,6 @@
 
 
-CREATE EXTENSION pgcrypto;
+-- CREATE EXTENSION pgcrypto;
 ALTER TABLE tblsecurityuser ALTER COLUMN password TYPE varchar(132);
 
 
@@ -1281,6 +1281,7 @@ CREATE TABLE tblloan
   organisation character varying,
   duedate timestamp with time zone,
   issuedate timestamp with time zone,
+  returndate timestamp with time zone,
   files character varying[],
   notes character varying,
   CONSTRAINT pkey_tblloan PRIMARY KEY (loanid)
@@ -1323,7 +1324,6 @@ CREATE TABLE tblcuration
   CONSTRAINT "fkey_tblcuration-tlkpcurationstatus" FOREIGN KEY (curationstatusid)
       REFERENCES tlkpcurationstatus (curationstatusid) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION
-  CONSTRAINT "uniq_curationstatus" UNIQUE (curationstatus)
 )
 WITH (
   OIDS=FALSE

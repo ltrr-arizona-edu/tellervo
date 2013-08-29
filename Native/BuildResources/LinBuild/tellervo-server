@@ -600,18 +600,19 @@ function runDBUpgrades()
 
 	if (is_dir($upgradeScripts)) 
 	{
-	    if ($dh = opendir($upgradeScripts)) 
-	    {
-	        while (($file = readdir($dh)) !== false) 
-			{
-				// Ignore directories and hidden files
-		        if ($file != "." && $file != ".." && strpos($file, ".")!=0) 
-			    {
-			      	$result = runSQLUpgradeFile($file);
-			      	if($result) $scriptsRun++;
-		        }
-		    }
-		    closedir($dh);
+		$files = scandir($upgradeScripts);
+		
+		// This is how you sort an array, see http://php.net/sort
+		natsort($files);
+		
+		// There's no need to use a directory handler, just loop through your $files array.
+		foreach ($files as $file) {
+			// Ignore directories and hidden files
+	        if ($file != "." && $file != ".." && strpos($file, ".")!=0) 
+		    {
+		      	$result = runSQLUpgradeFile($file);
+		      	if($result) $scriptsRun++;
+	        }
 		}
 	}
 	
@@ -742,7 +743,6 @@ function runSQLUpgradeFile($filename)
     		echo "\n\n";
 
     		writeLogMsg("Error running upgrade script '".escapeshellcmd($filename)."'" );
-    		writeLogMsg("".escapeshellcmd($error)."\" >> $logfile" );
     		pg_query($dbconn, "ROLLBACK");
     		 
     		return false;
