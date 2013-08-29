@@ -596,6 +596,8 @@ public class EditorFactory {
 	 */
 	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries series, NormalTridasUnit unitsIfNotSpecfied) {
 		
+		log.debug("Creating new editor for series: "+series.getTitle());
+		
 		if(container!=null) container.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
 		try {				
@@ -666,6 +668,7 @@ public class EditorFactory {
 
 		// start the editor
 		Editor ed = new Editor(sample);
+		
 		ed.setVisible(true);
 
 		if(container!=null) container.setCursor(Cursor.getDefaultCursor());

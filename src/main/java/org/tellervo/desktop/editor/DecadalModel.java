@@ -274,7 +274,7 @@ public abstract class DecadalModel extends AbstractTableModel {
 			}
 		}
 
-		log.debug("Class for column : "+col+" is "+ret.getSimpleName());
+		//log.debug("Class for column : "+col+" is "+ret.getSimpleName());
 		
 		return ret;
 	}

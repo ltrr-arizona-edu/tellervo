@@ -28,7 +28,6 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -38,6 +37,8 @@ import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
 
@@ -47,7 +48,6 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
@@ -68,6 +68,8 @@ import javax.swing.undo.UndoManager;
 import javax.swing.undo.UndoableEdit;
 import javax.swing.undo.UndoableEditSupport;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
@@ -116,10 +118,8 @@ import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.OKCancel;
 import org.tellervo.desktop.util.Overwrite;
-import org.tellervo.desktop.versioning.Build;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
@@ -135,7 +135,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		SampleListener, PrintableDocument, FocusListener {
 
 	private static final long serialVersionUID = 1L;
+	private final static Logger log = LoggerFactory.getLogger(Editor.class);
 
+	 private String random = new BigInteger(130, new SecureRandom()).toString(32);
+	
 	// gui
 	private JTable wjTable;
 	private JPanel wjPanel;
@@ -175,6 +178,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 
 		// pass
 		setup();
+		
+		log.debug("Editor created : "+random.toString());
 	}
 	
 	public void postEdit(UndoableEdit x) {

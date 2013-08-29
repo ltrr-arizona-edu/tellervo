@@ -209,7 +209,9 @@ public class ImportDataOnly extends Object {
 				}
 			}
 			
-			EditorFactory.newSeriesFromMeasurementSeries(parent, series, unitsIfNotSpecified);
+			TridasMeasurementSeries freshSeries = (TridasMeasurementSeries) series.clone();
+			
+			EditorFactory.newSeriesFromMeasurementSeries(null, freshSeries, unitsIfNotSpecified);
 		}
 	}
 }
