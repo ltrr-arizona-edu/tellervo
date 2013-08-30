@@ -118,7 +118,7 @@ public class WSIServerDetails {
 			return false;
 		}
 		
-		URI                url; 
+		URI                url = null; 
 	    BufferedReader    dis = null;
 	    DefaultHttpClient client = new DefaultHttpClient();
 
@@ -239,7 +239,16 @@ public class WSIServerDetails {
 			status = WSIServerStatus.STATUS_ERROR;
 			return false;
 		} catch (IOException e) {
-			errMessage="There is no response from the server at this URL.\nAre you sure this is the correct address and that\nthe server is turned on and configured correctly?";
+			
+			if(url.toString().startsWith("http://10."))
+			{
+				// Provide extra help to those failing to access a local server address
+				errMessage="There is no response from the server at this URL. Are you sure this is the correct address?\n\nPlease note that the URL you have specified is a local network address. You will need to be on the same network as the server to gain access.";
+			}
+			else
+			{
+				errMessage="There is no response from the server at this URL.\nAre you sure this is the correct address and that\nthe server is turned on and configured correctly?";
+			}
 			log.debug(errMessage);
 			status = WSIServerStatus.URL_NOT_RESPONDING;
 			return false;

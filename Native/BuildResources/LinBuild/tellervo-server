@@ -1333,21 +1333,10 @@ function verifySetup($silent=false)
 				if($silent!=TRUE) printResult(FALSE);
 				$runningresult = FALSE;
 			}
-			else if(substr(getIP(), 0, 3)=="10.") 
-			{
-				
-				if($silent!=TRUE) 
-				{
-					$colors = new Colors();
-					echo $colors->getColoredString("WARNING", "yellow");
-					echo "\n\n**Your server has a private network address which will limit accessibility**\n\n";
-				}
-				$runningresult = TRUE;
-			}
 			else
 			{
-		    	if($silent!=TRUE) printResult(TRUE);
-		    }
+		    		if($silent!=TRUE) printResult(TRUE);
+		   	}
 		}
 		else
 		{
@@ -1437,6 +1426,23 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
     //error_log("--- ".$errType." - ".$errstr. "\n" , 3, $logfile);
 }
 
+
+function printLocalServerWarning()
+{
+
+	if(substr(getIP(), 0, 3)=="10.") 
+	{
+		$colors = new Colors();
+		
+
+		echo "*******************************************************************************\n";
+		echo " NB : Your server has a private network address.  This means that access will  \n";
+		echo "      be limited to local computers.  To enable access via external machines   \n";
+		echo "      please read the networking section of the Tellervo manual.               \n";
+		echo "*******************************************************************************\n\n";
+	}
+}
+
 /**
  * Helper function for printing the 'goodbye' line of the script depending
  * on success.
@@ -1454,6 +1460,7 @@ function printComplete($forceSuccess=null)
   {
   	echo "Your Tellervo server configuration is valid.  Your webservice is accessible at:\n";
   	echo "    - $wsurl\n\n";
+	printLocalServerWarning();
    	exit(0);
   }
   else if ($forceSuccess===FALSE)
@@ -1466,6 +1473,7 @@ function printComplete($forceSuccess=null)
   {
   	echo "Your Tellervo server configuration is valid.  Your webservice is accessible at:\n";
   	echo "    - $wsurl\n\n";
+	printLocalServerWarning();
   	exit(0);
   }
   else
