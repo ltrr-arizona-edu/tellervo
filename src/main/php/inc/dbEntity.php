@@ -449,6 +449,11 @@ class dbEntity
     {
         return $this->id;
     }
+ 
+    function getDomain()
+    {
+	return $this->identifierDomain;
+    }
     
     /**
      * Returns the internal XML reference string for this entity
@@ -470,7 +475,7 @@ class dbEntity
     	global $domain;
 
     	$xml= "<tridas:title>".dbHelper::escapeXMLChars($this->getTitle())."</tridas:title>\n".
-               "<tridas:identifier domain=\"$domain\">".$this->getID()."</tridas:identifier>\n";
+               "<tridas:identifier domain=\"".$this->getDomain()."\">".$this->getID()."</tridas:identifier>\n";
         if($format!="minimal")
         {
        		$xml .= "<tridas:createdTimestamp>".dbHelper::pgDateTimeToCompliantISO($this->getCreatedTimestamp())."</tridas:createdTimestamp>\n".
@@ -2894,7 +2899,7 @@ class taxonEntity extends dbEntity
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified id");
+                $this->setErrorMessage("903", "DBEntity - No records match the specified id");
                 return FALSE;
             }
             else
@@ -3285,6 +3290,7 @@ class curationEntity extends dbEntity
 
 		
 }
+
 
 /**
  * A class representing TRiDaS measurementSeries and derivedSeries in the database.  This class also includes representations of TRiDaS values.

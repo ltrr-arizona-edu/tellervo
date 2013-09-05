@@ -44,7 +44,7 @@ class object extends objectEntity implements IDBAccessor
                
         // Set parameters from db
         $this->setTitle($row['title']);
-        $this->setID($row['objectid']);
+        $this->setID($row['objectid'], $row['domain']);
         $this->setCreatedTimestamp($row['createdtimestamp']);
         $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
         $this->setComments($row['comments']);

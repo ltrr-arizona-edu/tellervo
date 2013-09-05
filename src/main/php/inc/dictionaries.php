@@ -19,6 +19,7 @@ require_once("inc/region.php");
 require_once("inc/securityUser.php");
 require_once("inc/securityGroup.php");
 require_once("inc/box.php");
+require_once("inc/domain.php");
 
 class dictionaries
 {
@@ -64,6 +65,7 @@ class dictionaries
     function setParamsFromDB()
     {
         global $dbconn;
+        global $firebug;
         
         $xmldata = "";
         
@@ -138,17 +140,18 @@ class dictionaries
 
         
         // More complex dictionary items
-        $dictItemsWithClasses = array('securityUser', 'securityGroup', 'readingNote', 'box');
+        $dictItemsWithClasses = array('securityUser', 'securityGroup', 'readingNote', 'box', 'domain');
         //$dictItemsWithClasses = array('securityGroup', 'box');
         
         
-        global $firebug;
         
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             foreach($dictItemsWithClasses as $item)
             {
+            	$firebug->log($item, "Dictionary");
+            	 
                 switch($item)
                 {
             		case "securityUser": 
@@ -164,12 +167,18 @@ class dictionaries
             			$myObj = new readingNote();
             			break;              			     			
             		case "taxon":
+            			 
                        	$sql="select taxonid as id, label as value from tlkptaxon order by taxonid";
                        	$myObj = new taxon();
                        	break;
             		case "box":
             			$sql="select boxid as id, title as value from tblbox order by createdtimestamp"; 	
                       	$myObj = new box();
+                      	break;
+                    case "domain":
+                    	 
+                      	$sql="select domainid as id, domain as value, prefix from tlkpdomain";
+                      	$myObj = new domain();
                       	break;
                 }
             		

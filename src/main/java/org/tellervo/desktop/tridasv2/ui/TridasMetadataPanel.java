@@ -51,6 +51,7 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;

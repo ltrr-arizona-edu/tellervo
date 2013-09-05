@@ -100,7 +100,7 @@ class element extends elementEntity implements IDBAccessor
     function setParamsFromDBRow($row, $format="standard")
     {
         $this->setTitle($row['title']);    	
-        $this->setID($row['elementid']);
+        $this->setID($row['elementid'], $row['domain']);
         $this->setCreatedTimestamp($row['createdtimestamp']);       
         $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);
         $this->setComments($row['comments']);        

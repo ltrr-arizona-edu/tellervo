@@ -5,6 +5,7 @@ package org.tellervo.desktop.editor;
 
 import java.awt.Container;
 import java.awt.Cursor;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +14,6 @@ import java.util.UUID;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
-import javax.swing.table.AbstractTableModel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +21,11 @@ import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.io.Metadata;
-import org.tellervo.desktop.io.command.ReplaceHierarchyCommand;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.BaseSample;
+import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.sample.SampleEvent;
-import org.tellervo.schema.TellervoRequestFormat;
-import org.tellervo.schema.TellervoRequestType;
-import org.tellervo.schema.EntityType;
-import org.tellervo.schema.WSIBox;
-import org.tellervo.schema.WSIEntity;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
@@ -39,16 +34,20 @@ import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tellervo.schema.EntityType;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSIBox;
+import org.tellervo.schema.WSIEntity;
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.util.SafeIntYear;
 import org.tridas.io.util.UnitUtils;
-import org.tridas.schema.BaseSeries;
 import org.tridas.schema.NormalTridasMeasuringMethod;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.NormalTridasVariable;
@@ -592,9 +591,50 @@ public class EditorFactory {
 	 * Creates a new editor based upon a measurementSeries
 	 * 
 	 * @param container
-	 * @param series
+	 * @param inSeries
 	 */
-	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries series, NormalTridasUnit unitsIfNotSpecfied) {
+	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries inSeries, NormalTridasUnit unitsIfNotSpecfied) 
+	{
+		
+		// should we get this elsewhere?
+		String title = "["+I18n.getText("editor.newSeries")+ "]";
+
+
+		
+		
+		
+		// make dataset ref, based on our series
+		Sample sample = new Sample(inSeries);
+		
+		Element e = new Element(sample);
+		try {
+			Sample sample2 = e.load();
+			
+			// setup our loader and series identifier
+			TellervoWsiTridasElement.attachNewSample(sample2);
+
+			// start the editor
+			Editor ed = new Editor(sample2);
+			ed.setVisible(true);
+			ed.setDefaultFocus();
+			
+			ed.showPage(EditType.OBJECT);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+
+		// default title
+	//	sample.setMeta(Metadata.TITLE, I18n.getText("general.newEntry")+": " + title);
+
+		
+		
+
+		
+		
+	}
+		
+	public static void newSeriesFromMeasurementSeriesPrevious(Container container, TridasMeasurementSeries series, NormalTridasUnit unitsIfNotSpecfied) {
 		
 		log.debug("Creating new editor for series: "+series.getTitle());
 		

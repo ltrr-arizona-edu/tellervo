@@ -190,6 +190,8 @@ public class ImportDataOnly extends Object {
 			}
 		}
 
+
+		
 		for(TridasMeasurementSeries series : seriesList)
 		{		
 			// Check if series contain data of unknown or unsupported variables
@@ -210,6 +212,7 @@ public class ImportDataOnly extends Object {
 			}
 			
 			TridasMeasurementSeries freshSeries = (TridasMeasurementSeries) series.clone();
+			
 			
 			EditorFactory.newSeriesFromMeasurementSeries(null, freshSeries, unitsIfNotSpecified);
 		}

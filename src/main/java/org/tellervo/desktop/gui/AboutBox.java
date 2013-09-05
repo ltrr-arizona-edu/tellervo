@@ -20,6 +20,7 @@
 package org.tellervo.desktop.gui;
 
 
+import java.awt.Color;
 import java.awt.Font;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,21 +28,17 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.text.MessageFormat;
 
-import javax.swing.GroupLayout;
 import javax.swing.Icon;
 import javax.swing.JLabel;
-import javax.swing.GroupLayout.Alignment;
-import javax.swing.LayoutStyle.ComponentPlacement;
+import javax.swing.JSeparator;
+import javax.swing.JTabbedPane;
+import javax.swing.border.EtchedBorder;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.versioning.Build;
-
-import net.miginfocom.swing.MigLayout;
-import javax.swing.JSeparator;
-import java.awt.Color;
-import javax.swing.border.EtchedBorder;
-import javax.swing.JTabbedPane;
 
 
 /*

@@ -568,6 +568,7 @@
 				<xs:element ref="securityGroupDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="boxDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="configurationDictionary" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="domainDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="wmsServerDictionary" minOccurs="0" maxOccurs="1"/>
 				
 			</xs:choice>
@@ -705,6 +706,14 @@
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
+        
+        <xs:element name="domainDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="domain" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
 
         <xs:element name="readingNoteDictionary">
                 <xs:complexType>
@@ -833,6 +842,33 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	
+<!--
+	%%%%%%%%%%%%%%
+	%   DOMAIN
+	%%%%%%%%%%%%%% -->
+	<xs:element name="domain">
+		<xs:annotation>
+			<xs:documentation>
+				A domain should be a unique string representing a Tellervo database.  Typically it is the URL
+				of the Tellervo webservice or an organisation's website.  It is important for the domain to
+				be unique though to enable the identification of the originating database when data is shared. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:simpleContent>		
+				<xs:extension base="xs:string">
+					<xs:attribute name="prefix" use="optional">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">Optional code for use as a prefix in sample identifiers. </xs:documentation>
+						</xs:annotation>
+					</xs:attribute>	
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	
+	
 	
 	<!--
 		%%%%%%%%%%%%%%

@@ -48,7 +48,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
         if ($theID==NULL) return false;
         
         $this->id=$theID;
-        $sql = "select * from tblsecurityuser where securityuserid=$theID";
+        $sql = "select * from tblsecurityuser where securityuserid='$theID'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -57,7 +57,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
             if(pg_num_rows($result)==0)
             {
                 // No records match the id specified
-                $this->setErrorMessage("903", "No records match the specified id");
+                $this->setErrorMessage("903", "SecurityUser - No records match the specified id");
                 return FALSE;
             }
             else

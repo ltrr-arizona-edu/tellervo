@@ -23,7 +23,7 @@
 			<xs:enumeration value="measurementSeries" />
 			<xs:enumeration value="derivedSeries" />
 			<xs:enumeration value="box"/>
-			<xs:enumeration value="curationEvent"/>
+			<xs:enumeration value="curation"/>
 			<xs:enumeration value="loan"/>
 		</xs:restriction>
 	</xs:simpleType>
@@ -43,7 +43,7 @@
 			<xs:enumeration value="box"/>
 			<xs:enumeration value="securityUser"/>
 			<xs:enumeration value="securityGroup"/>
-			<xs:enumeration value="curationEvent"/>
+			<xs:enumeration value="curation"/>
 			<xs:enumeration value="loan"/>
 		</xs:restriction>
 	</xs:simpleType>
@@ -109,8 +109,8 @@
 		</xs:annotation>
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="Archived"/>
-			<xs:enumeration value="On loan (internal)"/>
-			<xs:enumeration value="On loan (external)"/>
+			<xs:enumeration value="On loan"/>
+			<xs:enumeration value="Active research"/>
 			<xs:enumeration value="Missing"/>
 			<xs:enumeration value="On display"/>
 			<xs:enumeration value="Destroyed"/>
@@ -262,7 +262,14 @@
 			
 			<!-- LOAN ATTRIBUTES-->
 			<xs:enumeration value="loanid"/>
-
+			<xs:enumeration value="loanissuedate"/>
+			<xs:enumeration value="loanduedate"/>
+			<xs:enumeration value="loanreturndate"/>
+			<xs:enumeration value="loanfirstname"/>
+			<xs:enumeration value="loanlastname"/>
+			<xs:enumeration value="loanorganisation"/>
+			<xs:enumeration value="loannotes"/>
+			
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -413,6 +420,8 @@
 					<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 					<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="curation" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="loan" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:annotation>
@@ -535,6 +544,7 @@
 				<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="loan" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="curation" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded" />
@@ -558,6 +568,7 @@
 				<xs:element ref="securityGroupDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="boxDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="configurationDictionary" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="domainDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="wmsServerDictionary" minOccurs="0" maxOccurs="1"/>
 				
 			</xs:choice>
@@ -695,6 +706,14 @@
                     </xs:sequence>
                 </xs:complexType>
         </xs:element>
+        
+        <xs:element name="domainDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element ref="domain" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
 
         <xs:element name="readingNoteDictionary">
                 <xs:complexType>
@@ -824,6 +843,33 @@
 		</xs:complexType>
 	</xs:element>
 	
+<!--
+	%%%%%%%%%%%%%%
+	%   DOMAIN
+	%%%%%%%%%%%%%% -->
+	<xs:element name="domain">
+		<xs:annotation>
+			<xs:documentation>
+				A domain should be a unique string representing a Tellervo database.  Typically it is the URL
+				of the Tellervo webservice or an organisation's website.  It is important for the domain to
+				be unique though to enable the identification of the originating database when data is shared. 
+			</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:simpleContent>		
+				<xs:extension base="xs:string">
+					<xs:attribute name="prefix" use="optional">
+						<xs:annotation>
+							<xs:documentation xml:lang="EN">Optional code for use as a prefix in sample identifiers. </xs:documentation>
+						</xs:annotation>
+					</xs:attribute>	
+				</xs:extension>
+			</xs:simpleContent>
+		</xs:complexType>
+	</xs:element>
+	
+	
+	
 	<!--
 		%%%%%%%%%%%%%%
 		%  PERMISSION
@@ -936,7 +982,7 @@
 		% CURATION
 		%%%%%%%%%%%%%% -->
 	
-	<xs:element name="curationEvent">
+	<xs:element name="curation">
 		<xs:annotation>
 			<xs:documentation>
 				Details of a curation event, such as making a loan, archiving, logging a missing sample etc
@@ -944,17 +990,14 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
-				<xs:element ref="tridas:identifier" />
-				<xs:element ref="securityUser"/>
-				<xs:element name="curationTimeStamp" type="xs:dateTime"/>
-				<xs:element name="notes" minOccurs="0" maxOccurs="1"/>
-				<xs:choice>
-					<xs:element ref="loan" minOccurs="1" maxOccurs="1"/>
-					<xs:element ref="entity" minOccurs="1" maxOccurs="1"/>
-				</xs:choice>		
+				<xs:element ref="tridas:identifier" minOccurs="0"/>
+				<xs:element name="status" type="curationStatus" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="securityUser" minOccurs="0"/>
+				<xs:element name="curationtimestamp" type="xs:dateTime" minOccurs="0"/>
+				<xs:element name="notes" minOccurs="0" maxOccurs="1" type="xs:string"/>
+				<xs:element ref="tridas:sample" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="loan" minOccurs="0" maxOccurs="1"/>
 			</xs:sequence>
-			
-			<xs:attribute name="status" type="curationStatus" use="required" />
 		</xs:complexType>
 	</xs:element>
 	
@@ -970,26 +1013,20 @@
 		</xs:annotation>
 		<xs:complexType>	
 			<xs:sequence>
-				<xs:element ref="tridas:identifier"/>
+			
+				<xs:element ref="tridas:identifier" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="issuedate" minOccurs="0" type="xs:dateTime" />
+				<xs:element name="duedate" minOccurs="0" type="xs:dateTime" />
+				<xs:element name="returndate" minOccurs="0" type="xs:dateTime" />
 				<xs:element name="firstname" type="xs:string" />
 				<xs:element name="lastname" type="xs:string" />
 				<xs:element name="organisation" type="xs:string"/>
-				<xs:element name="file" minOccurs="0" maxOccurs="unbounded">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							Filename of a file associated with this loan.
-						</xs:documentation>
-					</xs:annotation>
-					<xs:complexType>
-						<xs:attribute ref="xlink:href" use="required"/>
-					</xs:complexType>
+				<xs:element ref="tridas:file" minOccurs="0" maxOccurs="unbounded">
+	
 				</xs:element>
-				<xs:element name="notes" minOccurs="0" maxOccurs="1"/>
-				<xs:element ref="entity" minOccurs="1" maxOccurs="unbounded"/>
+				<xs:element name="notes" minOccurs="0" maxOccurs="1" type="xs:string"/>
+				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
-
-			<xs:attribute name="duedate" type="xs:dateTime" use="optional"/>
-			<xs:attribute name="issuedate" type="xs:dateTime" use="required"/>
 		</xs:complexType>
 		</xs:element>
 </xs:schema>

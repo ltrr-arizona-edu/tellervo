@@ -1846,10 +1846,10 @@ class measurement extends measurementEntity implements IDBAccessor
 						// Update the tblmeasurement table
 						$updateSQL2.= "UPDATE tblmeasurement SET ";
 						if(isset($this->parentEntityArray[0]))            			$updateSQL2.= "radiusid = '".pg_escape_string($this->parentEntityArray[0]->getID())."', ";
-						if($this->getIsReconciled()!=NULL)        					$updateSQL2.= "isreconciled='".dbHelper::formatBool($this->getIsReconciled(),'pg')."', ";
+						if($this->getIsReconciled()!=NULL)        					$updateSQL2.= "isreconciled=".dbHelper::formatBool($this->getIsReconciled(),'pg').", ";
 						           					$updateSQL2.= "startyear = ".pg_escape_string($this->getFirstYear()).", ";
-						if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = ".pg_escape_string($this->analyst->getID()).", ";
-						if($this->dating->getID()!=NULL)        					$updateSQL2.= "datingtypeid = ".pg_escape_string($this->dating->getID()).", ";
+						if($this->analyst->getID()!=NULL)	        				$updateSQL2.= "measuredbyid = '".pg_escape_string($this->analyst->getID())."', ";
+						if($this->dating->getID()!=NULL)        					$updateSQL2.= "datingtypeid = '".pg_escape_string($this->dating->getID())."', ";
 						if($this->dating->getDatingErrorPositive()!=NULL) 			$updateSQL2.= "datingerrorpositive = ".pg_escape_string($this->dating->getDatingErrorPositive()).", ";
 						if($this->dating->getDatingErrorNegative()!=NULL) 			$updateSQL2.= "datingerrornegative = ".pg_escape_string($this->dating->getDatingErrorNegative()).", ";
 						$updateSQL2 = substr($updateSQL2, 0 , -2);
