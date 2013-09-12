@@ -71,9 +71,21 @@ import org.tellervo.desktop.util.Overwrite;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
+import org.tridas.io.exceptions.ConversionWarningException;
+import org.tridas.io.exceptions.IncompleteTridasDataException;
+import org.tridas.io.formats.tucson.TucsonWriter;
+import org.tridas.io.naming.NumericalNamingConvention;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasProject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasTridas;
 
 
 
@@ -91,6 +103,7 @@ public class FileMenu extends JMenu {
 	protected JMenuItem fileopenmulti;
 	protected JMenuItem openrecent;
 	protected JMenuItem fileexport;
+	protected JMenuItem fileofflinesave;
 	protected JMenuItem fileimport;
 	protected JMenuItem fileimportdataonly;
 	protected JMenuItem bulkentry;
@@ -119,7 +132,7 @@ public class FileMenu extends JMenu {
 	public void addIOMenus(){
 		
 		fileimport = Builder.makeMenu("menus.file.import", "fileimport.png");
-		
+				
 		for (final String s : TridasIO.getSupportedReadingFormats()) {
 			
 			JMenuItem importitem = new JMenuItem(s);
@@ -161,6 +174,8 @@ public class FileMenu extends JMenu {
 			});
 			
 			fileimport.add(importitem);
+			
+			
 		}
 		
 		
@@ -285,6 +300,10 @@ public class FileMenu extends JMenu {
 		}
 
 		add(saveAs);
+		
+	
+		
+		
 	}
 
 	public void addCloseMenu() {
@@ -631,14 +650,24 @@ public class FileMenu extends JMenu {
 		  logoff.setVisible(App.isLoggedIn());  
 		  logon.setVisible(!App.isLoggedIn());  
 		  fileopen.setEnabled(App.isLoggedIn());
-		  filenew.setEnabled(App.isLoggedIn());
+		  //filenew.setEnabled(App.isLoggedIn());
 		  fileopenmulti.setEnabled(App.isLoggedIn());
 		  openrecent.setEnabled(App.isLoggedIn());
 		  fileimport.setEnabled(App.isLoggedIn());
 		  fileimportdataonly.setEnabled(App.isLoggedIn());
 		  fileexport.setEnabled(App.isLoggedIn());
 		  bulkentry.setEnabled(App.isLoggedIn());
-		  save.setEnabled(App.isLoggedIn() && f instanceof SaveableDocument);
+		  
+		  if(App.isLoggedIn())
+		  {
+			  save.setEnabled(App.isLoggedIn() && f instanceof SaveableDocument); 
+			  fileofflinesave.setVisible(false);
+		  }
+		  else
+		  {
+			  save.setVisible(false);
+			  fileofflinesave.setVisible(true);
+		  }
 
 	  }
 	  
@@ -647,6 +676,63 @@ public class FileMenu extends JMenu {
 			Action saveAction = new SaveAction(f);
 			save = new JMenuItem(saveAction);
 			add(save);
+			
+			 fileofflinesave = Builder.makeMenuItem("menus.file.saveas");
+				
+				if(f instanceof Editor)
+				{
+					fileofflinesave.setEnabled(true);
+					
+					fileofflinesave.addActionListener(new ActionListener(){
+
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							Editor ed = (Editor) f;
+							
+							TridasMeasurementSeries series = (TridasMeasurementSeries) ed.getSample().getSeries();
+							TridasRadius radius = new TridasRadius();
+							TridasSample sample = new TridasSample();
+							TridasElement element = new TridasElement();
+							TridasObject object = new TridasObject();
+							
+							TridasProject proj = new TridasProject();
+							
+							radius.getMeasurementSeries().add(series);
+							sample.getRadiuses().add(radius);
+							element.getSamples().add(sample);
+							object.getElements().add(element);
+							proj.getObjects().add(object);
+							
+							
+							// Extract the TridasProject
+							TridasTridas container = new TridasTridas();
+							container.getProjects().add(proj);
+							
+							// Create a new converter based on a TridasProject
+							TucsonWriter tucsonwriter = new TucsonWriter();
+							NumericalNamingConvention nc = new NumericalNamingConvention("test");
+							tucsonwriter.setNamingConvention(nc);
+							try {
+								tucsonwriter.load(container);
+							} catch (IncompleteTridasDataException e) {
+								e.printStackTrace();
+							} catch (ConversionWarningException e) {
+							} 
+							
+							// Actually save file(s) to disk
+							tucsonwriter.saveAllToDisk("/tmp/");
+							
+						}
+						
+						
+					});
+					
+					
+				}
+				
+				add(fileofflinesave);
+			
+			
 		}
 }
 
