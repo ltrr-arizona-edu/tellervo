@@ -325,6 +325,43 @@ public class EditorFactory {
 		// should we get this elsewhere?
 		String title = "["+I18n.getText("editor.newSeries")+ "]";
 
+		
+		if(!App.isLoggedIn())
+		{
+			
+			// make a new measurement series
+			TridasMeasurementSeries series = new TridasMeasurementSeries();
+			series.setTitle(title);
+
+			// set up the new measuring method
+			TridasMeasuringMethod method = new TridasMeasuringMethod();
+			method.setNormalTridas(NormalTridasMeasuringMethod.MEASURING_PLATFORM);
+			series.setMeasuringMethod(method);
+
+			// set the measuring date to today
+			series.setMeasuringDate(XMLDateUtils.toDate(new Date(), null));
+
+			// make dataset ref, based on our series
+			Sample sample = new Sample(series);
+
+			// default title
+			sample.setMeta(Metadata.TITLE, I18n.getText("general.newEntry")+": " + title);
+			
+			// setup our loader and series identifier
+			TellervoWsiTridasElement.attachNewSample(sample);
+
+			// start the editor
+			EditorLite ed = new EditorLite(sample);
+			ed.setVisible(true);
+			ed.setDefaultFocus();
+			
+			container.setCursor(Cursor.getDefaultCursor());
+			
+			return;
+		}
+		
+		
+		
 		BarcodeDialogResult result = null;
     	if(!App.prefs.getBooleanPref(PrefKey.BARCODES_DISABLED, false))
     	{
@@ -599,10 +636,6 @@ public class EditorFactory {
 		// should we get this elsewhere?
 		String title = "["+I18n.getText("editor.newSeries")+ "]";
 
-
-		
-		
-		
 		// make dataset ref, based on our series
 		Sample sample = new Sample(inSeries);
 		

@@ -103,7 +103,7 @@ public class FileMenu extends JMenu {
 	protected JMenuItem fileopenmulti;
 	protected JMenuItem openrecent;
 	protected JMenuItem fileexport;
-	protected JMenuItem fileofflinesave;
+	protected JMenuItem fileOfflineSaveAs;
 	protected JMenuItem fileimport;
 	protected JMenuItem fileimportdataonly;
 	protected JMenuItem bulkentry;
@@ -657,17 +657,8 @@ public class FileMenu extends JMenu {
 		  fileimportdataonly.setEnabled(App.isLoggedIn());
 		  fileexport.setEnabled(App.isLoggedIn());
 		  bulkentry.setEnabled(App.isLoggedIn());
-		  
-		  if(App.isLoggedIn())
-		  {
-			  save.setEnabled(App.isLoggedIn() && f instanceof SaveableDocument); 
-			  fileofflinesave.setVisible(false);
-		  }
-		  else
-		  {
-			  save.setVisible(false);
-			  fileofflinesave.setVisible(true);
-		  }
+    	  save.setEnabled(App.isLoggedIn() && f instanceof SaveableDocument); 
+
 
 	  }
 	  
@@ -677,13 +668,13 @@ public class FileMenu extends JMenu {
 			save = new JMenuItem(saveAction);
 			add(save);
 			
-			 fileofflinesave = Builder.makeMenuItem("menus.file.saveas");
+			 fileOfflineSaveAs = Builder.makeMenuItem("menus.file.saveas");
 				
 				if(f instanceof Editor)
 				{
-					fileofflinesave.setEnabled(true);
+					fileOfflineSaveAs.setEnabled(true);
 					
-					fileofflinesave.addActionListener(new ActionListener(){
+					fileOfflineSaveAs.addActionListener(new ActionListener(){
 
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
@@ -730,7 +721,7 @@ public class FileMenu extends JMenu {
 					
 				}
 				
-				add(fileofflinesave);
+				add(fileOfflineSaveAs);
 			
 			
 		}

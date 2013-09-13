@@ -33,6 +33,9 @@ public class Metadata {
 	/** The filename (mostly obselete, irrelevant for "web" files, etc */
 	public final static String FILENAME = "filename";
 	
+	/** If 'Tellervo-lite' is being used then this stores the format the file is saved as */
+	public final static String LEGACY_FORMAT = "format";
+	
 	/* Timestamps */
 	public final static String CREATED_TIMESTAMP = "createdTimestamp";
 	public final static String MODIFIED_TIMESTAMP = "modifiedTimestamp";

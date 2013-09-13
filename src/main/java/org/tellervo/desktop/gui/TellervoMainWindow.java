@@ -54,6 +54,7 @@ import javax.swing.JPanel;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
+import org.tellervo.desktop.editor.EditorLiteFileMenu;
 import org.tellervo.desktop.gui.menus.AdminMenu;
 import org.tellervo.desktop.gui.menus.EditMenu;
 import org.tellervo.desktop.gui.menus.FileMenu;
@@ -161,7 +162,18 @@ public class TellervoMainWindow extends JFrame {
 		// menubar
 		{
 			JMenuBar menubar = new JMenuBar();
-			menubar.add(new FileMenu(this));
+			
+			if(App.isLoggedIn())
+			{
+				menubar.add(new FileMenu(this));
+
+			}
+			else
+			{
+				menubar.add(new EditorLiteFileMenu(this));
+
+			}
+			
 			menubar.add(new EditMenu(this));
 			menubar.add(new AdminMenu(this));
 			//menubar.add(new OldCrossdateMenu());

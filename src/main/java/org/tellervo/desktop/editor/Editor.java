@@ -143,18 +143,20 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private JTable wjTable;
 	private JPanel wjPanel;
 	private EditorMeasurePanel measurePanel = null;
-	private TridasMetadataPanel metaView;
+	protected TridasMetadataPanel metaView;
 	private ComponentViewer componentsPanel = null;
 	private BargraphPanel bargraphPanel = null;
-	private SeriesDataMatrix dataView; // (a jpanel)
+	protected SeriesDataMatrix dataView; // (a jpanel)
 	protected GISPanel wwMapPanel;
-	private JTabbedPane tabbedPanel;
+	protected JTabbedPane tabbedPanel;
 	private JToolBar toolbar;
 	
 	// for menus we have to notify...
-	private EditorFileMenu editorFileMenu;
-	private EditorEditMenu editorEditMenu;
-	private GISViewMenu editorViewMenu;
+	protected EditorFileMenu editorFileMenu;
+	protected EditorEditMenu editorEditMenu;
+	protected GISViewMenu editorViewMenu;
+	
+	protected Action metadbAction ;
 	private Boolean otherElementsLoaded = false;
 	
 	// undo
@@ -162,7 +164,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private UndoableEditSupport undoSupport = new UndoableEditSupport();
 
 	// data
-	private Sample sample;
+	protected Sample sample;
 	
 	private int measuringPanelWidth = 340;
 	
@@ -465,7 +467,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				
 		// Admin Buttons
 		toolbar.addSeparator();
-		Action metadbAction = new MetadatabaseBrowserAction();
+		metadbAction = new MetadatabaseBrowserAction();
 		AbstractButton launchMetadb = new TitlelessButton(metadbAction);
 		toolbar.add(launchMetadb);
 		
@@ -720,23 +722,9 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		// set preferences
 		setUIFromPrefs();
 		
-		// menubar
-		// This must happen *after* initRolodex(), as dataview and elempanel come from it.
-		JMenuBar menubar = new JMenuBar();
-
-		menubar.add(new EditorFileMenu(this, sample));
-		editorEditMenu = new EditorEditMenu(sample, dataView, this);
-		menubar.add(editorEditMenu);
-		menubar.add(new AdminMenu(this));
-		menubar.add(this.editorViewMenu);
-		menubar.add(new EditorToolsMenu(sample, this));
-		menubar.add(new EditorGraphMenu(sample));
-		//menubar.add(new EditorSiteMenu(sample));
-		if (Platform.isMac())
-			menubar.add(new WindowMenu(this));
-		menubar.add(new HelpMenu());
-		setJMenuBar(menubar);
+		setupMenuBar();
 		
+
 		// init undo/redo
 		initUndoRedo();
 
@@ -774,8 +762,31 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		 }
 		 */
 
+		
 		// datatable gets initial focus, and select year 1001
 		dataView.requestFocus();
+	}
+	
+	protected void setupMenuBar()
+	{
+		// menubar
+		// This must happen *after* initRolodex(), as dataview and elempanel come from it.
+		JMenuBar menubar = new JMenuBar();
+
+		menubar.add(new EditorFileMenu(this, sample));
+		editorEditMenu = new EditorEditMenu(sample, dataView, this);
+		menubar.add(editorEditMenu);
+		menubar.add(new AdminMenu(this));
+		menubar.add(this.editorViewMenu);
+		menubar.add(new EditorToolsMenu(sample, this));
+		menubar.add(new EditorGraphMenu(sample));
+		//menubar.add(new EditorSiteMenu(sample));
+		if (Platform.isMac())
+			menubar.add(new WindowMenu(this));
+		menubar.add(new HelpMenu());
+		setJMenuBar(menubar);
+		
+
 	}
 	
 
