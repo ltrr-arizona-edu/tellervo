@@ -47,6 +47,7 @@ import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.util.SafeIntYear;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.io.util.UnitUtils;
 import org.tridas.schema.NormalTridasMeasuringMethod;
 import org.tridas.schema.NormalTridasUnit;
@@ -64,6 +65,8 @@ import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
 import org.tridas.schema.TridasVariable;
 import org.tridas.util.TridasObjectEx;
+
+import com.itextpdf.text.Meta;
 
 
 /**
@@ -326,8 +329,9 @@ public class EditorFactory {
 		String title = "["+I18n.getText("editor.newSeries")+ "]";
 
 		
-		if(!App.isLoggedIn())
+		if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
 		{
+			// If the webservice is disabled just do a Tellervo-lite new file interface
 			
 			// make a new measurement series
 			TridasMeasurementSeries series = new TridasMeasurementSeries();
@@ -439,7 +443,19 @@ public class EditorFactory {
 	 * @param container
 	 * @param series
 	 */
-	public static void newSeriesFromDerivedSeries(Container container, TridasDerivedSeries series, NormalTridasUnit unitsIfNotSpecified) {
+	public static void newSeriesFromDerivedSeries(Container container, TridasDerivedSeries series, NormalTridasUnit unitsIfNotSpecified) 
+	{
+		EditorFactory.newSeriesFromDerivedSeries(container, series, unitsIfNotSpecified, false);
+	}
+	
+	/**
+	 * Bit of a kludge.  This creates a new editor from a derivedSeries pretending
+	 * it's a raw measurement
+	 *  
+	 * @param container
+	 * @param series
+	 */
+	public static void newSeriesFromDerivedSeries(Container container, TridasDerivedSeries series, NormalTridasUnit unitsIfNotSpecified, Boolean useEditorLite) {
 		
 		Sample sample = createSampleFromSeries(series);
 		
@@ -449,8 +465,17 @@ public class EditorFactory {
 		TellervoWsiTridasElement.attachNewSample(sample);
 
 		// start the editor
-		Editor ed = new Editor(sample);
-		ed.setVisible(true);
+		if(useEditorLite)
+		{
+			EditorLite ed = new EditorLite(sample);
+			ed.setVisible(true);	
+		}
+		else
+		{
+			Editor ed = new Editor(sample);
+			ed.setVisible(true);
+		}
+		
 		
 	}
 	
@@ -630,7 +655,7 @@ public class EditorFactory {
 	 * @param container
 	 * @param inSeries
 	 */
-	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries inSeries, NormalTridasUnit unitsIfNotSpecfied) 
+	public static void newSeriesFromMeasurementSeries2(Container container, TridasMeasurementSeries inSeries, NormalTridasUnit unitsIfNotSpecfied) 
 	{
 		
 		// should we get this elsewhere?
@@ -666,8 +691,13 @@ public class EditorFactory {
 		
 		
 	}
+	
+	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries series, NormalTridasUnit unitsIfNotSpecfied) {
+		newSeriesFromMeasurementSeries(container, series, unitsIfNotSpecfied, false);
 		
-	public static void newSeriesFromMeasurementSeriesPrevious(Container container, TridasMeasurementSeries series, NormalTridasUnit unitsIfNotSpecfied) {
+	}
+	
+	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries series, NormalTridasUnit unitsIfNotSpecfied, Boolean useEditorLite) {
 		
 		log.debug("Creating new editor for series: "+series.getTitle());
 		
@@ -740,9 +770,17 @@ public class EditorFactory {
 		TellervoWsiTridasElement.attachNewSample(sample);
 
 		// start the editor
-		Editor ed = new Editor(sample);
 		
-		ed.setVisible(true);
+		if(useEditorLite)
+		{
+			EditorLite ed = new EditorLite(sample);
+			ed.setVisible(true);
+		}
+		else
+		{
+			Editor ed = new Editor(sample);
+			ed.setVisible(true);
+		}
 
 		if(container!=null) container.setCursor(Cursor.getDefaultCursor());
 	}

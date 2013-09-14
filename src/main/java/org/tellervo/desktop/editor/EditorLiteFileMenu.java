@@ -5,36 +5,34 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 
-import javax.swing.Action;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 
+import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.menus.FileMenu;
-import org.tellervo.desktop.gui.menus.actions.SaveAction;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.exceptions.IncompleteTridasDataException;
-import org.tridas.io.formats.tucson.TucsonWriter;
-import org.tridas.io.gui.model.FileListModel;
 import org.tridas.io.gui.model.TricycleModelLocator;
+import org.tridas.io.naming.AbstractNamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
+import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
@@ -44,6 +42,7 @@ import org.tridas.schema.TridasTridas;
 
 public class EditorLiteFileMenu extends FileMenu {
 
+	private static final Logger log = LoggerFactory.getLogger(EditorLiteFileMenu.class);
 
 	private static final long serialVersionUID = 1L;
 	
@@ -104,7 +103,7 @@ public class EditorLiteFileMenu extends FileMenu {
 				    if (returnVal == JFileChooser.APPROVE_OPTION) {
 				        File file = fc.getSelectedFile();
 				        ImportDataOnly importDialog = new ImportDataOnly(f, file, s);
-				        importDialog.openEditors();
+				        importDialog.openEditorLites();
 				        
 						// Remember this folder for next time
 						App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
@@ -121,7 +120,7 @@ public class EditorLiteFileMenu extends FileMenu {
 			fileimportdataonly.add(importitem);
 		}
 		add(fileimportdataonly);
-		
+		addSeparator();
 
 	}
 	
@@ -152,13 +151,12 @@ public class EditorLiteFileMenu extends FileMenu {
 	public void addSaveMenu() {
 		
 		JMenuItem save = Builder.makeMenuItem("menus.file.save");
-		
+		save.setIcon(Builder.getIcon("filesave.png", 22));
 		save.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-								
 				if(s.getMeta(Metadata.FILENAME)!=null && s.getMeta(Metadata.LEGACY_FORMAT)!=null)
 				{
 					saveToDisk(s.getMeta(Metadata.LEGACY_FORMAT).toString(), new File(s.getMeta(Metadata.FILENAME).toString()));
@@ -173,9 +171,14 @@ public class EditorLiteFileMenu extends FileMenu {
 		});
 		
 		add(save);
+
+		
+		
+		
 		
 		 fileOfflineSaveAs = Builder.makeMenuItem("menus.file.saveas");
-			
+		 fileOfflineSaveAs.setIcon(Builder.getIcon("saveas.png", 22));
+		 
 			if(f instanceof EditorLite)
 			{
 				fileOfflineSaveAs.setEnabled(true);
@@ -194,14 +197,16 @@ public class EditorLiteFileMenu extends FileMenu {
 			}
 			
 			add(fileOfflineSaveAs);
+
 		
+
+			if(parent instanceof EditorLite) addSeparator();
 		
 	}
 	
 	private void saveAs()
 	{
-		
-		
+
 		// custom jfilechooser
 		File file = null;
 		String format = null;
@@ -211,22 +216,31 @@ public class EditorLiteFileMenu extends FileMenu {
 		fc.setMultiSelectionEnabled(false);
 								
 		// Loop through formats and create filters for each
+		fc.setAcceptAllFileFilterUsed(false);
 		ArrayList<DendroFileFilter> filters = TridasIO.getFileFilterArray();
 		Collections.sort(filters);
 		for(DendroFileFilter filter : filters)
 		{
 			fc.addChoosableFileFilter(filter);
+			if(App.prefs.getPref(PrefKey.EXPORT_FORMAT, null)!=null)
+			{
+				if(App.prefs.getPref(PrefKey.EXPORT_FORMAT, null).equals(filter.getFormatName()))
+				{
+					fc.setFileFilter(filter);
+				}
+			}
 		}
+		
 
 		// Pick the last used directory by default
-		/*try{
-			File lastDirectory = TricycleModelLocator.getInstance().getLastDirectory();
+		try{
+			File lastDirectory = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_SAVE, null));
 			if(lastDirectory != null){
 				fc.setCurrentDirectory(lastDirectory);
 			}
 		} catch (Exception e)
 		{
-		}*/
+		}
 		
 		int retValue = fc.showSaveDialog(parent);
 		TricycleModelLocator.getInstance().setLastDirectory(fc.getCurrentDirectory());
@@ -240,7 +254,8 @@ public class EditorLiteFileMenu extends FileMenu {
 		if (file == null) {
 			return;
 		}
-							
+		
+								
 		saveToDisk(format, file);
 
 
@@ -250,17 +265,36 @@ public class EditorLiteFileMenu extends FileMenu {
 	private void saveToDisk(String format, File file)
 	{
 		AbstractDendroCollectionWriter writer = null;
+		
+		String filename = file.getAbsolutePath();
+		String ext = FilenameUtils.getExtension(filename);
+		String path = FilenameUtils.getFullPath(filename);
+		
+		
+		if(ext!=null)
+		{
+			filename = FilenameUtils.getBaseName(filename);
+		}
+		
+		log.debug("Saving legacy file to disk");
+		log.debug("Path: "+path);
+		log.debug("Filename: "+filename);
+		log.debug("Extension: "+ext);
+		
+		
 		try{
 			
 			writer = TridasIO.getFileWriter(format);
 			
 			// Create a new converter based on a TridasProject
-			NumericalNamingConvention nc = new NumericalNamingConvention(file.getName());
+			NumericalNamingConvention nc = new NumericalNamingConvention(filename);
+			nc.setAddSequenceNumbersForUniqueness(false);
 			writer.setNamingConvention(nc);
 
 			writer.load(getContainerForFile());
 			// Actually save file(s) to disk
-			writer.saveAllToDisk(file.getParentFile().getAbsolutePath());
+			writer.saveAllToDisk(path);
+			
 			
 		}
 		 catch (IncompleteTridasDataException e) {
@@ -274,37 +308,53 @@ public class EditorLiteFileMenu extends FileMenu {
 		}
 		
 		s.clearModified();
-		s.setMeta(Metadata.FILENAME, file.getName());
+		s.setMeta(Metadata.FILENAME, filename);
 		
 		if(parent instanceof EditorLite)
-		{
-			EditorLite editor = (EditorLite) parent;
-			
-			s.setMeta(Metadata.TITLE, editor.getMetadataPanel().txtTitle.getText());
-			
+		{			
+			s.setMeta(Metadata.TITLE, filename);
+			s.setMeta(Metadata.FILENAME, file);
+			s.setMeta(Metadata.LEGACY_FORMAT, format);
 		}
 		
 		s.fireSampleMetadataChanged();
+		
+		
+		App.prefs.setPref(PrefKey.EXPORT_FORMAT, format);
+		App.prefs.setPref(PrefKey.FOLDER_LAST_SAVE, path);
 
 	}
 	
 	private TridasTridas getContainerForFile()
 	{
-		if((f instanceof EditorLite))
+		EditorLite ed;
+		if((parent instanceof EditorLite))
 		{
-			
+			ed = (EditorLite) parent;
 		}
 		else
 		{
 			return null;
 		}
 		
-		EditorLite ed = (EditorLite) f;
 		TridasMeasurementSeries series = (TridasMeasurementSeries) ed.getSample().getSeries();
+		series.setTitle(ed.getMetadataPanel().txtTitle.getText());
+		series.setDendrochronologist(ed.getMetadataPanel().txtAuthor.getText());
+		TridasGenericField gf = new TridasGenericField();
+		gf.setName("keycode");
+		gf.setType("xs:string");
+		gf.setValue(ed.getMetadataPanel().txtKeycode.getText());
+		series.getGenericFields().add(gf);
+		
 		TridasRadius radius = new TridasRadius();
+		
 		TridasSample sample = new TridasSample();
+		
 		TridasElement element = new TridasElement();
+		element.setTaxon(ITRDBTaxonConverter.getControlledVocFromCode(ed.getMetadataPanel().txtSpecies.getText()));
+		
 		TridasObject object = new TridasObject();
+		object.setTitle(ed.getMetadataPanel().txtTitle.getText());
 		
 		TridasProject proj = new TridasProject();
 		

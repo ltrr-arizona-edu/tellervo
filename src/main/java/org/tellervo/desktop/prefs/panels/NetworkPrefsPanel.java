@@ -74,6 +74,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	private JCheckBox chkDisableWS;
 	private JButton btnForceDictionaryReload;
 	private String originalURL;
+	private Boolean originalOfflineStatus;
 	private JPanel wsPanel;
 	private JPanel proxyPanel;
 	private MigLayout layout;
@@ -106,12 +107,18 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				pingComponents();
+				
+				if(chkDisableWS.isSelected() && !App.prefs.getBooleanPref(PrefKey.WEBSERVICE_WARNED_OFFLINE_LIMITED, false))
+				{
+					Alert.message("Warning", "Please note that working offline means that the majority of Tellervo " +
+			                 "functions are disabled and Tellervo becomes a basic data collection tool. Access to " +
+			                 "a Tellervo server is necessary to take advantage of all features.");
+					App.prefs.setBooleanPref(PrefKey.WEBSERVICE_WARNED_OFFLINE_LIMITED, true);
+				}
+				
 			}
 			
 		});
-		
-		// Hide the offline mode until it is useful
-		chkDisableWS.setVisible(false);
 		
 		JLabel lblWebservice = new JLabel("URL:");
 		wsPanel.add(lblWebservice, "cell 0 1,alignx trailing,aligny center");
@@ -247,6 +254,8 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	{
 		cboWSURL.setEnabled(!chkDisableWS.isSelected());
 		btnForceDictionaryReload.setEnabled(!chkDisableWS.isSelected());
+		btnTest.setEnabled(!chkDisableWS.isSelected());
+		btnClearHistory.setEnabled(!chkDisableWS.isSelected());
 	}
 	
 	public Boolean testWSConnection(Boolean feedbackOnSuccess)
@@ -303,6 +312,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		
 		try{
 			originalURL = cboWSURL.getSelectedItem().toString();
+			originalOfflineStatus = chkDisableWS.isSelected();
 		} catch (Exception e)
 		{
 			
@@ -324,16 +334,20 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	{
 		try{
 			String newURL = null;
+			Boolean newOfflineStatus = null;
+			
 			try{
 				newURL = cboWSURL.getSelectedItem().toString();
+				newOfflineStatus = chkDisableWS.isSelected();
 			} catch (Exception e)
 			{
 				
 			}
 			
-			if(!originalURL.equalsIgnoreCase(newURL))
+			if(!originalURL.equalsIgnoreCase(newURL) || !originalOfflineStatus.equals(newOfflineStatus))
 			{
 				originalURL = newURL;
+				originalOfflineStatus = newOfflineStatus;
 				return true;
 			}
 		}

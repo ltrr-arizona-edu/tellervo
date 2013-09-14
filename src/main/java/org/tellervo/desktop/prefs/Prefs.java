@@ -166,6 +166,8 @@ public class Prefs extends AbstractSubsystem {
 		WEBSERVICE_URL("tellervo.webservice.url"),
 		WEBSERVICE_URL_OTHERS("tellervo.webservice.url.others"),
 		WEBSERVICE_DISABLED("tellervo.webservice.disable"),
+		WEBSERVICE_WARNED_OFFLINE_LIMITED("tellervo.webservice.offlinewarning"),
+		
 		PROXY_TYPE("tellervo.proxy.type"),
 		PROXY_PORT_HTTP("tellervo.proxy.http_port"),
 		PROXY_PORT_HTTPS("tellervo.proxy.https_port"),

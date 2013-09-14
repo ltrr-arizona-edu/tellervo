@@ -181,17 +181,25 @@ public class ImportDataOnly extends Object {
 	
 	public void openEditors()
 	{
+		openEditors(false);
+	}
+	
+	public void openEditorLites()
+	{
+		openEditors(true);
+	}
+	
+	private void openEditors(Boolean useEditorLite)
+	{
 		// Warn if project contains derivedSeries
 		if(reader.getProjects()[0].isSetDerivedSeries())
 		{
 			for(TridasDerivedSeries series : reader.getProjects()[0].getDerivedSeries())	
 			{
-				EditorFactory.newSeriesFromDerivedSeries(parent, series, unitsIfNotSpecified);
+				EditorFactory.newSeriesFromDerivedSeries(parent, series, unitsIfNotSpecified, useEditorLite);
 			}
 		}
 
-
-		
 		for(TridasMeasurementSeries series : seriesList)
 		{		
 			// Check if series contain data of unknown or unsupported variables
@@ -214,7 +222,7 @@ public class ImportDataOnly extends Object {
 			TridasMeasurementSeries freshSeries = (TridasMeasurementSeries) series.clone();
 			
 			
-			EditorFactory.newSeriesFromMeasurementSeries(null, freshSeries, unitsIfNotSpecified);
+			EditorFactory.newSeriesFromMeasurementSeries(null, freshSeries, unitsIfNotSpecified, useEditorLite);
 		}
 	}
 }

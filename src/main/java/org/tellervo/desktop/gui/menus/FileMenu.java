@@ -67,11 +67,9 @@ import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.util.Overwrite;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
-import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
@@ -81,10 +79,10 @@ import org.tridas.io.formats.tucson.TucsonWriter;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
-import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasTridas;
 
 
@@ -115,12 +113,9 @@ public class FileMenu extends JMenu {
 		this.f = f;
 
 		addNewOpenMenus();
-			addSeparator();
 		addIOMenus();
-			addSeparator();
 		addCloseMenu();
 		addSaveMenu();
-			addSeparator();
 		addPrintingMenus();
 		addExitMenu();
 		
@@ -233,6 +228,8 @@ public class FileMenu extends JMenu {
 		
 		bulkentry = Builder.makeMVCMenuItem("menus.file.bulkimport", BulkImportController.DISPLAY_BULK_IMPORT, "bulkDataEntry.png");
 		add(bulkentry);
+		addSeparator();
+
 	}
 	
 	public void addExportMenus(){
@@ -259,14 +256,14 @@ public class FileMenu extends JMenu {
 		
 		openrecent = OpenRecent.makeOpenRecentMenu();
 		add(openrecent);
-
+		addSeparator();
 	}
 	
 
 
 
 	public void addSaveAsMenu() {
-		JMenuItem saveAs = Builder.makeMenuItem("menus.file.saveas");
+	/*	JMenuItem saveAs = Builder.makeMenuItem("menus.file.saveas");
 
 		if (f instanceof SaveableDocument
 				&& ((SaveableDocument) f).isNameChangeable()) {
@@ -300,12 +297,10 @@ public class FileMenu extends JMenu {
 		}
 
 		add(saveAs);
-		
-	
-		
-		
+		*/		
 	}
 
+	
 	public void addCloseMenu() {
 		JMenuItem close = Builder.makeMenuItem("menus.file.close", true, "fileclose.png");
 		close.addActionListener(new ActionListener() {
@@ -351,7 +346,7 @@ public class FileMenu extends JMenu {
 	}
 	public void addExitMenu() {
 		
-		addSeparator();
+		
 
 		logoff = Builder.makeMenuItem("menus.file.logoff", true, "logoff.png");
 		add(logoff);
@@ -667,62 +662,8 @@ public class FileMenu extends JMenu {
 			Action saveAction = new SaveAction(f);
 			save = new JMenuItem(saveAction);
 			add(save);
-			
-			 fileOfflineSaveAs = Builder.makeMenuItem("menus.file.saveas");
-				
-				if(f instanceof Editor)
-				{
-					fileOfflineSaveAs.setEnabled(true);
-					
-					fileOfflineSaveAs.addActionListener(new ActionListener(){
-
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							Editor ed = (Editor) f;
-							
-							TridasMeasurementSeries series = (TridasMeasurementSeries) ed.getSample().getSeries();
-							TridasRadius radius = new TridasRadius();
-							TridasSample sample = new TridasSample();
-							TridasElement element = new TridasElement();
-							TridasObject object = new TridasObject();
-							
-							TridasProject proj = new TridasProject();
-							
-							radius.getMeasurementSeries().add(series);
-							sample.getRadiuses().add(radius);
-							element.getSamples().add(sample);
-							object.getElements().add(element);
-							proj.getObjects().add(object);
-							
-							
-							// Extract the TridasProject
-							TridasTridas container = new TridasTridas();
-							container.getProjects().add(proj);
-							
-							// Create a new converter based on a TridasProject
-							TucsonWriter tucsonwriter = new TucsonWriter();
-							NumericalNamingConvention nc = new NumericalNamingConvention("test");
-							tucsonwriter.setNamingConvention(nc);
-							try {
-								tucsonwriter.load(container);
-							} catch (IncompleteTridasDataException e) {
-								e.printStackTrace();
-							} catch (ConversionWarningException e) {
-							} 
-							
-							// Actually save file(s) to disk
-							tucsonwriter.saveAllToDisk("/tmp/");
-							
-						}
-						
-						
-					});
-					
-					
-				}
-				
-				add(fileOfflineSaveAs);
-			
+	
+			addSeparator();
 			
 		}
 }

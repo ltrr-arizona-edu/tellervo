@@ -61,14 +61,14 @@ import org.tellervo.desktop.gui.menus.FileMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.platform.Platform;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ListUtil;
 import org.tellervo.desktop.versioning.Build;
 import org.tellervo.desktop.versioning.UpdateChecker;
-
+import org.tellervo.desktop.prefs.*;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 public class TellervoMainWindow extends JFrame {
 
@@ -163,14 +163,13 @@ public class TellervoMainWindow extends JFrame {
 		{
 			JMenuBar menubar = new JMenuBar();
 			
-			if(App.isLoggedIn())
+			if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
 			{
-				menubar.add(new FileMenu(this));
-
+				menubar.add(new EditorLiteFileMenu(this));
 			}
 			else
 			{
-				menubar.add(new EditorLiteFileMenu(this));
+				menubar.add(new FileMenu(this));
 
 			}
 			
@@ -258,12 +257,7 @@ public class TellervoMainWindow extends JFrame {
 		// show
 		setVisible(true);
 		
-		// Check whether updates are available
-		if(App.prefs.getBooleanPref(PrefKey.CHECK_FOR_UPDATES, true))
-		{
-			UpdateChecker.doUpdateCheck(false);
-		}
-		
+
 		
 		
 	}

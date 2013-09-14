@@ -35,6 +35,7 @@ public class Metadata {
 	
 	/** If 'Tellervo-lite' is being used then this stores the format the file is saved as */
 	public final static String LEGACY_FORMAT = "format";
+	public final static String KEYCODE = "keycode";
 	
 	/* Timestamps */
 	public final static String CREATED_TIMESTAMP = "createdTimestamp";

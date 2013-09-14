@@ -70,6 +70,7 @@ import org.tellervo.desktop.wsi.tellervo.resources.AuthenticateResource;
 import org.tridas.io.defaults.values.GenericDefaultValue;
 
 import javax.swing.JComboBox;
+import net.miginfocom.swing.MigLayout;
 
 
 public class LoginDialog extends JDialog {
@@ -198,7 +199,6 @@ public class LoginDialog extends JDialog {
 		{
 			final JDialog glue = this;
 			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
 				loginButton = new JButton(I18n.getText("login"));
@@ -207,7 +207,8 @@ public class LoginDialog extends JDialog {
 						performAuthentication(0);
 					}
 				});
-				buttonPane.add(loginButton);
+				buttonPane.setLayout(new MigLayout("", "[120px][grow][][]", "[25px]"));
+				buttonPane.add(loginButton, "cell 2 0,alignx left,aligny top");
 				getRootPane().setDefaultButton(loginButton);
 			}
 			{
@@ -217,7 +218,7 @@ public class LoginDialog extends JDialog {
 						glue.dispose();
 					}
 				});
-				buttonPane.add(cancelButton);
+				buttonPane.add(cancelButton, "cell 3 0,alignx left,aligny top");
 			}
 		}
 		{

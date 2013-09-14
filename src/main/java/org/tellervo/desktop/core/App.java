@@ -54,6 +54,7 @@ import org.tellervo.desktop.setupwizard.SetupWizard;
 import org.tellervo.desktop.tridasv2.TridasObjectList;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.versioning.UpdateChecker;
 import org.tellervo.desktop.wsi.tellervo.TellervoWsiAccessor;
 import org.tellervo.schema.WSIConfiguration;
 import org.tellervo.schema.WSISecurityUser;
@@ -131,7 +132,7 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
 	if (initialized) throw new IllegalStateException("AppContext already initialized.");
 	
     if (meter != null) {
-      meter.setMaximum(10);
+      meter.setMaximum(11);
       meter.setProgress(0);
     }
 
@@ -334,9 +335,21 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
         }
     }
     
-    // we're done here!
+	// Check whether updates are available
     if (meter != null) {
     	meter.setProgress(10);
+    	meter.setNote("Checking for updates...");
+    }
+	if(App.prefs.getBooleanPref(PrefKey.CHECK_FOR_UPDATES, true))
+	{
+		UpdateChecker.doUpdateCheck(false);
+	}
+	
+    
+    
+    // we're done here!
+    if (meter != null) {
+    	meter.setProgress(11);
     	meter.setNote("");
     }
 

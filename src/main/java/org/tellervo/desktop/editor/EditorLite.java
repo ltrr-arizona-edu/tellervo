@@ -8,6 +8,7 @@ import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.ui.Builder;
 
 public class EditorLite extends Editor {
 
@@ -33,7 +34,7 @@ public class EditorLite extends Editor {
 		
 		basicMeta = new BasicMetadataPanel();
 		
-		tabbedPanel.add(basicMeta, "Basic metadata");
+		tabbedPanel.addTab("Basic metadata", Builder.getIcon("database.png", 16), basicMeta);
 		
 		
 	}
