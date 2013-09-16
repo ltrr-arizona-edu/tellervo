@@ -29,6 +29,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.swing.BoxLayout;
@@ -49,6 +51,7 @@ import javax.xml.bind.util.ValidationEventCollector;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
+import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Element;
@@ -121,9 +124,77 @@ public class GraphElementsPanel extends JPanel {
 	    JPanel addButtonContainer = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 	    add(addButtonContainer, BorderLayout.CENTER);
 	    
-	    addButton = new JButton("Add series...");
-	    addButtonContainer.add(addButton);
-	    addButton.addActionListener(new ActionListener() {
+	    JButton btnAddFromFile = new JButton("Add from file...");
+	    addButtonContainer.add(btnAddFromFile);
+	    final Frame glue = gwindow;
+	    
+	    btnAddFromFile.addActionListener(new ActionListener() {
+	    	public void actionPerformed(ActionEvent ae) {
+
+	    		// custom jfilechooser
+	    		File file = null;
+	    		String format = null;
+	    		JFileChooser fc = new JFileChooser();
+	    	
+	    		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+	    		fc.setMultiSelectionEnabled(false);
+	    								
+	    		// Loop through formats and create filters for each
+	    		fc.setAcceptAllFileFilterUsed(false);
+	    		ArrayList<DendroFileFilter> filters = TridasIO.getFileFilterArray();
+	    		Collections.sort(filters);
+	    		for(DendroFileFilter filter : filters)
+	    		{
+	    			fc.addChoosableFileFilter(filter);
+	    			if(App.prefs.getPref(PrefKey.IMPORT_FORMAT, null)!=null)
+	    			{
+	    				if(App.prefs.getPref(PrefKey.IMPORT_FORMAT, null).equals(filter.getFormatName()))
+	    				{
+	    					fc.setFileFilter(filter);
+	    				}
+	    			}
+	    		}
+	    		
+
+	    		// Pick the last used directory by default
+	    		try{
+	    			File lastDirectory = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_READ, null));
+	    			if(lastDirectory != null){
+	    				fc.setCurrentDirectory(lastDirectory);
+	    			}
+	    		} catch (Exception e)
+	    		{
+	    		}
+			    
+	    		Integer retValue = fc.showOpenDialog(glue);
+	    		
+	    		if (retValue == JFileChooser.APPROVE_OPTION) {
+	    			file = fc.getSelectedFile();
+	    			String formatDesc = fc.getFileFilter().getDescription();
+	    			try{
+	    				format = formatDesc.substring(0, formatDesc.indexOf("(")).trim();
+		    			ImportDataOnly importDO = new ImportDataOnly(glue, file, format);
+		    			for(TridasMeasurementSeries series : importDO.getSeries())
+		    			{
+		    				Sample sample = new Sample(series);
+		    				
+		    				sample.setMeta("filename", series.getTitle());
+		    				sample.setMeta("title", series.getTitle());
+		    				
+		    				window.add(sample);
+		    			}
+		    			
+	    			} catch (Exception e){}
+	    		}
+	    	}
+
+				
+			});
+	    		
+	    
+	    btnAddFromDB = new JButton("Add from database...");
+	    addButtonContainer.add(btnAddFromDB);
+	    btnAddFromDB.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent ae) {
 	    		Window ancestor = SwingUtilities.getWindowAncestor(GraphElementsPanel.this);
 	    		
@@ -198,7 +269,7 @@ public class GraphElementsPanel extends JPanel {
 	private DefaultListModel listmodel;
 	private JList list;
 	private GraphWindow window;
-	private JButton addButton;
+	private JButton btnAddFromDB;
 	private JButton removeButton;
 	private JButton btnAddFile;
 	private ColorComboBox colorselect;

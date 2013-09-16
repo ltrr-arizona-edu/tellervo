@@ -55,6 +55,10 @@ public class ImportDataOnly extends Object {
 		
 	}
 	
+	public ArrayList<TridasMeasurementSeries> getSeries()
+	{
+		return seriesList;
+	}
 	
 	private void parseFile(File file, String fileType)
 	{
