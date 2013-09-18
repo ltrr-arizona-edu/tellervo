@@ -114,9 +114,9 @@ public class FileMenu extends JMenu {
 
 		addNewOpenMenus();
 		addIOMenus();
-		addCloseMenu();
 		addSaveMenu();
 		addPrintingMenus();
+		addCloseMenu();
 		addExitMenu();
 		
 		// Link to the app model so we can enable/disable depending on network status
@@ -315,6 +315,7 @@ public class FileMenu extends JMenu {
 			}
 		});
 		add(close);
+		addSeparator();
 	}
 
 	// add:

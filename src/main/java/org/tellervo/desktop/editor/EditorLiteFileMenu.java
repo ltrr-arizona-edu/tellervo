@@ -28,7 +28,6 @@ import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.exceptions.IncompleteTridasDataException;
 import org.tridas.io.gui.model.TricycleModelLocator;
-import org.tridas.io.naming.AbstractNamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.schema.TridasElement;
@@ -200,7 +199,7 @@ public class EditorLiteFileMenu extends FileMenu {
 
 		
 
-			if(parent instanceof EditorLite) addSeparator();
+			addSeparator();
 		
 	}
 	
