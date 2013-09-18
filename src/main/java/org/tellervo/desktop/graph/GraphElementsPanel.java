@@ -141,7 +141,7 @@ public class GraphElementsPanel extends JPanel {
 	    								
 	    		// Loop through formats and create filters for each
 	    		fc.setAcceptAllFileFilterUsed(false);
-	    		ArrayList<DendroFileFilter> filters = TridasIO.getFileFilterArray();
+	    		ArrayList<DendroFileFilter> filters = TridasIO.getFileReadingFilterArray();
 	    		Collections.sort(filters);
 	    		for(DendroFileFilter filter : filters)
 	    		{

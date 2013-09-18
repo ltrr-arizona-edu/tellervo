@@ -217,10 +217,16 @@ public class EditorLiteFileMenu extends FileMenu {
 								
 		// Loop through formats and create filters for each
 		fc.setAcceptAllFileFilterUsed(false);
-		ArrayList<DendroFileFilter> filters = TridasIO.getFileFilterArray();
+		ArrayList<DendroFileFilter> filters = TridasIO.getFileWritingFilterArray();
 		Collections.sort(filters);
 		for(DendroFileFilter filter : filters)
 		{
+			// No point trying to save to TRiDaS as there is all the metadata missing
+			if(filter.getFormatName().startsWith("TRiDaS")) continue;
+			// No point trying to save unstacked formats as there is only ever one series
+			if(filter.getFormatName().endsWith("(unstacked)")) continue;
+
+			
 			fc.addChoosableFileFilter(filter);
 			if(App.prefs.getPref(PrefKey.EXPORT_FORMAT, null)!=null)
 			{
@@ -291,7 +297,9 @@ public class EditorLiteFileMenu extends FileMenu {
 			nc.setAddSequenceNumbersForUniqueness(false);
 			writer.setNamingConvention(nc);
 
-			writer.load(getContainerForFile());
+			TridasTridas container = (TridasTridas) getContainerForFile().clone();
+			
+			writer.load(container);
 			// Actually save file(s) to disk
 			writer.saveAllToDisk(path);
 			
@@ -338,6 +346,7 @@ public class EditorLiteFileMenu extends FileMenu {
 		}
 		
 		TridasMeasurementSeries series = (TridasMeasurementSeries) ed.getSample().getSeries();
+		
 		series.setTitle(ed.getMetadataPanel().txtTitle.getText());
 		series.setDendrochronologist(ed.getMetadataPanel().txtAuthor.getText());
 		TridasGenericField gf = new TridasGenericField();
