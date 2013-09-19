@@ -38,6 +38,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.Help;
 import org.tellervo.desktop.platform.Platform;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.setupwizard.SetupWizard;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.TellervoAction;
@@ -73,8 +74,7 @@ public class HelpMenu extends JMenu {
 		if (!Platform.isMac()) {
 		    addSeparator();
 		    addAboutMenu();
-		}
-		
+		}		
     }
 
     
@@ -277,11 +277,12 @@ public class HelpMenu extends JMenu {
     	//add(Builder.makeMenuItem("menus.help.error_log", "org.tellervo.desktop.gui.Log4JViewer.showLogViewer()", "log.png"));
         add(Builder.makeMenuItem("menus.help.error_ws", "org.tellervo.desktop.wsi.TransactionDebug.forceGenerateWSBug()", "bugreport.png"));
 
-        debugMenu = Builder.makeMenuItem("menus.help.xml_debug", "org.tellervo.desktop.gui.XMLDebugView.showDialog()", "networksettings.png");
-        add(debugMenu);
-        
-
-        add(Builder.makeMenuItem("menus.help.showmvcmonitor", "com.dmurph.mvc.MVC.showEventMonitor()"));
+        if(!App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
+        {
+        	debugMenu = Builder.makeMenuItem("menus.help.xml_debug", "org.tellervo.desktop.gui.XMLDebugView.showDialog()", "networksettings.png");
+        	add(debugMenu);
+        	add(Builder.makeMenuItem("menus.help.showmvcmonitor", "com.dmurph.mvc.MVC.showEventMonitor()"));
+        }
         
         //add(Builder.makeMenuItem("debug_instantiator", "org.tellervo.desktop.gui.DebugInstantiator.showMe()"));
         //add(Builder.makeMenuItem("debug_instantiator", "org.tellervo.desktop.gui.newui.NewJFrame1.main()"));

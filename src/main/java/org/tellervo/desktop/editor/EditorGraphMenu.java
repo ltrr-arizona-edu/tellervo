@@ -22,6 +22,7 @@ package org.tellervo.desktop.editor;
 import gov.noaa.ncdc.paleo.fhchart.gui.PlotWindow;
 
 import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -42,6 +43,7 @@ import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
 import org.tellervo.desktop.io.Metadata;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
@@ -87,10 +89,11 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 	private JMenuItem plot, plotElements, plotAll, bargraphAll, fhxPlot;
 
 	private Sample sample;
-
-	EditorGraphMenu(Sample s) {
+	private static Window parent;
+	
+	EditorGraphMenu(Window parent, Sample s) {
 		super(I18n.getText("menus.graph")); // i18n bypasses mnemonic here!
-		
+		this.parent = parent;
 		this.sample = s;
 
 		sample.addSampleListener(this);
@@ -156,6 +159,11 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 			
 		});
 		add(fhxPlot);
+		
+		if(!App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
+		{
+			fhxPlot.setEnabled(false);
+		}
 		
 
 
@@ -228,7 +236,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 					s = e.load();
 					
 				} catch (IOException ioe) {
-					Alert.error("Error Loading Sample",
+					Alert.error(parent, "Error Loading Sample",
 							"Can't open this file: " + ioe.getMessage());
 					continue;
 				}
@@ -424,7 +432,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 				}
 				else
 				{
-					Alert.error("FHX Conversion", "Error converting series to FHX format");
+					Alert.error(parent, "FHX Conversion", "Error converting series to FHX format");
 					
 				}
 				

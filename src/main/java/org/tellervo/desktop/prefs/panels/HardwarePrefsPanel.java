@@ -285,7 +285,19 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		add(panelBarcode, "cell 0 1,grow");
 		panelBarcode.setLayout(new MigLayout("", "[]", "[]"));
 		
-		chkDisableBarcodes = new JCheckBox("Disable support for barcode scanner");
+		chkDisableBarcodes = new JCheckBox();
+		
+		if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
+		{
+			chkDisableBarcodes.setText("Disable support for barcode scanner (database connection required)");
+			chkDisableBarcodes.setEnabled(false);
+		}
+		else
+		{
+			chkDisableBarcodes.setText("Disable support for barcode scanner");
+			chkDisableBarcodes.setEnabled(true);
+		}
+		
 		panelBarcode.add(chkDisableBarcodes, "cell 0 0");
 		new CheckBoxWrapper(chkDisableBarcodes, PrefKey.BARCODES_DISABLED, false );
 		

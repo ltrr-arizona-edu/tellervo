@@ -922,7 +922,9 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 	 * @return true if counts exist
 	 */
 	public boolean hasCount() {
-		return ringwidths.hasCount();
+		Boolean cnt = ringwidths.hasCount();
+		log.debug("Sample has count? "+cnt);
+		return cnt;
 	}
 
 	/**

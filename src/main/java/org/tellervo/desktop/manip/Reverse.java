@@ -27,6 +27,10 @@ import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.CannotRedoException;
 
+import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.editor.EditorGraphMenu;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.I18n;
 
@@ -46,19 +50,31 @@ import org.tellervo.desktop.ui.I18n;
 
 @SuppressWarnings("serial")
 public class Reverse extends AbstractUndoableEdit {
+	private static final Logger log = LoggerFactory.getLogger(Reverse.class);
 
     private static void reverseSample(Sample s) {
 	// reverse stuff
 	Collections.reverse(s.getRingWidthData());
 	if (s.hasCount())
+		try{
 	    Collections.reverse(s.getCount());
+		} catch (UnsupportedOperationException e)
+		{
+			log.debug("Problem reversing counts" + e.getLocalizedMessage());
+		}
 	if (s.hasWeiserjahre()) {
+		try{
 	    Collections.reverse(s.getWJIncr());
 	    Collections.reverse(s.getWJDecr());
+		} catch (UnsupportedOperationException e)
+		{
+			log.debug("Problem reversing weiserjahre values" + e.getLocalizedMessage());
+		}
 	}
 
 	// fire events
 	s.fireSampleDataChanged();
+	
     }
 
     public static AbstractUndoableEdit reverse(Sample s) {

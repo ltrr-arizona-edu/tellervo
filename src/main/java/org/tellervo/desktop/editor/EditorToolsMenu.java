@@ -76,7 +76,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	
 	private JMenu crossMenu;
 	
-	public EditorToolsMenu(Sample s, Editor e) {
+	public EditorToolsMenu(Editor e, Sample s) {
 		super(I18n.getText("menus.tools")); 
 
 		this.sample = s;

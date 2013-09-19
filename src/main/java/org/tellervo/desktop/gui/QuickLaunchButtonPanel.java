@@ -10,9 +10,12 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
+import org.tellervo.desktop.editor.EditorLiteFileMenu;
 import org.tellervo.desktop.gui.menus.AdminMenu;
 import org.tellervo.desktop.gui.menus.FileMenu;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import java.awt.Font;
@@ -33,6 +36,11 @@ public class QuickLaunchButtonPanel extends JPanel implements ActionListener, Mo
 
 	private static final long serialVersionUID = 1L;
 
+	private JButton btnNewSeries;
+	private JButton btnOpenSeries;
+	private JButton btnMetadb;
+	private JButton btnMap;
+	
 	/**
 	 * Create the panel.
 	 */
@@ -48,13 +56,30 @@ public class QuickLaunchButtonPanel extends JPanel implements ActionListener, Mo
 		panel.setForeground(Color.WHITE);
 		panel.setBorder(new TitledBorder(new LineBorder(new Color(128, 128, 128), 1, true), "Quick link tasks", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(255, 255, 255)));
 		add(panel, "cell 0 0,growx,aligny top");
-		panel.setLayout(new MigLayout("", "[fill]", "[top][top][top][]"));
+		panel.setLayout(new MigLayout("hidemode 3", "[fill]", "[top][top][top][]"));
 			
-		panel.add(getQuickLinkButton(I18n.getText("workspace.createNewSeries"), "newSeries", "filenew.png"), "cell 0 0,growx");
-		panel.add(getQuickLinkButton(I18n.getText("workspace.openExistingSeries"), "openSeries", "fileopen.png"), "cell 0 1,growx");
-		panel.add(getQuickLinkButton("Browse metadatabase", "metadatabase", "database.png"), "cell 0 2,growx");		
-		panel.add(getQuickLinkButton("Browse map", "map", "globe.png"), "cell 0 3,growx");
+		btnNewSeries = getQuickLinkButton(I18n.getText("workspace.createNewSeries"), "newSeries", "filenew.png");
+		btnOpenSeries = getQuickLinkButton(I18n.getText("workspace.openExistingSeries"), "openSeries", "fileopen.png");
+		btnMetadb = getQuickLinkButton("Browse metadatabase", "metadatabase", "database.png");
+		btnMap = getQuickLinkButton("Browse map", "map", "globe.png");
+		
+		panel.add(btnNewSeries,  "cell 0 0,growx");
+		panel.add(btnOpenSeries, "cell 0 1,growx");
+		panel.add(btnMetadb, "cell 0 2,growx");		
+		panel.add(btnMap, "cell 0 3,growx");
+		
+		
+		if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
+		{
+			setBounds(10, 10, 470, 230);
+			btnMetadb.setVisible(false);
+			btnMap.setVisible(false);
 
+		}
+		else
+		{
+			setBounds(10, 10, 470, 330);
+		}
 	}
 	
 	private JButton getQuickLinkButton(String text, String action, String icon)
@@ -82,7 +107,14 @@ public class QuickLaunchButtonPanel extends JPanel implements ActionListener, Mo
 		}
 		else if(evt.getActionCommand().equals("openSeries"))
 		{
-			FileMenu.opendb();
+			if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
+			{
+				EditorLiteFileMenu.openLegacyFile(App.mainWindow);
+			}
+			else
+			{
+				FileMenu.opendb();
+			}
 		}
 		else if(evt.getActionCommand().equals("importSeries"))
 		{

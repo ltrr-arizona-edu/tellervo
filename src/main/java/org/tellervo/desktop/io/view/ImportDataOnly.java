@@ -6,12 +6,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
 
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.ui.Alert;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.InvalidDendroFileException;
@@ -24,10 +24,9 @@ import org.tridas.schema.TridasValues;
 
 public class ImportDataOnly extends Object {
 
-	private static final long serialVersionUID = 1L;
 	private final Window parent;
 	private Boolean warnedAboutUnspecifiedVar = false;
-	private ArrayList<TridasMeasurementSeries> seriesList;
+	private ArrayList<ITridasSeries> seriesList = new ArrayList<ITridasSeries>();
 	private NormalTridasUnit unitsIfNotSpecified = NormalTridasUnit.MICROMETRES;
 	private AbstractDendroFileReader reader;
 	
@@ -55,7 +54,7 @@ public class ImportDataOnly extends Object {
 		
 	}
 	
-	public ArrayList<TridasMeasurementSeries> getSeries()
+	public ArrayList<ITridasSeries> getSeries()
 	{
 		return seriesList;
 	}
@@ -69,7 +68,7 @@ public class ImportDataOnly extends Object {
 		reader = TridasIO.getFileReader(fileType);
 		if(reader==null) 
 		{
-			Alert.error("Error", "Unknown file type");
+			Alert.error(parent, "Error", "Unknown file type");
 			return;
 		}
 		
@@ -80,15 +79,19 @@ public class ImportDataOnly extends Object {
 			Alert.errorLoading(file.getAbsolutePath(), e);
 			return;
 		} catch (InvalidDendroFileException e) {
-			Alert.error("Error", "Invalid dendro file");
+			Alert.error(parent, "Error", "The selected file is not a valid "+fileType+ " file.\nPlease check and try again");
 			return;
 		}
 		catch(NullPointerException e)
 		{
-			Alert.error("Invalid File", e.getLocalizedMessage());
+			Alert.error(parent, "Invalid File", e.getLocalizedMessage());
 		}
 					
-		seriesList = TridasUtils.getMeasurementSeriesFromTridasProject(reader.getProjects()[0]);
+		ArrayList<TridasMeasurementSeries> mseriesList = TridasUtils.getMeasurementSeriesFromTridasContainer(reader.getTridasContainer());
+		ArrayList<TridasDerivedSeries> dseriesList = TridasUtils.getDerivedSeriesFromTridasContainer(reader.getTridasContainer());
+
+		seriesList.addAll(mseriesList);
+		seriesList.addAll(dseriesList);
 		
 		Integer count = reader.getProjects()[0].getDerivedSeries().size() + seriesList.size();
 		
@@ -107,7 +110,7 @@ public class ImportDataOnly extends Object {
 		}
 		
 		Boolean unitsSet = false;
-		for(TridasMeasurementSeries ser : seriesList)
+		for(ITridasSeries ser : seriesList)
 		{
 			for(TridasValues  tv : ser.getValues())
 			{	
@@ -177,7 +180,7 @@ public class ImportDataOnly extends Object {
 			}		
 			else
 			{
-				Alert.error("Error", "Invalid measurement units specified");
+				Alert.error(parent, "Error", "Invalid measurement units specified");
 				return;
 			}
 		}
@@ -195,6 +198,8 @@ public class ImportDataOnly extends Object {
 	
 	private void openEditors(Boolean useEditorLite)
 	{
+		if(seriesList==null || seriesList.size()==0) return;
+		
 		// Warn if project contains derivedSeries
 		if(reader.getProjects()[0].isSetDerivedSeries())
 		{
@@ -204,8 +209,10 @@ public class ImportDataOnly extends Object {
 			}
 		}
 
-		for(TridasMeasurementSeries series : seriesList)
+		for(ITridasSeries series : seriesList)
 		{		
+			if(series instanceof TridasDerivedSeries) continue;
+			
 			// Check if series contain data of unknown or unsupported variables
 			for(TridasValues grp : series.getValues())
 			{
@@ -215,18 +222,15 @@ public class ImportDataOnly extends Object {
 					{
 						if(!this.warnedAboutUnspecifiedVar)
 						{
-							Alert.error("Error", "The measurement variable was not specified in input file. \nAssuming data are standard ring widths.");
+							Alert.error(parent, "Error", "The measurement variable was not specified in input file. \nAssuming data are standard ring widths.");
 						}
 						this.warnedAboutUnspecifiedVar = true;
 						grp.getVariable().setNormalTridas(NormalTridasVariable.RING_WIDTH);
 					}
 				}
-			}
+			}	
 			
-			TridasMeasurementSeries freshSeries = (TridasMeasurementSeries) series.clone();
-			
-			
-			EditorFactory.newSeriesFromMeasurementSeries(null, freshSeries, unitsIfNotSpecified, useEditorLite);
+			EditorFactory.newSeriesFromMeasurementSeries(null, (TridasMeasurementSeries)series, unitsIfNotSpecified, useEditorLite);
 		}
 	}
 }

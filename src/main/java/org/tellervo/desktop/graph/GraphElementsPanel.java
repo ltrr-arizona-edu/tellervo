@@ -56,18 +56,23 @@ import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
+import org.tellervo.desktop.sample.LocalTridasFileLoader;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.formats.tridas.TridasWriter;
 import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasTridas;
+import org.tridas.schema.TridasValues;
+import org.tridas.schema.TridasVariable;
 
 
 public class GraphElementsPanel extends JPanel {
@@ -174,14 +179,46 @@ public class GraphElementsPanel extends JPanel {
 	    			try{
 	    				format = formatDesc.substring(0, formatDesc.indexOf("(")).trim();
 		    			ImportDataOnly importDO = new ImportDataOnly(glue, file, format);
-		    			for(TridasMeasurementSeries series : importDO.getSeries())
+		    			Integer seriesPlotted = 0;
+		    			for(ITridasSeries series : importDO.getSeries())
 		    			{
-		    				Sample sample = new Sample(series);
+		    				if(!series.isSetValues()) continue;
 		    				
-		    				sample.setMeta("filename", series.getTitle());
-		    				sample.setMeta("title", series.getTitle());
+		    				if(series.getValues().size()==1)
+		    				{
+		    					TridasVariable var = new TridasVariable();
+		    					var.setNormalTridas(NormalTridasVariable.RING_WIDTH);
+		    					series.getValues().get(0).setVariable(var);
+		    				}
 		    				
-		    				window.add(sample);
+		    				Boolean allgood = false;
+		    				for(TridasValues  tvs: series.getValues())
+		    				{
+		    					if(tvs.isSetVariable() 
+		    							&& tvs.getVariable().isSetNormalTridas() 
+		    							&& tvs.getVariable().getNormalTridas().equals(NormalTridasVariable.RING_WIDTH))
+		    					{
+		    						allgood = true;
+		    					}
+		    				}
+		    					
+		    				
+		    				if(allgood)
+		    				{
+			    				Sample sample = new Sample(series);
+			    				sample.setLoader(new LocalTridasFileLoader(series));
+			    				
+			    				sample.setMeta("filename", series.getTitle());
+			    				sample.setMeta("title", series.getTitle());
+			    				
+			    				window.add(sample);
+			    				seriesPlotted++;
+		    				}
+		    			}
+		    			
+		    			if(seriesPlotted==0)
+		    			{
+		    				Alert.error(window, "Error", "Unable to find any ring-width data to plot");
 		    			}
 		    			
 	    			} catch (Exception e){}
@@ -193,6 +230,9 @@ public class GraphElementsPanel extends JPanel {
 	    		
 	    
 	    btnAddFromDB = new JButton("Add from database...");
+	    
+	    if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false)) btnAddFromDB.setVisible(false);
+	    
 	    addButtonContainer.add(btnAddFromDB);
 	    btnAddFromDB.addActionListener(new ActionListener() {
 	    	public void actionPerformed(ActionEvent ae) {

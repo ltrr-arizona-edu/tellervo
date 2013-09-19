@@ -190,6 +190,7 @@ public class BugReport {
 		buf.append("   System user: " + System.getProperty("user.name") + "\n");
 		buf.append("   Tellervo user: " + tellervouser+"\n"); 
 		buf.append("   Home: " + System.getProperty("user.home") + "\n");
+		buf.append("   Tellervo-lite?: "+App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false));
 		buf.append("   Language: " + System.getProperty("user.language") + "\n");
 		buf.append("   Region: " + System.getProperty("user.region") + "\n");
 		buf.append("   TZ: " + System.getProperty("user.timezone") + "\n");

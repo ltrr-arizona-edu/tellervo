@@ -149,7 +149,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	protected SeriesDataMatrix dataView; // (a jpanel)
 	protected GISPanel wwMapPanel;
 	protected JTabbedPane tabbedPanel;
-	private JToolBar toolbar;
+	protected JToolBar toolbar;
 	
 	// for menus we have to notify...
 	protected EditorFileMenu editorFileMenu;
@@ -429,12 +429,12 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 
-	private void initToolbar()
+	protected void initToolbar()
 	{
 		toolbar=  new JToolBar();
 		
 		// File Buttons
-		Action fileOpenAction = new FileOpenAction();
+		Action fileOpenAction = new FileOpenAction(this);
 		AbstractButton fileOpen = new TitlelessButton(fileOpenAction);
 		toolbar.add(fileOpen);
 		
@@ -778,8 +778,8 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		menubar.add(editorEditMenu);
 		menubar.add(new AdminMenu(this));
 		menubar.add(this.editorViewMenu);
-		menubar.add(new EditorToolsMenu(sample, this));
-		menubar.add(new EditorGraphMenu(sample));
+		menubar.add(new EditorToolsMenu(this, sample));
+		menubar.add(new EditorGraphMenu(this, sample));
 		//menubar.add(new EditorSiteMenu(sample));
 		if (Platform.isMac())
 			menubar.add(new WindowMenu(this));

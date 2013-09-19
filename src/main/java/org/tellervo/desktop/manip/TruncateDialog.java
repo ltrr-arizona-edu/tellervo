@@ -48,11 +48,13 @@ import javax.swing.undo.CannotUndoException;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.NameVersionJustificationPanel;
 import org.tellervo.desktop.gui.RangeSlider;
 import org.tellervo.desktop.io.Metadata;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
@@ -96,6 +98,7 @@ import org.tridas.schema.TridasDerivedSeries;
 public class TruncateDialog extends JDialog {
 	private static final long serialVersionUID = 1L;
 
+	private JPanel justificationPanel;
 	/** The series that we're truncating */
 	private Sample s;
 	/** The range of the new truncation, or null if invalid */
@@ -246,7 +249,7 @@ public class TruncateDialog extends JDialog {
 				return true;
 			}
 		} catch (IOException ioe) {
-			Alert.error(I18n.getText("error"), I18n.getText("error.couldNotTruncate") +": " + ioe.toString());
+			Alert.error(this, I18n.getText("error"), I18n.getText("error.couldNotTruncate") +": " + ioe.toString());
 		}
 		
 		return false;
@@ -257,6 +260,14 @@ public class TruncateDialog extends JDialog {
 	 * @return true on success
 	 */
 	private boolean applyTruncation() {
+		
+		// If we're offline then just go ahead and do it
+		if(!App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
+		{
+			applyTruncationInPlace();
+			return true;
+		}
+		
 		// if it's not derived and has no children, we can truncate in place
 		if (!s.getSampleType().isDerived()
 				&& (!s.hasMeta(Metadata.CHILD_COUNT) || s.getMeta(Metadata.CHILD_COUNT, Integer.class) == 0)) {
@@ -286,7 +297,7 @@ public class TruncateDialog extends JDialog {
 			return applyCorinaWsiTruncation();
 		}
 		
-		Alert.error(I18n.getText("error"), I18n.getText("error.unableToTruncate"));
+		Alert.error(this, I18n.getText("error"), I18n.getText("error.unableToTruncate"));
 		
 		return false;
 	}
@@ -472,7 +483,10 @@ public class TruncateDialog extends JDialog {
 		pri.add(new JSeparator(JSeparator.HORIZONTAL));
 		pri.add(Box.createVerticalStrut(8));
 		
-		pri.add(setupNamingAndJustification());
+		justificationPanel = setupNamingAndJustification();
+		pri.add(justificationPanel);
+		
+		if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false)) justificationPanel.setVisible(false);
 		
 		pri.add(Box.createVerticalStrut(8));
 		pri.add(new JSeparator(JSeparator.HORIZONTAL));

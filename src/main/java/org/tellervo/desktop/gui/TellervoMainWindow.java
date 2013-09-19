@@ -191,11 +191,9 @@ public class TellervoMainWindow extends JFrame {
 		panel.setLayout(null);
 		//addQuickLinkButtons(panel, d);
 		
-		QuickLaunchButtonPanel testPanel = new QuickLaunchButtonPanel();
+		QuickLaunchButtonPanel quickLaunchPanel = new QuickLaunchButtonPanel();
 				
-		panel.add(testPanel);
-		testPanel.setBounds(10, 10, 470, 330);
-		
+		panel.add(quickLaunchPanel);		
 		
 		String version = "version "+Build.getVersion();
 		JLabel lblVersion = new JLabel(version);

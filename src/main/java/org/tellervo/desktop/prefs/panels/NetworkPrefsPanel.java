@@ -88,7 +88,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	public NetworkPrefsPanel(final JDialog parent) {
 		super(I18n.getText("preferences.network"), 
 				"networksettings.png", 
-				"Webservice network connection preferences",
+				"Database webservice and network connection preferences",
 				parent);
 		
 		layout = new MigLayout("", "[grow,fill]", "[][][grow]");
@@ -96,11 +96,11 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		setLayout(layout);
 		
 		wsPanel = new JPanel();
-		wsPanel.setBorder(new TitledBorder(null, "Web service", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+		wsPanel.setBorder(new TitledBorder(null, "Web Service Database Connection", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(wsPanel, "cell 0 0,grow, hidemode 2");
 		wsPanel.setLayout(new MigLayout("", "[100px:100px:100px][grow]", "[][15px][][]"));
 		
-		chkDisableWS = new JCheckBox("Disable web service integration and work offline");
+		chkDisableWS = new JCheckBox("Disable database integration and work offline");
 		wsPanel.add(chkDisableWS, "cell 1 0");
 		chkDisableWS.addActionListener(new ActionListener(){
 
@@ -110,7 +110,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 				
 				if(chkDisableWS.isSelected() && !App.prefs.getBooleanPref(PrefKey.WEBSERVICE_WARNED_OFFLINE_LIMITED, false))
 				{
-					Alert.message("Warning", "Please note that working offline means that the majority of Tellervo " +
+					Alert.message(parent, "Warning", "Please note that working offline means that the majority of Tellervo " +
 			                 "functions are disabled and Tellervo becomes a basic data collection tool. Access to " +
 			                 "a Tellervo server is necessary to take advantage of all features.");
 					App.prefs.setBooleanPref(PrefKey.WEBSERVICE_WARNED_OFFLINE_LIMITED, true);
@@ -264,14 +264,14 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		
 		if(serverDetails.getWSIServerStatus()==WSIServerStatus.NO_CONNECTION)
 		{
-			Alert.error("No network connection", 
+			Alert.error(parent, "No network connection", 
 			"You don't appear to have a network connection.  Please check your\n " +
 			"network settings and try again.");
 			return false;	
 		}
 		else if(!serverDetails.isServerValid())
 		{
-			Alert.error("Invalid Webservice URL", 
+			Alert.error(parent, "Invalid Webservice URL", 
 			"The URL you have entered is not a valid Tellervo Webservice");
 			return false;
 		}
