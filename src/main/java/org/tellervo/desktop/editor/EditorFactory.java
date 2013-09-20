@@ -443,9 +443,10 @@ public class EditorFactory {
 	 * @param container
 	 * @param series
 	 */
-	public static void newSeriesFromDerivedSeries(Container container, TridasDerivedSeries series, NormalTridasUnit unitsIfNotSpecified) 
+	public static void newSeriesFromDerivedSeries(Container container, TridasDerivedSeries series, NormalTridasUnit unitsIfNotSpecified,
+			String originalFilename, String originalFormat) 
 	{
-		EditorFactory.newSeriesFromDerivedSeries(container, series, unitsIfNotSpecified, false);
+		EditorFactory.newSeriesFromDerivedSeries(container, series, unitsIfNotSpecified, false, originalFilename, originalFormat);
 	}
 	
 	/**
@@ -455,11 +456,23 @@ public class EditorFactory {
 	 * @param container
 	 * @param series
 	 */
-	public static void newSeriesFromDerivedSeries(Container container, TridasDerivedSeries series, NormalTridasUnit unitsIfNotSpecified, Boolean useEditorLite) {
+	public static void newSeriesFromDerivedSeries(Container container, TridasDerivedSeries series, NormalTridasUnit unitsIfNotSpecified, 
+			Boolean useEditorLite, String originalFilename, String originalFormat) {
 		
 		Sample sample = createSampleFromSeries(series);
 		
 		sample.setModified();
+		
+		
+		if(originalFilename!=null)
+		{
+			sample.setMeta(Metadata.FILENAME, originalFilename);
+		}
+		if(originalFormat!=null)
+		{
+			sample.setMeta(Metadata.LEGACY_FORMAT, originalFormat);
+		}
+		
 		
 		// setup our loader and series identifier
 		TellervoWsiTridasElement.attachNewSample(sample);
@@ -648,56 +661,16 @@ public class EditorFactory {
 	    
 	    return sample;
 	}
-	
-	/**
-	 * Creates a new editor based upon a measurementSeries
-	 * 
-	 * @param container
-	 * @param inSeries
-	 */
-	public static void newSeriesFromMeasurementSeries2(Container container, TridasMeasurementSeries inSeries, NormalTridasUnit unitsIfNotSpecfied) 
-	{
-		
-		// should we get this elsewhere?
-		String title = "["+I18n.getText("editor.newSeries")+ "]";
 
-		// make dataset ref, based on our series
-		Sample sample = new Sample(inSeries);
-		
-		Element e = new Element(sample);
-		try {
-			Sample sample2 = e.load();
-			
-			// setup our loader and series identifier
-			TellervoWsiTridasElement.attachNewSample(sample2);
-
-			// start the editor
-			Editor ed = new Editor(sample2);
-			ed.setVisible(true);
-			ed.setDefaultFocus();
-			
-			ed.showPage(EditType.OBJECT);
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		// default title
-	//	sample.setMeta(Metadata.TITLE, I18n.getText("general.newEntry")+": " + title);
-
-		
-		
-
-		
-		
-	}
 	
 	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries series, NormalTridasUnit unitsIfNotSpecfied) {
-		newSeriesFromMeasurementSeries(container, series, unitsIfNotSpecfied, false);
+		newSeriesFromMeasurementSeries(container, series, unitsIfNotSpecfied, false, null, null);
 		
 	}
 	
-	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries series, NormalTridasUnit unitsIfNotSpecfied, Boolean useEditorLite) {
+	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries series, 
+			NormalTridasUnit unitsIfNotSpecfied, Boolean useEditorLite, 
+			String originalFilename, String originalFormat) {
 		
 		log.debug("Creating new editor for series: "+series.getTitle());
 		
@@ -743,7 +716,16 @@ public class EditorFactory {
 		// make dataset ref, based on our series
 		Sample sample = new Sample(series);
 		
-		sample.setMeta("filename", series.getTitle());
+		if(originalFilename!=null)
+		{
+			sample.setMeta(Metadata.FILENAME, originalFilename);
+		}
+		if(originalFormat!=null)
+		{
+			sample.setMeta(Metadata.LEGACY_FORMAT, originalFormat);
+		}
+		
+		
 		sample.setMeta("title", series.getTitle());
 		
 		// Set range from series

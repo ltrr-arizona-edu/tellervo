@@ -29,23 +29,31 @@ public class ImportDataOnly extends Object {
 	private ArrayList<ITridasSeries> seriesList = new ArrayList<ITridasSeries>();
 	private NormalTridasUnit unitsIfNotSpecified = NormalTridasUnit.MICROMETRES;
 	private AbstractDendroFileReader reader;
+	private File file;
+	private String fileType;
+	
 	
 	public ImportDataOnly(Window parent, File file, String fileType)
 	{
 		this.parent = parent;
-		parseFile(file, fileType);
+		this.fileType = fileType;
+		this.file = file;
+		parseFile();
+		
 	}
 	
 	public ImportDataOnly(Window parent, File file, DendroReaderFileFilter filetypefilter) throws Exception
 	{
 		this.parent = parent;
+		this.file = file;
 		
 		for (String readername : TridasIO.getSupportedReadingFormats())
 		{
 			AbstractDendroReaderFileFilter filter = new DendroReaderFileFilter(readername);
 			if(filter.getDescription().equals(filetypefilter.getDescription()))
 			{
-				parseFile(file, filter.getDescription());
+				this.fileType = filter.getDescription();
+				parseFile();
 				return;
 			}
 		}
@@ -59,7 +67,7 @@ public class ImportDataOnly extends Object {
 		return seriesList;
 	}
 	
-	private void parseFile(File file, String fileType)
+	private void parseFile()
 	{
 		
 		
@@ -205,7 +213,7 @@ public class ImportDataOnly extends Object {
 		{
 			for(TridasDerivedSeries series : reader.getProjects()[0].getDerivedSeries())	
 			{
-				EditorFactory.newSeriesFromDerivedSeries(parent, series, unitsIfNotSpecified, useEditorLite);
+				EditorFactory.newSeriesFromDerivedSeries(parent, series, unitsIfNotSpecified, useEditorLite, file.getAbsolutePath(), fileType);
 			}
 		}
 
@@ -230,7 +238,7 @@ public class ImportDataOnly extends Object {
 				}
 			}	
 			
-			EditorFactory.newSeriesFromMeasurementSeries(null, (TridasMeasurementSeries)series, unitsIfNotSpecified, useEditorLite);
+			EditorFactory.newSeriesFromMeasurementSeries(null, (TridasMeasurementSeries)series, unitsIfNotSpecified, useEditorLite, file.getAbsolutePath(), fileType);
 		}
 	}
 }

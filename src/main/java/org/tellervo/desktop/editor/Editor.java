@@ -261,11 +261,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	}
 
 	public void setFilename(String fn) {
-		sample.setMeta("filename", fn);
+		sample.setMeta(Metadata.FILENAME, fn);
 	}
 
 	public String getFilename() {
-		return (String) sample.getMeta("filename");
+		return (String) sample.getMeta(Metadata.FILENAME);
 	}
 
 	public String getDocumentTitle() {
@@ -337,7 +337,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				return;
 			}
 
-			sample.setMeta("filename", filename);
+			sample.setMeta(Metadata.FILENAME, filename);
 			
 			// attach a FileElement to it
 			sample.setLoader(new FileElement(filename));

@@ -192,7 +192,7 @@ public class EditorLiteFileMenu extends FileMenu {
 
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						((EditorLite)f).save();	
+						((EditorLite)f).saveAs();	
 					}
 				});
 			}
