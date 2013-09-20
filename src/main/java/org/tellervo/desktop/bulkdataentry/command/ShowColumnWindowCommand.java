@@ -74,7 +74,7 @@ public class ShowColumnWindowCommand implements ICommand {
 	
 		// give it the possible columns
 		ColumnChooserModel model = event.model.getColumnModel();
-		model.poplutePossibleColumns(event.model.getModelTableProperties());
+		model.populatePossibleColumns(event.model.getModelTableProperties());
 		
 		
 		// remove any columns in the model that aren't possible columns

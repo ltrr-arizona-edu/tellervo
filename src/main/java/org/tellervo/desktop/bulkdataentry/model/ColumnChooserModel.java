@@ -41,7 +41,7 @@ public class ColumnChooserModel extends MVCArrayList<String> {
 //		}
 	}
 	
-	public void poplutePossibleColumns(String[] argTableColumns){
+	public void populatePossibleColumns(String[] argTableColumns){
 		possibleColumns.clear();
 		for(String s : argTableColumns){
 			if(!s.equals(IBulkImportSingleRowModel.IMPORTED)){

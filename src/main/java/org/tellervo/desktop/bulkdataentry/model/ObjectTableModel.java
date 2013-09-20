@@ -23,15 +23,9 @@
  */
 package org.tellervo.desktop.bulkdataentry.model;
 
-import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
 import org.tellervo.schema.WSIObjectTypeDictionary;
-import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasObject;
-import org.tridas.util.TridasObjectEx;
-
-import com.dmurph.mvc.model.MVCArrayList;
 
 
 /**

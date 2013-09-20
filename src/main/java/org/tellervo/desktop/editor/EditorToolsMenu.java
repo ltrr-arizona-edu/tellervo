@@ -323,6 +323,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 		  //redate.setEnabled(App.isLoggedIn());
 		  crossAgainstDBSeries.setEnabled(App.isLoggedIn());
 		  crossMenu.setEnabled(App.isLoggedIn());
+		  truncate.setEnabled(App.isLoggedIn());
 	}
 
 

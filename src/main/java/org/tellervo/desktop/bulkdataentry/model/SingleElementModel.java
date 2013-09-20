@@ -25,16 +25,11 @@ package org.tellervo.desktop.bulkdataentry.model;
 
 import java.math.BigDecimal;
 
-import net.opengis.gml.schema.PointType;
-import net.opengis.gml.schema.Pos;
-
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasBedrock;
 import org.tridas.schema.TridasDimensions;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasIdentifier;
-import org.tridas.schema.TridasLocation;
-import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasSlope;
 import org.tridas.schema.TridasSoil;

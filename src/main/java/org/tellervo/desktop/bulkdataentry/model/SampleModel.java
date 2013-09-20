@@ -49,7 +49,7 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 		registerProperty(TABLE_MODEL, PropertyType.FINAL, new SampleTableModel(this));
 		registerProperty(RADIUS_WITH_SAMPLE, PropertyType.READ_WRITE, false);
 		registerProperty(IMPORTED_LIST, PropertyType.FINAL, new MVCArrayList<TridasSample>());
-		getColumnModel().poplutePossibleColumns(getModelTableProperties());
+		getColumnModel().populatePossibleColumns(getModelTableProperties());
 	}
 	
 	public MVCArrayList<SingleSampleModel> getRows(){

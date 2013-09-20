@@ -48,7 +48,7 @@ public class ElementModel extends HashModel implements IBulkImportSectionModel{
 		registerProperty(TABLE_MODEL, PropertyType.FINAL, new ElementTableModel(this));
 		registerProperty(IMPORTED_LIST, PropertyType.FINAL, new MVCArrayList<TridasElement>());
 		registerProperty(WAYPOINT_LIST, PropertyType.FINAL, new MVCArrayList<GPXWaypoint>());
-		getColumnModel().poplutePossibleColumns(getModelTableProperties());
+		getColumnModel().populatePossibleColumns(getModelTableProperties());
 	}
 	
 	public MVCArrayList<SingleElementModel> getRows(){
