@@ -202,6 +202,7 @@ class searchParameters implements IParams
 									'seriesvaluecount' =>					array('tbl' => 'vwcomprehensivevm', 'field' => 'readingcount'),
 									'seriescount' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'directchildcount'),
 									'seriescode' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'code'),
+									'dependentseriesid' =>						array('tbl' => 'vwcomprehensivevm', 'field' => 'dependentseriesid'),
 		
 									
 									'loanid' =>						array('tbl' => 'vwtblloan', 'field' => 'loanid'),

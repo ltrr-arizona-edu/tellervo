@@ -113,6 +113,7 @@ import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewer;
+import org.tellervo.desktop.tridasv2.ui.DependentsViewer;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
 import org.tellervo.desktop.ui.Alert;
@@ -145,6 +146,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private EditorMeasurePanel measurePanel = null;
 	protected TridasMetadataPanel metaView;
 	private ComponentViewer componentsPanel = null;
+	private DependentsViewer dependentsPanel = null;
 	private BargraphPanel bargraphPanel = null;
 	protected SeriesDataMatrix dataView; // (a jpanel)
 	protected GISPanel wwMapPanel;
@@ -428,6 +430,10 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			componentsPanel = new ComponentViewer(sample);
 	}
 
+	private void initDependentsPanel() {
+		
+		dependentsPanel = new DependentsViewer(sample);
+	}
 
 	protected void initToolbar()
 	{
@@ -531,6 +537,18 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			});
 		}
 				
+		if(dependentsPanel != null) {
+			tabbedPanel.addTab(I18n.getText("editor.tab_dependents")+" ", Builder.getIcon("dependent.png", 16), dependentsPanel);			
+			
+			// let the components panel know it's being set as visible...
+			tabbedPanel.addChangeListener(new ChangeListener() {
+				public void stateChanged(ChangeEvent e) {
+					if(tabbedPanel.getSelectedComponent() == dependentsPanel)
+						dependentsPanel.notifyPanelVisible();
+				}
+			});
+		}
+		
 		//if(mozillaMapPanel != null)
 	    //		tabbedPanel.add(mozillaMapPanel, I18n.getText("editor.tab_map"));
 	}
@@ -703,6 +721,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		initWJPanel();
 		initMetaView();
 		initComponentsPanel();
+		initDependentsPanel();
 		initWWMapPanel();
 
 
