@@ -8,6 +8,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import org.tellervo.desktop.core.App;
@@ -40,11 +41,13 @@ public class QuickLaunchButtonPanel extends JPanel implements ActionListener, Mo
 	private JButton btnOpenSeries;
 	private JButton btnMetadb;
 	private JButton btnMap;
+	private JFrame parent;
 	
 	/**
 	 * Create the panel.
 	 */
-	public QuickLaunchButtonPanel() {
+	public QuickLaunchButtonPanel(JFrame parent) {
+		this.parent = parent;
 		setLayout(new MigLayout("", "[fill][grow]", "[top][grow]"));
 		setOpaque(false);
 		setBackground(new Color(0,0,0,0));
@@ -103,13 +106,13 @@ public class QuickLaunchButtonPanel extends JPanel implements ActionListener, Mo
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getActionCommand().equals("newSeries"))
 		{
-			EditorFactory.newSeries(this);
+			EditorFactory.newSeries(parent);
 		}
 		else if(evt.getActionCommand().equals("openSeries"))
 		{
 			if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
 			{
-				EditorLiteFileMenu.openLegacyFile(App.mainWindow);
+				EditorLiteFileMenu.openLegacyFile(parent);
 			}
 			else
 			{

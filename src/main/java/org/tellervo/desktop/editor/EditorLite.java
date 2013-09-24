@@ -62,6 +62,8 @@ public class EditorLite extends Editor {
 		this.metaView.setVisible(false);
 		this.editorViewMenu.setVisible(false);
 		init();
+		tabbedPanel.setSelectedIndex(0);
+
 	}
 
 
@@ -80,6 +82,13 @@ public class EditorLite extends Editor {
 
 	}
 
+	@Override
+	public void setDefaultFocus()
+	{
+		this.tabbedPanel.setSelectedIndex(0);
+
+	}
+	
 	public BasicMetadataPanel getMetadataPanel()
 	{
 		return basicMeta;
@@ -132,7 +141,7 @@ public class EditorLite extends Editor {
 		}
 
 		sample.clearModified();
-		sample.setMeta(Metadata.FILENAME, file.getAbsoluteFile());
+		sample.setMeta(Metadata.FILENAME, file.getAbsolutePath());
 		sample.setMeta(Metadata.LEGACY_FORMAT, format);
 		sample.setMeta(Metadata.LEGACY_SAVED_BY_TELLERVO, true);
 		sample.fireSampleMetadataChanged();
@@ -237,10 +246,13 @@ public class EditorLite extends Editor {
 		if (file == null) {
 			return;
 		}
-
+		
+		log.debug("Does file "+file.getAbsolutePath()+" exist? "+file.exists());
+		
 		// If overwriting file warn that metadata may be lost if the fil
-		if(file.exists() && sample.getMeta(Metadata.LEGACY_SAVED_BY_TELLERVO)!=null 
-				&& !sample.getMeta(Metadata.LEGACY_SAVED_BY_TELLERVO).equals(true))
+		if(!file.exists() || 
+				(sample.getMeta(Metadata.LEGACY_SAVED_BY_TELLERVO)!=null 
+				&& !sample.getMeta(Metadata.LEGACY_SAVED_BY_TELLERVO).equals(true)))
 		{
 		}
 		else
@@ -277,7 +289,7 @@ public class EditorLite extends Editor {
 			if(sample.getMeta(Metadata.LEGACY_SAVED_BY_TELLERVO)!=null && 
 					sample.getMeta(Metadata.LEGACY_SAVED_BY_TELLERVO).equals(true))
 			{
-				saveToDisk(sample.getMeta(Metadata.LEGACY_FORMAT).toString(), new File(sample.getMeta(Metadata.FILENAME).toString()));
+				saveToDisk(sample.getMeta(Metadata.LEGACY_FORMAT).toString(), new File((String) sample.getMeta(Metadata.FILENAME)));
 				return;
 			}
 			else

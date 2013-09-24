@@ -151,7 +151,15 @@ public class TellervoMainWindow extends JFrame {
 		// set background...
 		ClassLoader cl = this.getClass().getClassLoader();		
 		BufferedImage img = null;
-		URL url = cl.getResource("Images/appbackground.png");
+		URL url = cl.getResource("Images/appbackground.png");		
+		
+		// Use 'Tellervo-lite' background if applicable
+		if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
+		{
+			url = cl.getResource("Images/appbackground-lite.png");		
+		}
+
+		
 		if (url != null) {
 			try {
 				img = ImageIO.read(url);
@@ -191,7 +199,7 @@ public class TellervoMainWindow extends JFrame {
 		panel.setLayout(null);
 		//addQuickLinkButtons(panel, d);
 		
-		QuickLaunchButtonPanel quickLaunchPanel = new QuickLaunchButtonPanel();
+		QuickLaunchButtonPanel quickLaunchPanel = new QuickLaunchButtonPanel(this);
 				
 		panel.add(quickLaunchPanel);		
 		

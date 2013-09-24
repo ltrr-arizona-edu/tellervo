@@ -2,10 +2,11 @@
 \chapter{Getting started}
 \label{txt:gettingstarted}
 
-Once you have your Tellervo desktop application installed (see chapter \ref{txt:installation}) and you also have access to a Tellervo server (either via your lab network administrator or your own on as a Virtual Appliance) you are ready to start using Tellervo.  Below are some basic instructions for performing common tasks in Tellervo followed by a number of more in-depth chapters.
+Once you have your Tellervo desktop application installed (see chapter \ref{txt:installation}) and you also have access to a Tellervo server (either via your lab network administrator or your own on as a Virtual Appliance) you are ready to start using Tellervo.  Below are some basic instructions for performing common tasks in Tellervo followed by a number of more in-depth chapters.  If you are running Tellervo with database integration disabled (Tellervo-lite mode) then see section \ref{txt:tellervolite} for further details.
 
 \section{Measuring a new sample}
 \index{Sample!Measuring|(}
+\label{txt:new}
 Once your measuring platform has been configured, measuring your first sample is simple.  To start a new measurement go to \menutwo{File}{New} or click the `new' icon on the home screen. A dialog will appear where you can scan your sample's barcode, or press the button to enter metadata for your sample later. Barcodes minimize data entry errors and also speed up the process of measuring your samples. See section \ref{txt:barcodes} for more information. Once you have scanned your barcode or pressed the button, you will then be presented with an empty Tellervo metadata screen.
 
 The next step is to fill out the metadata information. If you have used a barcode, nearly all of this metadata will be filled in for you, otherwise you will need to fill this out yourself. Details about metadata can be found in chapter \ref{txt:metadata}, page \pageref{txt:metadata}.  Once you have populated the metadata tab, you can then switch to the data tab (figure \ref{fig:datascreen}).  
@@ -67,6 +68,7 @@ Once you have finished measuring your sample, you should then go to \menutwo{Fil
 
 \section{Opening existing data}
 \index{Sample!Opening}
+\label{txt:open}
 If you have used traditional dendrochronology software, you are probably used to opening existing dendro data files from your computer.  Tellervo works in a different way.  All data accessed by Tellervo is stored within the central Tellervo database rather than in files.  The database provides many benefits over file based storage, most importantly it means there is a high degree of security and integrity in your data.\footnote{This doesn't mean you don't have to backup your data though!  Whoever is in charge of maintaining your Tellervo database should make sure regular backups are made--preferably offsite.}
 
 To use data that you have stored in existing data files you must first \emph{import} your data into the Tellervo database.  This gives you the opportunity to clean-up your data!  For details of how to import your data see chapter \ref{txt:importExport}, page \pageref{txt:importExport}.
@@ -94,6 +96,24 @@ There is also a `Show options' button on the database browser dialog.  This adds
 \index{Sample!Reconciling}
 Tellervo has been developed not only for experience dendrochronologists, but as a tool for teaching students.  It therefore includes a comprehensive `reconciling' tool for supervisors to check the quality of measurements made by students.  The reconcile dialog does a comparison of a measurement series made by a student with a references series of the same radius measured by the supervisor.  The same dialog can also prove useful for comparing measurements from two experienced dendrochronologists when handling particularly difficult samples.
 
- 
+
+\section[Tellervo-lite]{Tellervo-lite: running without database server integration}
+\label{txt:tellervolite}
+\index{Tellervo-lite}
+\index{Offline mode}
+When you run Tellervo with database integration disabled (referred to as Tellervo-lite), you are presented with a simplified interface without database functionality. Tellervo-lite has basic measuring functionality only and does not take advantage of many of the advanced features introduced by the full Tellervo application.  We strongly recommend installing Tellervo server to take advantage of all that Tellervo has to offer.
+
+When reading this manual please keep in mind that for the most part it is assuming that you are using the full Tellervo application.  Although in some cases the information is useful regardless of whether you're using Tellervo or Tellervo-lite, there will be differences, and of course features that require the database (such as mapping, user permissions and analysis tools) that will be disabled or missing entirely.  
+
+Instead of opening and saving data to the Tellervo database, in Tellervo-lite data is accessed via traditional data file formats such as Tucson, Heidelberg and Sheffield etc.  In Tellervo-lite, \menutwo{File}{Open} presents the user with a standard file dialog box rather than the Tellervo database browser.  Similarly when the user clicks \menutwo{File}{New}, instead of being presented by the barcode dialog, they are taken directly to the data editor (with a limited metadata tab).   
+
+Tellervo-lite is a departure from the primary mission of Tellervo (i.e.\ to provide a user-friendly application that supports standardised dendro data and metadata). The support for metadata in legacy dendro file formats ranges from non-existent to minimal with little standardisation.  Given the wide variation in metadata that can potentially be provided by these formats, it is not practical to support reading and editing in Tellervo-lite, instead it provides a very minimal interface for recording non-standardised metadata.  This basic metadata screen replaces the TRiDaS-based metadata interface normally seen in the standard version of Tellervo.  How this basic metadata is used (or indeed whether it is used at all) depends on the file format you choose to save to.  
+
+When opening legacy dendro files in Tellervo-lite, it is possible that metadata will be discarded.  So if you open and edit an existing file in Tellervo, then overwrite the orignal you may well loose information.  We highly recommend saving changes to a different file.  It is also important for users to understand the limitations of the file formats you're reading from and writing to.  For instance the Tucson format has no mechanism for indicating whether years are absolute or relative so data loaded from Tucson files will be marked as relative years in Tellervo.  Some formats also store ring-width measurements in 1/100th mm integers, so if you measure in microns then the values will be rounded. A full description of each format along with their limitations is given in appendix \ref{txt:fileFormatsStart}.
+
+
+
+
+
 
 

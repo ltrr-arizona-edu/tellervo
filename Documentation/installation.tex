@@ -3,10 +3,12 @@
 \label{txt:installation}
 Tellervo is made up of two packages; the Tellervo desktop application and the Tellervo database server.  Tellervo was designed primarily for laboratories with multiple users, each running the Tellervo desktop application on their own computer connecting to a single central server containing the lab's data.  In this situation the Tellervo server would be run on a separate computer to those running the desktop client, but this need not necessarily be the case.  It is perfectly possible to run both the server and the client on the same computer.  This is likely to be the situation if you simply want to try out Tellervo, if you don't have a separate server, or if you do not work in a multi-user laboratory.
 
+Tellervo can be run without access to a Tellervo server, however, in offline mode (known as Tellervo-lite) it has a greatly reduced functionality.  Without access to a database the mapping, barcoding, metadata support, permissions handling etc are all disabled.  Tellervo-lite functions as a basic data collection tool saving to a variety of legacy file formats.  While this may be adequate for casual dendro users, we urge you to install the Tellervo server too and make full use of the functionality that it provides.
+
 
 \section{Server installation}
 \index{Installation!Server}
-For the Tellervo desktop application to be useful you will require access to a Tellervo server.  If you are running Tellervo in a lab where the Tellervo server has already been set up by your systems administrator, you can skip this section.
+To make full use of the potential of the Tellervo desktop application you will require access to a Tellervo server.  If you are running Tellervo in a lab where the Tellervo server has already been set up by your systems administrator, you can skip this section.
 
 The Tellervo server is made up of a number of components, which unlike the desktop client, can't be easily combined together into cross-platform packages.  Although all the constituent components are open-source and available for all major platforms, building and maintaining separate packages for each platform is too large a task for a small development team.  To conserve resources, we therefore made the decision to utilize Virtual Machine technology to ensure that the Tellervo server could still be run on all major operating systems.  This means that we can package the Tellervo server for a single operating system (Ubuntu Linux) and then distribute it as a Virtual Appliance that can be run as a program on your normal operating system. 
 
@@ -132,12 +134,13 @@ The pages of the wizard include:
 
 \begin{description}
  \item[Network connection] -- this configures how your computer accesses the internet.  Most users will be able to use the default `Use system default proxy settings' option here, but if you know that your computer is behind a corporate proxy server you may choose to manually provide the settings.
- \item[Configuring the Tellervo server] -- Tellervo comes in two parts: the Tellervo desktop client that you are using; and the Tellervo server which runs the database that stores your data.  If you are working in a lab your systems administrator may have already set up the Tellervo server and given you the URL to connect to.  Alternatively, you may have already installed the Tellervo server yourself.  If so the installation program should have given you the URL. If you don't have access to a Tellervo server yet, you should close this wizard, then go to the Tellervo website and download it.
+ \item[Configuring the Tellervo server] -- Tellervo comes in two parts: the Tellervo desktop client that you are using; and the Tellervo server which runs the database that stores your data.  If you are working in a lab your systems administrator may have already set up the Tellervo server and given you the URL to connect to.  Alternatively, you may have already installed the Tellervo server yourself.  If so the installation program should have given you the URL. If you don't want to take advantage of the full capabilities of Tellervo you can opt to disable database integration.  If you do not configure a Tellervo server you will be left with a basic file-based dendro data collection tool.
  \item[Measuring platform configuration] -- the next page enables you to configure measuring platform hardware attached to your computer.  Some measuring platforms have fixed settings in which case the port settings will be set automatically, but others can be changed in the hardware and must be set explicitly here. Use the `Test Connection' button to make sure that Tellervo can successfully communicate with your platform.
+ \item[Tutorial videos] -- Once you've completed the wizard you will be given the option of viewing tutorial videos explaining how to use Tellervo.  You can access these at any time via the Help menu or through the Tellervo website.
 \end{description}
 
 
-Once you have completed the wizard you will be presented with a dialog (figure \ref{fig:login}) for logging in to your Tellervo server.
+Assuming that you have configured a Tellervo server, once you have finished the wizard you will be presented with a login dialog (figure \ref{fig:login}).
 
 The username and password details requested are your Tellervo login credentials (not your system or network credentials) provided to you by your systems administrator.  If you are using your own Virtual Appliance server, the default admin user details are provided in section \ref{txt:passwords}, page \pageref{txt:passwords}.  The dialog gives you the option for saving your username and/or password if you prefer.  We recommend using this feature only on personal machines.  You may choose to cancel the login if you like and Tellervo will continue to load, however, you will not have access to the Tellervo database therefore very few functions will be available to you.
 
@@ -149,7 +152,7 @@ The username and password details requested are your Tellervo login credentials 
   \label{fig:login}
 \end{wrapfigure}
 
-Once you have logged in you will be presented with the Tellervo home screen.  This contains the main menus for the program as well as three quick-link icons for creating new records, opening existing records and importing existing data files to the database.
+Once you have logged in you will be presented with the Tellervo home screen.  This contains the main menus for the program as well as quick-link icons for creating new records, opening existing records and importing existing data files to the database.
 
 
 \subsection{Mapping support}
