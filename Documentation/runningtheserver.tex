@@ -27,11 +27,11 @@ If you have followed the instructions in section \ref{txt:BackupVA} to backup yo
 \subsection{Backup PostgreSQL database}
 The more standard way of backing up your database is to do a dump of the PostgreSQL database itself into a large text file.  This is a little more involved, so it is only recommended if you are familiar with command line and/or Linux.  You can create the file with a command like the one below, but you should read up on pg\_dump so that you understand the possible options that you can use.
 
-\code{pg\_dump -Fc /folder/and/file/to/make/mybackup.sql database\_name}
+\code{pg\_dump -Fc -f /folder/and/file/to/make/mybackup.sql database\_name}
 
 For example the following line will backup the database called `tellervo' (the standard name for your database) into a file called backup.sql in the tmp folder.  Keep in mind that the tmp folder is cleaned each time the server is booted.
 
-\code{pg\_dump -Fc /tmp/backup.sql tellervo}
+\code{pg\_dump -Fc -f /tmp/backup.sql tellervo}
 
 It then makes sense to transfer this backup off the virtual machine onto a separate computer as per normal backup procedures.  If you are familiar with Linux you could do this by using SFTP or similar transfer protocols.  If you just want a quick and dirty method, you could save the backup.sql file to /var/www/tellervo-server/ and then you can access the file from any web browser at the address http://your.server.ip/tellervo-server/backup.sql.  Keep in mind though that anyone could potential download the file as long as it is left there so you will want to delete it as soon as you have transferred it.  You can do this from the server command line by typing sudo rm /var/www/tellervo.org/backup.sql.  
 

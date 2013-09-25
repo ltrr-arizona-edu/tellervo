@@ -47,6 +47,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.table.TableColumnModelExt;
 import org.tellervo.desktop.gui.dbbrowse.BooleanCellRenderer;
 import org.tellervo.desktop.gui.dbbrowse.ElementListCellRenderer;
 import org.tellervo.desktop.gui.dbbrowse.ElementListManager;
@@ -58,6 +60,7 @@ import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.PopupListener;
 import org.tellervo.desktop.wsi.ResourceEvent;
 import org.tellervo.desktop.wsi.ResourceEventListener;
@@ -91,7 +94,7 @@ public class DependentsViewer extends JPanel implements ResourceEventListener, E
 	private JProgressBar pbStatus;
 	
 	private JPanel tablePanel;
-	private JTable table;
+	private JXTable table;
 	
 	private ElementListTableSorter tableSorter;
 	private ElementListTableModel tableModel;
@@ -109,7 +112,7 @@ public class DependentsViewer extends JPanel implements ResourceEventListener, E
 	private void initComponents() {
 			
 		tableModel = new ElementListTableModel();
-		table = new JTable(tableModel);
+		table = new JXTable(tableModel);
 
 		// create status bar
 		JPanel statusPanel = new JPanel();
@@ -131,6 +134,14 @@ public class DependentsViewer extends JPanel implements ResourceEventListener, E
 		
     	// set our column widths
     	ElementListTableModel.setupColumnWidths(table);
+    	table.setColumnControlVisible(true);
+    	
+    	// hide irrelevent columns
+    	TableColumnModelExt colmodel = (TableColumnModelExt)table.getColumnModel();
+    	colmodel.getColumnExt(I18n.getText("hidden.MostRecentVersion")).setVisible(false);
+    	colmodel.getColumnExt(I18n.getText("dbbrowser.n")).setVisible(false);
+    	colmodel.getColumnExt(I18n.getText("dbbrowser.rec")).setVisible(false);
+    	colmodel.getColumnExt(I18n.getText("dbbrowser.hash")).setVisible(false);
     	
     	table.setDefaultRenderer(Object.class, new ElementListCellRenderer(this, false));
     	table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer(this, false));

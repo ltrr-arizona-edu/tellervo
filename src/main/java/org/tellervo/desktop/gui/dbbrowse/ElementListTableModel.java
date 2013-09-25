@@ -15,12 +15,17 @@ import javax.swing.table.AbstractTableModel;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.io.Metadata;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.BaseSample;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.SampleType;
 import org.tellervo.desktop.ui.I18n;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.util.SafeIntYear;
+import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.DatingSuffix;
+import org.tridas.schema.NormalTridasDatingType;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasMeasurementSeries;
 
@@ -41,7 +46,7 @@ public class ElementListTableModel extends AbstractTableModel {
             I18n.getText("dbbrowser.end"), 
             I18n.getText("dbbrowser.n"),
             I18n.getText("dbbrowser.rec"),
-            "hidden.MostRecentVersion"
+            I18n.getText("hidden.MostRecentVersion")
         };
     
     /**
@@ -66,8 +71,6 @@ public class ElementListTableModel extends AbstractTableModel {
 		table.getColumnModel().getColumn(8).setPreferredWidth(fm.stringWidth("12345"));
 		table.getColumnModel().getColumn(9).setPreferredWidth(fm.stringWidth("123"));
 		table.getColumnModel().getColumn(10).setPreferredWidth(fm.stringWidth("Rec")); // checkbox?
-
-
 		}
     
     private final DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -120,6 +123,7 @@ public class ElementListTableModel extends AbstractTableModel {
 		} catch (IOException ioe) {
 			return "<ERROR>";
 		}
+		
 		
 		switch(columnIndex) {
 		case 0: 
@@ -182,11 +186,33 @@ public class ElementListTableModel extends AbstractTableModel {
 
 		// start year
 		case 7:
-			return bs.getRange().getStart();
+			NormalTridasDatingType dt = null;
+			try
+			{
+				dt = series.getInterpretation().getDating().getType();
+			}
+			catch (NullPointerException ex)	{ }
+			
+			SafeIntYear yr = new SafeIntYear(bs.getRange().getStart().toString());
+			String strds = App.prefs.getPref(PrefKey.DISPLAY_DATING_SUFFIX, DatingSuffix.AD.name().toString());
+			DatingSuffix ds = TridasUtils.getDatingSuffixFromName(strds);
+			
+			return yr.formattedYear(dt, ds);
 			
 		// end year
 		case 8:
-			return bs.getRange().getEnd();
+			NormalTridasDatingType dt2 = null;
+			try
+			{
+				dt2 = series.getInterpretation().getDating().getType();
+			}
+			catch (NullPointerException ex)	{ }
+			
+			SafeIntYear yr2 = new SafeIntYear(bs.getRange().getEnd().toString());
+			String strds2 = App.prefs.getPref(PrefKey.DISPLAY_DATING_SUFFIX, DatingSuffix.AD.name().toString());
+			DatingSuffix ds2 = TridasUtils.getDatingSuffixFromName(strds2);
+			
+			return yr2.formattedYear(dt2, ds2);
 		
 		// number of readings
 		case 9:

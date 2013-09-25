@@ -54,6 +54,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
 
+import org.jdesktop.swingx.table.TableColumnModelExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
@@ -544,25 +545,45 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     	
 		ElementListTableModel mdlAvailMeas = new ElementListTableModel();
 		tblAvailMeas.setModel(mdlAvailMeas); // set model
-		tblAvailMeas.getColumnModel().removeColumn(tblAvailMeas.getColumn("hidden.MostRecentVersion"));
+		//tblAvailMeas.getColumnModel().removeColumn(tblAvailMeas.getColumn("hidden.MostRecentVersion"));
+		
+
+		
 		availableSorter = new ElementListTableSorter(mdlAvailMeas, tblAvailMeas);
 		availableSorter.sortOnColumn(0, false);
 		tblAvailMeas.getTableHeader().addMouseListener(availableSorter); // add sorter & header renderer
 		tblAvailMeas.setColumnSelectionAllowed(false);
 		tblAvailMeas.setRowSelectionAllowed(true);
-		setupTableColumns(tblAvailMeas, true);
+	
 		rowFilter = new TableRowSorter<ElementListTableModel>(mdlAvailMeas);
 		tblAvailMeas.setRowSorter(rowFilter);
-			
+		
+    	// hide irrelevent columns
+		tblAvailMeas.setColumnControlVisible(true);
+    	TableColumnModelExt colmodel = (TableColumnModelExt)tblAvailMeas.getColumnModel();
+    	colmodel.getColumnExt(I18n.getText("hidden.MostRecentVersion")).setVisible(false);
+    	colmodel.getColumnExt(I18n.getText("dbbrowser.n")).setVisible(false);
+    	colmodel.getColumnExt(I18n.getText("dbbrowser.rec")).setVisible(false);
+    	colmodel.getColumnExt(I18n.getText("dbbrowser.hash")).setVisible(false);
+		
 		ElementListTableModel mdlChosenMeas = new ElementListTableModel(selectedElements);
 		tblChosenMeas.setModel(mdlChosenMeas);
-		tblChosenMeas.getColumnModel().removeColumn(tblChosenMeas.getColumn("hidden.MostRecentVersion"));
+		
 		chosenSorter = new ElementListTableSorter(mdlChosenMeas, tblChosenMeas);
 		chosenSorter.sortOnColumn(0, false);
 		tblChosenMeas.getTableHeader().addMouseListener(chosenSorter); // add sorter & header renderer
 		tblChosenMeas.setColumnSelectionAllowed(false);
 		tblChosenMeas.setRowSelectionAllowed(true);
 		setupTableColumns(tblChosenMeas, false);
+		
+    	// hide irrelevent columns
+		tblChosenMeas.setColumnControlVisible(true);
+    	TableColumnModelExt colmodel2 = (TableColumnModelExt)tblChosenMeas.getColumnModel();
+    	colmodel2.getColumnExt(I18n.getText("hidden.MostRecentVersion")).setVisible(false);
+    	colmodel2.getColumnExt(I18n.getText("dbbrowser.n")).setVisible(false);
+    	colmodel2.getColumnExt(I18n.getText("dbbrowser.rec")).setVisible(false);
+    	colmodel2.getColumnExt(I18n.getText("dbbrowser.hash")).setVisible(false);
+    	
 		
 		if(!isMultiDialog) {
 			// only single selection!

@@ -50,6 +50,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.table.TableColumnModelExt;
 import org.tellervo.desktop.gui.dbbrowse.BooleanCellRenderer;
 import org.tellervo.desktop.gui.dbbrowse.ElementListCellRenderer;
 import org.tellervo.desktop.gui.dbbrowse.ElementListManager;
@@ -64,6 +66,7 @@ import org.tellervo.desktop.sample.Sample;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.EntityType;
+import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.PopupListener;
 import org.tellervo.desktop.wsi.ResourceEvent;
 import org.tellervo.desktop.wsi.ResourceEventListener;
@@ -93,7 +96,7 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 	private JProgressBar pbStatus;
 	
 	private JPanel contentPanel, tablePanel, treePanel;
-	private JTable table;
+	private JXTable table;
 	private JTree tree;
 	
 	private ElementListTableSorter tableSorter;
@@ -222,12 +225,20 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 	
 	private void setupTable() {
 		tableModel = new ElementListTableModel();
-		table = new JTable(tableModel);
+		table = new JXTable(tableModel);
 		
 		tableSorter = new ElementListTableSorter(tableModel, table);
 		table.getTableHeader().addMouseListener(tableSorter); // add sorter & header renderer
 		table.setColumnSelectionAllowed(false);
 		table.setRowSelectionAllowed(true);
+		
+    	// hide irrelevent columns
+    	TableColumnModelExt colmodel = (TableColumnModelExt)table.getColumnModel();
+    	table.setColumnControlVisible(true);
+    	colmodel.getColumnExt(I18n.getText("hidden.MostRecentVersion")).setVisible(false);
+    	colmodel.getColumnExt(I18n.getText("dbbrowser.n")).setVisible(false);
+    	colmodel.getColumnExt(I18n.getText("dbbrowser.rec")).setVisible(false);
+    	colmodel.getColumnExt(I18n.getText("dbbrowser.hash")).setVisible(false);
 		
     	// set our column widths
     	ElementListTableModel.setupColumnWidths(table);

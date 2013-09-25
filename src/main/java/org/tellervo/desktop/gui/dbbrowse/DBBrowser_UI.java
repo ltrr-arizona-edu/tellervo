@@ -26,6 +26,7 @@ import java.awt.HeadlessException;
 
 import javax.swing.JButton;
 
+import org.jdesktop.swingx.JXTable;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 
@@ -46,8 +47,8 @@ public class DBBrowser_UI extends javax.swing.JDialog {
 	/** A return status code - returned if OK button has been pressed */
 	public static final int RET_OK = 1;
 	protected int returnStatus = RET_CANCEL;
-	protected javax.swing.JTable tblAvailMeas;
-	protected javax.swing.JTable tblChosenMeas;
+	protected JXTable tblAvailMeas;
+	protected JXTable tblChosenMeas;
 	protected JButton btnAdd;
 	protected JButton btnRemove;
 	
@@ -68,8 +69,8 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     	// Dynamic components
 	    btnAdd = new javax.swing.JButton();
 	    btnRemove = new javax.swing.JButton();
-	    tblAvailMeas = new javax.swing.JTable();
-	    tblChosenMeas = new javax.swing.JTable();
+	    tblAvailMeas = new JXTable();
+	    tblChosenMeas = new JXTable();
 	    // Standard components
     	initComponents();
     	
