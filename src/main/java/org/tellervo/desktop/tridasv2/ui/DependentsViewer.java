@@ -257,7 +257,7 @@ public class DependentsViewer extends JPanel implements ResourceEventListener, E
 			SeriesSearchResource resource = new SeriesSearchResource(search);
 
 			// flag it as comprehensive
-			resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+			resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
 			resource.setOwnerWindow(SwingUtilities.getWindowAncestor(this));
 			
 			resource.addResourceEventListener(this);
