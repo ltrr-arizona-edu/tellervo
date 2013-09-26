@@ -60,6 +60,7 @@ import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.PopupListener;
 import org.tellervo.desktop.wsi.ResourceEvent;
@@ -74,6 +75,7 @@ import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tridas.schema.TridasIdentifier;
 import java.awt.Component;
+import javax.swing.JButton;
 
 
 /**
@@ -100,6 +102,7 @@ public class DependentsViewer extends JPanel implements ResourceEventListener, E
 	private ElementListTableModel tableModel;
 	
 	private final static String TABLEPANEL = "Series Table View";
+	private JButton btnRefresh;
 	
 	public DependentsViewer(Sample sample) {
 		this.sample = sample;
@@ -116,11 +119,8 @@ public class DependentsViewer extends JPanel implements ResourceEventListener, E
 
 		// create status bar
 		JPanel statusPanel = new JPanel();
-		statusPanel.setLayout(new BoxLayout(statusPanel, BoxLayout.X_AXIS));
 		txtStatus = new JLabel("");
-		pbStatus = new JProgressBar();
-		pbStatus.setVisible(false);
-		setLayout(new MigLayout("", "[450px,grow,fill]", "[3px,grow,fill][18px]"));
+		setLayout(new MigLayout("", "[450px,grow,fill]", "[333.00px,grow,fill][18px]"));
 		
 		tablePanel = new JPanel(new BorderLayout());
 		add(tablePanel, "cell 0 0,growx,aligny top");
@@ -173,13 +173,29 @@ public class DependentsViewer extends JPanel implements ResourceEventListener, E
     			popup.show(table, e.getX(), e.getY());
     		}
     	});
-		statusPanel.add(txtStatus);
-		Component horizontalStrut = Box.createHorizontalStrut(8);
-		statusPanel.add(horizontalStrut);
-		statusPanel.add(pbStatus);
+		statusPanel.setLayout(new MigLayout("", "[0:30.00px,grow][grow,fill][50px]", "[21.00px][]"));
+		statusPanel.add(txtStatus, "cell 0 0 3 1,alignx left,aligny center");
 		statusPanel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 		
 		add(statusPanel, "cell 0 1,growx,aligny top");
+		pbStatus = new JProgressBar();
+		pbStatus.setVisible(false);
+		statusPanel.add(pbStatus, "cell 0 1 2 1,grow");
+		
+		btnRefresh = new JButton();
+		btnRefresh.setIcon(Builder.getIcon("reload.png", 16));
+		btnRefresh.setToolTipText("Refresh");
+		btnRefresh.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				loadedComprehensive = false;
+				notifyPanelVisible();				
+			}
+			
+			
+		});
+		statusPanel.add(btnRefresh, "cell 2 1,alignx left,aligny center");
 	
 	}
 	
@@ -261,6 +277,14 @@ public class DependentsViewer extends JPanel implements ResourceEventListener, E
 			
 					
 			TridasIdentifier identifier = ((TellervoWsiTridasElement) sample.getLoader()).getTridasIdentifier();
+			
+			if((identifier.getValue()==null) || (identifier.getValue().equals("newSeries")))
+			{
+				setStatus("New series has no dependents.", false);
+				return;
+			}
+			
+			
 			// create a new resource
 			SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
 			search.addSearchConstraint(SearchParameterName.DEPENDENTSERIESID, SearchOperator.EQUALS, identifier.getValue());

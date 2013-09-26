@@ -232,6 +232,12 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		table.setColumnSelectionAllowed(false);
 		table.setRowSelectionAllowed(true);
 		
+    	// set our column widths
+    	ElementListTableModel.setupColumnWidths(table);
+		
+    	table.setDefaultRenderer(Object.class, new ElementListCellRenderer(this, false));
+		table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer(this, false));
+    	
     	// hide irrelevent columns
     	TableColumnModelExt colmodel = (TableColumnModelExt)table.getColumnModel();
     	table.setColumnControlVisible(true);
@@ -239,12 +245,8 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
     	colmodel.getColumnExt(I18n.getText("dbbrowser.n")).setVisible(false);
     	colmodel.getColumnExt(I18n.getText("dbbrowser.rec")).setVisible(false);
     	colmodel.getColumnExt(I18n.getText("dbbrowser.hash")).setVisible(false);
-		
-    	// set our column widths
-    	ElementListTableModel.setupColumnWidths(table);
-		
-    	table.setDefaultRenderer(Object.class, new ElementListCellRenderer(this, false));
-		table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer(this, false));
+				
+
 		
 		// popup menu
 		table.addMouseListener(new PopupListener() {
