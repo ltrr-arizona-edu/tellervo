@@ -433,7 +433,12 @@ public class SeriesReport extends ReportBase {
 		// Flag to show if there are *any* ring remarks
 		Boolean hasRemarks = false;
 
-		mainTable.setWidthPercentage(100f);
+
+		
+		 float[] columnWidths = new float[] {20f, 8f, 8f, 8f, 8f, 8f, 8f, 8f, 8f, 8f, 8f};
+		 mainTable.setWidths(columnWidths);
+		 mainTable.setWidthPercentage(100f);
+
 		
 		if(wj==true)
 		{
@@ -473,7 +478,10 @@ public class SeriesReport extends ReportBase {
 				}*/
 				
 				// Use the current default display units
-				if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
+				
+				colHeadCell.setPhrase(new Phrase(displayUnits.value(), tableHeaderFont));
+				
+				/*if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
 				{
 					colHeadCell.setPhrase(new Phrase("microns", tableHeaderFont));
 				}
@@ -481,6 +489,7 @@ public class SeriesReport extends ReportBase {
 				{
 					colHeadCell.setPhrase(new Phrase("1/100th mm", tableHeaderFont));
 				}
+				*/
 				
 			} catch (Exception e){
 				colHeadCell.setPhrase(new Phrase(" ", tableHeaderFont));
@@ -526,7 +535,7 @@ public class SeriesReport extends ReportBase {
 				}
 				else
 				{
-					if(displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+					/*if(displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 					{
 						try{
 						Integer val = (Integer) value;
@@ -537,10 +546,43 @@ public class SeriesReport extends ReportBase {
 
 						}
 					}
-					else if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
+					else if(displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
 					{
-						cellValuePhrase = new Phrase(value.toString(), getTableFont(col));
+						try{
+						Integer val = (Integer) value;
+						val =val/20;
+						cellValuePhrase = new Phrase(String.valueOf(val), getTableFont(col));
+						} catch (Exception e){
+							cellValuePhrase = new Phrase(value.toString(), getTableFont(col));
+
+						}					
 					}
+					else if(displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
+					{
+						try{
+						Integer val = (Integer) value;
+						val =val/50;
+						cellValuePhrase = new Phrase(String.valueOf(val), getTableFont(col));
+						} catch (Exception e){
+							cellValuePhrase = new Phrase(value.toString(), getTableFont(col));
+
+						}					
+					}
+					else if(displayUnits.equals(NormalTridasUnit.TENTH_MM))
+					{
+						try{
+						Integer val = (Integer) value;
+						val =val/100;
+						cellValuePhrase = new Phrase(String.valueOf(val), getTableFont(col));
+						} catch (Exception e){
+							cellValuePhrase = new Phrase(value.toString(), getTableFont(col));
+
+						}					
+					}
+					else if(displayUnits.equals(NormalTridasUnit.MICROMETRES))
+					{*/
+						cellValuePhrase = new Phrase(value.toString(), getTableFont(col));
+					//}
 				}	
 				
 				
