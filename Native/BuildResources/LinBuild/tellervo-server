@@ -1006,7 +1006,7 @@ function postgresSetup($quick=false)
   else
   {
 	  // Find out if the user wants a new db
-	  echo "Would you like the installer to set up a blank Tellervo database?\n";
+	  echo "Would you like the installer to set up a new Tellervo database?\n";
 	  echo "    [Y]/n  ";
 	  $response = fgets(STDIN);
   } 
@@ -1066,9 +1066,7 @@ function postgresSetup($quick=false)
       setConfigVariable("%%DBNAME%%", "tellervo");   
       
       // Create the database and populate from the database template
-      echo "\nCreating database.  This could take a while...\n";
-      exec("su - postgres -c \"createdb tellervo 2>> ".$logfile."\"");
-      exec("su - postgres -c \"psql tellervo < $dbtemplate 2>> ".$logfile."\"");
+      createDatabase();
       
       // Set pg_hba.conf file entry
       $pg_hba_str = "local        all      ".trim($user, "\n\r")."                  trust\\n".
@@ -1081,6 +1079,52 @@ function postgresSetup($quick=false)
       exec("/etc/init.d/postgresql restart\n");
    }
 }  
+
+/**
+ *  Create the Postgres Tellervo database 
+ */
+function createDatabase()
+{	
+    global $logfile;
+    global $dbtemplate;
+    global $dbconn;
+   
+   $sql = "SELECT 1 AS result FROM pg_database where datname='tellervo'";
+   $cmd = "su - postgres -c \" psql -c \\\"$sql\\\" \"";
+ 
+  	exec($cmd, $resp);
+  
+    if(strpos($resp[2], "1") === false)
+    {
+        // Tellervo database doesn't currently exist
+    }
+    else
+    {
+   		// Tellervo database DOES exist     
+
+    		  // Find out if the user wants drop the existing database
+	 		  echo "\nWarning - there is an existing Tellervo database. Would you like to delete it\nand create a new one?\n";
+			  echo "    y/[N]  ";
+	          $response = fgets(STDIN);
+	          
+	          if((trim(strtolower($response))=='y') || (trim(strtolower($response))=='yes'))
+              {
+              		// Drop Database
+              		pg_close($dbconn);
+              		echo"\nDeleting existing database...\n";
+              		exec("su - postgres -c \"dropdb tellervo\"");
+    	      }
+    	      else
+    	      {
+    	      		return;
+    	      }
+        
+    }
+    
+    echo "\nCreating database.  This could take a while...\n";
+    exec("su - postgres -c \"createdb tellervo 2>> ".$logfile."\"");
+    exec("su - postgres -c \"psql tellervo < $dbtemplate 2>> ".$logfile."\"");
+}
 
 /**
  * Set up the database user either by creating a new user or

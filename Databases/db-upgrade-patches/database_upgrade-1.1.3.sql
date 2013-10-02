@@ -2,12 +2,12 @@
 ALTER TABLE tblloan ALTER COLUMN issuedate SET DEFAULT now();
 ALTER TABLE tblloan ALTER COLUMN issuedate SET NOT NULL;
 
-CREATE VIEW vwtblloan AS
+CREATE OR REPLACE VIEW vwtblloan AS
 SELECT l.loanid, l.firstname, l.lastname, l.organisation, l.duedate, l.issuedate, l.returndate, age(l.duedate, l.issuedate) as loanperiod, array_to_string(l.files, '><'::text) AS files, l.notes
 FROM tblloan l;
 
 
-CREATE VIEW vwtblcurationmostrecent as 
+CREATE OR REPLACE VIEW vwtblcurationmostrecent as 
 select c.curationid, c.curationstatusid, c.sampleid, c.createdtimestamp, c.curatorid, c.loanid, c.notes 
 from tblcuration c where not exists (select * from tblcuration c2 where c2.createdtimestamp > c.createdtimestamp 
 and c.sampleid=c2.sampleid);
@@ -27,7 +27,7 @@ FROM tblsample s
  
 
 
-CREATE VIEW vwtblcuration AS
+CREATE OR REPLACE VIEW vwtblcuration AS
    SELECT c.curationid, c.curationstatusid, c.sampleid, c.createdtimestamp, c.curatorid, c.loanid, c.notes, cl.curationstatus
 FROM (tblcuration c
 LEFT JOIN tlkpcurationstatus cl ON ((c.curationstatusid = cl.curationstatusid)));
@@ -358,7 +358,7 @@ CREATE OR REPLACE VIEW vwtblcuration AS
 CREATE OR REPLACE VIEW vwtblcurationmostrecent AS 
  SELECT c.curationid, c.curationstatusid, c.sampleid, c.createdtimestamp, c.curatorid, c.loanid, c.notes
    FROM tblcuration c
-  WHERE NOT (EXISTS ( SELECT c2.curationid, c2.curationstatusid, c2.sampleid, c2.createdtimestamp, c2.curatorid, c2.loanid, c2.notes, c2.storagelocation, c2.iscurrent
+  WHERE NOT (EXISTS ( SELECT c2.curationid, c2.curationstatusid, c2.sampleid, c2.createdtimestamp, c2.curatorid, c2.loanid, c2.notes, c2.storagelocation
            FROM tblcuration c2
           WHERE c2.createdtimestamp > c.createdtimestamp AND c.sampleid = c2.sampleid));
 
@@ -699,7 +699,7 @@ CREATE OR REPLACE VIEW vwcomprehensivevm AS
  m.importtablename, m.measuredbyid, pg_catalog.concat(anly.firstname, ' ', anly.lastname) AS measuredby, mc.datingtypeid, m.datingerrorpositive, m.datingerrornegative, m.measurementvariableid, m.unitid, m.power, m.provenance, m.measuringmethodid, m.supervisedbyid, pg_catalog.concat(spvr.firstname, ' ', spvr.lastname) AS supervisedby, su.username, op.name AS opname, dt.datingtype, mc.vmextent AS extentgeometry, cd.crossdateid, cd.mastervmeasurementid, cd.startyear AS newstartyear, cd.justification, cd.confidence, der.objectid, der.objecttitle, der.objectcode, der.elementcode, der.samplecode, der.radiuscode, dcc.directchildcount
    FROM tblvmeasurement vm
    JOIN tlkpvmeasurementop op ON vm.vmeasurementopid = op.vmeasurementopid
-   LEFT JOIN tlkpdomain dom ON vm.domainid = dom.domainid;
+   LEFT JOIN tlkpdomain dom ON vm.domainid = dom.domainid
    LEFT JOIN vwderivedtitles der ON vm.vmeasurementid = der.vmeasurementid
    LEFT JOIN vwdirectchildcount dcc ON vm.vmeasurementid = dcc.vmeasurementid
    LEFT JOIN tblmeasurement m ON vm.measurementid = m.measurementid
