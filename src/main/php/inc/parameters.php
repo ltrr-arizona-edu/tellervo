@@ -1757,8 +1757,8 @@ class securityUserParameters extends securityUserEntity implements IParams
     function setParamsFromXMLRequest()
     {
     	global $firebug;
-		global $tellervoNS;
-        global $tridasNS;
+	global $tellervoNS;
+	global $tridasNS;
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
      	

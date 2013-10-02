@@ -87,10 +87,12 @@ class securityUser extends securityUserEntity implements IDBAccessor
     function setChildParamsFromDB()
     {
         global $dbconn;
+	global $firebug;
         
         $this->groupArray = array();
         
-        $sql = "SELECT DISTINCT SecurityGroupID FROM cpgdb.GetGroupMembership(".$this->id.") ORDER BY SecurityGroupID ASC";
+        $sql = "SELECT DISTINCT SecurityGroupID FROM cpgdb.GetGroupMembership('".$this->id."') ORDER BY SecurityGroupID ASC";
+	$firebug->log($sql, "Get group sql");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -313,15 +315,18 @@ class securityUser extends securityUserEntity implements IDBAccessor
                 // If ID has not been set then we assume that we are writing a new record to the DB.  Otherwise updating.
                 if($this->id == NULL)
                 {
-                    // New record
-                    $sql = "insert into tblsecurityuser (username, password, firstName, lastName, isactive) values (";
+                    $this->setID(uuid::getUUID(), $domain);
+                    
+		    // New record
+                    $sql = "insert into tblsecurityuser (securityuserid, username, password, firstName, lastName, isactive) values (";
+                    $sql.= "'".pg_escape_string($this->id)."', ";
                     $sql.= "'".pg_escape_string($this->username)."', ";
                     $sql.= "'".pg_escape_string($this->password)."', ";
                     $sql.= "'".pg_escape_string($this->firstName)."', ";
                     $sql.= "'".pg_escape_string($this->lastName)."', ";
                     $sql.= dbhelper::formatBool($this->isActive,'pg');
                     $sql.= " )";
-                    $sql2 = "select * from tblsecurityuser where securityuserid=currval('tblsecurityuser_securityuserid_seq')";
+                    $sql2 = "select * from tblsecurityuser where securityuserid='".$this->id."'";
                 }
                 else
                 {

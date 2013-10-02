@@ -53,6 +53,7 @@ public class Dictionary extends TellervoResource {
 		// load my cache and unload on a successful remote load
 		new TellervoResourceCacher(this, true).load();
 	}
+	
 	@Override
 	protected void populateRequest(WSIRequest request) {
 		request.setDictionaries(new Dictionaries());

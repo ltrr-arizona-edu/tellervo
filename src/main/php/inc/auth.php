@@ -505,7 +505,7 @@ class auth
         }
 
         // Do the actual perms lookup
-        $sql = "select * from cpgdb.getuserpermissionset('$this->securityuserid', '$theObjectType', '$theObjectID'::uuid)";
+        $sql = "select * from cpgdb.getuserpermissionset('$this->securityuserid'::uuid, '$theObjectType', '$theObjectID'::uuid)";
         $firebug->log($sql, "Get permissions sql");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -571,8 +571,10 @@ class auth
    */
   public function isAdmin()
   {
+	global $firebug;
         global $dbconn;
-        $sql = "select * from cpgdb.isadmin(".$this->securityuserid.") where isadmin=true";
+        $sql = "select * from cpgdb.isadmin('".$this->securityuserid."'::uuid) where isadmin=true";
+	$firebug->log($sql, "Checking isAdmin SQL");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {

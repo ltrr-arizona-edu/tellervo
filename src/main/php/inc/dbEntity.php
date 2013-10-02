@@ -178,9 +178,8 @@ class dbEntity
      *
      * @param String $groupXMLTag
      */
-    public function __construct($groupXMLTag)
+    public function __construct()
     {
-    	$this->setgroupXMLTag($groupXMLTag);
     	$this->parentEntityArray = array();
     	$this->childrenEntityArray = array();
 		$this->files = array();
@@ -780,8 +779,7 @@ class objectEntity extends dbEntity
     	$this->object = new objectType();
 	$this->type = new objectType();
     	$this->files = array();
-        $groupXMLTag = "objects";
-        parent::__construct($groupXMLTag);  	
+        parent::__construct();  	
 	}
 
 	/***********/
@@ -1145,7 +1143,7 @@ class elementEntity extends dbEntity
 	
     function __construct()
     {  
-		parent::__construct("");
+		parent::__construct();
 		$this->location = new location();	
 		$this->taxon = new taxon(); 	
 		$this->type = new elementType(); 	
@@ -1723,8 +1721,7 @@ class sampleEntity extends dbEntity
 	
     function __construct()
     {  
-        $groupXMLTag = "samples";
-        parent::__construct($groupXMLTag);
+        parent::__construct();
         $this->type = new sampleType();  	
         $this->box = new box();
 
@@ -2083,8 +2080,7 @@ class radiusEntity extends dbEntity
     
     function __construct()
     {
-        $groupXMLTag = "radii";
-        parent::__construct($groupXMLTag);  
+        parent::__construct();  
         $this->pith = new complexPresenceAbsence();
         $this->heartwood = new complexPresenceAbsence();
         $this->sapwood = new complexPresenceAbsence();
@@ -3240,8 +3236,7 @@ class curationEntity extends dbEntity
 	
 	function __construct()
 	{
-		$groupXMLTag = "curation";
-		parent::__construct($groupXMLTag);
+		parent::__construct();
 		$this->curationstatus = new curationStatus();
 		$this->curator = new SecurityUser();
 		$this->entityIdArray = array();
@@ -3537,8 +3532,7 @@ class measurementEntity extends dbEntity
     
     function __construct()
     {  
-        $groupXMLTag = "elements";
-        parent::__construct($groupXMLTag); 
+        parent::__construct(); 
 		$this->location = new location();	
 		$this->taxon = new taxon(); 	
 		$this->dendrochronologist = new securityUser();

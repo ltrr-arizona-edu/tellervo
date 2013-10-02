@@ -102,6 +102,8 @@ public class UserGroupAdminModel extends AbstractModel {
 	public ArrayList<WSISecurityGroup> getParentGroups() {
 		ArrayList<WSISecurityGroup> parentGroups = new ArrayList<WSISecurityGroup>();
 		Set<String> childIds = new HashSet<String>();
+		
+		
 		for(WSISecurityGroup g:getGroupList()){
 			for(String childId: g.getGroupMembers()){
 				childIds.add(childId);

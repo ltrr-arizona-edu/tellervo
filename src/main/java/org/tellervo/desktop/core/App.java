@@ -26,10 +26,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.net.URISyntaxException;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.MissingResourceException;
 
 import javax.media.opengl.GLException;
 
@@ -81,7 +79,6 @@ public class App{
   public static WSISecurityUser currentUser;
   public static Boolean isAdmin;
   public static String domain;
-  private static String username;
   private static PreferencesDialog prefsDialog;
   public static AppModel appmodel;
   private static Log4JViewer logviewer;
@@ -232,14 +229,14 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
 	    	}
 	       	
 			// Grab username either from prefs or directly from dialog
-			if(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, null)!=null)
+			/*if(App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, null)!=null)
 			{
 				username= App.prefs.getPref(PrefKey.PERSONAL_DETAILS_USERNAME, null);
 			}
 			else
 			{
 				username=dlg.getUsername().toString();
-			}
+			}*/
         }
 
     }
