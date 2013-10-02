@@ -22,6 +22,7 @@ package org.tellervo.desktop.gui.cross;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import org.jdesktop.swingx.JXTable;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.ui.I18n;
 
@@ -136,7 +137,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         tblHistogram = new javax.swing.JTable();
         panelSignificantScores = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        tableSignificantScores = new javax.swing.JTable();
+        tblSignificantScores = new JXTable();
         panelAllScores = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
         tblAllScores = new javax.swing.JTable();
@@ -240,7 +241,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
                 .addContainerGap())
         );
 
-        tableSignificantScores.setModel(new javax.swing.table.DefaultTableModel(
+        tblSignificantScores.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null, null, null},
                 {null, null, null, null, null, null, null},
@@ -251,7 +252,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
                 "Range", "Overlap", "Trend", "T-Score", "R-Value", "D-Score", "Weiserjahre"
             }
         ));
-        jScrollPane2.setViewportView(tableSignificantScores);
+        jScrollPane2.setViewportView(tblSignificantScores);
 
         org.jdesktop.layout.GroupLayout panelSignificantScoresLayout = new org.jdesktop.layout.GroupLayout(panelSignificantScores);
         panelSignificantScores.setLayout(panelSignificantScoresLayout);
@@ -630,7 +631,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     protected javax.swing.JPanel panelStatMap;
     protected javax.swing.JPanel panelStats;
     protected javax.swing.JScrollPane scrollInfo;
-    protected javax.swing.JTable tableSignificantScores;
+    protected JXTable tblSignificantScores;
     protected javax.swing.JTable tbl1ToNStats;
     protected javax.swing.JTable tblAllScores;
     protected javax.swing.JTable tblHistogram;

@@ -46,6 +46,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.jdesktop.swingx.JXTable;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.graph.Graph;
 import org.tellervo.desktop.graph.GraphActions;
@@ -349,7 +350,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
      */
     private void setFloatingPosition(Range pos)
     {
-    	tableSignificantScores.setRowSelectionInterval(sigScoresModel.getRowForRange(pos), sigScoresModel.getRowForRange(pos));
+    	tblSignificantScores.setRowSelectionInterval(sigScoresModel.getRowForRange(pos), sigScoresModel.getRowForRange(pos));
     }
     
     private void initialize() {  	
@@ -378,21 +379,22 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	window.setVisible(true);
     	window.setIconImage(Builder.getApplicationIcon());
     	
-    	if (tableSignificantScores.getRowCount()>0)	tableSignificantScores.setRowSelectionInterval(0, 0);
+    	if (tblSignificantScores.getRowCount()>0)	tblSignificantScores.setRowSelectionInterval(0, 0);
 
     	
     }
     
     private void setupTables() {
     	// sig scores table
-       	sigScoresModel = new SigScoresTableModel(tableSignificantScores);
-    	tableSignificantScores.setModel(sigScoresModel);
+       	sigScoresModel = new SigScoresTableModel(tblSignificantScores);
+    	tblSignificantScores.setModel(sigScoresModel);
     	sigScoresModel.applyFormatting();
     	
-    	tableSignificantScores.getTableHeader().setReorderingAllowed(false);    	
-    	tableSignificantScores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-    	tableSignificantScores.setRowSelectionAllowed(true);
-    	tableSignificantScores.setColumnSelectionAllowed(false);
+    	tblSignificantScores.getTableHeader().setReorderingAllowed(false);    	
+    	tblSignificantScores.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    	tblSignificantScores.setRowSelectionAllowed(true);
+    	tblSignificantScores.setColumnSelectionAllowed(false);
+    	((JXTable) tblSignificantScores).setColumnControlVisible(true);
     	    	
     	// all scores table
     	allScoresModel = new AllScoresTableModel(tblAllScores);
@@ -442,7 +444,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     			}
     			
     			// If table has rows - select first (most significant)
-    			if (tableSignificantScores.getRowCount()>0)	tableSignificantScores.setRowSelectionInterval(0, 0);
+    			if (tblSignificantScores.getRowCount()>0)	tblSignificantScores.setRowSelectionInterval(0, 0);
     		}
     	};
     	
@@ -450,15 +452,15 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	cboFloating.addActionListener(listChanged);
     	
     	// now, when our table row changes
-    	tableSignificantScores.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+    	tblSignificantScores.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent lse) {
-				if(lse.getValueIsAdjusting() || tableSignificantScores.getSelectedRow() == -1) 
+				if(lse.getValueIsAdjusting() || tblSignificantScores.getSelectedRow() == -1) 
 					return;
 				
 				// deselect anything in tblAllScores
 				tblAllScores.clearSelection();
 
-				int row = tableSignificantScores.getSelectedRow();
+				int row = tblSignificantScores.getSelectedRow();
 				
 				// make our new range
 				newCrossdateRange = sigScoresModel.getSecondaryRangeForRow(row);
@@ -478,7 +480,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 					return;
 				
 				// unset any selections in sig scores
-				tableSignificantScores.clearSelection();
+				tblSignificantScores.clearSelection();
 			
 				int row = tblAllScores.getSelectedRow();
 				int col = tblAllScores.getSelectedColumn();

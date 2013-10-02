@@ -83,6 +83,30 @@ An r-value can range from 0.0 (no correlation) to 1.0 (perfect correlation).
 \section{Crossdating series}
 \index{Crossdating!Performing}
 
+\info{Crossdating is still a work in progress in Tellervo}
+
+To cross-date a series in Tellervo open the series in question and go to \menuthree{Tools}{Crossdate against...}{Series from database}.  The database browser will open and you should select two or more series.  The simplest use-case is to attempt to cross a single unknown series against a single reference chronology, but it is also possible to work with a pool of multiple series within the crossdate dialog.  Once you've selected your series click OK to open them in the crossdate dialog (figure \ref{fig:crossdate}).  
+
+\begin{figure}[hbtp]
+  \label{fig:crossdate}
+  \centering
+  \includegraphics[width=\textwidth]{Images/crossdate1.png}
+  \caption{Screenshot showing an example of the crossdating dialog.}
+\end{figure}
+
+At the top of the crossdate dialog it shows which series are currently being considered.  Top left is the floating series (the one that is of unknown date and is being moved to locate it's correct date position) and top right is the reference series (the series of known date).  If you loaded a pool of series you can uses these drop down menus to pick the series you want to compare.  You can also change the pool of series using button immediately below.  Below is a tabular and graphic representation of the crossdate that is being performed.  
+
+Three tabs are provided for inspecting the statistical output of the various crossdating positions.  The first is a simple \textbf{1-to-1} comparison of the two series selected at the top of the screen.  This shows the various positions for the floating series against the reference chronology.   By selecting `Significant scores only' you will be presented with a simple table of the most statistically significant positions based upon your chosen statistical method, typically t-scores but other options can be chosen using the drop down menu at the bottom of the dialog.  By selecting rows in this table the graph below will update to shown the visual position of the crossdate selected.  Another option for exploring 1-to-1 crossdates is to view `All scores' which includes all positions whether they are significant or not.  Finally you can also choose `Histogram of scores' to explore the distribution of possible matches.
+
+The next tab allows you to explore your floating series against all the other series in your pool (a \textbf{1-to-n} comparison).  This is useful for instance when you have an unknown sample that you are trying to match against a selection of reference chronologies e.g. as is typical in a dendroprovenancing study.  There are two options for the type of matches shown.  The first is a list of all the scores for the `floating' series in it's current chronological position against all the other series in the pool.  The second is a list of the best statistical match in any chronological position for the floating series against each of the series in the pool in turn.  The results of this analysis can be viewed either as a table or as a map.  In the latter, locations are shown for each of the series with the dot size relative to the statistical score.
+
+The final tab shows the result of running all combination of series in the pool (a \textbf{n-to-n} comparison).  In this tab there is no distinction between floating and reference series.  Crossdates are run for each series against each of the other series and the details of the best match shown in the grid.  All series are treated as `floating' and no existing chronological positions are taken into consideration.  This method is largely reserved for a first-pass look when you have many samples of unknown date.  Clearly closer examination of potential matches must be done before proceeding.
+
+At the bottom of the screen is a graphical representation of the current cross-match being examined.  The floating series on the graph is also click and draggable which means that manual visual cross-matches can be explored.  Below the graph the statistics for the current position are displayed.
+
+Once you are satisfied you have a valid cross-match you can finish your crossdate by pressing the apply button.  This will create a new derived series based on your floating series but redated to the new chronological position.  You have the opportunity to explain your reasoning for choosing the cross-match and also give the match a broad star rating.  Once the newly dated series is committed, users can review the crossdate by viewing the history tab of the series, right clicking and selecting 'review crossdate'.  This provides a level of transparency that has not been possible before.  It's also a very useful tool for supervisors to assess the progress of students.
+
+
 \section{Managing chronologies}
 \index{Crossdating!Managing chronologies}
 \index{Chronologies}

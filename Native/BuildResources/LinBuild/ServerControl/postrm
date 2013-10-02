@@ -8,14 +8,23 @@ echo "*******************" >> /var/log/tellervo-installation.log
 
    
 if [ $1 = 'remove' ]; then
-   rm /usr/share/tellervo-server/*.backup
-   rm /usr/share/tellervo-server/server_credentials
-   rm /usr/share/tellervo-server/set_database_permission.sql
-   rmdir /usr/share/tellervo-server
-   rm /var/www/tellervo/config.php
-   rm /var/www/tellervo/systemconfig.php
-   rmdir /var/www/tellervo
+
+   # Delete various config files
+   rm -f /usr/share/tellervo-server/*.backup
+   rm -f /usr/share/tellervo-server/server_credentials
+   rm -f /usr/share/tellervo-server/set_database_permission.sql
+   rm -f /var/www/tellervo/config.php
+   rm -f /var/www/tellervo/systemconfig.php
    
+   # Delete webservice folder if it exists and is non-empty
+   if [ -d "/var/www/tellervo" ]; then
+  		rmdir --ignore-fail-on-non-empty /var/www/tellervo
+   fi  
+    
+   # Delete tellervo-server folder if it exists and is non-empty
+   if [ -d "/usr/share/tellervo-server" ]; then
+   		rmdir --ignore-fail-on-non-empty /usr/share/tellervo-server
+   fi
    
 #elif [ $1 = 'upgrade' ]; then   
    
@@ -27,7 +36,17 @@ elif [ $1 = 'failed-upgrade' ]; then
 
 	echo "Previous version postrm script failed, but continuing anyway..." >> /var/log/tellervo-installation.log
 
+
+elif [ $1 = 'purge' ]; then
+
+	echo "Deleting database..."
+	su - postgres -c "dropdb tellervo"
+	echo "Deleting logs..."
+	rm -f /var/log/tellervo-server.log
+    exit 0;
 fi
+
+
 
 
 echo "*******************" >> /var/log/tellervo-installation.log
