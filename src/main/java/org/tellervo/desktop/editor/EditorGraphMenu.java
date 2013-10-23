@@ -19,7 +19,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.editor;
 
-import gov.noaa.ncdc.paleo.fhchart.gui.PlotWindow;
+import org.fhaes.fhchart.gui.PlotWindow;
 
 import java.awt.Frame;
 import java.awt.Window;

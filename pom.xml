@@ -348,9 +348,9 @@
 			<version>2.2</version>
 		</dependency>
 		<dependency>
-			<groupId>gov.noaa.ncdc.paleo</groupId>
+			<groupId>org.fhaes</groupId>
 			<artifactId>fhchart</artifactId>
-			<version>0.2.0-SNAPSHOT</version>
+			<version>0.2.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>joda-time</groupId>
@@ -869,8 +869,7 @@
 					</execution>
 				</executions>
 			</plugin>
-			
-			
+		
 			<!-- Nasty kludge fixes.  Tasks that Maven can 
 			not perform are	done by running Ant instead-->
 			<plugin>
@@ -973,6 +972,11 @@
 								      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
 								        <arg value="main.nsh"/>  
 								      </exec>  
+								      
+								      <!-- Copy setup file to final binaries folder in case the signing doesn't work -->
+								      <copy file="${project.build.directory}/${project.build.finalName}-unsigned.exe" 
+								      tofile="${project.build.directory}/binaries/desktop/${project.version}/Windows/${project.build.finalName}-setup.exe" failonerror="false"/>
+								      
 								 </try>
 								 <catch>
 								    <echo>**********************************************</echo>
@@ -983,6 +987,35 @@
 								 	<sleep seconds="5"/>
 								 </catch>
 								 </trycatch>
+								 
+								<trycatch>
+							    <try>		
+							    	  <!-- Try to sign the Setup.exe with the University of Arizona certificate -->					      
+								      <exec dir="${project.build.directory}" executable="osslsigncode">  
+								        <arg value="sign"/>  
+								        <arg value="-certs"/>
+								        <arg value="/home/pbrewer/.ssh/cert.pem"/>
+								        <arg value="-key"/>
+								        <arg value="/home/pbrewer/.ssh/key.pem"/>
+								        <arg value="-n"/>
+								        <arg value="Tellervo"/>
+								        <arg value="-i"/>
+								        <arg value="http://www.tellervo.org"/>
+								        <arg value="-in"/>
+								        <arg value="${project.build.directory}/${project.build.finalName}-unsigned.exe"/>
+								        <arg value="-out"/>
+								        <arg value="${project.build.directory}/binaries/desktop/${project.version}/Windows/${project.build.finalName}-setup.exe"/>
+								        
+								      </exec>  
+								 </try>
+								 <catch>
+								    <echo>**********************************************</echo>
+								    <echo> UNABLE TO SIGN Windows executable            </echo>
+								 	<echo>**********************************************</echo>
+								 	<sleep seconds="5"/>
+								 </catch>
+								 </trycatch>
+								 
 							</tasks>
 						</configuration>
 						<goals>
@@ -998,6 +1031,32 @@
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
 									classpathref="maven.plugin.classpath"/>
 							      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Java"/>
+							      
+							      
+							    <trycatch>
+							    <try>		
+							    	  <!-- Try to sign the jar with the University of Arizona certificate -->					      
+								      <exec dir="${project.build.directory}" executable="jarsigner">  
+								        <arg value="-storetype"/>  
+								        <arg value="pkcs12"/>
+								        <arg value="-keystore"/>
+								        <arg value="/home/pbrewer/.ssh/incommon-certificate.p12"/>
+								        <arg value="-storepass:file"/>
+								        <arg value="/home/pbrewer/.ssh/key"/>
+								        <arg value="-keypass:file"/>
+								        <arg value="/home/pbrewer/.ssh/key"/>
+								        <arg value="${project.build.directory}/${project.build.finalName}.jar"/>
+								        <arg value="the university of arizona's internet2 id"/>								        
+								      </exec>  
+								 </try>
+								 <catch>
+								    <echo>**********************************************</echo>
+								    <echo> UNABLE TO SIGN  executable jar            </echo>
+								 	<echo>**********************************************</echo>
+								 	<sleep seconds="5"/>
+								 </catch>
+								 </trycatch>
+								 
 							      <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/binaries/desktop/${project.version}/Java/${project.build.finalName}.jar" failonerror="false"/>
 							</tasks>
 						</configuration>

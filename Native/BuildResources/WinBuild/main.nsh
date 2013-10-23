@@ -52,7 +52,9 @@ FunctionEnd
 ; MUI end ------
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "..\..\binaries\desktop\${PRODUCT_VERSION}\${OUTFOLDER}\tellervo-${PRODUCT_VERSION}-${PLATFORM_SUFFIX}setup.exe"
+;OutFile "..\..\binaries\desktop\${PRODUCT_VERSION}\${OUTFOLDER}\tellervo-${PRODUCT_VERSION}-${PLATFORM_SUFFIX}setup.exe"
+OutFile "..\..\tellervo-${PRODUCT_VERSION}-${PLATFORM_SUFFIX}unsigned.exe"
+
 
 InstallDir "$PROGRAMFILES\${PRODUCT_NAME}"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""

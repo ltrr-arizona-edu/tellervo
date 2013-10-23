@@ -1124,6 +1124,9 @@ function createDatabase()
     echo "\nCreating database.  This could take a while...\n";
     exec("su - postgres -c \"createdb tellervo 2>> ".$logfile."\"");
     exec("su - postgres -c \"psql tellervo < $dbtemplate 2>> ".$logfile."\"");
+    
+    runDBUpgrades();
+    
 }
 
 /**
@@ -1406,6 +1409,18 @@ function verifySetup($silent=false)
 		if(getTellervoDPKGVersion()!=getTellervoDBVersion()) return FALSE;
 	}
 	
+	if($silent!=TRUE) echoTruncatedString("    - Checking server can access the Internet:");
+	$connected = haveNetworkConnectivity();
+	if($silent!=TRUE) 
+	{
+		printResult($connected);
+		if($connected===FALSE) $runningresult = FALSE;
+	}
+	else
+	{
+		if($connected===FALSE) return FALSE;
+	}
+	
 	return $runningresult;  
 }
 
@@ -1582,6 +1597,27 @@ function writeStdErr($error)
     $STDERR = fopen("php://stderr", "w");
     fwrite($STDERR, $error);
     fclose($STDERR);
+}
+
+/**
+ * Check prominent websites to see if we have connectivity
+ */
+function haveNetworkConnectivity()
+{
+	$command = "ping -c1 google.com";
+	exec($command, $result, $returncode);
+	if($returncode==0) return true;
+	
+	$command = "ping -c1 yahoo.com";
+	exec($command, $result, $returncode);
+	if($returncode==0) return true;
+	
+	$command = "ping -c1 bbc.co.uk";
+	exec($command, $result, $returncode);
+	if($returncode==0) return true;
+	
+	return false;
+
 }
 
 
@@ -1817,6 +1853,7 @@ class File_SearchReplace
 
     // }}}
     // {{{ setSearchFunction()
+
 
     /**
      * Function to determine which search function is used.
@@ -2269,7 +2306,13 @@ class File_SearchReplace
 	public function getBackgroundColors() {
 		return array_keys($this->background_colors);
 	}
+	
+	
+
+	
 }
+
+
 
 
 
