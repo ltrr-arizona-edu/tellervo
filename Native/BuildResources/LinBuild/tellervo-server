@@ -211,7 +211,7 @@ if(isset($args["reconfigure"]) || isset($args["r"]))
 	include($dbsetupfile);
 	generateSystemsConfig();
 	include($systemconfig);
-
+	runDBUpgrades();	
 	apacheSetup();
 	verifySetup();
 	printComplete();
@@ -316,7 +316,6 @@ if (isset($args["configure"]) || isset($args["c"]))
 	generateSystemsConfig();
 	include($systemconfig);
 	runDBUpgrades();
-	generateSystemsConfig();
 	apacheSetup();
 	verifySetup();
 	printComplete();
@@ -644,6 +643,8 @@ function runDBUpgrades()
     	echo "Database now at version ".trim($f).".\n";
     }
 	
+	generateSystemsConfig();
+	include($systemconfig);
 }
 
 /**
@@ -740,7 +741,7 @@ function runSQLUpgradeFile($filename)
     	if(!$result)
     	{
 	    	echo $colors->getColoredString("WARNING", "yellow");
-    		echo "\n\n";
+    		echo "\n";
 
     		writeLogMsg("Error running upgrade script '".escapeshellcmd($filename)."'" );
     		pg_query($dbconn, "ROLLBACK");
@@ -1125,7 +1126,7 @@ function createDatabase()
     exec("su - postgres -c \"createdb tellervo 2>> ".$logfile."\"");
     exec("su - postgres -c \"psql tellervo < $dbtemplate 2>> ".$logfile."\"");
     
-    runDBUpgrades();
+    //runDBUpgrades();
     
 }
 
@@ -1409,16 +1410,20 @@ function verifySetup($silent=false)
 		if(getTellervoDPKGVersion()!=getTellervoDBVersion()) return FALSE;
 	}
 	
-	if($silent!=TRUE) echoTruncatedString("    - Checking server can access the Internet:");
-	$connected = haveNetworkConnectivity();
+	$colors = new Colors();
+	
 	if($silent!=TRUE) 
 	{
-		printResult($connected);
-		if($connected===FALSE) $runningresult = FALSE;
-	}
-	else
-	{
-		if($connected===FALSE) return FALSE;
+		echoTruncatedString("    - Checking server can access the Internet:");
+		$connected = haveNetworkConnectivity();
+		if($connected===FALSE) 
+		{
+			echo $colors->getColoredString("WARNING", "yellow");
+		}
+		else
+		{
+			printResult(TRUE);
+		}
 	}
 	
 	return $runningresult;  

@@ -315,7 +315,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
                 // If ID has not been set then we assume that we are writing a new record to the DB.  Otherwise updating.
                 if($this->id == NULL)
                 {
-                    $this->setID(uuid::getUUID(), $domain);
+                    $this->setID(uuid::getUUID(), 0);
                     
 		    // New record
                     $sql = "insert into tblsecurityuser (securityuserid, username, password, firstName, lastName, isactive) values (";

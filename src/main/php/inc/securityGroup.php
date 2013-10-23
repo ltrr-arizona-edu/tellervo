@@ -393,12 +393,12 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
                         if($hasmembers)
                         {
                             $sql = "delete from tblsecurityusermembership where ";
-                            $sql.= "securitygroupid='$this->id' AND securityuserid NOT IN (";
+                            $sql.= "securitygroupid='$this->id' AND securityuserid NOT IN ('";
                             foreach($this->userMembers as $item)
                             {
-                                $sql.= $item.", ";
+                                $sql.= $item."', '";
                             }
-                            $sql = substr($sql, 0, -2).")";
+                            $sql = substr($sql, 0, -3).")";
                             $result = pg_query($dbconn, $sql);
                         }
                         else
@@ -431,7 +431,7 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
 				// Set or unset groups for this group
 				if(count($this->groupMembers)>0)
 				{
-					$sql = "delete from tblsecuritygroupmembership where parentsecuritygroupid=".$this->id;
+					$sql = "delete from tblsecuritygroupmembership where parentsecuritygroupid='".$this->id."'";
 					$result = pg_query($dbconn, $sql);
 
 					foreach($this->groupMembers as $item)
@@ -481,7 +481,7 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
 			if ($dbconnstatus ===PGSQL_CONNECTION_OK)
 			{
 
-				$sql = "delete from tblsecuritygroup where securitygroupid=".$this->id.";";
+				$sql = "delete from tblsecuritygroup where securitygroupid='".$this->id."';";
 				$firebug->log($sql, "Delete SQL");
 
 				// Run SQL command
