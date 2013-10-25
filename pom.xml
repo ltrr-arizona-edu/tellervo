@@ -993,19 +993,13 @@
 							    	  <!-- Try to sign the Setup.exe with the University of Arizona certificate -->					      
 								      <exec dir="${project.build.directory}" executable="osslsigncode">  
 								        <arg value="sign"/>  
-								        <arg value="-certs"/>
-								        <arg value="/home/pbrewer/.ssh/cert.pem"/>
-								        <arg value="-key"/>
-								        <arg value="/home/pbrewer/.ssh/key.pem"/>
-								        <arg value="-n"/>
-								        <arg value="Tellervo"/>
-								        <arg value="-i"/>
-								        <arg value="http://www.tellervo.org"/>
-								        <arg value="-in"/>
-								        <arg value="${project.build.directory}/${project.build.finalName}-unsigned.exe"/>
-								        <arg value="-out"/>
-								        <arg value="${project.build.directory}/binaries/desktop/${project.version}/Windows/${project.build.finalName}-setup.exe"/>
-								        
+								        <arg value="-certs"/>  <arg value="/home/pbrewer/.ssh/cert.pem"/>
+								        <arg value="-key"/>    <arg value="/home/pbrewer/.ssh/key.pem"/>
+								        <arg value="-n"/>      <arg value="Tellervo"/>
+								        <arg value="-t"/>      <arg value="http://tsa.starfieldtech.com/"/>
+								        <arg value="-i"/>      <arg value="http://www.tellervo.org"/>
+								        <arg value="-in"/>     <arg value="${project.build.directory}/${project.build.finalName}-unsigned.exe"/>
+								        <arg value="-out"/>    <arg value="${project.build.directory}/binaries/desktop/${project.version}/Windows/${project.build.finalName}-setup.exe"/>
 								      </exec>  
 								 </try>
 								 <catch>
@@ -1037,16 +1031,13 @@
 							    <try>		
 							    	  <!-- Try to sign the jar with the University of Arizona certificate -->					      
 								      <exec dir="${project.build.directory}" executable="jarsigner">  
-								        <arg value="-storetype"/>  
-								        <arg value="pkcs12"/>
-								        <arg value="-keystore"/>
-								        <arg value="/home/pbrewer/.ssh/incommon-certificate.p12"/>
-								        <arg value="-storepass:file"/>
-								        <arg value="/home/pbrewer/.ssh/key"/>
-								        <arg value="-keypass:file"/>
-								        <arg value="/home/pbrewer/.ssh/key"/>
+								        <arg value="-storetype"/>     <arg value="pkcs12"/>
+								        <arg value="-tsa"/>           <arg value="http://tsa.starfieldtech.com"/>
+								        <arg value="-keystore"/>      <arg value="/home/pbrewer/.ssh/incommon-certificate.p12"/>
+								        <arg value="-storepass:file"/><arg value="/home/pbrewer/.ssh/key"/>
+								        <arg value="-keypass:file"/>  <arg value="/home/pbrewer/.ssh/key"/>
 								        <arg value="${project.build.directory}/${project.build.finalName}.jar"/>
-								        <arg value="the university of arizona's internet2 id"/>								        
+								                                      <arg value="the university of arizona's internet2 id"/>								        
 								      </exec>  
 								 </try>
 								 <catch>
