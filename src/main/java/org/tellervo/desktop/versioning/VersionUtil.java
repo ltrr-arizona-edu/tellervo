@@ -7,7 +7,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class VersionUtil {
+	private static final Logger log = LoggerFactory.getLogger(VersionUtil.class);
 
 	/**
 	 * Parse the version string returned from the server to extract
@@ -94,6 +98,7 @@ public class VersionUtil {
 		try {
 			url = new URL(urlOfVersionInfo);
 		} catch (MalformedURLException e) {
+			log.error("Invalid URL for version check");
 			return null;
 		}
 		
@@ -107,9 +112,12 @@ public class VersionUtil {
 	        in.close();
 			 
 		} catch (IOException e) {
+			log.error("IOException thrown while attempting to get latest version available info from server");
 			return null;
 		}
 				
+		log.error("Unknown error while attempting to get latest version available info from server");
+
 		return null;	
 	}
 

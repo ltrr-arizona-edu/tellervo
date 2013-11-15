@@ -43,7 +43,7 @@ import org.tellervo.desktop.ui.TellervoAction;
 // other notes:
 // -- "return null" in invocation handlers.  i have to return something, but the docs don't say what.
 
-public class Macintosh {
+public class OSX {
 
 	/**
 	   Uses the other methods of this class to set up the About,
@@ -58,21 +58,21 @@ public class Macintosh {
 	public static void configureMenus() {
 		if (Platform.isMac()) {
 			// register "about" menuitem
-			Macintosh.registerAboutHandler(HelpMenu.ABOUT_ACTION);/*new Runnable() {
+			OSX.registerAboutHandler(HelpMenu.ABOUT_ACTION);/*new Runnable() {
 			                public void run() {
 			                    AboutBox.getInstance().show();
 			                }
 			            });*/
 
 			// and "preferences"
-			Macintosh.registerPrefsHandler(new Runnable() {
+			OSX.registerPrefsHandler(new Runnable() {
 				public void run() {
 					App.showPreferencesDialog();
 				}
 			});
 
 			// and "quit"
-			Macintosh.registerQuitHandler(new Runnable() {
+			OSX.registerQuitHandler(new Runnable() {
 				public void run() {
 					TellervoMainWindow.quit();
 					System.exit(0);
@@ -215,6 +215,6 @@ public class Macintosh {
 	// --------------------------------------------------
 	// common code:
 	private static ClassLoader getClassLoader() {
-		return org.tellervo.desktop.platform.Macintosh.class.getClassLoader();
+		return org.tellervo.desktop.platform.OSX.class.getClassLoader();
 	}
 }

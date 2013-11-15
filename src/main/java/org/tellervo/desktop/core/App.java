@@ -43,7 +43,7 @@ import org.tellervo.desktop.gui.TellervoMainWindow;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowserSettings;
 import org.tellervo.desktop.nativelib.NativeLibWrapper;
-import org.tellervo.desktop.platform.Macintosh;
+import org.tellervo.desktop.platform.OSX;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.PreferencesDialog;
 import org.tellervo.desktop.prefs.Prefs;
@@ -107,7 +107,7 @@ public static synchronized void init() {
     prefs.init();
     
 	// Set up mac menubar
-	Macintosh.configureMenus();
+	OSX.configureMenus();
 
        
     appmodel = new AppModel();

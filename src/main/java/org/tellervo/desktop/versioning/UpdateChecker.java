@@ -28,109 +28,116 @@ public class UpdateChecker {
 		  UpdateChecker.doUpdateCheck(showConfirmation, App.mainWindow);
 	  }
 	  
-	public static void doUpdateCheck(Boolean showConfirmation, Component parent)
+	public static void doUpdateCheck(final Boolean showConfirmation, final Component parent)
 	{
-		// Check server for current available version
-		String availableDesktopVersion = VersionUtil.getAvailableVersion(latestVersionURL);
-		String serverVersionRequiredForMostRecent = VersionUtil.getAvailableVersion(serverRequiredForLatestDesktop);
-		if(availableDesktopVersion==null)
-		{
-			if(showConfirmation)
-			{
-				JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.updateServerIOE"));
-			}
-			return;
-		}
+		new Thread(new Runnable() {
+		    @Override
+		    public void run() {
 		
-		// Parse string version numbers into Integers
-		Integer available = 0;
-		Integer current = 0;
-		String currentVersion;
-		try{
-
-			currentVersion = Build.REVISION_NUMBER;
-			log.debug("Current version = "+currentVersion);
-			log.debug("Available versn = "+availableDesktopVersion);
-			available = Integer.parseInt(availableDesktopVersion);
-			current = Integer.parseInt(currentVersion);
-		} catch (NumberFormatException e)
-		{
-			if(showConfirmation)
-			{	
-				JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.updateVersionParseError"));
-			}
-			return;
-		}
-
-		// Compare available and current build numbers
-		if(available.compareTo(current)>0)
-		{
-			// Update required 
-			String message = I18n.getText("view.popup.updateVersionAvailable");
-			
-			// Now check that this most recent version supports the server we are using
-			try{
-				WSIServerDetails serverDetails = new WSIServerDetails();
-				Boolean currentServerOkWithUpdate = serverDetails.isServerValid(serverVersionRequiredForMostRecent);			
-				if(!currentServerOkWithUpdate)
+		
+				// Check server for current available version
+				String availableDesktopVersion = VersionUtil.getAvailableVersion(latestVersionURL);
+				String serverVersionRequiredForMostRecent = VersionUtil.getAvailableVersion(serverRequiredForLatestDesktop);
+				if(availableDesktopVersion==null)
 				{
-					message = I18n.getText("view.popup.updateDesktopAndServer");
-				}
-			} catch (Exception ex)
-			{
-				log.error("Unable to check whether the update on offer will work with the user's current server");
-			}
-			 
-			
-			// Ask user what to do
-			if(Desktop.isDesktopSupported())	
-			{
-			
-				Object[] options = {"Yes",
-				                    "Maybe later",
-									"No, don't ask again"};
-				
-				int n = JOptionPane.showOptionDialog(parent, 
-						message,
-						"Update available",
-						JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.QUESTION_MESSAGE,
-						null,
-						options,
-						options[0]);
-
-				if(n==JOptionPane.CANCEL_OPTION){
-					App.prefs.setBooleanPref(PrefKey.CHECK_FOR_UPDATES, false);					
-					JOptionPane.showMessageDialog(parent, "Tellervo will no longer automatically check for updates\nhowever you may still check manually using the option\nin the help menu.");					
+					if(showConfirmation)
+					{
+						JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.updateServerIOE"));
+					}
 					return;
 				}
 				
-				if(n==JOptionPane.NO_OPTION) return;
-				
-				// Try to open browser
-				Desktop desktop = Desktop.getDesktop();
-				try {
-					URI updateURL = new URI(downloadPage);
-					desktop.browse(updateURL);
+				// Parse string version numbers into Integers
+				Integer available = 0;
+				Integer current = 0;
+				String currentVersion;
+				try{
+		
+					currentVersion = Build.REVISION_NUMBER;
+					log.debug("Current version = "+currentVersion);
+					log.debug("Available versn = "+availableDesktopVersion);
+					available = Integer.parseInt(availableDesktopVersion);
+					current = Integer.parseInt(currentVersion);
+				} catch (NumberFormatException e)
+				{
+					if(showConfirmation)
+					{	
+						JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.updateVersionParseError"));
+					}
 					return;
-				} catch (URISyntaxException e) {
-				} catch (IOException e) {
 				}
-				
-				
-				// Problems opening browser so get user to download manually
-				JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.updatePleaseDownload") +
-						"\n"+downloadPage);
-			}
-		}
-		else
-		{
-			// Update not required
-			if(showConfirmation)
-			{
-				JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.upToDate"));
-			}
-			return;
-		}
+		
+				// Compare available and current build numbers
+				if(available.compareTo(current)>0)
+				{
+					// Update required 
+					String message = I18n.getText("view.popup.updateVersionAvailable");
+					
+					// Now check that this most recent version supports the server we are using
+					try{
+						WSIServerDetails serverDetails = new WSIServerDetails();
+						Boolean currentServerOkWithUpdate = serverDetails.isServerValid(serverVersionRequiredForMostRecent);			
+						if(!currentServerOkWithUpdate)
+						{
+							message = I18n.getText("view.popup.updateDesktopAndServer");
+						}
+					} catch (Exception ex)
+					{
+						log.error("Unable to check whether the update on offer will work with the user's current server");
+					}
+					 
+					
+					// Ask user what to do
+					if(Desktop.isDesktopSupported())	
+					{
+					
+						Object[] options = {"Yes",
+						                    "Maybe later",
+											"No, don't ask again"};
+						
+						int n = JOptionPane.showOptionDialog(parent, 
+								message,
+								"Update available",
+								JOptionPane.YES_NO_CANCEL_OPTION,
+								JOptionPane.QUESTION_MESSAGE,
+								null,
+								options,
+								options[0]);
+		
+						if(n==JOptionPane.CANCEL_OPTION){
+							App.prefs.setBooleanPref(PrefKey.CHECK_FOR_UPDATES, false);					
+							JOptionPane.showMessageDialog(parent, "Tellervo will no longer automatically check for updates\nhowever you may still check manually using the option\nin the help menu.");					
+							return;
+						}
+						
+						if(n==JOptionPane.NO_OPTION) return;
+						
+						// Try to open browser
+						Desktop desktop = Desktop.getDesktop();
+						try {
+							URI updateURL = new URI(downloadPage);
+							desktop.browse(updateURL);
+							return;
+						} catch (URISyntaxException e) {
+						} catch (IOException e) {
+						}
+						
+						
+						// Problems opening browser so get user to download manually
+						JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.updatePleaseDownload") +
+								"\n"+downloadPage);
+					}
+				}
+				else
+				{
+					// Update not required
+					if(showConfirmation)
+					{
+						JOptionPane.showMessageDialog(parent, I18n.getText("view.popup.upToDate"));
+					}
+					return;
+				}
+		    }
+		}).start();
 	}
 }
