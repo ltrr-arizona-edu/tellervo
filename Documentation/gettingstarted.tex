@@ -111,6 +111,17 @@ Tellervo-lite is a departure from the primary mission of Tellervo (i.e.\ to prov
 
 When opening legacy dendro files in Tellervo-lite, it is possible that metadata will be discarded.  So if you open and edit an existing file in Tellervo, then overwrite the orignal you may well loose information.  We highly recommend saving changes to a different file.  It is also important for users to understand the limitations of the file formats you're reading from and writing to.  For instance the Tucson format has no mechanism for indicating whether years are absolute or relative so data loaded from Tucson files will be marked as relative years in Tellervo.  Some formats also store ring-width measurements in 1/100th mm integers, so if you measure in microns then the values will be rounded. A full description of each format along with their limitations is given in appendix \ref{txt:fileFormatsStart}.
 
+{%
+\newcommand{\mc}[3]{\multicolumn{#1}{#2}{#3}}
+\begin{center}
+\begin{tabular*}{}{llll}
+× & × & \mc{2}{c}{Site j}\\
+× & Outcomes & 1 & 0\\
+Site i & 1 & a(1,1) & b(1,0)\\
+× & 0 & c(0,1) & d(0,0)
+\end{tabular*}
+\end{center}
+}%
 
 
 
