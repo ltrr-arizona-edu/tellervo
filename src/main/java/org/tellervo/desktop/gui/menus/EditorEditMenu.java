@@ -18,7 +18,7 @@
  *     Peter Brewer
  ******************************************************************************/
 
-package org.tellervo.desktop.editor;
+package org.tellervo.desktop.gui.menus;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -46,10 +46,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.editor.CopyDialog;
+import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.PopulateEditorDialog;
+import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.UserCancelledException;
-import org.tellervo.desktop.gui.menus.EditMenu;
 import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
 import org.tellervo.desktop.gui.menus.actions.PrintAction;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
@@ -159,7 +162,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 	@Override
 	protected void addUndo() {
-		undoMenu = Builder.makeMenuItem("menus.edit.undo", true, "undo.png");
+		/*undoMenu = Builder.makeMenuItem("menus.edit.undo", true, "undo.png");
 		undoMenu.addActionListener(new AbstractAction() {
 			private static final long serialVersionUID = 1L;
 			public void actionPerformed(ActionEvent e) {
@@ -168,13 +171,13 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			}
 		});
 		undoMenu.setEnabled(false);
-		add(undoMenu);
+		add(undoMenu);*/
 	}
 
 	@SuppressWarnings("serial")
 	@Override
 	protected void addRedo() {
-		redoMenu = Builder.makeMenuItem("menus.edit.redo", true, "redo.png");
+		/*redoMenu = Builder.makeMenuItem("menus.edit.redo", true, "redo.png");
 		redoMenu.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				// DISABLED: undoManager.redo();
@@ -182,7 +185,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 			}
 		});
 		redoMenu.setEnabled(false);
-		add(redoMenu);
+		add(redoMenu);*/
 	}
 
 	/**
@@ -229,8 +232,8 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 	 */
 	@Override
 	protected void init() {
-		addUndoRedo();
-		addSeparator();
+		//addUndoRedo();
+		//addSeparator();
 
 		addClipboard();
 		addSeparator();

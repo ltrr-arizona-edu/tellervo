@@ -412,7 +412,12 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 					}
 				}
 			}
-			else {
+			else if(graphs==null)
+			{
+				
+			}
+			else
+			{
 				// unhighlight anything
 				if(highlightedGraph >= 0) {
 					Graph highlighted = graphs.get(highlightedGraph);

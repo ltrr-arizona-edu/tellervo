@@ -10,7 +10,7 @@ import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasSample;
 
-public class UniqueListModel extends AbstractListModel<TridasSample> {
+public class UniqueListModel extends AbstractListModel {
 
 	private ArrayList<TridasSample> data = new ArrayList<TridasSample>();
 	

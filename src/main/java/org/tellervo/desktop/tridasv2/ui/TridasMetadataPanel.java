@@ -51,6 +51,7 @@ import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.editor.AbstractMetadataPanel;
 import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.io.Metadata;
@@ -97,7 +98,7 @@ import com.lowagie.text.Font;
 
 
 @SuppressWarnings("serial")
-public class TridasMetadataPanel extends JPanel implements PropertyChangeListener {
+public class TridasMetadataPanel extends AbstractMetadataPanel implements PropertyChangeListener {
 	/** The sample we're working on */
 	private Sample sample;
 	/** Our property sheet panel (contains table and description) */

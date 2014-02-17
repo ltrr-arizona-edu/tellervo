@@ -30,7 +30,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.editor.EditorEditMenu;
+import org.tellervo.desktop.gui.menus.EditorEditMenu;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.InvalidDendroFileException;

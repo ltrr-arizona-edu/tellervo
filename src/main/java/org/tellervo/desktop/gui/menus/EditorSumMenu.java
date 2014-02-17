@@ -17,7 +17,7 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package org.tellervo.desktop.editor;
+package org.tellervo.desktop.gui.menus;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

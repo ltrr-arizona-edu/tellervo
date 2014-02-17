@@ -23,22 +23,14 @@ import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.tellervo.desktop.admin.BoxCuration.BoxCurationType;
 import org.tellervo.desktop.tridasv2.ui.EnumComboBoxItemRenderer;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.schema.CurationStatus;
-import org.tellervo.schema.EntityType;
-import org.tellervo.schema.SearchOperator;
-import org.tellervo.schema.SearchParameterName;
-import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestType;
-import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSICuration;
-import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasSample;
 
 public class CurationEventDialog extends JDialog implements ActionListener{
@@ -47,7 +39,7 @@ public class CurationEventDialog extends JDialog implements ActionListener{
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private ArrayList<TridasSample> sampleList;
-	private JComboBox<CurationStatus> cboCurationStatus;
+	private JComboBox cboCurationStatus;
 	private JTextArea txtNotes;
 	private JButton btnAdd;
 	private JButton btnCancel;
@@ -105,8 +97,9 @@ public class CurationEventDialog extends JDialog implements ActionListener{
 		}
 		{
 			CurationStatus[] statuses = {null, CurationStatus.ARCHIVED, CurationStatus.DESTROYED, CurationStatus.MISSING, CurationStatus.ON___DISPLAY, CurationStatus.RETURNED___TO___OWNER, CurationStatus.ACTIVE___RESEARCH};
-			cboCurationStatus = new JComboBox<CurationStatus>();
-			cboCurationStatus.setModel(new DefaultComboBoxModel<CurationStatus>(statuses));
+			cboCurationStatus = new JComboBox();
+			cboCurationStatus = new JComboBox();
+			cboCurationStatus.setModel(new DefaultComboBoxModel(statuses));
 			cboCurationStatus.setRenderer(new EnumComboBoxItemRenderer());
 			contentPanel.add(cboCurationStatus, "cell 1 0,growx");
 		}

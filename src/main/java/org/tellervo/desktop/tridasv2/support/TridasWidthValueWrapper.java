@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.editor.EditorEditMenu;
+import org.tellervo.desktop.gui.menus.EditorEditMenu;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
@@ -271,6 +271,7 @@ public final class TridasWidthValueWrapper {
 	}
 	
 	public boolean hasCount() {
+		if(count==null) return false;
 		return count.size() > 0;
 	}
 }

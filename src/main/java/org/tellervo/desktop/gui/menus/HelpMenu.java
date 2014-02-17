@@ -275,7 +275,11 @@ public class HelpMenu extends JMenu {
         add(logviewer);
     	
     	//add(Builder.makeMenuItem("menus.help.error_log", "org.tellervo.desktop.gui.Log4JViewer.showLogViewer()", "log.png"));
-        add(Builder.makeMenuItem("menus.help.error_ws", "org.tellervo.desktop.wsi.TransactionDebug.forceGenerateWSBug()", "bugreport.png"));
+        JMenuItem reportBug = Builder.makeMenuItem("menus.help.error_ws", "org.tellervo.desktop.wsi.TransactionDebug.forceGenerateWSBug()", "bugreport.png");
+        if(App.isLoggedIn())
+        {
+        	add(reportBug);
+        }
 
         if(!App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
         {
@@ -283,6 +287,9 @@ public class HelpMenu extends JMenu {
         	add(debugMenu);
         	add(Builder.makeMenuItem("menus.help.showmvcmonitor", "com.dmurph.mvc.MVC.showEventMonitor()"));
         }
+        
+        
+        
         
         //add(Builder.makeMenuItem("debug_instantiator", "org.tellervo.desktop.gui.DebugInstantiator.showMe()"));
         //add(Builder.makeMenuItem("debug_instantiator", "org.tellervo.desktop.gui.newui.NewJFrame1.main()"));

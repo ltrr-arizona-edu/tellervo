@@ -30,7 +30,7 @@ import javax.swing.undo.CannotRedoException;
 import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.editor.EditorGraphMenu;
+import org.tellervo.desktop.gui.menus.EditorGraphMenu;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.I18n;
 

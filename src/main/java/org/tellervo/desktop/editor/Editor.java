@@ -86,6 +86,10 @@ import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.XFrame;
 import org.tellervo.desktop.gui.menus.AdminMenu;
+import org.tellervo.desktop.gui.menus.EditorEditMenu;
+import org.tellervo.desktop.gui.menus.EditorFileMenu;
+import org.tellervo.desktop.gui.menus.EditorGraphMenu;
+import org.tellervo.desktop.gui.menus.EditorToolsMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.gui.menus.actions.ExportDataAction;
@@ -144,12 +148,12 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private JTable wjTable;
 	private JPanel wjPanel;
 	private EditorMeasurePanel measurePanel = null;
-	protected TridasMetadataPanel metaView;
+	protected AbstractMetadataPanel metaView;
 	private ComponentViewer componentsPanel = null;
-	private DependentsViewer dependentsPanel = null;
+	protected DependentsViewer dependentsPanel = null;
 	private BargraphPanel bargraphPanel = null;
 	protected SeriesDataMatrix dataView; // (a jpanel)
-	protected GISPanel wwMapPanel;
+	public GISPanel wwMapPanel;
 	protected JTabbedPane tabbedPanel;
 	protected JToolBar toolbar;
 	
@@ -421,7 +425,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		wjPanel.add(new EditorStatusBar(wjTable, sample), BorderLayout.SOUTH);
 	}
 
-	private void initMetaView() {
+	protected void initMetaView() {
 		metaView = new TridasMetadataPanel(sample);
 	}
 
@@ -430,7 +434,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			componentsPanel = new ComponentViewer(sample);
 	}
 
-	private void initDependentsPanel() {
+	protected void initDependentsPanel() {
 		
 		dependentsPanel = new DependentsViewer(sample);
 	}
@@ -1114,7 +1118,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	
 	public void showPage(EditType type)
 	{
-		metaView.showPage(type);
+		if(metaView instanceof TridasMetadataPanel)
+		{
+		
+			((TridasMetadataPanel)metaView).showPage(type);
+		}
 	}
 
 	@Override

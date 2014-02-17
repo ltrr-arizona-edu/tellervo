@@ -17,7 +17,7 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package org.tellervo.desktop.editor;
+package org.tellervo.desktop.gui.menus;
 
 
 import java.awt.event.ActionEvent;
@@ -33,6 +33,7 @@ import javax.swing.JMenuItem;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.cross.CrossdateDialog;
+import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.gui.menus.actions.TruncateAction;
 import org.tellervo.desktop.index.IndexDialog;

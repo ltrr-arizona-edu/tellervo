@@ -17,6 +17,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.graph.GraphToolbar.TitlelessButton;
+import org.tellervo.desktop.gui.menus.EditorEditMenu;
+import org.tellervo.desktop.gui.menus.EditorLiteFileMenu;
+import org.tellervo.desktop.gui.menus.EditorLiteGraphMenu;
+import org.tellervo.desktop.gui.menus.EditorLiteToolsMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
@@ -32,7 +36,6 @@ import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
-import org.tellervo.desktop.ui.Builder;
 import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
@@ -43,6 +46,7 @@ import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
+import org.tridas.schema.TridasInterpretation;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
@@ -53,7 +57,6 @@ import org.tridas.schema.TridasTridas;
 public class EditorLite extends Editor {
 
 	private static final long serialVersionUID = 1L;
-	private BasicMetadataPanel basicMeta ;
 	private static final Logger log = LoggerFactory.getLogger(EditorLite.class);
 
 	public EditorLite(Sample sample) {
@@ -61,25 +64,15 @@ public class EditorLite extends Editor {
 
 		this.metaView.setVisible(false);
 		this.editorViewMenu.setVisible(false);
-		init();
 		tabbedPanel.setSelectedIndex(0);
-
 	}
-
-
-	private void init()
-	{
-
-		if (tabbedPanel.indexOfComponent(metaView) > -1)
-		{
-			tabbedPanel.remove(metaView);
-		}
-
-		basicMeta = new BasicMetadataPanel();
-
-		tabbedPanel.addTab("Basic metadata", Builder.getIcon("database.png", 16), basicMeta);
-
-
+	protected void initDependentsPanel() {
+		
+	}
+	
+	protected void initMetaView() {
+		metaView = new BasicMetadataPanel();
+		((BasicMetadataPanel) metaView).populateFromSample(sample);
 	}
 
 	@Override
@@ -88,12 +81,6 @@ public class EditorLite extends Editor {
 		this.tabbedPanel.setSelectedIndex(0);
 
 	}
-	
-	public BasicMetadataPanel getMetadataPanel()
-	{
-		return basicMeta;
-	}
-
 
 	private void saveToDisk(String format, File file)
 	{
@@ -156,12 +143,22 @@ public class EditorLite extends Editor {
 
 		TridasMeasurementSeries series = (TridasMeasurementSeries) getSample().getSeries();
 
-		series.setTitle(getMetadataPanel().txtTitle.getText());
-		series.setDendrochronologist(getMetadataPanel().txtAuthor.getText());
+		series.setTitle(((BasicMetadataPanel)metaView).txtTitle.getText());
+		series.setDendrochronologist(((BasicMetadataPanel)metaView).txtAuthor.getText());
+		
+		if(!series.isSetInterpretation() || !series.getInterpretation().isSetFirstYear())
+		{
+			TridasInterpretation interp = new TridasInterpretation();
+			
+			interp.setFirstYear(getSample().getStart().tridasYearValue());
+			series.setInterpretation(interp);
+		}
+		
+		
 		TridasGenericField gf = new TridasGenericField();
 		gf.setName("keycode");
 		gf.setType("xs:string");
-		gf.setValue(getMetadataPanel().txtKeycode.getText());
+		gf.setValue(((BasicMetadataPanel)metaView).txtKeycode.getText());
 		series.getGenericFields().add(gf);
 
 		TridasRadius radius = new TridasRadius();
@@ -169,10 +166,10 @@ public class EditorLite extends Editor {
 		TridasSample sample = new TridasSample();
 
 		TridasElement element = new TridasElement();
-		element.setTaxon(ITRDBTaxonConverter.getControlledVocFromCode(getMetadataPanel().txtSpecies.getText()));
+		element.setTaxon(ITRDBTaxonConverter.getControlledVocFromCode(((BasicMetadataPanel)metaView).txtSpecies.getText()));
 
 		TridasObject object = new TridasObject();
-		object.setTitle(getMetadataPanel().txtTitle.getText());
+		
 
 		TridasProject proj = new TridasProject();
 
@@ -339,10 +336,6 @@ public class EditorLite extends Editor {
 		AbstractButton save = new TitlelessButton(saveAction);
 		toolbar.add(save);
 
-		//Action exportAction = new ExportDataAction(IOController.OPEN_EXPORT_WINDOW);
-		//AbstractButton fileexport = new TitlelessButton(exportAction);
-		//toolbar.add(fileexport);
-
 		Action printAction = new PrintAction(sample);
 		AbstractButton print = new TitlelessButton(printAction);
 		toolbar.add(print);
@@ -362,31 +355,17 @@ public class EditorLite extends Editor {
 		AbstractButton toggleRemarks = new TitlelessButton(remarkAction);
 		toolbar.add(toggleRemarks);
 
-		// Admin Buttons
-		//toolbar.addSeparator();
-		//metadbAction = new MetadatabaseBrowserAction();
-		//AbstractButton launchMetadb = new TitlelessButton(metadbAction);
-		//toolbar.add(launchMetadb);
-
-
-
 		// Tools Buttons
 		toolbar.addSeparator();
 		Action truncateAction = new TruncateAction(null, sample, this, null);
 		AbstractButton truncate = new TitlelessButton(truncateAction);
 		toolbar.add(truncate);
 
-
-
 		// Graph Buttons
 		toolbar.addSeparator();
 		Action graphSeriesAction = new GraphSeriesAction(sample);
 		AbstractButton graph = new TitlelessButton(graphSeriesAction);
 		toolbar.add(graph);
-
-
-
-
 
 		getContentPane().add(toolbar, BorderLayout.NORTH);
 	}
@@ -400,12 +379,10 @@ public class EditorLite extends Editor {
 		JMenuBar menubar = new JMenuBar();
 
 		menubar.add(new EditorLiteFileMenu(this, sample));
-		editorEditMenu = new EditorEditMenu(sample, dataView, this);
-		menubar.add(editorEditMenu);
+		menubar.add(new EditorEditMenu(sample, dataView, this));
 		menubar.add(this.editorViewMenu);
-		menubar.add(new EditorToolsMenu(this, sample));
-		menubar.add(new EditorGraphMenu(this, sample));
-		//menubar.add(new EditorSiteMenu(sample));
+		menubar.add(new EditorLiteToolsMenu(this, sample));
+		menubar.add(new EditorLiteGraphMenu(this, sample));
 		if (Platform.isMac())
 			menubar.add(new WindowMenu(this));
 		menubar.add(new HelpMenu());

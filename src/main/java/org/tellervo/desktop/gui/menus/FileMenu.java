@@ -537,7 +537,7 @@ public class FileMenu extends JMenu {
 		// Get details from user
 	    if (returnVal == JFileChooser.APPROVE_OPTION) {
 	        File file = fc.getSelectedFile();
-	        DendroReaderFileFilter filter = (DendroReaderFileFilter) fc.getFileFilter();
+	        DendroFileFilter filter = (DendroFileFilter) fc.getFileFilter();
 	        
 
 	        

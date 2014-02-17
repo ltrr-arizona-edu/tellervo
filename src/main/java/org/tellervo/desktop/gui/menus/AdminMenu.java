@@ -39,10 +39,9 @@ import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
 import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.ui.TellervoAction;
 
 
 @SuppressWarnings("serial")
@@ -77,6 +76,15 @@ public class AdminMenu extends JMenu {
 		});
 	  
 	  setEnabled(App.isLoggedIn());
+	  
+	  if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
+	  {
+		  this.setVisible(false);
+	  }
+	  else
+	  {
+		  this.setVisible(true);
+	  }
   }
   
   

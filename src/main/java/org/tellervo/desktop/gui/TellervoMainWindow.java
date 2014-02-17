@@ -54,9 +54,9 @@ import javax.swing.JPanel;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
-import org.tellervo.desktop.editor.EditorLiteFileMenu;
 import org.tellervo.desktop.gui.menus.AdminMenu;
 import org.tellervo.desktop.gui.menus.EditMenu;
+import org.tellervo.desktop.gui.menus.EditorLiteFileMenu;
 import org.tellervo.desktop.gui.menus.FileMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;

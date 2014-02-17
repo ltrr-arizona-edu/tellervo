@@ -5,6 +5,7 @@ package org.tellervo.desktop.editor;
 
 import java.awt.Container;
 import java.awt.Cursor;
+import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -436,77 +437,27 @@ public class EditorFactory {
 	}
 	
 	
-	/**
-	 * Bit of a kludge.  This creates a new editor from a derivedSeries pretending
-	 * it's a raw measurement
-	 *  
-	 * @param container
-	 * @param series
-	 */
-	public static void newSeriesFromDerivedSeries(Container container, TridasDerivedSeries series, NormalTridasUnit unitsIfNotSpecified,
-			String originalFilename, String originalFormat) 
+	public static Sample createSampleFromSeries(ITridas series, TridasElement el, File file, String fileType, Boolean hideWarnings)
 	{
-		EditorFactory.newSeriesFromDerivedSeries(container, series, unitsIfNotSpecified, false, originalFilename, originalFormat);
-	}
-	
-	/**
-	 * Bit of a kludge.  This creates a new editor from a derivedSeries pretending
-	 * it's a raw measurement
-	 *  
-	 * @param container
-	 * @param series
-	 */
-	public static void newSeriesFromDerivedSeries(Container container, TridasDerivedSeries series, NormalTridasUnit unitsIfNotSpecified, 
-			Boolean useEditorLite, String originalFilename, String originalFormat) {
-		
-		Sample sample = createSampleFromSeries(series);
-		
-		sample.setModified();
+		String species = null;
+		String author = null;
+		TridasGenericField keycode = null;
 		
 		
-		if(originalFilename!=null)
+		if(el!=null)
 		{
-			sample.setMeta(Metadata.FILENAME, originalFilename);
-		}
-		if(originalFormat!=null)
-		{
-			sample.setMeta(Metadata.LEGACY_FORMAT, originalFormat);
+			species = el.getTaxon().getValue();
 		}
 		
 		
-		// setup our loader and series identifier
-		TellervoWsiTridasElement.attachNewSample(sample);
-
-		// start the editor
-		if(useEditorLite)
-		{
-			EditorLite ed = new EditorLite(sample);
-			ed.setVisible(true);	
-		}
-		else
-		{
-			Editor ed = new Editor(sample);
-			ed.setVisible(true);
-		}
-		
-		
-	}
-	
-	public static Sample createSampleFromSeries(ITridas series)
-	{
 		Sample sample = new Sample();
-		sample.setMeta("filename", series.getTitle());
-		sample.setMeta("title", series.getTitle());
-				
-		TridasDerivedSeries ds;
-		TridasMeasurementSeries ms;
 		SafeIntYear endYear;
 		SafeIntYear startYear = new SafeIntYear(1001);
 		List<TridasValues> servalues;
 		
 		if(series instanceof TridasDerivedSeries)
 		{
-			ds = (TridasDerivedSeries) series;
+			TridasDerivedSeries ds = (TridasDerivedSeries) series;
 			// Set range from series
 			if(ds.isSetInterpretation())
 			{
@@ -516,12 +467,16 @@ public class EditorFactory {
 				}
 			}
 			
+			keycode = TridasUtils.getGenericFieldByName(ds, "keycode");
+			
+			author = ds.getAuthor();
+			
 			endYear = startYear.add(ds.getValues().get(0).getValues().size()-1);
 			servalues = ds.getValues();
 		}
 		else
 		{
-			ms = (TridasMeasurementSeries) series;
+			TridasMeasurementSeries ms = (TridasMeasurementSeries) series;
 			// Set range from series
 			
 			if(ms.isSetInterpretation())
@@ -532,15 +487,39 @@ public class EditorFactory {
 				}
 			}
 			
+			author = ms.getDendrochronologist();
+			keycode = TridasUtils.getGenericFieldByName(ms, "keycode");
+			
 			endYear = startYear.add(ms.getValues().get(0).getValues().size()-1);
 			servalues = ms.getValues();
 		}
 		
+		//sample.setMeta("filename", series.getTitle());
+		sample.setMeta("title", series.getTitle());
+
+		if(file!=null && file.getName()!=null)
+		{
+			sample.setMeta(Metadata.FILENAME, file.getName());
+		}
+		if(fileType!=null)
+		{
+			sample.setMeta(Metadata.LEGACY_FORMAT, fileType);
+		}
+		if(keycode!=null)
+		{
+			sample.setMeta(Metadata.KEYCODE, keycode.getValue());
+		}
+		if(species!=null && species!="Plantae")
+		{
+			sample.setMeta(Metadata.SPECIES, species);
+		}
+		if(author!=null)
+		{
+			sample.setMeta(Metadata.AUTHOR, author);
+		}
+
 		Range rng = new Range(new Year(startYear.toString()), new Year(endYear.toString()));
 
-		
-
-		
 		log.debug("New series range is "+rng.toStringWithSpan());
 		sample.setRange(rng);
 
@@ -550,12 +529,12 @@ public class EditorFactory {
 		
 		if(servalues==null)
 		{
-			Alert.error("Import error", "Series contains no data");
+			if(!hideWarnings) Alert.error("Import error", "One or more series contains no data");
 			return null;
 		}
 		else if (servalues.size()==0)
 		{
-			Alert.error("Import error", "Series contains no data");
+			if(!hideWarnings) Alert.error("Import error", "One or more series contains no data");
 			return null;
 		}
 		else if(servalues.size()==1)
@@ -566,7 +545,7 @@ public class EditorFactory {
 			{
 				if(!var.getNormalTridas().value().equals(NormalTridasVariable.RING_WIDTH))
 				{
-					Alert.error("Import error", "Although the series contains data, it is not ring width data");
+					if(!hideWarnings) Alert.error("Import error", "One or more series contains data that is not ring width data");
 					return null;
 				}
 			}
@@ -602,7 +581,7 @@ public class EditorFactory {
 			
 			if(ringWidthValues==null && (earlyWidthValues==null && lateWidthValues==null))
 			{
-				Alert.error("Import error", "Unable to extract data from chronology file");
+				if(!hideWarnings) Alert.error("Import error", "Unable to extract data from one or more series in this chronology file");
 				return null;
 			}
 			
@@ -661,21 +640,17 @@ public class EditorFactory {
 	    
 	    return sample;
 	}
-
 	
-	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries series, NormalTridasUnit unitsIfNotSpecfied) {
-		newSeriesFromMeasurementSeries(container, series, unitsIfNotSpecfied, false, null, null);
-		
-	}
-	
-	public static void newSeriesFromMeasurementSeries(Container container, TridasMeasurementSeries series, 
-			NormalTridasUnit unitsIfNotSpecfied, Boolean useEditorLite, 
-			String originalFilename, String originalFormat) {
-		
-		log.debug("Creating new editor for series: "+series.getTitle());
+	public static void createEditorForSample(Container container, 
+			Sample sample, 
+			NormalTridasUnit unitsIfNotSpecfied, 
+			Boolean useEditorLite) 
+	{
 		
 		if(container!=null) container.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
+		ITridasSeries series = sample.getSeries();
+		
 		try {				
 			for(int i=0; i < series.getValues().size(); i++)
 			{
@@ -713,43 +688,7 @@ public class EditorFactory {
 		}
 		
 		
-		// make dataset ref, based on our series
-		Sample sample = new Sample(series);
-		
-		if(originalFilename!=null)
-		{
-			sample.setMeta(Metadata.FILENAME, originalFilename);
-		}
-		if(originalFormat!=null)
-		{
-			sample.setMeta(Metadata.LEGACY_FORMAT, originalFormat);
-		}
-		
-		
-		sample.setMeta("title", series.getTitle());
-		
-		// Set range from series
-		SafeIntYear startYear = new SafeIntYear(1001);
-		if(series.isSetInterpretation())
-		{
-			if (series.getInterpretation().isSetFirstYear())
-			{
-				 startYear = new SafeIntYear(series.getInterpretation().getFirstYear());
-			}
-		}
-		
-		log.debug("New series has "+series.getValues().get(0).getValues().size()+" values in it");
-		
-		SafeIntYear endYear = startYear.add(series.getValues().get(0).getValues().size()-1);
-		Range rng = new Range(new Year(startYear.toString()), new Year(endYear.toString()));
-		
-		log.debug("New series range is "+rng.toStringWithSpan());
-		sample.setRange(rng);
 
-		sample.setModified();
-		
-		// setup our loader and series identifier
-		TellervoWsiTridasElement.attachNewSample(sample);
 
 		// start the editor
 		

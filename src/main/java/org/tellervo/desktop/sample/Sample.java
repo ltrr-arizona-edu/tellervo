@@ -923,7 +923,7 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 	 */
 	public boolean hasCount() {
 		Boolean cnt = ringwidths.hasCount();
-		log.debug("Sample has count? "+cnt);
+		//log.debug("Sample has count? "+cnt);
 		return cnt;
 	}
 

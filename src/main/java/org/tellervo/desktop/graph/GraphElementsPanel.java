@@ -44,35 +44,19 @@ import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.util.ValidationEventCollector;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.io.view.ImportDataOnly;
-import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
-import org.tellervo.desktop.sample.LocalTridasFileLoader;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
-import org.tridas.interfaces.ITridasSeries;
-import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
-import org.tridas.io.exceptions.InvalidDendroFileException;
-import org.tridas.io.formats.tridas.TridasWriter;
-import org.tridas.io.util.TridasUtils;
-import org.tridas.schema.NormalTridasVariable;
-import org.tridas.schema.TridasMeasurementSeries;
-import org.tridas.schema.TridasTridas;
-import org.tridas.schema.TridasValues;
-import org.tridas.schema.TridasVariable;
 
 
 public class GraphElementsPanel extends JPanel {
@@ -174,54 +158,31 @@ public class GraphElementsPanel extends JPanel {
 	    		Integer retValue = fc.showOpenDialog(glue);
 	    		
 	    		if (retValue == JFileChooser.APPROVE_OPTION) {
-	    			file = fc.getSelectedFile();
-	    			String formatDesc = fc.getFileFilter().getDescription();
-	    			try{
-	    				format = formatDesc.substring(0, formatDesc.indexOf("(")).trim();
-		    			ImportDataOnly importDO = new ImportDataOnly(glue, file, format);
-		    			Integer seriesPlotted = 0;
-		    			for(ITridasSeries series : importDO.getSeries())
-		    			{
-		    				if(!series.isSetValues()) continue;
-		    				
-		    				if(series.getValues().size()==1)
-		    				{
-		    					TridasVariable var = new TridasVariable();
-		    					var.setNormalTridas(NormalTridasVariable.RING_WIDTH);
-		    					series.getValues().get(0).setVariable(var);
-		    				}
-		    				
-		    				Boolean allgood = false;
-		    				for(TridasValues  tvs: series.getValues())
-		    				{
-		    					if(tvs.isSetVariable() 
-		    							&& tvs.getVariable().isSetNormalTridas() 
-		    							&& tvs.getVariable().getNormalTridas().equals(NormalTridasVariable.RING_WIDTH))
-		    					{
-		    						allgood = true;
-		    					}
-		    				}
-		    					
-		    				
-		    				if(allgood)
-		    				{
-			    				Sample sample = new Sample(series);
-			    				sample.setLoader(new LocalTridasFileLoader(series));
-			    				
-			    				sample.setMeta("filename", series.getTitle());
-			    				sample.setMeta("title", series.getTitle());
-			    				
-			    				window.add(sample);
-			    				seriesPlotted++;
-		    				}
-		    			}
+	    			
+	    			
+	    			file = fc.getSelectedFile();	    			
+	    			DendroFileFilter filter = (DendroFileFilter)fc.getFileFilter();
+	    			ImportDataOnly ido;
+					try {
+						ido = new ImportDataOnly(window, file, filter);
 		    			
-		    			if(seriesPlotted==0)
+		    			if(ido.getSamples()==null || ido.getSamples().size()==0)
 		    			{
 		    				Alert.error(window, "Error", "Unable to find any ring-width data to plot");
+		    				return;
 		    			}
 		    			
-	    			} catch (Exception e){}
+		    			for(Sample sample : ido.getSamples())
+		    			{
+		    				window.add(sample);
+		    			}
+		    			
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+	
+	    			
+	    		
 	    		}
 	    	}
 

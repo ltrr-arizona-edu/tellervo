@@ -37,6 +37,8 @@ public class Metadata {
 	public final static String LEGACY_FORMAT = "format";
 	public final static String LEGACY_SAVED_BY_TELLERVO = "savedByTellervo";
 	public final static String KEYCODE = "keycode";
+	public final static String AUTHOR = "author";
+	public final static String SPECIES = "species";
 	
 	/* Timestamps */
 	public final static String CREATED_TIMESTAMP = "createdTimestamp";

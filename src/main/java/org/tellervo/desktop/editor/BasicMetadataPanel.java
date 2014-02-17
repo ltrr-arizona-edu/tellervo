@@ -1,18 +1,21 @@
 package org.tellervo.desktop.editor;
 
-import javax.swing.JPanel;
-import net.miginfocom.swing.MigLayout;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import java.awt.Color;
-import javax.swing.JTextArea;
-import javax.swing.border.EmptyBorder;
-
-import org.tellervo.desktop.ui.Builder;
 import java.awt.Font;
 
-public class BasicMetadataPanel extends JPanel {
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+import net.miginfocom.swing.MigLayout;
+
+import org.tellervo.desktop.io.Metadata;
+import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.ui.Builder;
+
+public class BasicMetadataPanel extends AbstractMetadataPanel {
+
+	private static final long serialVersionUID = 1L;
 	public JTextField txtTitle;
 	public JTextField txtKeycode;
 	public JTextField txtSpecies;
@@ -20,7 +23,7 @@ public class BasicMetadataPanel extends JPanel {
 
 	private JLabel lblNewLabel;
 	private JLabel lblTheseBasicMetadata;
-	private JTextArea txtWarning;
+	private JLabel txtWarning;
 	private JLabel lblAuthor;
 
 	/**
@@ -64,13 +67,13 @@ public class BasicMetadataPanel extends JPanel {
 		lblTheseBasicMetadata = new JLabel("");
 		add(lblTheseBasicMetadata, "flowx,cell 1 5");
 		
-		txtWarning = new JTextArea();
+		txtWarning = new JLabel();
 		txtWarning.setFont(new Font("Dialog", Font.PLAIN, 10));
-		txtWarning.setWrapStyleWord(true);
-		txtWarning.setLineWrap(true);
-		txtWarning.setText("These basic metadata fields simply provide you with a method of adding rudimentary metadata to legacy dendro file formats. They are not populated when you load legacy data files.");
-		txtWarning.setEditable(false);
-		txtWarning.setEditable(false);
+
+		txtWarning.setText("<html>These basic metadata fields simply provide you with a method of adding rudimentary metadata to legacy dendro file formats. They are supported sporadically" +
+				" depending on the format you save to and therefore may be truncated or omitted. When you load legacy files into Tellervo-<i>lite</i> unsupported" +
+				" fields will be ignored so you may prefer to make copies of files before editing.");
+
 		txtWarning.setOpaque(false);
 		txtWarning.setBackground(new Color(0,0,0,0));
 		txtWarning.setBorder(new EmptyBorder(0,0,0,0));
@@ -79,7 +82,21 @@ public class BasicMetadataPanel extends JPanel {
 
 	}
 
-	public JTextField getTxtAuthor() {
-		return txtAuthor;
+	public void populateFromSample(Sample s)
+	{
+		if(s==null) return;
+		
+		txtTitle.setText(s.getSeries().getTitle());
+		txtAuthor.setText(s.getMetaString(Metadata.AUTHOR));
+		txtKeycode.setText(s.getMetaString(Metadata.KEYCODE));
+		
+		if(s.getMetaString(Metadata.SPECIES)!="Plantae")
+		{
+			txtSpecies.setText(s.getMetaString(Metadata.SPECIES));
+		}
+		
+		
 	}
+	
+
 }

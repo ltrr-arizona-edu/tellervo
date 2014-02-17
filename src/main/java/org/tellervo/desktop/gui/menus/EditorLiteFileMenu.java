@@ -1,4 +1,4 @@
-package org.tellervo.desktop.editor;
+package org.tellervo.desktop.gui.menus;
 
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -14,7 +14,9 @@ import javax.swing.JMenuItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.menus.FileMenu;
+import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.EditorFactory;
+import org.tellervo.desktop.editor.EditorLite;
 import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;

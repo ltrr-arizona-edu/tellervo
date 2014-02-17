@@ -6,7 +6,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.EditorLiteFileMenu;
+import org.tellervo.desktop.gui.menus.EditorLiteFileMenu;
 import org.tellervo.desktop.gui.menus.FileMenu;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;

@@ -7,26 +7,38 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.editor.EditorFactory;
+import org.tellervo.desktop.editor.PickSampleDialog;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
+import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroFileReader;
+import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
+import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.exceptions.InvalidDendroFileException;
-import org.tridas.io.util.TridasUtils;
+import org.tridas.io.util.UnitUtils;
 import org.tridas.schema.NormalTridasUnit;
-import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasDerivedSeries;
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
+import org.tridas.schema.TridasTridas;
+import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValues;
 
 public class ImportDataOnly extends Object {
+	private final static Logger log = LoggerFactory.getLogger(EditorFactory.class);
 
 	private final Window parent;
-	private Boolean warnedAboutUnspecifiedVar = false;
-	private ArrayList<ITridasSeries> seriesList = new ArrayList<ITridasSeries>();
+	private ArrayList<Sample> sampleList = new ArrayList<Sample>();
 	private NormalTridasUnit unitsIfNotSpecified = NormalTridasUnit.MICROMETRES;
 	private AbstractDendroFileReader reader;
 	private File file;
@@ -42,15 +54,19 @@ public class ImportDataOnly extends Object {
 		
 	}
 	
-	public ImportDataOnly(Window parent, File file, DendroReaderFileFilter filetypefilter) throws Exception
+	public ImportDataOnly(Window parent, File file, DendroFileFilter filetypefilter) throws Exception
 	{
 		this.parent = parent;
 		this.file = file;
 		
+				
 		for (String readername : TridasIO.getSupportedReadingFormats())
 		{
 			AbstractDendroReaderFileFilter filter = new DendroReaderFileFilter(readername);
-			if(filter.getDescription().equals(filetypefilter.getDescription()))
+			String format = filetypefilter.getFormatName();
+			log.debug("Checking to see if "+format+" matches "+ filter.getDescription());
+			
+			if(filter.getDescription().equals(format))
 			{
 				this.fileType = filter.getDescription();
 				parseFile();
@@ -62,15 +78,37 @@ public class ImportDataOnly extends Object {
 		
 	}
 	
+	/**
+	 * Get list of series for each sample in imported file 
+	 * 
+	 * @return
+	 */
 	public ArrayList<ITridasSeries> getSeries()
 	{
-		return seriesList;
+		
+		ArrayList<ITridasSeries> serList = new ArrayList<ITridasSeries>();
+		
+		for(Sample s : sampleList)
+		{
+			serList.add(s.getSeries());
+		}
+		
+		return serList;
+	}
+	
+	
+	/**
+	 * Get list of samples from the imported file 
+	 * 
+	 * @return
+	 */
+	public ArrayList<Sample> getSamples()
+	{
+		return sampleList;
 	}
 	
 	private void parseFile()
 	{
-		
-		
 		// Create a reader based on the file type supplied
 		
 		reader = TridasIO.getFileReader(fileType);
@@ -94,62 +132,97 @@ public class ImportDataOnly extends Object {
 		{
 			Alert.error(parent, "Invalid File", e.getLocalizedMessage());
 		}
-					
-		ArrayList<TridasMeasurementSeries> mseriesList = TridasUtils.getMeasurementSeriesFromTridasContainer(reader.getTridasContainer());
-		ArrayList<TridasDerivedSeries> dseriesList = TridasUtils.getDerivedSeriesFromTridasContainer(reader.getTridasContainer());
 
-		seriesList.addAll(mseriesList);
-		seriesList.addAll(dseriesList);
+		TridasTridas tc = reader.getTridasContainer();
 		
-		Integer count = reader.getProjects()[0].getDerivedSeries().size() + seriesList.size();
-		
-		if(count>3)
+		Boolean hideWarningsFlag = false;
+		for(TridasProject p : tc.getProjects())
 		{
-			int n = JOptionPane.showConfirmDialog(
-				    parent,
-				    "This file contains "+count+" series.\nAre you sure you want to open all of these?",
-				    "Multiple series",
-				    JOptionPane.YES_NO_OPTION);
-			if(n != JOptionPane.YES_OPTION)
+			for(TridasObject o : p.getObjects())
 			{
-				return;
+				for(TridasElement e : o.getElements())
+				{
+					
+					for(TridasSample s : e.getSamples())
+					{
+						for(TridasRadius r : s.getRadiuses())
+						{
+							for(TridasMeasurementSeries ms : r.getMeasurementSeries())
+							{
+								Sample sample = EditorFactory.createSampleFromSeries(ms, e, file, fileType, hideWarningsFlag);	
+								if(sample==null)
+								{
+									hideWarningsFlag=true;
+								}
+								else
+								{
+									sampleList.add(sample);
+								}
+								
+							}
+						}
+					}
+				}
+			}
+			
+			for(TridasDerivedSeries ds : p.getDerivedSeries())
+			{
+				Sample sample = EditorFactory.createSampleFromSeries(ds, null, file, fileType, hideWarningsFlag);
+				
+				if(sample==null)
+				{
+					hideWarningsFlag=true;
+				}
+				else
+				{
+					sampleList.add(sample);
+				}
+				
 			}
 			
 		}
 		
-		Boolean unitsSet = false;
-		for(ITridasSeries ser : seriesList)
-		{
-			for(TridasValues  tv : ser.getValues())
-			{	
-				if(tv.isSetUnit())
-				{
-					if(tv.getUnit().isSetNormalTridas())
-					{
-						unitsSet = true;
-					}
-				}	
-			}
-		}
-		
-		
-		
-		for(TridasDerivedSeries ser : reader.getProjects()[0].getDerivedSeries())
-		{
-			for(TridasValues  tv : ser.getValues())
-			{	
-				if(tv.isSetUnit())
-				{
-					if(tv.getUnit().isSetNormalTridas())
-					{
-						unitsSet = true;
-					}
-				}	
-			}
-		}
-		
 
-		if(unitsSet==false && seriesList.size()>0)
+		Integer count = sampleList.size();
+		
+		if(count>1)
+		{
+			PickSampleDialog psd = new PickSampleDialog(parent, sampleList);
+			
+			if(psd.isCancelled())
+			{
+				sampleList = null;
+				return;
+			}
+			else if(psd.isOpeningAll())
+			{
+				// No need to do anything
+			}
+			else
+			{
+				sampleList.clear();
+				sampleList.add(psd.getSelectedSample());
+			}
+
+			
+		}
+		
+		Boolean unitsSet = false;
+		for(ITridasSeries ser : getSeries())
+		{
+			for(TridasValues  tv : ser.getValues())
+			{	
+				if(tv.isSetUnit())
+				{
+					if(tv.getUnit().isSetNormalTridas())
+					{
+						unitsSet = true;
+					}
+				}	
+			}
+		}
+
+		if(unitsSet==false && sampleList.size()>0)
 		{
 			Object[] possibilities = {"1/1000th mm", 
 					"1/100th mm",
@@ -192,6 +265,47 @@ public class ImportDataOnly extends Object {
 				return;
 			}
 		}
+		
+		for(Sample sample : sampleList)
+		{
+			ITridasSeries series = sample.getSeries();
+			
+			try {				
+				for(int i=0; i < series.getValues().size(); i++)
+				{
+					TridasValues tv = series.getValues().get(i);
+					
+					if(tv.isSetUnit())
+					{
+						if(!tv.getUnit().isSetNormalTridas())
+						{
+							tv.getUnit().setNormalTridas(unitsIfNotSpecified);
+						}
+					}	
+					else
+					{
+						TridasUnit unit = new TridasUnit();
+						unit.setNormalTridas(unitsIfNotSpecified);
+						tv.setUnit(unit);
+						tv.setUnitless(null);
+					}
+					
+					tv = UnitUtils.convertTridasValues(NormalTridasUnit.MICROMETRES, tv, true);
+					
+					TridasUnit unit = new TridasUnit();
+					unit.setNormalTridas(NormalTridasUnit.MICROMETRES);
+					tv.setUnit(unit);
+					series.getValues().set(i,tv);
+				}
+				
+			} catch (NumberFormatException e) {
+				Alert.error("Error", "One or more data values are not numbers.");
+				return;
+			} catch (ConversionWarningException e) {
+				Alert.error("Error", "Error converting units");
+				return;
+			}
+		}
 	}
 	
 	public void openEditors()
@@ -206,39 +320,14 @@ public class ImportDataOnly extends Object {
 	
 	private void openEditors(Boolean useEditorLite)
 	{
-		if(seriesList==null || seriesList.size()==0) return;
+		if(sampleList==null || sampleList.size()==0) return;
 		
-		// Warn if project contains derivedSeries
-		if(reader.getProjects()[0].isSetDerivedSeries())
+		
+		for(Sample sample : sampleList)
 		{
-			for(TridasDerivedSeries series : reader.getProjects()[0].getDerivedSeries())	
-			{
-				EditorFactory.newSeriesFromDerivedSeries(parent, series, unitsIfNotSpecified, useEditorLite, file.getAbsolutePath(), fileType);
-			}
-		}
-
-		for(ITridasSeries series : seriesList)
-		{		
-			if(series instanceof TridasDerivedSeries) continue;
 			
-			// Check if series contain data of unknown or unsupported variables
-			for(TridasValues grp : series.getValues())
-			{
-				if(!grp.getVariable().isSetNormalTridas())
-				{
-					if(!grp.getVariable().isSetNormalStd() || !grp.getVariable().getNormalStd().equals("Tellervo"))
-					{
-						if(!this.warnedAboutUnspecifiedVar)
-						{
-							Alert.error(parent, "Error", "The measurement variable was not specified in input file. \nAssuming data are standard ring widths.");
-						}
-						this.warnedAboutUnspecifiedVar = true;
-						grp.getVariable().setNormalTridas(NormalTridasVariable.RING_WIDTH);
-					}
-				}
-			}	
-			
-			EditorFactory.newSeriesFromMeasurementSeries(null, (TridasMeasurementSeries)series, unitsIfNotSpecified, useEditorLite, file.getAbsolutePath(), fileType);
+			EditorFactory.createEditorForSample(parent, sample,  unitsIfNotSpecified, useEditorLite);
 		}
+				
 	}
 }

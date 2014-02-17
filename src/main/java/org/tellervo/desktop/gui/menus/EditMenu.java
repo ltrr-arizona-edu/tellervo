@@ -92,8 +92,8 @@ public class EditMenu extends JMenu {
     }
 
     protected void init() {
-        addUndoRedo();
-        addSeparator();
+        //addUndoRedo();
+        //addSeparator();
 
         addClipboard();
         addSeparator();
@@ -109,11 +109,11 @@ public class EditMenu extends JMenu {
     }
 
     protected void addUndo() {
-        add(Builder.makeMenuItem("menus.edit.undo", false, "undo.png"));
+        //add(Builder.makeMenuItem("menus.edit.undo", false, "undo.png"));
     }
 
     protected void addRedo() {
-        add(Builder.makeMenuItem("menus.edit.redo", false, "redo.png"));
+        //add(Builder.makeMenuItem("menus.edit.redo", false, "redo.png"));
     }
 
     protected void addClipboard() {
