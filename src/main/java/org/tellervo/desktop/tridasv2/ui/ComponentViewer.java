@@ -30,20 +30,27 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 
+import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
+
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
+import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
 import javax.swing.border.EtchedBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -74,6 +81,127 @@ import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesResource;
 import org.tridas.schema.TridasIdentifier;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Shape;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.Timer;
+
+import javax.swing.BorderFactory;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+
+import org.apache.commons.collections15.Factory;
+import org.apache.commons.collections15.functors.ConstantTransformer;
+
+import edu.uci.ics.jung.algorithms.layout.FRLayout;
+import edu.uci.ics.jung.algorithms.layout.FRLayout2;
+import edu.uci.ics.jung.algorithms.layout.PolarPoint;
+import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
+import edu.uci.ics.jung.algorithms.layout.SpringLayout;
+import edu.uci.ics.jung.algorithms.layout.TreeLayout;
+import edu.uci.ics.jung.graph.DirectedGraph;
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import edu.uci.ics.jung.graph.Forest;
+import edu.uci.ics.jung.graph.DelegateForest;
+import edu.uci.ics.jung.graph.DelegateTree;
+import edu.uci.ics.jung.graph.Graph;
+import edu.uci.ics.jung.graph.ObservableGraph;
+import edu.uci.ics.jung.graph.Tree;
+import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
+import edu.uci.ics.jung.visualization.Layer;
+import edu.uci.ics.jung.visualization.VisualizationServer;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ScalingControl;
+import edu.uci.ics.jung.visualization.decorators.EdgeShape;
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import edu.uci.ics.jung.visualization.layout.LayoutTransition;
+import edu.uci.ics.jung.visualization.renderers.Renderer;
+import edu.uci.ics.jung.visualization.util.Animator;
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridLayout;
+import java.awt.Shape;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import javax.swing.BorderFactory;
+import javax.swing.JApplet;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+
+import org.apache.commons.collections15.Factory;
+import org.apache.commons.collections15.functors.ConstantTransformer;
+
+import edu.uci.ics.jung.algorithms.layout.PolarPoint;
+import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
+import edu.uci.ics.jung.algorithms.layout.TreeLayout;
+import edu.uci.ics.jung.algorithms.layout.util.Relaxer;
+import edu.uci.ics.jung.graph.DirectedGraph;
+import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
+import edu.uci.ics.jung.graph.Forest;
+import edu.uci.ics.jung.graph.DelegateForest;
+import edu.uci.ics.jung.graph.DelegateTree;
+import edu.uci.ics.jung.graph.Tree;
+import edu.uci.ics.jung.graph.event.GraphEvent;
+import edu.uci.ics.jung.graph.event.GraphEventListener;
+import edu.uci.ics.jung.graph.util.Graphs;
+import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
+import edu.uci.ics.jung.visualization.Layer;
+import edu.uci.ics.jung.visualization.VisualizationServer;
+import edu.uci.ics.jung.visualization.VisualizationViewer;
+import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
+import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
+import edu.uci.ics.jung.visualization.control.ScalingControl;
+import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
+import edu.uci.ics.jung.visualization.decorators.EdgeShape;
+import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
+import edu.uci.ics.jung.visualization.layout.LayoutTransition;
+import edu.uci.ics.jung.visualization.util.Animator;
+
+import java.awt.Component;
+
+import net.miginfocom.swing.MigLayout;
+
 
 /**
  * @author Lucas Madar
@@ -95,7 +223,8 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 	/** Progress bar */
 	private JProgressBar pbStatus;
 	
-	private JPanel contentPanel, tablePanel, treePanel;
+	private JPanel contentPanel, tablePanel, treePanel, tree2Panel;
+	
 	private JXTable table;
 	private JTree tree;
 	
@@ -105,6 +234,12 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 	
 	private final static String TABLEPANEL = "Series Table View";
 	private final static String TREEPANEL = "Series Tree View";
+	private final static String TREE2PANEL = "New Tree View";
+	
+	private Graph<String,String> g = null;
+    private VisualizationViewer<String,String> vv = null;
+    private AbstractLayout<String,String> layout = null;
+	
 	
 	public ComponentViewer(Sample sample) {
 		this.sample = sample;
@@ -124,12 +259,13 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		
 		// create button panel
 		JPanel topPanel = new JPanel();
-		topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.X_AXIS));
 		label = new JLabel("View as: ");
 		btnTreeView = new JRadioButton("tree");
 		btnTreeView.putClientProperty("cv.cardName", TREEPANEL);
 		btnTableView = new JRadioButton("table");
 		btnTableView.putClientProperty("cv.cardName", TABLEPANEL);
+		JRadioButton btnTree2View = new JRadioButton("tree2");
+		btnTree2View.putClientProperty("cv.cardName", TREE2PANEL);
 		
 		ActionListener btnListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -141,25 +277,27 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		};
 		btnTableView.addActionListener(btnListener);
 		btnTreeView.addActionListener(btnListener);	
+		btnTree2View.addActionListener(btnListener);
 		
 		// connect buttons
 		ButtonGroup group = new ButtonGroup();
 		group.add(btnTreeView);
 		group.add(btnTableView);
+		group.add(btnTree2View);
+		topPanel.setLayout(new MigLayout("", "[64px][55px][62px][63px][][]", "[23px]"));
 		
 		
 		// add it all to a panel
-		topPanel.add(label);
-		topPanel.add(Box.createHorizontalStrut(12));
-		topPanel.add(btnTreeView);
-		topPanel.add(Box.createHorizontalStrut(8));
-		topPanel.add(btnTableView);
-		topPanel.add(Box.createHorizontalGlue());
+		topPanel.add(label, "cell 0 0,alignx left,aligny center");
+		topPanel.add(btnTreeView, "cell 1 0,alignx left,aligny center");
+		topPanel.add(btnTableView, "cell 2 0,alignx left,aligny center");
+		topPanel.add(btnTree2View, "cell 3 0,alignx left,aligny center");
+		
 		
 		topPanel.setBorder(BorderFactory.createEmptyBorder(2, 8, 8, 8));
 		
 		add(topPanel, BorderLayout.NORTH);
-		
+				
 		// create status bar
 		JPanel status = new JPanel();
 		status.setLayout(new BoxLayout(status, BoxLayout.X_AXIS));
@@ -184,8 +322,13 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		setupTree();
 		treePanel.add(new JScrollPane(tree), BorderLayout.CENTER);
 		
+		tree2Panel = new JPanel(new BorderLayout());
+		setupTreeGUI();
+
 		contentPanel.add(tablePanel, TABLEPANEL);
 		contentPanel.add(treePanel, TREEPANEL);
+		contentPanel.add(tree2Panel, TREE2PANEL);
+
 	}
 	
 	private void setupTree() {
@@ -277,45 +420,10 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		});
 	}
 	
-	private void recurseAddElementsToList(ElementList elements, ElementList flat, 
-			DefaultMutableTreeNode parent, int depth) {
-		for(Element e : elements) {
-			if(e instanceof CachedElement) {
-				CachedElement ce = (CachedElement) e;
-				
-				// need the basic...
-				if(!ce.hasBasic()) {
-					System.err.println("Cached, but not even basic loaded!");
-					continue;
-				}
-				
-				// add to list
-				flat.add(ce);
-				
-				// add to tree
-				DefaultMutableTreeNode node = new DefaultMutableTreeNode(ce);
-				parent.add(node);
-				
-				// can't go any deeper if there's no series...
-				if(!ce.hasFull())
-					continue;
-				
-				try {
-					Sample s = ce.load();
-					ElementList sampleElements = s.getElements();
-					if(sampleElements != null)
-						recurseAddElementsToList(sampleElements, flat, node, depth + 1);
-				} catch (IOException ioe) {
-					// shouldn't happen
-				} 
-			}
-			else
-				System.err.println("Non-cached element: " + e);
-		}
-	}
+
 	
 	private void updateContent() {
-		ElementList elements = sample.getElements();
+		/*ElementList elements = sample.getElements();
 		ElementList displayElements = new ElementList();
 		
 		// if we don't have any, use an empty list instead...
@@ -325,17 +433,26 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		// create root node
 		DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new CachedElement(sample));
 		
-		recurseAddElementsToList(elements, displayElements, rootNode, 0);
+
+		//recurseAddElementsToList(elements, displayElements, rootNode, sample, 0);
+		*/
+		Task task = new Task(sample);
+		task.execute();	
+		
+		
+		//displayElements = task.getDisplayElements();
 
 		// should be unsorted - default order is what we want
-		tableModel.setElements(displayElements);
-		treeModel.setRoot(rootNode);
+		//tableModel.setElements(displayElements);
+		//treeModel.setRoot(rootNode);
 		
 		// expand all nodes in tree
 		// note: tree.getRowCount() changes as we expand each node!
 		/*for(int i = 0; i < tree.getRowCount(); i++) {
 			tree.expandRow(i);
 		}*/
+		
+
 	}
 	
 	private void setStatus(String status, boolean inProgress) {
@@ -416,4 +533,188 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		// none of our elements are ever disabled
 		return false;
 	}
+	
+	
+	private void setupTreeGUI()
+	{
+	       //create a graph
+	    	Graph<String, String> ig = Graphs.<String,String>synchronizedDirectedGraph(new DirectedSparseMultigraph<String,String>());
+
+	        ObservableGraph<String,String> og = new ObservableGraph<String,String>(ig);
+	        og.addGraphEventListener(new GraphEventListener<String,String>() {
+
+				public void handleGraphEvent(GraphEvent<String, String> evt) {
+					System.err.println("got "+evt);
+
+				}});
+	        this.g = og;
+	        //create a graphdraw
+	        layout = new FRLayout2<String,String>(g);
+//	        ((FRLayout)layout).setMaxIterations(200);
+
+	        vv = new VisualizationViewer<String,String>(layout, new Dimension(600,600));
+
+	        
+	        tree2Panel.putClientProperty("defeatSystemEventQueueCheck", Boolean.TRUE);
+
+	        tree2Panel.setLayout(new BorderLayout());
+	        tree2Panel.setBackground(java.awt.Color.lightGray);
+	        tree2Panel.setFont(new Font("Serif", Font.PLAIN, 12));
+
+	        vv.getModel().getRelaxer().setSleepTime(500);
+	        final DefaultModalGraphMouse graphMouse = new DefaultModalGraphMouse<Number,Number>();
+
+	        vv.setGraphMouse(graphMouse);
+
+	        vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
+	        //vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<Number>());
+	        vv.setForeground(Color.white);
+	        tree2Panel.add(vv, BorderLayout.CENTER);
+	        
+
+	        
+	        JComboBox modeBox = graphMouse.getModeComboBox();
+	        
+	        modeBox.setRenderer(new JUNGModeRenderer());
+	        
+	        modeBox.addItemListener(graphMouse.getModeListener());
+	        graphMouse.setMode(ModalGraphMouse.Mode.TRANSFORMING);
+
+	        final ScalingControl scaler = new CrossoverScalingControl();
+
+	        JButton plus = new JButton("+");
+	        plus.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                scaler.scale(vv, 1.1f, vv.getCenter());
+	            }
+	        });
+	        JButton minus = new JButton("-");
+	        minus.addActionListener(new ActionListener() {
+	            public void actionPerformed(ActionEvent e) {
+	                scaler.scale(vv, 1/1.1f, vv.getCenter());
+	            }
+	        });
+
+	        JPanel scaleGrid = new JPanel(new GridLayout(1,0));
+	        scaleGrid.setBorder(BorderFactory.createTitledBorder("Zoom"));
+
+	        JPanel controls = new JPanel();
+	        scaleGrid.add(plus);
+	        scaleGrid.add(minus);
+	        controls.add(scaleGrid);
+	        controls.add(modeBox);
+
+	        tree2Panel.add(controls, BorderLayout.SOUTH);
+
+	}
+	
+	class Task extends SwingWorker<Void, Void> {
+		
+		
+		private Sample sample;
+		private ElementList de = new ElementList();
+		
+		public Task(Sample sample)
+		{
+			this.sample = sample;
+		}
+		
+		@Override
+		protected Void doInBackground() throws Exception {
+			
+			ElementList el = sample.getElements();
+			ElementList de = new ElementList();
+			
+			// if we don't have any, use an empty list instead...
+			if(el == null)
+				el = new ElementList();
+			
+			// create root node
+			DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new CachedElement(sample));
+			
+
+			recurseAddElementsToList(el, de, rootNode, sample, 0);
+			
+			return null;		
+		}
+		
+		/*
+		 * Executed in event dispatching thread
+		 */
+		@Override
+		public void done() {     
+			tableModel.setElements(de);
+			treeModel.setRoot(new DefaultMutableTreeNode(new CachedElement(sample)));
+		}
+		
+		
+		public ElementList getDisplayElements()
+		{
+			return de;
+		}
+		
+		
+		private void recurseAddElementsToList(ElementList elements, ElementList flat, 
+				DefaultMutableTreeNode parent, Sample parentSample, int depth) {
+			for(Element e : elements) {
+				if(e instanceof CachedElement) {
+					CachedElement ce = (CachedElement) e;
+					
+					// need the basic...
+					if(!ce.hasBasic()) {
+						System.err.println("Cached, but not even basic loaded!");
+						continue;
+					}
+					
+					// add to list
+					flat.add(ce);
+					
+					// add to tree
+					DefaultMutableTreeNode node = new DefaultMutableTreeNode(ce);
+					parent.add(node);
+								
+					
+					// can't go any deeper if there's no series...
+					if(!ce.hasFull())
+						continue;
+					
+					try {
+						Sample s = ce.load();
+						
+		            	layout.lock(true);
+		                //add a vertex
+		                String v1 = ComponentTreeCellRenderer.getFullTitle(s, false);
+
+		                Relaxer relaxer = vv.getModel().getRelaxer();
+		                relaxer.pause();
+		                g.addVertex(v1);
+		                System.err.println("added node " + v1);
+
+		                // wire it to some edges
+						g.addEdge(g.getEdgeCount()+"", 
+								ComponentTreeCellRenderer.getFullTitle(s, false),
+								ComponentTreeCellRenderer.getFullTitle(parentSample, false));
+
+		                layout.initialize();
+		                relaxer.resume();
+		                layout.lock(false);
+
+						ElementList sampleElements = s.getElements();
+												
+						if(sampleElements != null)
+							recurseAddElementsToList(sampleElements, flat, node, s, depth + 1);
+					} catch (IOException ioe) {
+						// shouldn't happen
+					} 
+				}
+				else
+					System.err.println("Non-cached element: " + e);
+			}	
+			
+			vv.repaint();
+		}
+		
+	}
+    
+  
 }

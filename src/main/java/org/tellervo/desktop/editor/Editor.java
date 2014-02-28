@@ -117,6 +117,7 @@ import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewer;
+import org.tellervo.desktop.tridasv2.ui.ComponentViewerOld;
 import org.tellervo.desktop.tridasv2.ui.DependentsViewer;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
@@ -149,11 +150,11 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private JPanel wjPanel;
 	private EditorMeasurePanel measurePanel = null;
 	protected AbstractMetadataPanel metaView;
-	private ComponentViewer componentsPanel = null;
-	protected DependentsViewer dependentsPanel = null;
+	private ComponentViewerOld componentsPanel = null;
+	private DependentsViewer dependentsPanel = null;
 	private BargraphPanel bargraphPanel = null;
 	protected SeriesDataMatrix dataView; // (a jpanel)
-	public GISPanel wwMapPanel;
+	protected GISPanel wwMapPanel;
 	protected JTabbedPane tabbedPanel;
 	protected JToolBar toolbar;
 	
@@ -425,13 +426,13 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		wjPanel.add(new EditorStatusBar(wjTable, sample), BorderLayout.SOUTH);
 	}
 
-	protected void initMetaView() {
+	private void initMetaView() {
 		metaView = new TridasMetadataPanel(sample);
 	}
 
 	private void initComponentsPanel() {
 		if(sample.getSampleType().isDerived())
-			componentsPanel = new ComponentViewer(sample);
+			componentsPanel = new ComponentViewerOld(sample);
 	}
 
 	protected void initDependentsPanel() {

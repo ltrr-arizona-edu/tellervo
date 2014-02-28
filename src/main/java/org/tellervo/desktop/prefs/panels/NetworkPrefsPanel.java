@@ -81,6 +81,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	private JButton btnTest;
 	private JButton btnClearHistory;
 	private URLComponentWrapper cboWrapper;
+	private JCheckBox chkStrictSSLSecurity;
 	
 	/**
 	 * Create the panel.
@@ -176,6 +177,9 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		
 		wsPanel.add(btnTest, "cell 1 1");
 		
+		chkStrictSSLSecurity = new JCheckBox("<html>Check server has valid SSL certificate when using HTTPS connection");
+		wsPanel.add(chkStrictSSLSecurity, "cell 1 3");
+		
 		proxyPanel = new JPanel();
 		proxyPanel.setBorder(new TitledBorder(null, "Network Connection", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(proxyPanel, "cell 0 1,grow, hidemode 2");
@@ -253,6 +257,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 	private void pingComponents()
 	{
 		cboWSURL.setEnabled(!chkDisableWS.isSelected());
+		chkStrictSSLSecurity.setEnabled(!chkDisableWS.isSelected());
 		btnForceDictionaryReload.setEnabled(!chkDisableWS.isSelected());
 		btnTest.setEnabled(!chkDisableWS.isSelected());
 		btnClearHistory.setEnabled(!chkDisableWS.isSelected());
@@ -298,6 +303,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		new RadioButtonWrapper(new JRadioButton[] { btnDefaultProxy, btnManualProxy, btnNoProxy }, 
 				PrefKey.PROXY_TYPE, "default");
 		new CheckBoxWrapper(chkDisableWS, PrefKey.WEBSERVICE_DISABLED, false );
+		new CheckBoxWrapper(chkStrictSSLSecurity, PrefKey.WEBSERVICE_USE_STRICT_SECURITY, false );
 	
 		// manual proxy button behavior
 		setEnableProxy(btnManualProxy.isSelected());

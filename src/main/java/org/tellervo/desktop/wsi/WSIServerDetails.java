@@ -29,6 +29,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
+
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -69,7 +71,8 @@ public class WSIServerDetails {
 		NOT_CHECKED,
 		TOO_OLD,
 		STATUS_ERROR,
-		VALID;
+		VALID,
+		SSL_CERTIFICATE_PROBLEM;
 		
 	}
 	
@@ -140,9 +143,17 @@ public class WSIServerDetails {
 			// load cookies
 			client.setCookieStore(WSCookieStoreHandler.getCookieStore().toCookieStore());
 			
-			// are we using https? should we allow self-signed certs?
-			if(url.getScheme().equals("https")) 
+						
+			if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_USE_STRICT_SECURITY, false))
+			{
+				// Using strict security so don't allow self signed certificates for SSL
+			}
+			else
+			{
+				// Not using strict security so allow self signed certificates for SSL
+				if(url.getScheme().equals("https")) 
 				WebJaxbAccessor.setSelfSignableHTTPSScheme(client);
+			}
 	
 			
 			HttpGet req = new HttpGet(url);
@@ -238,7 +249,15 @@ public class WSIServerDetails {
 			log.debug(errMessage);
 			status = WSIServerStatus.STATUS_ERROR;
 			return false;
-		} catch (IOException e) {
+		} 
+	    catch (SSLPeerUnverifiedException sslex)
+	    {
+	    	errMessage="You have strict security policy enabled but the server you are connecting to does not have a valid SSL certificate.";
+	    	log.debug(errMessage);
+			status = WSIServerStatus.SSL_CERTIFICATE_PROBLEM;
+			return false;
+	    }
+	    catch (IOException e) {
 			
 			if(url.toString().startsWith("http://10."))
 			{

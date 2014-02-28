@@ -258,9 +258,17 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			req.setHeader("User-Agent", "Tellervo WSI " + Build.getUTF8Version() + 
 					" (" + clientModuleVersion + "; ts " + Build.getCompleteVersionNumber() +")");
 			
-			// are we using https? should we allow self-signed certs?
-			if(url.getScheme().equals("https"))
-				setSelfSignableHTTPSScheme(client);
+			
+			if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_USE_STRICT_SECURITY, false))
+			{
+				// Using strict security so don't allow self signed certificates for SSL
+			}
+			else
+			{
+				// Not using strict security so allow self signed certificates for SSL
+				if(url.getScheme().equals("https")) 
+				WebJaxbAccessor.setSelfSignableHTTPSScheme(client);
+			}
 			
 			// create a responsehandler
 			JaxbResponseHandler<INTYPE> responseHandler = 
@@ -297,6 +305,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 		{
 			throw new IOException("The URL of the server you have specified is unknown");
 		}
+		
 		catch (HttpResponseException hre) {
 			BugReport bugs = new BugReport(hre);
 			
