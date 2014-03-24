@@ -20,10 +20,16 @@
  ******************************************************************************/
 package org.tellervo.desktop.hardware.device;
 
+import gnu.io.SerialPortEvent;
+
 import java.io.DataOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 
 
 
@@ -119,8 +125,104 @@ public class VRODevice extends GenericASCIIDevice {
 		return true;
 	}
 	
+	public void serialEvent(SerialPortEvent e) {
+		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+			InputStream input;
+			
+			try {
+				input = getSerialPort().getInputStream();
+	    
+			    StringBuffer readBuffer = new StringBuffer();
+			    int intReadFromPort;
+			    	//Read from port into buffer while not line feed
+			    	while ((intReadFromPort=input.read()) != 10){
+			    		//If a timeout then show bad sample
+						if(intReadFromPort == -1) {
+							fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, null);
+							return;
+
+						}
+
+						//Ignore CR (13)
+			    		if(intReadFromPort!=13)  {
+			    			readBuffer.append((char) intReadFromPort);
+			    		}
+			    	}
+
+                String strReadBuffer = readBuffer.toString();
+                fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
+ 	
+                
+                // Check units 
+                if(strReadBuffer.endsWith("in"))
+                {
+					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in inches.  Only millimetre units are supported in Tellervo.");
+                }
+                else if (strReadBuffer.endsWith("ct"))
+                {
+					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in raw counts.  Your need to configure your VRO to transmit values in millimetres.");
+                }
+                
+		    	// Raw data is in mm like "2.575"
+                // Strip label and/or units if present
+				String regex = "[\\d\\.]+";
+				Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+				Matcher m = p.matcher(strReadBuffer);
+				if (m.find()) {
+					strReadBuffer = m.group();
+				}
+				else
+				{
+					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Invalid value from device");
+
+				}
+                
+                
+             	// Round up to micron integers
+		    	Float fltValue = new Float(strReadBuffer) * unitMultiplier.toFloat();
+		    	Integer intValue = Math.round(fltValue);
+				
+		    	// Handle any correction factor
+		    	intValue = getCorrectedValue(intValue);
+		    	
+		    	// Do calculation if working in cumulative mode
+		    	if(this.measureCumulatively)
+		    	{
+		    		Integer cumValue = intValue;
+		    		intValue = intValue - getPreviousPosition();
+		    		setPreviousPosition(cumValue);
+		    	}
+		    	
+		    	if(intValue>0)
+		    	{	    	
+			    	// Fire event
+			    	fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+		    	}
+		    	else
+		    	{
+		    		// Fire bad event as value is a negative number
+		    		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, null);
+		    	}
+			    							
+
+			}
+			catch (Exception ioe) {
+				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port");
+
+			}   	
+			 
+			// Only zero the measurement if we're not measuring cumulatively
+			if(!measureCumulatively)
+			{
+				zeroMeasurement();
+			}
+	
+		}
+	}
+	
+	
 	/**
-	 * Send zero command to Quadra-check QC10
+	 * Send zero command to VRO
 	 */
 	@Override
 	public void zeroMeasurement()
