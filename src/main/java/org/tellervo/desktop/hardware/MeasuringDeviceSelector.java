@@ -41,6 +41,7 @@ import org.tellervo.desktop.hardware.device.QC10Device;
 import org.tellervo.desktop.hardware.device.QC1100;
 import org.tellervo.desktop.hardware.device.SMCODendro1;
 import org.tellervo.desktop.hardware.device.UParSerDevice;
+import org.tellervo.desktop.hardware.device.VRODevice;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 
@@ -64,6 +65,7 @@ public class MeasuringDeviceSelector {
 		registerDevice(Microcode2.class);
 		registerDevice(UParSerDevice.class);
 		registerDevice(SMCODendro1.class);
+		registerDevice(VRODevice.class);
 	}
 	
 	/**

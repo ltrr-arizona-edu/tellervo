@@ -28,22 +28,25 @@ import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 
 
 
-public class QC10Device extends GenericASCIIDevice {
+public class VRODevice extends GenericASCIIDevice {
 
 	@Override
 	public String toString() {
-		return "Metronics Quadra-Chek 10";
+		return "Velmex VRO";
 	}
 
 	@Override
 	public void setDefaultPortParams(){
+		
+		//MeasureJ2X defaults to using 2 stop bits but Tellervo/Java/something bombs if you 
+		//try to write to the port with 2 stop bits set.  So lets stick with 1 stop bit for now!
 		
 		baudRate = BaudRate.B_9600;
 		dataBits = DataBits.DATABITS_8;
 		stopBits = StopBits.STOPBITS_2;
 		parity = PortParity.NONE;
 		flowControl = FlowControl.NONE;
-		lineFeed = LineFeed.CRLF;
+		lineFeed = LineFeed.CR;
 		unitMultiplier = UnitMultiplier.TIMES_1000;
 	}
 	
@@ -55,22 +58,22 @@ public class QC10Device extends GenericASCIIDevice {
 
 	@Override
 	public Boolean isDatabitsEditable() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public Boolean isLineFeedEditable() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public Boolean isParityEditable() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public Boolean isStopbitsEditable() {
-		return true;
+		return false;
 	}
 	
 	@Override
@@ -122,14 +125,13 @@ public class QC10Device extends GenericASCIIDevice {
 	@Override
 	public void zeroMeasurement()
 	{
-		String strZeroDataCommand = "@3";
+		String strZeroDataCommand = "C";
 		sendRequest(strZeroDataCommand);
-		setPreviousPosition(0);
 	}
 	
 	@Override
 	public void requestMeasurement() {
-		String strZeroDataCommand = "@16";
+		String strZeroDataCommand = "S";
 		sendRequest(strZeroDataCommand);
 		
 	}

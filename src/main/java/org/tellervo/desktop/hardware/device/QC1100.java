@@ -114,6 +114,11 @@ public class QC1100 extends GenericASCIIDevice {
 		return true;
 	}
 	
+	@Override
+	public Boolean isReverseMeasureCapable() {
+		return true;
+	}
+	
 	/**
 	 * Send zero command to Quadra-check QC10
 	 */
