@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
+import org.tellervo.schema.SampleStatus;
 import org.tellervo.schema.WSICuration;
 import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasGenericField;
@@ -55,7 +56,17 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 			gf.setType("xs:integer");
 		}
 		
-		gf.setValue((String) this.getValue());	
+		
+		if(this.getValue() instanceof SampleStatus)
+		{
+			SampleStatus ss = (SampleStatus) this.getValue();
+			gf.setValue(ss.value());
+		}
+		else
+		{
+			gf.setValue((String) this.getValue());
+		}
+		
 		return gf;
 	}
 	
@@ -109,6 +120,13 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 	{
 		TellervoGenericFieldProperty tgf = new TellervoGenericFieldProperty("sample.curationStatus", "curationStatus", "tellervo.curationStatus", 
 				WSICuration.class, TridasSample.class, false, false);
+		return tgf;
+	}
+	
+	public static TellervoGenericFieldProperty getSampleStatusProperty()
+	{
+		TellervoGenericFieldProperty tgf = new TellervoGenericFieldProperty("sample.sampleStatus", "sampleStatus", "tellervo.sampleStatus", 
+				SampleStatus.class, TridasSample.class, false, false);
 		return tgf;
 	}
 	

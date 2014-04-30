@@ -27,7 +27,8 @@ import java.io.IOException;
 
 import javax.swing.JDialog;
 
-import org.tellervo.desktop.print.BoxLabel;
+import org.tellervo.desktop.print.BasicBoxLabel;
+import org.tellervo.desktop.print.CompleteBoxLabel;
 import org.tellervo.desktop.print.ProSheet;
 import org.tellervo.desktop.util.labels.PDFLabelMaker;
 import org.tridas.schema.TridasObject;
@@ -42,7 +43,7 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 	PrintSettings.PrintType printtype;
 	
 	LabelLayoutUI layoutPanel = new LabelLayoutUI();
-	BoxLabelPrintingUI boxlabelpanel = new BoxLabelPrintingUI();
+	BoxLabelPrintingUI boxlabelpanel;
 	SampleLabelPrintingUI samplelabelpanel = new SampleLabelPrintingUI();
 	ProSheetPrintingUI prosheetpanel = new ProSheetPrintingUI();
 	JDialog parent;
@@ -67,9 +68,14 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 		
 		// Add content panel to tab
 		this.tabContent.setLayout(new BorderLayout());
-		if(printtype==PrintSettings.PrintType.BOX)
+		if(printtype==PrintSettings.PrintType.BOX_WITH_CONTENTS)
 		{
-			boxlabelpanel = new BoxLabelPrintingUI();
+			boxlabelpanel = new BoxLabelPrintingUI(printtype);
+			this.tabContent.add(boxlabelpanel, BorderLayout.CENTER);
+		}
+		else if(printtype==PrintSettings.PrintType.BOX_BASIC)
+		{
+			boxlabelpanel = new BoxLabelPrintingUI(printtype);
 			this.tabContent.add(boxlabelpanel, BorderLayout.CENTER);
 		}
 		else if (printtype==PrintSettings.PrintType.SAMPLE)
@@ -100,12 +106,23 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 			
 			this.parent.setVisible(false);
 			
-			if(printtype == PrintType.BOX)
+			if(printtype == PrintType.BOX_WITH_CONTENTS)
 			{		
 				if(boxlabelpanel.selModel.getSize()>0)
 				{
 					System.out.println("Print box label");
-					BoxLabel label = new BoxLabel(boxlabelpanel.selModel);
+					CompleteBoxLabel label = new CompleteBoxLabel(boxlabelpanel.selModel);
+					
+					label.getLabel(true);
+					this.parent.dispose();
+				}
+			}
+			else if(printtype == PrintType.BOX_BASIC)
+			{		
+				if(boxlabelpanel.selModel.getSize()>0)
+				{
+					System.out.println("Print box label");
+					BasicBoxLabel label = new BasicBoxLabel(boxlabelpanel.selModel);
 					
 					label.getLabel(true);
 					this.parent.dispose();
@@ -133,13 +150,24 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 		
 		if (evt.getSource() == btnPreview){
 
-			if(printtype == PrintType.BOX)
+			if(printtype == PrintType.BOX_WITH_CONTENTS)
 			{	
 				if(boxlabelpanel.selModel.getSize()>0)
 				{
 					
 					System.out.println("Preview box label");
-					BoxLabel label = new BoxLabel(boxlabelpanel.selModel);
+					CompleteBoxLabel label = new CompleteBoxLabel(boxlabelpanel.selModel);
+					
+					label.getLabel(false);
+				}	
+			}
+			else if(printtype == PrintType.BOX_BASIC)
+			{	
+				if(boxlabelpanel.selModel.getSize()>0)
+				{
+					
+					System.out.println("Preview box label");
+					BasicBoxLabel label = new BasicBoxLabel(boxlabelpanel.selModel);
 					
 					label.getLabel(false);
 				}	
@@ -181,7 +209,7 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 	
 	
 	public enum PrintType {
-		BOX, SAMPLE, PROSHEET
+		BOX_WITH_CONTENTS, SAMPLE, PROSHEET, BOX_BASIC
 	}
 	
 

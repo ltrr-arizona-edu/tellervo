@@ -31,11 +31,8 @@ import gov.nasa.worldwind.view.orbit.OrbitViewInputHandler;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -44,7 +41,6 @@ import javax.swing.JSplitPane;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.platform.Platform;
-import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 
 public class GISFrame extends JFrame {
@@ -63,17 +59,11 @@ public class GISFrame extends JFrame {
 	{
 		this.isMiniMap = isMiniMap;
 		
-
-		
-		
 			setupGui(TridasMarkerLayerBuilder.getMarkerLayerForAllSites());
 			
 			//setupGui(KMLMarkerLayerBuilder.createLayerFromKMZ("/tmp/tree-ring-records.kmz"));
 			//setupGui(ITRDBMarkerLayerBuilder.createITRDBLayer());
 			setupMenus();
-		
-
-		
 	}
 	
 	/**

@@ -52,6 +52,8 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 	  private final static Logger log = LoggerFactory.getLogger(WSICurationEditor.class);
 
 	private TridasGenericFieldRenderer label;
+	private TridasGenericField genfield;
+	
 	private JButton editButton;
 	private JButton viewButton;
 	private String value;
@@ -92,8 +94,6 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 				{
 					return;
 				}
-				
-				
 			}
 		});
 		
@@ -126,17 +126,17 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 	public void setValue(Object value) {
 		
 		log.debug("setValue in WSICurationEditor passed: "+value);
-		TridasGenericFieldRenderer oldLabel = label;
+		
 
 		if(value ==null)
 		{
 			log.debug("Value is null");
 
-			label.setValue(null);
+			//label.setValue(null);
 			
 		
 		}
-		if(value instanceof String)
+		else if(value instanceof String)
 		{
 			log.debug("Value is a string");
 			this.value = (String) value;
@@ -144,11 +144,7 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 			TridasGenericField gf = new TridasGenericField();
 			gf.setName("tellervo.curationStatus");
 			gf.setValue((String) value);
-			ArrayList<TridasGenericField> gfs = new ArrayList<TridasGenericField>();
-			gfs.add(gf);
-			label.setValue(gfs);
-			
-			firePropertyChange(oldLabel, label);
+			commit(gf);
 			
 		}
 		else if (value instanceof CurationStatus)
@@ -159,11 +155,9 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 			TridasGenericField gf = new TridasGenericField();
 			gf.setName("tellervo.curationStatus");
 			gf.setValue(this.value);
-			ArrayList<TridasGenericField> gfs = new ArrayList<TridasGenericField>();
-			gfs.add(gf);
-			label.setValue(gfs);
+
+			commit(gf);
 			
-			firePropertyChange(oldLabel, label);
 		}
 		else 
 		{
@@ -173,16 +167,22 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 
 	} 
 	
-	/**
-	 * Remove the current list
-	 */
-	private void selectNull() {
-		String oldValue = value;
-		label.setValue(null);
-		value = null;
-		
-		firePropertyChange(oldValue, value);
+	private void commit(TridasGenericField gf)
+	{
+		TridasGenericFieldRenderer oldLabel = label;
+		genfield = gf;
+		ArrayList<TridasGenericField> gfs = new ArrayList<TridasGenericField>();
+		gfs.add(gf);
+		label.setValue(gfs);
+		firePropertyChange(oldLabel, label);
+		label.repaint();
 	}
 	
+	
+	@Override
+	public Object getValue() {
+		return genfield.getValue();
+	}
+		
 
 }

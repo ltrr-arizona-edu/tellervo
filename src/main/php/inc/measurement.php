@@ -1479,11 +1479,11 @@ class measurement extends measurementEntity implements IDBAccessor
 		// Author
 		if($this->author->getID()!=NULL)
 		{
-			$sql.= pg_escape_string($this->author->getID()).", ";
+			$sql.= "'".pg_escape_string($this->author->getID())."', ";
 		}
 		else
 		{
-			$sql.= pg_escape_string($myAuth->getID()).", ";
+			$sql.= "'".pg_escape_string($myAuth->getID())."', ";
 		}
 
 		// Code

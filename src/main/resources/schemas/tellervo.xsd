@@ -118,6 +118,22 @@
 		</xs:restriction>
 	</xs:simpleType>
 
+	<xs:simpleType name="sampleStatus">
+		<xs:annotation>
+			<xs:documentation>Stage of preparation this sample is currently at</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Prepped"/>
+			<xs:enumeration value="Unprepped"/>
+			<xs:enumeration value="Undateable"/>
+			<xs:enumeration value="Dated"/>
+			<xs:enumeration value="Measured"/>
+			<xs:enumeration value="Too few rings"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
+
 	<xs:simpleType name="searchParameterName">
 		<xs:restriction base="xs:string">
 
@@ -571,6 +587,7 @@
 				<xs:element ref="configurationDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="domainDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="wmsServerDictionary" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="sampleStatusDictionary" minOccurs="0" maxOccurs="1"/>
 				
 			</xs:choice>
 		</xs:complexType>
@@ -763,6 +780,15 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	
+	
+    <xs:element name="sampleStatusDictionary">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="sampleStatus" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+    </xs:element>
 	
 	
 <!--

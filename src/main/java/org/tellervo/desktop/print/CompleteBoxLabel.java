@@ -73,11 +73,11 @@ import com.lowagie.text.pdf.PdfWriter;
  * @author peterbrewer
  *
  */
-public class BoxLabel extends ReportBase{
+public class CompleteBoxLabel extends ReportBase{
 	
 	private ArrayList<WSIBox> boxlist = new ArrayList<WSIBox>();
 	
-	public BoxLabel(Sample s){
+	public CompleteBoxLabel(Sample s){
 		
 		if(s==null)
 		{
@@ -93,7 +93,7 @@ public class BoxLabel extends ReportBase{
 		boxlist.add(s.getMeta(Metadata.BOX, WSIBox.class));
 	}
 	
-	public BoxLabel(WSIBox b){
+	public CompleteBoxLabel(WSIBox b){
 		if (b==null)
 		{
 			System.out.println("Error - box is null");
@@ -102,7 +102,7 @@ public class BoxLabel extends ReportBase{
 		boxlist.add(b);
 	}
 		
-	public BoxLabel(ArrayList<WSIBox> bl)
+	public CompleteBoxLabel(ArrayList<WSIBox> bl)
 	{
 		boxlist = bl;
 	}
@@ -660,7 +660,7 @@ public class BoxLabel extends ReportBase{
 		}
 
 		// create the box label
-		BoxLabel label = new BoxLabel(samp);		
+		CompleteBoxLabel label = new CompleteBoxLabel(samp);		
 		
 		if(printReport) {
 			ByteArrayOutputStream output = new ByteArrayOutputStream();

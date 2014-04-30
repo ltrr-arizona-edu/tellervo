@@ -137,11 +137,15 @@ public class AdminMenu extends JMenu {
 
     	
     	JMenuItem boxlabel = Builder.makeMenuItem("menus.admin.boxlabels",
-                "org.tellervo.desktop.util.labels.ui.PrintingDialog.boxLabelDialog()", "box.png");
+                "org.tellervo.desktop.util.labels.ui.LabelPrintingDialog.boxLabelDialog()", "box.png");
         labelmenu.add(boxlabel);
+        
+    	JMenuItem basicBoxlabel = Builder.makeMenuItem("Basic box labels",
+                "org.tellervo.desktop.util.labels.ui.LabelPrintingDialog.boxBasicLabelDialog()", "box.png");
+        labelmenu.add(basicBoxlabel);
     	
         JMenuItem samplelabel = Builder.makeMenuItem("menus.admin.samplelabels",
-                "org.tellervo.desktop.util.labels.ui.PrintingDialog.sampleLabelDialog()", "sample.png");
+                "org.tellervo.desktop.util.labels.ui.LabelPrintingDialog.sampleLabelDialog()", "sample.png");
         labelmenu.add(samplelabel);   
         add(labelmenu);
     }
@@ -155,7 +159,7 @@ public class AdminMenu extends JMenu {
 	 	
 	 	
 	    JMenuItem prosheet = Builder.makeMenuItem("menus.admin.prosheet",
-	            "org.tellervo.desktop.util.labels.ui.PrintingDialog.proSheetPrintingDialog()", "prosheet.png");
+	            "org.tellervo.desktop.util.labels.ui.LabelPrintingDialog.proSheetPrintingDialog()", "prosheet.png");
 	    prosheet.setEnabled(false);
 	    reportmenu.add(prosheet); 
 	 	add(reportmenu);
@@ -204,7 +208,7 @@ public class AdminMenu extends JMenu {
 	    curationmenu.add(checkinbox); 
 	    
 	    JMenuItem inventory = Builder.makeMenuItem("menus.admin.inventory",
-	            "org.tellervo.desktop.util.labels.ui.PrintingDialog.proSheetPrintingDialog()");
+	            "org.tellervo.desktop.util.labels.ui.LabelPrintingDialog.proSheetPrintingDialog()");
 	    inventory.setEnabled(false);
 	    curationmenu.add(inventory); */
 	    

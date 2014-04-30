@@ -26,7 +26,6 @@ package org.tellervo.desktop.tridasv2.ui;
 import java.beans.PropertyEditor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.sql.Date;
 import java.util.List;
 
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
@@ -34,7 +33,6 @@ import org.tellervo.schema.WSICuration;
 import org.tridas.io.formats.tridas.TridasFile;
 import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDatingReference;
-import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.TridasSample;
 

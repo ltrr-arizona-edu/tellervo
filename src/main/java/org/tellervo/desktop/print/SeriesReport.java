@@ -103,7 +103,7 @@ public class SeriesReport extends ReportBase {
 			
 			// Set basic metadata
 		    document.addAuthor("Peter Brewer"); 
-		    document.addSubject("Corina Series Report for " + s.getDisplayTitle()); 
+		    document.addSubject("Tellervo Series Report for " + s.getDisplayTitle()); 
 				   
 			// Title Left		
 			ColumnText ct = new ColumnText(cb);

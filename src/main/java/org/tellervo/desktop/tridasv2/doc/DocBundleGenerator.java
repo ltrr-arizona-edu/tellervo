@@ -109,6 +109,7 @@ public class DocBundleGenerator {
 			
 			w.println("externalId = Identifier for this sample in an external database or repository such as Park Service or Archaeological Service databases");
 			w.println("curationStatus = Status of this sample in the collection.  For instance whether this sample is archived, on loan or currently used in active research");
+			w.println("sampleStatus = Stage of preparation this sample is currently at");
 			w.println("files = References to files, webpages or URNs containing associated information");
 			w.println("objectCode = Short code used to identify the site.  Traditionally this is three characters long, but there is no reason it can't be longer");
 			w.println("presence = Pick list of options to indicate whether this feature is present or not");

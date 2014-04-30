@@ -30,6 +30,7 @@ public class ReportBase {
 	// Title fonts
 	Font docTypeFont = new Font(Font.HELVETICA, 20f, Font.BOLD);
 	Font titleFont = new Font(Font.HELVETICA, 20f, Font.BOLD);
+	Font labelTitleFont = new Font(Font.HELVETICA, 28f, Font.BOLD);
 	Font monsterFont = new Font(Font.HELVETICA, 38f, Font.BOLD);
 	Font subTitleFont = new Font(Font.HELVETICA, 14f);
 	

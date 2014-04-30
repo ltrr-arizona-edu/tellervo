@@ -25,12 +25,12 @@ import javax.swing.JDialog;
 import org.tellervo.desktop.ui.Builder;
 
 
-public class PrintingDialog extends JDialog{
+public class LabelPrintingDialog extends JDialog{
 
 	private static final long serialVersionUID = 1428573868641877953L;
 	private PrintSettings lp;
 		
-    public PrintingDialog(java.awt.Frame parent, boolean modal, PrintSettings.PrintType lt) {
+    public LabelPrintingDialog(java.awt.Frame parent, boolean modal, PrintSettings.PrintType lt) {
         super(parent, modal);
         lp = new PrintSettings(lt, this);
         
@@ -42,24 +42,29 @@ public class PrintingDialog extends JDialog{
 		
 	public static void boxLabelDialog()
 	{
-		PrintingDialog.main(PrintSettings.PrintType.BOX);
+		LabelPrintingDialog.main(PrintSettings.PrintType.BOX_WITH_CONTENTS);
+	}
+	
+	public static void boxBasicLabelDialog()
+	{
+		LabelPrintingDialog.main(PrintSettings.PrintType.BOX_BASIC);
 	}
 	
 	public static void sampleLabelDialog()
 	{
-		PrintingDialog.main(PrintSettings.PrintType.SAMPLE);
+		LabelPrintingDialog.main(PrintSettings.PrintType.SAMPLE);
 	}
 	
 	public static void proSheetPrintingDialog()
 	{
-		PrintingDialog.main(PrintSettings.PrintType.PROSHEET);
+		LabelPrintingDialog.main(PrintSettings.PrintType.PROSHEET);
 		
 	}
 	
     public static void main(final PrintSettings.PrintType lt) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-            	PrintingDialog dialog = new PrintingDialog(null, true, lt);
+            	LabelPrintingDialog dialog = new LabelPrintingDialog(null, true, lt);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
 

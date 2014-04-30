@@ -48,11 +48,12 @@ public class BoxLabelPrintingUI extends javax.swing.JPanel implements ActionList
 	private static final long serialVersionUID = -7164959226567752919L;
 	protected ArrayListModel<WSIBox> selModel = new ArrayListModel<WSIBox>();
 	protected ArrayListModel<WSIBox> availModel = new ArrayListModel<WSIBox>();
-
+	private PrintSettings.PrintType type;
 	
     /** Creates new form BoxLabelPrintingUI */
-    public BoxLabelPrintingUI() {
+    public BoxLabelPrintingUI(PrintSettings.PrintType type) {
     	initComponents();
+    	this.type = type;
     	
         btnAdd.addActionListener(this);
         btnRemove.addActionListener(this);

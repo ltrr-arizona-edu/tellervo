@@ -543,7 +543,8 @@ public class EditorFactory {
 			
 			if(var.isSetNormalTridas())
 			{
-				if(!var.getNormalTridas().value().equals(NormalTridasVariable.RING_WIDTH))
+
+				if(!var.getNormalTridas().value().equals(NormalTridasVariable.RING_WIDTH.value()))
 				{
 					if(!hideWarnings) Alert.error("Import error", "One or more series contains data that is not ring width data");
 					return null;

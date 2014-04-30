@@ -154,7 +154,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	private DependentsViewer dependentsPanel = null;
 	private BargraphPanel bargraphPanel = null;
 	protected SeriesDataMatrix dataView; // (a jpanel)
-	protected GISPanel wwMapPanel;
+	public GISPanel wwMapPanel;
 	protected JTabbedPane tabbedPanel;
 	protected JToolBar toolbar;
 	

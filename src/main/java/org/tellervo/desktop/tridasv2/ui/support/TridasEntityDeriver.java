@@ -259,6 +259,13 @@ public class TridasEntityDeriver {
 			parent.addChildProperty(pd2);
 			nChildren++;	
 			
+			// Sample status
+			TellervoGenericFieldProperty pd3 =  TellervoGenericFieldProperty.getSampleStatusProperty();
+			pd2.setCategoryPrefix(rootName);
+			fieldMap.put(pd3.getName(), pd3);
+			parent.addChildProperty(pd3);
+			nChildren++;	
+			
 		}
 		
 		if(clazz.equals(TridasObject.class))

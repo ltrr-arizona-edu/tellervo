@@ -88,7 +88,8 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 			TridasSample sample = (TridasSample) object;
 			TellervoGenericFieldProperty externalID = TellervoGenericFieldProperty.getSampleExternalIDProperty();
 			TellervoGenericFieldProperty curationStatus = TellervoGenericFieldProperty.getSampleCurationStatusProperty();
-			
+			TellervoGenericFieldProperty sampleStatus = TellervoGenericFieldProperty.getSampleStatusProperty();
+
 			
 			if (sample.isSetGenericFields())
 			{
@@ -113,6 +114,18 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 							TridasEntityProperty tep = (TridasEntityProperty) p;
 							//log.debug("Property name : "+tep.qname);
 							if(tep.qname.equals(curationStatus.qname))
+							{
+								p.setValue(gf.getValue());
+							}
+						}
+					}
+					else if(gf.getName().equals(sampleStatus.getXMLFieldName()))
+					{
+						for(Property p : prop)
+						{
+							TridasEntityProperty tep = (TridasEntityProperty) p;
+							//log.debug("Property name : "+tep.qname);
+							if(tep.qname.equals(sampleStatus.qname))
 							{
 								p.setValue(gf.getValue());
 							}
