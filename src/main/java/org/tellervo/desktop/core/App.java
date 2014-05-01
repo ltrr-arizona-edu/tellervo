@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;
 import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.dictionary.StatisticsResource;
 import org.tellervo.desktop.gui.Log4JViewer;
 import org.tellervo.desktop.gui.LoginDialog;
 import org.tellervo.desktop.gui.ProgressMeter;
@@ -259,7 +260,7 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
         if(!DEBUGGING)
         	dictionary.query();
     }
-       
+           
     
     if (meter != null) {
     	meter.setProgress(8);

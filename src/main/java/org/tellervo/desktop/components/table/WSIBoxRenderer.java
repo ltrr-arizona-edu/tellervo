@@ -3,16 +3,15 @@
  */
 package org.tellervo.desktop.components.table;
 
+import org.tellervo.desktop.tridasv2.ui.DefaultCellRendererEx;
 import org.tellervo.schema.WSIBox;
-
-import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
 
 
 /**
  * @author Daniel
  *
  */
-public class WSIBoxRenderer extends DefaultCellRenderer {
+public class WSIBoxRenderer extends DefaultCellRendererEx {
 
 	private static final long serialVersionUID = 1L;
 

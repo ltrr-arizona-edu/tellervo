@@ -27,8 +27,6 @@ import java.util.ArrayList;
 
 import org.tridas.schema.TridasGenericField;
 
-import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
-
 /**
  * renderer for a tridas controlled vocabulary
  * 
@@ -37,7 +35,7 @@ import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
  * 
  * @author Lucas Madar
  */
-public class TridasGenericFieldRenderer extends DefaultCellRenderer {
+public class TridasGenericFieldRenderer extends DefaultCellRendererEx {
 	private static final long serialVersionUID = 1L;
 
 	@Override

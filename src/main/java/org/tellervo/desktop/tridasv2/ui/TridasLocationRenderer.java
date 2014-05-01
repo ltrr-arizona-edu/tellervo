@@ -26,13 +26,11 @@ package org.tellervo.desktop.tridasv2.ui;
 import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasLocationGeometry;
 
-import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
-
 /**
  * @author Lucas Madar
  *
  */
-public class TridasLocationRenderer extends DefaultCellRenderer {
+public class TridasLocationRenderer extends DefaultCellRendererEx {
 	private static final long serialVersionUID = 1L;
 
 	/* (non-Javadoc)

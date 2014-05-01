@@ -99,9 +99,9 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 		wsPanel = new JPanel();
 		wsPanel.setBorder(new TitledBorder(null, "Web Service Database Connection", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(wsPanel, "cell 0 0,grow, hidemode 2");
-		wsPanel.setLayout(new MigLayout("", "[100px:100px:100px][grow]", "[][15px][][]"));
+		wsPanel.setLayout(new MigLayout("", "[100px:100px:100px][grow]", "[grow][15px][][]"));
 		
-		chkDisableWS = new JCheckBox("Disable database integration and work offline");
+		chkDisableWS = new JCheckBox("Disable database integration and switch to Tellervo-lite mode");
 		wsPanel.add(chkDisableWS, "cell 1 0");
 		chkDisableWS.addActionListener(new ActionListener(){
 

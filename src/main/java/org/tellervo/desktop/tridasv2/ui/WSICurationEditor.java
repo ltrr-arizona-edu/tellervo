@@ -181,7 +181,14 @@ public class WSICurationEditor extends AbstractPropertyEditor {
 	
 	@Override
 	public Object getValue() {
-		return genfield.getValue();
+		if(genfield!=null && genfield.getValue()!=null)
+		{
+			return genfield.getValue();
+		}
+		else
+		{
+			return null;
+		}
 	}
 		
 

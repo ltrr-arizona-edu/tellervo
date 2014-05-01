@@ -431,7 +431,11 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		// Inform the tree to update itself
 		if(nodeSelected!=null)
 		{
-			if(nodeSelected.getParent().equals(nodeSelected.getRoot()))
+			if(nodeSelected.getParent()==null)
+			{
+				
+			}
+			else if (nodeSelected.getParent().equals(nodeSelected.getRoot()))
 			{
 				((TridasTreeViewPanel) treepanel).refreshNode(nodeSelected);
 			}

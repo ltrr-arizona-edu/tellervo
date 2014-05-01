@@ -27,8 +27,6 @@ import java.util.ArrayList;
 
 import org.tridas.schema.ControlledVoc;
 
-import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
-
 /**
  * renderer for a tridas controlled vocabulary
  * 
@@ -37,7 +35,7 @@ import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
  * 
  * @author Lucas Madar
  */
-public class ControlledVocRenderer extends DefaultCellRenderer {
+public class ControlledVocRenderer extends DefaultCellRendererEx {
 	private static final long serialVersionUID = 1L;
 
 	public enum Behavior {

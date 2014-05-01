@@ -33,7 +33,9 @@ import javax.swing.JMenuItem;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
+import org.tellervo.desktop.curation.DatabaseSummaryDialog;
 import org.tellervo.desktop.curation.LoanDialog;
+import org.tellervo.desktop.curation.SampleStatusDialog;
 import org.tellervo.desktop.gis.GISFrame;
 import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
@@ -237,6 +239,34 @@ public class AdminMenu extends JMenu {
 	    });
 	    curationmenu.add(newLoan);
 	    
+	    
+	    JMenuItem sampleStatusMenuItem = new JMenuItem("Sample status");
+	    sampleStatusMenuItem.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+			    SampleStatusDialog dialog = new SampleStatusDialog();
+			    dialog.pack();
+			    dialog.setVisible(true);
+				
+			}
+	    
+	    });
+	    curationmenu.add(sampleStatusMenuItem);
+
+	    JMenuItem statsMenuItem = new JMenuItem("Database statistics");
+	    statsMenuItem.setIcon(Builder.getIcon("statistics.png", 22));
+	    statsMenuItem.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+			    DatabaseSummaryDialog dialog = new DatabaseSummaryDialog();
+			    dialog.setVisible(true);
+				
+			}
+	    
+	    });
+	    add(statsMenuItem);
 	    
 	 	add(curationmenu);
 	 	addSeparator();

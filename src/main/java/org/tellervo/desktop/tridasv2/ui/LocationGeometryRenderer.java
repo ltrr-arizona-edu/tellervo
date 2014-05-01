@@ -28,13 +28,11 @@ import java.util.List;
 
 import org.tridas.schema.TridasLocationGeometry;
 
-import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
-
 /**
  * @author Lucas Madar
  *
  */
-public class LocationGeometryRenderer extends DefaultCellRenderer {
+public class LocationGeometryRenderer extends DefaultCellRendererEx {
 	private static final long serialVersionUID = 1L;
 
 	/* (non-Javadoc)

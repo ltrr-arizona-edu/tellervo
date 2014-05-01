@@ -451,6 +451,12 @@
 						</xs:complexType>
 					</xs:element>
 				</xs:sequence>
+					<xs:sequence>
+					<xs:element name="statistics">
+						<xs:complexType>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
 			</xs:choice>
 			<xs:attribute name="type" type="tellervoRequestType"/>
 			<xs:attribute name="format" type="tellervoRequestFormat"/>
@@ -588,6 +594,7 @@
 				<xs:element ref="domainDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="wmsServerDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="sampleStatusDictionary" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="statisticalResults" minOccurs="0" maxOccurs="1"/>
 				
 			</xs:choice>
 		</xs:complexType>
@@ -790,7 +797,13 @@
             </xs:complexType>
     </xs:element>
 	
-	
+	    <xs:element name="statisticalResults">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref="statistic" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+    </xs:element>
 <!--
 	%%%%%%%%%%%%%%
 	%		HELP
@@ -1001,6 +1014,19 @@
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="optional"/>
 			<xs:attribute name="url" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	
+	
+		<!--
+		%%%%%%%%%%%%%%
+		% Statistic
+		%%%%%%%%%%%%%% -->
+	
+	<xs:element name="statistic" >
+		<xs:complexType>
+			<xs:attribute name="key" type="xs:string" use="required"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	

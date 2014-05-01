@@ -159,13 +159,6 @@
 			<scope>compile</scope>
 		</dependency>
 		<!-- Logger -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.6.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
 		<!-- <dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
@@ -201,13 +194,6 @@
 		</dependency>
 		<!-- Diverts System.out calls to logger can be removed
 		once code has been refactored to use proper logger calls -->
-		<dependency>
-			<groupId>uk.org.lidalia</groupId>
-			<artifactId>sysout-over-slf4j</artifactId>
-			<version>1.0.2</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>

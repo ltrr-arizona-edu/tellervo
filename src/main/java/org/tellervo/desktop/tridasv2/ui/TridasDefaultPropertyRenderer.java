@@ -26,10 +26,8 @@ import java.awt.Font;
 
 import javax.swing.JTable;
 
-import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
 
-
-public class TridasDefaultPropertyRenderer extends DefaultCellRenderer  {
+public class TridasDefaultPropertyRenderer extends DefaultCellRendererEx  {
 	private static final long serialVersionUID = 1L;
 
 	private Font font;

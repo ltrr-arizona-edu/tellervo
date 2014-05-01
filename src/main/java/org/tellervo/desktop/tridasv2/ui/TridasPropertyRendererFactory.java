@@ -20,6 +20,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.tridasv2.ui;
 
+import java.awt.Color;
 import java.util.List;
 
 import javax.swing.table.DefaultTableCellRenderer;
@@ -53,17 +54,19 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 	public TridasPropertyRendererFactory() {
 		super();
 		
-		TableCellRenderer myRenderer = new TridasYearDateTimeCellRenderer(false);
+		TridasYearDateTimeCellRenderer myRenderer = new TridasYearDateTimeCellRenderer(false);
+		myRenderer.setOddBackgroundColor(Color.WHITE);
+		myRenderer.setEvenBackgroundColor(Color.LIGHT_GRAY);
 		
 		super.registerRenderer(Date.class, myRenderer);
 		super.registerRenderer(DateTime.class, myRenderer);
 		super.registerRenderer(Year.class, myRenderer);
 		
-		myRenderer = new TridasSeriesLinkRendererEditor();
-		super.registerRenderer(SeriesLink.class, myRenderer);
-		super.registerRenderer(TridasDatingReference.class, myRenderer);
+		TridasSeriesLinkRendererEditor myRenderer2 = new TridasSeriesLinkRendererEditor();
+		super.registerRenderer(SeriesLink.class, myRenderer2);
+		super.registerRenderer(TridasDatingReference.class, myRenderer2);
 		
-		// nicely render dates and times
+		// nicely render dates and times		
 		super.registerRenderer(TridasDating.class, TridasDatingCellRenderer.class);
 		
 		// nicely render controlled vocs

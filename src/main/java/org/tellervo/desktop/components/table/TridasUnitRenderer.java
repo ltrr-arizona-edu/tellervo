@@ -4,16 +4,15 @@
 package org.tellervo.desktop.components.table;
 
 import org.apache.commons.lang.WordUtils;
+import org.tellervo.desktop.tridasv2.ui.DefaultCellRendererEx;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasUnitless;
-
-import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
 
 /**
  * @author Daniel
  *
  */
-public class TridasUnitRenderer extends DefaultCellRenderer {
+public class TridasUnitRenderer extends DefaultCellRendererEx {
 	private static final long serialVersionUID = 1L;
 
 	

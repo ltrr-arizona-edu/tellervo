@@ -3,6 +3,7 @@
  */
 package org.tellervo.desktop.components.table;
 
+import org.tellervo.desktop.tridasv2.ui.DefaultCellRendererEx;
 import org.tridas.schema.TridasElement;
 
 import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
@@ -12,7 +13,7 @@ import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
  * @author Daniel
  *
  */
-public class TridasElementRenderer extends DefaultCellRenderer {
+public class TridasElementRenderer extends DefaultCellRendererEx {
 
 	private static final long serialVersionUID = 1L;
 

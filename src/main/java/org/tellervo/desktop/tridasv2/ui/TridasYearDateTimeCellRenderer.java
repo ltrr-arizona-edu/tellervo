@@ -26,23 +26,16 @@ import org.tridas.schema.Date;
 import org.tridas.schema.DateTime;
 import org.tridas.schema.Year;
 
-import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
-
 /**
  * A renderer that shows Tridas Dates and DateTimes in a viewer friendly manner
  * 
  * @author Lucas Madar
  */
 
-public class TridasYearDateTimeCellRenderer extends DefaultCellRenderer {
+public class TridasYearDateTimeCellRenderer extends DefaultCellRendererEx {
 	private static final long serialVersionUID = 1L;
 	private boolean showPrecision = false;
-		
-	public TridasYearDateTimeCellRenderer()
-	{
-	
-	}
-	
+			
 	public TridasYearDateTimeCellRenderer(boolean showPrecision)
 	{
 		setShowPrecision(showPrecision);

@@ -23,19 +23,15 @@
  */
 package org.tellervo.desktop.tridasv2.ui;
 
-import java.text.NumberFormat;
 import java.util.List;
 
 import org.tridas.schema.TridasFile;
-import org.tridas.schema.TridasLocationGeometry;
-
-import com.l2fprod.common.swing.renderer.DefaultCellRenderer;
 
 /**
  * @author Lucas Madar
  *
  */
-public class TridasFileArrayRenderer extends DefaultCellRenderer {
+public class TridasFileArrayRenderer extends DefaultCellRendererEx {
 	private static final long serialVersionUID = 1L;
 
 	/* (non-Javadoc)

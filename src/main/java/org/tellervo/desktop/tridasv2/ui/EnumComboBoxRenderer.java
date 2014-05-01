@@ -23,6 +23,8 @@
  */
 package org.tellervo.desktop.tridasv2.ui;
 
+import java.awt.Color;
+
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -45,6 +47,8 @@ public class EnumComboBoxRenderer extends AbstractComboBoxRenderer {
 
 	public EnumComboBoxRenderer(boolean required) {
 		renderer = new EnumComboBoxItemRenderer();
+		renderer.setBackground(null);
+		renderer.setOpaque(false);
 		this.required = required;
 		
         Icon icon = Builder.getIcon("dropdown.png", Builder.ICONS, 22);
@@ -52,6 +56,10 @@ public class EnumComboBoxRenderer extends AbstractComboBoxRenderer {
         	dropdown = new JLabel("[...]");
         else
         	dropdown = new JLabel(icon);
+        
+        dropdown.setOpaque(false);
+        dropdown.setBackground(null);
+        dropdown.setForeground(Color.RED);
         
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(renderer);
