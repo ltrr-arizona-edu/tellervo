@@ -195,6 +195,20 @@ public class AdminMenu extends JMenu {
 	            "org.tellervo.desktop.admin.SampleCuration.showDialog()", "findsample.png");
 	    curationmenu.add(findsample); 
 	    
+	    
+	    JMenuItem sampleStatusMenuItem = new JMenuItem("Sample status");
+	    sampleStatusMenuItem.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+			    new SampleStatusDialog();
+				
+			}
+	    
+	    });
+	    sampleStatusMenuItem.setIcon(Builder.getIcon("samplestatus.png", 22));
+	    curationmenu.add(sampleStatusMenuItem);
+	    
 	    curationmenu.addSeparator();
 	    
 	    JMenuItem boxdetails = Builder.makeMenuItem("menus.admin.boxdetails",
@@ -240,19 +254,7 @@ public class AdminMenu extends JMenu {
 	    curationmenu.add(newLoan);
 	    
 	    
-	    JMenuItem sampleStatusMenuItem = new JMenuItem("Sample status");
-	    sampleStatusMenuItem.addActionListener(new ActionListener(){
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-			    SampleStatusDialog dialog = new SampleStatusDialog();
-			    dialog.pack();
-			    dialog.setVisible(true);
-				
-			}
-	    
-	    });
-	    curationmenu.add(sampleStatusMenuItem);
 
 	    JMenuItem statsMenuItem = new JMenuItem("Database statistics");
 	    statsMenuItem.setIcon(Builder.getIcon("statistics.png", 22));

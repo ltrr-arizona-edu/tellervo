@@ -1,5 +1,6 @@
 package org.tellervo.desktop.curation;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,15 +10,18 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.KeyListener;
+import java.awt.print.PrinterException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.jdesktop.swingx.JXTable;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.JDialog;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -38,16 +42,22 @@ import org.tellervo.desktop.util.labels.ui.SampleLabelPrintingUI;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.schema.SampleStatus;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.TellervoRequestType;
 import org.tridas.interfaces.ITridas;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
+
+
 import javax.swing.JToolBar;
 
 
@@ -56,7 +66,7 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 
-  	private JTable tblSamples;
+  	private JXTable tblSamples;
     private static String barcodeInstructions = "To quickly add multiple samples, highlight the list above and scan sample barcodes.  You can also scan box barcodes to include all samples from a specific box.";
 	private SampleListTableModel sampleModel;
 	private JButton btnAddSample;
@@ -69,9 +79,11 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
 	private JButton btnAddPreppedSamples;
 	private JButton btnAddUndateableSamples;
 	private JButton btnUpdateStatus;
+	private JButton btnPrintTable;
 
   public SampleStatusDialog() {
 	  this.setIconImage(Builder.getApplicationIcon());
+	  this.setTitle("Sample Status");
   	getContentPane().setLayout(new MigLayout("", "[grow][fill]", "[][][][grow,fill][][]"));
   	
   	toolBar = new JToolBar();
@@ -93,11 +105,17 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
   	btnUpdateStatus.setActionCommand("updateStatus");
   	btnUpdateStatus.addActionListener(this);
   	
+  	btnPrintTable = new JButton("Print");
+  	btnPrintTable.setActionCommand("printTable");
+  	btnPrintTable.addActionListener(this);
+  	
   	toolBar.add(btnAddUnpreppedSamples);
   	toolBar.add(btnAddPreppedSamples);
   	toolBar.add(btnAddUndateableSamples);
   	toolBar.add(btnUpdateStatus);
-  	
+  	toolBar.add(btnPrintTable);
+
+ 
   	
   	getContentPane().add(toolBar, "cell 0 0");
   	
@@ -136,7 +154,7 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
 		
 	});
 	
-	tblSamples = new JTable();
+	tblSamples = new JXTable();
 	tblSamples.setShowGrid(false);
 	scrollPaneSamples.setViewportView(tblSamples);
 	sampleModel = new SampleListTableModel();
@@ -231,14 +249,14 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
   	
   	btnAddSample = new JButton();
 	btnAddSample.setActionCommand("AddSample");
-	btnAddSample.setToolTipText("Add sample to loan");
+	btnAddSample.setToolTipText("Add sample to list");
 	btnAddSample.setIcon(Builder.getIcon("edit_add.png", 16));
 	btnAddSample.addActionListener(this);
   	getContentPane().add(btnAddSample, "cell 1 1");
   	
   	btnRemoveSample = new JButton();
 	btnRemoveSample.setActionCommand("RemoveSample");
-	btnRemoveSample.setToolTipText("Remove selected sample from loan");
+	btnRemoveSample.setToolTipText("Remove selected sample from list");
 	btnRemoveSample.setIcon(Builder.getIcon("cancel.png", 16));
 	btnRemoveSample.addActionListener(this);
   	getContentPane().add(btnRemoveSample, "cell 1 2");
@@ -270,9 +288,16 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
   	
   	
   	JButton btnOk = new JButton("OK");
+  	btnOk.setActionCommand("OK");
+  	btnOk.addActionListener(this);
   	getContentPane().add(btnOk, "cell 0 5 2 1,alignx right");
-
+  
   	
+  	this.setModal(true);
+  	this.pack();
+  	this.setSize(new Dimension(500,400));
+  	this.setLocationRelativeTo(null);
+  	this.setVisible(true);
   	
   	
 
@@ -286,10 +311,11 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
 			log.error("Return object type passed to addSamplesByScan() must be a sample");
 			return;
 		}
+		
 
 		// we want an object returned here
 		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
-		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
+		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
 
 		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
 		resource.query();	
@@ -300,7 +326,6 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
 			log.error("Error getting loans");
 			return;
 		}
-		
 		java.util.List<TridasSample> sampList = SampleLabelPrintingUI.getSamplesList(resource.getAssociatedResult(), null, null);
 		addSamplesToList(sampList);
 
@@ -322,32 +347,15 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
 
 	private void addSamplesToList(Collection<TridasSample> sampList)
 	{
-		ArrayList<TridasSample> alreadyLoanedSamples = new ArrayList<TridasSample>();
 		
 		for(TridasSample s : sampList){
 			
-        	TridasGenericField curationStatus = GenericFieldUtils.findField(s, "tellervo.curationStatus");
-        	if(curationStatus.isSetValue() && curationStatus.getValue().startsWith("On loan"))
-        	{
-        		alreadyLoanedSamples.add(s);
-        	}
-        	else
-        	{
-        		sampleModel.addSample(s);
-        	}
+            sampleModel.addSample(s);
+        	
 		}
 				
-		if(alreadyLoanedSamples.size()>0)
-		{
-			for (TridasSample s : alreadyLoanedSamples)
-			{
-				sampleModel.addSample(s);
-			}
-		}
-		
 		tblSamples.clearSelection();
 
-		
 	}
 	
 	@Override
@@ -358,9 +366,9 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
 					null, "Pick Sample", TridasSample.class, EntitiesAccepted.SPECIFIED_ENTITY_UP_TO_PROJECT);
 			if(returned instanceof TridasSample)
 			{
-				ArrayList<TridasSample> list = new ArrayList<TridasSample>();
-				list.add((TridasSample) returned);
-				addSamplesToList(list);				
+		    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);    	
+		    	param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, returned.getIdentifier().getValue());
+				addSamplesByScan(param);	
 			}
 			else if (returned instanceof TridasElement)
 			{
@@ -400,25 +408,99 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
 		{
 			updateStatus();
 		}
+		else if (event.getActionCommand().equals("OK"))
+		{
+			dispose();
+		}
+		else if (event.getActionCommand().equals("printTable"))
+		{
+		 	try {
+		  	    boolean complete = tblSamples.print();
+		  	    if (complete) {
+		  	       
+		  	    } else {
+		  	        Alert.message("Printing", "Printing cancelled");
+		  	    }
+		  	} catch (PrinterException pe) {
+		  		Alert.error("Printing", "Printing failed.  "+pe.getLocalizedMessage());
+		  	}
+		}
 	}
     
 	private void addUnpreppedSamples()
 	{
-		
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);    	
+    	param.addSearchConstraint(SearchParameterName.SAMPLESTATUS, SearchOperator.EQUALS, SampleStatus.UNPREPPED.value());
+		addSamplesByScan(param);
 	}
 	
 	private void addPreppedSamples()
 	{
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);    	
+    	param.addSearchConstraint(SearchParameterName.SAMPLESTATUS, SearchOperator.EQUALS, SampleStatus.PREPPED.value());
+		addSamplesByScan(param);
 		
 	}
 	
 	private void addUndateableSamples()
 	{
-		
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);    	
+    	param.addSearchConstraint(SearchParameterName.SAMPLESTATUS, SearchOperator.EQUALS, SampleStatus.UNDATEABLE.value());
+		addSamplesByScan(param);
 	}
 	
 	private void updateStatus()
 	{
+		Object[] possibilities = {SampleStatus.DATED.value(), SampleStatus.MEASURED.value(), SampleStatus.PREPPED.value(), SampleStatus.TOO___FEW___RINGS.value(), SampleStatus.UNDATEABLE.value(), SampleStatus.UNPREPPED.value()};
+		String s = (String)JOptionPane.showInputDialog(
+		                    this,
+		                    "Change status of all samples in the list to:\n",
+		                    "Set sample status",
+		                    JOptionPane.PLAIN_MESSAGE,
+		                    null,
+		                    possibilities,
+		                    SampleStatus.PREPPED.value());
+
+		//If a string was returned, say so.
+		if (s == null) {
+		    log.debug("No choice made");
+			return;
+		}
+		
+		ArrayList<TridasSample> updatedList = new ArrayList<TridasSample>();
+		
+		for(TridasSample sample: sampleModel.getTridasSamples())
+		{
+			TridasGenericField sampleStatusField = TridasUtils.getGenericFieldByName(sample, "tellervo.sampleStatus");
+			
+			if(sampleStatusField==null) continue;
+			
+			sampleStatusField.setValue(s);
+			
+			// Create resource
+			EntityResource<TridasSample> resource;
+			
+			resource = new EntityResource<TridasSample>(sample, TellervoRequestType.UPDATE, TridasSample.class);
+		
+			TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(this, resource);
+			
+			resource.query();
+			dialog.setVisible(true);
+			
+			if(!dialog.isSuccessful()) 
+			{ 
+				Alert.error("Error", dialog.getFailException().getMessage());
+				return;
+			}
+			
+			
+			updatedList.add(resource.getAssociatedResult());
+
+		}
+
+		// Replace model with updated entries
+		//sampleModel.clear();
+		//addSamplesToList(updatedList);
 		
 	}
 

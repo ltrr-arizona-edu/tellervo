@@ -1077,10 +1077,10 @@ public class LoanPanel extends JPanel implements ActionListener {
 		{
 			ITridas returned = TridasEntityPickerDialog.pickEntity(null, "Pick Sample", TridasSample.class, EntitiesAccepted.SPECIFIED_ENTITY_UP_TO_PROJECT);
 			if(returned instanceof TridasSample)
-			{
-				ArrayList<TridasSample> list = new ArrayList<TridasSample>();
-				list.add((TridasSample) returned);
-				addSamplesToList(list, true);				
+			{				
+		    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);    	
+		    	param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, returned.getIdentifier().getValue());
+				addSamplesByScan(param);			
 			}
 			else if (returned instanceof TridasElement)
 			{
@@ -1126,7 +1126,7 @@ public class LoanPanel extends JPanel implements ActionListener {
 
 		// we want an object returned here
 		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
-		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
+		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
 
 		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
 		resource.query();	

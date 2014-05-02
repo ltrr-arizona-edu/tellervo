@@ -211,6 +211,7 @@
 			<xs:enumeration value="samplingdatecertainty"/>
 			<xs:enumeration value="sampleboxid"/>
 			<xs:enumeration value="samplecode"/>
+			<xs:enumeration value="samplestatus"/>
 			
 			
 			<!-- RADIUS ATTRIBUTES -->
