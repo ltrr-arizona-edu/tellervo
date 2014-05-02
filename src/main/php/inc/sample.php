@@ -61,6 +61,7 @@ class sample extends sampleEntity implements IDBAccessor
 		$this->setCode($row['code']);
 		$this->setBoxID($row['boxid']);
 		$this->setCurationStatus($row['curationstatus']);
+		$this->setSampleStatus($row['samplestatusid'], $row['samplestatus']);
 		$this->setSummaryObjectCode($row['objectcode']);
 		$this->setSummaryElementCode($row['elementcode']);
 		
@@ -191,6 +192,7 @@ class sample extends sampleEntity implements IDBAccessor
         $this->setPosition($paramsClass->getPosition());
         $this->setState($paramsClass->getState());
         $this->setExternalID($paramsClass->getExternalID());
+	$this->setSampleStatus($paramsClass->getSampleStatus(true), $paramsClass->getSampleStatus());
 
         $this->setKnots($paramsClass->getKnots());        
     	$this->setCode($paramsClass->getCode());        
@@ -462,6 +464,7 @@ class sample extends sampleEntity implements IDBAccessor
             }
             
             $xml.="<tridas:genericField name=\"tellervo.curationStatus\" type=\"xs:string\">".$this->getCurationStatus()."</tridas:genericField>\n";
+            $xml.="<tridas:genericField name=\"tellervo.sampleStatus\" type=\"xs:string\">".$this->getSampleStatus()."</tridas:genericField>\n";
             
             if ($format=="summary")
             {
@@ -533,6 +536,7 @@ class sample extends sampleEntity implements IDBAccessor
                        	$sql.="knots, ";
                        	$sql.="boxid, ";
                        	$sql.="externalid, ";
+			if($this->getSampleStatus()!=null) $sql.="samplestatusid, "; 
                         if(isset($this->parentEntityArray[0]))	$sql.="elementid, ";                        
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
@@ -549,6 +553,7 @@ class sample extends sampleEntity implements IDBAccessor
                         $sql.=dbHelper::formatBool($this->getKnots(),"pg").", ";
                         $sql.=dbHelper::tellervo_pg_escape_string($this->getBoxID()).", ";
                         $sql.=dbHelper::tellervo_pg_escape_string($this->getExternalID()).", ";
+                        if($this->getSampleStatus()!=null) $sql.=dbHelper::tellervo_pg_escape_string($this->getSampleStatus(true)).", ";
                         if(isset($this->parentEntityArray[0])) $sql.=dbHelper::tellervo_pg_escape_string($this->parentEntityArray[0]->getID()).", ";                        
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
@@ -570,6 +575,7 @@ class sample extends sampleEntity implements IDBAccessor
                         $sql.="knots="		.dbHelper::formatBool($this->getKnots(),"pg").", ";
                         $sql.="boxid="		.dbHelper::tellervo_pg_escape_string($this->getBoxID()).", ";
                         $sql.="externalid="	.dbHelper::tellervo_pg_escape_string($this->getExternalID()).", ";
+                        $sql.="samplestatusid="	.dbHelper::tellervo_pg_escape_string($this->getSampleStatus(true)).", ";
                         if(isset($this->parentEntityArray[0])) 	$sql.="elementid='"	.pg_escape_string($this->parentEntityArray[0]->getID()) 	.", ";
                         
                     $sql = substr($sql, 0, -2);

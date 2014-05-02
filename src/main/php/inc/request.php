@@ -367,6 +367,11 @@ class request
         		$myParamObj = new dictionariesParameters(null, null);
         		array_push($this->paramObjectsArray, $myParamObj);
         	}
+        	elseif($this->xmlRequestDom->getElementsByTagName("statistics")->item(0)!=NULL)
+        	{
+        		$myParamObj = new statisticsParameters(null, null);
+        		array_push($this->paramObjectsArray, $myParamObj);
+        	}
             else
             {
                 trigger_error("905"."Invalid XML request - read, merge and delete requests require entity tags", E_USER_ERROR);

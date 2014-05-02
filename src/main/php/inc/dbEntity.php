@@ -1717,6 +1717,8 @@ class sampleEntity extends dbEntity
 	protected $summaryObjectCode = NULL;
 	protected $summaryElementCode = NULL;
 	protected $curationstatus = null;
+	protected $samplestatus = null;
+	
 	
 	
     function __construct()
@@ -1724,6 +1726,7 @@ class sampleEntity extends dbEntity
         parent::__construct();
         $this->type = new sampleType();  	
         $this->box = new box();
+        $this->samplestatus = new sampleStatus();
 
 	}	
 	
@@ -1780,6 +1783,12 @@ class sampleEntity extends dbEntity
 		
 		return $this->type->setSampleType($id, $value);
 	}
+	
+	function setSampleStatus($id, $value)
+	{
+		return $this->samplestatus->setSampleStatus($id, $value);
+	}
+	
 	
 	/**
 	 * Set the date that this sample was taken on
@@ -1906,6 +1915,18 @@ class sampleEntity extends dbEntity
             else
             {
 				return $this->type->getValue();	
+            }
+	}
+	
+	function getSampleStatus($askey=false)
+        {
+            if($askey)
+            {
+                return $this->samplestatus->getID();
+            }
+            else
+            {
+				return $this->samplestatus->getValue();	
             }
 	}
 	

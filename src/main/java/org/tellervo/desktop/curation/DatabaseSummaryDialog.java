@@ -119,6 +119,8 @@ public class DatabaseSummaryDialog extends JDialog {
         if(unprepped==null) unprepped=0;
         if(dated==null) dated=0;
         if(tfr==null) tfr=0;
+        if(totalSamples==null) totalSamples=0;
+        
         
         Integer nostatus = totalSamples - prepped-unprepped-dated-tfr;
         

@@ -29,3 +29,40 @@ insert into tlkpsamplestatus (samplestatus) values ('Too few rings');
 alter table tblsample add column samplestatusid integer;
 alter table tblsample add constraint "fkey_sample-samplestatus" 
 FOREIGN KEY (samplestatusid) REFERENCES tlkpsamplestatus (samplestatusid) MATCH SIMPLE ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+
+-- ADDING TAGGING
+
+CREATE TABLE tbltag
+(
+  tagid uuid NOT NULL DEFAULT uuid_generate_v1mc(),
+  tag character varying NOT NULL,
+  ownerid uuid,
+  CONSTRAINT pkey_tbltag PRIMARY KEY (tagid),
+  CONSTRAINT "fkey_tagowner-securityuser" FOREIGN KEY (ownerid)
+      REFERENCES tblsecurityuser (securityuserid) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT uniq_tagperuser UNIQUE (tag, ownerid)
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+CREATE TABLE tblvmeasurementtotag
+(
+  vmeasurementtotagid serial NOT NULL,
+  tagid uuid NOT NULL,
+  vmeasurementid uuid NOT NULL,
+  CONSTRAINT pkey_vmeasurementtotag PRIMARY KEY (vmeasurementtotagid),
+  CONSTRAINT "fkey_vmeasurementtotag-tag" FOREIGN KEY (tagid)
+      REFERENCES tbltag (tagid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT "fkey_vmeasurementtotag-vmeasurement" FOREIGN KEY (vmeasurementid)
+      REFERENCES tblvmeasurement (vmeasurementid) MATCH SIMPLE
+       ON UPDATE CASCADE ON DELETE CASCADE,
+)
+WITH (
+  OIDS=FALSE
+);

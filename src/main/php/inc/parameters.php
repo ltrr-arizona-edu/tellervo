@@ -151,6 +151,7 @@ class searchParameters implements IParams
 									'samplingdatecertainty' => 				array('tbl' => 'vwtblsample', 'field' => 'datecertainty'),
 									'sampleboxid' =>						array('tbl' => 'vwtblsample', 'field' => 'boxid'),
 									'samplecode' =>							array('tbl' => 'vwtblsample', 'field' => 'code'),
+									'samplestatus' =>							array('tbl' => 'vwtblsample', 'field' => 'samplestatus'),
 		
 
                                     'radiusid' =>                           		array('tbl' => 'vwtblradius', 'field' => 'radiusid'),
@@ -251,6 +252,26 @@ class searchParameters implements IParams
 }
 
 class dictionariesParameters implements IParams
+{   
+    protected $xmlRequestDom = NULL;
+
+    function __construct($xmlrequest)
+    {
+
+    }
+
+    function setParamsFromXMLRequest()
+    {
+    	return null;
+    }
+    
+    function getID()
+    {
+    	return null;
+    }
+}
+
+class statisticsParameters implements IParams
 {   
     protected $xmlRequestDom = NULL;
 
@@ -1065,6 +1086,9 @@ class sampleParameters extends sampleEntity implements IParams
 		   				break; 			
 		   			case "tellervo.externalID":
 		   				$this->setExternalID($value);
+		   				break; 			
+		   			case "tellervo.sampleStatus":
+		   				$this->setSampleStatus(null, $value);
 		   				break; 			
 		   			default:
 		   			//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'sample' entity of the XML request. Tag is being ignored", E_USER_NOTICE);

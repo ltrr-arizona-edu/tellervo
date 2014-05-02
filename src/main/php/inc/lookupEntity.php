@@ -498,6 +498,21 @@ class curationStatus extends lookupEntity
 
 }
 
+class sampleStatus extends lookupEntity
+{
+
+	function __construct()
+	{
+		parent::__construct("tlkpsamplestatus", "samplestatus", "samplestatusid");
+	}
+
+	function setSampleStatus($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
+	}
+
+}
+
 
 class controlledVoc extends lookupEntity
 {

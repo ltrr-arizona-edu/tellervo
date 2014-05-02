@@ -45,6 +45,7 @@
 			<xs:enumeration value="securityGroup"/>
 			<xs:enumeration value="curation"/>
 			<xs:enumeration value="loan"/>
+			<xs:enumeration value="tag"/>
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -71,8 +72,8 @@
 			<xs:enumeration value="logout"/>
 			<xs:enumeration value="help"/>
 			<xs:enumeration value="search"/>
-<!--	    <xs:enumeration value="assign"/>
-			<xs:enumeration value="unassign"/>-->
+	   		<xs:enumeration value="assign"/>
+			<xs:enumeration value="unassign"/>
 			<xs:enumeration value="merge"/>
 		</xs:restriction>	
 	</xs:simpleType>

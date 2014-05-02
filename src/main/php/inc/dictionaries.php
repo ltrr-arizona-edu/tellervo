@@ -70,7 +70,7 @@ class dictionaries
         $xmldata = "";
         
         $dictItems = array('objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
-        				  'elementAuthenticity', 'datingType', 'taxon', 'configuration');
+        				  'elementAuthenticity', 'datingType', 'taxon', 'configuration', 'sampleStatus');
         //$dictItems = array('elementType',  
         //				  'elementAuthenticity', 'datingType', 'configuration');
        

@@ -259,7 +259,7 @@ class curation extends curationEntity implements IDBAccessor
 		global $myMetaHeader;
 			
     	$curationsql = "INSERT INTO tblcuration (curationstatusid, curatorid, sampleid, notes) values (";
-    	$curationsql .= $this->getCurationStatus(true).", ".$myMetaHeader->securityUserID.", '".$this->sample->getID()."', ".dbHelper::tellervo_pg_escape_string($this->getNotes()).") RETURNING curationid";
+    	$curationsql .= $this->getCurationStatus(true).", '".$myMetaHeader->securityUserID."', '".$this->sample->getID()."', ".dbHelper::tellervo_pg_escape_string($this->getNotes()).") RETURNING curationid";
     	
     	$firebug->log($curationsql, "Curation SQL");
     	$query = pg_query($dbconn, $curationsql);
