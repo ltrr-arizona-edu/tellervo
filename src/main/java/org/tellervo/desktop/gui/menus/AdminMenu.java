@@ -31,6 +31,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.tellervo.desktop.admin.view.PermissionByEntityDialog;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.curation.DatabaseSummaryDialog;
@@ -40,10 +41,14 @@ import org.tellervo.desktop.gis.GISFrame;
 import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
 import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
+import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
+import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.ui.TellervoAction;
+import org.tridas.interfaces.ITridas;
+import org.tridas.schema.TridasSample;
 
 
 @SuppressWarnings("serial")
@@ -93,6 +98,7 @@ public class AdminMenu extends JMenu {
   protected void init() {
 
 	  addUserGroupMenu();
+	  addPermissionsMenu();
 	  addPasswordMenu();
       	addSeparator();
 	  addReportsMenu();
@@ -183,6 +189,38 @@ public class AdminMenu extends JMenu {
 		add(usergroup);
 	}
 
+	protected void addPermissionsMenu(){
+
+	  	JMenuItem permissions = new JMenuItem("Edit/view permissions");
+	  	permissions.setIcon(Builder.getIcon("trafficlight.png", 22));
+	  	
+	  	permissions.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				ITridas returned = TridasEntityPickerDialog.pickEntity(null, "Pick Sample", TridasSample.class, EntitiesAccepted.SPECIFIED_ENTITY_UP_TO_PROJECT);
+				
+				if(returned==null) return;
+				
+				PermissionByEntityDialog.showDialog(returned);
+				
+			}
+	  		
+	  	});
+	
+
+		// Enable if user is an admin
+	  	Boolean adm = App.isAdmin;
+	  	permissions.setEnabled(adm);
+		
+		add(permissions);
+		
+		
+		
+
+		
+	}
+	
 	 /**
 	 Add the "Curation" menuitem.
 	*/

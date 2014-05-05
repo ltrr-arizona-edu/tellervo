@@ -9,6 +9,8 @@ import org.tellervo.desktop.ui.Builder;
 import org.tridas.interfaces.ITridas;
 
 public class TridasEntityPickerDialog extends JDialog {
+	public TridasEntityPickerDialog() {
+	}
 
 	private static final long serialVersionUID = 1L;
 

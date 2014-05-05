@@ -45,8 +45,10 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
     		
     		for(Object usrOrGroup : perm.getSecurityUsersAndSecurityGroups())
     		{
-
-    			permclone.getSecurityUsersAndSecurityGroups().add(usrOrGroup);
+    			if(usrOrGroup instanceof WSISecurityGroup)
+    			{
+    				permclone.getSecurityUsersAndSecurityGroups().add(usrOrGroup);
+    			}
     			
     		}
     		if(permclone.getSecurityUsersAndSecurityGroups().size()>0)
@@ -94,7 +96,21 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 	
 	public WSIPermission getWSIPermissionAt(int rowIndex)
 	{
-		return groupList.get(rowIndex);		
+		if(rowIndex==-1)
+		{
+			return null;
+		}
+		
+		try{
+			return groupList.get(rowIndex);	
+		}
+		catch (Exception e)
+		{
+			log.error("Unable to get permission row at index "+rowIndex+". Table only has "+groupList.size()+" rows.");
+			return null;
+		}
+		
+			
 	}
 	
 	@Override
@@ -133,10 +149,12 @@ public class GroupsWithPermissionsTableModel extends AbstractTableModel {
 
     	WSISecurityGroup grp = null;
 		for(WSISecurityGroup u: groupDictionary){
-			WSISecurityGroup userorgroup = (WSISecurityGroup) permission.getSecurityUsersAndSecurityGroups().get(0);
-			
-			if((userorgroup).getId().equals(u.getId())) grp = u;
-			
+		
+			if(permission.getSecurityUsersAndSecurityGroups().get(0) instanceof WSISecurityGroup)
+			{
+				WSISecurityGroup userorgroup = (WSISecurityGroup) permission.getSecurityUsersAndSecurityGroups().get(0);
+				if((userorgroup).getId().equals(u.getId())) grp = u;
+			}
 		}
 	
 		if(grp==null) return null;

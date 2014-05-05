@@ -12,10 +12,9 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-
-
 import javax.swing.JButton;
 
+import org.jdesktop.swingx.JXTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.admin.model.GroupsWithPermissionsTableModel;
@@ -48,13 +47,17 @@ import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+
 import javax.swing.JLabel;
 import javax.swing.table.TableColumn;
 
 import net.miginfocom.swing.MigLayout;
+
 import javax.swing.JTabbedPane;
+
 import java.awt.Color;
 import java.awt.Font;
+
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -64,9 +67,9 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	private UsersWithPermissionsTableModel userTableModel;
 	private GroupsWithPermissionsTableModel groupTableModel;
 	private final static Logger log = LoggerFactory.getLogger(PermissionByEntityUI.class);
-	private JTable tblUserPerms;
+	private JXTable tblUserPerms;
 	private ArrayList<WSIPermission> permsList;
-	private JTable tblGroupPerms;
+	private JXTable tblGroupPerms;
 	private JTabbedPane tabbedPane;
 	private JPanel panelUsers;
 	private JPanel panelGroups;
@@ -191,7 +194,8 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		JScrollPane scrollGroup = new JScrollPane();
 		panelGroups.add(scrollGroup, "cell 0 0,grow");
 		
-		tblGroupPerms = new JTable(groupTableModel);
+		tblGroupPerms = new JXTable(groupTableModel);
+		tblGroupPerms.setSortable(true);
 		scrollGroup.setViewportView(tblGroupPerms);
 		
 		btnEditGroup = new JButton("View / Edit Group");
@@ -246,7 +250,8 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		JScrollPane scrollUser = new JScrollPane();
 		panelUsers.add(scrollUser, "cell 0 0,grow");
 		
-		tblUserPerms = new JTable(userTableModel);
+		tblUserPerms = new JXTable(userTableModel);
+		tblUserPerms.setSortable(true);
 		scrollUser.setViewportView(tblUserPerms);
 		
 		btnEditUser = new JButton("View / Edit User");
@@ -366,7 +371,12 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	
 	private void resetPermissionsForCurrentGroup()
 	{
-		groupTableModel.setRowToDefaultValues(tblGroupPerms.getSelectedRow());
+		for(int i=0; i<groupTableModel.getRowCount(); i++)
+		{
+			groupTableModel.setRowToDefaultValues(i);
+
+		}
+		
 		
 	}
 	
