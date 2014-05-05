@@ -1,65 +1,46 @@
 package org.tellervo.desktop.admin.view;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-import javax.swing.JDialog;
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JButton;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.search.SearchFactory;
+import org.jdesktop.swingx.search.Searchable;
+import org.jdesktop.swingx.search.TableSearchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.admin.model.GroupsWithPermissionsTableModel;
 import org.tellervo.desktop.admin.model.UsersWithPermissionsTableModel;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.schema.TellervoRequestType;
-import org.tellervo.schema.EntityType;
-import org.tellervo.schema.PermissionsEntityType;
-import org.tellervo.schema.SearchOperator;
-import org.tellervo.schema.SearchParameterName;
-import org.tellervo.schema.SearchReturnObject;
-import org.tellervo.schema.WSIBox;
-import org.tellervo.schema.WSIPermission;
-import org.tellervo.schema.WSISecurityGroup;
-import org.tellervo.schema.WSISecurityUser;
-import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
-import org.tellervo.desktop.wsi.tellervo.SearchParameters;
-import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.PermissionsResource;
+import org.tellervo.schema.PermissionsEntityType;
+import org.tellervo.schema.WSIPermission;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
 import org.tridas.interfaces.ITridas;
-import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
-import org.tridas.schema.TridasRadius;
-import org.tridas.schema.TridasSample;
-
-import javax.swing.JLabel;
-import javax.swing.table.TableColumn;
-
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.JTabbedPane;
-
-import java.awt.Color;
-import java.awt.Font;
-
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
 
 public class PermissionByEntityUI extends JPanel implements MouseListener{
 
@@ -86,7 +67,10 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	private JButton btnGroupRefresh;
 	private JButton btnUserRefresh;
 	private ITridas theentity;
+	private Searchable searchableGroup;
+	private Searchable searchableUser;
 
+	
 	/**
 	 * Create the panel.
 	 */
@@ -196,6 +180,11 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		
 		tblGroupPerms = new JXTable(groupTableModel);
 		tblGroupPerms.setSortable(true);
+		
+		searchableGroup = new TableSearchable(tblGroupPerms);
+		tblGroupPerms.setSearchable(searchableGroup);
+		
+		
 		scrollGroup.setViewportView(tblGroupPerms);
 		
 		btnEditGroup = new JButton("View / Edit Group");
@@ -251,6 +240,10 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		panelUsers.add(scrollUser, "cell 0 0,grow");
 		
 		tblUserPerms = new JXTable(userTableModel);
+		
+		searchableUser = new TableSearchable(tblUserPerms);
+		tblUserPerms.setSearchable(searchableUser);
+		
 		tblUserPerms.setSortable(true);
 		scrollUser.setViewportView(tblUserPerms);
 		
@@ -378,6 +371,35 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		}
 		
 		
+	}
+	
+	/**
+	 * 
+	 * @return a not-null Searchable for this editor.
+     */
+	 public Searchable getSearchableGroup() {
+		 if (searchableGroup == null) {
+			 searchableGroup = new TableSearchable(this.tblGroupPerms);
+		 }
+		 return searchableGroup;
+	 }
+	
+	/**
+	 * 
+	 * @return a not-null Searchable for this editor.
+     */
+	 public Searchable getSearchableUser() {
+		 if (searchableUser == null) {
+			 searchableUser = new TableSearchable(this.tblUserPerms);
+		 }
+		 return searchableUser;
+	 }
+		
+	 
+	
+	/** Opens the find widget for the table. */
+	private void find() {
+		SearchFactory.getInstance().showFindInput(this, getSearchableGroup());
 	}
 	
 	@Override

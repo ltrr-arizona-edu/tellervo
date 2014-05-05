@@ -25,11 +25,12 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.jdesktop.swingx.JXTree;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.util.TridasObjectEx;
 
-public class TridasTree extends JTree {
+public class TridasTree extends JXTree {
 
 	private static final long serialVersionUID = 5358870985497921555L;
 

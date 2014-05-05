@@ -41,6 +41,9 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import org.jdesktop.swingx.search.SearchFactory;
+import org.jdesktop.swingx.search.Searchable;
+import org.jdesktop.swingx.search.TreeSearchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
@@ -66,6 +69,8 @@ import org.tellervo.desktop.util.PopupListener;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.WebInterfaceCode;
+import org.tellervo.desktop.wsi.tellervo.WebInterfaceException;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
@@ -93,6 +98,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	protected ObjectListMode baseObjectListMode = ObjectListMode.TOP_LEVEL_ONLY;
 	protected Boolean derivedVisible = false;
 	private Window parent = null;
+	private Searchable searchable;
 	
 	/**
 	 * Basic constructor for tree view panel used in the context of searching
@@ -303,6 +309,25 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		setupTree(null);
 	}
 	
+	
+	/**
+	 * 
+	 * @return a not-null Searchable for this editor.
+     */
+	 public Searchable getSearchable() {
+		 if (searchable == null) {
+			 searchable = new TreeSearchable(this.tree);
+		 }
+		 return searchable;
+	 }
+		
+	 
+	
+	/** Opens the find widget for the table. */
+	private void find() {
+		SearchFactory.getInstance().showFindInput(this, getSearchable());
+	}
+	
 	/**
 	 * Set up the tree.  If objectList is passed then this is used
 	 * as the base nodes of the tree, otherwise the objects specified
@@ -324,6 +349,12 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     		addObjectsToTree(tree, top);
     	}
     	tree = new TridasTree(top);
+    	searchable = new TreeSearchable(tree);
+    	tree.setSearchable(searchable);
+    	
+    	tree.setSearchable(searchable);
+
+    	
     	tree.setCellRenderer(new TridasTreeCellRenderer());
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);        
         tree.setRootVisible(true);
@@ -903,9 +934,26 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 			((DefaultTreeModel)tree.getModel()).removeNodeFromParent(node);
 			return;
 		}
+		else
+		{
+			if(accdialog.getErrorCode()	== WebInterfaceCode.PERMISSION_DENIED) 
+			{
+	
+				JOptionPane.showMessageDialog(this, "Unable to delete this "+ entityType.toLowerCase() +" as you do not have sufficient privileges.", 
+						"Error", JOptionPane.ERROR_MESSAGE);
+			}
+			else if(accdialog.getErrorCode() == WebInterfaceCode.FOREIGN_KEY_VIOLATION) 
+			{
 		
-		JOptionPane.showMessageDialog(this, "Unable to delete this "+ entityType.toLowerCase() +" as it is referenced by other entries in the database.", 
+				JOptionPane.showMessageDialog(this, "Unable to delete this "+ entityType.toLowerCase() +" as it is referenced by other entries in the database.", 
 				"Error", JOptionPane.ERROR_MESSAGE);
+			}
+			else
+			{
+				JOptionPane.showMessageDialog(this, "Unable to delete this "+ entityType.toLowerCase() +" check logs.", 
+						"Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
 		
 		return;
 	}

@@ -295,6 +295,21 @@ public class TellervoResourceAccessDialog extends JDialog implements ResourceEve
 		dispose();
 	}
 	
+	/**
+	 * Get the WebInterfaceCode error code.  If no error exists then returns null
+	 * 
+	 * @return
+	 */
+	public WebInterfaceCode getErrorCode()
+	{
+		if(getFailException()!=null)
+		{
+			return ((WebInterfaceException)getFailException()).getMessageCode();
+		}
+		
+		return null;
+	}
+	
 	public void resourceChanged(ResourceEvent re) {		
 		int eventType = re.getEventType();
 		switch(eventType) {
