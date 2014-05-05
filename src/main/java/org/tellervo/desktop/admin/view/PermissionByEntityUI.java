@@ -399,7 +399,7 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	
 	/** Opens the find widget for the table. */
 	private void find() {
-		SearchFactory.getInstance().showFindInput(this, getSearchableGroup());
+		SearchFactory.getInstance().showFindInput(tblUserPerms, getSearchableUser());
 	}
 	
 	@Override

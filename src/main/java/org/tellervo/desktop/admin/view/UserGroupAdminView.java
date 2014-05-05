@@ -40,6 +40,10 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.table.TableRowSorter;
 
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.search.SearchFactory;
+import org.jdesktop.swingx.search.Searchable;
+import org.jdesktop.swingx.search.TableSearchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.admin.control.AuthenticateEvent;
@@ -99,7 +103,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     protected javax.swing.JScrollPane scrollUsers;
     protected javax.swing.JTable tblGroups;
     protected javax.swing.JTable tblMembers;
-    protected javax.swing.JTable tblUsers;
+    protected JXTable tblUsers;
     protected javax.swing.JPanel userPanel;
     private JLabel lblMembers;
     private JPanel debugPanel;
@@ -122,8 +126,10 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     private JTextArea txtDescription;
     private JButton btnRefresh;
     private JPanel panelButtons;
+    private Searchable searchableUser;
 	
 	private final static Logger log = LoggerFactory.getLogger(UserGroupAdminView.class);
+	private JButton btnFindUser;
 
 
     public static void main() {
@@ -156,7 +162,10 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         userPanel = new javax.swing.JPanel();
         
         scrollUsers = new javax.swing.JScrollPane();
-        tblUsers = new javax.swing.JTable();
+        tblUsers = new JXTable();
+        searchableUser = new TableSearchable(tblUsers);
+        
+        
         btnEditUser = new javax.swing.JButton();
         btnNewUser = new javax.swing.JButton();
         btnDeleteUser = new javax.swing.JButton();
@@ -191,12 +200,20 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         });
 
         accountsTabPane.addTab("Users", userPanel);
-        userPanel.setLayout(new MigLayout("hidemode 3", "[236.00px,grow][][][]", "[25px][335px,grow,fill]"));
-        userPanel.add(scrollUsers, "cell 0 1 4 1,grow");
+        userPanel.setLayout(new MigLayout("hidemode 3", "[236.00px,grow][][][][]", "[25px][335px,grow,fill]"));
+        
+        btnFindUser = new JButton("Find");
+        btnFindUser.setIcon(Builder.getIcon("find.png", 16));
+        btnFindUser.setActionCommand("findUser");
+        btnFindUser.addActionListener(this);
+        
+        
+        userPanel.add(btnFindUser, "cell 1 0");
+        userPanel.add(scrollUsers, "cell 0 1 5 1,grow");
         userPanel.add(chkShowDisabledUsers, "cell 0 0,alignx left,aligny center");
-        userPanel.add(btnEditUser, "cell 1 0,alignx left,aligny top");
-        userPanel.add(btnNewUser, "cell 2 0,alignx left,aligny top");
-        userPanel.add(btnDeleteUser, "cell 3 0,alignx center,aligny top");
+        userPanel.add(btnEditUser, "cell 2 0,alignx left,aligny top");
+        userPanel.add(btnNewUser, "cell 3 0,alignx left,aligny top");
+        userPanel.add(btnDeleteUser, "cell 4 0,alignx center,aligny top");
 
         accountsTabPane.addTab("Groups", groupPanel);
         groupPanel.setLayout(new BorderLayout(0, 0));
@@ -567,8 +584,12 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 			if (ret == JOptionPane.YES_OPTION) {
 				new DeleteGroupEvent(selectedGroup.getId()).dispatch();
 			}
+		} else if (e.getActionCommand().equals("findUser"))
+		{
+			SearchFactory.getInstance().showFindInput(this.tblUsers, searchableUser);
+
 		}
-	}
+    }
 
 	private void resetMembers(){
 		WSISecurityGroup selectedGroup = groupsModel.getGroupAt(

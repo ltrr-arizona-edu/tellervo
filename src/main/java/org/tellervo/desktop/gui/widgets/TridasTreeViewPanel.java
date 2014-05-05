@@ -497,6 +497,13 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	        popupMenu.addSeparator();   
         }
         
+        // Find 
+        menuItem = new JMenuItem("Find");
+        menuItem.setIcon(Builder.getIcon("find.png", 16));
+        menuItem.setActionCommand("findInTree");
+        menuItem.addActionListener(this);
+        popupMenu.add(menuItem);
+        
         // Refresh
         menuItem = new JMenuItem("Refresh");
         menuItem.addActionListener(this);
@@ -1034,6 +1041,10 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 			{
 				deleteEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
 			}			
+		}
+		else if (e.getActionCommand().equals("findInTree"))
+		{
+			find();
 		}
 
 	}
