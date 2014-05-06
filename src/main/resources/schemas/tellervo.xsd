@@ -441,6 +441,7 @@
 					<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="curation" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="loan" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:annotation>
@@ -573,6 +574,8 @@
 				<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+				
 
                 <xs:element ref="objectTypeDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="elementTypeDictionary" minOccurs="0" maxOccurs="1"/>
@@ -805,18 +808,19 @@
                     <xs:element ref="statistic" minOccurs="0" maxOccurs="unbounded"/>
                 </xs:sequence>
             </xs:complexType>
-    </xs:element>
+	    </xs:element>
+	
 <!--
 	%%%%%%%%%%%%%%
 	%		HELP
 	%%%%%%%%%%%%%% -->	
-<xs:element name="help">
-	<xs:complexType>
-		<xs:sequence>
-			<xs:any processContents="skip"/>
-		</xs:sequence>
-	</xs:complexType>
-</xs:element>
+	<xs:element name="help">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any processContents="skip"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	
 	<!--
 %%%%%%%%%%%%%%
@@ -1031,6 +1035,34 @@
 			<xs:attribute name="value" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
+	
+	
+	<!--
+		%%%%%%%%%%%%%%
+		% Tag
+		%%%%%%%%%%%%%% -->
+	
+	<xs:element name="tag" >
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="assignedTo" minOccurs="0" maxOccurs="1" >
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="measurementSeries" minOccurs="1" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="id" type="xs:string" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>	
+			<xs:attribute name="id" type="xs:string" use="optional"/>
+			<xs:attribute name="ownerid" type="xs:string" use="optional"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+		</xs:complexType>	
+	</xs:element>
+	
 	
 	<!--
 		%%%%%%%%%%%%%%

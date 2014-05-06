@@ -1571,7 +1571,7 @@ class measurement extends measurementEntity implements IDBAccessor
 	 *
 	 * @return Boolean
 	 */
-	function writeToDB()
+	function writeToDB($crudMode="create")
 	{
 		// Write the current object to the database
 
@@ -1611,6 +1611,13 @@ class measurement extends measurementEntity implements IDBAccessor
 		global $dbconn;
 		global $myAuth;
 		global $firebug;
+		
+		// Check for required parameters
+		if($crudMode!="create" && $crudMode!="update")
+		{
+		    $this->setErrorMessage("667", "Invalid mode specified in writeToDB().  Only create and update are supported");
+		    return FALSE;
+		}		
 		
 		//Only attempt to run SQL if there are no errors so far
 		if($this->getLastErrorCode() == NULL)

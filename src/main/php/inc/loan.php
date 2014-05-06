@@ -280,7 +280,7 @@ class loan extends loanEntity implements IDBAccessor
     /*FUNCTIONS*/
     /***********/
 
-    function writeToDB()
+    function writeToDB($crudMode="create")
     {
 
     	global $dbconn;

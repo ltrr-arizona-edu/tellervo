@@ -446,6 +446,7 @@ class auth
             $this->authFailReason = "Not logged in";
             return false;
         }
+                
         
         if (($theObjectType=='securityUser') || ($theObjectType=='securityGroup'))
         {

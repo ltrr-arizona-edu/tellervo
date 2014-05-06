@@ -420,7 +420,7 @@ class object extends objectEntity implements IDBAccessor
 	 *
 	 * @return Boolean
 	 */
-	function writeToDB()
+	function writeToDB($crudMode="create")
 	{
         // Write the current object to the database
 
@@ -432,6 +432,12 @@ class object extends objectEntity implements IDBAccessor
 
 
         // Check for required parameters
+        if($crudMode!="create" && $crudMode!="update")
+        {
+	    $this->setErrorMessage("667", "Invalid mode specified in writeToDB().  Only create and update are supported");
+	    return FALSE;
+        }
+        
         if($this->getTitle() == NULL) 
         {
             $this->setErrorMessage("902", "Missing parameter - 'title' field is required.");
@@ -442,6 +448,12 @@ class object extends objectEntity implements IDBAccessor
             $this->setErrorMessage("902", "Missing parameter - 'code' field is required.");
             return FALSE;
         }
+        
+        if($crudMode=="update" && $this->getID()==NULL)
+        {
+	    $this->setErrorMessage("902", "Missing parameter - 'id' field is required when editing");
+            return FALSE;
+        }
 
         //Only attempt to run SQL if there are no errors so far
         if($this->getLastErrorCode() == NULL)
@@ -450,17 +462,19 @@ class object extends objectEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
                 // If ID has not been set then we assume that we are writing a new record to the DB.  Otherwise updating.
-                if($this->getID() == NULL)
+                if($crudMode=="create")
                 {
                     // New Record
-                    
-                	// Generate a new UUID pkey
-                	$this->setID(uuid::getUUID(), $domain);
-                	
+                    if($this->getID()==NULL) $this->setID(uuid::getUUID(), $domain);
+                  
+                
+                    // New Record
+                                    	
                     $sql = "insert into tblobject ( ";
+                    
                         $sql.= "title, ";
-			$sql.= "objectid, ";
-                        $sql.= "comments, ";
+			$sql.="objectid, ";                        
+			$sql.= "comments, ";
                        	$sql.= "objecttypeid, ";                        
                        	$sql.= "description, ";
                        	$sql.= "file, ";
@@ -483,6 +497,7 @@ class object extends objectEntity implements IDBAccessor
                         if(isset($this->parentEntityArray) && count($this->parentEntityArray)>0) $sql.= "parentobjectid, ";
 			$sql = substr($sql, 0, -2);
                     $sql.=") values (";
+                    
                         $sql.= dbHelper::tellervo_pg_escape_string($this->getTitle()).", ";
 	                $sql.= dbHelper::tellervo_pg_escape_string($this->getID()).", ";
                         $sql.= dbHelper::tellervo_pg_escape_string($this->getComments()).", ";

@@ -252,11 +252,19 @@ class curation extends curationEntity implements IDBAccessor
     /*FUNCTIONS*/
     /***********/
 
-    function writeToDB()
+    function writeToDB($crudMode="create")
     {
     	global $dbconn;
     	global $firebug;
 		global $myMetaHeader;
+			
+			
+        // Check for required parameters
+        if($crudMode!="create" && $crudMode!="update")
+        {
+	    $this->setErrorMessage("667", "Invalid mode specified in writeToDB().  Only create and update are supported");
+	    return FALSE;
+        }			
 			
     	$curationsql = "INSERT INTO tblcuration (curationstatusid, curatorid, sampleid, notes) values (";
     	$curationsql .= $this->getCurationStatus(true).", '".$myMetaHeader->securityUserID."', '".$this->sample->getID()."', ".dbHelper::tellervo_pg_escape_string($this->getNotes()).") RETURNING curationid";

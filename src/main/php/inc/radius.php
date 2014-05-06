@@ -421,7 +421,7 @@ class radius extends radiusEntity implements IDBAccessor
     /*FUNCTIONS*/
     /***********/
 
-    function writeToDB()
+    function writeToDB($crudMode="create")
     {
         // Write the current object to the database
 
@@ -430,6 +430,13 @@ class radius extends radiusEntity implements IDBAccessor
         global $firebug;
         $sql = NULL;
         $sql2 = NULL;
+        
+        // Check for required parameters
+        if($crudMode!="create" && $crudMode!="update")
+        {
+	    $this->setErrorMessage("667", "Invalid mode specified in writeToDB().  Only create and update are supported");
+	    return FALSE;
+        }
         
         //Only attempt to run SQL if there are no errors so far
         if($this->getLastErrorCode() ===NULL)

@@ -29,7 +29,7 @@ require_once('box.php');
 interface IDBAccessor
 {
 	function asXML();
-	function writeToDB();
+	function writeToDB($crudMode="create");
 	function deleteFromDB();
 	function mergeRecords($mergeWithID);
 	function validateRequestParams($paramsClass, $crudMode);
@@ -3305,6 +3305,52 @@ class curationEntity extends dbEntity
 	}
 
 		
+}
+
+
+class tagEntity extends dbEntity
+{
+	public $tagtext = NULL;
+	protected $ownerid = NULL;
+	protected $entityIdArray = NULL;
+	
+	function __construct()
+	{
+		parent::__construct();
+		$this->entityIdArray = array();
+
+	}
+	
+	function setTagText($txt)
+	{
+		$this->tagtext = $txt;
+	}
+	
+	function setOwnerID($id)
+	{
+		$this->ownerid = $id;
+	}
+
+	function getEntityIdArray()
+	{
+		return $this->entityIdArray;
+	}
+	
+	function getOwnerID()
+	{
+		return $this->ownerid;
+	}
+	
+	
+	function getTagText()
+	{
+		return $this->tagtext;
+	}
+	
+	function isGlobalTag()
+	{
+		return $ownerid!=NULL;
+	}
 }
 
 

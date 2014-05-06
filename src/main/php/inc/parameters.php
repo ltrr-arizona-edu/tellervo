@@ -494,6 +494,64 @@ class permissionParameters extends permissionEntity implements IParams
     }
 }
 
+class tagParameters extends tagEntity implements IParams
+{
+ 
+	var $xmlRequestDom = NULL;
+	var $mergeWithID = NULL;
+
+	function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
+	{
+		global $firebug;
+		$firebug->log($xmlrequest, "XML request received by tagParameters");
+		 
+		parent::__construct();
+
+		$this->xmlRequestDom = new DomDocument();
+		$this->xmlRequestDom->loadXML($xmlrequest);
+
+		// Extract parameters from the XML request
+		$this->setParamsFromXMLRequest();
+	}
+
+	function setParamsFromXMLRequest()
+	{
+		
+		global $tellervoNS;
+		global $tridasNS;
+		global $firebug;
+
+		
+		
+		$this->setTagText($this->xmlRequestDom->documentElement->getAttribute("value"));
+		$this->setOwnerID($this->xmlRequestDom->documentElement->getAttribute("ownerid"));
+		$this->setID($this->xmlRequestDom->documentElement->getAttribute("id"));
+		
+
+		 $children = $this->xmlRequestDom->documentElement->childNodes;
+	
+		foreach($children as $child)
+		{
+			if($child->nodeType != XML_ELEMENT_NODE) continue;
+		 
+			switch ($child->tagName)
+			{
+			  case "assignedTo":
+			  $entitynodes = $child->childNodes;
+			    foreach($entitynodes as $entity)
+			    {
+			        if($entity->nodeType != XML_ELEMENT_NODE) continue;
+			    	array_push($this->entityIdArray, $entity->getAttribute("id"));  		
+			    }
+			    break;
+			    
+			}
+		}
+
+	}
+
+}
+
 
 class authenticationParameters implements IParams
 {

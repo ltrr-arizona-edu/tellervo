@@ -244,7 +244,7 @@ class domain extends dbEntity implements IDBAccessor
     /*FUNCTIONS*/
     /***********/
 
-    function writeToDB()
+    function writeToDB($crudMode="create")
     {
         // Write the current object to the database
 

@@ -879,7 +879,7 @@ class search Implements IDBAccessor
     }
 
     
-    function writeToDB()
+    function writeToDB($crudMode="create")
     {
     	trigger_error("667"."search class should not be asked to write to db", E_USER_ERROR);
     	return false;

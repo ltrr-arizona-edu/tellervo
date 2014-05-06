@@ -42,7 +42,7 @@ require_once("inc/permission.php");
 require_once("inc/authenticate.php");
 require_once("inc/dictionaries.php");
 require_once("inc/search.php");
-require_once("inc/loan.php");
+require_once("inc/tag.php");
 
 
 $xmldata 		= NULL;
@@ -123,6 +123,8 @@ if($myMetaHeader->status != "Error")
             case "permissionParameters":		$myObject = new permission(); break;
             case "loanParameters":				$myObject = new loan(); break;
             case "curationParameters":			$myObject = new curation(); break;
+            case "tagParameters":			$myObject = new tag(); break;
+
             default:
             	trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
             	echo "Object type not supported";
@@ -148,7 +150,7 @@ if($myMetaHeader->status != "Error")
         }
 
         // ********************
-        //  DO PERMISSION CHECK FOR CREATE, READ, UPDATE OR DELETE REQUESTS
+        //  DO PERMISSION CHECK FOR CREATE, READ, UPDATE, DELETE, ASSIGN and UNASSIGN REQUESTS
         //  search request permissions are handled by inc/search.php
         //  other requests do not need to be verified
         // ********************
@@ -212,6 +214,10 @@ if($myMetaHeader->status != "Error")
                 case "curation":
                 	$myID = null;
                 	break;
+                case "tag":
+                	$myID = null;
+                	$objectType="tag";
+                	break;                	
                 default:
                 	$firebug->log($objectType, "Unknown object type");
              
@@ -222,7 +228,20 @@ if($myMetaHeader->status != "Error")
         {
             $myID = $paramObj->getID();
         }
+       
 
+	if( ($myRequest->getCrudMode()=='assign') || ($myRequest->getCrudMode()=='unassign'))
+	{
+	    if($objectType!="tag")
+	    {
+	      trigger_error("901"."The assign and unassign request types are only applicable to the tag entity", $defaultErrType);
+	    }
+	    
+	    // TODO Implement Tag permissions
+	
+	}
+       
+       
         if( ($myRequest->getCrudMode()=='create') || ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete') )
         {
         	
@@ -248,7 +267,7 @@ if($myMetaHeader->status != "Error")
                  */
                 if(($myRequest->getCrudMode()=='create') && $originalObjectType=='measurement')
 				{
-					if( ($paramObj->getType()=="Sum") || ($paramObj->getType()=="Index") || ($paramObj->getType()=="Redate") || ($paramObj->getType()=="Crossdate") || ($paramObj->getType()=="Trunate"))
+					if( ($paramObj->getType()=="Sum") || ($paramObj->getType()=="Index") || ($paramObj->getType()=="Redate") || ($paramObj->getType()=="Crossdate") || ($paramObj->getType()=="Truncate"))
 					{
 						// For now give everyone permission to *create* a derived series
 					}
@@ -349,7 +368,8 @@ if($myMetaHeader->status != "Error")
         // ********************
                         	
         if( ($myRequest->getCrudMode()=='read') || ($myRequest->getCrudMode()=='update') || ($myRequest->getCrudMode()=='delete') ||
-        	($myRequest->getCrudMode()=='plainlogin')  || ($myRequest->getCrudMode()=='securelogin') || ($myRequest->getCrudMode()=='merge') )
+        	($myRequest->getCrudMode()=='plainlogin')  || ($myRequest->getCrudMode()=='securelogin') || ($myRequest->getCrudMode()=='merge') || 
+        	($myRequest->getCrudMode()=='assign') || ($myRequest->getCrudMode()=='unassign'))
         {
             if($myMetaHeader->status != "Error")
             {   
@@ -406,7 +426,7 @@ if($myMetaHeader->status != "Error")
             if($myMetaHeader->status != "Error")
             {
             	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Writing ".get_class($myObject)." to database");              	
-                $success = $myObject->writeToDB();
+                $success = $myObject->writeToDB($myRequest->getCrudMode());
                 if(!$success)
                 {
                     trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
@@ -471,7 +491,9 @@ if($myMetaHeader->status != "Error")
             }
         }
         
-
+       
+        
+        
         // ********************
         // Include permissions in output when requested 
         // ********************

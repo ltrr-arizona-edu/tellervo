@@ -156,8 +156,17 @@ class permission extends permissionEntity implements IDBAccessor
      *
      * @return unknown
      */
-    function writeToDB()
+    function writeToDB($crudMode="create")
     {
+    
+        // Check for required parameters
+        if($crudMode!="create" && $crudMode!="update")
+        {
+	    $this->setErrorMessage("667", "Invalid mode specified in writeToDB().  Only create and update are supported");
+	    return FALSE;
+        }
+    
+    
 	$this->deleteFromDB();
 
     	global $dbconn;

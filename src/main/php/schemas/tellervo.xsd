@@ -45,6 +45,7 @@
 			<xs:enumeration value="securityGroup"/>
 			<xs:enumeration value="curation"/>
 			<xs:enumeration value="loan"/>
+			<xs:enumeration value="tag"/>
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -71,8 +72,8 @@
 			<xs:enumeration value="logout"/>
 			<xs:enumeration value="help"/>
 			<xs:enumeration value="search"/>
-<!--	    <xs:enumeration value="assign"/>
-			<xs:enumeration value="unassign"/>-->
+	   		<xs:enumeration value="assign"/>
+			<xs:enumeration value="unassign"/>
 			<xs:enumeration value="merge"/>
 		</xs:restriction>	
 	</xs:simpleType>
@@ -117,6 +118,22 @@
 			<xs:enumeration value="Returned to owner"/>
 		</xs:restriction>
 	</xs:simpleType>
+
+	<xs:simpleType name="sampleStatus">
+		<xs:annotation>
+			<xs:documentation>Stage of preparation this sample is currently at</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Prepped"/>
+			<xs:enumeration value="Unprepped"/>
+			<xs:enumeration value="Undateable"/>
+			<xs:enumeration value="Dated"/>
+			<xs:enumeration value="Measured"/>
+			<xs:enumeration value="Too few rings"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+
 
 	<xs:simpleType name="searchParameterName">
 		<xs:restriction base="xs:string">
@@ -195,6 +212,7 @@
 			<xs:enumeration value="samplingdatecertainty"/>
 			<xs:enumeration value="sampleboxid"/>
 			<xs:enumeration value="samplecode"/>
+			<xs:enumeration value="samplestatus"/>
 			
 			
 			<!-- RADIUS ATTRIBUTES -->
@@ -423,6 +441,7 @@
 					<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="curation" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="loan" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:annotation>
@@ -431,6 +450,12 @@
 				</xs:sequence>
 				<xs:sequence>
 					<xs:element name="dictionaries">
+						<xs:complexType>
+						</xs:complexType>
+					</xs:element>
+				</xs:sequence>
+					<xs:sequence>
+					<xs:element name="statistics">
 						<xs:complexType>
 						</xs:complexType>
 					</xs:element>
@@ -549,6 +574,8 @@
 				<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded" />
+				<xs:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+				
 
                 <xs:element ref="objectTypeDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="elementTypeDictionary" minOccurs="0" maxOccurs="1"/>
@@ -571,6 +598,8 @@
 				<xs:element ref="configurationDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="domainDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="wmsServerDictionary" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="sampleStatusDictionary" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="statisticalResults" minOccurs="0" maxOccurs="1"/>
 				
 			</xs:choice>
 		</xs:complexType>
@@ -765,17 +794,33 @@
 	</xs:element>
 	
 	
+    <xs:element name="sampleStatusDictionary">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="sampleStatus" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+    </xs:element>
+	
+	    <xs:element name="statisticalResults">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element ref="statistic" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+	    </xs:element>
+	
 <!--
 	%%%%%%%%%%%%%%
 	%		HELP
 	%%%%%%%%%%%%%% -->	
-<xs:element name="help">
-	<xs:complexType>
-		<xs:sequence>
-			<xs:any processContents="skip"/>
-		</xs:sequence>
-	</xs:complexType>
-</xs:element>
+	<xs:element name="help">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any processContents="skip"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	
 	<!--
 %%%%%%%%%%%%%%
@@ -977,6 +1022,47 @@
 			<xs:attribute name="url" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
+	
+	
+		<!--
+		%%%%%%%%%%%%%%
+		% Statistic
+		%%%%%%%%%%%%%% -->
+	
+	<xs:element name="statistic" >
+		<xs:complexType>
+			<xs:attribute name="key" type="xs:string" use="required"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	
+	
+	<!--
+		%%%%%%%%%%%%%%
+		% Tag
+		%%%%%%%%%%%%%% -->
+	
+	<xs:element name="tag" >
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="assignedTo" minOccurs="0" maxOccurs="1" >
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="measurementSeries" minOccurs="1" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="id" type="xs:string" use="required"/>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>	
+			<xs:attribute name="id" type="xs:string" use="optional"/>
+			<xs:attribute name="ownerid" type="xs:string" use="optional"/>
+			<xs:attribute name="value" type="xs:string" use="required"/>
+		</xs:complexType>	
+	</xs:element>
+	
 	
 	<!--
 		%%%%%%%%%%%%%%

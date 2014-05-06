@@ -615,7 +615,7 @@ class element extends elementEntity implements IDBAccessor
      *
      * @return Boolean
      */
-    function writeToDB()
+    function writeToDB($crudMode="create")
     {
         // Write the current object to the database
 
@@ -626,6 +626,13 @@ class element extends elementEntity implements IDBAccessor
         $sql2 = "";
 
 
+        // Check for required parameters
+        if($crudMode!="create" && $crudMode!="update")
+        {
+	    $this->setErrorMessage("667", "Invalid mode specified in writeToDB().  Only create and update are supported");
+	    return FALSE;
+        }        
+        
         // Check for required parameters
         if($this->getCode() == NULL) 
         {

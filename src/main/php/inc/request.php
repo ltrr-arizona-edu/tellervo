@@ -345,7 +345,7 @@ class request
 	                		$myParamObj = new securityGroupParameters($newxml);
                             break;	  
                             
-	                	case 'loan':
+	                case 'loan':
 	                		$newxml = "<loan xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier>".$item->getAttribute('id')."</tridas:identifier></loan>";
 	                		$myParamObj = new loanParameters($newxml);
                             break;		  
@@ -354,6 +354,12 @@ class request
                             $newxml = "<curation xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier>".$item->getAttribute('id')."</tridas:identifier></curation>";
                             $myParamObj = new curationParameters($newxml);
                             break;
+                            
+                        case 'tag':
+                            $newxml = "<tag id=\"".$item->getAttribute('id')."\"></tag>";
+                            $myParamObj = new tagParameters($newxml);
+                           
+                            break;                            
                             
 	                	default:
 	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);
@@ -378,7 +384,7 @@ class request
             }
         
         }
-        elseif ( ($this->crudMode=='create') || ($this->crudMode=='update'))
+        elseif ( ($this->crudMode=='create') || ($this->crudMode=='update') || ($this->crudMode=='assign') || ($this->crudMode=='unassign'))
         {
 
             // Extract ID of Parent entity if supplied
@@ -431,6 +437,9 @@ class request
               		case "permission":
             			$myParamObj = new permissionParameters($this->xmlRequestDom->saveXML($item));
             			break;
+              		case "tag":
+            			$myParamObj = new tagParameters($this->xmlRequestDom->saveXML($item));
+            			break;            			
             		default:
             			trigger_error("901"."Unknown entity tag &lt;".$item->tagName."&gt; when trying to ".$this->crudMode." a record", E_USER_ERROR);
             	}
@@ -469,7 +478,7 @@ class request
         
         $firebug->log($myParamObj, "request.php myParamObj");
 
-        // Check that at least one parameters object has been extracted from the xml request
+        // Check that at least one parameters object 	has been extracted from the xml request
         if(sizeof($this->paramObjectsArray)>0)
         {
         	$firebug->log($this->paramObjectsArray, "Parameters Objects");
