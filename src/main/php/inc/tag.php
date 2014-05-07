@@ -41,8 +41,7 @@ class tag extends tagEntity implements IDBAccessor
      	$this->setOwnerID($row['ownerid']);
      	$this->setTagText($row['tag']);
      	
-		
-	$this->setChildParamsFromDB();
+     	
         return true;
     }
 

@@ -26,6 +26,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.jdesktop.swingx.JXTree;
+import org.tellervo.schema.WSITag;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.util.TridasObjectEx;
@@ -70,6 +71,13 @@ public class TridasTree extends JXTree {
 				}
 			}
 			return obj.getTitle();
+		}
+		else if (node.getUserObject() instanceof WSITag)
+		{	
+			WSITag tag = ((WSITag)node.getUserObject());
+			String tagtext = tag.getValue();
+			Boolean isPersonal = tag.isSetOwnerid();
+			return tagtext;
 		}
 		else if(node.getUserObject() instanceof ITridas)
 		{

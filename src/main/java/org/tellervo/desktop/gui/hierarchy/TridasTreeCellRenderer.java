@@ -31,6 +31,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.schema.WSITag;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -53,6 +54,7 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 	Icon radiusIcon;
 	Icon mseriesIcon;
 	Icon dseriesIcon;
+	Icon tagIcon;
 	Boolean isDropCell = false;
 
 	
@@ -65,6 +67,7 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 		radiusIcon   = ((ImageIcon) Builder.getIcon("radius.png",   Builder.ICONS, 16));
 		mseriesIcon  = ((ImageIcon) Builder.getIcon("measurementseries.png",   Builder.ICONS, 16));
 		dseriesIcon  = ((ImageIcon) Builder.getIcon("derivedseries.png",   Builder.ICONS, 16));
+		tagIcon      = ((ImageIcon) Builder.getIcon("tag.png",   Builder.ICONS, 16));
 
 	}
 		
@@ -152,6 +155,10 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 		else if (node.getUserObject() instanceof TridasDerivedSeries)
 		{
 			icon = dseriesIcon;
+		}
+		else if (node.getUserObject() instanceof WSITag)
+		{
+			icon = tagIcon;
 		}
 		else
 		{

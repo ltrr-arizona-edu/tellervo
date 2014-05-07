@@ -25,6 +25,7 @@
 			<xs:enumeration value="box"/>
 			<xs:enumeration value="curation"/>
 			<xs:enumeration value="loan"/>
+			<xs:enumeration value="tag"/>
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -275,6 +276,10 @@
 			<xs:enumeration value="boxlastmodified"/>
 			<xs:enumeration value="boxcreated"/>		
 			
+			
+			<!-- TAG ATTRIBUTES -->
+			<xs:enumeration value="tagtext"/>
+			<xs:enumeration value="tagid"/>
 			
 			<!-- CURATION EVENT ATTRIBUTES-->
 			

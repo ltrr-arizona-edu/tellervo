@@ -269,7 +269,7 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
 			  
 			ArrayList<TridasObjectEx> siteList = getFilteredSiteList(objcode);
 			  
-			ArrayList<TridasObjectEx> siteList2 = new ArrayList<TridasObjectEx>();
+			ArrayList<ITridas> siteList2 = new ArrayList<ITridas>();
 			siteList2.addAll(siteList);
 			  
 			this.fireTridasSelectListener(new TridasSelectEvent(this, 1001, siteList2) );
@@ -308,7 +308,7 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
 		{
 			// Search successful
 			List<TridasObject> foundEntities = (List<TridasObject>) searchResource.getAssociatedResult();
-			
+
 			if(foundEntities.size()==0)
 			{
 				this.fireTridasSelectListener(new TridasSelectEvent(this, 1001, TridasSelectType.FORCED));
@@ -319,7 +319,9 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
 			}
 			else
 			{	
-				this.fireTridasSelectListener(new TridasSelectEvent(this, 1001, foundEntities, TridasSelectType.FORCED));
+				ArrayList<ITridas> foundEntities2 = new ArrayList<ITridas>();
+				foundEntities2.addAll(foundEntities);
+				this.fireTridasSelectListener(new TridasSelectEvent(this, 1001, foundEntities2, TridasSelectType.FORCED));
 			}
 			
 		}		

@@ -54,6 +54,11 @@ class search Implements IDBAccessor
 
     function validateRequestParams($paramsObj, $crudMode)
     {
+    	global $firebug;
+    	
+    	$firebug->log($paramsObj->returnObject, "Return object");
+    	$firebug->log($paramsObj->allData, "All data?");
+
     	
         switch($crudMode)
         {
@@ -63,11 +68,26 @@ class search Implements IDBAccessor
                     $this->setErrorMessage("902","Missing parameter - 'returnObject' field is required when performing a search");
                     return false;
                 }
-                if(($paramsObj->allData===TRUE) && ($paramsObj->returnObject=='measurement'))
+                if(($paramsObj->allData===TRUE) && ($paramsObj->returnObject=='measurementSeries'))
                 {
                     $this->setErrorMessage("901","Invalid user parameters - you cannot request all measurements as it is computationally too expensive");
                     return false;
                 }
+                
+                if($paramsObj->returnObject=='tag')
+                {
+		  if($paramsObj->allData===TRUE)
+		  {
+		    $firebug->log("Search for all tags");
+		  }
+		  else
+		  {
+                
+		    $this->setErrorMessage("901","Invalid user parameters - you can only search for 'all' tags, search parameters are not currently supported");
+		    return false;
+		  }
+                }
+                
                 return true;
             
             default:
@@ -127,9 +147,11 @@ class search Implements IDBAccessor
         if ($myRequest->limit) $limitSQL = "\n LIMIT ".pg_escape_string($myRequest->limit);
         if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".pg_escape_string($myRequest->skip);
 
-        if($myRequest->allData===FALSE)
+        if( $myRequest->allData===FALSE || $this->includeTag($this->tablesFromParams($paramsArray)) )
         {
-            // User doing a normal search (not all records) so build filter
+            // User doing a normal search (not all records) OR
+            // request include tbltag so always needs filter
+            // so build filter  
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
@@ -237,6 +259,16 @@ class search Implements IDBAccessor
                 	$firebug->log($row['radiusid'], "Permission denied on radiusid");	 
                 	continue;
                 }            
+            }
+            elseif($this->returnObject=="tag") 
+            {
+                $myReturnObject = new tag();
+                /*$hasPermission = $myAuth->getPermission("read", "tag", $row['tagid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['tagid']); 
+                	$firebug->log($row['radiusid'], "Permission denied on tagid");	 
+                	continue;
+                } */           
             }
             elseif($this->returnObject=="vmeasurement")
             {
@@ -369,6 +401,8 @@ class search Implements IDBAccessor
     private function paramsToFilterSQL($paramsArray)
     {
     	global $firebug;
+    	global $myAuth;
+    	
         $filterSQL = NULL;
 
         foreach($paramsArray as $param)
@@ -474,6 +508,13 @@ class search Implements IDBAccessor
 
         // Trim off last 'and'
         $filterSQL = substr($filterSQL, 0, -5);
+        
+        // Force clause to hide personal tags
+        if($this->includeTag($this->tablesFromParams($paramsArray)))
+        {
+	    $filterSQL .= " tbltag.ownerid IS NULL OR tbltag.ownerid='".$myAuth->getID()."'";
+        }
+        
         return $filterSQL;
     }
 
@@ -489,6 +530,7 @@ class search Implements IDBAccessor
         case "loan":   
         case "box":
         case "curation":
+        case "tag":
             return $objectName;
             break;
         case "vmeasurement":
@@ -541,6 +583,9 @@ class search Implements IDBAccessor
         case "curation":
         	return "vwtblcuration";
         	break;
+        case "tag":
+	        return "tbltag";
+		break;
         default:
         	echo "unable to determine table name.  Fatal error.";
             die();
@@ -625,6 +670,7 @@ class search Implements IDBAccessor
             {
             	$fromSQL .= "INNER JOIN ".$this->tableName("loan")." ON ".$this->tableName("curation").".loanid = ".$this->tableName("loan").".loanid \n";
             }
+                        
         }
         else 
         {
@@ -668,6 +714,7 @@ class search Implements IDBAccessor
         	}
         }
         
+        
         if( (($this->getLowestRelationshipLevel($tables)<=2) && ($this->getHighestRelationshipLevel($tables)>=2)) || ($this->returnObject == 'radius'))
         {
             if($withinJoin)
@@ -695,11 +742,32 @@ class search Implements IDBAccessor
                 $fromSQL .= $this->tableName("vmeasurement")." \n";
                 $withinJoin = TRUE;
             }
+            
+            if ($this->includeTag($tables))
+	    {
+		 $fromSQL .=" LEFT JOIN tblvmeasurementtotag ON ".$this->tableName("vmeasurement").".vmeasurementid = tblvmeasurementtotag.vmeasurementid \n";
+		 $fromSQL .=" LEFT JOIN ".$this->tableName("tag")." ON tblvmeasurementtotag.tagid = ".$this->tableName("tag").".tagid \n";
+	    }
+            
 
         }
-
-
+        else
+        {
+            if ($this->includeTag($tables))
+	    {
+        	if($withinJoin)
+        	{
+			$fromSQL .=" LEFT JOIN tblvmeasurementtotag ON ".$this->tableName("vmeasurement").".vmeasurementid = tblvmeasurementtotag.vmeasurementid \n";
+			$fromSQL .=" LEFT JOIN ".$this->tableName("tag")." ON tblvmeasurementtotag.tagid = ".$this->tableName("tag").".tagid \n";        	}
+        	else
+        	{
+        		$fromSQL .= $this->tableName("tag")." \n";
+        		$withinJoin = TRUE;
+        	}
+	    }
         
+        }
+                
         /*
         if( (($this->getLowestRelationshipLevel($tables)<=1) && ($this->getHighestRelationshipLevel($tables)>=1)) || ($this->returnObject == 'vmeasurement'))  
         {
@@ -733,6 +801,18 @@ class search Implements IDBAccessor
     		return true;
     	}
     }
+    
+     /**
+     * Whether or not the tag table should be included
+     */
+    private function includeTag($tables)
+    {
+    	if ((in_array('tbltag', $tables)) || ($this->returnObject == 'tag'))
+    	{
+    		return true;
+    	}
+    }
+    
     
     /**
      * Whether or not the Box table should be included

@@ -82,7 +82,14 @@
 			</ai:interfaces>
 		</jaxb:bindings>
 		
-		<!-- Add ITridas interface to loan (kludge) -->
+		<!-- Add ITridas interface to tag (kludge) -->
+		<jaxb:bindings node="//xs:element[@name='tag']/xs:complexType">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.ICoreTridas
+			</ai:interfaces>
+		</jaxb:bindings>
+		
+		<!-- Add ITridas interface to curation (kludge) -->
 		<jaxb:bindings node="//xs:element[@name='curation']/xs:complexType">
 			<ai:interfaces check="false">
 				org.tridas.interfaces.ICoreTridas

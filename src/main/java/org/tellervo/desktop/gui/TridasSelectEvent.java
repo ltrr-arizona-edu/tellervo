@@ -123,12 +123,14 @@ public class TridasSelectEvent extends AWTEvent {
 	 * @param entityList
 	 */
 	@SuppressWarnings("unchecked")
-	public TridasSelectEvent(Object source, int id, List<TridasObjectEx> entityList) {
+	public TridasSelectEvent(Object source, int id, List<ITridas> entityList) {
 		super(source, id);
-		this.entityList = new ArrayList<TridasObjectEx>();
+		this.entityList = new ArrayList<ITridas>();
 		this.entityList.addAll(entityList);
 		multiSelector = true;
 	}
+	
+	
 	
 	/**
 	 * Constructor used when multiple entities were selected
@@ -138,9 +140,9 @@ public class TridasSelectEvent extends AWTEvent {
 	 * @param entityList
 	 */
 	@SuppressWarnings("unchecked")
-	public TridasSelectEvent(Object source, int id, List<TridasObject> entityList, TridasSelectType typ) {
+	public TridasSelectEvent(Object source, int id, List<ITridas> entityList, TridasSelectType typ) {
 		super(source, id);
-		this.entityList = new ArrayList<TridasObject>();
+		this.entityList = new ArrayList<ITridas>();
 		this.entityList.addAll(entityList);
 		setSelectType(typ);
 		multiSelector = true;

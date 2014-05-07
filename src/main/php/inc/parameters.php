@@ -70,6 +70,8 @@ class searchParameters implements IParams
         global $tridasNS;
         global $firebug;
 
+
+        
         // Get main attributes
     	$searchParamsTag = $this->xmlRequestDom->getElementsByTagName("searchParams")->item(0); 	
 		$this->returnObject = $searchParamsTag->getAttribute("returnObject");
@@ -78,6 +80,20 @@ class searchParameters implements IParams
 		$this->includeChildren = (bool) $searchParamsTag->getAttribute("includeChildren");
 		
 		// Get individual params
+		
+		$allTags = $this->xmlRequestDom->getElementsByTagName("all");
+		
+		foreach ($allTags as $param)
+		{
+			if($param->nodeType != XML_ELEMENT_NODE) continue; 
+			
+			$firebug->log("Found 'all' records tag");
+
+			$this->allData=TRUE; 
+			break;
+		}
+		
+		
 		$paramsTags = $this->xmlRequestDom->getElementsByTagName("param");	
 		
 				// Create an array for translating the search parameters names into Tellervo database table and field names
@@ -214,19 +230,16 @@ class searchParameters implements IParams
 									'loanlastname' =>						array('tbl' => 'vwtblloan', 'field' => 'lastname'),
 									'loanorganisation' =>						array('tbl' => 'vwtblloan', 'field' => 'organisation'),
 									'loannotes' =>						array('tbl' => 'vwtblloan', 'field' => 'notes'),
+									
+									'tagtext' =>						array('tbl' => 'tbltag', 'field' => 'tag'),
+									'tagid' =>						array('tbl' => 'tbltag', 'field' => 'tagid')
 								  );
 		
 		// Loop through each param tag
 		foreach ($paramsTags as $param)
 		{
-			if($param->nodeType != XML_ELEMENT_NODE) continue; 
-			
-			// If the <all> tag is found set allData to true and finish
-			if($param->tagName=='all') 
-			{
-				$this->allData=TRUE; 
-				break;
-			}
+
+
 	
 			//$firebug->log($param->getAttribute("name"), "param name");
 			

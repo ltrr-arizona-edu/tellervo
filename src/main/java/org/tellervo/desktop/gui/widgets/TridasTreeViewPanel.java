@@ -47,6 +47,7 @@ import org.jdesktop.swingx.search.TreeSearchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.hierarchy.TridasTree;
@@ -61,6 +62,7 @@ import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.WSITag;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.ui.Alert;
@@ -347,6 +349,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	else
     	{
     		addObjectsToTree(tree, top);
+    		addTagsToTree(tree, top);
     	}
     	tree = new TridasTree(top);
     	searchable = new TreeSearchable(tree);
@@ -494,7 +497,15 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	        menuItem.setIcon(Builder.getIcon("cancel.png", 16));
 	        popupMenu.add(menuItem);
 	        	        
-	        popupMenu.addSeparator();   
+	        popupMenu.addSeparator();
+	        
+	        // Refresh
+	        menuItem = new JMenuItem("Refresh");
+	        menuItem.addActionListener(this);
+	        menuItem.setActionCommand("refresh");
+	        menuItem.setIcon(Builder.getIcon("reload.png", 16));
+	        popupMenu.add(menuItem);
+	        
         }
         
         // Find 
@@ -503,14 +514,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         menuItem.setActionCommand("findInTree");
         menuItem.addActionListener(this);
         popupMenu.add(menuItem);
-        
-        // Refresh
-        menuItem = new JMenuItem("Refresh");
-        menuItem.addActionListener(this);
-        menuItem.setActionCommand("refresh");
-        menuItem.setIcon(Builder.getIcon("reload.png", 16));
-        popupMenu.add(menuItem);
-        
+
         popupMenu.setOpaque(true);
         popupMenu.setLightWeightPopupEnabled(false);
 
@@ -532,6 +536,63 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
             objectNode = new DefaultMutableTreeNode(object);   
             addTridasNodeInOrder(thetree, top, objectNode);
         }
+        log.debug("Finished adding objects to tree in order");
+    }
+	
+	
+	/**
+	 * Populate the tree with tags
+	 * 
+	 * @param top
+	 */
+	protected void addTagsToTree(TridasTree thetree, DefaultMutableTreeNode top)
+    {
+		DefaultMutableTreeNode myTags = new DefaultMutableTreeNode("My tags");
+		DefaultMutableTreeNode sharedTags = new DefaultMutableTreeNode("Shared tags");
+
+        top.add(myTags);
+        top.add(sharedTags);
+
+    	DefaultMutableTreeNode tagNode = null;
+
+        log.debug("Beginning to loop through object list and adding to tree in order");
+        
+		SearchParameters search = new SearchParameters(SearchReturnObject.TAG);
+		search.addSearchForAll();
+		
+		EntitySearchResource<WSITag> searchResource = new EntitySearchResource<WSITag>(search, WSITag.class);
+		
+		TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(parent, searchResource);
+		searchResource.query();
+		dlg.setVisible(true);
+			
+		if(!dlg.isSuccessful()) 
+		{
+			// Search failed
+			new Bug(dlg.getFailException());
+			return;
+		} 
+		else 
+		{
+			// Search successful
+			List<WSITag> foundEntities = (List<WSITag>) searchResource.getAssociatedResult();
+	        for(WSITag tag : foundEntities)
+	        {
+	            tagNode = new DefaultMutableTreeNode(tag);   
+
+	        	if(tag.isSetOwnerid())
+	        	{
+	        		myTags.add(tagNode);
+	        	}
+	        	else
+	        	{
+	        		sharedTags.add(tagNode);
+	        	}
+	        }
+		}
+		
+        
+
         log.debug("Finished adding objects to tree in order");
     }
     
@@ -815,6 +876,12 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	{
     		TridasSelectEvent event = new TridasSelectEvent(tree, TridasSelectEvent.ENTITY_SELECTED, ((ITridas)node.getUserObject()), node);
     		this.fireTridasSelectListener(event);
+    	}
+    	else if (node.getUserObject() instanceof WSITag)
+    	{
+    		SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
+    		//search.addSearchConstraint(SearchParameterName., comparison, value);
+    		
     	}
 	}
 		
