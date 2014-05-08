@@ -32,6 +32,7 @@ import org.tellervo.schema.WSICuration;
 import org.tellervo.schema.WSIEntity;
 import org.tellervo.schema.WSILoan;
 import org.tellervo.schema.WSIRequest;
+import org.tellervo.schema.WSITag;
 import org.tridas.interfaces.ICoreTridas;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasDerivedSeries;
@@ -122,16 +123,32 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 			break;
 			
 		case DELETE: {
-			TridasIdentifier identifier = entity.getIdentifier();
-
-			if(parentEntityID != null)
-				throw new IllegalArgumentException("Delete called with parentObjectID!");
-			
-			if(identifier == null)
-				throw new IllegalArgumentException("Delete called with a tridas entity with no identifier!");
-			
 			readDeleteOrMergeEntity = new WSIEntity();
-			readDeleteOrMergeEntity.setId(identifier.getValue());
+
+			if(entity instanceof WSITag)
+			{
+				if(((WSITag) entity).isSetId()==false)
+					throw new IllegalArgumentException("Delete called with no identifier");
+
+				readDeleteOrMergeEntity.setId(((WSITag) entity).getId());
+
+			}
+			else
+			{
+				TridasIdentifier identifier = entity.getIdentifier();
+
+				if(parentEntityID != null)
+					throw new IllegalArgumentException("Delete called with parentObjectID!");
+				
+				if(identifier == null)
+					throw new IllegalArgumentException("Delete called with a tridas entity with no identifier!");
+				
+				readDeleteOrMergeEntity.setId(identifier.getValue());
+			}
+			
+			
+
+
 			// cheap-ish: XmlRootElement (above) is the xml tag, which is also our entity type
 			readDeleteOrMergeEntity.setType(EntityType.fromValue(getResourceName()));
 			break;
@@ -144,7 +161,7 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 		// derived series, objects and box don't have a parent entity ID
 		if (queryType == TellervoRequestType.CREATE && parentEntityID == null) {
 			if (!(entity instanceof ITridasDerivedSeries || entity instanceof TridasObject 
-				|| entity instanceof WSIBox || entity instanceof WSILoan || entity instanceof WSICuration))
+				|| entity instanceof WSIBox || entity instanceof WSILoan || entity instanceof WSICuration || entity instanceof WSITag))
 				throw new IllegalArgumentException("CREATE called with ParentObjectID == null!");
 		}
 	}
@@ -242,6 +259,8 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 			request.getLoen().add((WSILoan) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof WSICuration)
 			request.getCurations().add((WSICuration) createOrUpdateEntity);
+		else if(createOrUpdateEntity instanceof WSITag)
+			request.getTags().add((WSITag) createOrUpdateEntity);
 		else 
 			throw new IllegalArgumentException("Unknown/invalid entity type for update/create: " + 
 					createOrUpdateEntity.toString());

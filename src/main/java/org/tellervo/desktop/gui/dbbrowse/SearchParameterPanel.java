@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.tellervo.desktop.gui.widgets.AutoCompletion;
+import org.tellervo.desktop.gui.widgets.AutoCompleteComboDocument;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.ColorUtils;
@@ -213,7 +213,7 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 
 		cboSearchField.setModel(model);
 		cboSearchField.setSelectedItem(null);
-		AutoCompletion.enable(cboSearchField);
+		AutoCompleteComboDocument.enable(cboSearchField);
 		lastSearchParameter = null;
 		
 		// set up the search operator combo, default to '='

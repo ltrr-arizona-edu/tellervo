@@ -31,6 +31,8 @@ import javax.swing.JPopupMenu;
 import org.tellervo.desktop.cross.CrossdateDialog;
 import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.graph.GraphWindow;
+import org.tellervo.desktop.gui.hierarchy.WSITagNameDialog;
+import org.tellervo.desktop.gui.hierarchy.WSITagUnassignDialog;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.BaseSample;
 import org.tellervo.desktop.sample.Element;
@@ -83,7 +85,7 @@ public class ElementListPopupMenu extends JPopupMenu {
 			return;
 		}
 		
-		ITridasSeries series = bs.getSeries();
+		final ITridasSeries series = bs.getSeries();
 		if( series instanceof TridasDerivedSeries)
 		{
 			final TridasDerivedSeries ds = (TridasDerivedSeries) bs.getSeries();
@@ -101,10 +103,44 @@ public class ElementListPopupMenu extends JPopupMenu {
 			}
 		}
 		
+		this.addSeparator();
+		
+		// Tag series 
+		item = new JMenuItem("Tag this series");
+		item.setIcon(Builder.getIcon("tag.png", 16));
+		
+		item.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				WSITagNameDialog.addTagToSeries(null, series);
+				
+			}
+			
+			
+		});
+		add(item);	
+		
+		// Remove tag 
+		item = new JMenuItem("Remove tag from series");
+		item.setIcon(Builder.getIcon("deletetag.png", 16));
+		
+		item.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				WSITagUnassignDialog.showDialog(null, series);
+				
+			}
+			
+			
+		});
+		add(item);		
+		
 		// direct number of children
 		Integer directChildCount = bs.getMeta(Metadata.CHILD_COUNT, Integer.class);
 		boolean canDelete = (element.isDeletable() && (directChildCount == null || directChildCount == 0));
-		
+				
 		// Delete 
 		addSeparator();
 		item = Builder.makeMenuItem("general.delete", canDelete, "delete.png");

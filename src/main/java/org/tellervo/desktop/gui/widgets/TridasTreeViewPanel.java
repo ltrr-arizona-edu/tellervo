@@ -53,6 +53,7 @@ import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.hierarchy.TridasTree;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeCellRenderer;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel_UI;
+import org.tellervo.desktop.gui.hierarchy.WSITagNameDialog;
 import org.tellervo.desktop.gui.widgets.TellervoCodePanel.ObjectListMode;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
@@ -101,6 +102,9 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	protected Boolean derivedVisible = false;
 	private Window parent = null;
 	private Searchable searchable;
+	private DefaultMutableTreeNode myTags = new DefaultMutableTreeNode("My tags");
+	private DefaultMutableTreeNode sharedTags = new DefaultMutableTreeNode("Shared tags");
+	protected DefaultMutableTreeNode top;
 	
 	/**
 	 * Basic constructor for tree view panel used in the context of searching
@@ -341,15 +345,15 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	{
 		log.debug("starting to set up tree");
 		// Set up tree
-    	DefaultMutableTreeNode top = new DefaultMutableTreeNode(App.getLabName()+" Database");
+    		top = new DefaultMutableTreeNode(App.getLabName()+" Database");
     	if(objList!=null)
     	{
-    		addObjectsToTree(tree, top, objList);
+    		addObjectsToTree(tree, objList);
     	}
     	else
     	{
-    		addObjectsToTree(tree, top);
-    		addTagsToTree(tree, top);
+    		addObjectsToTree(tree);
+    		addTagsToTree(tree);
     	}
     	tree = new TridasTree(top);
     	searchable = new TreeSearchable(tree);
@@ -462,16 +466,21 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		
 		String className = TridasTreeViewPanel.getFriendlyClassName(clazz);
 		Boolean isTridas = false;
+		Boolean isTag = false;
 		if(clazz.getSimpleName().startsWith("Tridas"))
 		{
 			isTridas = true;
+		}
+		if(clazz.equals(WSITag.class))
+		{
+			isTag = true;
 		}
 		
         // define the popup
         JPopupMenu popupMenu = new JPopupMenu();
         JMenuItem menuItem;
         
-        if(isTridas)
+        if(!isTag)
         {
 	        // Expand 
 	        menuItem = new JMenuItem("Expand branch");
@@ -479,34 +488,56 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	        menuItem.setActionCommand("expand");
 	       	menuItem.setEnabled(expandEnabled);
 	        menuItem.setIcon(Builder.getIcon("view_tree.png", 16));
-	     
 	        popupMenu.add(menuItem);
-	        
-	        // Select
+        }
+        
+        // Select
+        if(isTridas || isTag)
+        {
 	        menuItem = new JMenuItem(this.textForSelectPopup);
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("select");
 	        menuItem.setIcon(Builder.getIcon("select.png", 16));
 	        popupMenu.add(menuItem);
-	        popupMenu.addSeparator();
-	        
+        }
+        
+        popupMenu.addSeparator();
+        
+        if(isTridas)
+        {        
 	        // Delete
 	        menuItem = new JMenuItem("Delete this "+className.toLowerCase());
 	        menuItem.addActionListener(this);
 	        menuItem.setActionCommand("delete");
 	        menuItem.setIcon(Builder.getIcon("cancel.png", 16));
-	        popupMenu.add(menuItem);
-	        	        
-	        popupMenu.addSeparator();
-	        
-	        // Refresh
-	        menuItem = new JMenuItem("Refresh");
+	        popupMenu.add(menuItem); 
+	        popupMenu.addSeparator();        
+        }   
+        else if(isTag)
+        {
+	        // Delete
+	        menuItem = new JMenuItem("Delete this tag");
 	        menuItem.addActionListener(this);
-	        menuItem.setActionCommand("refresh");
-	        menuItem.setIcon(Builder.getIcon("reload.png", 16));
+	        menuItem.setActionCommand("deleteTag");
+	        menuItem.setIcon(Builder.getIcon("cancel.png", 16));
+	        popupMenu.add(menuItem);        
+        	
+	        // Rename tag 
+	        menuItem = new JMenuItem("Rename tag");
+	        menuItem.addActionListener(this);
+	        menuItem.setActionCommand("renameTag");
+	        menuItem.setIcon(Builder.getIcon("tag.png", 16));
 	        popupMenu.add(menuItem);
-	        
+	        popupMenu.addSeparator();
+
         }
+        
+        // Refresh
+        menuItem = new JMenuItem("Refresh");
+        menuItem.addActionListener(this);
+        menuItem.setActionCommand("refresh");
+        menuItem.setIcon(Builder.getIcon("reload.png", 16));
+        popupMenu.add(menuItem);
         
         // Find 
         menuItem = new JMenuItem("Find");
@@ -526,7 +557,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 * 
 	 * @param top
 	 */
-	protected void addObjectsToTree(TridasTree thetree, DefaultMutableTreeNode top, List<TridasObjectEx> objectList)
+	protected void addObjectsToTree(TridasTree thetree, List<TridasObjectEx> objectList)
     {
     	DefaultMutableTreeNode objectNode = null;
 
@@ -545,13 +576,23 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	 * 
 	 * @param top
 	 */
-	protected void addTagsToTree(TridasTree thetree, DefaultMutableTreeNode top)
+	protected void addTagsToTree(TridasTree thetree)
     {
-		DefaultMutableTreeNode myTags = new DefaultMutableTreeNode("My tags");
-		DefaultMutableTreeNode sharedTags = new DefaultMutableTreeNode("Shared tags");
-
         top.add(myTags);
         top.add(sharedTags);
+		
+		
+		try{
+			myTags.removeAllChildren();
+			sharedTags.removeAllChildren();
+		} catch (Exception e)
+		{
+			log.debug("Caught exception when deleting root tags from tree");
+		}
+
+
+
+
 
     	DefaultMutableTreeNode tagNode = null;
 
@@ -601,7 +642,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
      * 
      * @param parentNode - node to which the objects should be added
      */
-    protected void addObjectsToTree(TridasTree thetree, DefaultMutableTreeNode parentNode)
+    protected void addObjectsToTree(TridasTree thetree)
     {
     	log.debug("Starting to get object list from dictionary");
     	List<TridasObjectEx> objectList = null;
@@ -624,7 +665,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	}
     	log.debug("Finished getting object list from dictionary");
     	
-    	addObjectsToTree(thetree, parentNode, objectList);
+    	addObjectsToTree(thetree, objectList);
     }
     
     /**
@@ -696,14 +737,15 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	// Node already expanded so return
     	if(node.getChildCount()>0){	return;	}
     	
-    	if(!(node.getUserObject() instanceof ITridas))
-    	{
-    		// Node not a Tridas entity so return
-    		return;
-    	}
-    	else
+    	if (node.getUserObject() instanceof ITridas)
     	{
     		entity = (ITridas)node.getUserObject();
+    	}
+    	else	
+    	{
+    		tree.expandPath(path);
+    		// Node not a Tridas entity so return
+    		return;
     	}
     	
     	// Build search
@@ -879,8 +921,44 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	}
     	else if (node.getUserObject() instanceof WSITag)
     	{
-    		SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
-    		//search.addSearchConstraint(SearchParameterName., comparison, value);
+    		WSITag tag = (WSITag) node.getUserObject();
+    		SearchParameters params = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
+    		
+    		params.addSearchConstraint(SearchParameterName.TAGTEXT, SearchOperator.EQUALS, tag.getValue());
+        	
+    		
+    		EntitySearchResource<TridasMeasurementSeries> searchResource = new EntitySearchResource<TridasMeasurementSeries>(params, TridasMeasurementSeries.class);
+    		
+    		searchResource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
+
+    		
+    		TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(parent, searchResource);
+    		searchResource.query();
+    		dlg.setVisible(true);
+    			
+    		if(!dlg.isSuccessful()) 
+    		{
+    			// Search failed
+    			new Bug(dlg.getFailException());
+    			return;
+    		} 
+    		else 
+    		{
+    			
+    			// Search successful
+    			List<TridasMeasurementSeries> foundEntities = (List<TridasMeasurementSeries>) searchResource.getAssociatedResult();
+    			
+    			if(foundEntities.size()==0)
+    			{
+    				Alert.message(parent, "No records", "No series were found with this tag");
+    				return;
+    			}
+    			
+    			ArrayList<ITridas> foundEntities2 = new ArrayList<ITridas>();
+    			foundEntities2.addAll(foundEntities);
+    			TridasSelectEvent event = new TridasSelectEvent(tree, TridasSelectEvent.ENTITY_SELECTED, foundEntities2);
+    			this.fireTridasSelectListener(event);
+    		}
     		
     	}
 	}
@@ -1113,17 +1191,103 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		{
 			find();
 		}
+		else if (e.getActionCommand().equals("renameTag"))
+		{
+			renameTag((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+		}
+		else if (e.getActionCommand().equals("deleteTag"))
+		{
+			// Delete this entity
+						Object[] options = {"OK",
+			            "Cancel"};
+						int ret = JOptionPane.showOptionDialog(getParent(), 
+								"Are you sure you want to permanently delete this tag?", 
+								"Confirm delete", 
+								JOptionPane.YES_NO_OPTION, 
+								JOptionPane.WARNING_MESSAGE, null, options, options[1]);
+						
+						if(ret == JOptionPane.YES_OPTION)
+						{
+							deleteTag((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+						}			
+			
+		}
+		
+	}
+	
+	
+	private void renameTag(DefaultMutableTreeNode node)
+	{
 
+		WSITag tag = (WSITag) node.getUserObject();
+		WSITag oldTag = (WSITag) tag.clone();
+		
+		WSITagNameDialog dialog = new WSITagNameDialog(tag);
+		dialog.setVisible(true);
+		tag = dialog.getWSITag();
+
+		if(!dialog.isChanged()) return;
+			
+		EntityResource<WSITag> resource = new EntityResource<WSITag>(tag, TellervoRequestType.UPDATE, WSITag.class);
+		
+		// set up a dialog...
+		TellervoResourceAccessDialog dialog2 = TellervoResourceAccessDialog.forWindow(parent, resource);
+	
+		resource.query();
+		dialog2.setVisible(true);
+		if(!dialog2.isSuccessful()) 
+		{ 
+			Alert.error("Error", dialog2.getFailException().getMessage());
+		}
+		
+		// If the tag has been switched between personal and global, then refresh whole tree
+		if(tag.getOwnerid()!=oldTag.getOwnerid())
+		{
+			this.setupTree();
+		}
+		
+		
+		
+	}
+	
+	private void deleteTag(DefaultMutableTreeNode node)
+	{
+		WSITag tag = (WSITag) node.getUserObject();
+		EntityResource<WSITag> resource = new EntityResource<WSITag>(tag, TellervoRequestType.DELETE, WSITag.class);
+		
+		// set up a dialog...
+		TellervoResourceAccessDialog dialog2 = TellervoResourceAccessDialog.forWindow(parent, resource);
+	
+		resource.query();
+		dialog2.setVisible(true);
+		if(!dialog2.isSuccessful()) 
+		{ 
+			Alert.error("Error", dialog2.getFailException().getMessage());
+			return;
+		}
+		
+		((DefaultTreeModel)tree.getModel()).removeNodeFromParent(node);
 	}
 	
 	public void refreshNode(DefaultMutableTreeNode node)
 	{
-		// Remove all children then add again
-		node.removeAllChildren();
-		node.removeAllChildren();
-		//((DefaultTreeModel)tree.getModel()).reload();
-		expandEntity(node);
-		((DefaultTreeModel)tree.getModel()).nodeStructureChanged(node);
+		if(node.getUserObject() instanceof WSITag 
+				|| node.equals(this.sharedTags) 
+				|| node.equals(this.myTags)
+				|| node.equals(this.top))
+		{
+			setupTree();
+		}
+		else if (node.getUserObject() instanceof ITridas)
+		{
+			// Remove all children then add again
+			node.removeAllChildren();
+			node.removeAllChildren();
+			//((DefaultTreeModel)tree.getModel()).reload();
+			expandEntity(node);
+			((DefaultTreeModel)tree.getModel()).nodeStructureChanged(node);
+		}
+
 	}
 	
 	@Override

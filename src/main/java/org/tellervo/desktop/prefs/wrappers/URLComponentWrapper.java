@@ -13,7 +13,7 @@ import javax.swing.event.ListDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.widgets.AutoCompletion;
+import org.tellervo.desktop.gui.widgets.AutoCompleteComboDocument;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tridas.io.formats.corina.CorinaReader;
 

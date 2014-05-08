@@ -311,7 +311,7 @@ class tag extends tagEntity implements IDBAccessor
             return FALSE;
         }
 	
-	if($crudMode=="create")
+	if( $crudMode=="create" )
 	{
 	 
 	   if($this->getID()==NULL) $this->setID(uuid::getUUID(), $domain);  
@@ -384,12 +384,41 @@ class tag extends tagEntity implements IDBAccessor
 	    }
 	    
 	    $this->assignToSeries();
-           
+          	
 	}
 	else if ($crudMode=="update")
 	{
-	
-	
+	   $sql = "UPDATE tbltag SET ";
+	   $sql.= "ownerid=".dbHelper::tellervo_pg_escape_string($this->getOwnerID()).", ";
+	   $sql.= "tag=".dbHelper::tellervo_pg_escape_string($this->getTagText())." ";
+	   $sql.= "WHERE tagid=". dbHelper::tellervo_pg_escape_string($this->getID());
+           
+           $firebug->log($sql, "SQL");
+           
+           
+	    // Run SQL command
+	    if ($sql)
+	    {
+		// Run SQL 
+		pg_send_query($dbconn, $sql);
+		$result = pg_get_result($dbconn);
+		if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+		{
+		    $PHPErrorCode = pg_result_error_field($result, PGSQL_DIAG_SQLSTATE);
+		    switch($PHPErrorCode)
+		    {
+		   
+		    default:
+			    // Any other error
+			    $this->setErrorMessage("002", "Error code: ".$PHPErrorCode."  -  ".pg_result_error($result)."--- SQL was $sql");
+			    return FALSE;
+		    }
+		   
+		}
+	    }
+	    
+	    $this->assignToSeries();
+	    
 	}
 	else if ($crudMode=="assign")
 	{

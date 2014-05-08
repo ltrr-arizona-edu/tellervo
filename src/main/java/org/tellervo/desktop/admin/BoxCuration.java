@@ -47,7 +47,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.editor.ScanBarcodeUI;
 import org.tellervo.desktop.editor.EditorFactory.BarcodeDialogResult;
-import org.tellervo.desktop.gui.widgets.AutoCompletion;
+import org.tellervo.desktop.gui.widgets.AutoCompleteComboDocument;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.schema.TellervoRequestType;

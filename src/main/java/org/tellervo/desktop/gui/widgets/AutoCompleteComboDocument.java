@@ -9,7 +9,7 @@ import javax.swing.text.*;
  * To view a copy of the public domain dedication, visit
  * http://creativecommons.org/licenses/publicdomain/
  */
-public class AutoCompletion extends PlainDocument {
+public class AutoCompleteComboDocument extends PlainDocument {
 
 	private static final long serialVersionUID = 1L;
 	JComboBox comboBox;
@@ -23,7 +23,7 @@ public class AutoCompletion extends PlainDocument {
 	boolean hitBackspaceOnSelection;
 	KeyListener editorKeyListener;
 	FocusListener editorFocusListener;
-	public AutoCompletion(final JComboBox comboBox) {
+	public AutoCompleteComboDocument(final JComboBox comboBox) {
 		this.comboBox = comboBox;
 		model = comboBox.getModel();
 		comboBox.addActionListener(new ActionListener() {
@@ -76,7 +76,7 @@ public class AutoCompletion extends PlainDocument {
 		// has to be editable
 		comboBox.setEditable(true);
 		// change the editor's document
-		new AutoCompletion(comboBox);
+		new AutoCompleteComboDocument(comboBox);
 	}
 	void configureEditor(ComboBoxEditor newEditor) {
 		if (editor != null) {

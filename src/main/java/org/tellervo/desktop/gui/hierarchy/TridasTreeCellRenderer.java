@@ -55,6 +55,9 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 	Icon mseriesIcon;
 	Icon dseriesIcon;
 	Icon tagIcon;
+	Icon myTagsIcon;
+	Icon sharedTagsIcon;
+
 	Boolean isDropCell = false;
 
 	
@@ -68,6 +71,10 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 		mseriesIcon  = ((ImageIcon) Builder.getIcon("measurementseries.png",   Builder.ICONS, 16));
 		dseriesIcon  = ((ImageIcon) Builder.getIcon("derivedseries.png",   Builder.ICONS, 16));
 		tagIcon      = ((ImageIcon) Builder.getIcon("tag.png",   Builder.ICONS, 16));
+		myTagsIcon     = ((ImageIcon) Builder.getIcon("mytag.png",   Builder.ICONS, 16));
+		sharedTagsIcon     = ((ImageIcon) Builder.getIcon("sharedtag.png",   Builder.ICONS, 16));
+
+
 
 	}
 		
@@ -162,7 +169,18 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 		}
 		else
 		{
-			icon = databaseIcon;
+			if(stringValue.equals("My tags"))
+			{
+				icon = myTagsIcon;
+			}
+			else if (stringValue.equals("Shared tags"))
+			{
+				icon = sharedTagsIcon;
+			}
+			else
+			{
+				icon = databaseIcon;
+			}
 		}
 		
 		

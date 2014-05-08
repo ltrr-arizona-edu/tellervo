@@ -234,14 +234,14 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 		log.debug("Setting up multi-tree");
 		
 		// Set up tree
-    	DefaultMutableTreeNode top = new DefaultMutableTreeNode(App.getLabName()+" Database");
+    	top = new DefaultMutableTreeNode(App.getLabName()+" Database");
     	if(objList!=null)
     	{
-    		addObjectsToTree(this.tree, top, objList);
+    		addObjectsToTree(this.tree, objList);
     	}
     	else
     	{
-    		addObjectsToTree(this.tree, top);
+    		addObjectsToTree(this.tree);
     	}
     	tree = new TridasTree(top);
     	tree.setCellRenderer(new TridasTreeCellRenderer());

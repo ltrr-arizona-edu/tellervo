@@ -26,6 +26,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,12 +49,14 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableRowSorter;
 
+import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.table.TableColumnModelExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,6 +64,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
+import org.tellervo.desktop.gui.hierarchy.WSITagNameDialog;
 import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
 import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
@@ -82,6 +86,7 @@ import org.tellervo.schema.WSIBox;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
@@ -546,15 +551,14 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 		ElementListTableModel mdlAvailMeas = new ElementListTableModel();
 		tblAvailMeas.setModel(mdlAvailMeas); // set model
 		//tblAvailMeas.getColumnModel().removeColumn(tblAvailMeas.getColumn("hidden.MostRecentVersion"));
-		
-
-		
+			
 		availableSorter = new ElementListTableSorter(mdlAvailMeas, tblAvailMeas);
 		availableSorter.sortOnColumn(0, false);
 		tblAvailMeas.getTableHeader().addMouseListener(availableSorter); // add sorter & header renderer
 		tblAvailMeas.setColumnSelectionAllowed(false);
 		tblAvailMeas.setRowSelectionAllowed(true);
-	
+		setupTableColumns(tblAvailMeas, false);
+		
 		rowFilter = new TableRowSorter<ElementListTableModel>(mdlAvailMeas);
 		tblAvailMeas.setRowSorter(rowFilter);
 		
@@ -724,7 +728,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     	}	
     }
     
-    private void setupTableColumns(JTable table, boolean disableSelections) {
+    private void setupTableColumns(JXTable table, boolean disableSelections) {
 
     	// set our column widths
     	ElementListTableModel.setupColumnWidths(table);
@@ -737,10 +741,10 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			@Override
 			public void showPopup(MouseEvent e) {
 				// only clicks on tables
-				if(!(e.getSource() instanceof JTable))
+				if(!(e.getSource() instanceof JXTable))
 					return;
 				
-				JTable table = (JTable) e.getSource();
+				JXTable table = (JXTable) e.getSource();
 				ElementListTableModel model = (ElementListTableModel) table.getModel();
 				
 				// get the row and sanity check
@@ -758,6 +762,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 				JPopupMenu popup = new ElementListPopupMenu(element, DBBrowser.this);
 				popup.show(table, e.getX(), e.getY());
 			}
+
+			
 		});
     }
     

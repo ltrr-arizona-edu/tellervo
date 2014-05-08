@@ -505,15 +505,15 @@ class search Implements IDBAccessor
 	            $filterSQL .= $param['table'].".".$param['field']." ".$operator.$value."\n AND ";
         	}
         }
-
-        // Trim off last 'and'
-        $filterSQL = substr($filterSQL, 0, -5);
         
         // Force clause to hide personal tags
         if($this->includeTag($this->tablesFromParams($paramsArray)))
         {
-	    $filterSQL .= " tbltag.ownerid IS NULL OR tbltag.ownerid='".$myAuth->getID()."'";
+	    $filterSQL .= " (tbltag.ownerid IS NULL OR tbltag.ownerid='".$myAuth->getID()."') AND ";
         }
+
+        // Trim off last 'and'
+        $filterSQL = substr($filterSQL, 0, -5);
         
         return $filterSQL;
     }
