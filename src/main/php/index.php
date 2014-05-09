@@ -248,10 +248,9 @@ if($myMetaHeader->status != "Error")
         {
         	
             // Do permissions check
-			$firebug->log("Beginning permissions check...");
-			
+	    $firebug->log("Beginning permissions check...");
 
-	    	$hasPermission = $myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID);
+	    $hasPermission = $myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID, $paramObj);
             if($hasPermission!=TRUE)
             {
                 // Permission denied
@@ -453,6 +452,51 @@ if($myMetaHeader->status != "Error")
             }
         }
 
+        
+        
+        // ********************
+        // Assing/Unassign tag records from DB
+        // ********************
+        if( ($myRequest->getCrudMode()=='assign') || ($myRequest->getCrudMode()=='unassign'))
+        {
+            // Update parameters in object
+            if($myMetaHeader->status != "Error")
+            {
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Setting parameters to new requested values");             	
+                $success = $myObject->setParamsFromParamsClass($paramObj, $myAuth);
+                if(!$success)
+                {
+                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                }
+            }
+
+            // Write object to db
+            if($myMetaHeader->status != "Error")
+            {
+            
+            	if ($debugFlag===TRUE) $myMetaHeader->setTiming("Writing ".get_class($myObject)." to database");              	
+            	
+            	if($myRequest->getCrudMode()=='assign')
+            	{
+			$success = $myObject->assignToSeries();
+                }
+                
+                            	
+            	if($myRequest->getCrudMode()=='unassign')
+            	{
+			$success = $myObject->unassignFromSeries();
+                }
+                
+                if(!$success)
+                {
+                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                }
+            }
+            
+      	$firebug->log("Finished assign/unassign records");
+
+        }
+        
         // ********************
         // Do a search for records
         // ********************

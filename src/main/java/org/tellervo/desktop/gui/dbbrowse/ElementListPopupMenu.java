@@ -32,7 +32,7 @@ import org.tellervo.desktop.cross.CrossdateDialog;
 import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.gui.hierarchy.WSITagNameDialog;
-import org.tellervo.desktop.gui.hierarchy.WSITagUnassignDialog;
+import org.tellervo.desktop.gui.hierarchy.AddRemoveWSITagDialog;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.BaseSample;
 import org.tellervo.desktop.sample.Element;
@@ -121,15 +121,15 @@ public class ElementListPopupMenu extends JPopupMenu {
 		});
 		add(item);	
 		
-		// Remove tag 
-		item = new JMenuItem("Remove tag from series");
-		item.setIcon(Builder.getIcon("deletetag.png", 16));
+		// Add/remove tag 
+		item = new JMenuItem("Add/remove tag(s) from series");
+		item.setIcon(Builder.getIcon("tags.png", 16));
 		
 		item.addActionListener(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				WSITagUnassignDialog.showDialog(null, series);
+				AddRemoveWSITagDialog.showDialog(null, series);
 				
 			}
 			

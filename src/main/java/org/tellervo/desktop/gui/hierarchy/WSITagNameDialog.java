@@ -51,6 +51,7 @@ public class WSITagNameDialog extends JDialog implements ActionListener{
 	private JRadioButton radShared;
 	private DefaultComboBoxModel model ;
 	private static final String COMMIT_ACTION = "commit";
+	private boolean autocomplete = false;
 	
 	/**
 	 * Create the dialog.
@@ -58,12 +59,13 @@ public class WSITagNameDialog extends JDialog implements ActionListener{
 	 */
 	public WSITagNameDialog(WSITag tag) {
 		
-		setupGUI(tag, false);		
+		setupGUI(tag);		
 	}
 	
 	public WSITagNameDialog(WSITag tag, Boolean autocomplete) {
 
-		setupGUI(tag, autocomplete);
+		this.autocomplete = autocomplete; 
+		setupGUI(tag);
 	}
 	
 	private void populateExistingTagLists()
@@ -107,7 +109,7 @@ public class WSITagNameDialog extends JDialog implements ActionListener{
 		}
 	}
 	
-	private void setupGUI(WSITag tag, Boolean autocomplete)
+	private void setupGUI(WSITag tag)
 	{
 		this.tag =tag;
 		
@@ -197,6 +199,8 @@ public class WSITagNameDialog extends JDialog implements ActionListener{
 		
 	private void setupAutocomplete()
 	{
+		if(!autocomplete) return;
+		
 		if(this.radPersonal.isSelected())
 		{
 			model = new DefaultComboBoxModel(this.existingPersonalTagStrings.toArray(new String[existingPersonalTagStrings.size()]));
@@ -274,12 +278,12 @@ public class WSITagNameDialog extends JDialog implements ActionListener{
 	 * 
 	 * @param series
 	 */
-	public static void addTagToSeries(Component parent, ITridasSeries series)
+	public static WSITag addTagToSeries(Component parent, ITridasSeries series)
 	{
 		ArrayList<ITridasSeries> seriesList = new ArrayList<ITridasSeries>();
 		seriesList.add(series);
 		
-		addTagToSeries(parent, seriesList);
+		return addTagToSeries(parent, seriesList);
 		
 		
 	}
@@ -288,9 +292,9 @@ public class WSITagNameDialog extends JDialog implements ActionListener{
 	 * 
 	 * @param series
 	 */
-	public static void addTagToSeries(Component parent, List<ITridasSeries> seriesList)
+	public static WSITag addTagToSeries(Component parent, List<ITridasSeries> seriesList)
 	{
-		if(seriesList==null) return;
+		if(seriesList==null) return null;
 		
 		
 		WSITagNameDialog dialog = new WSITagNameDialog(null, true);
@@ -298,11 +302,11 @@ public class WSITagNameDialog extends JDialog implements ActionListener{
 		dialog.setLocationRelativeTo(parent);
 		dialog.setVisible(true);
 		
-		if(!dialog.isChanged()) return;
+		if(!dialog.isChanged()) return null;
 		
 		WSITag newtag = dialog.getWSITag();
 	
-		if(newtag==null) return;
+		if(newtag==null) return null;
 		
 		AssignedTo at = new AssignedTo();
 		ArrayList<AssignedTo.MeasurementSeries> msl = new ArrayList<AssignedTo.MeasurementSeries>();
@@ -329,6 +333,7 @@ public class WSITagNameDialog extends JDialog implements ActionListener{
 			Alert.error("Error", dialog2.getFailException().getMessage());
 		}
 		
+		return newtag;
 		
 	}
 

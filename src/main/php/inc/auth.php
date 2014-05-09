@@ -398,7 +398,7 @@ class auth
    * @param unknown_type $theObjectID
    * @return unknown
    */
-  public function getPermission($thePermissionType, $theObjectType, $theObjectID)
+  public function getPermission($thePermissionType, $theObjectType, $theObjectID, $paramObj=null)
   {
         global $dbconn;
 		global $firebug;
@@ -410,7 +410,7 @@ class auth
             return TRUE;
         }
   	
-        // $theObjectType should be one of object, element, sample, radius, vmeasurement, default, securityUser, securityGroup, permission
+        // $theObjectType should be one of object, element, sample, radius, vmeasurement, default, securityUser, securityGroup, permission, tag
 
         
 		// Merge should be swapped to update as they are 
@@ -463,6 +463,69 @@ class auth
             	$this->authFailReason = "Only admin users can use security functions.";
             	return false;
         	}
+        }
+        
+        // For tags, permission to CRUD is based on:
+        // 1) only admins can do global tags
+        // 2) only owners can do their own
+        if ($theObjectType=='tag')
+        {
+	    if( ($thePermissionType=='read') || ($thePermissionType=='update') || ($thePermissionType=='delete') || ($thePermissionType=='assign') || ($thePermissionType=='unassign'))
+	    {
+		$sql = "SELECT ownerid from tbltag where tagid='$theObjectID'";
+	
+	        if($sql)
+		{
+		    $dbconnstatus = pg_connection_status($dbconn);
+		    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+		    {
+			pg_send_query($dbconn, $sql);
+			$result = pg_get_result($dbconn);
+			if(pg_num_rows($result)==0)
+			{
+			    // No records match the id specified
+			    $this->authFailReason = "Attempt to determine permissions failed because the the tag doesn't exist.";
+			    return false;
+			}
+			else
+			{
+			    $result = pg_query($dbconn, $sql);
+			    while ($row = pg_fetch_array($result))
+			    {
+				if($row['ownerid']==$this->getID())
+				{
+				    return true;
+				}
+				else
+				{
+				    $this->authFailReason = "You can only ".$thePermissionType." your own personal tags";
+				    return false;
+				}
+			    }
+			}
+			return true;
+		    }
+		}
+		$this->authFailReason = "SQL permission check failed";
+		return false;
+	    }
+	    else if ($thePermissionType=='create')
+	    {
+		if($paramObj->getOwnerID()==null)
+		{
+		     $this->authFailReason = "Only admin users can create shared tags";
+		     return false;
+		}
+	    
+	    }
+	    else
+	    {
+		$this->authFailReason = "Unhandled permission type";
+
+		return false;
+	    }
+	    
+        
         }
 
         // For objects that don't have direct security, we need to move up the object chain to check perms

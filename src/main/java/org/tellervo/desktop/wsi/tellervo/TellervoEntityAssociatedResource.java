@@ -118,6 +118,8 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 		switch(queryType) {
 		case CREATE:
 		case UPDATE:
+		case ASSIGN:
+		case UNASSIGN:
 			this.parentEntityID = parentEntityID;
 			this.createOrUpdateEntity = entity;
 			break;
@@ -145,10 +147,6 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 				
 				readDeleteOrMergeEntity.setId(identifier.getValue());
 			}
-			
-			
-
-
 			// cheap-ish: XmlRootElement (above) is the xml tag, which is also our entity type
 			readDeleteOrMergeEntity.setType(EntityType.fromValue(getResourceName()));
 			break;
@@ -160,8 +158,12 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 		
 		// derived series, objects and box don't have a parent entity ID
 		if (queryType == TellervoRequestType.CREATE && parentEntityID == null) {
-			if (!(entity instanceof ITridasDerivedSeries || entity instanceof TridasObject 
-				|| entity instanceof WSIBox || entity instanceof WSILoan || entity instanceof WSICuration || entity instanceof WSITag))
+			if (!(entity instanceof ITridasDerivedSeries 
+					|| entity instanceof TridasObject 
+				    || entity instanceof WSIBox 
+				    || entity instanceof WSILoan 
+				    || entity instanceof WSICuration 
+				    || entity instanceof WSITag))
 				throw new IllegalArgumentException("CREATE called with ParentObjectID == null!");
 		}
 	}
@@ -281,6 +283,8 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 			
 		case UPDATE:
 		case CREATE:
+		case ASSIGN:
+		case UNASSIGN:
 			request.setParentEntityID(this.parentEntityID);
 			populateAppropriateList(request);
 			break;

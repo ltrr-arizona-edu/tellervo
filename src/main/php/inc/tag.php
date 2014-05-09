@@ -491,7 +491,7 @@ class tag extends tagEntity implements IDBAccessor
     
      foreach($this->entityIdArray as $idtoassign)
 	  {
-		$sql = "DELETE FROM tblvmeasurementtotag WHERE tagid ='".$this->getID()."' AND vmeasurementid='".$idtoassign."')";
+		$sql = "DELETE FROM tblvmeasurementtotag WHERE tagid ='".$this->getID()."' AND vmeasurementid='".$idtoassign."'";
 		  
 		  $firebug->log($sql, "Tag unassign SQL");
 		  
@@ -513,10 +513,10 @@ class tag extends tagEntity implements IDBAccessor
 	    
 	  }
     
-      $this->setChildParamsFromDB();
+      //$this->setChildParamsFromDB();
       
       
-      
+      return TRUE;
     }
     
 

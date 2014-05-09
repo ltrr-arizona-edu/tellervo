@@ -74,7 +74,7 @@ class search Implements IDBAccessor
                     return false;
                 }
                 
-                if($paramsObj->returnObject=='tag')
+               /* if($paramsObj->returnObject=='tag')
                 {
 		  if($paramsObj->allData===TRUE)
 		  {
@@ -86,7 +86,7 @@ class search Implements IDBAccessor
 		    $this->setErrorMessage("901","Invalid user parameters - you can only search for 'all' tags, search parameters are not currently supported");
 		    return false;
 		  }
-                }
+                }*/
                 
                 return true;
             
@@ -150,7 +150,7 @@ class search Implements IDBAccessor
         if( $myRequest->allData===FALSE || $this->includeTag($this->tablesFromParams($paramsArray)) )
         {
             // User doing a normal search (not all records) OR
-            // request include tbltag so always needs filter
+            // request include tbltag which always needs filter
             // so build filter  
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
