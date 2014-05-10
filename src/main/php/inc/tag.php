@@ -464,8 +464,7 @@ class tag extends tagEntity implements IDBAccessor
 		    {
 		     case 23505:
 			    // Unique constraint error
-			    $firebug->log("This tag is already associated with this series.");   
-			    
+			    $firebug->log("This tag is already associated with this series.");      
 			    break;
 		    
 		    default:

@@ -237,10 +237,7 @@ if($myMetaHeader->status != "Error")
 	    if($objectType!="tag")
 	    {
 	      trigger_error("901"."The assign and unassign request types are only applicable to the tag entity", $defaultErrType);
-	    }
-	    
-	    // TODO Implement Tag permissions
-	
+	    }	
 	}
        
        
@@ -251,6 +248,7 @@ if($myMetaHeader->status != "Error")
 	    $firebug->log("Beginning permissions check...");
 
 	    $hasPermission = $myAuth->getPermission($myRequest->getCrudMode(), $objectType, $myID, $paramObj);
+	    	    
             if($hasPermission!=TRUE)
             {
                 // Permission denied
@@ -299,13 +297,13 @@ if($myMetaHeader->status != "Error")
         }
         
         // Merges should only be done by admins
-		if( $myRequest->getCrudMode()=='merge')
+	if( $myRequest->getCrudMode()=='merge')
+	{
+		if(!$myAuth->isAdmin())
 		{
-			if(!$myAuth->isAdmin())
-			{
-				trigger_error("103"."Merges can only be done by administrators", $defaultErrType);
-			}
+			trigger_error("103"."Merges can only be done by administrators", $defaultErrType);
 		}
+	}
 
 
         // ********************

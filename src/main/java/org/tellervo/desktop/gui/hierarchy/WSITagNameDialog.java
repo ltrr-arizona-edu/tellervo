@@ -153,6 +153,9 @@ public class WSITagNameDialog extends JDialog implements ActionListener{
 		group.add(radPersonal);
 
 		group.add(radShared);
+		
+		radShared.setEnabled(App.isAdmin);
+		
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));

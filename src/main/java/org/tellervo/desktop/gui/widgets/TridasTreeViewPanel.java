@@ -1193,10 +1193,25 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		}
 		else if (e.getActionCommand().equals("renameTag"))
 		{
-			renameTag((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+			DefaultMutableTreeNode selectedtag = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+			WSITag wsitag = (WSITag)selectedtag.getUserObject();
+			if(!wsitag.isSetOwnerid() && !App.isAdmin)
+			{
+				Alert.error("Permissions", "Only admin users can rename shared tags");
+				return;
+			}
+			renameTag(selectedtag);
 		}
 		else if (e.getActionCommand().equals("deleteTag"))
 		{
+			DefaultMutableTreeNode selectedtag = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+			WSITag wsitag = (WSITag)selectedtag.getUserObject();
+			if(!wsitag.isSetOwnerid() && !App.isAdmin)
+			{
+				Alert.error("Permissions", "Only admin users can delete shared tags");
+				return;
+			}
+			
 			// Delete this entity
 						Object[] options = {"OK",
 			            "Cancel"};
@@ -1208,7 +1223,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 						
 						if(ret == JOptionPane.YES_OPTION)
 						{
-							deleteTag((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+							deleteTag(selectedtag);
 						}			
 			
 		}

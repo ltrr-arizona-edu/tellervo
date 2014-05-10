@@ -403,6 +403,14 @@ class auth
         global $dbconn;
 		global $firebug;
 
+	
+        // If user is not logged in deny!
+        if ($this->isLoggedIn!=TRUE)
+        {
+            $this->authFailReason = "Not logged in";
+            return false;
+        }
+		
 
         // If user is admin give them the world
         if ($this->isAdmin)
@@ -410,10 +418,6 @@ class auth
             return TRUE;
         }
   	
-        // $theObjectType should be one of object, element, sample, radius, vmeasurement, default, securityUser, securityGroup, permission, tag
-
-        
-		// Merge should be swapped to update as they are 
 		
         // Always allow access to dictionaries and authentication requests
         if ( ($theObjectType=='dictionaries') || ($theObjectType=='authentication') )
@@ -440,12 +444,6 @@ class auth
 	    $theObjectID = "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa";
         }
 
-        // If user is not logged in deny!
-        if ($this->isLoggedIn!=TRUE)
-        {
-            $this->authFailReason = "Not logged in";
-            return false;
-        }
                 
         
         if (($theObjectType=='securityUser') || ($theObjectType=='securityGroup'))
@@ -470,10 +468,15 @@ class auth
         // 2) only owners can do their own
         if ($theObjectType=='tag')
         {
+        
+          	$firebug->log($theObjectType, "getPermission object type");
+  	$firebug->log($thePermissionType, "getPermission permission type");
+
+        
 	    if( ($thePermissionType=='read') || ($thePermissionType=='update') || ($thePermissionType=='delete') || ($thePermissionType=='assign') || ($thePermissionType=='unassign'))
 	    {
 		$sql = "SELECT ownerid from tbltag where tagid='$theObjectID'";
-	
+		$firebug->log($sql, "Tag perms SQL");
 	        if($sql)
 		{
 		    $dbconnstatus = pg_connection_status($dbconn);
@@ -515,6 +518,10 @@ class auth
 		{
 		     $this->authFailReason = "Only admin users can create shared tags";
 		     return false;
+		}
+		else
+		{
+		    return true;
 		}
 	    
 	    }
