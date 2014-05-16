@@ -125,13 +125,10 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION cpgdb.createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, character varying, character varying)
-  OWNER TO postgres;
 
 
 
-
-DROP FUNCTION cpgdb.createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, date)
+DROP FUNCTION cpgdb.createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, date);
 
 CREATE OR REPLACE FUNCTION cpgdb.createnewvmeasurement(character varying, integer, uuid, character varying, character varying, integer, uuid[], character varying, character varying, date)
   RETURNS uuid AS
@@ -292,8 +289,6 @@ END;
 $BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-ALTER FUNCTION cpgdb.createnewvmeasurement(character varying, integer, integer, character varying, character varying, integer, uuid[], character varying, character varying, date)
-  OWNER TO pbrewer;
 
 
 
@@ -345,7 +340,7 @@ CREATE TABLE tbltag
   CONSTRAINT pkey_tbltag PRIMARY KEY (tagid),
   CONSTRAINT "fkey_tagowner-securityuser" FOREIGN KEY (ownerid)
       REFERENCES tblsecurityuser (securityuserid) MATCH SIMPLE
-      ON UPDATE CASCADE ON DELETE CASCADE,
+      ON UPDATE CASCADE ON DELETE CASCADE
 )
 WITH (
   OIDS=FALSE

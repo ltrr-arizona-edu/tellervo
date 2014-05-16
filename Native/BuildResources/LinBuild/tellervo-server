@@ -14,8 +14,9 @@ if (!isset($argc))
 $wsbase           = "/var/www/tellervo/";
 $folderbase       = "/usr/share/tellervo-server/";
 
-$pg_hba_file      = "/etc/postgresql/9.1/main/pg_hba.conf";
-$pg_hba_file_orig = "/etc/postgresql/9.1/main/pg_hba.conf.bak";
+
+$pg_hba_file      = "/etc/postgres/?";  // set later
+$pg_hba_file_orig = "/etc/postgres/?"; // set later
 $permsfile        = $folderbase."set_database_permission.sql";
 $permstemplate    = $folderbase."set_database_permission.template";
 $logfile          = "/var/log/tellervo-installation.log";
@@ -597,6 +598,8 @@ function runDBUpgrades()
 	// Loop through all upgrade scripts and run any that haven't 
 	// already been run
 
+	$upgradeScriptFailed = false;
+
 	if (is_dir($upgradeScripts)) 
 	{
 		$files = scandir($upgradeScripts);
@@ -610,12 +613,21 @@ function runDBUpgrades()
 	        if ($file != "." && $file != ".." && strpos($file, ".")!=0) 
 		    {
 		      	$result = runSQLUpgradeFile($file);
-		      	if($result) $scriptsRun++;
+		      	if($result){
+		      		$scriptsRun++;
+		      	} else {
+		      		$upgradeScriptFailed = true;
+		      	}
+		      	
 	        }
 		}
 	}
 	
-
+	if($upgradeScriptFailed===TRUE)
+	{
+		die("There was an error applying one or more upgrade scripts.  Please contact the Tellervo developers.\n\n");
+	}
+	
 	
 	$f = getTellervoDPKGVersion();
 
@@ -740,7 +752,7 @@ function runSQLUpgradeFile($filename)
     	
     	if(!$result)
     	{
-	    	echo $colors->getColoredString("WARNING", "yellow");
+	    	echo $colors->getColoredString("FAILED", "red");
     		echo "\n";
 
     		writeLogMsg("Error running upgrade script '".escapeshellcmd($filename)."'" );
@@ -761,7 +773,7 @@ function runSQLUpgradeFile($filename)
     			echo "\n\n";
 
 	    		writeLogMsg("Unable to add patch name to upgradelog" );
-	    		writeLogMsg(escapeshellcmd($error));
+	    		//writeLogMsg(escapeshellcmd($error));
 	    		pg_query($dbconn, "ROLLBACK"); 
 	    		return false;
 	    	}	
@@ -946,6 +958,19 @@ function createScriptsFromTemplates()
  
   // Set timezone from system
   setConfigVariable("%%TIMEZONE%%", trim(file_get_contents('/etc/timezone'))); 
+ 
+ 
+  // Set the pg_hba location
+  if(file_exists("/etc/postgresql/9.3/main/pg_hba.conf"))
+  {
+  	$pg_hba_file = "/etc/postgresql/9.3/main/pg_hba.conf";
+  	$pg_hba_file_orig = "/etc/postgresql/9.3/main/pg_hba.conf.bak";
+  }
+  else if (file_exists("/etc/postgresql/9.1/main/pg_hba.conf"))
+  {
+  	$pg_hba_file = "/etc/postgresql/9.1/main/pg_hba.conf";
+  	$pg_hba_file_orig = "/etc/postgresql/9.1/main/pg_hba.conf.bak";
+  }
  
   echo "\n";
   // Back up pg_hba file if it hasn't been already 
@@ -1491,6 +1516,31 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 }
 
 
+function printDefaultLoginWarning()
+{
+	global $configfile;
+    global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;	
+				
+	$sql = "SELECT * FROM tblsecurityuser WHERE username='admin' and password='bd38976c388a4f04381b82a7d6c62ae5'";
+    $dbconnstatus = pg_connection_status($dbconn);
+    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+    {
+    	$result = pg_query($dbconn, $sql);    	
+        while ($row = pg_fetch_array($result))
+	  	{
+	  		  echo "    Usr - admin\n";
+	     	  echo "    Pwd - qu3rcu5\n\n";   
+	     	  echo "The default administrator login shown above should be changed the first time you\n";
+	     	  echo "log in with your Tellervo desktop client.\n";
+	
+	  	} 	
+    }
+
+	echo "\n";
+}
+
 function printLocalServerWarning()
 {
 
@@ -1523,7 +1573,8 @@ function printComplete($forceSuccess=null)
   if($forceSuccess===TRUE)
   {
   	echo "Your Tellervo server configuration is valid.  Your webservice is accessible at:\n";
-  	echo "    - $wsurl\n\n";
+  	echo "    URL - $wsurl\n";
+  	printDefaultLoginWarning();
 	printLocalServerWarning();
    	exit(0);
   }
@@ -1532,11 +1583,12 @@ function printComplete($forceSuccess=null)
         echo $colors->getColoredString("Errors occurred during configuration. Check the error log and try again.", "white", "red");
         echo "\n\n";
         exit(1);
-  }
+  } 	
   else if($errorsFound===FALSE)
   {
   	echo "Your Tellervo server configuration is valid.  Your webservice is accessible at:\n";
-  	echo "    - $wsurl\n\n";
+  	echo "    URL - $wsurl\n";
+	printDefaultLoginWarning();  	
 	printLocalServerWarning();
   	exit(0);
   }

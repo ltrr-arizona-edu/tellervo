@@ -55,6 +55,13 @@ class permission extends permissionEntity implements IDBAccessor
     {
 	global $dbconn;
 	global $firebug;
+	global $entity;
+	$entitytype = $entity['type'];
+
+	if($entitytype=='measurement' || $entitytype=='measurementSeries' || $entitytype=='derivedSeries')
+	{
+		$entitytype='vmeasurement';
+	}
     	
 	$xml = "";
 	
@@ -67,13 +74,13 @@ class permission extends permissionEntity implements IDBAccessor
 		{
 		   $entity['id']=='aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa';
 		}
-		if($entity['type']=='default')
+		if($entitytype=='default')
 		{		
 			$sql = "select * from tblsecuritydefault where securityuserid";
 		}
 		else
 		{
-			$sql = "select * from cpgdb.getuserpermissionset('$user', '".$entity['type']."', '".$entity['id']."'::uuid)";
+			$sql = "select * from cpgdb.getuserpermissionset('$user', '".$entitytype."', '".$entity['id']."'::uuid)";
 		}
 	                    
 		pg_send_query($dbconn, $sql);
@@ -109,13 +116,13 @@ class permission extends permissionEntity implements IDBAccessor
 		if($entity['id']=='')
 		{
 		   $firebug->log("id is null so setting dummy uuid");
-		   $sql = "select * from cpgdb.getgrouppermissionset('{".$group."}', '".$entity['type']."', 'aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa'::uuid)";
+		   $sql = "select * from cpgdb.getgrouppermissionset('{".$group."}', '".$entitytype."', 'aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa'::uuid)";
 
 		}
 		else
 		{
 		   
-		   $sql = "select * from cpgdb.getgrouppermissionset('{".$group."}', '".$entity['type']."', '".$entity['id']."'::uuid)";
+		   $sql = "select * from cpgdb.getgrouppermissionset('{".$group."}', '".$entitytype."', '".$entity['id']."'::uuid)";
 		}
 	
 	                    
@@ -156,21 +163,20 @@ class permission extends permissionEntity implements IDBAccessor
      *
      * @return unknown
      */
-    function writeToDB($crudMode="create")
+    function writeToDB()
     {
-    
-        // Check for required parameters
-        if($crudMode!="create" && $crudMode!="update")
-        {
-	    $this->setErrorMessage("667", "Invalid mode specified in writeToDB().  Only create and update are supported");
-	    return FALSE;
-        }
-    
-    
 	$this->deleteFromDB();
 
     	global $dbconn;
         global $firebug;
+	global $entity;
+	$entitytype = $entity['type'];
+
+	if($entitytype=='measurement' || $entitytype=='measurementSeries' || $entitytype=='derivedSeries')
+	{
+		$entitytype='vmeasurement';
+	}
+
 	$firebug->log("Starting permissions write to db");
 	$firebug->log($this->thisParamsClass, "Writing this params class to db");
                 
@@ -178,9 +184,9 @@ class permission extends permissionEntity implements IDBAccessor
     	{
 		$firebug->log($entity, "Permissions being written for this entity");
     		// Entity has to be of a certain type otherwise continue;
-    		if ($entity["type"]!='object' && $entity["type"]!='element' && $entity["type"]!='measurement' && $entity['type']!='default')
+    		if ($entitytype!='object' && $entitytype!='element' && $entitytype!='vmeasurement')
     		{
-			$firebug->log("Unsupported entity for permissions. Ignoring");
+			$firebug->log("Unsupported entity '".$entitytype."'for permissions. Ignoring");
     			continue;
     		}
     		
@@ -201,14 +207,14 @@ class permission extends permissionEntity implements IDBAccessor
     			{
 				$firebug->log("Creating SQL for 'create' permission");
 				
-				if($entity['type']=='default')
+				if($entitytype=='default')
 				{
 					$sql = "INSERT INTO tblsecuritydefault (securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('$group','3'); ";
 				}
 				else
     				{
-					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
+					$sql = "INSERT INTO tblsecurity".$entitytype." (".$entitytype."id, securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('".$entity["id"]."','$group','3'); ";
 				}
 
@@ -224,14 +230,14 @@ class permission extends permissionEntity implements IDBAccessor
     			}
     		    if($this->thisParamsClass->canRead===TRUE )
     			{
-				if($entity['type']=='default')
+				if($entitytype=='default')
 				{
 					$sql = "INSERT INTO tblsecuritydefault (securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('$group','2'); ";
 				}
 				else
 				{
-    					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
+    					$sql = "INSERT INTO tblsecurity".$entitytype." (".$entitytype."id, securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('".$entity["id"]."','$group','2'); ";
 				}
 
@@ -247,14 +253,14 @@ class permission extends permissionEntity implements IDBAccessor
     			}
     		    if($this->thisParamsClass->canUpdate===TRUE )
     			{
-				if($entity['type']=='default')
+				if($entitytype=='default')
 				{
 					$sql = "INSERT INTO tblsecuritydefault (securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('$group','4'); ";
 				}
 				else
 				{
-    					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
+    					$sql = "INSERT INTO tblsecurity".$entitytype." (".$entitytype."id, securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('".$entity["id"]."','$group','4'); ";
 				}
 				$firebug->log($sql, "Permission write sql");
@@ -269,14 +275,14 @@ class permission extends permissionEntity implements IDBAccessor
     			}
     		    if($this->thisParamsClass->canDelete===TRUE)
     			{
-				if($entity['type']=='default')
+				if($entitytype=='default')
 				{
 					$sql = "INSERT INTO tblsecuritydefault (securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('$group','5'); ";
 				}
 				else
 				{
-    					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
+    					$sql = "INSERT INTO tblsecurity".$entitytype." (".$entitytype."id, securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('".$entity["id"]."','$group','5'); ";
 				}
 				$firebug->log($sql, "Permission write sql");
@@ -291,14 +297,14 @@ class permission extends permissionEntity implements IDBAccessor
     			}    			
     		    if($this->thisParamsClass->isPermissionDenied()===TRUE)
     			{
-				if($entity['type']=='default')
+				if($entitytype=='default')
 				{
 					$sql = "INSERT INTO tblsecuritydefault (securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('$group','6'); ";
 				}
 				else
 				{
-    					$sql = "INSERT INTO tblsecurity".$entity["type"]." (".$entity["type"]."id, securitygroupid, securitypermissionid) VALUES ";
+    					$sql = "INSERT INTO tblsecurity".$entitytype." (".$entitytype."id, securitygroupid, securitypermissionid) VALUES ";
     					$sql .=" ('".$entity["id"]."','$group','6'); ";
 				}
 				$firebug->log($sql, "Permission write sql");
@@ -403,8 +409,13 @@ class permission extends permissionEntity implements IDBAccessor
 		{
 			$sql = "DELETE FROM tblsecuritydefault WHERE securitygroupid='$group'";
 		}
+		else if ($entity['type']=='measurementSeries' || $entity['type']=='derivedSeries' || $entity['type']=='vmeasurement')
+		{
+			$sql = "DELETE FROM tblsecurityvmeasurement WHERE vmeasurementid='".$entity['id']."' AND securitygroupid='$group'";
+		}
 		else
 		{
+	
 			$sql = "DELETE FROM tblsecurity".$entity['type']." WHERE ".$entity['type']."id='".$entity['id']."' AND securitygroupid='$group'";
 		}
 		$firebug->log($sql, "Delete existing permissions records");

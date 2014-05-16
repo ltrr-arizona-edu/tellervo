@@ -46,6 +46,9 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
     {
     	userList = new ArrayList<WSIPermission>();
     	
+    	
+    	if(list==null || list.size()==0) return;
+    	
     	// Remove any groups from the list as we're not interested in these
     	for(WSIPermission perm : list)
     	{
