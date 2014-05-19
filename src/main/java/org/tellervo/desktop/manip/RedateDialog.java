@@ -227,9 +227,12 @@ public class RedateDialog extends JDialog {
 		setup(startRange);
 
 		// hide justification panel for new series that must be redated in place
-		if(sample.getIdentifier().getValue().equals("newSeries"))
+		infoPanel.setVisible(false);
+		if(sample.getIdentifier()!=null && 
+				sample.getIdentifier().getValue()!=null && 
+				!sample.getIdentifier().getValue().equals("newSeries"))
 		{
-			infoPanel.setVisible(false);
+			infoPanel.setVisible(true);
 		}
 		
 		// all done
@@ -266,7 +269,7 @@ public class RedateDialog extends JDialog {
 		newDating.setType(datingType);
 
 		
-		if(sample.getSeries().getIdentifier().getValue().equals("newSeries"))
+		if(sample.getIdentifier()==null || sample.getSeries().getIdentifier().getValue().equals("newSeries"))
 		{
 			// This is a brand new unsaved series so *must* be redate in place
 			performRedateInPlace(newDating);

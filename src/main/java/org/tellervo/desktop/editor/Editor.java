@@ -426,7 +426,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		wjPanel.add(new EditorStatusBar(wjTable, sample), BorderLayout.SOUTH);
 	}
 
-	private void initMetaView() {
+	protected void initMetaView() {
 		metaView = new TridasMetadataPanel(sample);
 	}
 

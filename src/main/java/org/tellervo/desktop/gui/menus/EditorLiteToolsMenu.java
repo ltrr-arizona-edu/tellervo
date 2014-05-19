@@ -71,7 +71,7 @@ public class EditorLiteToolsMenu extends JMenu implements SampleListener {
 				&& (!sample.hasMeta(Metadata.CHILD_COUNT) || sample.getMeta(
 						Metadata.CHILD_COUNT, Integer.class) == 0));
 		// redate
-		redate = Builder.makeMenuItem("menus.tools.redate", true, "redate.png");
+		/*redate = Builder.makeMenuItem("menus.tools.redate", true, "redate.png");
 		redate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent ae) {
 				new RedateDialog(sample, editor).setVisible(true);
@@ -80,7 +80,7 @@ public class EditorLiteToolsMenu extends JMenu implements SampleListener {
 
 		add(redate);
 		redate.setEnabled(true);
-		redate.setVisible(true);		
+		redate.setVisible(true);*/		
 		
 		
 		

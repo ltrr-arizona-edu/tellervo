@@ -70,6 +70,7 @@ public class EditorLite extends Editor {
 		
 	}
 	
+	@Override
 	protected void initMetaView() {
 		metaView = new BasicMetadataPanel();
 		((BasicMetadataPanel) metaView).populateFromSample(sample);
@@ -336,10 +337,6 @@ public class EditorLite extends Editor {
 		AbstractButton save = new TitlelessButton(saveAction);
 		toolbar.add(save);
 
-		Action printAction = new PrintAction(sample);
-		AbstractButton print = new TitlelessButton(printAction);
-		toolbar.add(print);
-
 		// Edit Buttons
 		Action measureAction = new MeasureToggleAction(this);
 		AbstractButton measure = new TitlelessButton(measureAction);
@@ -356,10 +353,10 @@ public class EditorLite extends Editor {
 		toolbar.add(toggleRemarks);
 
 		// Tools Buttons
-		toolbar.addSeparator();
-		Action truncateAction = new TruncateAction(null, sample, this, null);
-		AbstractButton truncate = new TitlelessButton(truncateAction);
-		toolbar.add(truncate);
+		//toolbar.addSeparator();
+		//Action truncateAction = new TruncateAction(null, sample, this, null);
+		//AbstractButton truncate = new TitlelessButton(truncateAction);
+		//toolbar.add(truncate);
 
 		// Graph Buttons
 		toolbar.addSeparator();
