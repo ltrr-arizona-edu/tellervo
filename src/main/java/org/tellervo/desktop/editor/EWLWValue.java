@@ -1,5 +1,10 @@
 package org.tellervo.desktop.editor;
 
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.NormalTridasUnit;
+
 public class EWLWValue {
 
 	private Number ewvalue;
@@ -13,14 +18,25 @@ public class EWLWValue {
 	
 	public EWLWValue(String value) throws NumberFormatException
 	{
+		
+    	NormalTridasUnit displayUnits;
+    	try{
+			String strunit = App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.name().toString());
+			displayUnits = TridasUtils.getUnitFromName(strunit);
+		} catch (Exception e)
+		{
+			displayUnits = NormalTridasUnit.MICROMETRES;
+		}
+    	
+		
 		String[] arr = ((String)value).split("/");
     	
     	if(arr.length==2)
     	{
 	    		Number ew = Integer.parseInt(arr[0]);
 	    		Number lw = Integer.parseInt(arr[1]);
-	    		this.ewvalue = ew;
-	    		this.lwvalue = lw;	
+	    		this.ewvalue = UnitAwareDecadalModel.convertToMicrons(displayUnits, ew);
+	    		this.lwvalue = UnitAwareDecadalModel.convertToMicrons(displayUnits, lw);
     	}
     	else
     	{

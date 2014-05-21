@@ -28,6 +28,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.AbstractCellEditor;
 import javax.swing.JTable;
 import javax.swing.DefaultCellEditor;
 import javax.swing.table.TableCellEditor;
@@ -97,6 +98,20 @@ public class DecadalKeyListener extends KeyAdapter {
 		_table.setColumnSelectionInterval(col, col);
 	}
 
+	private Year cancelEditing()
+	{
+		// where am i?
+		int row = _table.getEditingRow();
+		int col = _table.getEditingColumn();
+
+		// stop editing
+		TableCellEditor ed = _table.getCellEditor(row, col);
+		((TableCellEditor) ed).cancelCellEditing();
+
+		// compute year
+		return ((DecadalModel) _table.getModel()).getYear(row, col);
+	}
+	
 	// stop editing, and return the year that was being edited
 	private Year stopEditing() {
 		// where am i?
@@ -135,6 +150,12 @@ public class DecadalKeyListener extends KeyAdapter {
 		if(e.isControlDown() || e.isAltDown()) { e.consume(); return;}
 				
 		switch (e.getKeyCode()) {
+		case KeyEvent.VK_ESCAPE:
+			log.debug("Cancel edits to table");
+			y = cancelEditing();
+			e.consume();
+			eventHandled = true;
+			break;
 		case KeyEvent.VK_TAB: // but shift-tab goes LEFT!
 			if (e.isShiftDown()) {
 				y = (_table.isEditing() ? stopEditing() : getSelectedYear());
@@ -198,17 +219,29 @@ public class DecadalKeyListener extends KeyAdapter {
 		case KeyEvent.VK_8:
 		case KeyEvent.VK_9:
 		case KeyEvent.VK_0:
-			log.debug("Digit pressed");
+			log.debug("Digit pressed: "+e.getKeyChar());
 			if (!_table.isCellEditable(_table.getSelectedRow(), _table.getSelectedColumn()))
 				return;
 			
+			log.debug("Is Table editing? " + _table.isEditing());
+			
 			if(!_table.isEditing())
 			{
-				
-				_table.setValueAt(e.getKeyChar(), _table.getEditingRow(), _table.getEditingColumn());
+			
+			
+				try{
+					_table.getModel().setValueAt(e.getKeyChar(), _table.getSelectedRow(), _table.getSelectedColumn());
+				} catch (Exception ex)
+				{
+					log.debug("Failed to set value of table model");
+				}
 				_table.editCellAt(_table.getEditingRow(), _table.getEditingColumn());
+
 				//e.consume();
 			}
+			
+
+
 			break;
 			
 			

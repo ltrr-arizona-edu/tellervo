@@ -19,11 +19,8 @@
  ******************************************************************************/
 package org.tellervo.desktop.editor;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
@@ -195,8 +192,18 @@ public class UnitAwareDecadalModel extends DecadalModel {
 			
 			else if (obj instanceof EWLWValue)
 			{
-				Integer ewval = ((EWLWValue) obj).getEarlywoodValue().intValue();
-				Integer lwval = ((EWLWValue) obj).getLatewoodValue().intValue();
+				
+				Integer ewval = null; 
+				Integer lwval = null;
+				
+				try{
+					ewval = ((EWLWValue) obj).getEarlywoodValue().intValue();
+					lwval = ((EWLWValue) obj).getLatewoodValue().intValue();
+				} catch (Exception e)
+				{
+					return null;
+				}
+				
 				String strval = "";
 
 				if (s.getTridasUnits()==null)
@@ -319,7 +326,6 @@ public class UnitAwareDecadalModel extends DecadalModel {
 				val = (Number) value;
 			} catch (Exception e)
 			{
-				
 				if(value instanceof String)
 				{
 					try{
@@ -338,7 +344,7 @@ public class UnitAwareDecadalModel extends DecadalModel {
 			
 			if(val!=null) 
 			{
-				val = convertToMicrons(val);
+				val = convertToMicrons(displayUnits, val);
 				super.setValueAt(val, row, col);
 
 			}
@@ -350,7 +356,7 @@ public class UnitAwareDecadalModel extends DecadalModel {
 		
 	}
 	
-	private Number convertToMicrons(Number val)
+	public static Number convertToMicrons(NormalTridasUnit displayUnits, Number val)
 	{
 		if (displayUnits.equals(NormalTridasUnit.MILLIMETRES))
 		{

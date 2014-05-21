@@ -44,6 +44,11 @@ import javax.swing.border.Border;
 import javax.swing.table.TableCellEditor;
 import javax.swing.tree.TreeCellEditor;
 
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.NormalTridasUnit;
+
 /**
  * The default editor for table and tree cells.
  * <p>
@@ -66,7 +71,9 @@ public class EWLWCellEditor extends AbstractCellEditor implements TableCellEdito
 //  Instance Variables
 //
 
-    /** The Swing component being edited. */
+
+	private static final long serialVersionUID = 1L;
+	/** The Swing component being edited. */
     protected JComponent editorComponent;
     /**
      * The delegate class which handles all methods sent from the
@@ -94,6 +101,9 @@ public class EWLWCellEditor extends AbstractCellEditor implements TableCellEdito
     	
         editorComponent = textField;
         this.clickCountToStart = 2;
+        
+        textField.setText("");
+        
         delegate = new EWLWEditorDelegate() {
             public void setValue(Object value) {
                 textField.setText((value != null) ? value.toString() : "");
@@ -203,8 +213,7 @@ public class EWLWCellEditor extends AbstractCellEditor implements TableCellEdito
     public Component getTableCellEditorComponent(JTable table, Object value,
                                                  boolean isSelected,
                                                  int row, int column) {
-       
-    	
+           	
     	if(value instanceof String)
     	{
 	    	try{

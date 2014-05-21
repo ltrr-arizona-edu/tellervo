@@ -190,8 +190,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		 }; */
 		myTable.setGridColor(new Color(240, 240, 240)); 
 		
-		myTable.setDefaultEditor(EWLWValue.class, new EWLWCellEditor());
-
+		//myTable.setDefaultEditor(Integer.class, new SeriesDataMatrixEditor());
 		// mouse listener for table
 		
 		final Editor glue = e;
@@ -201,12 +200,12 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 			@Override
 			public void mouseClicked(MouseEvent ev) {
 				
+				int row = myTable.rowAtPoint(ev.getPoint());
+				int col = myTable.columnAtPoint(ev.getPoint());
+				
 				if(ev.getButton() == MouseEvent.BUTTON3)
 				{
 					// Right click popup
-					int row = myTable.rowAtPoint(ev.getPoint());
-					int col = myTable.columnAtPoint(ev.getPoint());
-
 					JPopupMenu menu = createPopupMenu(row, col);
 					
 					if(menu != null)
@@ -645,7 +644,22 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 
 		// insert 0, nyears times...
 		for(int j = 0; j < nYears; j++)
-			mySample.getRingWidthData().add(i, val); // new Integer(0));
+		{
+			if(mySample.containsSubAnnualData())
+			{
+				mySample.getEarlywoodWidthData().add(i, val);
+				mySample.getLatewoodWidthData().add(i, val);
+				mySample.getRingWidthData().add(i, val); 
+				mySample.recalculateRingWidths();
+			}
+			else
+			{
+				mySample.getRingWidthData().add(i, val); 
+			}
+			
+			
+		}
+			
 		mySample.setRange(new Range(mySample.getRange().getStart(), mySample.getRange()
 				.getEnd().add(nYears)));
 		// REFACTOR: by LoD, should be range.extend()

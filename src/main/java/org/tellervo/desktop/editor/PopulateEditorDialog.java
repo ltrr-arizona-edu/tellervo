@@ -21,14 +21,17 @@ import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.JComboBox;
 
+import org.fhaes.util.preferences.App;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.manip.Redate;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.tridasv2.ui.ComboBoxFilterable;
 import org.tellervo.desktop.tridasv2.ui.EnumComboBoxItemRenderer;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tridas.schema.NormalTridasDatingType;
+import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasDating;
 import org.tellervo.desktop.Year;
 import javax.swing.JTextField;
@@ -181,6 +184,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 		
 		if(event.getActionCommand().equals("OK"))
 		{
+
 			dataView.insertYears(0, Integer.parseInt(spnRingCount.getValue().toString()), 0 ,2);
 			Sample sample = dataView.getSample();
 			Range range = sample.getRange();
@@ -188,6 +192,10 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 			TridasDating dating = new TridasDating();
 			dating.setType(datingType);
 			sample.postEdit(Redate.redate(sample, range, dating));
+			//sample.createEmptyValuesGroup(NormalTridasVariable.RING_WIDTH);
+			
+
+			
 			this.dispose();
 		}
 		

@@ -602,13 +602,20 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		search.addSearchForAll();
 		
 		EntitySearchResource<WSITag> searchResource = new EntitySearchResource<WSITag>(search, WSITag.class);
-		
 		TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(parent, searchResource);
+	
 		searchResource.query();
 		dlg.setVisible(true);
+
 			
 		if(!dlg.isSuccessful()) 
 		{
+			// Ignore complaints that the request doesn't validate
+			// TODO Remove once 1.0.3 release is made
+			if(dlg.getFailException().getMessage().contains("does not validate against the schema"))
+			{
+				return;
+			}
 			// Search failed
 			new Bug(dlg.getFailException());
 			return;

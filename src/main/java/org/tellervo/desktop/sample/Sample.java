@@ -256,7 +256,7 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 		return createEmptyValuesGroup(NormalTridasVariable.RING_WIDTH);
 	}	
 	
-	private TridasValues createEmptyValuesGroup(NormalTridasVariable var)
+	public TridasValues createEmptyValuesGroup(NormalTridasVariable var)
 	{
 		TridasValues values = new TridasValues();
 		

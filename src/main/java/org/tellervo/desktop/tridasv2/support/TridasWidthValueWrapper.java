@@ -171,8 +171,19 @@ public final class TridasWidthValueWrapper {
 		
 		@Override
 		public void add(int index, Number element) {
+			
+			
+			
 			TridasValue newValue = new TridasValue();
-			newValue.setValue(element.toString());
+			
+			if(element==null)
+			{
+				newValue.setValue("");
+			}
+			else
+			{
+				newValue.setValue(element.toString());
+			}
 						
 			values.add(index, newValue);
 		}
