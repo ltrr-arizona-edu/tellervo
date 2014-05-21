@@ -150,10 +150,6 @@ if(isset($args["deploy"]))
 		exec("sudo rm /etc/update-motd.d/91-release-upgrade");
 	}
 	
-	echo "Add Tellervo version to message of the day...\n\n";
-	$cmd="echo \"\ntellervo-server --info\" >> /etc/update-motd.d/00-header";
-	exec($cmd);
-	
 	echo "Move first run script into place...\n\n";
 	if (file_exists("/tmp/firstrun"))
 	{
