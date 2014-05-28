@@ -376,7 +376,8 @@ public class EditorLite extends Editor {
 		JMenuBar menubar = new JMenuBar();
 
 		menubar.add(new EditorLiteFileMenu(this, sample));
-		menubar.add(new EditorEditMenu(sample, dataView, this));
+		editorEditMenu = new EditorEditMenu(sample, dataView, this);
+		menubar.add(editorEditMenu);
 		menubar.add(this.editorViewMenu);
 		menubar.add(new EditorLiteToolsMenu(this, sample));
 		menubar.add(new EditorLiteGraphMenu(this, sample));

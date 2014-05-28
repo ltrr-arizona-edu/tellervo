@@ -53,7 +53,7 @@ if(stripos($ipadd, "127.0.0", 0) === 0)
     echo "The network card on your virtual server is reporting that it's IP address is\n";
     echo $ipadd." (localhost) rather than an externally accessible address.  This means\n";
     echo "that your Tellervo server will not be accessible to other computers.\n\n";
-    echo "Please contact the Tellervo developers for support and advice.";
+    echo "Please contact the Tellervo developers for support and advice.\n\n";
     die();
 }
 

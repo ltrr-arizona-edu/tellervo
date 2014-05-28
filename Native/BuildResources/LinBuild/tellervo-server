@@ -112,6 +112,8 @@ if(isset($args["firstrun"]))
 	generateSystemsConfig();
 	include($systemconfig);
 	runDBUpgrades();
+	generateSystemsConfig();
+	include($systemconfig);
 	echo $colors->getColoredString("\n\nStep 5 - Configuring the Apache webservice...\n\n", "light_purple");
 	apacheSetup();
 	echo $colors->getColoredString("\n\nStep 6 - Verifying setup...\n\n", "light_purple");
@@ -151,19 +153,15 @@ if(isset($args["deploy"]))
 	}
 	
 	echo "Move first run script into place...\n\n";
-	if (file_exists("/tmp/firstrun"))
+	if (file_exists("/usr/share/tellervo-server/firstrun.template"))
 	{
-		exec("sudo mv /tmp/firstrun $folderbase");
+		exec("sudo cp /usr/share/tellervo-server/firstrun.template /usr/share/tellervo-server/firstrun");
 	}
 	
 	echo "Installing power interface stuff for clean shutdowns...\n\n";
 	exec("apt-get -q -y install acpid");
 	
-	echo "Remove persistence rules so MAC address reinit doesn't break network...\n\n";
-	if (file_exists("/etc/udev/rules.d/70-persistent-net.rules"))
-	{
-		exec("sudo rm /etc/udev/rules.d/70-persistent-net.rules");
-	}
+	removeNetworkPersistence();
 	
 	echo "Make sure firstrun gets run on next login...\n\n";
 	exec("echo \"\n# Run Tellervo firstrun script if required\nif [ -f /usr/share/tellervo-server/firstrun ]\nthen\n   /usr/share/tellervo-server/firstrun\nfi\" >> ~/.bashrc");
@@ -365,6 +363,9 @@ if (isset($args["network"]) || isset($args["n"]))
                               		'', // directorie(s) to search
                               		false) ;
         $snr->doSearch();
+        
+        removeNetworkPersistence();
+        
 	}
 	
 	
@@ -2366,7 +2367,15 @@ class File_SearchReplace
 }
 
 
+function removeNetworkPersistence()
+{
+	echo "Remove persistence rules so MAC address reinit doesn't break network...\n\n";
+	if (file_exists("/etc/udev/rules.d/70-persistent-net.rules"))
+	{
+		exec("sudo rm /etc/udev/rules.d/70-persistent-net.rules");
+	}
 
+}
 
 
 ?>

@@ -1007,7 +1007,12 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 			return;
 		}
 		
-		editorEditMenu.setMeasuring(true);
+		try{
+			editorEditMenu.setMeasuring(true);
+		} catch (Exception e)
+		{ 
+		}
+		
 		dataView.enableEditing(false);
 	
 		// add the measure panel...

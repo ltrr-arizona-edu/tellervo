@@ -837,7 +837,7 @@
 									</mapper>
 								</data>
 								<data>
-									<src>Native/BuildResources/LinBuild/firstrun</src>
+									<src>Native/BuildResources/LinBuild/firstrun.template</src>
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
