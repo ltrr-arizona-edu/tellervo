@@ -138,7 +138,7 @@ public class EditorLite extends Editor {
 		App.prefs.setPref(PrefKey.FOLDER_LAST_SAVE, path);
 
 	}
-
+	
 	private TridasTridas getContainerForFile()
 	{
 
@@ -191,6 +191,9 @@ public class EditorLite extends Editor {
 	
 	public void saveAs()
 	{
+		
+
+		
 		// custom jfilechooser
 		File file = null;
 		String format = null;
@@ -280,6 +283,32 @@ public class EditorLite extends Editor {
 
 	public void save()
 	{
+		if(!((BasicMetadataPanel)metaView).isMetadataSet())
+		{
+			Object[] options = {"Yes",
+                    "No",
+                    "Cancel"};
+			int n = JOptionPane.showOptionDialog(this,
+			    "You have not set any metadata for this file.  Depending on the output\n"+
+				"format you choose, the keycode field can be especially important.\n\n"+
+			    "Would you like to continue saving without metadata?",
+			    "No metadata",
+			    JOptionPane.YES_NO_CANCEL_OPTION,
+			    JOptionPane.QUESTION_MESSAGE,
+			    null,
+			    options,
+			    options[2]);
+			
+			if(n != JOptionPane.YES_OPTION)
+			{
+				// Set focus to metadata tab
+				this.tabbedPanel.setSelectedIndex(1);
+				return;
+			}
+
+		}
+		
+		
 		// Save without prompt if possible
 		if(sample.getMeta(Metadata.FILENAME)!=null
 				&& sample.getMeta(Metadata.LEGACY_FORMAT)!=null  )

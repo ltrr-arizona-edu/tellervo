@@ -32,14 +32,14 @@ public class BasicMetadataPanel extends AbstractMetadataPanel {
 	public BasicMetadataPanel() {
 		setLayout(new MigLayout("", "[84.00,right][grow]", "[][][][][grow][]"));
 		
-		JLabel lblTitle = new JLabel("Title:");
+		JLabel lblTitle = new JLabel("Title / Series name:");
 		add(lblTitle, "cell 0 0,alignx trailing");
 		
 		txtTitle = new JTextField();
 		add(txtTitle, "cell 1 0,growx");
 		txtTitle.setColumns(10);
 		
-		JLabel lblKeycode = new JLabel("Keycode:");
+		JLabel lblKeycode = new JLabel("Sample code / Keycode:");
 		add(lblKeycode, "cell 0 1,alignx trailing");
 		
 		txtKeycode = new JTextField();
@@ -86,9 +86,13 @@ public class BasicMetadataPanel extends AbstractMetadataPanel {
 	{
 		if(s==null) return;
 		
-		txtTitle.setText(s.getSeries().getTitle());
 		txtAuthor.setText(s.getMetaString(Metadata.AUTHOR));
 		txtKeycode.setText(s.getMetaString(Metadata.KEYCODE));
+		
+		if(!s.getMeta(Metadata.TITLE).equals("New entry: [New series]"))
+		{
+			txtTitle.setText(s.getSeries().getTitle());
+		}
 		
 		if(s.getMetaString(Metadata.SPECIES)!="Plantae")
 		{
@@ -96,6 +100,25 @@ public class BasicMetadataPanel extends AbstractMetadataPanel {
 		}
 		
 		
+	}
+	
+	/**
+	 * Have any of the metadata fields been set?
+	 * 
+	 * @return
+	 */
+	public Boolean isMetadataSet()
+	{
+		if(txtTitle.getText().isEmpty() 
+				&& txtKeycode.getText().isEmpty()
+				&& txtSpecies.getText().isEmpty()
+				&& txtAuthor.getText().isEmpty()
+		)
+		{
+			return false;
+		}
+		
+		return true;
 	}
 	
 
