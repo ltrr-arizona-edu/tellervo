@@ -401,6 +401,7 @@ class element extends elementEntity implements IDBAccessor
 	        global $tellervoNS;
 	        global $tridasNS;
 	        global $gmlNS;
+	        global $xlinkNS;
 	        
 	        // We need to return the comprehensive XML for this element i.e. including all it's ancestral 
 	        // object entities.
@@ -414,7 +415,7 @@ class element extends elementEntity implements IDBAccessor
             // Grab the XML representation of the immediate parent using the 'comprehensive'
             // attribute so that we get all the object ancestors formatted correctly                   
             $xml = new DomDocument();   
-    		$xml->loadXML("<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".end($this->parentEntityArray)->asXML('comprehensive')."</root>");                   
+    		$xml->loadXML("<root xmlns=\"$tellervoNS\" xmlns:xlink=\"$xlinkNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".end($this->parentEntityArray)->asXML('comprehensive')."</root>");                   
 
     		// We need to locate the leaf tridas:object (one with no child tridas:objects)
     		// because we need to insert our element xml here
@@ -425,7 +426,7 @@ class element extends elementEntity implements IDBAccessor
     		
     		// Create a temporary DOM document to store our element XML
     		$tempdom = new DomDocument();
-			$tempdom->loadXML("<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
+			$tempdom->loadXML("<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:xlink=\"$xlinkNS\" xmlns:gml=\"$gmlNS\">".$this->asXML()."</root>");
    		
 			// Import and append the element XML node into the main XML DomDocument
 			$elemnode = $tempdom->getElementsByTagName("element")->item(0);

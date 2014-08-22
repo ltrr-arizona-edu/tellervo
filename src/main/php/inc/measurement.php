@@ -798,8 +798,9 @@ class measurement extends measurementEntity implements IDBAccessor
 		global $tellervoNS;
 		global $tridasNS;
 		global $gmlNS;
+		global $xlinkNS;
 
-		$domhead = "<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">";
+		$domhead = "<root xmlns=\"$tellervoNS\" xmlns:xlink=\"$xlinkNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">";
 		$domfoot = "</root>";
 
 		$tmpdom = new DomDocument();

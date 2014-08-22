@@ -5,10 +5,16 @@ import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Calendar;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -16,25 +22,18 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import net.miginfocom.swing.MigLayout;
-import javax.swing.JLabel;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import javax.swing.JComboBox;
 
-import org.fhaes.util.preferences.App;
 import org.tellervo.desktop.Range;
+import org.tellervo.desktop.Year;
 import org.tellervo.desktop.manip.Redate;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.tridasv2.ui.ComboBoxFilterable;
 import org.tellervo.desktop.tridasv2.ui.EnumComboBoxItemRenderer;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
+import org.tridas.io.util.SafeIntYear;
 import org.tridas.schema.NormalTridasDatingType;
-import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasDating;
-import org.tellervo.desktop.Year;
-import javax.swing.JTextField;
 
 
 public class PopulateEditorDialog extends JDialog implements ActionListener{
@@ -42,12 +41,14 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 	private final JPanel contentPanel = new JPanel();
 	private NormalTridasDatingType datingType ;
 	private SeriesDataMatrix dataView;
-	private JTextField startField;
+	private JSpinner spnStartYear;
 	private JSpinner spnRingCount;
 	private Window parent;
-	/** Text field document listeners to auto-update each other */
-	private DocumentListener startListener, endListener;
-	private JTextField endField;
+
+	private boolean disableStartYearListener = false;
+	private boolean disableEndYearListener = false;
+	
+	private JSpinner spnEndYear;
 	private Range range;
 	
 	/**
@@ -59,6 +60,8 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 		setResizable(false);
 		this.dataView = dataView;
 		this.parent = parent;
+		range = new Range(new Year(Calendar.getInstance().get(Calendar.YEAR)-99), new Year(Calendar.getInstance().get(Calendar.YEAR)));
+
 		
 		try{
 			if(dataView.getSample().getRingWidthData().size()>0)	
@@ -73,41 +76,40 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 		}
 	
 		
-		datingType = NormalTridasDatingType.RELATIVE;
+		datingType = NormalTridasDatingType.ABSOLUTE;
 		
 		setTitle(I18n.getText("menus.edit.populateditor"));
 		setModal(true);
-		setBounds(100, 100, 364, 166);
+		setBounds(100, 100, 364, 162);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new MigLayout("", "[][74.00,left][][67.00][grow]", "[][][][grow,fill]"));
 		{
-			JLabel lblNumberOfRings = new JLabel("Number of rings:");
-			contentPanel.add(lblNumberOfRings, "cell 0 0,alignx right");
-		}
-		{
-			spnRingCount = new JSpinner();
-			spnRingCount.setModel(new SpinnerNumberModel(new Integer(100), new Integer(1), null, new Integer(1)));
-			contentPanel.add(spnRingCount, "cell 1 0 3 1,growx");
-		}
-		{
 			JLabel lblFirstYear = new JLabel("Years:");
-			contentPanel.add(lblFirstYear, "cell 0 1,alignx right");
+			contentPanel.add(lblFirstYear, "cell 0 0,alignx right");
 		}
 		{
-			startField = new JTextField();
-			startField.setText("1001");
-			contentPanel.add(startField, "cell 1 1,growx");
+			spnStartYear = new JSpinner();
+			contentPanel.add(spnStartYear, "cell 1 0,growx");
 		}
 		{
 			JLabel lblTo = new JLabel("to:");
-			contentPanel.add(lblTo, "cell 2 1,alignx trailing");
+			contentPanel.add(lblTo, "cell 2 0,alignx trailing");
 		}
 		{
-			endField = new JTextField();
-			endField.setText("1002");
-			contentPanel.add(endField, "cell 3 1,growx");
+			spnEndYear = new JSpinner();
+			contentPanel.add(spnEndYear, "cell 3 0,growx");
+		}
+		{
+			JLabel lblNumberOfRings = new JLabel("Number of rings:");
+			contentPanel.add(lblNumberOfRings, "cell 0 1,alignx right");
+		}
+		{
+			spnRingCount = new JSpinner();
+			spnRingCount.setEnabled(false);
+			spnRingCount.setModel(new SpinnerNumberModel(new Integer(100), new Integer(1), null, new Integer(1)));
+			contentPanel.add(spnRingCount, "cell 1 1 3 1,growx");
 		}
 		{
 			JLabel lblDatingType = new JLabel("Dating type:");
@@ -147,40 +149,76 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 			}
 		}
 		
-		range = new Range(new Year("1001"), Integer.parseInt(spnRingCount.getValue().toString()));
-		
-		startListener = new StartListener();
-		startField.setText(range.getStart().toString());
-		startField.getDocument().addDocumentListener(startListener);
-
-		endListener = new EndListener();
-		endField.setText(range.getEnd().toString());
-		endField.getDocument().addDocumentListener(endListener);
-		
-		spnRingCount.addChangeListener(new ChangeListener(){
+		this.spnStartYear.addChangeListener(new ChangeListener(){
 
 			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				// set the range
-				try {
-					range = new Range(new Year(range.getStart().toString()), Integer.parseInt(spnRingCount.getValue().toString()));			
-					endField.setText(range.getEnd().toString());
-				} catch (NumberFormatException nfe) {
-					endField.setText(I18n.getText("error"));
+			public void stateChanged(ChangeEvent evt) {
+				recalculateRingCount();
+				
+				if(((Integer)spnStartYear.getValue())<((Integer)spnEndYear.getValue()))
+				{
+					updateEndYearModel((Integer)spnEndYear.getValue());
 				}
 
 			}
 			
 		});
 		
+		this.spnEndYear.addChangeListener(new ChangeListener(){
+
+			@Override
+			public void stateChanged(ChangeEvent evt) {
+				recalculateRingCount();
+				
+				if(((Integer)spnEndYear.getValue())>((Integer)spnStartYear.getValue()))
+				{
+					updateStartYearModel((Integer)spnStartYear.getValue());
+				}
+
+			}
+			
+		});
+		
+		updateEndYearModel(null);
+		updateStartYearModel(null);
+		spnStartYear.setEditor(new JSpinner.NumberEditor(spnStartYear, "####"));
+		spnEndYear.setEditor(new JSpinner.NumberEditor(spnEndYear, "####"));
 		this.setLocationRelativeTo(parent);
 		
 	}
 
+	private void recalculateRingCount()
+	{
+		range = new Range(new Year((Integer)spnStartYear.getValue()), new Year((Integer)spnEndYear.getValue()));
+		spnRingCount.setValue(range.getSpan());
+	}
 
+	private void updateStartYearModel(Integer forceValue)
+	{
+		if(disableStartYearListener) return;
+		
+		Integer value = forceValue;
+		Integer maxValue = Integer.parseInt(range.getEnd().toString())-1;
+		if(value==null) value = Integer.parseInt(range.getStart().toString());
+		if(value>maxValue) value = maxValue;
+		spnStartYear.setModel(new SpinnerNumberModel(value, null, maxValue, new Integer(1)));
+	}
+	
+	private void updateEndYearModel(Integer forceValue)
+	{
+		if(disableEndYearListener) return;
+		
+		Integer value = forceValue;
+		Integer minValue = Integer.parseInt(range.getStart().toString())+1;
+		if(value==null) value = Integer.parseInt(range.getEnd().toString());
+		if(value<minValue) value = minValue;
+		Integer maxValue = Calendar.getInstance().get(Calendar.YEAR);
+		
+		spnEndYear.setModel(new SpinnerNumberModel(value, minValue, maxValue, new Integer(1)));
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		// TODO Auto-generated method stub
 		
 		if(event.getActionCommand().equals("OK"))
 		{
@@ -188,7 +226,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 			dataView.insertYears(0, Integer.parseInt(spnRingCount.getValue().toString()), 0 ,2);
 			Sample sample = dataView.getSample();
 			Range range = sample.getRange();
-			range = range.redateStartTo(new Year(this.startField.getText()));
+			range = range.redateStartTo(new Year((Integer) this.spnStartYear.getValue()));
 			TridasDating dating = new TridasDating();
 			dating.setType(datingType);
 			sample.postEdit(Redate.redate(sample, range, dating));
@@ -205,7 +243,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 		}
 	}
 	
-	private class EndListener implements DocumentListener {
+	/*private class EndListener implements DocumentListener {
 		public void changedUpdate(DocumentEvent e) {
 			update();
 		}
@@ -239,10 +277,10 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 			// re-enable startListener
 			startField.getDocument().addDocumentListener(startListener);
 		}
-	}
+	}*/
 
 	/** A DocumentListener for the starting value */
-	private class StartListener implements DocumentListener {
+	/*private class StartListener implements DocumentListener {
 		public void changedUpdate(DocumentEvent e) {
 			update();
 		}
@@ -272,7 +310,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 			// re-enable endListener
 			endField.getDocument().addDocumentListener(endListener);
 		}
-	}
+	}*/
 
 
 }

@@ -237,12 +237,13 @@ class object extends objectEntity implements IDBAccessor
             global $dbconn;
 	        global $tellervoNS;
 	        global $tridasNS;
+	        global $xlinkNS;
 	        global $gmlNS;
 
 	        // Create a DOM Document to hold the XML as it's produced
             $xml = new DomDocument();
-    		$xml->loadXML("<object xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\"></object>");
-    		$xml->formatOutput = true;
+    		$xml->loadXML("<object xmlns=\"$tellervoNS\" xmlns:xlink=\"$xlinkNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\"></object>");
+    		//$xml->formatOutput = true;
 
     	    $myParentObjectArray = Array();
 	  		array_push($myParentObjectArray, $this);
@@ -266,7 +267,7 @@ class object extends objectEntity implements IDBAccessor
 				foreach($myParentObjectArray as $obj)
 				{
 					$dom = new DomDocument();
-					$dom->loadXML("<root xmlns=\"$tellervoNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$obj->asXML()."</root>");
+					$dom->loadXML("<root xmlns=\"$tellervoNS\" xmlns:xlink=\"$xlinkNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">".$obj->asXML()."</root>");
 					$dom->formatOutput = true;
 					
 					$objnode = $dom->getElementsByTagName("object")->item(0);
@@ -350,8 +351,8 @@ class object extends objectEntity implements IDBAccessor
 	
 	private function _asXML($format='standard', $parts='all')
 	{
+	global $firebug;
         $xml = NULL;
-
 
         // Return a string containing the current object in XML format
         if ($this->getLastErrorCode()==NULL)
@@ -364,6 +365,7 @@ class object extends objectEntity implements IDBAccessor
                 									$xml.= "<tridas:type normal=\"".dbhelper::escapeXMLChars($this->getType())."\" normalId=\"".$this->getType(TRUE)."\" normalStd=\"Tellervo\" />\n";        	
             	if($this->getDescription()!==NULL)	$xml.= "<tridas:description>".dbHelper::escapeXMLChars($this->getDescription())."</tridas:description>";
             	$xml.= $this->getFileXML();
+		$firebug->log($this->getFileXML(), "File XMLLLL");
                	if($this->getCreator()!=NULL)		$xml.= "<tridas:creator>".dbHelper::escapeXMLChars($this->getCreator())."</tridas:creator>";
             	if($this->getOwner()!=NULL)			$xml.= "<tridas:owner>".dbHelper::escapeXMLChars($this->getOwner())."</tridas:owner>";         	
             	
