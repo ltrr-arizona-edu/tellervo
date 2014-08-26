@@ -66,6 +66,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	public static final String LOCATION_COMMENT = "Location comment";
 	public static final String OWNER = "Owner";
 	public static final String CREATOR = "Creator";
+	public static final String VEGETATION_TYPE = "Vegetation type";
 	
 	// Not implemented yet
 	//public static final String LOCATION_TYPE = "Location type";
@@ -76,7 +77,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	
 	public static final String[] TABLE_PROPERTIES = {
 		PARENT_OBJECT, OBJECT_CODE, TITLE, TYPE, DESCRIPTION, COMMENTS, LATITUDE, LONGITUDE, WAYPOINT, LOCATION_PRECISION, LOCATION_COMMENT,
-		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, POSTCODE, COUNTRY,  OWNER, CREATOR
+		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, POSTCODE, COUNTRY,  OWNER, CREATOR, VEGETATION_TYPE
 	};
 	
 	public SingleObjectModel(){
@@ -123,6 +124,17 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		}
 		if(!found){
 			setProperty(OBJECT_CODE, null);
+		}
+		
+		found = false;
+		for(TridasGenericField field : fields){
+			if(field.getName().equals("tellervo.vegetationType")){
+				setProperty(VEGETATION_TYPE, field.getValue());
+				found = true;
+			}
+		}
+		if(!found){
+			setProperty(VEGETATION_TYPE, null);
 		}
 		
 		setProperty(TITLE, argObject.getTitle());
@@ -215,11 +227,16 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	}
 	
 	public void populateTridasObject(TridasObject argObject){
-		TridasGenericField codeField = new TridasGenericField();
-		codeField.setName("tellervo.objectLabCode");
-		codeField.setValue(getProperty(OBJECT_CODE)+"");
-		argObject.getGenericFields().add(codeField);
+		TridasGenericField genericField = new TridasGenericField();
+		genericField.setName("tellervo.objectLabCode");
+		genericField.setValue(getProperty(OBJECT_CODE)+"");
+		argObject.getGenericFields().add(genericField);
 		
+	/*	genericField = new TridasGenericField();
+		genericField.setName("tellervo.vegetationType");
+		genericField.setValue(getProperty(VEGETATION_TYPE)+"");
+		argObject.getGenericFields().add(genericField);
+		*/
 		argObject.setTitle((String)getProperty(TITLE));
 		argObject.setIdentifier((TridasIdentifier) getProperty(IMPORTED));
 		argObject.setComments((String)getProperty(COMMENTS));

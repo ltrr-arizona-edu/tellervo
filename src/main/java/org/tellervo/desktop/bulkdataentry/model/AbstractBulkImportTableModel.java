@@ -71,7 +71,11 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		recreateSelected();
 	}
 	
-
+	public MVCArrayList<IBulkImportSingleRowModel> getAllSingleRowModels()
+	{
+		return models;
+	}
+	
 	public void getSelected(ArrayList<IBulkImportSingleRowModel> argModels){
 		for(IBulkImportSingleRowModel key : selected.keySet()){
 			if(selected.get(key)){

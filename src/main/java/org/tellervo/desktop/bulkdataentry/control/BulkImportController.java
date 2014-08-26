@@ -30,6 +30,7 @@ import org.tellervo.desktop.bulkdataentry.command.ImportSelectedElementsCommand;
 import org.tellervo.desktop.bulkdataentry.command.ImportSelectedObjectsCommand;
 import org.tellervo.desktop.bulkdataentry.command.ImportSelectedSamplesCommand;
 import org.tellervo.desktop.bulkdataentry.command.PopulateFromDatabaseCommand;
+import org.tellervo.desktop.bulkdataentry.command.PopulateFromODKFileCommand;
 import org.tellervo.desktop.bulkdataentry.command.PrintBarcodesCommand;
 import org.tellervo.desktop.bulkdataentry.command.RemoveSelectedCommand;
 import org.tellervo.desktop.bulkdataentry.command.ShowColumnWindowCommand;
@@ -71,6 +72,7 @@ public class BulkImportController extends FrontController {
 	
 	public static final String BROWSE_GPX_FILE = "BULK_IMPORT_BROWSE_GPX_FILE";
 	public static final String PRINT_SAMPLE_BARCODES = "BULK_IMPORT_PRINT_BARCODES";
+	public static final String POPULATE_FROM_ODK_FILE = "BULK_IMPORT_POPULATE_FROM_ODK_FILE";
 
 	
 	public BulkImportController(){
@@ -88,6 +90,8 @@ public class BulkImportController extends FrontController {
 		registerCommand(BROWSE_GPX_FILE, GPXBrowseCommand.class);
 		registerCommand(PRINT_SAMPLE_BARCODES, PrintBarcodesCommand.class);
 		registerCommand(POPULATE_FROM_DATABASE, PopulateFromDatabaseCommand.class);
+		registerCommand(POPULATE_FROM_ODK_FILE, PopulateFromODKFileCommand.class);
+
 	}
 	
 	public void display(MVCEvent argEvent){

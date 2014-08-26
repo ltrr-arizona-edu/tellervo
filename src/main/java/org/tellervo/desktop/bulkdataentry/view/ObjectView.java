@@ -27,7 +27,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Comparator;
 
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -35,11 +34,10 @@ import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
-import org.tellervo.desktop.bulkdataentry.control.ColumnChooserController;
-import org.tellervo.desktop.bulkdataentry.control.ColumnsModifiedEvent;
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
+import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
@@ -50,13 +48,15 @@ import org.tellervo.desktop.components.table.StringCellEditor;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
-import org.tellervo.schema.WSIObjectTypeDictionary;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.schema.WSIObjectTypeDictionary;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
+
+import com.dmurph.mvc.model.HashModel;
 
 
 /**
@@ -67,6 +67,7 @@ public class ObjectView extends AbstractBulkImportView{
 	private static final long serialVersionUID = 1L;
 	
 	private JButton browseGPX;
+	private JButton browseODK;
 	
 	public ObjectView(ObjectModel argModel){
 		super(argModel);
@@ -188,6 +189,11 @@ public class ObjectView extends AbstractBulkImportView{
 		 toolbar.add(argCopyRow);
 		 toolbar.add(argPopulateFromDB);
 		
+			browseODK = new JButton("ODK Import");
+			//browseODK.setIcon(Builder.getIcon("satellite.png", 22));
+			browseODK.setToolTipText("Browse for ODK file");
+			toolbar.add(browseODK);
+		 
 		 
 		 
 		browseGPX = new JButton();
@@ -216,6 +222,19 @@ public class ObjectView extends AbstractBulkImportView{
 				//ColumnsModifiedEvent ev = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_ADDED, "Waypoint", model.getColumnModel());
 				//ev.dispatch();
 			}
+		});
+		
+		browseODK.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				HashModel model = BulkImportModel.getInstance().getObjectModel();
+				PopulateFromODKFileEvent event = new PopulateFromODKFileEvent(model);
+				event.dispatch();
+			}
+			
+			
+			
 		});
 	}
 

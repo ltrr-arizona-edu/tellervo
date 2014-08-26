@@ -40,6 +40,7 @@ import org.tellervo.desktop.bulkdataentry.control.ColumnsModifiedEvent;
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
+import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
@@ -66,6 +67,8 @@ import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasUnit;
 import org.tridas.util.TridasObjectEx;
 
+import com.dmurph.mvc.model.HashModel;
+
 
 /**
  * @author Daniel Murphy
@@ -73,11 +76,11 @@ import org.tridas.util.TridasObjectEx;
  */
 @SuppressWarnings("serial")
 public class ElementView extends AbstractBulkImportView{
-	
+
 	private JButton browseGPX;
 	private JButton quickFill;
-	
-	
+	private JButton browseODK;
+
 	public ElementView(ElementModel argModel){
 		super(argModel);
 	}
@@ -96,7 +99,7 @@ public class ElementView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(TridasUnit.class, new TridasUnitRenderer());
 		argTable.setDefaultEditor(WSITaxonDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("taxonDictionary")));
 		argTable.setDefaultRenderer(WSITaxonDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
-		
+
 		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(),
 				new Comparator<TridasObjectEx>() {
 			public int compare(TridasObjectEx argO1, TridasObjectEx argO2) {
@@ -119,9 +122,9 @@ public class ElementView extends AbstractBulkImportView{
 				return o.getLabCode();
 			}
 		});
-		
+
 		box.setRenderer(new TridasObjectExRenderer());
-		
+
 		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(box));
 		argTable.setDefaultRenderer(TridasObject.class, new DefaultTableCellRenderer(){
 			/**
@@ -137,7 +140,7 @@ public class ElementView extends AbstractBulkImportView{
 				super.setValue(object.getLabCode());
 			}
 		});
-		
+
 		ElementModel model = BulkImportModel.getInstance().getElementModel();
 		DynamicJComboBox<GPXWaypoint> waypointBox = new DynamicJComboBox<GPXWaypoint>(model.getWaypointList(), new Comparator<GPXWaypoint>() {
 			/**
@@ -156,43 +159,50 @@ public class ElementView extends AbstractBulkImportView{
 		});
 		argTable.setDefaultEditor(GPXWaypoint.class, new ComboBoxCellEditor(waypointBox));
 	}
-	
+
 	@Override
 	protected JToolBar setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
 			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB){
 
+
+		JToolBar toolbar = new JToolBar();
+		toolbar.add(selectAll);
+		toolbar.add(selectNone);
+		toolbar.add(argAddRowButton);
+		toolbar.add(argDeleteRowButton);
+		toolbar.add(argCopyRowButton);
+		toolbar.add(argPopulateFromDB);
+
+		quickFill = new JButton();
+		quickFill.setIcon(Builder.getIcon("quickfill.png", 22));
+		quickFill.setToolTipText("Open quick fill dialog");
+
+
+		toolbar.add(quickFill);
+
+
+		browseGPX = new JButton();
+		browseGPX.setIcon(Builder.getIcon("satellite.png", 22));
+		browseGPX.setToolTipText(I18n.getText("bulkimport.browseGPXFile"));
+		toolbar.add(browseGPX);
 		
-		 JToolBar toolbar = new JToolBar();
-		 toolbar.add(selectAll);
-		 toolbar.add(selectNone);
-		 toolbar.add(argAddRowButton);
-		 toolbar.add(argDeleteRowButton);
-		 toolbar.add(argCopyRowButton);
-		 toolbar.add(argPopulateFromDB);
-		 
-		 quickFill = new JButton();
-		 quickFill.setIcon(Builder.getIcon("quickfill.png", 22));
-		 quickFill.setToolTipText("Open quick fill dialog");
-		 
-		 
-		 toolbar.add(quickFill);
+		browseODK = new JButton("ODK Import");
+		//browseODK.setIcon(Builder.getIcon("satellite.png", 22));
+		browseODK.setToolTipText("ODK Import");
+		toolbar.add(browseODK);
 		
-		 
-			browseGPX = new JButton();
-			browseGPX.setIcon(Builder.getIcon("satellite.png", 22));
-			browseGPX.setToolTipText(I18n.getText("bulkimport.browseGPXFile"));
-			toolbar.add(browseGPX);
-		 toolbar.add(argShowHideColumnButton);
-		 
-		 return toolbar;
+		
+		toolbar.add(argShowHideColumnButton);
+
+		return toolbar;
 	}
-	
+
 	@Override
 	protected void addListeners() {
 		super.addListeners();
 		final JPanel parent = (JPanel) this;
-		
-		
+
+
 		browseGPX.addActionListener(new ActionListener() {
 
 			@Override
@@ -200,12 +210,25 @@ public class ElementView extends AbstractBulkImportView{
 				ElementModel model = BulkImportModel.getInstance().getElementModel();
 				GPXBrowse event = new GPXBrowse(model, parent);
 				event.dispatch();
-				
+
 				// Show waypoint column
 				ColumnsModifiedEvent ev = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_ADDED, "Waypoint", model.getColumnModel());
 				ev.dispatch();
-				
+
 			}
+		});
+
+		browseODK.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				HashModel model = BulkImportModel.getInstance().getElementModel();
+				PopulateFromODKFileEvent event = new PopulateFromODKFileEvent(model);
+				event.dispatch();
+			}
+			
+			
+			
 		});
 		
 		final ElementView glue = this;
@@ -214,18 +237,18 @@ public class ElementView extends AbstractBulkImportView{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				QuickEntryElement dialog = new QuickEntryElement(glue, model);
-				
+
 				dialog.setVisible(true);
-				
+
 			}
-			
-			
-			
+
+
+
 		});
-		
-		
+
+
 	}
-	
+
 	/**
 	 * @see org.tellervo.desktop.bulkdataentry.view.AbstractBulkImportView#importSelectedPressed()
 	 */
@@ -234,13 +257,13 @@ public class ElementView extends AbstractBulkImportView{
 		ImportSelectedEvent event = new ImportSelectedEvent(BulkImportController.IMPORT_SELECTED_ELEMENTS);
 		event.dispatch();
 	}
-	
+
 	@Override
 	protected void populateFromDatabase() {
 		ElementModel model = BulkImportModel.getInstance().getElementModel();
 		PopulateFromDatabaseEvent event = new PopulateFromDatabaseEvent(model);
-		
+
 		event.dispatch();
-		
+
 	}
 }
