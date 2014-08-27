@@ -189,8 +189,8 @@ public class ObjectView extends AbstractBulkImportView{
 		 toolbar.add(argCopyRow);
 		 toolbar.add(argPopulateFromDB);
 		
-			browseODK = new JButton("ODK Import");
-			//browseODK.setIcon(Builder.getIcon("satellite.png", 22));
+			browseODK = new JButton("");
+			browseODK.setIcon(Builder.getIcon("odk.png", 22));
 			browseODK.setToolTipText("Browse for ODK file");
 			toolbar.add(browseODK);
 		 
@@ -232,9 +232,6 @@ public class ObjectView extends AbstractBulkImportView{
 				PopulateFromODKFileEvent event = new PopulateFromODKFileEvent(model);
 				event.dispatch();
 			}
-			
-			
-			
 		});
 	}
 

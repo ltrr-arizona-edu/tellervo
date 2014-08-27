@@ -26,13 +26,13 @@ import com.dmurph.mvc.ObjectEvent;
 import com.dmurph.mvc.tracking.ITrackable;
 
 
-public class DeleteRowEvent extends ObjectEvent<Integer> implements ITrackable {
+public class DeleteRowEvent extends ObjectEvent<int[]> implements ITrackable {
 	private static final long serialVersionUID = 1L;
 
 	public final IBulkImportSectionModel model;
 	
-	public DeleteRowEvent(IBulkImportSectionModel argModel, Integer rowIndex) {
-		super(BulkImportController.DELETE_ROW, rowIndex);
+	public DeleteRowEvent(IBulkImportSectionModel argModel, int[] rows) {
+		super(BulkImportController.DELETE_ROW, rows);
 		model = argModel;
 	}
 

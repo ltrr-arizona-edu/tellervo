@@ -74,6 +74,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 	private JMenuItem redate = new JMenuItem();
 	private JMenuItem crossAgainstDBSeries = new JMenuItem();
 	private JMenuItem crossAgainstFileSeries = new JMenuItem();
+	private JMenuItem buildODKForm = new JMenuItem();
 	
 	private JMenu crossMenu;
 	

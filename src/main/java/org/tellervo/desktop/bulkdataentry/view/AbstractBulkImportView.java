@@ -475,7 +475,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 	}
 	
 	protected void deleteRowPressed(){
-		DeleteRowEvent event = new DeleteRowEvent(model, table.getSelectedRow());
+		DeleteRowEvent event = new DeleteRowEvent(model, table.getSelectedRows());
 		event.dispatch();
 	}
 	

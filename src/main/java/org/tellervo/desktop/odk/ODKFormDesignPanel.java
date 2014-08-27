@@ -1,19 +1,29 @@
 package org.tellervo.desktop.odk;
 
-import javax.swing.JPanel;
-import net.miginfocom.swing.MigLayout;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.JList;
-import javax.swing.JScrollPane;
-import javax.swing.JButton;
-import javax.swing.JSplitPane;
-import javax.swing.DefaultComboBoxModel;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
+
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+
+import net.miginfocom.swing.MigLayout;
+
+import org.tellervo.desktop.odk.fields.AbstractODKField;
+import org.tellervo.desktop.odk.fields.ODKFields;
+import org.tridas.schema.TridasObject;
+
+
 
 public class ODKFormDesignPanel extends JPanel {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create the panel.
@@ -51,7 +61,7 @@ public class ODKFormDesignPanel extends JPanel {
 		
 		JList lstAvailableFields = new JList();
 		lstAvailableFields.setModel(new AbstractListModel() {
-			String[] values = new String[] {"Code", "Title", "Location", "Description", "Comments"};
+			Class<? extends AbstractODKField>[] values = ODKFields.getFieldsAsArray(TridasObject.class);
 			public int getSize() {
 				return values.length;
 			}

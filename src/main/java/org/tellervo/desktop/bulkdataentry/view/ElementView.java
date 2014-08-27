@@ -186,8 +186,8 @@ public class ElementView extends AbstractBulkImportView{
 		browseGPX.setToolTipText(I18n.getText("bulkimport.browseGPXFile"));
 		toolbar.add(browseGPX);
 		
-		browseODK = new JButton("ODK Import");
-		//browseODK.setIcon(Builder.getIcon("satellite.png", 22));
+		browseODK = new JButton("");
+		browseODK.setIcon(Builder.getIcon("odk.png", 22));
 		browseODK.setToolTipText("ODK Import");
 		toolbar.add(browseODK);
 		

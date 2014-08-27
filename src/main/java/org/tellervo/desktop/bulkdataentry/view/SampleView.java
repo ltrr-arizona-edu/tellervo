@@ -34,6 +34,7 @@ import javax.swing.JToolBar;
 
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
+import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.control.PrintSampleBarcodesEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
@@ -61,6 +62,7 @@ import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.gui.combo.MVCJComboBox;
+import com.dmurph.mvc.model.HashModel;
 
 
 
@@ -73,7 +75,8 @@ public class SampleView  extends AbstractBulkImportView{
 
 	private JButton printBarcodes;
 	private JButton quickFill;
-	
+	private JButton browseODK;
+
 	private ElementModel elementModel;
 
 	
@@ -197,6 +200,11 @@ public class SampleView  extends AbstractBulkImportView{
 		 quickFill.setToolTipText("Open sample quick fill dialog");
 		 toolbar.add(quickFill);
 		 
+			browseODK = new JButton("");
+			browseODK.setIcon(Builder.getIcon("odk.png", 22));
+			browseODK.setToolTipText("Browse for ODK file");
+			toolbar.add(browseODK);
+		 
 			printBarcodes = new JButton();
 			printBarcodes.setIcon(Builder.getIcon("barcode.png", 22));
 			printBarcodes.setToolTipText(I18n.getText("bulkimport.printBarcodes"));
@@ -233,9 +241,16 @@ public class SampleView  extends AbstractBulkImportView{
 				dialog.setVisible(true);
 				
 			}
-			
-			
-			
+		});
+		
+		browseODK.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				HashModel model = BulkImportModel.getInstance().getSampleModel();
+				PopulateFromODKFileEvent event = new PopulateFromODKFileEvent(model);
+				event.dispatch();
+			}
 		});
 	}
 	

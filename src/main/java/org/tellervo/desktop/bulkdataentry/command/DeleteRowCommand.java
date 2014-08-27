@@ -27,6 +27,7 @@ import com.dmurph.mvc.IncorrectThreadException;
 import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
+import com.dmurph.mvc.model.MVCArrayList;
 
 
 public class DeleteRowCommand implements ICommand {
@@ -45,6 +46,14 @@ public class DeleteRowCommand implements ICommand {
 		}
 		
 		DeleteRowEvent event = (DeleteRowEvent) argEvent;
-		event.model.getRows().remove((int)event.getValue());
+		
+		MVCArrayList rowsToDelete = new MVCArrayList();
+		
+		for(int i : event.getValue())
+		{
+			rowsToDelete.add(event.model.getRows().get(i));
+		}
+		
+		event.model.getRows().removeAll(rowsToDelete);
 	}
 }

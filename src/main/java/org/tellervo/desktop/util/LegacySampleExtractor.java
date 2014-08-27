@@ -212,17 +212,7 @@ public class LegacySampleExtractor {
 		return measurementName;
 	}
 	
-	private ControlledVoc getControlledVocForName(String name, String dictionaryName) {
-		List<?> dictionary = Dictionary.getDictionary(dictionaryName);
-		List<ControlledVoc> vocab = ListUtil.subListOfType(dictionary, ControlledVoc.class);
-		
-		for(ControlledVoc voc : vocab) {
-			if(name.equalsIgnoreCase(voc.getNormal()))
-				return voc;
-		}
-		
-		return null;
-	}
+
 	
 	public void populateObject(TridasObject object) {
 		if(objectCode != null)
@@ -231,19 +221,19 @@ public class LegacySampleExtractor {
 		// does it have a forest in the name?
 		String fn = (String) s.getMeta("filename");
 		if(fn.toLowerCase().contains("forest"))
-			object.setType(getControlledVocForName("Forest", "objectTypeDictionary"));
+			object.setType(DictionaryUtil.getControlledVocForName("Forest", "objectTypeDictionary"));
 		
 		// ok, then default to site
 		if(!object.isSetType())
-			object.setType(getControlledVocForName("Site", "objectTypeDictionary"));
+			object.setType(DictionaryUtil.getControlledVocForName("Site", "objectTypeDictionary"));
 	}
 	
 	public void populateElement(TridasElement element) {
 		if(elementName != null)
 			element.setTitle(elementName);
 		
-		element.setTaxon(getControlledVocForName("Plantae", "taxonDictionary"));
-		element.setType(getControlledVocForName("Tree", "elementTypeDictionary"));
+		element.setTaxon(DictionaryUtil.getControlledVocForName("Plantae", "taxonDictionary"));
+		element.setType(DictionaryUtil.getControlledVocForName("Tree", "elementTypeDictionary"));
 		
 		// try for a taxon...
 		if(s.hasMeta("species")) {
@@ -281,7 +271,7 @@ public class LegacySampleExtractor {
 				? getLegacyMapping("type", s.getMetaString("type")) 
 				: "Section";
 				
-		sample.setType(getControlledVocForName(type, "sampleTypeDictionary"));
+		sample.setType(DictionaryUtil.getControlledVocForName(type, "sampleTypeDictionary"));
 	}
 	
 	public void populateRadius(TridasRadius radius) {
