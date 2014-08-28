@@ -37,7 +37,7 @@ public class ODKFields {
 	 * @param clazz
 	 * @return
 	 */
-	public static ArrayList<Class<? extends AbstractODKField>> getFields(Class<? extends ITridas> clazz)
+	public static ArrayList<AbstractODKField> getFields(Class<? extends ITridas> clazz)
 	{
 		ODKFields c = new ODKFields();
 		
@@ -46,7 +46,7 @@ public class ODKFields {
 			throw new IllegalArgumentException("ODKFields only valid for Tridas objects, elements and samples");
 		}
 		
-		ArrayList<Class<? extends AbstractODKField>> f = new ArrayList<Class<? extends AbstractODKField>>();
+		ArrayList<AbstractODKField> f = new ArrayList<AbstractODKField>();
 		
 		for(Class<? extends AbstractODKField> fieldClass : c.fieldsList)
 		{
@@ -55,7 +55,7 @@ public class ODKFields {
 				
 				if(instance.getTridasClass().equals(clazz))
 				{
-					f.add(fieldClass);
+					f.add(instance);
 				}
 				
 			} catch (InstantiationException e) {
@@ -71,10 +71,10 @@ public class ODKFields {
 	}
 	
 	
-	public static Class<? extends AbstractODKField>[] getFieldsAsArray(Class<? extends ITridas> clazz)
+	public static AbstractODKField[] getFieldsAsArray(Class<? extends ITridas> clazz)
 	{	
-		ArrayList<Class<? extends AbstractODKField>> fields = ODKFields.getFields(clazz);
-		return fields.toArray(new Class[fields.size()]);
+		ArrayList<AbstractODKField> fields = ODKFields.getFields(clazz);
+		return fields.toArray(new AbstractODKField[fields.size()]);
 	}
 
 }

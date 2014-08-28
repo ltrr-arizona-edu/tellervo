@@ -8,4 +8,9 @@ public abstract class AbstractODKField implements ODKFieldInterface {
 		return this.getFieldName();
 	}
 
+	public Object getDefaultValue()
+	{
+		return null;
+	}
+	
 }

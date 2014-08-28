@@ -10,7 +10,7 @@ public class ODKTridasObjectCode extends AbstractODKField {
 	public String getFieldName() {
 		return "Object code";
 	}
-
+	
 	@Override
 	public String getFieldCode() {
 		return "tridas_object_code";
@@ -34,6 +34,12 @@ public class ODKTridasObjectCode extends AbstractODKField {
 	@Override
 	public Class<? extends ITridas> getTridasClass() {
 		return TridasObject.class;
+	}
+	
+	@Override
+	public Object getDefaultValue()
+	{
+		return "ABC";
 	}
 
 }

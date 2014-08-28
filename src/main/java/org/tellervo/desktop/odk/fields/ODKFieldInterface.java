@@ -12,6 +12,8 @@ public interface ODKFieldInterface {
 	
 	public String getFieldDescription();
 	
+	public Object getDefaultValue();
+	
 	public Class getFieldType();
 	
 	public Boolean isFieldRequired();

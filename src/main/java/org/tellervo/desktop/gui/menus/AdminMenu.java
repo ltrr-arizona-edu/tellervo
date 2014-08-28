@@ -20,6 +20,7 @@
 
 package org.tellervo.desktop.gui.menus;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +28,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.Action;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -43,6 +45,7 @@ import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
 import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
+import org.tellervo.desktop.odk.ODKFormDesignPanel;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -310,6 +313,24 @@ public class AdminMenu extends JMenu {
 	    
 	 	add(curationmenu);
 	 	addSeparator();
+	 	
+	 	JMenuItem buildODKForm = new JMenuItem("Design ODK form");
+	 	buildODKForm.setIcon(Builder.getIcon("odk.png", 22));
+	 	buildODKForm.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				ODKFormDesignPanel panel = new ODKFormDesignPanel();
+				JDialog dialog = new JDialog();
+				dialog.setLayout(new BorderLayout());
+				dialog.add(panel, BorderLayout.CENTER);
+				dialog.pack();
+				dialog.setVisible(true);
+				
+			}
+	 		
+	 	});
+	 	add(buildODKForm);
 	 	
 	 	Action metadbAction = new MetadatabaseBrowserAction();
 	 	JMenuItem metadb = new JMenuItem(metadbAction);
