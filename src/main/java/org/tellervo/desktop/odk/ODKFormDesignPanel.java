@@ -5,8 +5,11 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -22,6 +25,7 @@ import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.Position;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -32,6 +36,11 @@ import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.ODKFields;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.TridasObject;
+
+import com.jidesoft.swing.CheckBoxList;
+import com.jidesoft.swing.SearchableUtils;
+
+import javax.swing.ListSelectionModel;
 
 
 
@@ -49,12 +58,16 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 	private ODKFieldListModel selectedFieldsModel;
 	private static final Logger log = LoggerFactory.getLogger(ODKFormDesignPanel.class);
 	private JComboBox txtDefault;
-
+    private DefaultListModel _model;
+    private CheckBoxList cbxlstChoices;
+    final private JDialog parent;
+    
 	/**
 	 * Create the panel.
 	 */
-	public ODKFormDesignPanel() {
+	public ODKFormDesignPanel(JDialog parent) {
 		setLayout(new BorderLayout(0, 0));
+		this.parent = parent;
 		
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -73,7 +86,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		
 		JPanel panelFieldPicker = new JPanel();
 		panelMain.add(panelFieldPicker, "cell 0 1 2 1,grow");
-		panelFieldPicker.setLayout(new MigLayout("", "[grow,fill][70px:70px:70px][grow,fill]", "[][grow,center]"));
+		panelFieldPicker.setLayout(new MigLayout("", "[300px,grow,fill][70px:70px:70px][300px,grow,fill]", "[][grow,center]"));
 		
 		JLabel lblAvailableFields = new JLabel("Available fields:");
 		panelFieldPicker.add(lblAvailableFields, "cell 0 0");
@@ -85,6 +98,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		panelFieldPicker.add(scrollPaneAvailable, "cell 0 1,grow");
 		
 		lstAvailableFields = new JList();
+		lstAvailableFields.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		availableFieldsModel = new ODKFieldListModel(ODKFields.getFields(TridasObject.class));
 		lstAvailableFields.setModel(availableFieldsModel);
 
@@ -131,6 +145,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		panelFieldPicker.add(scrollPaneSelected, "cell 2 1,grow");
 		
 		lstSelectedFields = new JList();
+		lstSelectedFields.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		selectedFieldsModel = new ODKFieldListModel();
 		lstSelectedFields.setModel(selectedFieldsModel);
 		
@@ -148,14 +163,14 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		JPanel panelFieldOptions = new JPanel();
 		panelFieldOptions.setBorder(new TitledBorder(UIManager.getBorder("EditorPane.border"), "Field details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane.setRightComponent(panelFieldOptions);
-		panelFieldOptions.setLayout(new MigLayout("", "[right][grow]", "[][][][][][grow]"));
+		panelFieldOptions.setLayout(new MigLayout("", "[right][grow][]", "[][][][][][grow][grow]"));
 		
 		JLabel lblFieldNameDisplayed = new JLabel("Name displayed to user:");
 		panelFieldOptions.add(lblFieldNameDisplayed, "cell 0 0,alignx trailing");
 		
 		txtFieldName = new JTextField();
 		txtFieldName.setEditable(false);
-		panelFieldOptions.add(txtFieldName, "cell 1 0,growx");
+		panelFieldOptions.add(txtFieldName, "cell 1 0 2 1,growx");
 		txtFieldName.setColumns(10);
 		
 		JLabel lblInternalFieldCode = new JLabel("Internal code name:");
@@ -163,7 +178,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		
 		txtFieldCode = new JTextField();
 		txtFieldCode.setEditable(false);
-		panelFieldOptions.add(txtFieldCode, "cell 1 1,growx");
+		panelFieldOptions.add(txtFieldCode, "cell 1 1 2 1,growx");
 		txtFieldCode.setColumns(10);
 		
 		JLabel lblType = new JLabel("Data type:");
@@ -171,7 +186,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		
 		txtType = new JTextField();
 		txtType.setEditable(false);
-		panelFieldOptions.add(txtType, "cell 1 2,growx");
+		panelFieldOptions.add(txtType, "cell 1 2 2 1,growx");
 		txtType.setColumns(10);
 		
 		JLabel lblDefaultValue = new JLabel("Default value:");
@@ -180,7 +195,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		txtDefault = new JComboBox();
 		txtDefault.setEnabled(false);
 		txtDefault.setEditable(false);
-		panelFieldOptions.add(txtDefault, "cell 1 3,growx");
+		panelFieldOptions.add(txtDefault, "cell 1 3 2 1,growx");
 		
 		JLabel lblIsFieldMandatory = new JLabel("Is field mandatory?:");
 		panelFieldOptions.add(lblIsFieldMandatory, "cell 0 4");
@@ -189,14 +204,37 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		chkRequired.setEnabled(false);
 		panelFieldOptions.add(chkRequired, "cell 1 4");
 		
+		JLabel lblOptionsToInclude = new JLabel("Options to include:");
+		panelFieldOptions.add(lblOptionsToInclude, "cell 0 5,aligny top");
+		
+		CheckBoxList list = createCheckBoxList();
+
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setViewportView(list);
+		panelFieldOptions.add(scrollPane, "cell 1 5,grow");
+		
+		JButton btnAll = new JButton("");
+		btnAll.setIcon(Builder.getIcon("selectall.png", 16));
+		btnAll.setActionCommand("SelectAllChoices");
+		btnAll.addActionListener(this);
+		panelFieldOptions.add(btnAll, "flowy,cell 2 5,aligny top");
+		
 		JLabel lblDescription = new JLabel("Description:");
-		panelFieldOptions.add(lblDescription, "cell 0 5,alignx right,aligny top");
+		panelFieldOptions.add(lblDescription, "cell 0 6,alignx right,aligny top");
 		
 		txtDescription = new JTextArea();
 		txtDescription.setWrapStyleWord(true);
 		txtDescription.setLineWrap(true);
 		txtDescription.setEditable(false);
-		panelFieldOptions.add(txtDescription, "cell 1 5,grow");
+		panelFieldOptions.add(txtDescription, "cell 1 6,grow");
+		
+		JButton btnNone = new JButton("");
+		btnNone.setActionCommand("SelectNoChoices");
+		btnNone.addActionListener(this);
+		btnNone.setIcon(Builder.getIcon("selectnone.png", 16));
+
+		panelFieldOptions.add(btnNone, "cell 2 5");
 		
 		JPanel panel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
@@ -204,9 +242,13 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		add(panel, BorderLayout.SOUTH);
 		
 		JButton btnSave = new JButton("Save");
+		btnSave.setActionCommand("Save");
+		btnSave.addActionListener(this);
 		panel.add(btnSave);
 		
 		JButton btnCancel = new JButton("Cancel");
+		btnCancel.setActionCommand("Cancel");
+		btnCancel.addActionListener(this);
 		panel.add(btnCancel);
 
 	}
@@ -237,8 +279,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 
 		App.init();
 
-		ODKFormDesignPanel panel = new ODKFormDesignPanel();
 		JDialog dialog = new JDialog();
+		ODKFormDesignPanel panel = new ODKFormDesignPanel(dialog);
+
 		dialog.getContentPane().setLayout(new BorderLayout());
 		dialog.getContentPane().add(panel, BorderLayout.CENTER);
 		dialog.pack();
@@ -277,7 +320,99 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			availableFieldsModel.addAllFields(fields);
 			selectedFieldsModel.removeFields(fields);
 		}
-		
+		else if(evt.getActionCommand().equals("Save"))
+		{
+			for(int i=0; i<_model.getSize(); i++)
+			{
+				SelectableChoice choice = (SelectableChoice) _model.get(i);
+				
+				if(choice.isSelected())
+				{
+					log.debug("Choice: "+choice.toString());
+				}
+			}
+			
+		}
+		else if(evt.getActionCommand().equals("Cancel"))
+		{
+			parent.dispose();
+		}
+		else if(evt.getActionCommand().equals("SelectAllChoices"))
+		{
+			DefaultListModel newModel = new DefaultListModel();
+
+			for(int i=0; i<_model.getSize(); i++)
+			{
+				SelectableChoice item = ((SelectableChoice)_model.get(i));
+				item.setSelected(true);
+				newModel.addElement(item);
+			}
+			_model = newModel;
+			cbxlstChoices.setModel(_model);
+			cbxlstChoices.repaint();
+		}
+		else if(evt.getActionCommand().equals("SelectNoChoices"))
+		{
+			DefaultListModel newModel = new DefaultListModel();
+
+			for(int i=0; i<_model.getSize(); i++)
+			{
+				SelectableChoice item = ((SelectableChoice)_model.get(i));
+				item.setSelected(false);
+				newModel.addElement(item);
+			}
+			_model = newModel;
+			cbxlstChoices.setModel(_model);
+			cbxlstChoices.repaint();
+
+		}
 	}
 	
+    private CheckBoxList createCheckBoxList() {
+        _model = new DefaultListModel();
+        SelectableChoice[] choice = {new SelectableChoice("aa"), 
+        		new SelectableChoice("bb"), 
+        		new SelectableChoice("cc"),
+        		new SelectableChoice("dd"),
+        		new SelectableChoice("e"),
+        		new SelectableChoice("f"),
+        		new SelectableChoice("g"),
+        		new SelectableChoice("h")};
+        for (SelectableChoice s : choice) {
+            _model.addElement(s);
+        }
+        cbxlstChoices = new CheckBoxList(_model);
+        cbxlstChoices.getCheckBoxListSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+
+        SearchableUtils.installSearchable(cbxlstChoices);
+        cbxlstChoices.getCheckBoxListSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent e) {
+                if (!e.getValueIsAdjusting()) {
+//                   
+                	// Clear all selections             
+                	for(int i=0; i < _model.getSize(); i++)
+                	{
+                        SelectableChoice item = (SelectableChoice)_model.get(i);
+                        item.setSelected(false);
+                	}  
+                	
+                	// No reselect all checked items
+                	int[] selected = cbxlstChoices.getCheckBoxListSelectedIndices();
+                    for (int i = 0; i < selected.length; i++) 
+                    {
+                        SelectableChoice item = (SelectableChoice)_model.get(selected[i]);
+                        item.setSelected(true);
+                    }
+                }
+            }
+        });
+        cbxlstChoices.setCheckBoxListSelectedIndices(new int[]{2, 3, 20});
+        return cbxlstChoices;
+    }
+    
+
+	
 }
+
+

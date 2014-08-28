@@ -320,8 +320,8 @@ public class AdminMenu extends JMenu {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				ODKFormDesignPanel panel = new ODKFormDesignPanel();
 				JDialog dialog = new JDialog();
+				ODKFormDesignPanel panel = new ODKFormDesignPanel(dialog);
 				dialog.setLayout(new BorderLayout());
 				dialog.add(panel, BorderLayout.CENTER);
 				dialog.pack();
