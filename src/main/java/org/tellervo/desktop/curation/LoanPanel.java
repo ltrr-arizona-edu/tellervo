@@ -517,7 +517,7 @@ public class LoanPanel extends JPanel implements ActionListener {
 		}
 		else
 		{
-			scrollPaneSamples.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, false));		
+			scrollPaneSamples.setBorder(BorderFactory.createLineBorder(Color.GRAY));		
 		}
 	}
 	

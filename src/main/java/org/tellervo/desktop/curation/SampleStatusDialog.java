@@ -340,7 +340,7 @@ public class SampleStatusDialog extends JDialog implements ActionListener{
 		}
 		else
 		{
-			scrollPaneSamples.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1, false));		
+			scrollPaneSamples.setBorder(BorderFactory.createLineBorder(Color.GRAY));		
 		}
 	}
   

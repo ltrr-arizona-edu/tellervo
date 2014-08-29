@@ -47,8 +47,8 @@ public class AddRemoveWSITagDialog extends JDialog implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
-	private JList<WSITag> lstTags;
-	private DefaultListModel<WSITag> model;
+	private JList lstTags;
+	private DefaultListModel model;
 	private boolean changed = false;
 	private ArrayList<WSITag> removedTags = new ArrayList<WSITag>();
 	private ITridasSeries series;
@@ -98,7 +98,7 @@ public class AddRemoveWSITagDialog extends JDialog implements ActionListener{
 		
 		
 		
-		model = new DefaultListModel<WSITag>();
+		model = new DefaultListModel();
 	
 		
 		for(WSITag tag : list)
@@ -234,7 +234,7 @@ public class AddRemoveWSITagDialog extends JDialog implements ActionListener{
 		if(lstTags.getSelectedIndex()>=0)
 		{
 			int ind = lstTags.getSelectedIndex();
-			removedTags.add(model.get(ind));
+			removedTags.add((WSITag) model.get(ind));
 			model.remove(ind);
 		}
 	}

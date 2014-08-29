@@ -7,7 +7,7 @@ import javax.swing.AbstractListModel;
 
 import org.tellervo.desktop.odk.fields.AbstractODKField;
 
-public class ODKFieldListModel extends AbstractListModel<AbstractODKField> {
+public class ODKFieldListModel extends AbstractListModel {
 
 	private static final long serialVersionUID = 1L;
 	ArrayList<AbstractODKField> fields;

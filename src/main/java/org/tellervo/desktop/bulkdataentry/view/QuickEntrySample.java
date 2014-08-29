@@ -44,7 +44,7 @@ public class QuickEntrySample extends JDialog implements ActionListener, Propert
 	private final JPanel contentPanel = new JPanel();
 	private IBulkImportSectionModel sampleModel;
 	private IBulkImportSectionModel elementModel;
-	private JComboBox<ControlledVoc> cboSampleType;
+	private JComboBox cboSampleType;
 	private JSpinner spnSampleNumber;
 	private JProgressBar progressBar;
 	private Task task;

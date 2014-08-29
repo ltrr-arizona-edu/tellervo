@@ -382,7 +382,7 @@ public class BugReport {
 			BasicResponseHandler handler = new BasicResponseHandler();
 			String result = client.execute(post, handler);
 			
-			Alert.error("Bug report submitted", result);
+			Alert.message("Bug report submitted", result);
 		} catch (Exception e) {
 			Alert.error("Error submitting bug report", "There was a problem submitting your bug report. \nPlease email the Tellervo developers directly");
 			return false;

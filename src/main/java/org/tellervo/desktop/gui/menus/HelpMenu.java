@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -36,16 +35,13 @@ import javax.swing.JMenuItem;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.AboutBox;
-import org.tellervo.desktop.gui.Help;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.setupwizard.SetupWizard;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.versioning.UpdateChecker;
-
-import com.dmurph.mvc.MVC;
 
 
 /**

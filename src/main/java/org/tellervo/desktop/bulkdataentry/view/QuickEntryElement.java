@@ -50,9 +50,9 @@ public class QuickEntryElement extends JDialog implements ActionListener, Proper
 	private final JPanel contentPanel = new JPanel();
 	private JSpinner spnFirstElementCode;
 	private JSpinner spnNumberOfElements;
-	private JComboBox<ControlledVoc> cboTaxon;
-	private JComboBox<ControlledVoc> cboElementType;
-	private JComboBox<TridasObject> cboObject;
+	private JComboBox cboTaxon;
+	private JComboBox cboElementType;
+	private JComboBox cboObject;
 	private IBulkImportSectionModel model;
 	protected ArrayListModel<TridasObject> objModel = new ArrayListModel<TridasObject>();
 	private JLabel lblPrefix;
@@ -81,7 +81,7 @@ public class QuickEntryElement extends JDialog implements ActionListener, Proper
 			contentPanel.add(lblObject, "cell 0 0,alignx trailing");
 		}
 		{
-			cboObject = new JComboBox<TridasObject>();	
+			cboObject = new JComboBox();	
 	    	TridasObjectRenderer rend = new TridasObjectRenderer();
 	    	cboObject.setRenderer(rend);
 	    	objModel = new ArrayListModel<TridasObject>(App.tridasObjects.getObjectList());
