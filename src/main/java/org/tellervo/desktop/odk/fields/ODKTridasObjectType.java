@@ -1,19 +1,37 @@
 package org.tellervo.desktop.odk.fields;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.odk.SelectableChoice;
 import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tridas.interfaces.ITridas;
+import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasObject;
 
-public class ODKTridasObjectTitle extends AbstractODKField {
-	
+public class ODKTridasObjectType extends AbstractODKChoiceField {
+
 	String description;
 	String name;
 	
-	public ODKTridasObjectTitle()
+	public ODKTridasObjectType()
 	{
-		description = Documentation.getDocumentation("object.title");
-		name = "Object title";
+		List<ControlledVoc> types = Dictionary.getMutableDictionary("objectTypeDictionary");
+		
+		ArrayList<Object> objects = new ArrayList<Object>();
+		for(ControlledVoc type: types)
+		{
+			objects.add(type);
+		}
+		
+		
+		this.setPossibleChoices(SelectableChoice.makeObjectsSelectable(objects));
+		
+		description = Documentation.getDocumentation("object.type");
+		name = "Object type";
 	}
+	
 	
 	@Override
 	public String getFieldName() {
@@ -22,17 +40,17 @@ public class ODKTridasObjectTitle extends AbstractODKField {
 
 	@Override
 	public String getFieldCode() {
-		return "tridas_object_title";
+		return "tridas_object_type";
 	}
 
 	@Override
 	public String getFieldDescription() {
 		return description;
 	}
-	
+
 	@Override
 	public ODKDataType getFieldType() {
-		return ODKDataType.STRING;
+		return ODKDataType.SELECT_ONE;
 	}
 
 	@Override

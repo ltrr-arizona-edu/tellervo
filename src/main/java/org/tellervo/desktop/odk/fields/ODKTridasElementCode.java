@@ -6,9 +6,18 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementCode extends AbstractODKField {
 
+	String description;
+	String name;
+	
+	public ODKTridasElementCode()
+	{
+		description = Documentation.getDocumentation("element.code");
+		name = "Element code";
+	}
+	
 	@Override
 	public String getFieldName() {
-		return "Element code";
+		return name;
 	}
 
 	@Override
@@ -18,12 +27,12 @@ public class ODKTridasElementCode extends AbstractODKField {
 
 	@Override
 	public String getFieldDescription() {
-		return Documentation.getDocumentation("element.code");
+		return description;
 	}
 
 	@Override
-	public Class getFieldType() {
-		return String.class;
+	public ODKDataType getFieldType() {
+		return ODKDataType.STRING;
 	}
 
 	@Override
@@ -35,5 +44,16 @@ public class ODKTridasElementCode extends AbstractODKField {
 	public Class<? extends ITridas> getTridasClass() {
 		return TridasElement.class;
 	}
+	
+	@Override
+	public void setName(String str)
+	{
+		this.name = str;
+	}
 
+	@Override
+	public void setDescription(String str)
+	{
+		this.description = str;
+	}
 }

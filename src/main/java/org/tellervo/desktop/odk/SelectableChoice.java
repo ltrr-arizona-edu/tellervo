@@ -1,21 +1,31 @@
 package org.tellervo.desktop.odk;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.tridas.schema.ControlledVoc;
+
 import com.jidesoft.swing.Selectable;
 
 public class SelectableChoice implements Selectable {
 
 	boolean selected = false;
 	boolean enabled = true;
-	String label;
+	Object item;
 	
-	public SelectableChoice(String label)
+	public SelectableChoice(Object item)
 	{
-		this.label = label;
+		this.item = item;
 	}
 	
 	public String toString()
 	{
-		return label;
+		if(item instanceof ControlledVoc)
+		{
+			return ((ControlledVoc)item).getNormal();
+		}
+		
+		return item.toString();
 	}
 	
 	@Override
@@ -46,4 +56,22 @@ public class SelectableChoice implements Selectable {
 
 	}
 
+	/**
+	 * Convert an array list of objects into an array list of selectable choices
+	 *  
+	 * @param objects
+	 * @return
+	 */
+	public static ArrayList<SelectableChoice> makeObjectsSelectable(Collection<Object> objects)
+	{
+		ArrayList<SelectableChoice> choices = new ArrayList<SelectableChoice>();
+		
+		for(Object o : objects)
+		{
+			SelectableChoice choice = new SelectableChoice(o);
+			choices.add(choice);
+		}
+		
+		return choices;	
+	}
 }

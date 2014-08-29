@@ -14,12 +14,15 @@ public interface ODKFieldInterface {
 	
 	public Object getDefaultValue();
 	
-	public Class getFieldType();
+	public ODKDataType getFieldType();
 	
 	public Boolean isFieldRequired();
 	
 	public Class<? extends ITridas> getTridasClass();
 	
 
+	public void setName(String str);
+	
+	public void setDescription(String str);
 	
 }

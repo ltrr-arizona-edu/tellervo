@@ -6,11 +6,20 @@ import org.tridas.schema.TridasObject;
 
 public class ODKTridasObjectCode extends AbstractODKField {
 
-	@Override
-	public String getFieldName() {
-		return "Object code";
+	String description;
+	String name;
+	
+	public ODKTridasObjectCode()
+	{
+		description = Documentation.getDocumentation("object.code");
+		name = "Object code";
 	}
 	
+	@Override
+	public String getFieldName() {
+		return name;
+	}
+
 	@Override
 	public String getFieldCode() {
 		return "tridas_object_code";
@@ -18,12 +27,12 @@ public class ODKTridasObjectCode extends AbstractODKField {
 
 	@Override
 	public String getFieldDescription() {
-		return Documentation.getDocumentation("object.code");
+		return description;
 	}
 
 	@Override
-	public Class getFieldType() {
-		return String.class;
+	public ODKDataType getFieldType() {
+		return ODKDataType.STRING;
 	}
 
 	@Override
@@ -40,6 +49,18 @@ public class ODKTridasObjectCode extends AbstractODKField {
 	public Object getDefaultValue()
 	{
 		return "ABC";
+	}
+	
+	@Override
+	public void setName(String str)
+	{
+		this.name = str;
+	}
+
+	@Override
+	public void setDescription(String str)
+	{
+		this.description = str;
 	}
 
 }
