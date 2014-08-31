@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.apache.commons.io.FileUtils;
+import org.tellervo.desktop.odk.fields.AbstractODKChoiceField;
 import org.tellervo.desktop.odk.fields.ODKDataType;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 import org.tridas.io.util.StringUtils;
@@ -31,14 +32,14 @@ public class ODKFormGenerator {
 		data.append("</meta>");
 		for(ODKFieldInterface field : fields)
 		{
-			data.append("<"+field.getFieldCode()+"/>");
+			data.append("<"+field.getFieldCode()+">");
 			
 			// Include default value when appropriate
-			if(field.getDefaultValue()!=null)
+			if(field.getDefaultValue()!=null )
 			{
-				data.append(StringUtils.escapeForXML((String) field.getDefaultValue()));
+				data.append(StringUtils.escapeForXML(field.getDefaultValue().toString()));
 			}
-			
+					
 			data.append("</"+field.getFieldCode()+">");
 		}
 		data.append("</data>");
@@ -50,6 +51,7 @@ public class ODKFormGenerator {
 		data.append("<translation lang=\"eng\">");
 		for(ODKFieldInterface field : fields)
 		{
+					
 			// The field 
 			data.append("<text id=\"/data/"+field.getFieldCode()+":label\">");
 			data.append("<value>"+StringUtils.escapeForXML(field.getFieldName())+"</value>");
@@ -68,6 +70,21 @@ public class ODKFormGenerator {
 				data.append("<value>"+StringUtils.escapeForXML(field.getFieldDescription())+"</value>");
 			}
 			data.append("</text>");
+			
+				
+			if (field.getFieldType().equals(ODKDataType.SELECT_ONE))
+			{
+				AbstractODKChoiceField choicefield = (AbstractODKChoiceField) field;
+
+				int i =0;
+				for(SelectableChoice choice: choicefield.getSelectedChoices())
+				{
+					data.append("<text id=\"/data/"+field.getFieldCode()+":option"+i+"\">");
+					data.append("<value>"+choice.toString()+"</value>");
+					data.append("</text>");
+					i++;
+				}
+			}
 		}            
 		data.append("</translation>");
 		data.append("</itext>");
@@ -93,12 +110,37 @@ public class ODKFormGenerator {
 		data.append("</h:head>");
 		data.append("<h:body>");
 		
+		// Code for the fields to display to the user
 		for(ODKFieldInterface field : fields)
 		{
-			data.append("<input ref=\"/data/"+field.getFieldCode()+"\">");
-			data.append("<label ref=\"jr:itext('/data/"+field.getFieldCode()+":label')\"/>");
-			data.append("<hint ref=\"jr:itext('/data/"+field.getFieldCode()+":hint')\"/>");
-			data.append("</input>");
+			// Standard text input
+			if(field.getFieldType().equals(ODKDataType.STRING))
+			{			
+				data.append("<input ref=\"/data/"+field.getFieldCode()+"\">");
+				data.append("<label ref=\"jr:itext('/data/"+field.getFieldCode()+":label')\"/>");
+				data.append("<hint ref=\"jr:itext('/data/"+field.getFieldCode()+":hint')\"/>");
+				data.append("</input>");
+			}
+			//Select one option
+			else if (field.getFieldType().equals(ODKDataType.SELECT_ONE))
+			{
+				data.append("<select1 ref=\"/data/"+field.getFieldCode()+"\">");
+				data.append("<label ref=\"jr:itext('/data/"+field.getFieldCode()+":label')\"/>");
+				data.append("<hint ref=\"jr:itext('/data/"+field.getFieldCode()+":hint')\"/>");
+				
+				AbstractODKChoiceField choicefield = (AbstractODKChoiceField) field;
+
+				int i =0;
+				for(SelectableChoice choice: choicefield.getSelectedChoices())
+				{
+					data.append("<item>");
+					data.append("<label ref=\"jr:itext('/data/"+field.getFieldCode()+":option"+i+"')\"/>");
+					data.append("<value>"+choice.toString()+"</value>");
+					data.append("</item>");
+					i++;
+				}
+				data.append("</select1>");
+			}
 	        
 		}
 	    

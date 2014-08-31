@@ -81,6 +81,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
     private JTextField txtFormName;
     private JTextField txtDefault;
     private DefaultComboBoxModel defModel;
+    private JLabel lblOptionsToInclude;
+    private JButton btnAll;
+    private JButton btnNone;
     
 	/**
 	 * Create the panel.
@@ -287,7 +290,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		chkRequired.setEnabled(false);
 		panelFieldOptions.add(chkRequired, "cell 1 3");
 		
-		JLabel lblOptionsToInclude = new JLabel("Options to include:");
+		lblOptionsToInclude = new JLabel("Options to include:");
 		panelFieldOptions.add(lblOptionsToInclude, "cell 0 4,aligny top");
 		
 		choicesScrollPane = new JScrollPane();
@@ -302,13 +305,13 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		choicesScrollPane.setViewportView(cbxlstChoices);
 		panelFieldOptions.add(choicesScrollPane, "cell 1 4,grow");
 		
-		JButton btnAll = new JButton("");
+		btnAll = new JButton("");
 		btnAll.setIcon(Builder.getIcon("selectall.png", 16));
 		btnAll.setActionCommand("SelectAllChoices");
 		btnAll.addActionListener(this);
 		panelFieldOptions.add(btnAll, "flowy,cell 2 4,aligny top");
 		
-		JButton btnNone = new JButton("");
+		btnNone = new JButton("");
 		btnNone.setActionCommand("SelectNoChoices");
 		btnNone.addActionListener(this);
 		btnNone.setIcon(Builder.getIcon("selectnone.png", 16));
@@ -333,6 +336,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		// Make sure all mandatory fields are selected
 		this.addAllFields();
 		this.removeAllNonMandatoryFields();
+		setChoiceGUIVisible(false);
+
 
 	}
 	
@@ -394,6 +399,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 
 			cboDefault.setVisible(true);
 			txtDefault.setVisible(false);
+			setChoiceGUIVisible(true);
+
 			
 
 		}
@@ -408,16 +415,26 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 				this.txtDefault.setText("");
 			}
 
-			this.cbxlstChoices = new CheckBoxList();
-			this.choicesScrollPane.setViewportView(cbxlstChoices);
-			cbxlstChoices.repaint();
-			choicesScrollPane.revalidate();
 			cboDefault.setVisible(false);
 			txtDefault.setVisible(true);
+			setChoiceGUIVisible(false);
+		}
+		else if(selectedField.getFieldType().equals(ODKDataType.IMAGE) || 
+				selectedField.getFieldType().equals(ODKDataType.AUDIO) ||
+				selectedField.getFieldType().equals(ODKDataType.VIDEO) )
+		{
+			
+			this.txtDefault.setVisible(false);
+			this.cboDefault.setVisible(false);
+
+			setChoiceGUIVisible(false);
+
 		}
 		else
 		{
 			log.error("Fields of data type "+selectedField.getFieldType()+" are not yet supported");
+			setChoiceGUIVisible(false);
+
 		}
 	}
 	
@@ -439,6 +456,19 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		{
 			cboDefault.setSelectedIndex(-1);
 		}
+	}
+	
+	/**
+	 * Show or hide all the choice gui components 
+	 * 
+	 * @param b
+	 */
+	private void setChoiceGUIVisible(boolean b)
+	{
+		this.choicesScrollPane.setVisible(b);
+		this.lblOptionsToInclude.setVisible(b);
+		this.btnAll.setVisible(b);
+		this.btnNone.setVisible(b);
 	}
 	
 	/**
@@ -647,8 +677,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		
 		return outputFile;
 	}
-	
-	
 
 }
 

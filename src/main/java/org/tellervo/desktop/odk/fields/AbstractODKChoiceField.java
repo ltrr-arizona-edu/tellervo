@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import org.apache.commons.lang.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.odk.ODKFormDesignPanel;
 import org.tellervo.desktop.odk.SelectableChoice;
 
 
@@ -15,6 +14,11 @@ public abstract class AbstractODKChoiceField extends AbstractODKField {
 	private static final Logger log = LoggerFactory.getLogger(AbstractODKChoiceField.class);
 
 
+	public AbstractODKChoiceField(ODKDataType datatype, String fieldcode, String fieldname, String description, Object defaultvalue)
+	{
+		super(datatype, fieldcode, fieldname, description, defaultvalue);
+
+	}
 	
 	public void setPossibleChoices(ArrayList<SelectableChoice> choices)
 	{

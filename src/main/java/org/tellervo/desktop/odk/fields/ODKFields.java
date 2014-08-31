@@ -18,6 +18,9 @@ public class ODKFields {
 		fieldsList.add(ODKTridasObjectType.class);
 		fieldsList.add(ODKTridasObjectComments.class);
 		fieldsList.add(ODKTridasObjectDescription.class);
+		fieldsList.add(ODKTridasObjectPhoto.class);
+		fieldsList.add(ODKTridasObjectSound.class);
+		fieldsList.add(ODKTridasObjectVideo.class);
 
 		
 		fieldsList.add(ODKTridasElementCode.class);

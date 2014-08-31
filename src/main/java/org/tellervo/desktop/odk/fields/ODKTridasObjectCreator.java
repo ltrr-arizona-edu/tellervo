@@ -4,11 +4,11 @@ import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
 
-public class ODKTridasObjectComments extends AbstractODKField {
-
-	public ODKTridasObjectComments()
+public class ODKTridasObjectCreator extends AbstractODKField {
+	
+	public ODKTridasObjectCreator()
 	{
-		super(ODKDataType.STRING, "tridas_object_comments", "Object comments", Documentation.getDocumentation("object.comments"), null);
+		super(ODKDataType.STRING, "tridas_object_creator", "Object creator", Documentation.getDocumentation("object.creator"), null);
 	}
 	
 	@Override

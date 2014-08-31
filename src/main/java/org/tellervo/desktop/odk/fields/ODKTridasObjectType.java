@@ -12,12 +12,10 @@ import org.tridas.schema.TridasObject;
 
 public class ODKTridasObjectType extends AbstractODKChoiceField {
 
-	String description;
-	String name;
-	Object defaultvalue;
-
 	public ODKTridasObjectType()
 	{
+		super(ODKDataType.SELECT_ONE, "tridas_object_type", "Object type", Documentation.getDocumentation("object.type"), null);
+		
 		List<ControlledVoc> types = Dictionary.getMutableDictionary("objectTypeDictionary");
 		
 		ArrayList<Object> objects = new ArrayList<Object>();
@@ -28,32 +26,8 @@ public class ODKTridasObjectType extends AbstractODKChoiceField {
 		
 		
 		this.setPossibleChoices(SelectableChoice.makeObjectsSelectable(objects));
-		
-		description = Documentation.getDocumentation("object.type");
-		name = "Object type";
 	}
 	
-	
-	@Override
-	public String getFieldName() {
-		return name;
-	}
-
-	@Override
-	public String getFieldCode() {
-		return "tridas_object_type";
-	}
-
-	@Override
-	public String getFieldDescription() {
-		return description;
-	}
-
-	@Override
-	public ODKDataType getFieldType() {
-		return ODKDataType.SELECT_ONE;
-	}
-
 	@Override
 	public Boolean isFieldRequired() {
 		return true;
@@ -64,28 +38,4 @@ public class ODKTridasObjectType extends AbstractODKChoiceField {
 		return TridasObject.class;
 	}
 
-	@Override
-	public void setName(String str)
-	{
-		this.name = str;
-	}
-
-	@Override
-	public void setDescription(String str)
-	{
-		this.description = str;
-	}
-	
-	@Override
-	public Object getDefaultValue()
-	{
-		return defaultvalue;
-	}
-	
-	
-	@Override
-	public void setDefaultValue(Object o)
-	{
-		this.defaultvalue = o;
-	}
 }

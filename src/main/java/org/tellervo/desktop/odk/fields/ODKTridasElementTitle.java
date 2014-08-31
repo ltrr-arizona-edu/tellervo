@@ -6,36 +6,11 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementTitle extends AbstractODKField {
 
-	String description;
-	String name;
-	Object defaultvalue;
-
 	public ODKTridasElementTitle()
 	{
-		description = Documentation.getDocumentation("element.title");
-		name = "Element title";
+		super(ODKDataType.STRING, "tridas_element_title", "Element title", Documentation.getDocumentation("element.title"), null);
 	}
 	
-	@Override
-	public String getFieldName() {
-		return name;
-	}
-
-	@Override
-	public String getFieldCode() {
-		return "tridas_element_title";
-	}
-
-	@Override
-	public String getFieldDescription() {
-		return description;
-	}
-
-	@Override
-	public ODKDataType getFieldType() {
-		return ODKDataType.STRING;
-	}
-
 	@Override
 	public Boolean isFieldRequired() {
 		return true;
@@ -45,29 +20,5 @@ public class ODKTridasElementTitle extends AbstractODKField {
 	public Class<? extends ITridas> getTridasClass() {
 		return TridasElement.class;
 	}
-	
-	@Override
-	public void setName(String str)
-	{
-		this.name = str;
-	}
 
-	@Override
-	public void setDescription(String str)
-	{
-		this.description = str;
-	}
-
-	@Override
-	public Object getDefaultValue()
-	{
-		return defaultvalue;
-	}
-	
-	
-	@Override
-	public void setDefaultValue(Object o)
-	{
-		this.defaultvalue = o;
-	}
 }
