@@ -8,6 +8,7 @@ public class ODKTridasObjectCode extends AbstractODKField {
 
 	String description;
 	String name;
+	Object defaultvalue;
 	
 	public ODKTridasObjectCode()
 	{
@@ -45,12 +46,7 @@ public class ODKTridasObjectCode extends AbstractODKField {
 		return TridasObject.class;
 	}
 	
-	@Override
-	public Object getDefaultValue()
-	{
-		return "ABC";
-	}
-	
+
 	@Override
 	public void setName(String str)
 	{
@@ -61,6 +57,19 @@ public class ODKTridasObjectCode extends AbstractODKField {
 	public void setDescription(String str)
 	{
 		this.description = str;
+	}
+	
+	@Override
+	public Object getDefaultValue()
+	{
+		return defaultvalue;
+	}
+	
+	
+	@Override
+	public void setDefaultValue(Object o)
+	{
+		this.defaultvalue = o;
 	}
 
 }

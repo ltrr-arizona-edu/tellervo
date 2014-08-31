@@ -1,6 +1,7 @@
 package org.tellervo.desktop.odk;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.ActionEvent;
@@ -15,8 +16,10 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -29,18 +32,25 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileFilter;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.apache.commons.io.FilenameUtils;
+import org.codehaus.plexus.util.FileUtils;
+import org.fhaes.filefilter.FHAESFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.AbstractODKChoiceField;
+import org.tellervo.desktop.odk.fields.ODKDataType;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 
 import org.tellervo.desktop.odk.fields.ODKFields;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.util.ExtensionFileFilter;
 import org.tridas.schema.TridasObject;
 
 import com.jidesoft.swing.CheckBoxList;
@@ -62,14 +72,15 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 	private ODKFieldListModel availableFieldsModel;
 	private ODKFieldListModel selectedFieldsModel;
 	private static final Logger log = LoggerFactory.getLogger(ODKFormDesignPanel.class);
-	private JComboBox txtDefault;
-    private DefaultListModel choiceModel;
+	private JComboBox cboDefault;
+    private SelectableListModel choiceModel;
     private CheckBoxList cbxlstChoices;
     final private JDialog parent;
     private JScrollPane choicesScrollPane;
     private ODKFieldInterface selectedField;
     private JTextField txtFormName;
-    
+    private JTextField txtDefault;
+    private DefaultComboBoxModel defModel;
     
 	/**
 	 * Create the panel.
@@ -190,7 +201,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		JPanel panelFieldOptions = new JPanel();
 		panelFieldOptions.setBorder(new TitledBorder(UIManager.getBorder("EditorPane.border"), "Field details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane.setRightComponent(panelFieldOptions);
-		panelFieldOptions.setLayout(new MigLayout("", "[right][grow][]", "[][59.00:59.00:59.00][][][grow]"));
+		panelFieldOptions.setLayout(new MigLayout("", "[right][grow][grow]", "[][59.00:59.00:59.00][grow][][grow]"));
 		
 		JLabel lblFieldNameDisplayed = new JLabel("Name:");
 		panelFieldOptions.add(lblFieldNameDisplayed, "cell 0 0,alignx trailing");
@@ -253,11 +264,21 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 						
 		JLabel lblDefaultValue = new JLabel("Default value:");
 		panelFieldOptions.add(lblDefaultValue, "cell 0 2,alignx trailing");
+		defModel = new DefaultComboBoxModel();
 		
-		txtDefault = new JComboBox();
-		txtDefault.setEnabled(false);
-		txtDefault.setEditable(false);
-		panelFieldOptions.add(txtDefault, "cell 1 2 2 1,growx");
+		JPanel panel_1 = new JPanel();
+		panelFieldOptions.add(panel_1, "cell 1 2 2 1,grow");
+		panel_1.setLayout(new MigLayout("hidemode 3", "[114px,grow,fill][grow,fill]", "[19px]"));
+		
+		txtDefault = new JTextField();
+		panel_1.add(txtDefault, "cell 0 0,alignx left,aligny top");
+		txtDefault.setColumns(10);
+		
+		cboDefault = new JComboBox();
+		panel_1.add(cboDefault, "cell 1 0");
+		cboDefault.setVisible(false);
+		cboDefault.addActionListener(this);
+		cboDefault.setActionCommand("DefaultChosen");
 		
 		JLabel lblIsFieldMandatory = new JLabel("Is field mandatory?:");
 		panelFieldOptions.add(lblIsFieldMandatory, "cell 0 3");
@@ -270,9 +291,13 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		panelFieldOptions.add(lblOptionsToInclude, "cell 0 4,aligny top");
 		
 		choicesScrollPane = new JScrollPane();
-
-		createCheckBoxList(null);
-
+		choicesScrollPane.setOpaque(false);
+		
+		cbxlstChoices = new CheckBoxList();
+			
+        
+     	
+		
 		
 		choicesScrollPane.setViewportView(cbxlstChoices);
 		panelFieldOptions.add(choicesScrollPane, "cell 1 4,grow");
@@ -320,26 +345,99 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 	
 	private void setDetailsPanel()
 	{
+		// Handle null fields first
 		if(selectedField==null)
 		{
 			this.txtFieldName.setText("");
 			this.txtDescription.setText("");
 			this.chkRequired.setSelected(false);
+			this.txtDefault.setText("");
 			return;
 		}
+		
+		
+		// Handle fields that are the same regardless of data type
 		this.txtFieldName.setText(selectedField.getFieldName());
 		this.txtDescription.setText(selectedField.getFieldDescription());
 		this.chkRequired.setSelected(selectedField.isFieldRequired());
 		
-		if(selectedField instanceof AbstractODKChoiceField)
+		
+		
+		if(selectedField.getFieldType().equals(ODKDataType.SELECT_ONE))
 		{
 			ArrayList<SelectableChoice> choices = ((AbstractODKChoiceField)selectedField).getAvailableChoices();
-			createCheckBoxList(choices);
-			log.debug("Number of choices = "+cbxlstChoices.getModel().getSize());
+			this.cbxlstChoices = new CheckBoxList(choices.toArray(new SelectableChoice[choices.size()]));
+			this.choicesScrollPane.setViewportView(cbxlstChoices);
+			cbxlstChoices.setCheckBoxListSelectedIndices(((AbstractODKChoiceField)selectedField).getSelectedChoicesIndices());
+			
+			cbxlstChoices.getCheckBoxListSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
+	        SearchableUtils.installSearchable(cbxlstChoices);
+	        cbxlstChoices.getCheckBoxListSelectionModel().addListSelectionListener(new ListSelectionListener() {
+	            public void valueChanged(ListSelectionEvent e) {
+	                if (!e.getValueIsAdjusting()) {
+	                                 	
+	                	if(selectedField instanceof AbstractODKChoiceField)
+	                	{
+	                		((AbstractODKChoiceField)selectedField).setSelectedChoices(cbxlstChoices.getCheckBoxListSelectedValues());
+	                		updateDefaultCombo();
+	                	}
+	                    
+	                }
+	            }
+	        });
+			
+			cbxlstChoices.repaint();
+			choicesScrollPane.revalidate();
+
+			updateDefaultCombo();
+
+			cboDefault.setVisible(true);
+			txtDefault.setVisible(false);
+			
+
+		}
+		else if(selectedField.getFieldType().equals(ODKDataType.STRING))
+		{
+			if(selectedField.getDefaultValue()!=null)
+			{
+				this.txtDefault.setText(selectedField.getDefaultValue().toString());
+			}
+			else
+			{
+				this.txtDefault.setText("");
+			}
+
+			this.cbxlstChoices = new CheckBoxList();
+			this.choicesScrollPane.setViewportView(cbxlstChoices);
+			cbxlstChoices.repaint();
+			choicesScrollPane.revalidate();
+			cboDefault.setVisible(false);
+			txtDefault.setVisible(true);
 		}
 		else
 		{
-			createCheckBoxList(null);
+			log.error("Fields of data type "+selectedField.getFieldType()+" are not yet supported");
+		}
+	}
+	
+	private void updateDefaultCombo()
+	{
+		AbstractODKChoiceField field = (AbstractODKChoiceField)selectedField;
+		defModel.removeAllElements();
+		for(SelectableChoice choice : field.getSelectedChoices())
+		{
+			defModel.addElement(choice);
+		}
+		cboDefault.setModel(defModel);
+		
+		if(field.getDefaultValue()!=null)
+		{
+			cboDefault.setSelectedItem(field.getDefaultValue());
+		}
+		else
+		{
+			cboDefault.setSelectedIndex(-1);
 		}
 	}
 	
@@ -356,6 +454,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		dialog.getContentPane().setLayout(new BorderLayout());
 		dialog.getContentPane().add(panel, BorderLayout.CENTER);
 		dialog.pack();
+		dialog.setIconImage(Builder.getApplicationIcon());
+		dialog.setTitle("ODK Form Builder");
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		dialog.setVisible(true);
 
@@ -444,89 +544,114 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		}
 		else if(evt.getActionCommand().equals("SelectAllChoices"))
 		{
-			DefaultListModel newModel = new DefaultListModel();
-
-			for(int i=0; i<choiceModel.getSize(); i++)
-			{
-				SelectableChoice item = ((SelectableChoice)choiceModel.get(i));
-				item.setSelected(true);
-				newModel.addElement(item);
-			}
-			choiceModel = newModel;
-			cbxlstChoices.setModel(choiceModel);
-			cbxlstChoices.repaint();
+			cbxlstChoices.selectAll();
 		}
 		else if(evt.getActionCommand().equals("SelectNoChoices"))
 		{
-			DefaultListModel newModel = new DefaultListModel();
+			cbxlstChoices.selectNone();
 
-			for(int i=0; i<choiceModel.getSize(); i++)
-			{
-				SelectableChoice item = ((SelectableChoice)choiceModel.get(i));
-				item.setSelected(false);
-				newModel.addElement(item);
-			}
-			choiceModel = newModel;
-			cbxlstChoices.setModel(choiceModel);
-			cbxlstChoices.repaint();
-
+		}
+		else if (evt.getActionCommand().equals("DefaultChosen"))
+		{
+			selectedField.setDefaultValue(cboDefault.getSelectedItem());
 		}
 	}
 	
-    private void createCheckBoxList(ArrayList<SelectableChoice> choices) {
-       
-    	if(choices==null) choices = new ArrayList<SelectableChoice>();
-    	
-    	choiceModel = new DefaultListModel();
-
-        for (SelectableChoice s : choices) {
-            choiceModel.addElement(s);
-        }
-        cbxlstChoices = new CheckBoxList(choiceModel);
-        cbxlstChoices.getCheckBoxListSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-
-        SearchableUtils.installSearchable(cbxlstChoices);
-        cbxlstChoices.getCheckBoxListSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if (!e.getValueIsAdjusting()) {
-                 
-                	// Clear all selections             
-                	for(int i=0; i < choiceModel.getSize(); i++)
-                	{
-                        SelectableChoice item = (SelectableChoice)choiceModel.get(i);
-                        item.setSelected(false);
-                	}  
-                	
-                	// Now reselect all checked items
-                	int[] selected = cbxlstChoices.getCheckBoxListSelectedIndices();
-                    for (int i = 0; i < selected.length; i++) 
-                    {
-                        SelectableChoice item = (SelectableChoice)choiceModel.get(selected[i]);
-                        item.setSelected(true);
-                    }
-                }
-            }
-        });
-        
-        choicesScrollPane.setViewportView(cbxlstChoices);
-        // Disable if no choices
-        cbxlstChoices.setEnabled(choices.size()>0);
-        
-    }
-    
-
     private void doSave()
     {
-    	File file = new File("/tmp/test.xml");
     	
-    	ODKFormGenerator.generate(file, txtFormName.getText(), this.selectedFieldsModel.getAllFields());
+    	File file = getOutputFile(new ExtensionFileFilter("Open Data Kit (ODK) form file (*.xml)", new String[] { "xml"}), this);
+    	
+    	if(file!=null) ODKFormGenerator.generate(file, txtFormName.getText(), this.selectedFieldsModel.getAllFields());
     	
     }
 	
-	public JTextField getTxtFormName() {
-		return txtFormName;
+	
+	/**
+	 * Prompt the user for an output filename
+	 * 
+	 * @param filter
+	 * @return
+	 */
+	public static File getOutputFile(FileFilter filter, Component parent)
+	{
+		String lastVisitedFolder = App.prefs.getPref(PrefKey.FOLDER_LAST_SAVE, null);
+		File outputFile;
+		
+		//Create a file chooser
+		final JFileChooser fc = new JFileChooser(lastVisitedFolder);
+		
+		
+		fc.setAcceptAllFileFilterUsed(true);
+
+		if(filter !=null)
+		{
+			fc.addChoosableFileFilter(filter);
+			fc.setFileFilter(filter);
+		}
+		
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fc.setMultiSelectionEnabled(false);
+		fc.setDialogTitle("Save as...");
+		
+		//In response to a button click:
+		int returnVal = fc.showOpenDialog(parent);
+		
+		if(returnVal==JFileChooser.APPROVE_OPTION)
+		{
+			outputFile = fc.getSelectedFile();
+			
+			if(FileUtils.getExtension(outputFile.getAbsolutePath())== "")
+			{
+				log.debug("Output file extension not set by user");
+
+				if(fc.getFileFilter().getDescription().equals(new ExtensionFileFilter("Open Data Kit (ODK) form file (*.xml)", new String[] { "xml"})))
+				{
+					log.debug("Adding odk extension to output file name");
+					outputFile = new File(outputFile.getAbsolutePath()+".xml");
+				}
+				
+			}
+			else
+			{
+				log.debug("Output file extension set by user to '"+FileUtils.getExtension(outputFile.getAbsolutePath())+"'");
+			}
+			
+			
+			App.prefs.setPref(PrefKey.FOLDER_LAST_SAVE, outputFile.getAbsolutePath());
+		}
+		else
+		{
+			return null;
+		}
+		
+		if(outputFile.exists())
+		{
+			Object[] options = {"Overwrite",
+			        "No", "Cancel"};
+			int response = JOptionPane.showOptionDialog(parent,
+			"The file '"+outputFile.getName()+"' already exists.  Are you sure you want to overwrite?",
+			"Confirm",
+			JOptionPane.YES_NO_CANCEL_OPTION,
+			JOptionPane.QUESTION_MESSAGE,
+			null,     //do not use a custom Icon
+			options,  //the titles of buttons
+			options[0]); //default button title
+	
+			if(response != JOptionPane.YES_OPTION)
+			{
+				return null;				
+			}
+		}
+		
+		
+		return outputFile;
 	}
+	
+	
+
 }
+
+
 
 

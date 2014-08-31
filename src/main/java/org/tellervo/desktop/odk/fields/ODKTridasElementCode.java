@@ -8,6 +8,7 @@ public class ODKTridasElementCode extends AbstractODKField {
 
 	String description;
 	String name;
+	Object defaultvalue;
 	
 	public ODKTridasElementCode()
 	{
@@ -55,5 +56,17 @@ public class ODKTridasElementCode extends AbstractODKField {
 	public void setDescription(String str)
 	{
 		this.description = str;
+	}
+	@Override
+	public Object getDefaultValue()
+	{
+		return defaultvalue;
+	}
+	
+	
+	@Override
+	public void setDefaultValue(Object o)
+	{
+		this.defaultvalue = o;
 	}
 }

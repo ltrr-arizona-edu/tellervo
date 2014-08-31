@@ -11,20 +11,6 @@ import org.tridas.io.util.StringUtils;
 
 public class ODKFormGenerator {
 
-	
-	private static String boolAsText(boolean b)
-	{
-		if(b)
-		{
-			return "true";
-		}
-		else
-		{
-			return "false";
-		}
-	}
-	
-		
 	public static void generate(File outfile, String formNameFull, ArrayList<ODKFieldInterface> fields)
 	{
 		StringBuilder data = new StringBuilder();
@@ -88,7 +74,7 @@ public class ODKFormGenerator {
 		
 
 		// The actual fields to display to the user
-		data.append("<bind nodeset=\"/data/meta/instanceID\" type=\"string\" readonly=\"true()\" calculate=\"concat('uuid:', uuid())\"/>");
+		data.append("<bind nodeset=\"/data/meta/instanceID\" type=\"string\" readonly=\"true()\" calculate=\"concat(/"+formName+", '-', /tridas_object_code)\"/>");
 		for(ODKFieldInterface field : fields)
 		{
 			if(field.getFieldType().equals(ODKDataType.STRING))
@@ -203,6 +189,19 @@ public class ODKFormGenerator {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+	}
+	
+	
+	private static String boolAsText(boolean b)
+	{
+		if(b)
+		{
+			return "true";
+		}
+		else
+		{
+			return "false";
 		}
 	}
 }

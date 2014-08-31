@@ -14,7 +14,8 @@ public class ODKTridasObjectType extends AbstractODKChoiceField {
 
 	String description;
 	String name;
-	
+	Object defaultvalue;
+
 	public ODKTridasObjectType()
 	{
 		List<ControlledVoc> types = Dictionary.getMutableDictionary("objectTypeDictionary");
@@ -73,5 +74,18 @@ public class ODKTridasObjectType extends AbstractODKChoiceField {
 	public void setDescription(String str)
 	{
 		this.description = str;
+	}
+	
+	@Override
+	public Object getDefaultValue()
+	{
+		return defaultvalue;
+	}
+	
+	
+	@Override
+	public void setDefaultValue(Object o)
+	{
+		this.defaultvalue = o;
 	}
 }

@@ -8,7 +8,8 @@ public class ODKTridasObjectTitle extends AbstractODKField {
 	
 	String description;
 	String name;
-	
+	Object defaultvalue;
+
 	public ODKTridasObjectTitle()
 	{
 		description = Documentation.getDocumentation("object.title");
@@ -55,5 +56,18 @@ public class ODKTridasObjectTitle extends AbstractODKField {
 	public void setDescription(String str)
 	{
 		this.description = str;
+	}
+	
+	@Override
+	public Object getDefaultValue()
+	{
+		return defaultvalue;
+	}
+	
+	
+	@Override
+	public void setDefaultValue(Object o)
+	{
+		this.defaultvalue = o;
 	}
 }
