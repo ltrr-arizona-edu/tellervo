@@ -4,11 +4,11 @@ import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 
-public class ODKTridasElementCode extends AbstractODKField {
+public class ODKTridasElementSoil extends AbstractODKField {
 	
-	public ODKTridasElementCode()
+	public ODKTridasElementSoil()
 	{
-		super(ODKDataType.STRING, "tridas_element_title", "Element code", Documentation.getDocumentation("element.title"), null);
+		super(ODKDataType.STRING, "tridas_element_bedrock_description", "Bedrock description", Documentation.getDocumentation("element.bedrock.description"), null);
 	}
 	
 	@Override

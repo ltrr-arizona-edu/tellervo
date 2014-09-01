@@ -3,11 +3,11 @@ package org.tellervo.desktop.odk.fields;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
 
-public class ODKTridasObjectVideo extends AbstractODKField {
+public class ODKTridasElementSound extends AbstractODKField {
 
-	public ODKTridasObjectVideo()
+	public ODKTridasElementSound()
 	{
-		super(ODKDataType.VIDEO, "tridas_object_file_video", "Video(s) of object", "Video of the object being studied", null);
+		super(ODKDataType.AUDIO, "tridas_element_file_sound", "Sound clip(s)", "Audio recording, typically a voice memo regarding the element", null);
 	}
 	
 	@Override
@@ -26,7 +26,5 @@ public class ODKTridasObjectVideo extends AbstractODKField {
 		// NOT SUPPORTED FOR THIS DATA TYPE
 
 	}
-
-	
 
 }

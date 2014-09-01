@@ -3,8 +3,11 @@ package org.tellervo.desktop.odk;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.odk.fields.AbstractODKChoiceField;
 import org.tellervo.desktop.odk.fields.ODKDataType;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
@@ -12,6 +15,9 @@ import org.tridas.io.util.StringUtils;
 
 public class ODKFormGenerator {
 
+	private static final Logger log = LoggerFactory.getLogger(ODKFormGenerator.class);
+
+	
 	public static void generate(File outfile, String formNameFull, ArrayList<ODKFieldInterface> fields)
 	{
 		StringBuilder data = new StringBuilder();
@@ -26,7 +32,7 @@ public class ODKFormGenerator {
 		
 		// Define the fields and default values
 		data.append("<instance>");
-		data.append("<data id=\""+formName+"\">");
+		data.append("<data id=\""+formName+"-"+UUID.randomUUID()+"\">");
 		data.append("<meta>");
 		data.append("<instanceID/>");
 		data.append("</meta>");
@@ -101,7 +107,33 @@ public class ODKFormGenerator {
 						"required=\""+boolAsText(field.isFieldRequired())+"()\"" +
 						"/>");
 			}
-			
+			else if(field.getFieldType().equals(ODKDataType.SELECT_ONE))
+			{
+				data.append("<bind nodeset=\"/data/"+field.getFieldCode()+"\" " +
+						"type=\"select1\" " +
+						"required=\""+boolAsText(field.isFieldRequired())+"()\"" +
+						"/>");
+			}
+			else if(field.getFieldType().equals(ODKDataType.AUDIO) || 
+					field.getFieldType().equals(ODKDataType.VIDEO) ||
+					field.getFieldType().equals(ODKDataType.IMAGE))
+			{
+				data.append("<bind nodeset=\"/data/"+field.getFieldCode()+"\" " +
+						"type=\"binary\" " +
+						"required=\""+boolAsText(field.isFieldRequired())+"()\"" +
+						"/>");
+			}
+			else if (field.getFieldType().equals(ODKDataType.LOCATION))
+			{
+				data.append("<bind nodeset=\"/data/"+field.getFieldCode()+"\" " +
+						"type=\"geopoint\" " +
+						"required=\""+boolAsText(field.isFieldRequired())+"()\"" +
+						"/>");
+			}
+			else
+			{
+				log.error("The "+field.getFieldType()+" data type is not supported yet");
+			}
 			
 		}
 		
@@ -114,7 +146,8 @@ public class ODKFormGenerator {
 		for(ODKFieldInterface field : fields)
 		{
 			// Standard text input
-			if(field.getFieldType().equals(ODKDataType.STRING))
+			if(field.getFieldType().equals(ODKDataType.STRING) || 
+			   field.getFieldType().equals(ODKDataType.LOCATION))
 			{			
 				data.append("<input ref=\"/data/"+field.getFieldCode()+"\">");
 				data.append("<label ref=\"jr:itext('/data/"+field.getFieldCode()+":label')\"/>");
@@ -141,7 +174,32 @@ public class ODKFormGenerator {
 				}
 				data.append("</select1>");
 			}
-	        
+			else if(field.getFieldType().equals(ODKDataType.AUDIO))
+			{
+				data.append("<upload ref=\"/data/"+field.getFieldCode()+"\" mediatype=\"audio/*\">");
+				data.append("<label ref=\"jr:itext('/data/"+field.getFieldCode()+":label')\"/>");
+				data.append("<hint ref=\"jr:itext('/data/"+field.getFieldCode()+":hint')\"/>");
+			    data.append("</upload>");
+			}
+			else if(field.getFieldType().equals(ODKDataType.VIDEO))
+			{
+				data.append("<upload ref=\"/data/"+field.getFieldCode()+"\" mediatype=\"video/*\">");
+				data.append("<label ref=\"jr:itext('/data/"+field.getFieldCode()+":label')\"/>");
+				data.append("<hint ref=\"jr:itext('/data/"+field.getFieldCode()+":hint')\"/>");
+			    data.append("</upload>");
+			}
+			else if(field.getFieldType().equals(ODKDataType.IMAGE))
+			{
+				data.append("<upload ref=\"/data/"+field.getFieldCode()+"\" mediatype=\"image/*\">");
+				data.append("<label ref=\"jr:itext('/data/"+field.getFieldCode()+":label')\"/>");
+				data.append("<hint ref=\"jr:itext('/data/"+field.getFieldCode()+":hint')\"/>");
+			    data.append("</upload>");
+			}
+			else
+			{
+				log.error("The "+field.getFieldType()+" data type is not supported yet");
+			}
+			
 		}
 	    
 		data.append("</h:body>");

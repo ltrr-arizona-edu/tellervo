@@ -1,13 +1,13 @@
 package org.tellervo.desktop.odk.fields;
 
 import org.tridas.interfaces.ITridas;
-import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasElement;
 
-public class ODKTridasObjectVideo extends AbstractODKField {
+public class ODKTridasElementPhoto extends AbstractODKField {
 
-	public ODKTridasObjectVideo()
+	public ODKTridasElementPhoto()
 	{
-		super(ODKDataType.VIDEO, "tridas_object_file_video", "Video(s) of object", "Video of the object being studied", null);
+		super(ODKDataType.IMAGE, "tridas_element_file_photo", "Photo(s) of element", "Photos of the element being studied", null);
 	}
 	
 	@Override
@@ -17,7 +17,7 @@ public class ODKTridasObjectVideo extends AbstractODKField {
 
 	@Override
 	public Class<? extends ITridas> getTridasClass() {
-		return TridasObject.class;
+		return TridasElement.class;
 	}
 	
 
@@ -26,7 +26,5 @@ public class ODKTridasObjectVideo extends AbstractODKField {
 		// NOT SUPPORTED FOR THIS DATA TYPE
 
 	}
-
-	
 
 }

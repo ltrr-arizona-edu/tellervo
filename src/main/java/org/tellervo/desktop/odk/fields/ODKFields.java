@@ -13,6 +13,7 @@ public class ODKFields {
 	
 	public ODKFields()
 	{
+		fieldsList.add(ODKTridasParentObjectCode.class);
 		fieldsList.add(ODKTridasObjectCode.class);
 		fieldsList.add(ODKTridasObjectTitle.class);
 		fieldsList.add(ODKTridasObjectType.class);
@@ -21,10 +22,23 @@ public class ODKFields {
 		fieldsList.add(ODKTridasObjectPhoto.class);
 		fieldsList.add(ODKTridasObjectSound.class);
 		fieldsList.add(ODKTridasObjectVideo.class);
+		fieldsList.add(ODKTridasObjectLocation.class);
 
 		
 		fieldsList.add(ODKTridasElementCode.class);
-		fieldsList.add(ODKTridasElementTitle.class);
+		fieldsList.add(ODKTridasElementComments.class);
+		fieldsList.add(ODKTridasElementType.class);
+		fieldsList.add(ODKTridasElementDescription.class);
+		fieldsList.add(ODKTridasElementPhoto.class);
+		fieldsList.add(ODKTridasElementSound.class);
+		fieldsList.add(ODKTridasElementVideo.class);
+		fieldsList.add(ODKTridasElementTaxon.class);
+		fieldsList.add(ODKTridasElementShape.class);
+
+
+
+		
+
 	}
 	
 	/**
