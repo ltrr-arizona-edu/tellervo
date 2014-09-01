@@ -4,11 +4,12 @@ import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 
-public class ODKTridasElementAuthenticity extends AbstractODKField {
+public class ODKTridasElementSoilDepth extends AbstractODKDecimalField {
 	
-	public ODKTridasElementAuthenticity()
+	public ODKTridasElementSoilDepth()
 	{
-		super(ODKDataType.STRING, "tridas_element_authenticity", "Authenticity", Documentation.getDocumentation("element.authenticity"), null);
+		super(ODKDataType.DECIMAL, "tridas_element_soil_depth", "Soil depth", Documentation.getDocumentation("element.soil.depth"), null);
+		setMinValue(0.0);
 	}
 	
 	@Override

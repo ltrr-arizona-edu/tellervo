@@ -13,7 +13,7 @@ public class ODKTridasElementSoil extends AbstractODKField {
 	
 	@Override
 	public Boolean isFieldRequired() {
-		return true;
+		return false;
 	}
 
 	@Override

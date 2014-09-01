@@ -1,13 +1,13 @@
 package org.tellervo.desktop.odk.fields;
 
 import org.tridas.interfaces.ITridas;
-import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasSample;
 
-public class ODKTridasElementSound extends AbstractODKField {
+public class ODKTridasSamplePhoto extends AbstractODKField {
 
-	public ODKTridasElementSound()
+	public ODKTridasSamplePhoto()
 	{
-		super(ODKDataType.AUDIO, "tridas_element_file_sound", "Sound clip(s)", "Audio recording, typically a voice memo regarding the element", null);
+		super(ODKDataType.IMAGE, "tridas_sample_file_photo", "Photo(s) of sample", "Photos of the sample being studied", null);
 	}
 	
 	@Override
@@ -17,7 +17,7 @@ public class ODKTridasElementSound extends AbstractODKField {
 
 	@Override
 	public Class<? extends ITridas> getTridasClass() {
-		return TridasElement.class;
+		return TridasSample.class;
 	}
 	
 

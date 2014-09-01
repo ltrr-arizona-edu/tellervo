@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.NormalTridasShape;
 
 import com.jidesoft.swing.Selectable;
 
@@ -23,6 +24,10 @@ public class SelectableChoice implements Selectable {
 		if(item instanceof ControlledVoc)
 		{
 			return ((ControlledVoc)item).getNormal();
+		}
+		else if (item instanceof NormalTridasShape)
+		{
+			return ((NormalTridasShape)item).value();
 		}
 		
 		return item.toString();
@@ -55,6 +60,7 @@ public class SelectableChoice implements Selectable {
 		selected = b;
 
 	}
+	
 
 	/**
 	 * Convert an array list of objects into an array list of selectable choices
@@ -69,9 +75,15 @@ public class SelectableChoice implements Selectable {
 		for(Object o : objects)
 		{
 			SelectableChoice choice = new SelectableChoice(o);
+			choice.setSelected(true);
 			choices.add(choice);
 		}
 		
 		return choices;	
+	}
+	
+	public Object getItem()
+	{
+		return item;
 	}
 }

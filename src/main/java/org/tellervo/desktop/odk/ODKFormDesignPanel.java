@@ -8,10 +8,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.io.File;
 import java.util.ArrayList;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -26,6 +26,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.DocumentEvent;
@@ -36,30 +37,25 @@ import javax.swing.filechooser.FileFilter;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.apache.commons.io.FilenameUtils;
 import org.codehaus.plexus.util.FileUtils;
-import org.fhaes.filefilter.FHAESFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.AbstractODKChoiceField;
+import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.ODKDataType;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
-
 import org.tellervo.desktop.odk.fields.ODKFields;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ExtensionFileFilter;
-import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
 
 import com.jidesoft.swing.CheckBoxList;
 import com.jidesoft.swing.SearchableUtils;
-import javax.swing.border.LineBorder;
-import java.awt.Color;
-import java.io.File;
-import javax.swing.ScrollPaneConstants;
 
 
 
@@ -291,7 +287,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		txtDefault.setColumns(10);
 		
 		cboDefault = new JComboBox();
-		panel_1.add(cboDefault, "cell 0 1");
+		panel_1.add(cboDefault, "flowy,cell 0 1");
 		cboDefault.setVisible(false);
 		cboDefault.addActionListener(this);
 		cboDefault.setActionCommand("DefaultChosen");
@@ -429,6 +425,14 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 				selectedField.getFieldType().equals(ODKDataType.LOCATION))
 		{
 			
+			txtDefault.setVisible(false);
+			cboDefault.setVisible(false);
+			lblDefaultValue.setVisible(false);
+			setChoiceGUIVisible(false);
+		}
+		else if(selectedField.getFieldType().equals(ODKDataType.INTEGER) || 
+				selectedField.getFieldType().equals(ODKDataType.DECIMAL))
+		{
 			txtDefault.setVisible(false);
 			cboDefault.setVisible(false);
 			lblDefaultValue.setVisible(false);
@@ -610,7 +614,10 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			else
 			{
 				log.debug("Setting gui for element form creation");
-				availableFieldsModel = new ODKFieldListModel(ODKFields.getFields(TridasElement.class));
+				ArrayList<ODKFieldInterface> fields = ODKFields.getFields(TridasElement.class);
+				fields.addAll(ODKFields.getFields(TridasSample.class));
+				fields.addAll(ODKFields.getFields(TridasRadius.class));
+				availableFieldsModel = new ODKFieldListModel(fields);
 				selectedFieldsModel = new ODKFieldListModel();
 				this.lstAvailableFields.setModel(availableFieldsModel);
 				this.lstSelectedFields.setModel(selectedFieldsModel);
@@ -626,7 +633,36 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
     	
     	File file = getOutputFile(new ExtensionFileFilter("Open Data Kit (ODK) form file (*.xml)", new String[] { "xml"}), this);
     	
-    	if(file!=null) ODKFormGenerator.generate(file, txtFormName.getText(), this.selectedFieldsModel.getAllFields());
+    	if(file!=null) 
+    	{
+    		if(this.cboFormType.getSelectedIndex()==0)
+    		{
+    			// Generate Objects form
+    			ODKFormGenerator.generate(file, txtFormName.getText(), this.selectedFieldsModel.getAllFields(), null);
+    		}
+    		else
+    		{
+    			// Generate Elements/Samples form			
+    			ArrayList<ODKFieldInterface> mainFields = new ArrayList<ODKFieldInterface>();
+    			ArrayList<ODKFieldInterface> secondaryFields = new ArrayList<ODKFieldInterface>();
+    			for(ODKFieldInterface field : this.selectedFieldsModel.getAllFields())
+    			{
+    				if(field.getTridasClass().equals(TridasElement.class))
+    				{
+    					mainFields.add(field);
+    				}
+    				
+    				if(field.getTridasClass().equals(TridasSample.class) || 
+    						field.getTridasClass().equals(TridasRadius.class)) 
+    				{
+    					secondaryFields.add(field);
+    				}
+
+    			}
+    			ODKFormGenerator.generate(file, txtFormName.getText(), mainFields, secondaryFields);
+
+    		}
+    	}
     	
     }
 	
@@ -712,9 +748,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		return outputFile;
 	}
 
-	public JComboBox getCboFormType() {
-		return cboFormType;
-	}
+
 }
 
 

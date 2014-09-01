@@ -4,11 +4,13 @@ import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 
-public class ODKTridasElementAuthenticity extends AbstractODKField {
+public class ODKTridasElementSlopeAzimuth extends AbstractODKIntegerField {
 	
-	public ODKTridasElementAuthenticity()
+	public ODKTridasElementSlopeAzimuth()
 	{
-		super(ODKDataType.STRING, "tridas_element_authenticity", "Authenticity", Documentation.getDocumentation("element.authenticity"), null);
+		super(ODKDataType.INTEGER, "tridas_element_slope_azimuth", "Slope azimuth", Documentation.getDocumentation("element.slope.azimuth"), null);
+		setMinValue(0);
+		setMaxValue(360);
 	}
 	
 	@Override

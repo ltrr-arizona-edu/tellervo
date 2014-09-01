@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
 public class ODKFields {
@@ -24,7 +25,7 @@ public class ODKFields {
 		fieldsList.add(ODKTridasObjectVideo.class);
 		fieldsList.add(ODKTridasObjectLocation.class);
 
-		
+		fieldsList.add(ODKTridasElementObjectCode.class);
 		fieldsList.add(ODKTridasElementCode.class);
 		fieldsList.add(ODKTridasElementComments.class);
 		fieldsList.add(ODKTridasElementType.class);
@@ -34,9 +35,26 @@ public class ODKFields {
 		fieldsList.add(ODKTridasElementVideo.class);
 		fieldsList.add(ODKTridasElementTaxon.class);
 		fieldsList.add(ODKTridasElementShape.class);
+		// dimensions
+		fieldsList.add(ODKTridasElementAuthenticity.class);
+		fieldsList.add(ODKTridasElementLocation.class);
+		fieldsList.add(ODKTridasElementProcessing.class);
+		fieldsList.add(ODKTridasElementMarks.class);
+		fieldsList.add(ODKTridasElementSlopeAngle.class);
+		fieldsList.add(ODKTridasElementSlopeAzimuth.class);
+		fieldsList.add(ODKTridasElementSoilDepth.class);
+		fieldsList.add(ODKTridasElementSoil.class);
+		fieldsList.add(ODKTridasElementBedrock.class);
 
-
-
+		fieldsList.add(ODKTridasSampleCode.class);
+		fieldsList.add(ODKTridasSampleComments.class);
+		fieldsList.add(ODKTridasSampleType.class);
+		fieldsList.add(ODKTridasSampleDescription.class);
+		fieldsList.add(ODKTridasSamplePhoto.class);
+		//sampling date
+		fieldsList.add(ODKTridasSamplePosition.class);
+		fieldsList.add(ODKTridasSampleState.class);
+		fieldsList.add(ODKTridasSampleKnots.class);
 		
 
 	}
@@ -62,9 +80,9 @@ public class ODKFields {
 	{
 		ODKFields c = new ODKFields();
 		
-		if(!clazz.equals(TridasObject.class) && !clazz.equals(TridasElement.class) && !clazz.equals(TridasSample.class))
+		if(!clazz.equals(TridasObject.class) && !clazz.equals(TridasElement.class) && !clazz.equals(TridasSample.class) && !clazz.equals(TridasRadius.class))
 		{
-			throw new IllegalArgumentException("ODKFields only valid for Tridas objects, elements and samples");
+			throw new IllegalArgumentException("ODKFields only valid for Tridas objects, elements, samples and radii");
 		}
 		
 		ArrayList<ODKFieldInterface> f = new ArrayList<ODKFieldInterface>();

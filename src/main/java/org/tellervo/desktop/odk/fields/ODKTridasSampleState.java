@@ -2,13 +2,13 @@ package org.tellervo.desktop.odk.fields;
 
 import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tridas.interfaces.ITridas;
-import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasSample;
 
-public class ODKTridasElementMarks extends AbstractODKField {
+public class ODKTridasSampleState extends AbstractODKField {
 	
-	public ODKTridasElementMarks()
+	public ODKTridasSampleState()
 	{
-		super(ODKDataType.STRING, "tridas_element_marks", "Marks", Documentation.getDocumentation("element.marks"), null);
+		super(ODKDataType.STRING, "tridas_sample_state", "Sample state", Documentation.getDocumentation("sample.state"), null);
 	}
 	
 	@Override
@@ -18,7 +18,7 @@ public class ODKTridasElementMarks extends AbstractODKField {
 
 	@Override
 	public Class<? extends ITridas> getTridasClass() {
-		return TridasElement.class;
+		return TridasSample.class;
 	}
 
 }

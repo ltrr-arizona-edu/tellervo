@@ -5,13 +5,14 @@ public enum ODKDataType {
 	STRING,
 	INTEGER,
 	DECIMAL,
-	DATE,
-	DATE_TIME,
 	LOCATION,
 	IMAGE,
 	AUDIO,
 	VIDEO,
 	SELECT_ONE,
+	
+	DATE,
+	DATE_TIME,
 	SELECT_MANY;
 	
 }
