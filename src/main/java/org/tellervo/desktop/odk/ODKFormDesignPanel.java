@@ -71,7 +71,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 	private ODKFieldListModel selectedFieldsModel;
 	private static final Logger log = LoggerFactory.getLogger(ODKFormDesignPanel.class);
 	private JComboBox cboDefault;
-    private SelectableListModel choiceModel;
     private CheckBoxList cbxlstChoices;
     final private JDialog parent;
     private JScrollPane choicesScrollPane;
@@ -94,6 +93,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		splitPane.setOneTouchExpandable(true);
 		add(splitPane);
 		
 		JPanel panelMain = new JPanel();
@@ -321,12 +321,12 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		flowLayout.setAlignment(FlowLayout.RIGHT);
 		add(panel, BorderLayout.SOUTH);
 		
-		JButton btnSave = new JButton("Save");
+		JButton btnSave = new JButton("Generate Form");
 		btnSave.setActionCommand("Save");
 		btnSave.addActionListener(this);
 		panel.add(btnSave);
 		
-		JButton btnCancel = new JButton("Cancel");
+		JButton btnCancel = new JButton("Close");
 		btnCancel.setActionCommand("Cancel");
 		btnCancel.addActionListener(this);
 		panel.add(btnCancel);

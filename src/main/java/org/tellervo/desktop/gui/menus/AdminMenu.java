@@ -322,10 +322,13 @@ public class AdminMenu extends JMenu {
 			public void actionPerformed(ActionEvent arg0) {
 				JDialog dialog = new JDialog();
 				ODKFormDesignPanel panel = new ODKFormDesignPanel(dialog);
+				dialog.setIconImage(Builder.getApplicationIcon());
+				dialog.setTitle("ODK Form Builder");
 				dialog.setLayout(new BorderLayout());
 				dialog.add(panel, BorderLayout.CENTER);
 				dialog.pack();
 				dialog.setVisible(true);
+				dialog.setLocationRelativeTo(App.mainWindow);
 				
 			}
 	 		
