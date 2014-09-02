@@ -14,6 +14,8 @@ public class ODKFields {
 	
 	public ODKFields()
 	{
+		
+		// OBJECT FIELDS
 		fieldsList.add(ODKTridasParentObjectCode.class);
 		fieldsList.add(ODKTridasObjectCode.class);
 		fieldsList.add(ODKTridasObjectTitle.class);
@@ -26,6 +28,8 @@ public class ODKFields {
 		fieldsList.add(ODKTridasObjectLocation.class);
 		fieldsList.add(ODKTridasObjectVegetationType.class);
 
+		
+		// ELEMENT FIELDS
 		fieldsList.add(ODKTridasElementObjectCode.class);
 		fieldsList.add(ODKTridasElementCode.class);
 		fieldsList.add(ODKTridasElementComments.class);
@@ -36,7 +40,6 @@ public class ODKFields {
 		fieldsList.add(ODKTridasElementVideo.class);
 		fieldsList.add(ODKTridasElementTaxon.class);
 		fieldsList.add(ODKTridasElementShape.class);
-		// dimensions
 		fieldsList.add(ODKTridasElementAuthenticity.class);
 		fieldsList.add(ODKTridasElementLocation.class);
 		fieldsList.add(ODKTridasElementProcessing.class);
@@ -46,18 +49,23 @@ public class ODKFields {
 		fieldsList.add(ODKTridasElementSoilDepth.class);
 		fieldsList.add(ODKTridasElementSoil.class);
 		fieldsList.add(ODKTridasElementBedrock.class);
+		// dimensions
 
+		
+		// SAMPLE FIELDS
 		fieldsList.add(ODKTridasSampleCode.class);
 		fieldsList.add(ODKTridasSampleComments.class);
 		fieldsList.add(ODKTridasSampleType.class);
 		fieldsList.add(ODKTridasSampleDescription.class);
 		fieldsList.add(ODKTridasSamplePhoto.class);
-		//sampling date
 		fieldsList.add(ODKTridasSamplePosition.class);
 		fieldsList.add(ODKTridasSampleState.class);
 		fieldsList.add(ODKTridasSampleKnots.class);
 		fieldsList.add(ODKTridasSampleExternalID.class);
+		// sampling date
 
+		
+		// RADIUS FIELDS
 		//fieldsList.add(ODKTridasRadiusAzimuth.class);
 
 	}
