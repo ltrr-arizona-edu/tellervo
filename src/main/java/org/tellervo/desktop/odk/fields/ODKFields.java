@@ -24,6 +24,7 @@ public class ODKFields {
 		fieldsList.add(ODKTridasObjectSound.class);
 		fieldsList.add(ODKTridasObjectVideo.class);
 		fieldsList.add(ODKTridasObjectLocation.class);
+		fieldsList.add(ODKTridasObjectVegetationType.class);
 
 		fieldsList.add(ODKTridasElementObjectCode.class);
 		fieldsList.add(ODKTridasElementCode.class);
@@ -55,7 +56,9 @@ public class ODKFields {
 		fieldsList.add(ODKTridasSamplePosition.class);
 		fieldsList.add(ODKTridasSampleState.class);
 		fieldsList.add(ODKTridasSampleKnots.class);
-		
+		fieldsList.add(ODKTridasSampleExternalID.class);
+
+		//fieldsList.add(ODKTridasRadiusAzimuth.class);
 
 	}
 	
