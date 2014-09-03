@@ -15,6 +15,7 @@ import org.tellervo.desktop.odk.fields.ODKDataType;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 import org.tridas.io.util.StringUtils;
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
@@ -220,6 +221,12 @@ public class ODKFormGenerator {
 	
 	private static String getFieldGUICode(ODKFieldInterface field, String grpCd)
 	{
+		if(field.isFieldHidden()) {
+			// Field shouldn't be displayed to user
+			return "";
+		}
+		
+		
 		StringBuilder data = new StringBuilder();
 	
 		if(grpCd == null) 
@@ -264,7 +271,10 @@ public class ODKFormGenerator {
 				{
 					value = ((NormalTridasShape)choice.getItem()).toString();
 				}
-	
+				else if (choice.getItem() instanceof NormalTridasLocationType)
+				{
+					value = ((NormalTridasLocationType)choice.getItem()).toString();
+				}
 				
 				data.append("<item>");
 				data.append("<label ref=\"jr:itext('/data/"+grpCd+field.getFieldCode()+":option"+i+"')\"/>");

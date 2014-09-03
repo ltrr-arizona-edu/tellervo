@@ -57,6 +57,8 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	public static final String KNOTS = "Knots";
 	public static final String BOX = "Box";
 	public static final String IMPORTED = "Imported";
+	public static final String EXTERNAL_ID = "External ID";
+
 	
 	// radius stuff
 	public static final String RADIUS_MODEL = "RADIUS_MODEL";
@@ -68,7 +70,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 
 	public static final String[] TABLE_PROPERTIES = {
 		OBJECT, ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION,
-		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, IMPORTED
+		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, EXTERNAL_ID, IMPORTED
 	};
 	
 	
@@ -168,7 +170,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		argSample.setPosition((String)getProperty(POSITION));
 		argSample.setState((String)getProperty(STATE));
 		argSample.setKnots((Boolean)getProperty(KNOTS));
-		
+
 		if(getProperty(BOX) != null){
 			TridasGenericField field = null;
 			for(TridasGenericField gf: argSample.getGenericFields()){
@@ -183,6 +185,22 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			field.setName("tellervo.boxID");
 			field.setType("xs:string");
 			field.setValue(((WSIBox)getProperty(BOX)).getIdentifier().getValue());
+		}
+		
+		if(getProperty(EXTERNAL_ID) != null){
+			TridasGenericField field = null;
+			for(TridasGenericField gf: argSample.getGenericFields()){
+				if(gf.getName().equals("tellervo.externalID")){
+					field = gf;
+				}
+			}
+			if(field == null){
+				field = new TridasGenericField();
+				argSample.getGenericFields().add(field);
+			}
+			field.setName("tellervo.externalID");
+			field.setType("xs:string");
+			field.setValue(getProperty(EXTERNAL_ID).toString());
 		}
 		
 		argSample.setIdentifier((TridasIdentifier) getProperty(IMPORTED));
@@ -204,9 +222,13 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		
 		// Get boxID generic field
 		TridasGenericField field = null;
+
 		for(TridasGenericField gf: argSample.getGenericFields()){
 			if(gf.getName().equals("tellervo.boxID")){
 				field = gf;
+			}
+			else if(gf.getName().equals("tellervo.externalID")){
+				setProperty(EXTERNAL_ID, field.getValue());
 			}
 		}
 			

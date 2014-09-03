@@ -30,6 +30,7 @@ import net.opengis.gml.schema.Pos;
 
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
@@ -64,6 +65,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	public static final String COUNTRY = "Country";
 	public static final String LOCATION_PRECISION = "Location precision";
 	public static final String LOCATION_COMMENT = "Location comment";
+	public static final String LOCATION_TYPE = "Location type";
 	public static final String OWNER = "Owner";
 	public static final String CREATOR = "Creator";
 	public static final String VEGETATION_TYPE = "Vegetation type";
@@ -76,7 +78,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	
 	
 	public static final String[] TABLE_PROPERTIES = {
-		PARENT_OBJECT, OBJECT_CODE, TITLE, TYPE, DESCRIPTION, COMMENTS, LATITUDE, LONGITUDE, WAYPOINT, LOCATION_PRECISION, LOCATION_COMMENT,
+		PARENT_OBJECT, OBJECT_CODE, TITLE, TYPE, DESCRIPTION, COMMENTS, LATITUDE, LONGITUDE, WAYPOINT, LOCATION_PRECISION, LOCATION_TYPE, LOCATION_COMMENT,
 		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, POSTCODE, COUNTRY,  OWNER, CREATOR, VEGETATION_TYPE
 	};
 	
@@ -157,6 +159,12 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		}else{
 			setProperty(LATITUDE, null);
 			setProperty(LONGITUDE, null);
+		}
+		
+		if(argObject.isSetLocation() &&
+				argObject.getLocation().isSetLocationType())
+		{
+			setProperty(LOCATION_TYPE, argObject.getLocation().getLocationType());
 		}
 		
 		if(argObject.isSetLocation() &&
@@ -256,7 +264,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		Object country = getProperty(COUNTRY);
 		Object locprecision = getProperty(LOCATION_PRECISION);
 		Object loccomment = getProperty(LOCATION_COMMENT);
-
+		Object loctype = getProperty(LOCATION_TYPE);
 		
 		if((latitude != null && longitude != null) || 
 			addressline1 !=null ||
@@ -266,7 +274,8 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 			postcode != null ||
 			country != null ||
 			locprecision != null ||
-			loccomment != null
+			loccomment != null ||
+			loctype != null
 			){
 			
 			TridasLocation loc = new TridasLocation();
@@ -316,6 +325,12 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 			{
 				loc.setAddress(null);
 			}
+			
+			if(loctype!=null)
+			{
+				loc.setLocationType((NormalTridasLocationType) loctype);
+			}
+			
 			argObject.setLocation(loc);		
 		}else{
 			argObject.setLocation(null);

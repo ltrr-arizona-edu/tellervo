@@ -142,7 +142,43 @@ public class ODKParser {
 		
 	}
 	
-	public String getFieldValueAsStringForNodeList(String field, NodeList nList)
+	public Integer getFieldValueAsInteger(String field)
+	{
+		
+		NodeList nList = doc.getElementsByTagName(field);
+		 
+		if(nList.getLength()==0) return null;
+	
+		try{
+			Integer intval = Integer.parseInt(nList.item(0).getTextContent());
+			return intval;
+		} catch (Exception e)
+		{
+			System.out.println("Error getting number from tag");
+			return null;
+		}
+		
+	}
+	
+	public Double getFieldValueAsDouble(String field)
+	{
+		
+		NodeList nList = doc.getElementsByTagName(field);
+		 
+		if(nList.getLength()==0) return null;
+	
+		try{
+			Double dblval = Double.parseDouble(nList.item(0).getTextContent());
+			return dblval;
+		} catch (Exception e)
+		{
+			System.out.println("Error getting number from tag");
+			return null;
+		}
+		
+	}
+	
+	public String getFieldValueAsStringFromNodeList(String field, NodeList nList)
 	{
 				 
 		if(nList.getLength()==0) return null;

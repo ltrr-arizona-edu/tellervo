@@ -26,6 +26,14 @@ public class ODKFields {
 		fieldsList.add(ODKTridasObjectSound.class);
 		fieldsList.add(ODKTridasObjectVideo.class);
 		fieldsList.add(ODKTridasObjectLocation.class);
+		fieldsList.add(ODKTridasObjectLocationType.class);
+		fieldsList.add(ODKTridasObjectLocationComments.class);
+		fieldsList.add(ODKTridasObjectAddressLine1.class);
+		fieldsList.add(ODKTridasObjectAddressLine2.class);
+		fieldsList.add(ODKTridasObjectAddressCityOrTown.class);
+		fieldsList.add(ODKTridasObjectAddressStateProvince.class);
+		fieldsList.add(ODKTridasObjectAddressPostalCode.class);
+		fieldsList.add(ODKTridasObjectAddressCountry.class);
 		fieldsList.add(ODKTridasObjectVegetationType.class);
 
 		
@@ -42,6 +50,14 @@ public class ODKFields {
 		fieldsList.add(ODKTridasElementShape.class);
 		fieldsList.add(ODKTridasElementAuthenticity.class);
 		fieldsList.add(ODKTridasElementLocation.class);
+		fieldsList.add(ODKTridasElementLocationType.class);
+		fieldsList.add(ODKTridasElementLocationComments.class);
+		fieldsList.add(ODKTridasElementAddressLine1.class);
+		fieldsList.add(ODKTridasElementAddressLine2.class);
+		fieldsList.add(ODKTridasElementAddressCityOrTown.class);
+		fieldsList.add(ODKTridasElementAddressStateProvince.class);
+		fieldsList.add(ODKTridasElementAddressPostalCode.class);
+		fieldsList.add(ODKTridasElementAddressCountry.class);
 		fieldsList.add(ODKTridasElementProcessing.class);
 		fieldsList.add(ODKTridasElementMarks.class);
 		fieldsList.add(ODKTridasElementSlopeAngle.class);
@@ -58,6 +74,7 @@ public class ODKFields {
 		fieldsList.add(ODKTridasSampleType.class);
 		fieldsList.add(ODKTridasSampleDescription.class);
 		fieldsList.add(ODKTridasSamplePhoto.class);
+		fieldsList.add(ODKTridasSampleSamplingDate.class);
 		fieldsList.add(ODKTridasSamplePosition.class);
 		fieldsList.add(ODKTridasSampleState.class);
 		fieldsList.add(ODKTridasSampleKnots.class);

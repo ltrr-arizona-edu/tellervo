@@ -32,6 +32,8 @@ import javax.swing.JFileChooser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
@@ -42,10 +44,13 @@ import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.view.ODKParserLogViewer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.odk.ODKParser;
+import org.tellervo.desktop.odk.fields.ODKFieldInterface;
+import org.tellervo.desktop.odk.fields.ODKFields;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.util.DictionaryUtil;
 import org.tellervo.desktop.wsi.tellervo.TridasElementTemporaryCacher;
 import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
@@ -58,7 +63,6 @@ import com.dmurph.mvc.IncorrectThreadException;
 import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
-import com.ibm.icu.text.SimpleDateFormat;
 
 
 public class PopulateFromODKFileCommand implements ICommand {
@@ -67,6 +71,32 @@ public class PopulateFromODKFileCommand implements ICommand {
 	String otherErrors = "";
 	Integer filesLoadedSuccessfully = 0;
 	Integer filesFound = 0;
+	private static final Logger log = LoggerFactory.getLogger(PopulateFromODKFileCommand.class);
+
+	private static void debugODKCodes()
+	{
+		ODKFieldInterface[] fields = ODKFields.getFieldsAsArray(TridasObject.class);
+		log.debug("Object codes:");
+		for(ODKFieldInterface field : fields)
+		{
+			log.debug(field.getFieldCode());
+		}
+		
+		ODKFieldInterface[] fields2 = ODKFields.getFieldsAsArray(TridasElement.class);
+		log.debug("Element codes:");
+		for(ODKFieldInterface field : fields2)
+		{
+			log.debug(field.getFieldCode());
+		}
+		
+		ODKFieldInterface[] fields3 = ODKFields.getFieldsAsArray(TridasSample.class);
+		log.debug("Sample codes:");
+		for(ODKFieldInterface field : fields3)
+		{
+			log.debug(field.getFieldCode());
+		}
+	}
+	
 	
 	@Override
 	public void execute(MVCEvent argEvent) {
@@ -81,6 +111,8 @@ public class PopulateFromODKFileCommand implements ICommand {
 			e.printStackTrace();
 		}
 
+		debugODKCodes();
+		
 		PopulateFromODKFileEvent event = (PopulateFromODKFileEvent) argEvent;
 		ArrayList<ODKParser> filesProcessed = new ArrayList<ODKParser>();
 		ArrayList<ODKParser> filesFailed = new ArrayList<ODKParser>();
@@ -194,21 +226,38 @@ public class PopulateFromODKFileCommand implements ICommand {
 
 
 	}
-
+	
 	private void addObjectFromParser(ODKParser parser, ObjectModel model)
 	{
 		SingleObjectModel newrow = (SingleObjectModel) model.createRowInstance();
 
-		newrow.setProperty(SingleObjectModel.OBJECT_CODE, parser.getFieldValueAsString("PlotSubplotID"));
-		newrow.setProperty(SingleObjectModel.TITLE, parser.getFieldValueAsString("PlotSubplotID"));
-		newrow.setProperty(SingleObjectModel.LATITUDE, parser.getLatitude("Location"));
-		newrow.setProperty(SingleObjectModel.LONGITUDE, parser.getLongitude("Location"));
-		newrow.setProperty(SingleObjectModel.LOCATION_PRECISION, parser.getError("Location"));
-		newrow.setProperty(SingleObjectModel.VEGETATION_TYPE, parser.getFieldValueAsString("VegetationType"));
+		String objcode = parser.getFieldValueAsString("tridas_parent_object_code").toString();
+		TridasObjectEx obj = getTridasObjectByCode(objcode);
+		if(obj!=null) newrow.setProperty(SingleObjectModel.PARENT_OBJECT, obj);
+		newrow.setProperty(SingleObjectModel.OBJECT_CODE, parser.getFieldValueAsString("tridas_object_code"));
+		newrow.setProperty(SingleObjectModel.TITLE, parser.getFieldValueAsString("tridas_object_title"));
+		newrow.setProperty(SingleObjectModel.TYPE, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_object_type"), "objectTypeDictionary"));
+		newrow.setProperty(SingleObjectModel.COMMENTS, parser.getFieldValueAsString("tridas_object_comments") +" -- Imported from "+ parser.getFile().getName());
+		newrow.setProperty(SingleObjectModel.DESCRIPTION, parser.getFieldValueAsString("tridas_object_description"));
+		newrow.setProperty(SingleObjectModel.LATITUDE, parser.getLatitude("tridas_object_location"));
+		newrow.setProperty(SingleObjectModel.LONGITUDE, parser.getLongitude("tridas_object_location"));
+		newrow.setProperty(SingleObjectModel.LOCATION_TYPE, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_object_location_type"), "locationTypeDictionary"));
+		newrow.setProperty(SingleObjectModel.LOCATION_PRECISION, parser.getError("tridas_object_location"));
+		newrow.setProperty(SingleObjectModel.LOCATION_COMMENT, parser.getFieldValueAsString("tridas_object_location_comments"));
+		newrow.setProperty(SingleObjectModel.ADDRESSLINE1, parser.getFieldValueAsString("tridas_object_address_line1"));
+		newrow.setProperty(SingleObjectModel.ADDRESSLINE2, parser.getFieldValueAsString("tridas_object_address_line2"));
+		newrow.setProperty(SingleObjectModel.CITY_TOWN, parser.getFieldValueAsString("tridas_object_address_cityortown"));
+		newrow.setProperty(SingleObjectModel.STATE_PROVINCE_REGION, parser.getFieldValueAsString("tridas_object_address_stateorprovince"));
+		newrow.setProperty(SingleObjectModel.POSTCODE, parser.getFieldValueAsString("tridas_object_address_postalcode"));
+		newrow.setProperty(SingleObjectModel.COUNTRY, parser.getFieldValueAsString("tridas_object_address_country"));
+		newrow.setProperty(SingleObjectModel.VEGETATION_TYPE, parser.getFieldValueAsString("tridas_object_vegetation_type"));
 
-		newrow.setProperty(SingleObjectModel.COMMENTS, "Imported from "+parser.getFile().getName());
 
-
+		// Still to handle
+		//tridas_object_file_photo
+		//tridas_object_file_sound
+		//tridas_object_file_video
+		
 		model.getRows().add(newrow);
 		filesLoadedSuccessfully++;
 	}
@@ -217,14 +266,49 @@ public class PopulateFromODKFileCommand implements ICommand {
 	{
 		SingleElementModel newrow = (SingleElementModel) model.createRowInstance();
 
-		String objcode = parser.getFieldValueAsString("PlotSubplotID").toString();
+		String objcode = parser.getFieldValueAsString("tridas_object_code").toString();
 		TridasObjectEx obj = getTridasObjectByCode(objcode);
-
-		newrow.setProperty(SingleElementModel.TITLE, parser.getFieldValueAsString("TreeNO"));
 		newrow.setProperty(SingleElementModel.OBJECT, obj);
+		
+		NormalTridasShape shape = null;
+		String shapename = parser.getFieldValueAsString("tridas_element_shape").toString();
+		for(NormalTridasShape val : NormalTridasShape.values())
+		{
+			if(val.name().equals(shapename)) shape = val;
+			break;
+		}
+		if(shape!=null) newrow.setProperty(SingleElementModel.SHAPE, shape);
+		
+		newrow.setProperty(SingleElementModel.TITLE, parser.getFieldValueAsString("tridas_element_title"));
+		newrow.setProperty(SingleElementModel.COMMENTS, parser.getFieldValueAsString("tridas_element_comments"));
+		newrow.setProperty(SingleElementModel.TYPE, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_element_type"), "elementTypeDictionary"));
+		newrow.setProperty(SingleElementModel.DESCRIPTION, parser.getFieldValueAsString("tridas_element_description"));
+		newrow.setProperty(SingleElementModel.TAXON, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_element_taxon"), "taxonDictionary"));
+		newrow.setProperty(SingleElementModel.AUTHENTICITY, parser.getFieldValueAsString("tridas_element_authenticity"));
+		newrow.setProperty(SingleElementModel.LATITUDE, parser.getLatitude("tridas_element_location"));
+		newrow.setProperty(SingleElementModel.LONGITUDE, parser.getLongitude("tridas_element_location"));
+		newrow.setProperty(SingleElementModel.LOCATION_TYPE, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_element_location_type"), "locationTypeDictionary"));
+		newrow.setProperty(SingleElementModel.LOCATION_PRECISION, parser.getError("tridas_element_location"));
+		newrow.setProperty(SingleElementModel.LOCATION_COMMENT, parser.getFieldValueAsString("tridas_element_location_comments"));
+		newrow.setProperty(SingleElementModel.ADDRESSLINE1, parser.getFieldValueAsString("tridas_element_address_line1"));
+		newrow.setProperty(SingleElementModel.ADDRESSLINE2, parser.getFieldValueAsString("tridas_element_address_line2"));
+		newrow.setProperty(SingleElementModel.CITY_TOWN, parser.getFieldValueAsString("tridas_element_address_cityortown"));
+		newrow.setProperty(SingleElementModel.STATE_PROVINCE_REGION, parser.getFieldValueAsString("tridas_element_address_stateorprovince"));
+		newrow.setProperty(SingleElementModel.POSTCODE, parser.getFieldValueAsString("tridas_element_address_postalcode"));
+		newrow.setProperty(SingleElementModel.COUNTRY, parser.getFieldValueAsString("tridas_element_address_country"));
+		newrow.setProperty(SingleElementModel.PROCESSING, parser.getFieldValueAsString("tridas_element_processing"));
+		newrow.setProperty(SingleElementModel.MARKS, parser.getFieldValueAsString("tridas_element_marks"));
+		newrow.setProperty(SingleElementModel.BEDROCK_DESCRIPTION, parser.getFieldValueAsString("tridas_element_bedrock_description"));
+		newrow.setProperty(SingleElementModel.SOIL_DESCRIPTION, parser.getFieldValueAsString("tridas_element_soil_description"));
+		newrow.setProperty(SingleElementModel.SLOPE_ANGLE, parser.getFieldValueAsInteger("tridas_element_slope_angle"));
+		newrow.setProperty(SingleElementModel.SLOPE_AZIMUTH, parser.getFieldValueAsInteger("tridas_element_slope_azimuth"));
+		newrow.setProperty(SingleElementModel.SOIL_DEPTH, parser.getFieldValueAsDouble("tridas_element_soil_depth"));
 
-
-		newrow.setProperty(SingleElementModel.TAXON, DictionaryUtil.getControlledVocForName("Abies alba Mill.", "taxonDictionary"));
+		// Still to handle
+		//tridas_element_file_photo
+		//tridas_element_file_sound
+		//tridas_element_file_video
+		
 		model.getRows().add(newrow);
 		filesLoadedSuccessfully++;
 	}
@@ -234,7 +318,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 	{
 		Boolean loadedSuccessfully = false;
 		
-		NodeList nList = parser.getNodeListByName("SamplesRepeat");
+		NodeList nList = parser.getNodeListByName("group_sample");
 
 		if(nList==null || nList.getLength()==0) return;
 
@@ -243,19 +327,38 @@ public class PopulateFromODKFileCommand implements ICommand {
 			Node node = nList.item(i);
 			SingleSampleModel newrow = (SingleSampleModel) model.createRowInstance();
 
-			String objcode = parser.getFieldValueAsString("PlotSubplotID").toString();
+			String objcode = parser.getFieldValueAsString("tridas_object_code").toString();
 			TridasObjectEx obj = getTridasObjectByCode(objcode);
 			newrow.setProperty(SingleSampleModel.OBJECT, obj);
 								
-			TridasElement element = parser.getTridasElement(cache, "PlotSubplotID", "TreeNO");
+			TridasElement element = parser.getTridasElement(cache, "tridas_object_code", "tridas_element_title");
 			if(element==null) continue;
 			
 			newrow.setProperty(SingleSampleModel.ELEMENT, element);
-			newrow.setProperty(SingleSampleModel.TITLE, 
-					parser.getFieldValueAsStringForNodeList("SampleID", node.getChildNodes()));
-			
-			
+			newrow.setProperty(SingleSampleModel.TITLE, parser.getFieldValueAsStringFromNodeList("tridas_sample_title", node.getChildNodes()));
+			newrow.setProperty(SingleSampleModel.TYPE, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_sample_type"), "sampleTypeDictionary"));
+			newrow.setProperty(SingleSampleModel.COMMENTS, parser.getFieldValueAsStringFromNodeList("tridas_sample_comments", node.getChildNodes()));
+			newrow.setProperty(SingleSampleModel.DESCRIPTION, parser.getFieldValueAsStringFromNodeList("tridas_sample_description", node.getChildNodes()));
 			newrow.setProperty(SingleSampleModel.SAMPLING_DATE, parser.getDate());
+			newrow.setProperty(SingleSampleModel.POSITION, parser.getFieldValueAsStringFromNodeList("tridas_sample_position", node.getChildNodes()));
+			newrow.setProperty(SingleSampleModel.STATE, parser.getFieldValueAsStringFromNodeList("tridas_sample_state", node.getChildNodes()));
+			newrow.setProperty(SingleSampleModel.EXTERNAL_ID, parser.getFieldValueAsStringFromNodeList("tridas_sample_externalid", node.getChildNodes()));
+
+			String knots = parser.getFieldValueAsStringFromNodeList("tridas_sample_knots", node.getChildNodes());
+			Boolean kb = null;
+			if(knots.equals("Yes"))
+			{
+				kb = true;
+			}
+			else
+			{
+				kb = false;
+			}
+			if(kb!=null) newrow.setProperty(SingleSampleModel.KNOTS, kb);
+
+			// STILL TO HANDLE
+			//tridas_sample_file_photo
+			//?tridas_sample_samplingdate
 
 
 			model.getRows().add(newrow);

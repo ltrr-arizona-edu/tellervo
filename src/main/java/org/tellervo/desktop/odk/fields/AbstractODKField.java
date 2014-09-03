@@ -8,7 +8,8 @@ public abstract class AbstractODKField implements ODKFieldInterface {
 	protected Object defaultvalue;
 	protected String fieldcode;
 	protected ODKDataType datatype;
-
+	protected boolean isFieldHidden = false;
+	
 	/**
 	 * Constructor for a generic ODK field
 	 * 
@@ -54,6 +55,11 @@ public abstract class AbstractODKField implements ODKFieldInterface {
 	}
 	
 	@Override
+	public boolean isFieldHidden(){
+		return this.isFieldHidden;
+	}
+	
+	@Override
 	public String toString()
 	{
 		return this.getFieldName();
@@ -77,6 +83,11 @@ public abstract class AbstractODKField implements ODKFieldInterface {
 		this.defaultvalue = o;
 	}
 
+	@Override
+	public void setIsFieldHidden(boolean b)
+	{
+		this.isFieldHidden=b;
+	}
 
 	
 }

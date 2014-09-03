@@ -83,6 +83,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
     private JButton btnNone;
     private JLabel lblDefaultValue;
     private JComboBox cboFormType;
+    private JCheckBox chkHideField;
+    private boolean quietFieldChangeFlag = false;
     
 	/**
 	 * Create the panel.
@@ -209,14 +211,14 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		fieldOptionsScrollPane.setViewportView(panelFieldOptions);
 		panelFieldOptions.setBorder(new TitledBorder(UIManager.getBorder("EditorPane.border"), "Field details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane.setRightComponent(fieldOptionsScrollPane);
-		panelFieldOptions.setLayout(new MigLayout("hidemode 2", "[160px:160px,right][grow][120.00][]", "[][59.00:59.00:59.00][center][grow]"));
+		panelFieldOptions.setLayout(new MigLayout("hidemode 2", "[160px:160px,right][grow][120.00][]", "[][][][59.00:59.00:59.00][center][grow]"));
 		
 		JLabel lblFieldNameDisplayed = new JLabel("Name:");
 		panelFieldOptions.add(lblFieldNameDisplayed, "cell 0 0,alignx trailing");
 		
 		txtFieldName = new JTextField();
 		txtFieldName.setActionCommand("FieldNameChanged");
-		txtFieldName.addActionListener(this);
+		//txtFieldName.addActionListener(this);
 		
 		txtFieldName.addFocusListener(new FocusListener(){
 
@@ -236,15 +238,27 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		panelFieldOptions.add(txtFieldName, "cell 1 0,growx");
 		txtFieldName.setColumns(10);
 		
-		chkRequired = new JCheckBox("Field is required?");
+		chkRequired = new JCheckBox("Required");
 		chkRequired.setEnabled(false);
-		panelFieldOptions.add(chkRequired, "cell 2 0 2 1");
+		panelFieldOptions.add(chkRequired, "cell 1 1");
+		
+		chkHideField = new JCheckBox("Hide field from user (default value required if ticked)");
+		chkHideField.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				commitFieldChanges();
+				
+			}
+			
+		});
+		panelFieldOptions.add(chkHideField, "cell 1 2 3 1");
 		
 		JLabel lblDescription = new JLabel("Description:");
-		panelFieldOptions.add(lblDescription, "cell 0 1,alignx right,aligny top");
+		panelFieldOptions.add(lblDescription, "cell 0 3,alignx right,aligny top");
 		
 		JScrollPane scrollPane = new JScrollPane();
-		panelFieldOptions.add(scrollPane, "cell 1 1 3 1,grow");
+		panelFieldOptions.add(scrollPane, "cell 1 3 3 1,grow");
 		
 		txtDescription = new JTextArea();
 		txtDescription.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, null);
@@ -254,19 +268,19 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 
 			@Override
 			public void changedUpdate(DocumentEvent evt) {
-				commitDescriptionChange();
+				commitFieldChanges();
 				
 			}
 
 			@Override
 			public void insertUpdate(DocumentEvent evt) {
-				commitDescriptionChange();
+				commitFieldChanges();
 				
 			}
 
 			@Override
 			public void removeUpdate(DocumentEvent evt) {
-				commitDescriptionChange();
+				commitFieldChanges();
 				
 			}
 			
@@ -275,25 +289,55 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		txtDescription.setLineWrap(true);
 						
 		lblDefaultValue = new JLabel("Default value:");
-		panelFieldOptions.add(lblDefaultValue, "cell 0 2,alignx trailing,aligny center");
+		panelFieldOptions.add(lblDefaultValue, "cell 0 4,alignx trailing,aligny center");
 		defModel = new DefaultComboBoxModel();
 		
 		JPanel panel_1 = new JPanel();
-		panelFieldOptions.add(panel_1, "cell 1 2 3 1,grow");
+		panelFieldOptions.add(panel_1, "cell 1 4 3 1,grow");
 		panel_1.setLayout(new MigLayout("hidemode 3, insets 0", "[grow,fill]", "[center][center]"));
 		
 		txtDefault = new JTextField();
+		txtDefault.getDocument().addDocumentListener(new DocumentListener(){
+
+			@Override
+			public void changedUpdate(DocumentEvent evt) {
+				commitFieldChanges();
+				
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent evt) {
+				commitFieldChanges();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent evt) {
+				commitFieldChanges();
+				
+			}
+			
+		});
 		panel_1.add(txtDefault, "cell 0 0,alignx left,aligny top");
 		txtDefault.setColumns(10);
 		
 		cboDefault = new JComboBox();
+		cboDefault.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				commitFieldChanges();
+				
+			}
+			
+		});
 		panel_1.add(cboDefault, "flowy,cell 0 1");
 		cboDefault.setVisible(false);
-		cboDefault.addActionListener(this);
+		//cboDefault.addActionListener(this);
 		cboDefault.setActionCommand("DefaultChosen");
 		
 		lblOptionsToInclude = new JLabel("Options to include:");
-		panelFieldOptions.add(lblOptionsToInclude, "cell 0 3,aligny top");
+		panelFieldOptions.add(lblOptionsToInclude, "cell 0 5,aligny top");
 		
 		choicesScrollPane = new JScrollPane();
 		choicesScrollPane.setOpaque(false);
@@ -301,20 +345,20 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		cbxlstChoices = new CheckBoxList();
 
 		choicesScrollPane.setViewportView(cbxlstChoices);
-		panelFieldOptions.add(choicesScrollPane, "cell 1 3 2 1,grow");
+		panelFieldOptions.add(choicesScrollPane, "cell 1 5 2 1,grow");
 		
 		btnAll = new JButton("");
 		btnAll.setIcon(Builder.getIcon("selectall.png", 16));
 		btnAll.setActionCommand("SelectAllChoices");
 		btnAll.addActionListener(this);
-		panelFieldOptions.add(btnAll, "flowy,cell 3 3,aligny top");
+		panelFieldOptions.add(btnAll, "flowy,cell 3 5,aligny top");
 		
 		btnNone = new JButton("");
 		btnNone.setActionCommand("SelectNoChoices");
 		btnNone.addActionListener(this);
 		btnNone.setIcon(Builder.getIcon("selectnone.png", 16));
 
-		panelFieldOptions.add(btnNone, "cell 3 3");
+		panelFieldOptions.add(btnNone, "cell 3 5");
 		
 		JPanel panel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
@@ -339,15 +383,45 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 
 	}
 	
-	private void commitDescriptionChange()
+	private void commitFieldChanges()
 	{
-		if(selectedField==null) return;
+		log.debug("commitFieldChanges called");
+		if(selectedField==null) {
+			log.debug("selectedField is null so not committing changes");
+			return;
+		}
+
+		if(quietFieldChangeFlag==true) {
+			log.debug("quietFieldChangeFlag is on so not committing changes");
+
+			return;
+		}
+		
+		
 		selectedField.setDescription(this.txtDescription.getText());
+		
+		
+		log.debug("Is txtDefault visible? "+txtDefault.isVisible());
+		log.debug("Is cboDefault visible? "+cboDefault.isVisible());
+
+		if(this.txtDefault.isVisible())
+		{
+			selectedField.setDefaultValue(txtDefault.getText());
+		}
+		else if (this.cboDefault.isVisible())
+		{
+			selectedField.setDefaultValue(cboDefault.getSelectedItem());
+		}
+		
+		selectedField.setIsFieldHidden(this.chkHideField.isSelected());
+		
 		
 	}
 	
 	private void setDetailsPanel()
 	{
+		quietFieldChangeFlag = true;
+
 		// Handle null fields first
 		if(selectedField==null)
 		{
@@ -355,17 +429,20 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			this.txtDescription.setText("");
 			this.chkRequired.setSelected(false);
 			this.txtDefault.setText("");
+			this.chkHideField.setSelected(false);
+			this.cboDefault.setSelectedIndex(-1);
+			quietFieldChangeFlag = false;
 			return;
 		}
 		
+		log.debug("Field is hidden status: "+selectedField.isFieldHidden());
 		
 		// Handle fields that are the same regardless of data type
 		this.txtFieldName.setText(selectedField.getFieldName());
 		this.txtDescription.setText(selectedField.getFieldDescription());
 		this.chkRequired.setSelected(selectedField.isFieldRequired());
-		
-		
-		
+		this.chkHideField.setSelected(selectedField.isFieldHidden());		
+
 		if(selectedField.getFieldType().equals(ODKDataType.SELECT_ONE))
 		{
 			ArrayList<SelectableChoice> choices = ((AbstractODKChoiceField)selectedField).getAvailableChoices();
@@ -399,8 +476,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			lblDefaultValue.setVisible(true);
 			txtDefault.setVisible(false);
 
-			setChoiceGUIVisible(true);			
-
+			setChoiceGUIVisible(true);	
 		}
 		else if(selectedField.getFieldType().equals(ODKDataType.STRING))
 		{
@@ -444,6 +520,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			setChoiceGUIVisible(false);
 
 		}
+			
+		quietFieldChangeFlag = false;
+
 	}
 	
 	private void updateDefaultCombo()
@@ -596,7 +675,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		}
 		else if (evt.getActionCommand().equals("DefaultChosen"))
 		{
-			selectedField.setDefaultValue(cboDefault.getSelectedItem());
+			Object item = cboDefault.getSelectedItem();
+			if(item!=null) selectedField.setDefaultValue(item);
 		}
 		else if (evt.getActionCommand().equals("FormTypeChanged"))
 		{
@@ -747,7 +827,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		
 		return outputFile;
 	}
-
 
 }
 

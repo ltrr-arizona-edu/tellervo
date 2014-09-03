@@ -25,11 +25,18 @@ package org.tellervo.desktop.bulkdataentry.model;
 
 import java.math.BigDecimal;
 
+import net.opengis.gml.schema.PointType;
+import net.opengis.gml.schema.Pos;
+
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.NormalTridasLocationType;
+import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasBedrock;
 import org.tridas.schema.TridasDimensions;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasLocation;
+import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasSlope;
 import org.tridas.schema.TridasSoil;
@@ -57,18 +64,20 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 	public static final String DIAMETER = "Diameter";
 	public static final String DEPTH = "Depth";
 	public static final String UNIT = "Unit";
-	//public static final String AUTHENTICITY = "Authenticity";
+	public static final String AUTHENTICITY = "Authenticity";
 	public static final String WAYPOINT = "Waypoint";
 	public static final String LATITUDE = "Latitude";
 	public static final String LONGITUDE = "Longtitude";
 	public static final String LOCATION_PRECISION = "Location precision";
 	public static final String LOCATION_COMMENT = "Location comment";
+	public static final String LOCATION_TYPE = "Location type";
 	public static final String ADDRESSLINE1 = "Address 1";
 	public static final String ADDRESSLINE2 = "Address 2";
 	public static final String CITY_TOWN = "City/Town";
 	public static final String STATE_PROVINCE_REGION = "State/Province/Region";
 	public static final String POSTCODE = "Postal Code";
 	public static final String COUNTRY = "Country";
+	public static final String PROCESSING = "Processing";
 	public static final String MARKS = "Marks";
 	public static final String ALTITUDE = "Altitude";
 	public static final String SLOPE_ANGLE = "Slope Angle";
@@ -79,9 +88,9 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 	
 
 	public static final String[] TABLE_PROPERTIES = {
-		OBJECT, TITLE, TYPE, TAXON, COMMENTS, DESCRIPTION, LATITUDE, LONGITUDE,WAYPOINT,
+		OBJECT, TITLE, TYPE, TAXON, COMMENTS, DESCRIPTION, LATITUDE, LONGITUDE,WAYPOINT, AUTHENTICITY,
 		SHAPE, HEIGHT, WIDTH, DEPTH, UNIT, 
-		LOCATION_PRECISION, LOCATION_COMMENT,
+		LOCATION_PRECISION, LOCATION_COMMENT, LOCATION_TYPE,
 		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, 
 		POSTCODE, COUNTRY, SLOPE_ANGLE, SLOPE_AZIMUTH, SOIL_DESCRIPTION, SOIL_DEPTH,
 		BEDROCK_DESCRIPTION, MARKS, ALTITUDE,
@@ -123,7 +132,9 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		argElement.setShape((TridasShape) getProperty(SHAPE));
 		argElement.setMarks((String) getProperty(MARKS));
 		argElement.setAltitude((Double) getProperty(ALTITUDE));
-		
+		argElement.setAuthenticity((String) getProperty(AUTHENTICITY));
+		argElement.setProcessing((String) getProperty(PROCESSING));
+
 		TridasDimensions d = new TridasDimensions();
 
 		d.setWidth((BigDecimal)getProperty(WIDTH));
@@ -138,72 +149,88 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 			argElement.setDimensions(null);
 		}
 		
-		// i love how nested this is!
-		if(argElement.getLocation() != null &&
-				argElement.getLocation().getLocationGeometry() != null&&
-				argElement.getLocation().getLocationGeometry().getPoint() != null &&
-				argElement.getLocation().getLocationGeometry().getPoint().getPos() != null &&
-				argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().size() == 2){
-			setProperty(LATITUDE, argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(0));
-			setProperty(LONGITUDE, argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(1));
+		Object latitude = getProperty(LATITUDE);
+		Object longitude = getProperty(LONGITUDE);
+		Object addressline1 = getProperty(ADDRESSLINE1);
+		Object addressline2 = getProperty(ADDRESSLINE2);
+		Object city = getProperty(CITY_TOWN);
+		Object state = getProperty(STATE_PROVINCE_REGION);
+		Object postcode = getProperty(POSTCODE);
+		Object country = getProperty(COUNTRY);
+		Object locprecision = getProperty(LOCATION_PRECISION);
+		Object loccomment = getProperty(LOCATION_COMMENT);
+		Object loctype = getProperty(LOCATION_TYPE);
+		
+		if((latitude != null && longitude != null) || 
+			addressline1 !=null ||
+			addressline2 !=null ||
+			city != null ||
+			state != null ||
+			postcode != null ||
+			country != null ||
+			locprecision != null ||
+			loccomment != null ||
+			loctype != null
+			){
+			
+			TridasLocation loc = new TridasLocation();
+			
+			loc.setLocationPrecision((String) locprecision);
+			loc.setLocationComment((String) loccomment);
+			
+			if(latitude != null && longitude != null)
+			{
+				// Lat/Long is set so use these
+				double lat = (Double)latitude;
+				double lon = (Double)longitude;
+				Pos p = new Pos();
+				p.getValues().add(lat);
+				p.getValues().add(lon);
+				
+				PointType pt = new PointType();
+				pt.setPos(p);
+				
+				TridasLocationGeometry locgeo = new TridasLocationGeometry();
+				locgeo.setPoint(pt);
+				
+				
+				loc.setLocationGeometry(locgeo);
+			}
+					
+			if(addressline1 !=null ||
+				addressline2 !=null ||
+				city != null ||
+				state != null ||
+				postcode != null ||
+				country != null ||
+				locprecision != null ||
+				loccomment != null
+			)
+			{
+				TridasAddress addr = new TridasAddress();
+				addr.setAddressLine1((String)addressline1);
+				addr.setAddressLine2((String)addressline2);
+				addr.setCityOrTown((String)city);
+				addr.setCountry((String) country);
+				addr.setPostalCode((String)postcode);
+				addr.setStateProvinceRegion((String)state);
+				loc.setAddress(addr);
+			}
+			else
+			{
+				loc.setAddress(null);
+			}
+			
+			if(loctype!=null)
+			{
+				loc.setLocationType((NormalTridasLocationType) loctype);
+			}
+			
+			argElement.setLocation(loc);		
 		}else{
-			setProperty(LATITUDE, null);
-			setProperty(LONGITUDE, null);
+			argElement.setLocation(null);
 		}
 		
-		if(argElement.isSetLocation() &&
-				argElement.getLocation().isSetAddress() &&
-				argElement.getLocation().getAddress().isSetAddressLine1())
-		{
-			setProperty(ADDRESSLINE1, argElement.getLocation().getAddress().getAddressLine1());
-		}
-		
-		if(argElement.isSetLocation() &&
-				argElement.getLocation().isSetAddress() &&
-				argElement.getLocation().getAddress().isSetAddressLine2())
-		{
-			setProperty(ADDRESSLINE2, argElement.getLocation().getAddress().getAddressLine2());
-		}
-		
-		if(argElement.isSetLocation() &&
-				argElement.getLocation().isSetAddress() &&
-				argElement.getLocation().getAddress().isSetCityOrTown())
-		{
-			setProperty(CITY_TOWN, argElement.getLocation().getAddress().getCityOrTown());
-		}
-		
-		if(argElement.isSetLocation() &&
-				argElement.getLocation().isSetAddress() &&
-				argElement.getLocation().getAddress().isSetCountry())
-		{
-			setProperty(COUNTRY, argElement.getLocation().getAddress().getCountry());
-		}
-		
-		if(argElement.isSetLocation() &&
-				argElement.getLocation().isSetAddress() &&
-				argElement.getLocation().getAddress().isSetPostalCode())
-		{
-			setProperty(POSTCODE, argElement.getLocation().getAddress().getPostalCode());
-		}
-		
-		if(argElement.isSetLocation() &&
-				argElement.getLocation().isSetAddress() &&
-				argElement.getLocation().getAddress().isSetStateProvinceRegion())
-		{
-			setProperty(STATE_PROVINCE_REGION, argElement.getLocation().getAddress().getStateProvinceRegion());
-		}
-		
-		if(argElement.isSetLocation() &&
-				argElement.getLocation().isSetLocationPrecision())
-		{
-			setProperty(LOCATION_PRECISION, argElement.getLocation().getLocationPrecision());
-		}
-		
-		if(argElement.isSetLocation() &&
-				argElement.getLocation().isSetLocationComment())
-		{
-			setProperty(LOCATION_COMMENT, argElement.getLocation().getLocationComment());
-		}
 		TridasSlope slope = new TridasSlope();
 		slope.setAngle((Integer)getProperty(SLOPE_ANGLE));
 		slope.setAzimuth((Integer) getProperty(SLOPE_AZIMUTH));
@@ -238,6 +265,7 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		setProperty(COMMENTS, argElement.getComments());
 		setProperty(TYPE, argElement.getType());
 		setProperty(DESCRIPTION, argElement.getDescription());
+		setProperty(AUTHENTICITY, argElement.getAuthenticity());
 		setProperty(TAXON, argElement.getTaxon());
 		setProperty(SHAPE, argElement.getShape());
 		if(argElement.getDimensions() != null){
@@ -248,6 +276,8 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 			setProperty(DEPTH, d.getDepth());
 			setProperty(UNIT, d.getUnit());
 		}
+		setProperty(PROCESSING, argElement.getProcessing());
+
 		
 		// I love how nested this is!
 		if(argElement.getLocation() != null &&
@@ -260,6 +290,12 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		}else{
 			setProperty(LATITUDE, null);
 			setProperty(LONGITUDE, null);
+		}
+		
+		if(argElement.isSetLocation() &&
+				argElement.getLocation().isSetLocationType())
+		{
+			setProperty(LOCATION_TYPE, argElement.getLocation().getLocationType());
 		}
 		
 		if(argElement.getSlope() != null){

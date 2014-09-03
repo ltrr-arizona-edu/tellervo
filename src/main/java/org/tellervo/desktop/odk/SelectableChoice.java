@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.NormalTridasShape;
 
 import com.jidesoft.swing.Selectable;
@@ -28,6 +29,10 @@ public class SelectableChoice implements Selectable {
 		else if (item instanceof NormalTridasShape)
 		{
 			return ((NormalTridasShape)item).value();
+		}
+		else if (item instanceof NormalTridasLocationType)
+		{
+			return ((NormalTridasLocationType)item).value();
 		}
 		
 		return item.toString();

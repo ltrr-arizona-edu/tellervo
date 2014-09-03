@@ -19,9 +19,12 @@ public interface ODKFieldInterface {
 	
 	public Boolean isFieldRequired();
 	
+	public boolean isFieldHidden();
+	
 	public Class<? extends ITridas> getTridasClass();
 	
-
+	public void setIsFieldHidden(boolean b);
+	
 	public void setName(String str);
 	
 	public void setDescription(String str);
