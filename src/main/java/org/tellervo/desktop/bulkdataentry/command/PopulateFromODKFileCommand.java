@@ -76,21 +76,18 @@ public class PopulateFromODKFileCommand implements ICommand {
 	private static void debugODKCodes()
 	{
 		ODKFieldInterface[] fields = ODKFields.getFieldsAsArray(TridasObject.class);
-		log.debug("Object codes:");
 		for(ODKFieldInterface field : fields)
 		{
 			log.debug(field.getFieldCode());
 		}
 		
 		ODKFieldInterface[] fields2 = ODKFields.getFieldsAsArray(TridasElement.class);
-		log.debug("Element codes:");
 		for(ODKFieldInterface field : fields2)
 		{
 			log.debug(field.getFieldCode());
 		}
 		
 		ODKFieldInterface[] fields3 = ODKFields.getFieldsAsArray(TridasSample.class);
-		log.debug("Sample codes:");
 		for(ODKFieldInterface field : fields3)
 		{
 			log.debug(field.getFieldCode());
@@ -110,9 +107,8 @@ public class PopulateFromODKFileCommand implements ICommand {
 			// this means that this MVC thread is not the main thread, it was already splitOff() previously
 			e.printStackTrace();
 		}
-
-		debugODKCodes();
 		
+		//debugODKCodes();
 		PopulateFromODKFileEvent event = (PopulateFromODKFileEvent) argEvent;
 		ArrayList<ODKParser> filesProcessed = new ArrayList<ODKParser>();
 		ArrayList<ODKParser> filesFailed = new ArrayList<ODKParser>();

@@ -34,6 +34,7 @@ import javax.swing.JTextArea;
 import org.tellervo.desktop.util.BugReport;
 import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.OKCancel;
+import org.tellervo.desktop.wsi.TransactionDebug;
 
 
 // TODO: refactor!
@@ -141,10 +142,9 @@ public class Bug extends JDialog {
 		textArea.setEditable(false);
 		stackTrace = new JScrollPane(textArea);
 
-		String msgText = "<html>We apologize but an internal error has occurred within Tellervo and there "
-						+ "<i>may</i> have been a <br>loss of data.<br><br>"
-						+ "Please contact the Tellervo developers with details of what you were doing"
-						+ " prior to getting<br> this message by submitting a report.<br>";
+		String msgText = "<html>We apologize but an internal error has occurred within Tellervo.  If you would "
+				+ "like to submit a bug report please do so via the button below.  If you include your email address"
+				+ " the developers will respond as soon as they can.";
 			
 		JPanel message = Layout
 				.flowLayoutL(msgText);
@@ -166,6 +166,7 @@ public class Bug extends JDialog {
 			private static final long serialVersionUID = 4617777199430388184L;
 
 			public void actionPerformed(ActionEvent e) {
+				TransactionDebug.forceGenerateWSBug();
 				dispose();
 			}
 		});
