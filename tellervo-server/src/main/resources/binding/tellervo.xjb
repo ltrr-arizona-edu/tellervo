@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings 
+	version="2.1"
+	xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" 
+	xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc"
+	xmlns:ai="http://jaxb.dev.java.net/plugin/if_insertion"
+	extensionBindingPrefixes="xjc ai">
+
+	<!-- Make underscores significant; this fixes *most* of the ObjectFactory name collision errors -->
+	<jaxb:bindings>
+		<jaxb:globalBindings 
+				underscoreBinding="asCharInWord"
+				generateIsSetMethod="true"
+				enableFailFastCheck="true"
+				typesafeEnumBase="xs:string xs:int xs:long xs:short xs:double xs:float"
+				typesafeEnumMemberName="generateName">
+			<!--<jaxb:serializable uid="1001"/>-->
+			<xjc:simple />
+			<xjc:treatRestrictionLikeNewType />	
+			<xjc:javaType name="java.lang.Integer" xmlType="xs:int" adapter="org.tridas.adapters.IntegerAdapter" />
+		</jaxb:globalBindings>
+	</jaxb:bindings> 
+	
+	<!-- Tellervo -->
+	<jaxb:bindings schemaLocation="../schemas/tellervo.xsd" node="/xs:schema">
+		
+		<!-- Rename Tellervo root element to WSIRootElement -->
+		<jaxb:bindings node="//xs:element[@name='tellervo']">
+			<jaxb:class name="WSIRootElement" />
+		</jaxb:bindings>
+   
+		<!-- Preserve header message code, but keep message content as DOM -->
+		<jaxb:bindings node="//xs:element[@name='message']">
+        	<jaxb:bindings node="./xs:complexType/xs:sequence">
+        		<jaxb:dom/>
+       		</jaxb:bindings>
+		</jaxb:bindings>
+	
+		<jaxb:bindings node="//xs:simpleType[@name='searchOperator']">
+			<jaxb:typesafeEnumClass>
+				<jaxb:typesafeEnumMember value="&gt;" name="GREATER_THAN" />
+				<jaxb:typesafeEnumMember value="&lt;" name="LESS_THAN" />
+				<jaxb:typesafeEnumMember value="=" name="EQUALS" />
+				<jaxb:typesafeEnumMember value="!=" name="NOT_EQUALS" />
+			</jaxb:typesafeEnumClass>
+		</jaxb:bindings>
+		
+		<!-- Add IdAble interface to securityUser -->
+		<!--<jaxb:bindings node="//xs:element[@name='securityUser']">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.IdAble
+				org.tridas.interfaces.HumanName
+			</ai:interfaces>
+		</jaxb:bindings>-->
+		
+		<!-- Add ITellervoEntity interface to ITridas-like things that are specific to Tellervo -->
+		<!--<bindings node="//xs:element[@name='securityUser']/xs:complexType">
+			<ai:interfaces check="false">
+				edu.cornell.dendro.tellervo.interfaces.ITellervoEntity
+			</ai:interfaces>
+		</bindings>-->
+			
+		<jaxb:bindings node="//xs:element[@name='securityUser']/xs:complexType">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.HumanName
+				org.tridas.interfaces.IdAble
+			</ai:interfaces>
+		</jaxb:bindings>
+					
+		<!-- Add ITridas interface to box (kludge) -->
+		<jaxb:bindings node="//xs:element[@name='box']/xs:complexType">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.ITridas
+			</ai:interfaces>
+		</jaxb:bindings>
+		
+		<!-- Add ITridas interface to loan (kludge) -->
+		<jaxb:bindings node="//xs:element[@name='loan']/xs:complexType">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.ICoreTridas
+			</ai:interfaces>
+		</jaxb:bindings>
+		
+		<!-- Add ITridas interface to tag (kludge) -->
+		<jaxb:bindings node="//xs:element[@name='tag']/xs:complexType">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.ICoreTridas
+			</ai:interfaces>
+		</jaxb:bindings>
+		
+		<!-- Add ITridas interface to curation (kludge) -->
+		<jaxb:bindings node="//xs:element[@name='curation']/xs:complexType">
+			<ai:interfaces check="false">
+				org.tridas.interfaces.ICoreTridas
+			</ai:interfaces>
+		</jaxb:bindings>
+	
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.tellervo.schema"/>
+			<jaxb:nameXmlTransform>
+				<jaxb:elementName prefix="WSI" />
+			</jaxb:nameXmlTransform>
+		</jaxb:schemaBindings>
+								
+	</jaxb:bindings>
+	
+	<!-- Tridas schema. Prefix with 'Tridas'! -->
+	<jaxb:bindings schemaLocation="../schemas/tridas.xsd" node="/xs:schema">
+		<jaxb:schemaBindings>
+			<jaxb:package name="org.tridas.schema"/>
+			<jaxb:nameXmlTransform>
+				<jaxb:elementName prefix="Tridas" />
+			</jaxb:nameXmlTransform>
+		</jaxb:schemaBindings>
+		
+		<!-- Rename object element to custom class -->
+		<jaxb:bindings node="//xs:element[@name='object']">
+			<jaxb:class implClass="org.tridas.util.TridasObjectEx" />
+		</jaxb:bindings>
+	</jaxb:bindings>
+		
+
+</jaxb:bindings> 
