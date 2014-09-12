@@ -22,12 +22,10 @@ package org.tellervo.desktop.tridasv2.support;
 
 import java.util.GregorianCalendar;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.core.App;
 import org.tridas.schema.Certainty;
 import org.tridas.schema.Date;
 import org.tridas.schema.DateTime;
@@ -82,11 +80,7 @@ public class XMLDateUtils {
 		// set it to this date
 		calendar.setTime(date);
 		
-		try {
-			return DatatypeFactory.newInstance().newXMLGregorianCalendar(calendar);
-		} catch (DatatypeConfigurationException e) {
-			new Bug(e);
-			return null;
-		}
+		return App.datatypeFactory.newXMLGregorianCalendar(calendar);
+		
 	}
 }

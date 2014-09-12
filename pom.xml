@@ -135,6 +135,13 @@
 	<!-- Packages that this project depends upon-->
 	<dependencies>
 
+		<!--  Super charge XML parsing!  -->
+		<!-- <dependency>
+			<groupId>org.codehaus.woodstox</groupId>
+			<artifactId>woodstox-core-lgpl</artifactId>
+			<version>4.4.0</version>
+		</dependency>-->
+
 		<!-- 3D Mapping library -->		
 		<dependency>
 			<groupId>gov.nasa.worldwind</groupId>

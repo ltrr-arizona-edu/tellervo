@@ -5,16 +5,15 @@ import java.beans.PropertyVetoException;
 import java.util.GregorianCalendar;
 
 import javax.swing.JPanel;
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.tellervo.desktop.core.App;
 import org.tridas.schema.Certainty;
 import org.tridas.schema.Date;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
-import com.michaelbaranov.microba.calendar.*;
+import com.michaelbaranov.microba.calendar.DatePicker;
 
 
 public class TridasDateEditor extends AbstractPropertyEditor {
@@ -45,15 +44,12 @@ public class TridasDateEditor extends AbstractPropertyEditor {
 			GregorianCalendar c = new GregorianCalendar();		
 			c.setTime(dataFromGui);
 			XMLGregorianCalendar xmlgc;
-			xmlgc = DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
+			xmlgc = App.datatypeFactory.newXMLGregorianCalendar(c);
 			xmlgc.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
 			org.tridas.schema.Date d = new org.tridas.schema.Date();
 			d.setValue(xmlgc);
 			d.setCertainty(Certainty.EXACT);
 			return d;
-		}
-		catch (DatatypeConfigurationException e) {
-			e.printStackTrace();
 		}
 		catch (Exception e)
 		{

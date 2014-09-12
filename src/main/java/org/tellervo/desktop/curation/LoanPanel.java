@@ -32,8 +32,6 @@ import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -837,24 +835,22 @@ public class LoanPanel extends JPanel implements ActionListener {
 		}
 		
 
-		try {
-			GregorianCalendar c = new GregorianCalendar();
-			
-			if(dpDueDate.getDate()!=null)
-			{
-				c.setTime(dpDueDate.getDate());
-				guiRepOfLoan.setDuedate(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
-			}
-			
-			if(dpReturnDate.getDate()!=null)
-			{
-				c.setTime(dpReturnDate.getDate());
-				guiRepOfLoan.setReturndate(DatatypeFactory.newInstance().newXMLGregorianCalendar(c));
-			}
-			
-		} catch (DatatypeConfigurationException e) {
-			e.printStackTrace();
+		
+		GregorianCalendar c = new GregorianCalendar();
+		
+		if(dpDueDate.getDate()!=null)
+		{
+			c.setTime(dpDueDate.getDate());
+			guiRepOfLoan.setDuedate(App.datatypeFactory.newXMLGregorianCalendar(c));
 		}
+		
+		if(dpReturnDate.getDate()!=null)
+		{
+			c.setTime(dpReturnDate.getDate());
+			guiRepOfLoan.setReturndate(App.datatypeFactory.newXMLGregorianCalendar(c));
+		}
+		
+	 
 		
 
 		guiRepOfLoan.setSamples(sampleModel.getTridasSamples());

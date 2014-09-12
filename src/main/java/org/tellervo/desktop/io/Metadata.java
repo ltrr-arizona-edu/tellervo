@@ -73,6 +73,7 @@ public class Metadata {
 	public final static String SUMMARY_MUTUAL_TAXON_COUNT = "::summary:mututalTaxonCount";
 	
 	/** The associated other object types */
+	public final static String PROJECT = "::project";
 	public final static String OBJECT_ARRAY = "::objectArray";
 	public final static String OBJECT = "::object";
 	public final static String ELEMENT = "::element";

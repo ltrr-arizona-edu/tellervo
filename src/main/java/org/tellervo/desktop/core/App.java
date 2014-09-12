@@ -30,6 +30,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.media.opengl.GLException;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.stream.XMLInputFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -96,6 +101,19 @@ public class App{
   private static ProxyManager proxies; // for handling our proxies
 
 
+  public static DatatypeFactory datatypeFactory;
+  
+  
+//Create static instances of factories that are time consuming to instantiate. 
+	// This dramatically improves performance
+
+	static{
+	    try {
+	        datatypeFactory = DatatypeFactory.newInstance();
+	    } catch (DatatypeConfigurationException e) {
+	        throw new RuntimeException("Init Error!", e);
+	    }
+	}
 
 public static synchronized void init() {
 	

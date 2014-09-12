@@ -18,6 +18,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.wsi.tellervo.TridasElementTemporaryCacher;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.Certainty;
@@ -285,7 +286,7 @@ public class ODKParser {
 
 			gcal.setTime(dob);
 			
-			XMLGregorianCalendar xmlGregCal = DatatypeFactory.newInstance().newXMLGregorianCalendarDate(
+			XMLGregorianCalendar xmlGregCal = App.datatypeFactory.newXMLGregorianCalendarDate(
 					gcal.get(Calendar.YEAR),
 					gcal.get(Calendar.MONTH),
 					gcal.get(Calendar.DAY_OF_MONTH),
@@ -296,10 +297,7 @@ public class ODKParser {
 			date.setCertainty(Certainty.EXACT);
 			
 			return date;
-		} catch (DatatypeConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalArgumentException e)
+		}  catch (IllegalArgumentException e)
 		{
 			log.debug("Error parsing date");
 		} catch (ParseException e) {
