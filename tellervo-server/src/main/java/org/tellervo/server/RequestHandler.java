@@ -6,10 +6,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -29,7 +25,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.schema.TellervoRequestStatus;
@@ -52,6 +47,8 @@ public class RequestHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(RequestHandler.class);
 
+	public static final boolean DO_XML_VALIDATION = true;
+	
 	private HttpServletRequest originalFullRequest;
 	private HttpServletResponse response;
 	private WSIRequest request;
@@ -61,7 +58,7 @@ public class RequestHandler {
 	private WSIContent content = new WSIContent();
 	private ArrayList<WSIMessage> messages = new ArrayList<WSIMessage>();
 	public TimeKeeper timeKeeper;
-	public static final boolean DO_XML_VALIDATION = true;
+	public Auth auth;
 
 	public RequestHandler(HttpServletRequest request, HttpServletResponse response) {
 		
@@ -83,6 +80,9 @@ public class RequestHandler {
 
 		parseRequest();
 		timeKeeper.log("Marshalled XML using JAXB");
+		
+		// Set up Auth to check for existing session etc
+		auth = new Auth(this);
 		
 	}
 
@@ -348,7 +348,7 @@ public class RequestHandler {
 
 		WSIHeader.QueryTime qt = new WSIHeader.QueryTime();
 		qt.setValue(timeKeeper.getTimeSinceStart());
-		qt.setUnit("seconds");
+		qt.setUnit("ms");
 		header.setQueryTime(qt);
 
 		if (request != null && request.isSetType()) {

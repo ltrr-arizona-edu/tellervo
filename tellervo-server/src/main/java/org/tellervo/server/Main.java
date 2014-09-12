@@ -43,7 +43,9 @@ public class Main extends HttpServlet {
 	public static String dbconnstring = "";
 	public static String dbuser = "";
 	public static String dbpwd = "";
-
+	public static String labName = "";
+	public static String labAcronym = "";
+	
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
@@ -71,6 +73,9 @@ public class Main extends HttpServlet {
 		    dbconnstring = configLines.get(0);
 		    dbuser = configLines.get(1);
 		    dbpwd = configLines.get(2);
+		    
+		    labName = (String) initialcontext.lookup("java:comp/env/LabName");
+		    labAcronym = (String) initialcontext.lookup("java:comp/env/LabAcronym");
 
 		    
 		} catch (NamingException e) {
@@ -140,11 +145,10 @@ public class Main extends HttpServlet {
 			}
 		}
 		
-		// Set up Auth to check for existing session etc
-		Auth auth = new Auth(handler);
+
 				
 		// If user is not logged in and is not attempting some sort of authentication, force them to log in
-		if(!auth.getIsLoggedIn())
+		if(!handler.auth.getIsLoggedIn())
 		{
 			if((!handler.getRequest().getType().equals(TellervoRequestType.PLAINLOGIN)) && 
 				(!handler.getRequest().getType().equals(TellervoRequestType.SECURELOGIN)) &&
@@ -154,7 +158,7 @@ public class Main extends HttpServlet {
 		  {	  
 			log.debug("User is not logged in and they aren't making any authentication requests.  Force them to login first");
 			log.debug("Request type is: "+handler.getRequest().getType());
-			auth.requestUserLogin();
+			handler.auth.requestUserLogin();
 			return;
 		  }
 		}
@@ -162,26 +166,26 @@ public class Main extends HttpServlet {
 		
 		if(handler.getRequest().getType().equals(TellervoRequestType.PLAINLOGIN))
 		{
-			auth.plainLogin();
+			handler.auth.plainLogin();
 			return;
 		}
 		else if(handler.getRequest().getType().equals(TellervoRequestType.NONCE))
 		{
 			handler.timeKeeper.log("Starting to process nonce request");
 
-			auth.returnNonce();
+			handler.auth.returnNonce();
 			return;
 		}
 		else if(handler.getRequest().getType().equals(TellervoRequestType.SECURELOGIN))
 		{
 			handler.timeKeeper.log("Starting to process secure login request");
 
-			auth.secureLogin();
+			handler.auth.secureLogin();
 			return;
 		}
 		else if(handler.getRequest().getType().equals(TellervoRequestType.LOGOUT))
 		{
-			auth.logout();
+			handler.auth.logout();
 			return;
 		}
 		else if(handler.getRequest().getType().equals(TellervoRequestType.READ))
