@@ -510,6 +510,7 @@
 									<xs:simpleType>
 										<xs:restriction base="xs:string">
 											<xs:enumeration value="seconds"/>
+											<xs:enumeration value="ms"/>
 										</xs:restriction>
 									</xs:simpleType>
 								</xs:attribute>

@@ -19,4 +19,14 @@
 		<env-entry-value>/home/pbrewer/tellervo-pg</env-entry-value>
 		<env-entry-type>java.lang.String</env-entry-type>
 	</env-entry>
+	<env-entry>
+		<env-entry-name>LabName</env-entry-name>
+		<env-entry-value>DemoLab</env-entry-value>
+		<env-entry-type>java.lang.String</env-entry-type>
+	</env-entry>
+	<env-entry>
+		<env-entry-name>LabAcronym</env-entry-name>
+		<env-entry-value>ABC</env-entry-value>
+		<env-entry-type>java.lang.String</env-entry-type>
+	</env-entry>	
 </web-app>

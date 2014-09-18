@@ -24,8 +24,10 @@ import javax.xml.stream.XMLInputFactory;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.schema.EntityType;
 import org.tellervo.schema.TellervoRequestStatus;
 import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSIEntity;
 
 
 /**
@@ -57,6 +59,7 @@ public class Main extends HttpServlet {
 			log.debug("Failed to load postgres driver");
 		}
 		
+		// Grab configuration info from the web.xml file
 	    InitialContext initialcontext;
 		try {
 			initialcontext = new InitialContext();
@@ -79,7 +82,7 @@ public class Main extends HttpServlet {
 
 		    
 		} catch (NamingException e) {
-	    	log.error("DB credentials file is broken");
+	    	log.error("Problem getting server configuration details from web.xml");
 	    	return;
 		} catch (IOException e) {
 	    	log.error("DB credentials file is broken");
@@ -88,18 +91,10 @@ public class Main extends HttpServlet {
 
 	}
 
-	
-	public static Connection getDatabaseConnection()
-	{
-		try {
-			return DriverManager.getConnection(dbconnstring, dbuser, dbpwd);
-		} catch (SQLException e) {
-			log.error("Error connecting to database");
-		}
-		
-		return null;
-	}
 	/**
+	 * Function for handling HTTP GET requests.  This simply gives a basic 'Hello World' response
+	 * to show users that the server is online.  All true requests should be sent via POST 
+	 * 
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
@@ -127,6 +122,8 @@ public class Main extends HttpServlet {
 	}
 
 	/**
+	 * Function for handling HTTP POST requests. 
+	 * 
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
@@ -163,7 +160,7 @@ public class Main extends HttpServlet {
 		  }
 		}
 		
-		
+		// Main section for diverting different request types to the correct places
 		if(handler.getRequest().getType().equals(TellervoRequestType.PLAINLOGIN))
 		{
 			handler.auth.plainLogin();
@@ -193,6 +190,28 @@ public class Main extends HttpServlet {
 			if(handler.getRequest().isSetDictionaries())
 			{
 				Dictionaries.returnDictionaries(handler);
+				return;
+			}
+			else if (handler.getRequest().isSetEntities())
+			{
+				for(WSIEntity entity : handler.getRequest().getEntities())
+				{
+					if(!entity.isSetType() || !entity.isSetId())
+					{
+						handler.addMessage(TellervoRequestStatus.ERROR, 902, "Entity tag is missing entity type and/or ID");
+						handler.sendResponse();
+						return;
+					}
+					
+					if(entity.getType().equals(EntityType.OBJECT))
+					{
+						TridasObjectHandler toh = new TridasObjectHandler(handler);
+						toh.readTridasObject(entity.getId());
+						
+					}
+				}
+				
+				handler.sendResponse();
 				return;
 			}
 			
@@ -249,6 +268,18 @@ public class Main extends HttpServlet {
 	}
 	
 
+	
+	public static Connection getDatabaseConnection()
+	{
+		try {
+			return DriverManager.getConnection(dbconnstring, dbuser, dbpwd);
+		} catch (SQLException e) {
+			log.error("Error connecting to database");
+		}
+		
+		return null;
+	}
+	
 	// Create static instances of factories that are time consuming to instantiate. 
 	// This dramatically improves performance
 	static{

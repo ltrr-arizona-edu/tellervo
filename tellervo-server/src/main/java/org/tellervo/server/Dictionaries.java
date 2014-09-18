@@ -133,6 +133,11 @@ public class Dictionaries {
 						dictionaryList.add(dictionary);
 					}
 				}
+				
+				//
+				//  OTHER DICTIONARIES THAT REQUIRE INDIVIDUAL HANDLING
+				//
+				
 				else if(dictName.equals("taxon"))
 				{
 					String sql = "SELECT taxonid, label FROM tlkptaxon ORDER BY label asc";
@@ -257,7 +262,7 @@ public class Dictionaries {
 						
 						box.setTitle(rs.getString("title"));
 						TridasIdentifier id = new TridasIdentifier();
-						//TODO Add domain
+						//TODO Add domain programmatically 
 						//id.setDomain("");
 						id.setValue(rs.getString("boxid"));
 						box.setIdentifier(id);
