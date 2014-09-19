@@ -256,9 +256,10 @@ public class Main extends HttpServlet {
 		}
 		else if(handler.getRequest().getType().equals(TellervoRequestType.SEARCH))
 		{
-			//TODO
-			handler.addMessage(TellervoRequestStatus.ERROR,667, "Whatever you've requested hasn't been implemented yet!");
+			SearchHandler search = new SearchHandler(handler);
+			search.doSearch();
 			handler.sendResponse();
+			return;
 		}
 
 		

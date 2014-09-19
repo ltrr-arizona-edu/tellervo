@@ -1,7 +1,7 @@
 package org.tellervo.server;
 
 import java.io.StringReader;
-import java.sql.Array;
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -16,14 +16,21 @@ import org.tellervo.schema.TellervoRequestStatus;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.NormalTridasShape;
+import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasAddress;
+import org.tridas.schema.TridasBedrock;
 import org.tridas.schema.TridasCoverage;
+import org.tridas.schema.TridasDimensions;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasFile;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.TridasShape;
+import org.tridas.schema.TridasSlope;
+import org.tridas.schema.TridasSoil;
+import org.tridas.schema.TridasUnit;
 import org.tridas.util.TridasObjectEx;
 
 /**
@@ -80,9 +87,8 @@ public class SQLMarshaller {
 		object.setDescription(rs.getString("description"));
 		//TODO linkseries
 
-		Array filearr = rs.getArray("file");
 		try{
-			String[] files2 = (String[])filearr.getArray();
+			String[] files2 = rs.getString("file").split("><");
 			for(String file : files2)
 			{
 				TridasFile tf = new TridasFile();
@@ -101,6 +107,27 @@ public class SQLMarshaller {
 		coverage.setCoverageTemporalFoundation(rs.getString("coveragetemporalfoundation"));
 		object.setCoverage(coverage);
 		object.setLocation(getTridasLocationFromResultSet(rs, handler));
+		
+		
+		// Generic fields
+		TridasGenericField labCode = new TridasGenericField();
+		labCode.setName("tellervo.objectLabCode");
+		labCode.setType("xs:string");
+		labCode.setValue(rs.getString("code"));
+		object.getGenericFields().add(labCode);
+		
+		TridasGenericField vegType = new TridasGenericField();
+		vegType.setName("tellervo.vegetationType");
+		vegType.setType("xs:string");
+		vegType.setValue(rs.getString("vegetationtype"));
+		object.getGenericFields().add(vegType);
+		
+		TridasGenericField countOfSeries = new TridasGenericField();
+		countOfSeries.setName("tellervo.countOfChildSeries");
+		countOfSeries.setType("xs:int");
+		countOfSeries.setValue(String.valueOf(rs.getInt("countofchildvmeasurements")));
+		object.getGenericFields().add(countOfSeries);
+		
 		
 		return object;
 	}
@@ -131,21 +158,17 @@ public class SQLMarshaller {
 		element.setType(getControlledVoc(rs.getString("elementtype"), rs.getString("elementtypeid"), "Tellervo", "en"));
 		element.setDescription(rs.getString("description"));
 		//TODO linkseries
-		if(rs.getArray("file")!=null)
-		{
-			Array filearr = rs.getArray("file");
-			try{
-				String[] files2 = (String[])filearr.getArray();
-				for(String file : files2)
-				{
-					TridasFile tf = new TridasFile();
-					tf.setHref(file);
-					element.getFiles().add(tf);
-				}
-			} catch (Exception ex)
+		try{
+			String[] files2 = rs.getString("file").split("><");
+			for(String file : files2)
 			{
-				log.debug("Problem getting file array");
+				TridasFile tf = new TridasFile();
+				tf.setHref(file);
+				element.getFiles().add(tf);
 			}
+		} catch (Exception ex)
+		{
+			log.debug("Problem getting file array");
 		}
 		
 		//TODO Set taxonomic authority properly
@@ -161,16 +184,37 @@ public class SQLMarshaller {
 		{
 			log.debug("Failed to set element shape");
 		}
-		//dimensions
-		//authenticity
-		element.setLocation(getTridasLocationFromResultSet(rs, handler));
-		//processing
-		//marks
-		//altitude
-		//slope
-		//soil
-		//bedrock
+		TridasDimensions dims = new TridasDimensions();
 		
+		try{
+			TridasUnit units = new TridasUnit();
+			units.setNormalTridas(NormalTridasUnit.valueOf(rs.getString("units")));
+			dims.setUnit(units);
+			dims.setDepth(BigDecimal.valueOf(rs.getDouble("depth")));
+			dims.setHeight(BigDecimal.valueOf(rs.getDouble("height")));
+			dims.setWidth(BigDecimal.valueOf(rs.getDouble("width")));
+			dims.setDiameter(BigDecimal.valueOf(rs.getDouble("diameter")));
+		} catch (Exception e)
+		{
+			log.debug("Failed to set dimensions");
+		}
+		element.setDimensions(dims);		
+		element.setAuthenticity(rs.getString("authenticity"));
+		element.setLocation(getTridasLocationFromResultSet(rs, handler));
+		element.setProcessing(rs.getString("processing"));
+		element.setMarks(rs.getString("marks"));
+		element.setAltitude(rs.getDouble("altitude"));
+		TridasSlope slope = new TridasSlope();
+		slope.setAngle(rs.getInt("slopeangle"));
+		slope.setAzimuth(rs.getInt("slopeazimuth"));
+		element.setSlope(slope);
+		TridasSoil soil = new TridasSoil();
+		soil.setDepth(rs.getDouble("soildepth"));
+		soil.setDescription(rs.getString("soildescription"));
+		element.setSoil(soil);
+		TridasBedrock bedrock = new TridasBedrock();
+		bedrock.setDescription(rs.getString("bedrockdescription"));
+		element.setBedrock(bedrock);
 		
 		return element;
 	}
@@ -188,7 +232,11 @@ public class SQLMarshaller {
 		TridasLocation location = new TridasLocation();
 		
 		location.setLocationComment(rs.getString("locationcomment"));
-		location.setLocationPrecision(rs.getInt("locationprecision")+"");
+		
+		if(rs.getInt("locationprecision")>0)
+		{
+			location.setLocationPrecision(rs.getInt("locationprecision")+"");
+		}
 		
 		try{
 			NormalTridasLocationType loctype = NormalTridasLocationType.fromValue(rs.getString("locationtype"));

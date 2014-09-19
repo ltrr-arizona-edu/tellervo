@@ -20,6 +20,7 @@ import org.tellervo.desktop.wsi.tellervo.resources.AuthenticateResource;
 import org.tellervo.schema.TellervoRequestStatus;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSINonce;
+import org.tellervo.schema.WSISecurityUser;
 
 public class Auth {
 
@@ -68,6 +69,25 @@ public class Auth {
 	}
 
 	/**
+	 * Get the currently logged in user.  If no user is logged in, then return null;
+	 * @return
+	 */
+	public WSISecurityUser getCurrentSecurityUser()
+	{
+		if(isLoggedIn)
+		{
+			WSISecurityUser user = new WSISecurityUser();
+			user.setFirstName(firstName);
+			user.setLastName(lastName);
+			user.setUsername(userName);
+			user.setId(securityUserID);
+			return user;
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Determine whether this user is an administrator
 	 */
 	private void setIsUserAdmin() {
@@ -85,11 +105,11 @@ public class Auth {
 			
 			if (rs.getBoolean("isadmin")==false)
 			{
-				log.debug("User is not an admin");
+				//log.debug("User is not an admin");
 			}
 			else
 			{
-				log.debug("User is an admin");
+				//log.debug("User is an admin");
 				this.isAdmin = true;
 			}
 
@@ -240,7 +260,8 @@ public class Auth {
 				session.setAttribute("firstname", this.getFirstName());
 				session.setAttribute("lastname", this.getLastName());
 				session.setAttribute("username", this.getUserName());
-				
+
+				handler.getHeader().setSecurityUser(this.getCurrentSecurityUser());
 				handler.timeKeeper.log("Sending response to user");
 
 				handler.sendResponse();
@@ -366,7 +387,7 @@ public class Auth {
 				session.setAttribute("username", this.getUserName());
 				
 				logIP();
-				
+				handler.getHeader().setSecurityUser(this.getCurrentSecurityUser());
 				handler.sendResponse();
 				return;
 
@@ -558,8 +579,8 @@ public class Auth {
 				+ StringEscapeUtils.escapeSql(handler.getOriginalFullRequest()
 						.getRemoteAddr()) + "', '"+this.getSecurityUserID()+"')";
 
-		log.debug("DelSQL : " + delSQL);
-		log.debug("InsSQL : " + insSQL);
+		//log.debug("DelSQL : " + delSQL);
+		//log.debug("InsSQL : " + insSQL);
 
 		try {
 			con = Main.getDatabaseConnection();

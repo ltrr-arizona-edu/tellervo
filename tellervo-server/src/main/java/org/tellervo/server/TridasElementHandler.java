@@ -28,7 +28,13 @@ public class TridasElementHandler {
 	}
 	
 	
-	public ArrayList<TridasElement> readTridasElements(String whereClause)
+	/**
+	 * Get an ArrayList of TridasElements but specifying the 'where' clause (without the actual where)
+	 * 
+	 * @param whereClause
+	 * @return
+	 */
+	public ArrayList<TridasElement> readTridasElementsWithSQL(String whereClause)
 	{
 		ArrayList<TridasElement> elementList = new ArrayList<TridasElement>();
 		
@@ -52,12 +58,10 @@ public class TridasElementHandler {
 				   handler.getRequest().getFormat().equals(TellervoRequestFormat.MINIMAL) || 
 				   handler.getRequest().getFormat().equals(TellervoRequestFormat.SUMMARY))
 				{
-					// Standard, Mimimal and Summary formats all return a simple single object
 					elementList.add(SQLMarshaller.getTridasElementFromResultSet(rs, handler));
 				}
 				else if (handler.getRequest().getFormat().equals(TellervoRequestFormat.COMPREHENSIVE))
 				{
-					// Comprehensive format returns object with child entities
 					elementList.add(SQLMarshaller.getTridasElementFromResultSet(rs, handler));
 					
 				}

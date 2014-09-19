@@ -93,6 +93,7 @@ public class RequestHandler {
 		
 		// Set up Auth to check for existing session etc
 		auth = new Auth(this);
+		header.setSecurityUser(auth.getCurrentSecurityUser());
 		
 	}
 
@@ -108,7 +109,7 @@ public class RequestHandler {
 		if(originalFullRequest.getContentType().startsWith("multipart/form-data"))
 		{
 			// Tellervo uses this method
-			log.debug("Request is using multipart/form-data");
+			//log.debug("Request is using multipart/form-data");
 
 			Collection<Part> postParts = null;
 			try {
@@ -165,7 +166,7 @@ public class RequestHandler {
 		else if (originalFullRequest.getContentType().startsWith("application/x-www-form-urlencoded"))
 		{
 			// This is the standard HTML form method
-			log.debug("Request is using standard application/x-www-form-urlencoded");
+			//log.debug("Request is using standard application/x-www-form-urlencoded");
 			xmlrequest = originalFullRequest.getParameter("xmlrequest");
 		}
 		else
@@ -188,7 +189,7 @@ public class RequestHandler {
 		}
 		else
 		{
-			requestAsString = xmlrequest;
+			requestAsString = xmlrequest.trim();
 		}
 				
 		timeKeeper.log("Extracted user request from POST");
@@ -212,7 +213,7 @@ public class RequestHandler {
 	
 				// Do the validation
 				Validator validator = schema.newValidator();
-				StreamSource source = new StreamSource(new StringReader(xmlrequest));
+				StreamSource source = new StreamSource(new StringReader(requestAsString));
 				validator.validate(source);
 	
 			} catch (SAXException ex) {
@@ -227,7 +228,7 @@ public class RequestHandler {
 		}
 
 		// Marshall the XML into Java classes using JAXB
-		StringReader reader = new StringReader(xmlrequest);
+		StringReader reader = new StringReader(requestAsString);
 		try {
 			timeKeeper.log("Instantiate JAXB classes");
 
