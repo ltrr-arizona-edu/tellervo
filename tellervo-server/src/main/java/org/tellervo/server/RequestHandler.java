@@ -27,6 +27,7 @@ import javax.xml.validation.Validator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestStatus;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIContent;
@@ -80,6 +81,15 @@ public class RequestHandler {
 
 		parseRequest();
 		timeKeeper.log("Marshalled XML using JAXB");
+		
+		// Set request format to standard if not specified by user
+		if(getRequest()!=null)
+		{
+			if(!getRequest().isSetFormat())
+			{
+				getRequest().setFormat(TellervoRequestFormat.STANDARD);
+			}
+		}
 		
 		// Set up Auth to check for existing session etc
 		auth = new Auth(this);
@@ -215,7 +225,6 @@ public class RequestHandler {
 			}
 			timeKeeper.log("Validated XML request");
 		}
-
 
 		// Marshall the XML into Java classes using JAXB
 		StringReader reader = new StringReader(xmlrequest);
