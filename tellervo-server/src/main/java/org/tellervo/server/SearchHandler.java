@@ -3,31 +3,31 @@ package org.tellervo.server;
 import java.util.HashMap;
 import java.util.List;
 
-import org.jfree.util.Log;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestStatus;
 import org.tellervo.schema.WSIParam;
 
+/**
+ * Class that builds and executes search SQL based upon the XML parameters section of a Tellervo request
+ * 
+ * @author pwb48
+ *
+ */
 public class SearchHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(SearchHandler.class);
 
 	private RequestHandler handler;
-	
-	private String orderBySQL;
-	private String groupBySQL;
-	private String filterBySQL;
-	private String skipSQL;
-	private String limitSQL;
-	private String returnObjectSQL;
 	private List<WSIParam> paramsArray;
 	private SearchReturnObject searchReturnObject;
 	
-	private HashMap<SearchParameterName, String> searchParameterTableMap;
-	private HashMap<SearchParameterName, String> searchParameterFieldMap;
+	private static HashMap<SearchParameterName, String> searchParameterTableMap;
+	private static HashMap<SearchParameterName, String> searchParameterFieldMap;
 	
 	public SearchHandler(RequestHandler handler)
 	{
@@ -316,8 +316,7 @@ public class SearchHandler {
 	}
 
 	/**
-	 * Perform the search specified in the search parameters included in the XML request 
-	 * 
+	 * Compile the SQL statement from it's portions then execute  
 	 */
 	public void doSearch() {
 		
@@ -332,14 +331,22 @@ public class SearchHandler {
 		paramsArray = handler.getRequest().getSearchParams().getParams();
 		searchReturnObject = handler.getRequest().getSearchParams().getReturnObject();
 
+		String sql = getReturnObjectSQL() + " \n "+ getFromSQL() + " \n "+ getFilterBySQL() + " \n "+ getGroupBySQL() + " \n "+ getOrderBySQL() + " \n "+ getPagingSQL(); 
+		
+		log.debug("Search SQL: "+sql);
 		
 		handler.addMessage(TellervoRequestStatus.ERROR,667, "Whatever you've requested hasn't been implemented yet!");
 
 	}
 	
+	/**
+	 * Get the SELECT portion of the SQL statement
+	 * 
+	 * @return
+	 */
 	private String getReturnObjectSQL()
 	{
-		return "DISTINCT ON (" + this.getDBTableNameForSearchReturnObject(searchReturnObject)+"."+searchReturnObject.toString()+"id) ";
+		return "SELECT DISTINCT ON (" + this.getDBTableNameForSearchReturnObject(searchReturnObject)+"."+searchReturnObject.toString()+"id) ";
 	}
 	
 	/**
@@ -349,17 +356,158 @@ public class SearchHandler {
 	 */
 	private String getFromSQL()
 	{
-		String sql = "FROM ";
+		String sql = "FROM \n";
 		Boolean withinJoin = false;
+
+		for(int i=getLowestTableRankForQuery(); i<=getHighestTableRankForQuery(); i++)
+		{		
+			if(withinJoin)
+			{
+				sql += "INNER JOIN "+getTableNameFromRank(i)+ " ON "+getTableNameFromRank(i)+"."+getPKeyNameFromRank(i)+ " = "+getTableNameFromRank(i-1)+"."+getPKeyNameFromRank(i-1)+"\n";
+			}
+			else
+			{
+				sql += getTableNameFromRank(i)+"\n";
+				withinJoin = true;
+			}
+			
+			
+			if(i==2)
+			{
+				//TODO handle branch to loans, curation, tags 
+			}
+		}
 		
 		
-		
-		return null;
+		return sql;
 	}
 	
+	/**
+	 * Get the WHERE portion of the SQL statement
+	 * 
+	 * @return
+	 */
+	private String getFilterBySQL()
+	{
+		
+		String sql = "WHERE \n";
+		
+		for(WSIParam param : paramsArray)
+		{
+			if(param.getName().equals(SearchParameterName.ANYPARENTOBJECTID))
+			{
+				//TODO special case
+			}
+			else if(param.getName().equals(SearchParameterName.ANYPARENTOBJECTCODE))
+			{
+				//TODO special case
+			}
+			else if(param.getName().equals(SearchParameterName.DEPENDENTSERIESID))
+			{
+				//TODO special case
+			}
+			else
+			{
+				sql += getDBTableFromSearchParameterName(param.getName())+"."+getDBFieldNameFromSearchParameterName(param.getName());
+				if(param.getOperator().equals(SearchOperator.LIKE))
+				{
+					sql+= " ilike '%"+StringEscapeUtils.escapeSql(param.getValue())+"%'\n AND ";
+				}
+				else
+				{
+					sql+= " " + param.getOperator().value()+" '"+StringEscapeUtils.escapeSql(param.getValue())+"'\n AND ";
+				}
+			}
+		}
+		
+		//TODO Force clause to hide personal tags
 	
+		
+		// Remove last AND
+		sql = sql.substring(0, sql.length()-5);		
+		
+		return sql;
+
+	}
 	
+	/**
+	 * Get the GROUP BY portion of the SQL statement
+	 * @return
+	 */
+	private String getGroupBySQL()
+	{
+		//TODO  Do we actually need this?
+		
+		//String sql = "GROUP BY ";
+		return null;
+
+	}
 	
+	/**
+	 * Get the ORDER BY portion of the SQL statement
+	 * 
+	 * @return
+	 */
+	private String getOrderBySQL()
+	{
+		String sql = "ORDER BY "+ this.getDBTableNameForSearchReturnObject(searchReturnObject)+".";
+		
+		if((searchReturnObject.equals(SearchReturnObject.OBJECT)) ||
+		   (searchReturnObject.equals(SearchReturnObject.ELEMENT))||
+		   (searchReturnObject.equals(SearchReturnObject.SAMPLE)) ||
+		   (searchReturnObject.equals(SearchReturnObject.RADIUS)) ||
+		   (searchReturnObject.equals(SearchReturnObject.MEASUREMENT_SERIES)) || 
+		   (searchReturnObject.equals(SearchReturnObject.DERIVED_SERIES)) )
+		{
+			sql+= "code asc";
+		}
+		else if(searchReturnObject.equals(SearchReturnObject.BOX))
+		{
+			sql+=  "title asc";
+		}
+		else if(searchReturnObject.equals(SearchReturnObject.LOAN))
+		{
+			sql+=  "duedate desc";
+		}
+		else if(searchReturnObject.equals(SearchReturnObject.CURATION))
+		{
+			sql+=  "curationid asc";
+		}
+		else if(searchReturnObject.equals(SearchReturnObject.TAG))
+		{
+			sql+=  "tag asc";
+		}
+		else
+		{
+			return null;
+		}
+		
+		return sql;
+	}
+	
+	/**
+	 * Get the LIMIT and SKIP portion of the SQL statement to enable paging through large result sets
+	 * 
+	 * @return
+	 */
+	private String getPagingSQL()
+	{
+		String sql = "";
+		
+		if(handler.getRequest().getSearchParams().isSetLimit())
+		{
+			sql = " LIMIT "+handler.getRequest().getSearchParams().getLimit();
+		}
+		
+		if(handler.getRequest().getSearchParams().isSetSkip())
+		{
+			sql += " SKIP "+handler.getRequest().getSearchParams().getSkip();
+		}
+				
+		return sql;
+	}
+	
+
 	/**
 	 * Get the database table name that corresponds to the SearchReturnObject provided 
 	 * 
@@ -368,187 +516,191 @@ public class SearchHandler {
 	 */
 	public String getDBTableNameForSearchReturnObject(SearchReturnObject sro)
 	{
-		if(sro.equals(SearchReturnObject.OBJECT))
+		if(sro.equals(SearchReturnObject.OBJECT))  return "vwtblobject";
+		if(sro.equals(SearchReturnObject.ELEMENT)) return "vwtblelement";
+		if(sro.equals(SearchReturnObject.SAMPLE))  return "vwtblsample";
+		if(sro.equals(SearchReturnObject.RADIUS))  return "vwtblradius";
+		if(sro.equals(SearchReturnObject.MEASUREMENT_SERIES) || sro.equals(SearchReturnObject.DERIVED_SERIES)) return "vwtblvmeasurement";
+		if(sro.equals(SearchReturnObject.BOX)) return "vwtblbox";
+		if(sro.equals(SearchReturnObject.LOAN)) return "vwtblloan";
+		if(sro.equals(SearchReturnObject.CURATION)) return "vwtblcuration";
+		if(sro.equals(SearchReturnObject.TAG)) return "vwtbltag";
+		
+		log.error("Unable to determine table name from SearchReturnObject provided");
+		return null;
+	}
+	
+	/**
+	 * Get the database table name for the corresponding table rank
+	 * 
+	 * @param rank
+	 * @return
+	 */
+	public static String getTableNameFromRank(Integer rank)
+	{
+		if(rank==null || rank<0 || rank >5) return null;
+		
+		switch(rank)
 		{
-			return "vwtblobject";
+			case 0 : return "vwcomprehensivevm";
+			case 1 : return "vwtblradius";
+			case 2 : return "vwtblsample";
+			case 3 : return "vwtblelement";
+			case 4 : return "vwtblobject";
+			case 5 : return "vwtblproject";			
 		}
-		else if(sro.equals(SearchReturnObject.ELEMENT))
+		
+		return null;	
+	}
+	
+	public static String getPKeyNameFromRank(Integer rank)
+	{
+		if(rank==null || rank<0 || rank >5) return null;
+		
+		switch(rank)
 		{
-			return "vwtblelement";
+			case 0 : return "vmeasurementid";
+			case 1 : return "radiusid";
+			case 2 : return "sampleid";
+			case 3 : return "elementid";
+			case 4 : return "objectid";
+			case 5 : return "projectid";			
 		}
-		else if(sro.equals(SearchReturnObject.SAMPLE))
+		
+		return null;	
+	}
+	
+	/**
+	 * Get an integer value representing the lowest rank in the TRiDaS hierarchy required for this query 
+	 * Value will range from 5 (project) down to 0 (series).
+	 * 
+	 * @return
+	 */
+	private Integer getLowestTableRankForQuery()
+	{
+		Integer lowestRank = 999;
+		for(WSIParam param : paramsArray)
 		{
-			return "vwtblsample";
+			if(getTableRankFromSearchParameterName(param.getName()).compareTo(lowestRank)<0)
+			{
+				lowestRank = getTableRankFromSearchParameterName(param.getName());
+			}
 		}
-		else if(sro.equals(SearchReturnObject.RADIUS))
+		
+		if(getTableRankFromSearchReturnObject(searchReturnObject).compareTo(lowestRank)<0)
 		{
-			return "vwtblradius";
+			lowestRank = getTableRankFromSearchReturnObject(searchReturnObject);
 		}
-		else if(sro.equals(SearchReturnObject.MEASUREMENT_SERIES) || sro.equals(SearchReturnObject.DERIVED_SERIES))
+		
+		if(lowestRank.equals(999))
 		{
-			return "vwtblvmeasurement";
-		}
-		else if(sro.equals(SearchReturnObject.BOX))
-		{
-			return "vwtblbox";
-		}
-		else if(sro.equals(SearchReturnObject.LOAN))
-		{
-			return "vwtblloan";
-		}
-		else if(sro.equals(SearchReturnObject.CURATION))
-		{
-			return "vwtblcuration";
-		}
-		else if(sro.equals(SearchReturnObject.TAG))
-		{
-			return "vwtbltag";
+			return null;
 		}
 		else
 		{
-			Log.error("Unable to determine table name from SearchReturnObject provided");
+			return lowestRank;
 		}
+	}
+	
+	/**
+	 * Get an integer value representing the highest rank in the TRiDaS hierarchy required for this query.
+	 * Value will range from 5 (project) down to 0 (series).
+	 * 
+	 * @return
+	 */
+	private Integer getHighestTableRankForQuery()
+	{
+		Integer highestRank = -999;
+		for(WSIParam param : paramsArray)
+		{
+			if(getTableRankFromSearchParameterName(param.getName()).compareTo(highestRank)>0)
+			{
+				highestRank = getTableRankFromSearchParameterName(param.getName());
+			}
+		}
+		
+		if(getTableRankFromSearchReturnObject(searchReturnObject).compareTo(highestRank)>0)
+		{
+			highestRank = getTableRankFromSearchReturnObject(searchReturnObject);
+		}
+		
+		if(highestRank.equals(-999))
+		{
+			return null;
+		}
+		else
+		{
+			return highestRank;
+		}
+	}
+	
+	private static Integer getTableRankFromSearchReturnObject(SearchReturnObject sro)
+	{
+		if(sro.equals(SearchReturnObject.OBJECT))  return 4;
+		if(sro.equals(SearchReturnObject.ELEMENT)) return 3;
+		if(sro.equals(SearchReturnObject.SAMPLE))  return 2;
+		if(sro.equals(SearchReturnObject.BOX)) return 2;
+		if(sro.equals(SearchReturnObject.LOAN)) return 2;
+		if(sro.equals(SearchReturnObject.CURATION)) return 2;
+		if(sro.equals(SearchReturnObject.TAG)) return 2;
+		if(sro.equals(SearchReturnObject.RADIUS))  return 1;
+		if(sro.equals(SearchReturnObject.MEASUREMENT_SERIES) || sro.equals(SearchReturnObject.DERIVED_SERIES)) return 0;
+
+		log.error("Failed to get table rank from search return object");
+		return null;
+	}
+	
+	private static Integer getTableRankFromSearchParameterName(SearchParameterName spn)
+	{
+		String tableName = getDBTableFromSearchParameterName(spn);
+		
+		if(tableName==null) return null;
+		
+		if(tableName.equals("vwtblproject")) return 5;
+		if(tableName.equals("vwtblobject"))	return 4;
+		if(tableName.equals("vwtblelement"))	return 3;
+		if(tableName.equals("vwtblsample"))	return 2;
+		if(tableName.equals("vwtblbox"))	return 2;
+		if(tableName.equals("vwtblloan"))	return 2;
+		if(tableName.equals("vwtblcuration"))	return 2;
+		if(tableName.equals("vwtblradius"))	return 1;
+		if(tableName.equals("vwcomprehensivevm"))	return 0;
+		if(tableName.equals("element"))	return 2;
+
+		log.error("Failed to get table rank");
 		return null;
 	}
 	
 	
-	
-	
+	/**
+	 * Get the database table name from the search parameter name
+	 * 
+	 * @param spn
+	 * @return
+	 */
 	public static String getDBTableFromSearchParameterName(SearchParameterName spn)
 	{
-		HashMap<SearchParameterName, String> tableNameMap = new HashMap<SearchParameterName, String>();
-		tableNameMap.put(SearchParameterName.OBJECTDBID, "vwtblobject");
-		tableNameMap.put(SearchParameterName.ANYPARENTOBJECTCODE, "vwtblobject");
-		tableNameMap.put(SearchParameterName.ANYPARENTOBJECTID, "vwtblobject");
-		tableNameMap.put(SearchParameterName.BOXCODE,  "vwtblbox");
-		tableNameMap.put(SearchParameterName.BOXCOMMENTS,  "vwtblbox");
-		tableNameMap.put(SearchParameterName.BOXCREATED,  "vwtblbox");
-		tableNameMap.put(SearchParameterName.BOXCURATIONLOCATION,  "vwtblbox");
-		tableNameMap.put(SearchParameterName.BOXID,  "vwtblbox");
-		tableNameMap.put(SearchParameterName.BOXLASTMODIFIED,  "vwtblbox");
-		tableNameMap.put(SearchParameterName.BOXTRACKINGLOCATION, "vwtblbox");
-		tableNameMap.put(SearchParameterName.COUNT_OF_CHILD_SERIES_OF_OBJECT, "vwtblobject");
-		tableNameMap.put(SearchParameterName.DEPENDENTSERIESID, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.ELEMENTAUTHENTICITY, "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTCLASSNAME, "vwtblelement"); 
-		tableNameMap.put(SearchParameterName.ELEMENTCODE,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTCREATED,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTDBID,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTDEPTH,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTDESCRIPTION,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTDIAMETER,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTDIMENSIONUNITS,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTDIMENSIONUNITSPOWER,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTFAMILYNAME,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTFILE,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTGENUSNAME,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTHEIGHT,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTID,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTINFRASPECIESNAME,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTINFRASPECIESTYPE,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTLASTMODIFIED,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTLOCATIONCOMMENT,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTLOCATIONPRECISION,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTLOCATIONTYPE,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTMARKS,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTORDERNAME,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTORIGINALTAXONNAME,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTPHYLUMNAME,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTPROCESSING,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTSHAPE,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTSPECIESNAME,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTTYPE,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.ELEMENTWIDTH,  "vwtblelement");
-		tableNameMap.put(SearchParameterName.LOANDUEDATE, "vwtblloan");
-		tableNameMap.put(SearchParameterName.LOANFIRSTNAME,  "vwtblloan");
-		tableNameMap.put(SearchParameterName.LOANID,  "vwtblloan");
-		tableNameMap.put(SearchParameterName.LOANISSUEDATE,  "vwtblloan");
-		tableNameMap.put(SearchParameterName.LOANLASTNAME,  "vwtblloan");
-		tableNameMap.put(SearchParameterName.LOANNOTES,  "vwtblloan");
-		tableNameMap.put(SearchParameterName.LOANORGANISATION,  "vwtblloan");
-		tableNameMap.put(SearchParameterName.LOANRETURNDATE,  "vwtblloan");
-		tableNameMap.put(SearchParameterName.OBJECTCODE, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTCOVERAGE_TEMPORAL_FOUNDATION, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTCOVERAGE_TEMPORAL, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTCREATED, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTCREATOR, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTDBID, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTDESCRIPTION, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTFILE, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTID, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTLASTMODIFIED, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTLOCATION, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTLOCATIONCOMMENT, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTLOCATIONPRECISION, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTLOCATIONTYPE, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTOWNER, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTTITLE, "vwtblobject");
-		tableNameMap.put(SearchParameterName.OBJECTTYPE, "vwtblobject");
-		tableNameMap.put(SearchParameterName.PARENTOBJECTID, "vwtblobject");
-		tableNameMap.put(SearchParameterName.RADIUSAZIMUTH, "vwtblradius"); 
-		tableNameMap.put(SearchParameterName.RADIUSBARK,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSCODE,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSCREATED,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSDBID,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSHEARTWOOD,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSID,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSLASTMODIFIED,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSLASTRINGUNDERBARK,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSMISSINGHEARTWOODRINGSTOPITH,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSMISSINGHEARTWOODRINGSTOPITHFOUNDATION,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSMISSINGSAPWOODRINGSTOBARK,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSMISSINGSAPWOODRINGSTOBARKFOUNDATION,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSNUMBERSAPWOODRINGS,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSPITH,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSSAPWOOD,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.RADIUSTITLE,  "vwtblradius");
-		tableNameMap.put(SearchParameterName.SAMPLEBOXID,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLECODE,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLECREATED,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLEDBID,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLEDESCRIPTION,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLEFILE,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLEHASKNOTS,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLEID,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLELASTMODIFIED,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLEPOSITION,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLESTATE,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLESTATUS,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLINGDATE,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SAMPLINGDATECERTAINTY,  "vwtblsample");
-		tableNameMap.put(SearchParameterName.SERIESANALYST, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESAUTHOR, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESCODE, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESCOMMENTS, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESCOUNT, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESDATINGERRORNEGATIVE, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESDATINGERRORPOSITIVE, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESDATINGTYPE, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESDBID, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESDEATHYEAR, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESDENDROCHRONOLOGIST, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESDERIVATIONDATE, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESFIRSTYEAR, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESID, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESISRECONCILED, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESLASTMODIFIED, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESMEASURINGDATE, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESMEASURINGMETHOD, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESOBJECTIVE, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESOPERATORPARAMETER, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESPOWER, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESPROVENANCE, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESSPROUTYEAR, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESSTANDARDIZINGMETHOD, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESTYPE, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESUNIT, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESVALUECOUNT, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESVARIABLE, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.SERIESVERSION, "vwcomprehensivevm");
-		tableNameMap.put(SearchParameterName.TAGID, "tbltag");
-		tableNameMap.put(SearchParameterName.TAGTEXT, "tbltag");
-
+		if (searchParameterTableMap.containsKey(spn.value()))
+		{
+			return searchParameterTableMap.get(spn.value());
+			
+		}
 		
+		return null;
+	}
+	
+	/**
+	 * Get the database field name from the search parameter name
+	 * 
+	 * @param spn
+	 * @return
+	 */
+	public static String getDBFieldNameFromSearchParameterName(SearchParameterName spn)
+	{
+		if (searchParameterFieldMap.containsKey(spn.value()))
+		{
+			return searchParameterFieldMap.get(spn.value());
+		}
 		
 		return null;
 	}

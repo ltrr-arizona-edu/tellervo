@@ -81,7 +81,7 @@ public class TridasObjectHandler {
 							handler.timeKeeper.log("Getting object row from database ");
 	
 							// Standard, Minimal and Summary formats all return a simple single object
-							handler.getContent().getSqlsAndObjectsAndElements().add(SQLMarshaller.getTridasObjectFromResultSet(rs, handler));
+							handler.getContent().getSqlsAndObjectsAndElements().add(SQLMarshaller.getTridasObject(rs));
 							handler.timeKeeper.log("Marshalled object into XML");
 					}
 					
@@ -143,12 +143,12 @@ public class TridasObjectHandler {
 							handler.timeKeeper.log("Getting object row from database ");
 							if(object==null)
 							{
-								object = SQLMarshaller.getTridasObjectFromResultSet(rs, handler);
+								object = SQLMarshaller.getTridasObject(rs);
 							}
 							else
 							{
 								TridasObject childObject = (TridasObject) object.clone();
-								object = SQLMarshaller.getTridasObjectFromResultSet(rs, handler);
+								object = SQLMarshaller.getTridasObject(rs);
 								ArrayList<TridasObject> objects = new ArrayList<TridasObject>();
 								objects.add(childObject);
 								object.setObjects(objects);

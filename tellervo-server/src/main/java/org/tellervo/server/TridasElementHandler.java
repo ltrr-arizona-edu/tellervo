@@ -58,11 +58,11 @@ public class TridasElementHandler {
 				   handler.getRequest().getFormat().equals(TellervoRequestFormat.MINIMAL) || 
 				   handler.getRequest().getFormat().equals(TellervoRequestFormat.SUMMARY))
 				{
-					elementList.add(SQLMarshaller.getTridasElementFromResultSet(rs, handler));
+					elementList.add(SQLMarshaller.getTridasElement(rs));
 				}
 				else if (handler.getRequest().getFormat().equals(TellervoRequestFormat.COMPREHENSIVE))
 				{
-					elementList.add(SQLMarshaller.getTridasElementFromResultSet(rs, handler));
+					elementList.add(SQLMarshaller.getTridasElement(rs));
 					
 				}
 			}
@@ -137,12 +137,12 @@ public class TridasElementHandler {
 					   handler.getRequest().getFormat().equals(TellervoRequestFormat.SUMMARY))
 					{
 						// Standard, Mimimal and Summary formats all return a simple single object
-						handler.getContent().getSqlsAndObjectsAndElements().add(SQLMarshaller.getTridasElementFromResultSet(rs, handler));
+						handler.getContent().getSqlsAndObjectsAndElements().add(SQLMarshaller.getTridasElement(rs));
 					}
 					else if (handler.getRequest().getFormat().equals(TellervoRequestFormat.COMPREHENSIVE))
 					{
 						// Comprehensive format returns object with child entities
-						TridasElement element = SQLMarshaller.getTridasElementFromResultSet(rs, handler);
+						TridasElement element = SQLMarshaller.getTridasElement(rs);
 						
 					}
 				}
