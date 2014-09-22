@@ -16,7 +16,7 @@
 	</servlet-mapping>
 	<env-entry>
 		<env-entry-name>DatabaseCredentials</env-entry-name>
-		<env-entry-value>/home/pwb48/tellervo-pg</env-entry-value>
+		<env-entry-value>/home/pbrewer/tellervo-pg</env-entry-value>
 		<env-entry-type>java.lang.String</env-entry-type>
 	</env-entry>
 	<env-entry>

@@ -339,9 +339,7 @@ public class SearchHandler {
 		paramsArray = handler.getRequest().getSearchParams().getParams();
 		searchReturnObject = handler.getRequest().getSearchParams().getReturnObject();
 
-		String sql = getSelectSQL() + " \n"+ getFromSQL() + getWhereSQL() + getOrderBySQL() + "\n"+ getPagingSQL(); 
-		
-		log.debug("Search SQL: \n********\n\n"+sql+"\n********\n");
+
 		
 		
 		Connection con = null;
@@ -354,6 +352,11 @@ public class SearchHandler {
 		// Standard, Minimal and Summary formats all return a single simple object
 
 		try {
+			
+			String sql = getSelectSQL() + " \n"+ getFromSQL() + getWhereSQL() + getOrderBySQL() + "\n"+ getPagingSQL(); 
+			
+			log.debug("Search SQL: \n********\n\n"+sql+"\n********\n");
+			
 			con = Main.getDatabaseConnection();
 			con.setAutoCommit(false);
 			
@@ -395,7 +398,7 @@ public class SearchHandler {
 			if(rowCount==0)
 			{
 				handler.addMessage(TellervoRequestStatus.ERROR, 903,
-						"There are no matches for the specified identifier in the database");
+						"No records match the query parameters you supplied");
 				return;
 			}
 			else
@@ -454,43 +457,215 @@ public class SearchHandler {
 		String sql = "FROM ";
 		Boolean withinJoin = false;
 
-		for(int i=getHighestTableRankForQuery(); i>=getLowestTableRankForQuery(); i--)
-		{	
-
-			if(i==0)
-			{
-				// Special case for 
-				if(withinJoin)
+		Integer highestRank = getHighestTableRankForQuery();
+		Integer lowestRank = getLowestTableRankForQuery();
+		
+		if(highestRank==null && lowestRank==null)
+		{
+			// No tables from the TRiDaS hierarchy are needed.  We must we doing a simple search for 
+			// one of the Tellervo entities.  We handle this later...
+		}
+		else
+		{			
+			// First we handle the tables from the standard TRiDaS hierarchy:
+			// Project > Object > Element > Sample > Radius > Series
+			for(int i=getHighestTableRankForQuery(); i>=getLowestTableRankForQuery(); i--)
+			{	
+	
+				if(i==0)
 				{
-					sql += "    INNER JOIN tblmeasurement ON tblmeasurement.radiusid = vwtblradius.radiusid\n";
-					sql += "    INNER JOIN tblvmeasurementderivedcache dc ON dc.measurementid = tblmeasurement.measurementid\n";
-					sql += "    INNER JOIN vwcomprehensivevm ON dc.vmeasurementid = vwcomprehensivevm.vmeasurementid\n";
+					// Special case for measurement series level as we have several intermediate tables that 
+					// we also need to include to span the gap up to tblradius
+					if(!withinJoin)
+					{
+						// This is the first table to include in the FROM statement so it doesn't need JOIN syntax
+						sql += getTableNameFromRank(i)+"\n";
+						withinJoin = true;
+					}
+					else
+					{
+						// Include another table once one or more tables has already been include there JOIN syntax required
+						sql += "    INNER JOIN tblmeasurement ON tblmeasurement.radiusid = vwtblradius.radiusid\n";
+						sql += "    INNER JOIN tblvmeasurementderivedcache dc ON dc.measurementid = tblmeasurement.measurementid\n";
+						sql += "    INNER JOIN vwcomprehensivevm ON dc.vmeasurementid = vwcomprehensivevm.vmeasurementid\n";
+					}				
 				}
 				else
 				{
-					sql += getTableNameFromRank(i)+"\n";
-					withinJoin = true;
-				}				
+					// Handle all other levels of the TRiDaS hierarchy
+					if(!withinJoin)
+					{
+						// This is the first table to include in the FROM statement so it doesn't need JOIN syntax
+						sql += getTableNameFromRank(i)+"\n";
+						withinJoin = true;
+					}
+					else
+					{
+						// Include another table once one or more tables has already been include there JOIN syntax required
+						sql += "    INNER JOIN "+getTableNameFromRank(i)+ " ON "+getTableNameFromRank(i)+"."+getPKeyNameFromRank(i+1)+ " = "+getTableNameFromRank(i+1)+"."+getPKeyNameFromRank(i+1)+"\n";
+					}
+				}
 			}
-			else if(withinJoin)
+		}
+		
+		// Now we need to handle the Tellervo specific tables that don't fall within the TRiDaS hierarchy
+		
+
+		if(isCurationIncluded() || isLoanIncluded())
+		{
+			if(!withinJoin)
 			{
-				sql += "    INNER JOIN "+getTableNameFromRank(i)+ " ON "+getTableNameFromRank(i)+"."+getPKeyNameFromRank(i+1)+ " = "+getTableNameFromRank(i+1)+"."+getPKeyNameFromRank(i+1)+"\n";
+				// This is the first table to include in the FROM statement so it doesn't need JOIN syntax
+				sql += "vwtblcuration\n";
+				withinJoin = true;
 			}
 			else
 			{
-				sql += getTableNameFromRank(i)+"\n";
+				// Include another table once one or more tables has already been include there JOIN syntax required
+				sql += "    INNER JOIN vwtblcuration ON vwtblcuration.sampleid = vwtblsample.sampleid\n";
+			}
+		}
+		
+		if(isLoanIncluded())
+		{
+			if(!withinJoin)
+			{
+				// This is the first table to include in the FROM statement so it doesn't need JOIN syntax
+				sql += "vwtblloan\n";
 				withinJoin = true;
 			}
-			
-			
-			if(i==2)
+			else
 			{
-				//TODO handle branch to loans, curation, tags 
+				// Include another table once one or more tables has already been include there JOIN syntax required
+				sql += "    INNER JOIN vwtblloan ON vwtblloan.loanid = vwtblcuration.loanid\n";
 			}
 		}
 		
 		
+		if(isBoxIncluded())
+		{
+			if(!withinJoin)
+			{
+				// This is the first table to include in the FROM statement so it doesn't need JOIN syntax
+				sql += "vwtblbox\n";
+				withinJoin = true;
+			}
+			else
+			{
+				// Include another table once one or more tables has already been include there JOIN syntax required
+				sql += "    INNER JOIN vwtblbox ON vwtblbox.boxid = vwtblsample.boxid\n";
+			}
+		}
+			
+		if(isTagIncluded())
+		{
+			if(!withinJoin)
+			{
+				// This is the first table to include in the FROM statement so it doesn't need JOIN syntax
+				sql += "tbltag\n";
+				withinJoin = true;
+			}
+			else
+			{
+				// Include another table once one or more tables has already been include there JOIN syntax required
+				sql += "    LEFT JOIN tblvmeasurementtotag ON vwcomprehensivevm.vmeasurementid = tblvmeasurementtotag.vmeasurementid\n";
+				sql += "    LEFT JOIN tbltag ON tbltag.tagid = tblvmeasurementtotag.tagid\n";
+			}
+		}
+		
 		return sql;
+	}
+	
+	/**
+	 * Is vwtblloan required in this query?
+	 * 
+	 * @return
+	 */
+	private boolean isLoanIncluded()
+	{
+		if(searchReturnObject.equals(SearchReturnObject.LOAN))
+		{
+			return true;
+		}
+		
+		for(WSIParam param : paramsArray)
+		{
+			String tablename = getDBTableFromSearchParameterName(param.getName());
+			if(tablename==null) continue;
+			if(tablename.equals("vwtblloan")) return true;
+		}
+		
+		return false;		
+		
+	}
+	
+	/**
+	 * Is tbltag required in this query?
+	 * 
+	 * @return
+	 */
+	private boolean isTagIncluded()
+	{
+		if(searchReturnObject.equals(SearchReturnObject.TAG))
+		{
+			return true;
+		}
+		
+		for(WSIParam param : paramsArray)
+		{
+			String tablename = getDBTableFromSearchParameterName(param.getName());
+			if(tablename==null) continue;
+			if(tablename.equals("tbltag")) return true;
+		}
+		
+		return false;		
+		
+	}
+	
+	/**
+	 * Is vwtblcuration required in this query?
+	 * 
+	 * @return
+	 */
+	private boolean isCurationIncluded()
+	{
+		if(searchReturnObject.equals(SearchReturnObject.CURATION))
+		{
+			return true;
+		}
+		
+		for(WSIParam param : paramsArray)
+		{
+			String tablename = getDBTableFromSearchParameterName(param.getName());
+			if(tablename==null) continue;
+			if(tablename.equals("vwtblcuration")) return true;
+		}
+		
+		return false;		
+		
+	}
+	
+	/**
+	 * Is tblbox required in this query?
+	 * 
+	 * @return
+	 */
+	private boolean isBoxIncluded()
+	{
+		if(searchReturnObject.equals(SearchReturnObject.BOX))
+		{
+			return true;
+		}
+		
+		for(WSIParam param : paramsArray)
+		{
+			String tablename = getDBTableFromSearchParameterName(param.getName());
+			if(tablename==null) continue;
+			if(tablename.equals("tblbox")) return true;
+		}
+		
+		return false;		
+		
 	}
 	
 	/**
@@ -498,27 +673,73 @@ public class SearchHandler {
 	 * 
 	 * @return
 	 */
-	private String getWhereSQL()
+	private String getWhereSQL() throws SQLException
 	{
 		
 		String sql = "WHERE\n";
 		
 		for(WSIParam param : paramsArray)
 		{
+			// Deal with special cases first...
 			if(param.getName().equals(SearchParameterName.ANYPARENTOBJECTID))
 			{
-				//TODO special case
+				String operator = "";
+				if(param.getOperator().equals(SearchOperator.EQUALS))
+				{
+					operator = "IN";
+				}
+				else if (param.getOperator().equals(SearchOperator.NOT_EQUALS))
+				{
+					operator = "NOT IN";
+				}
+				else
+				{
+					throw new SQLException("Invalid search operator used.  The anyparentobjectid field only supports = or != operators");
+				}
+				
+				sql += "    vwtblobject.objectid "+operator+" (SELECT objectid FROM cpgdb.findobjectdescendants('"+StringEscapeUtils.escapeSql(param.getValue())+"', true))\n AND ";
+
 			}
 			else if(param.getName().equals(SearchParameterName.ANYPARENTOBJECTCODE))
 			{
-				//TODO special case
+				String operator = "";
+				if(param.getOperator().equals(SearchOperator.EQUALS))
+				{
+					operator = "IN";
+				}
+				else if (param.getOperator().equals(SearchOperator.NOT_EQUALS))
+				{
+					operator = "NOT IN";
+				}
+				else
+				{
+					throw new SQLException("Invalid search operator used.  The anyparentobjectcode field only supports = or != operators");
+				}
+				
+				sql += "    vwtblobject.code "+operator+" (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode('"+StringEscapeUtils.escapeSql(param.getValue())+"', true)))\n AND ";
 			}
 			else if(param.getName().equals(SearchParameterName.DEPENDENTSERIESID))
 			{
-				//TODO special case
+				String operator = "";
+				if(param.getOperator().equals(SearchOperator.EQUALS))
+				{
+					operator = "IN";
+				}
+				else if (param.getOperator().equals(SearchOperator.NOT_EQUALS))
+				{
+					operator = "NOT IN";
+				}
+				else
+				{
+					throw new SQLException("Invalid search operator used.  The dependenseriesid field only supports = or != operators");
+				}
+				
+				sql += "    vwcomprehensivevm.vmeasurementid "+operator+" (SELECT vmeasurementid FROM cpgdb.findvmchildren('"+StringEscapeUtils.escapeSql(param.getValue())+"', false))\n AND ";
 			}
 			else
 			{
+				// Standard cases...
+				
 				sql += "    "+getDBTableFromSearchParameterName(param.getName())+"."+getDBFieldNameFromSearchParameterName(param.getName());
 				if(param.getOperator().equals(SearchOperator.LIKE))
 				{
@@ -531,8 +752,11 @@ public class SearchHandler {
 			}
 		}
 		
-		//TODO Force clause to hide personal tags
-	
+		// Force clause to hide personal tags
+		if(isTagIncluded())
+		{
+			sql += " (tbltag.ownerid IS NULL OR tbltag.ownerid='"+handler.auth.getSecurityUserID()+"') \n AND";
+		}
 		
 		// Remove last AND
 		sql = sql.substring(0, sql.length()-5);		
@@ -592,7 +816,7 @@ public class SearchHandler {
 		if(sro.equals(SearchReturnObject.BOX)) return "vwtblbox";
 		if(sro.equals(SearchReturnObject.LOAN)) return "vwtblloan";
 		if(sro.equals(SearchReturnObject.CURATION)) return "vwtblcuration";
-		if(sro.equals(SearchReturnObject.TAG)) return "vwtbltag";
+		if(sro.equals(SearchReturnObject.TAG)) return "tbltag";
 		
 		log.error("Unable to determine table name from SearchReturnObject provided");
 		return null;
@@ -621,7 +845,7 @@ public class SearchHandler {
 	}
 	
 	/**
-	 * Get the database table name for the corresponding table rank
+	 * Get the database table name for the corresponding TRiDaS hierarchical rank
 	 * 
 	 * @param rank
 	 * @return
@@ -643,6 +867,12 @@ public class SearchHandler {
 		return null;	
 	}
 	
+	/**
+	 * Get the primary key field name for the TRiDaS entity at the specified hierarchical rank
+	 * 
+	 * @param rank
+	 * @return
+	 */
 	public static String getPKeyNameFromRank(Integer rank)
 	{
 		if(rank==null || rank<0 || rank >5) return null;
@@ -671,23 +901,46 @@ public class SearchHandler {
 		Integer lowestRank = 999;
 		for(WSIParam param : paramsArray)
 		{
-			if(getTableRankFromSearchParameterName(param.getName()).compareTo(lowestRank)<0)
+			Integer rank = getTableRankFromSearchParameterName(param.getName());
+			if(rank==null) continue;
+
+			if(rank.compareTo(lowestRank)<0)
 			{
-				lowestRank = getTableRankFromSearchParameterName(param.getName());
+				lowestRank = rank;
 			}
 		}
 		
-		if(getTableRankFromSearchReturnObject(searchReturnObject).compareTo(lowestRank)<0)
+		Integer rank = getTableRankFromSearchReturnObject(searchReturnObject);
+		
+		if(rank!=null && rank.compareTo(lowestRank)<0)
 		{
-			lowestRank = getTableRankFromSearchReturnObject(searchReturnObject);
+			lowestRank = rank;
 		}
 		
 		if(lowestRank.equals(999))
 		{
+			// No TRiDaS tables are required in this query.  Probably searching
+			// for Tellervo specific table info
 			return null;
 		}
 		else
 		{
+			if(isCurationIncluded() || isLoanIncluded() || isBoxIncluded())
+			{
+				// If curation, loan or box are included then make sure the 
+				// TRiDaS hierarchy rank extends down to at least sample (2) 
+				if(lowestRank.compareTo(2)>0)
+				{
+					lowestRank = 2;
+				}
+			}
+			
+			if(isTagIncluded())
+			{
+				// If tag is included then make sure the TRiDaS hierarchy 
+				// rank extends down to to series (0)
+				lowestRank = 0;
+			}
 			return lowestRank;
 		}
 	}
@@ -703,36 +956,59 @@ public class SearchHandler {
 		Integer highestRank = -999;
 		for(WSIParam param : paramsArray)
 		{
-			if(getTableRankFromSearchParameterName(param.getName()).compareTo(highestRank)>0)
+			Integer rank = getTableRankFromSearchParameterName(param.getName());
+			if(rank==null) continue;
+
+			if(rank.compareTo(highestRank)>0)
 			{
-				highestRank = getTableRankFromSearchParameterName(param.getName());
+				highestRank = rank;
 			}
 		}
 		
-		if(getTableRankFromSearchReturnObject(searchReturnObject).compareTo(highestRank)>0)
+		Integer rank = getTableRankFromSearchReturnObject(searchReturnObject);
+		
+		if(rank!=null && rank.compareTo(highestRank)>0)
 		{
-			highestRank = getTableRankFromSearchReturnObject(searchReturnObject);
+			highestRank = rank;
 		}
+		
 		
 		if(highestRank.equals(-999))
 		{
+			// No TRiDaS tables are required in this query.  Probably searching
+			// for Tellervo specific table info
 			return null;
 		}
 		else
 		{
+			if(isCurationIncluded() || isLoanIncluded() || isBoxIncluded())
+			{
+				// If curation, loan or box are included then make sure the 
+				// TRiDaS hierarchy rank rises to at least sample (2) 
+				if(highestRank.compareTo(2)<0)
+				{
+					highestRank = 2;
+				}
+			}
 			return highestRank;
 		}
 	}
 	
+	/**
+	 * Get the TRiDaS hierarchy rank for the given SearchReturnObject
+	 * 
+	 * @param sro
+	 * @return
+	 */
 	private static Integer getTableRankFromSearchReturnObject(SearchReturnObject sro)
 	{
 		if(sro.equals(SearchReturnObject.OBJECT))  return 4;
 		if(sro.equals(SearchReturnObject.ELEMENT)) return 3;
 		if(sro.equals(SearchReturnObject.SAMPLE))  return 2;
-		if(sro.equals(SearchReturnObject.BOX)) return 2;
-		if(sro.equals(SearchReturnObject.LOAN)) return 2;
-		if(sro.equals(SearchReturnObject.CURATION)) return 2;
-		if(sro.equals(SearchReturnObject.TAG)) return 2;
+		//if(sro.equals(SearchReturnObject.BOX)) return 2;
+		//if(sro.equals(SearchReturnObject.LOAN)) return 2;
+		//if(sro.equals(SearchReturnObject.CURATION)) return 2;
+		//if(sro.equals(SearchReturnObject.TAG)) return 2;
 		if(sro.equals(SearchReturnObject.RADIUS))  return 1;
 		if(sro.equals(SearchReturnObject.MEASUREMENT_SERIES) || sro.equals(SearchReturnObject.DERIVED_SERIES)) return 0;
 
@@ -740,6 +1016,12 @@ public class SearchHandler {
 		return null;
 	}
 	
+	/**
+	 * Get the TRiDaS hierarchy rank for the given SearchParameterName
+	 * 
+	 * @param spn
+	 * @return
+	 */
 	private static Integer getTableRankFromSearchParameterName(SearchParameterName spn)
 	{
 		String tableName = getDBTableFromSearchParameterName(spn);
@@ -754,12 +1036,11 @@ public class SearchHandler {
 		if(tableName.equals("vwtblobject"))	return 4;
 		if(tableName.equals("vwtblelement"))	return 3;
 		if(tableName.equals("vwtblsample"))	return 2;
-		if(tableName.equals("vwtblbox"))	return 2;
-		if(tableName.equals("vwtblloan"))	return 2;
-		if(tableName.equals("vwtblcuration"))	return 2;
+		//if(tableName.equals("vwtblbox"))	return 2;
+		//if(tableName.equals("vwtblloan"))	return 2;
+		//if(tableName.equals("vwtblcuration"))	return 2;
 		if(tableName.equals("vwtblradius"))	return 1;
 		if(tableName.equals("vwcomprehensivevm"))	return 0;
-		if(tableName.equals("element"))	return 2;
 
 		log.error("Failed to get table rank");
 		return null;
