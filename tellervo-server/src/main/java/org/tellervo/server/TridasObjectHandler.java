@@ -53,7 +53,7 @@ public class TridasObjectHandler {
 		Connection con = null;
 		PreparedStatement st = null;
 		ResultSet rs = null;
-		con = Main.getDatabaseConnection();
+		
 		
 		if(handler.getRequest().getFormat().equals(TellervoRequestFormat.STANDARD) || 
 				   handler.getRequest().getFormat().equals(TellervoRequestFormat.MINIMAL) || 
@@ -62,6 +62,7 @@ public class TridasObjectHandler {
 			// Standard, Minimal and Summary formats all return a single simple object
 
 			try {
+				con = Main.getDatabaseConnection();
 				con.setAutoCommit(false);
 
 				String sql = "SELECT * FROM vwtblobject WHERE objectid= ?::uuid ";
@@ -123,6 +124,7 @@ public class TridasObjectHandler {
 		{
 			//Comprehensive format returns the full object hierarchy
 			try {
+				con = Main.getDatabaseConnection();
 				con.setAutoCommit(false);
 
 				String sql = "SELECT * FROM vwtblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectancestors(?::uuid, true)) ";

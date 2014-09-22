@@ -1,5 +1,10 @@
 package org.tellervo.server;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,8 +14,11 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestStatus;
 import org.tellervo.schema.WSIParam;
+import org.tridas.interfaces.ITridas;
+import org.tridas.schema.TridasObject;
 
 /**
  * Class that builds and executes search SQL based upon the XML parameters section of a Tellervo request
@@ -331,12 +339,98 @@ public class SearchHandler {
 		paramsArray = handler.getRequest().getSearchParams().getParams();
 		searchReturnObject = handler.getRequest().getSearchParams().getReturnObject();
 
-		String sql = getReturnObjectSQL() + " \n "+ getFromSQL() + " \n "+ getFilterBySQL() + " \n "+ getGroupBySQL() + " \n "+ getOrderBySQL() + " \n "+ getPagingSQL(); 
+		String sql = getSelectSQL() + " \n"+ getFromSQL() + getWhereSQL() + getOrderBySQL() + "\n"+ getPagingSQL(); 
 		
-		log.debug("Search SQL: "+sql);
+		log.debug("Search SQL: \n********\n\n"+sql+"\n********\n");
 		
-		handler.addMessage(TellervoRequestStatus.ERROR,667, "Whatever you've requested hasn't been implemented yet!");
+		
+		Connection con = null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		
+		ArrayList<Object> returnEntities = new ArrayList<Object>();
+		
+		// Standard, Minimal and Summary formats all return a single simple object
 
+		try {
+			con = Main.getDatabaseConnection();
+			con.setAutoCommit(false);
+			
+			st = con.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			rs = st.executeQuery();
+			
+			int rowCount =0;
+			if(rs.last())
+			{
+				rowCount = rs.getRow();
+				rs.beforeFirst();
+				while (rs.next()) 
+				{
+				
+						handler.timeKeeper.log("Getting object row from database ");
+
+						//TODO Handle output formats
+						
+						if(searchReturnObject.equals(SearchReturnObject.OBJECT))
+						{
+							returnEntities.add(SQLMarshaller.getTridasObject(rs));
+						}
+						else if(searchReturnObject.equals(SearchReturnObject.ELEMENT))
+						{
+							returnEntities.add(SQLMarshaller.getTridasElement(rs));
+						}
+						else if(searchReturnObject.equals(SearchReturnObject.SAMPLE))
+						{
+							returnEntities.add(SQLMarshaller.getTridasSample(rs));
+						}
+						else if(searchReturnObject.equals(SearchReturnObject.RADIUS))
+						{
+
+						}
+						//TODO finish implementing different classes
+				}
+			}
+			
+			if(rowCount==0)
+			{
+				handler.addMessage(TellervoRequestStatus.ERROR, 903,
+						"There are no matches for the specified identifier in the database");
+				return;
+			}
+			else
+			{
+				handler.getContent().getSqlsAndObjectsAndElements().addAll(returnEntities);
+				handler.timeKeeper.log("Marshalled object into XML");
+				return;
+				
+			}
+
+		} catch (SQLException ex) {
+			log.error(ex.getMessage());
+			handler.addMessage(TellervoRequestStatus.ERROR, 701,
+					ex.getMessage());
+
+		} finally {
+			try {
+				if (rs != null) {
+					rs.close();
+				}
+				if (st != null) {
+					st.close();
+				}
+				if (con != null) {
+					con.close();
+				}
+
+			} catch (SQLException ex) {
+				log.error(ex.getMessage());
+				handler.addMessage(TellervoRequestStatus.ERROR, 701,
+						"Error connecting to database");
+			}
+		}
+		
+	
 	}
 	
 	/**
@@ -344,10 +438,11 @@ public class SearchHandler {
 	 * 
 	 * @return
 	 */
-	private String getReturnObjectSQL()
+	private String getSelectSQL()
 	{
-		return "SELECT DISTINCT ON (" + this.getDBTableNameForSearchReturnObject(searchReturnObject)+"."+searchReturnObject.toString()+"id) ";
+		return "SELECT DISTINCT ON (" + this.getDBTableNameForSearchReturnObject(searchReturnObject)+"."+this.getDBPKeyNameForSearchReturnObject(searchReturnObject)+") "+this.getDBTableNameForSearchReturnObject(searchReturnObject)+".*";
 	}
+	
 	
 	/**
 	 * Get the FROM portion of the SQL statement based on the parameters specified
@@ -356,14 +451,30 @@ public class SearchHandler {
 	 */
 	private String getFromSQL()
 	{
-		String sql = "FROM \n";
+		String sql = "FROM ";
 		Boolean withinJoin = false;
 
-		for(int i=getLowestTableRankForQuery(); i<=getHighestTableRankForQuery(); i++)
-		{		
-			if(withinJoin)
+		for(int i=getHighestTableRankForQuery(); i>=getLowestTableRankForQuery(); i--)
+		{	
+
+			if(i==0)
 			{
-				sql += "INNER JOIN "+getTableNameFromRank(i)+ " ON "+getTableNameFromRank(i)+"."+getPKeyNameFromRank(i)+ " = "+getTableNameFromRank(i-1)+"."+getPKeyNameFromRank(i-1)+"\n";
+				// Special case for 
+				if(withinJoin)
+				{
+					sql += "    INNER JOIN tblmeasurement ON tblmeasurement.radiusid = vwtblradius.radiusid\n";
+					sql += "    INNER JOIN tblvmeasurementderivedcache dc ON dc.measurementid = tblmeasurement.measurementid\n";
+					sql += "    INNER JOIN vwcomprehensivevm ON dc.vmeasurementid = vwcomprehensivevm.vmeasurementid\n";
+				}
+				else
+				{
+					sql += getTableNameFromRank(i)+"\n";
+					withinJoin = true;
+				}				
+			}
+			else if(withinJoin)
+			{
+				sql += "    INNER JOIN "+getTableNameFromRank(i)+ " ON "+getTableNameFromRank(i)+"."+getPKeyNameFromRank(i+1)+ " = "+getTableNameFromRank(i+1)+"."+getPKeyNameFromRank(i+1)+"\n";
 			}
 			else
 			{
@@ -387,10 +498,10 @@ public class SearchHandler {
 	 * 
 	 * @return
 	 */
-	private String getFilterBySQL()
+	private String getWhereSQL()
 	{
 		
-		String sql = "WHERE \n";
+		String sql = "WHERE\n";
 		
 		for(WSIParam param : paramsArray)
 		{
@@ -408,7 +519,7 @@ public class SearchHandler {
 			}
 			else
 			{
-				sql += getDBTableFromSearchParameterName(param.getName())+"."+getDBFieldNameFromSearchParameterName(param.getName());
+				sql += "    "+getDBTableFromSearchParameterName(param.getName())+"."+getDBFieldNameFromSearchParameterName(param.getName());
 				if(param.getOperator().equals(SearchOperator.LIKE))
 				{
 					sql+= " ilike '%"+StringEscapeUtils.escapeSql(param.getValue())+"%'\n AND ";
@@ -430,18 +541,6 @@ public class SearchHandler {
 
 	}
 	
-	/**
-	 * Get the GROUP BY portion of the SQL statement
-	 * @return
-	 */
-	private String getGroupBySQL()
-	{
-		//TODO  Do we actually need this?
-		
-		//String sql = "GROUP BY ";
-		return null;
-
-	}
 	
 	/**
 	 * Get the ORDER BY portion of the SQL statement
@@ -450,43 +549,12 @@ public class SearchHandler {
 	 */
 	private String getOrderBySQL()
 	{
-		String sql = "ORDER BY "+ this.getDBTableNameForSearchReturnObject(searchReturnObject)+".";
-		
-		if((searchReturnObject.equals(SearchReturnObject.OBJECT)) ||
-		   (searchReturnObject.equals(SearchReturnObject.ELEMENT))||
-		   (searchReturnObject.equals(SearchReturnObject.SAMPLE)) ||
-		   (searchReturnObject.equals(SearchReturnObject.RADIUS)) ||
-		   (searchReturnObject.equals(SearchReturnObject.MEASUREMENT_SERIES)) || 
-		   (searchReturnObject.equals(SearchReturnObject.DERIVED_SERIES)) )
-		{
-			sql+= "code asc";
-		}
-		else if(searchReturnObject.equals(SearchReturnObject.BOX))
-		{
-			sql+=  "title asc";
-		}
-		else if(searchReturnObject.equals(SearchReturnObject.LOAN))
-		{
-			sql+=  "duedate desc";
-		}
-		else if(searchReturnObject.equals(SearchReturnObject.CURATION))
-		{
-			sql+=  "curationid asc";
-		}
-		else if(searchReturnObject.equals(SearchReturnObject.TAG))
-		{
-			sql+=  "tag asc";
-		}
-		else
-		{
-			return null;
-		}
-		
-		return sql;
+		return "ORDER BY "+this.getDBTableNameForSearchReturnObject(searchReturnObject)+
+				"."+this.getDBPKeyNameForSearchReturnObject(searchReturnObject);	
 	}
 	
 	/**
-	 * Get the LIMIT and SKIP portion of the SQL statement to enable paging through large result sets
+	 * Get the OFFSET and SKIP portion of the SQL statement to enable paging through large result sets
 	 * 
 	 * @return
 	 */
@@ -496,12 +564,12 @@ public class SearchHandler {
 		
 		if(handler.getRequest().getSearchParams().isSetLimit())
 		{
-			sql = " LIMIT "+handler.getRequest().getSearchParams().getLimit();
+			sql = "LIMIT "+handler.getRequest().getSearchParams().getLimit()+" ";
 		}
 		
 		if(handler.getRequest().getSearchParams().isSetSkip())
 		{
-			sql += " SKIP "+handler.getRequest().getSearchParams().getSkip();
+			sql += "OFFSET "+handler.getRequest().getSearchParams().getSkip();
 		}
 				
 		return sql;
@@ -520,13 +588,35 @@ public class SearchHandler {
 		if(sro.equals(SearchReturnObject.ELEMENT)) return "vwtblelement";
 		if(sro.equals(SearchReturnObject.SAMPLE))  return "vwtblsample";
 		if(sro.equals(SearchReturnObject.RADIUS))  return "vwtblradius";
-		if(sro.equals(SearchReturnObject.MEASUREMENT_SERIES) || sro.equals(SearchReturnObject.DERIVED_SERIES)) return "vwtblvmeasurement";
+		if(sro.equals(SearchReturnObject.MEASUREMENT_SERIES) || sro.equals(SearchReturnObject.DERIVED_SERIES)) return "vwcomprehensivevm";
 		if(sro.equals(SearchReturnObject.BOX)) return "vwtblbox";
 		if(sro.equals(SearchReturnObject.LOAN)) return "vwtblloan";
 		if(sro.equals(SearchReturnObject.CURATION)) return "vwtblcuration";
 		if(sro.equals(SearchReturnObject.TAG)) return "vwtbltag";
 		
 		log.error("Unable to determine table name from SearchReturnObject provided");
+		return null;
+	}
+	
+	/**
+	 * Get the database primary key field name that corresponds to the SearchReturnObject provided 
+	 * 
+	 * @param sro
+	 * @return
+	 */
+	public String getDBPKeyNameForSearchReturnObject(SearchReturnObject sro)
+	{
+		if(sro.equals(SearchReturnObject.OBJECT))  return "objectid";
+		if(sro.equals(SearchReturnObject.ELEMENT)) return "elementid";
+		if(sro.equals(SearchReturnObject.SAMPLE))  return "sampleid";
+		if(sro.equals(SearchReturnObject.RADIUS))  return "radiusid";
+		if(sro.equals(SearchReturnObject.MEASUREMENT_SERIES) || sro.equals(SearchReturnObject.DERIVED_SERIES)) return "vmeasurementid";
+		if(sro.equals(SearchReturnObject.BOX)) return "boxid";
+		if(sro.equals(SearchReturnObject.LOAN)) return "loanid";
+		if(sro.equals(SearchReturnObject.CURATION)) return "curationid";
+		if(sro.equals(SearchReturnObject.TAG)) return "tagid";
+		
+		log.error("Unable to determine pkey field name from SearchReturnObject provided");
 		return null;
 	}
 	
@@ -654,7 +744,11 @@ public class SearchHandler {
 	{
 		String tableName = getDBTableFromSearchParameterName(spn);
 		
-		if(tableName==null) return null;
+		if(tableName==null) 
+		{
+			log.error("Failed to get table rank because parameter is not supported");
+			return null;
+		}
 		
 		if(tableName.equals("vwtblproject")) return 5;
 		if(tableName.equals("vwtblobject"))	return 4;
@@ -680,12 +774,16 @@ public class SearchHandler {
 	 */
 	public static String getDBTableFromSearchParameterName(SearchParameterName spn)
 	{
-		if (searchParameterTableMap.containsKey(spn.value()))
+		if(spn==null) return null;
+		
+		if (searchParameterTableMap.containsKey(spn))
 		{
-			return searchParameterTableMap.get(spn.value());
+			return searchParameterTableMap.get(spn);
 			
 		}
 		
+		log.warn("Not found table name for search parameter "+spn);
+
 		return null;
 	}
 	
@@ -697,11 +795,16 @@ public class SearchHandler {
 	 */
 	public static String getDBFieldNameFromSearchParameterName(SearchParameterName spn)
 	{
-		if (searchParameterFieldMap.containsKey(spn.value()))
+		if(spn==null) return null;
+
+		
+		if (searchParameterFieldMap.containsKey(spn))
 		{
-			return searchParameterFieldMap.get(spn.value());
+			return searchParameterFieldMap.get(spn);
 		}
 		
+		log.warn("Not found parameter name for search parameter "+spn);
+
 		return null;
 	}
 	

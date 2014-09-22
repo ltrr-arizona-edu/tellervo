@@ -235,28 +235,38 @@ public class SQLMarshaller {
 			log.debug("Problem getting file array");
 		}
 		
-		sample.setSamplingDate(DBUtil.getDateFromDB(rs, "sampleingdate"));
+		sample.setSamplingDate(DBUtil.getDateFromDB(rs, "samplingdate"));
 		sample.setPosition(rs.getString("position"));
 		sample.setState(rs.getString("state"));
 		sample.setKnots(rs.getBoolean("knots"));
 		
-		TridasGenericField curationStatus = new TridasGenericField();
-		curationStatus.setName("tellervo.curationStatus");
-		curationStatus.setType("xs:string");
-		curationStatus.setValue(String.valueOf(rs.getString("curationstatus")));
-		sample.getGenericFields().add(curationStatus);
+		if(rs.getString("curationstatus")!=null)
+		{
+			TridasGenericField curationStatus = new TridasGenericField();
+			curationStatus.setName("tellervo.curationStatus");
+			curationStatus.setType("xs:string");
+			curationStatus.setValue(String.valueOf(rs.getString("curationstatus")));
+			sample.getGenericFields().add(curationStatus);
+		}
 		
-		TridasGenericField sampleStatus = new TridasGenericField();
-		sampleStatus.setName("tellervo.sampleStatus");
-		sampleStatus.setType("xs:string");
-		sampleStatus.setValue(String.valueOf(rs.getString("samplestatus")));
-		sample.getGenericFields().add(sampleStatus);
+		//TODO investigate what this is and if we need it
+		/*if(rs.getString("samplestatus")!=null)
+		{
+			TridasGenericField sampleStatus = new TridasGenericField();
+			sampleStatus.setName("tellervo.sampleStatus");
+			sampleStatus.setType("xs:string");
+			sampleStatus.setValue(String.valueOf(rs.getString("samplestatus")));
+			sample.getGenericFields().add(sampleStatus);
+		}*/
 		
-		TridasGenericField externalID = new TridasGenericField();
-		externalID.setName("tellervo.externalID");
-		externalID.setType("xs:string");
-		externalID.setValue(String.valueOf(rs.getString("externalid")));
-		sample.getGenericFields().add(externalID);
+		if(rs.getString("externalid")!=null)
+		{
+			TridasGenericField externalID = new TridasGenericField();
+			externalID.setName("tellervo.externalID");
+			externalID.setType("xs:string");
+			externalID.setValue(String.valueOf(rs.getString("externalid")));
+			sample.getGenericFields().add(externalID);
+		}
 		
 		return sample;
 	}

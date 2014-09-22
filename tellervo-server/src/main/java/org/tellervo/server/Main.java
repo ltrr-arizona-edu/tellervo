@@ -269,16 +269,20 @@ public class Main extends HttpServlet {
 	}
 	
 
-	
-	public static Connection getDatabaseConnection()
+	/**
+	 * Get a database connection using credentials from file specified in web.xml
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	public static Connection getDatabaseConnection() throws SQLException
 	{
-		try {
-			return DriverManager.getConnection(dbconnstring, dbuser, dbpwd);
-		} catch (SQLException e) {
-			log.error("Error connecting to database");
+		if(dbconnstring.equals("") || dbuser.equals("") || dbpwd.equals(""))
+		{
+			throw new SQLException("Error accessing database connection URL/credentials.  This is a fatal Tellervo server configuration error.  Check your web.xml settings.");
 		}
 		
-		return null;
+		return DriverManager.getConnection(dbconnstring, dbuser, dbpwd);	
 	}
 	
 	// Create static instances of factories that are time consuming to instantiate. 
