@@ -633,14 +633,20 @@ public class Auth {
 				+ "client, "
 				+ "securityuserid) VALUES ('";
 			
-		if(handler.getRequest().getType().equals(TellervoRequestType.PLAINLOGIN))
-		{
-			insSQL += StringEscapeUtils.escapeSql("[plain text login not logged]")+"', '";
-		}
-		else
+		try{
+			if(handler.getRequest().getType().equals(TellervoRequestType.PLAINLOGIN))
+			{
+				insSQL += StringEscapeUtils.escapeSql("[plain text login not logged]")+"', '";
+			}
+			else
+			{
+				insSQL += StringEscapeUtils.escapeSql(handler.getRequestAsString())+"', '";
+			}	
+		} catch (Exception e)
 		{
 			insSQL += StringEscapeUtils.escapeSql(handler.getRequestAsString())+"', '";
-		}			
+		}
+			
 			
 		insSQL += StringEscapeUtils.escapeSql(handler.getOriginalFullRequest().getRemoteAddr()) + "', '"
 				+ StringEscapeUtils.escapeSql(handler.getOriginalFullRequest().getHeader("User-Agent"))+ "', ";

@@ -60,6 +60,7 @@ public class RequestHandler {
 	private ArrayList<WSIMessage> messages = new ArrayList<WSIMessage>();
 	public TimeKeeper timeKeeper;
 	public Auth auth;
+	private boolean hasResponseBeenSent = false;
 
 	public RequestHandler(HttpServletRequest request, HttpServletResponse response) {
 		
@@ -217,12 +218,16 @@ public class RequestHandler {
 				validator.validate(source);
 	
 			} catch (SAXException ex) {
-				addMessage(TellervoRequestStatus.WARNING, 667,
-						"Tellervo schema is invalid! Unable to validate your request.");
+				addMessage(TellervoRequestStatus.ERROR, 905,
+						"Your XML request is invalid.  ");
+				addMessage(TellervoRequestStatus.ERROR, 905,
+						"Error message returned by SAX parser was :     "+ex.getLocalizedMessage());
+				sendResponse();
+				return;
 	
 			} catch (IOException e) {
 				addMessage(TellervoRequestStatus.WARNING, 667,
-						"Unable to load Tellervo schema to validate your request.");
+						"Unable to load Tellervo schema to validate your request. "+ e.getLocalizedMessage());
 			}
 			timeKeeper.log("Validated XML request");
 		}
@@ -354,6 +359,13 @@ public class RequestHandler {
 	 * otherwise any WSIContent will be sent instead
 	 */
 	public void sendResponse(WSIHelp help) {
+		
+		if(hasResponseBeenSent)
+		{
+			log.error("Response has already been sent.  Can't send again");
+			return;
+		}
+		
 		header.setStatus(currentStatus);
 
 		WSIHeader.QueryTime qt = new WSIHeader.QueryTime();
@@ -404,6 +416,8 @@ public class RequestHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		hasResponseBeenSent = true;
 
 	}
 

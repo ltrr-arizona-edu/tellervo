@@ -339,9 +339,6 @@ public class SearchHandler {
 		paramsArray = handler.getRequest().getSearchParams().getParams();
 		searchReturnObject = handler.getRequest().getSearchParams().getReturnObject();
 
-
-		
-		
 		Connection con = null;
 		PreparedStatement st = null;
 		ResultSet rs = null;

@@ -207,7 +207,21 @@ public class Main extends HttpServlet {
 					{
 						TridasObjectHandler toh = new TridasObjectHandler(handler);
 						toh.readTridasObject(entity.getId());
-						
+					}
+					else if(entity.getType().equals(EntityType.ELEMENT))
+					{
+						TridasElementHandler teh = new TridasElementHandler(handler);
+						teh.readTridasElement(entity.getId());
+					}
+					else if(entity.getType().equals(EntityType.SAMPLE))
+					{
+						TridasSampleHandler tsh = new TridasSampleHandler(handler);
+						tsh.readTridasSample(entity.getId());
+					}
+					//TODO Finish implementing other classes
+					else
+					{
+						handler.addMessage(TellervoRequestStatus.ERROR,667, "Whatever you've requested hasn't been implemented yet!");
 					}
 				}
 				
@@ -220,9 +234,22 @@ public class Main extends HttpServlet {
 		}
 		else if(handler.getRequest().getType().equals(TellervoRequestType.CREATE))
 		{
-			//TODO
+			
+			
+			if (handler.getRequest().isSetObjects())
+			{
+				TridasObjectHandler toh = new TridasObjectHandler(handler);
+				toh.writeTridasObjects(handler.getRequest().getObjects());
+				
+				handler.sendResponse();
+				return;
+			}
+			
+			//TODO implement other classes
+			
 			handler.addMessage(TellervoRequestStatus.ERROR,667, "Whatever you've requested hasn't been implemented yet!");
 			handler.sendResponse();
+			
 		}
 		else if(handler.getRequest().getType().equals(TellervoRequestType.UPDATE))
 		{
