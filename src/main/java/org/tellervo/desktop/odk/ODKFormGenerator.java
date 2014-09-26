@@ -62,6 +62,13 @@ public class ODKFormGenerator {
 			if(field.getTridasClass().equals(TridasSample.class)) sampleFieldCount++;
 			if(field.getTridasClass().equals(TridasRadius.class)) radiusFieldCount++;
 		}
+		for(ODKFieldInterface field : secondaryFields)
+		{
+			if(field.getTridasClass().equals(TridasObject.class)) objectFieldCount++;
+			if(field.getTridasClass().equals(TridasElement.class)) elementFieldCount++;
+			if(field.getTridasClass().equals(TridasSample.class)) sampleFieldCount++;
+			if(field.getTridasClass().equals(TridasRadius.class)) radiusFieldCount++;
+		}
 		if(objectFieldCount>0 && (elementFieldCount>0 || sampleFieldCount>0 || radiusFieldCount>0))
 		{
 			log.error("Can't mix object fields with fields from elements, samples and/or radii");
@@ -79,7 +86,8 @@ public class ODKFormGenerator {
 		data.append("<instance>");
 		data.append("<data id=\""+formName+"-"+UUID.randomUUID()+"\">");
 		data.append("<meta>");
-		data.append("<instanceID/>");
+		//data.append("<instanceID/>");
+		data.append("<instanceName/>");
 		data.append("</meta>");
 		for(ODKFieldInterface field : mainFields)
 		{
@@ -121,7 +129,11 @@ public class ODKFormGenerator {
 		data.append("</itext>");
 		
 		// Data binding code
-		data.append("<bind nodeset=\"/data/meta/instanceID\" type=\"string\" readonly=\"true()\" calculate=\"concat(/"+formName+", '-', /tridas_object_code)\"/>");
+		String instancename = "concat(/data/tridas_object_code"; 
+		if(elementFieldCount>0) instancename += ", '-', /data/tridas_element_title";
+		if(sampleFieldCount>0) instancename += ", '-', /data/tridas_sample_title";
+		data.append("<bind nodeset=\"/data/meta/instanceName\" type=\"string\" readonly=\"true()\" calculate=\""+instancename+")\"/>");
+
 		for(ODKFieldInterface field : mainFields)
 		{
 			data.append(getDataBindingCode(field, null));

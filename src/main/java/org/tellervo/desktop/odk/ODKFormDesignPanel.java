@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -22,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
@@ -62,6 +65,7 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.JEditorPane;
 import javax.swing.border.MatteBorder;
 import javax.swing.border.BevelBorder;
+import java.awt.Font;
 
 
 
@@ -92,6 +96,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
     private JCheckBox chkHideField;
     private boolean quietFieldChangeFlag = false;
     private JLabel lblIcon;
+    private JScrollPane scrollPaneAvailable;
+    private JScrollPane scrollPaneSelected;
+    private JLabel lblCodename;
     
 	/**
 	 * Create the panel.
@@ -136,7 +143,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		JLabel lblSelectedFields = new JLabel("Selected fields:");
 		panelFieldPicker.add(lblSelectedFields, "cell 2 0");
 		
-		JScrollPane scrollPaneAvailable = new JScrollPane();
+		scrollPaneAvailable = new JScrollPane();
 		panelFieldPicker.add(scrollPaneAvailable, "cell 0 1,grow");
 		
 		lstAvailableFields = new JList();
@@ -150,11 +157,54 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			@Override
 			public void valueChanged(ListSelectionEvent evt) {
 				
-				if(evt.getValueIsAdjusting()) return;
-				
+				/*if(evt.getValueIsAdjusting()) return;
+								
 				selectedField = (AbstractODKField) lstAvailableFields.getSelectedValue();
-				setDetailsPanel();
+				setDetailsPanel();*/
 			}
+			
+		});
+		
+		lstAvailableFields.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent evt) {
+				
+				if(evt.isPopupTrigger())
+				{
+					
+				}
+				else
+				{
+					if(evt.getClickCount()>1)
+					{
+						addOneField();
+						lstSelectedFields.setSelectedIndex(lstSelectedFields.getModel().getSize()-1);
+						selectedField = (AbstractODKField) lstSelectedFields.getSelectedValue();
+						setDetailsPanel();
+						JScrollBar vertical = scrollPaneSelected.getVerticalScrollBar();
+						vertical.setValue( vertical.getMaximum() );
+					}
+					else
+					{
+						selectedField = (AbstractODKField) lstAvailableFields.getSelectedValue();
+						setDetailsPanel();
+					}
+				}
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) { }
+
+			@Override
+			public void mouseExited(MouseEvent arg0) { }
+
+			@Override
+			public void mousePressed(MouseEvent arg0) { }
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) { }
 			
 		});
 		
@@ -188,7 +238,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		btnRemoveAll.setIcon(Builder.getIcon("2leftarrow.png", 22));
 		panelAddRemove.add(btnRemoveAll, "cell 0 3");
 		
-		JScrollPane scrollPaneSelected = new JScrollPane();
+		scrollPaneSelected = new JScrollPane();
 		panelFieldPicker.add(scrollPaneSelected, "cell 2 1,grow");
 		
 		lstSelectedFields = new JList();
@@ -212,6 +262,50 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			}
 			
 		});
+		
+		lstSelectedFields.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent evt) {
+				
+				if(evt.isPopupTrigger())
+				{
+					
+				}
+				else
+				{
+					if(evt.getClickCount()>1)
+					{
+						removeOneField();
+						lstAvailableFields.setSelectedIndex(lstAvailableFields.getModel().getSize()-1);
+						selectedField = (AbstractODKField) lstAvailableFields.getSelectedValue();
+						setDetailsPanel();
+						JScrollBar vertical = scrollPaneAvailable.getVerticalScrollBar();
+						vertical.setValue( vertical.getMaximum() );
+					}
+					else
+					{
+						selectedField = (AbstractODKField) lstSelectedFields.getSelectedValue();
+						setDetailsPanel();
+					}
+				}
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) { }
+
+			@Override
+			public void mouseExited(MouseEvent arg0) { }
+
+			@Override
+			public void mousePressed(MouseEvent arg0) { }
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) { }
+			
+		});
+		
 		scrollPaneSelected.setViewportView(lstSelectedFields);
 		
 		JScrollPane fieldOptionsScrollPane = new JScrollPane();
@@ -220,11 +314,16 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		fieldOptionsScrollPane.setViewportView(panelFieldOptions);
 		panelFieldOptions.setBorder(new TitledBorder(UIManager.getBorder("EditorPane.border"), "Field details", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		splitPane.setRightComponent(fieldOptionsScrollPane);
-		panelFieldOptions.setLayout(new MigLayout("hidemode 2", "[59.00][81.00:81.00:81.00,right][239.00,grow][50px:50px:50px]", "[][][][59.00:59.00:59.00][center][grow]"));
+		panelFieldOptions.setLayout(new MigLayout("hidemode 2", "[59.00][81.00:81.00:81.00,right][239.00,grow][50px:50px:50px]", "[][][][][59.00:59.00:59.00][center][grow]"));
+		
+		lblCodename = new JLabel("");
+		lblCodename.setForeground(Color.GRAY);
+		lblCodename.setFont(new Font("Dialog", Font.BOLD, 8));
+		panelFieldOptions.add(lblCodename, "cell 2 0,alignx right");
 		
 		JPanel panel_2 = new JPanel();
 		panel_2.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		panelFieldOptions.add(panel_2, "cell 0 0 1 3,alignx center,growy");
+		panelFieldOptions.add(panel_2, "cell 0 1 1 3,alignx center,growy");
 		panel_2.setLayout(new MigLayout("", "[][70px:70px:70px]", "[][][]"));
 		
 		lblIcon = new JLabel("");
@@ -232,7 +331,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		lblIcon.setIcon(Builder.getIcon("letters.png", 64));
 		
 		JLabel lblFieldNameDisplayed = new JLabel("Name:");
-		panelFieldOptions.add(lblFieldNameDisplayed, "cell 1 0,alignx trailing");
+		panelFieldOptions.add(lblFieldNameDisplayed, "cell 1 1,alignx trailing");
 		
 		txtFieldName = new JTextField();
 		txtFieldName.setActionCommand("FieldNameChanged");
@@ -253,12 +352,12 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			
 		});
 		
-		panelFieldOptions.add(txtFieldName, "cell 2 0,growx");
+		panelFieldOptions.add(txtFieldName, "cell 2 1,growx");
 		txtFieldName.setColumns(10);
 		
 		chkRequired = new JCheckBox("Required");
 		chkRequired.setEnabled(false);
-		panelFieldOptions.add(chkRequired, "cell 2 1");
+		panelFieldOptions.add(chkRequired, "cell 2 2");
 		
 		chkHideField = new JCheckBox("Hide field from user (default value required if ticked)");
 		chkHideField.addActionListener(new ActionListener(){
@@ -270,14 +369,14 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			}
 			
 		});
-		panelFieldOptions.add(chkHideField, "cell 2 2,aligny top");
+		panelFieldOptions.add(chkHideField, "cell 2 3,aligny top");
 		
 		JLabel lblDescription = new JLabel("Description:");
-		panelFieldOptions.add(lblDescription, "cell 0 3 2 1,alignx right,aligny top");
+		panelFieldOptions.add(lblDescription, "cell 0 4 2 1,alignx right,aligny top");
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		panelFieldOptions.add(scrollPane, "cell 2 3,grow");
+		panelFieldOptions.add(scrollPane, "cell 2 4,grow");
 		
 		txtDescription = new JTextArea();
 		scrollPane.setViewportView(txtDescription);
@@ -285,11 +384,11 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		txtDescription.setWrapStyleWord(true);
 						
 		lblDefaultValue = new JLabel("Default value:");
-		panelFieldOptions.add(lblDefaultValue, "cell 0 4 2 1,alignx trailing,aligny center");
+		panelFieldOptions.add(lblDefaultValue, "cell 0 5 2 1,alignx trailing,aligny center");
 		defModel = new DefaultComboBoxModel();
 		
 		JPanel panel_1 = new JPanel();
-		panelFieldOptions.add(panel_1, "cell 2 4,grow");
+		panelFieldOptions.add(panel_1, "cell 2 5,grow");
 		panel_1.setLayout(new MigLayout("hidemode 3, insets 0", "[grow,fill]", "[center][center]"));
 		
 		txtDefault = new JTextField();
@@ -334,7 +433,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		
 		lblOptionsToInclude = new JLabel("Options to include:");
 
-		panelFieldOptions.add(lblOptionsToInclude, "cell 0 5 2 1,alignx right,aligny top");
+		panelFieldOptions.add(lblOptionsToInclude, "cell 0 6 2 1,alignx right,aligny top");
 		
 		btnAll = new JButton("");
 		btnAll.setIcon(Builder.getIcon("selectall.png", 16));
@@ -342,20 +441,20 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		btnAll.addActionListener(this);
 		
 		choicesScrollPane = new JScrollPane();
-		panelFieldOptions.add(choicesScrollPane, "cell 2 5,grow");
+		panelFieldOptions.add(choicesScrollPane, "cell 2 6,grow");
 		choicesScrollPane.setOpaque(false);
 		
 		cbxlstChoices = new CheckBoxList();
 		
 				choicesScrollPane.setViewportView(cbxlstChoices);
-		panelFieldOptions.add(btnAll, "flowy,cell 3 5,aligny top");
+		panelFieldOptions.add(btnAll, "flowy,cell 3 6,aligny top");
 		
 		btnNone = new JButton("");
 		btnNone.setActionCommand("SelectNoChoices");
 		btnNone.addActionListener(this);
 		btnNone.setIcon(Builder.getIcon("selectnone.png", 16));
 
-		panelFieldOptions.add(btnNone, "cell 3 5");
+		panelFieldOptions.add(btnNone, "cell 3 6");
 		
 		JPanel panel = new JPanel();
 		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
@@ -440,6 +539,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			this.cbxlstChoices.setEnabled(false);
 			this.btnAll.setEnabled(false);
 			this.btnNone.setEnabled(false);
+			lblCodename.setText("");
 			return;
 		}
 		else
@@ -456,6 +556,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		}
 		
 		log.debug("Field is hidden status: "+selectedField.isFieldHidden());
+		
+		lblCodename.setText(selectedField.getFieldCode());
 		
 		// Handle fields that are the same regardless of data type
 		this.txtFieldName.setText(selectedField.getFieldName());
@@ -654,14 +756,28 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		selectedFieldsModel.removeFields(fields2);
 	}
 	
+	private void addOneField()
+	{
+		AbstractODKField field =  (AbstractODKField) lstAvailableFields.getSelectedValue();
+		if(field==null) return;
+		selectedFieldsModel.addField(field);
+		availableFieldsModel.removeField(field);
+	}
+	
+	private void removeOneField()
+	{
+		AbstractODKField field =  (AbstractODKField) lstSelectedFields.getSelectedValue();
+		if(field==null) return;
+		if(field.isFieldRequired()) return;
+		availableFieldsModel.addField(field);
+		selectedFieldsModel.removeField(field);
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getActionCommand().equals("AddOne"))
 		{
-			AbstractODKField field =  (AbstractODKField) lstAvailableFields.getSelectedValue();
-			if(field==null) return;
-			selectedFieldsModel.addField(field);
-			availableFieldsModel.removeField(field);
+			addOneField();
 		}
 		else if(evt.getActionCommand().equals("AddAll"))
 		{
@@ -669,11 +785,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		}
 		else if(evt.getActionCommand().equals("RemoveOne"))
 		{
-			AbstractODKField field =  (AbstractODKField) lstSelectedFields.getSelectedValue();
-			if(field==null) return;
-			if(field.isFieldRequired()) return;
-			availableFieldsModel.addField(field);
-			selectedFieldsModel.removeField(field);
+			removeOneField();
 		}
 		else if(evt.getActionCommand().equals("RemoveAll"))
 		{
@@ -743,6 +855,12 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
     	
     	if(file!=null) 
     	{
+    		// Make sure we have a .xml extension
+    		if(!FileUtils.getExtension(file.getAbsolutePath()).toLowerCase().equals("xml"))
+    		{
+    			file = new File(file.getAbsoluteFile()+".xml");
+    		}
+    		
     		if(this.cboFormType.getSelectedIndex()==0)
     		{
     			// Generate Objects form
@@ -856,18 +974,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		return outputFile;
 	}
 
-	public JLabel getLblIcon() {
-		return lblIcon;
-	}
-	public JButton getBtnAll() {
-		return btnAll;
-	}
-	public JButton getBtnNone() {
-		return btnNone;
-	}
-	public CheckBoxList getCbxlstChoices() {
-		return cbxlstChoices;
-	}
 }
 
 
