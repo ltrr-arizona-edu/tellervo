@@ -131,7 +131,7 @@ public class ODKFormGenerator {
 		// Data binding code
 		String instancename = "concat(/data/tridas_object_code"; 
 		if(elementFieldCount>0) instancename += ", '-', /data/tridas_element_title";
-		if(sampleFieldCount>0) instancename += ", '-', /data/tridas_sample_title";
+		//if(sampleFieldCount>0) instancename += ", '-', /data/tridas_sample_title";
 		data.append("<bind nodeset=\"/data/meta/instanceName\" type=\"string\" readonly=\"true()\" calculate=\""+instancename+")\"/>");
 
 		for(ODKFieldInterface field : mainFields)
@@ -215,7 +215,15 @@ public class ODKFormGenerator {
 		}
 		else if(field.getFieldType().equals(ODKDataType.SELECT_ONE))
 		{
-			data.append("<bind nodeset=\"/data/"+grpCd+field.getFieldCode()+"\" type=\"select1\" required=\""+boolAsText(field.isFieldRequired())+"()\"/>");
+			if(field.isFieldHidden())
+			{
+				// Force data type to String if the field is hidden otherwise form won't validate
+				data.append("<bind nodeset=\"/data/"+grpCd+field.getFieldCode()+"\" type=\"string\" required=\""+boolAsText(field.isFieldRequired())+"()\"/>");
+			}
+			else
+			{
+				data.append("<bind nodeset=\"/data/"+grpCd+field.getFieldCode()+"\" type=\"select1\" required=\""+boolAsText(field.isFieldRequired())+"()\"/>");
+			}
 		}
 		else if(field.getFieldType().equals(ODKDataType.AUDIO) ||
 				field.getFieldType().equals(ODKDataType.IMAGE) || 
@@ -233,10 +241,8 @@ public class ODKFormGenerator {
 	
 	private static String getFieldGUICode(ODKFieldInterface field, String grpCd)
 	{
-		if(field.isFieldHidden()) {
-			// Field shouldn't be displayed to user
-			return "";
-		}
+		// If field is hidden then no field GUI code is required
+		if(field.isFieldHidden()) return "";
 		
 		
 		StringBuilder data = new StringBuilder();
@@ -255,7 +261,7 @@ public class ODKFormGenerator {
 		if(field.getFieldType().equals(ODKDataType.STRING) || 
 		   field.getFieldType().equals(ODKDataType.LOCATION) || 
 		   field.getFieldType().equals(ODKDataType.INTEGER) || 
-		   field.getFieldType().equals(ODKDataType.DECIMAL))
+		   field.getFieldType().equals(ODKDataType.DECIMAL)) 
 		{			
 			data.append("<input ref=\"/data/"+grpCd+field.getFieldCode()+"\">");
 			data.append("<label ref=\"jr:itext('/data/"+grpCd+field.getFieldCode()+":label')\"/>");
@@ -383,9 +389,9 @@ public class ODKFormGenerator {
 
 			int i =0;
 			for(SelectableChoice choice: choicefield.getSelectedChoices())
-			{			
+			{			 
 				data.append("<text id=\"/data/"+grpCd+field.getFieldCode()+":option"+i+"\">");
-				data.append("<value>"+choice.toString()+"</value>");
+				data.append("<value>"+StringUtils.escapeForXML(choice.toString())+"</value>");
 				data.append("</text>");
 				i++;
 			}
@@ -405,4 +411,5 @@ public class ODKFormGenerator {
 			return "false";
 		}
 	}
+	
 }
