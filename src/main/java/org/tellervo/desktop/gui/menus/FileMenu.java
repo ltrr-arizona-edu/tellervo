@@ -19,6 +19,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.gui.menus;
 
+import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -30,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 
 import javax.swing.Action;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -59,6 +61,7 @@ import org.tellervo.desktop.io.WrongFiletypeException;
 import org.tellervo.desktop.io.control.IOController;
 import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.io.view.ImportView;
+import org.tellervo.desktop.odk.ODKFormDesignPanel;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Element;
@@ -217,6 +220,29 @@ public class FileMenu extends JMenu {
 		
 		bulkentry = Builder.makeMVCMenuItem("menus.file.bulkimport", BulkImportController.DISPLAY_BULK_IMPORT, "bulkDataEntry.png");
 		add(bulkentry);
+		
+		
+	 	JMenuItem buildODKForm = new JMenuItem("Design ODK form");
+	 	buildODKForm.setIcon(Builder.getIcon("odk.png", 22));
+	 	buildODKForm.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				JDialog dialog = new JDialog();
+				ODKFormDesignPanel panel = new ODKFormDesignPanel(dialog);
+				dialog.setIconImage(Builder.getApplicationIcon());
+				dialog.setTitle("ODK Form Builder");
+				dialog.setLayout(new BorderLayout());
+				dialog.add(panel, BorderLayout.CENTER);
+				dialog.pack();
+				dialog.setVisible(true);
+				dialog.setLocationRelativeTo(App.mainWindow);
+				
+			}
+	 		
+	 	});
+	 	add(buildODKForm);
+		
 		addSeparator();
 
 	}

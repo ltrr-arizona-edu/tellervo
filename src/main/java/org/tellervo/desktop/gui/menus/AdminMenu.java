@@ -313,7 +313,7 @@ public class AdminMenu extends JMenu {
 	    
 	 	add(curationmenu);
 	 	addSeparator();
-	 	
+	/* 	
 	 	JMenuItem buildODKForm = new JMenuItem("Design ODK form");
 	 	buildODKForm.setIcon(Builder.getIcon("odk.png", 22));
 	 	buildODKForm.addActionListener(new ActionListener(){
@@ -333,7 +333,7 @@ public class AdminMenu extends JMenu {
 			}
 	 		
 	 	});
-	 	add(buildODKForm);
+	 	add(buildODKForm);*/
 	 	
 	 	Action metadbAction = new MetadatabaseBrowserAction();
 	 	JMenuItem metadb = new JMenuItem(metadbAction);

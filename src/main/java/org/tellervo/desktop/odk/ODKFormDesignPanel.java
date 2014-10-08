@@ -376,6 +376,27 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		txtDescription = new JTextArea();
 		scrollPane.setViewportView(txtDescription);
 		txtDescription.setLineWrap(true);
+		txtDescription.getDocument().addDocumentListener(new DocumentListener(){
+
+			@Override
+			public void changedUpdate(DocumentEvent evt) {
+				commitFieldChanges();
+				
+			}
+
+			@Override
+			public void insertUpdate(DocumentEvent evt) {
+				commitFieldChanges();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent evt) {
+				commitFieldChanges();
+				
+			}
+			
+		});
 		txtDescription.setWrapStyleWord(true);
 						
 		lblDefaultValue = new JLabel("Default value:");
@@ -408,6 +429,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			}
 			
 		});
+		
 		panel_1.add(txtDefault, "cell 0 0,growx,aligny top");
 		txtDefault.setColumns(10);
 		
@@ -506,7 +528,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		
 		selectedField.setIsFieldHidden(this.chkHideField.isSelected());
 		
-		
+		this.lstSelectedFields.repaint();
+		this.lstAvailableFields.repaint();
 	}
 	
 	private void setDetailsPanel()
@@ -731,7 +754,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		}
 		
 	}
-	
+		
 	private void removeAllNonMandatoryFields()
 	{
 		ArrayList<ODKFieldInterface> fields =  selectedFieldsModel.getAllFields();
