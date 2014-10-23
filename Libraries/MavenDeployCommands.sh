@@ -23,3 +23,8 @@ mvn deploy:deploy-file  -DgroupId=postgresql          -DartifactId=pljava-public
 #mvn deploy:deploy-file -DgroupId=com.michaelbaranov.microba -DartifactId=microba            -Dversion=0.4.4.3       -Dpackaging=jar -Dfile=microba-0.4.4.3.jar             -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
 
 mvn deploy:deploy-file  -DgroupId=com.jhlabs         -DartifactId=jmapprojlib                -Dversion=1.2.0	     -Dpackaging=jar -Dfile=jmapprojlib-1.2.0.jar		    -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
+
+mvn deploy:deploy-file  -DgroupId=org.jvnet.jaxb2_commons    -DartifactId=xjc-if-ins                -Dversion=0.5.2	     -Dpackaging=jar -Dfile=xjc-if-ins-0.5.2.jar		    -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
+mvn deploy:deploy-file  -DgroupId=org.tridas.schema    -DartifactId=tridasaandi                -Dversion=1.0	     -Dpackaging=jar -Dfile=tridasaandi-1.0.jar		    -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
+mvn deploy:deploy-file  -DgroupId=org.tridas.schema    -DartifactId=tridas-annotations                -Dversion=1.0	     -Dpackaging=jar -Dfile=tridas-annotations-1.0.jar		    -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
+mvn deploy:deploy-file  -DgroupId=com.sun.tools.xjc    -DartifactId=collection-setter-injector                -Dversion=0.1	     -Dpackaging=jar -Dfile=collection-setter-injector-0.1.jar		    -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
