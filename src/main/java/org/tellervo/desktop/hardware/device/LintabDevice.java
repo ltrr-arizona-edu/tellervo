@@ -88,6 +88,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 		unitMultiplier = UnitMultiplier.TIMES_1;
 		this.correctionMultiplier = 1.0;
 		this.measureInReverse = true;
+		this.measureCumulatively = true;
 	}
 	
 	@Override
