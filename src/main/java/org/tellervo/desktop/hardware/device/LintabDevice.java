@@ -112,12 +112,12 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 			    StringBuffer readBuffer = new StringBuffer();
 			    int intReadFromPort;
 			    
-			    	/*LINTAB data appears in the following format:
-					 *[integer position in 1/1000mm];[add button state ‘0’ or ’1’][reset button state ‘0’ or ‘1’][LF]
-					 *It should look like "140;10" or "46;10"with a LF. 
-					 *With every change of the LINTAB table state (move table, button press, button release) a
-					 *new data record is sent with a line feed (0x0A) at the end of the line.
-					 *This means that a lot of the data needs to be ignored.
+			    	/* LINTAB data appears in the following format:
+					 * [integer position in 1/1000mm];[add button state ‘0’ or ’1’][reset button state ‘0’ or ‘1’][LF]
+					 * It should look like "140;10" or "46;10" with a LF. 
+					 * With every change of the LINTAB table state (move table, button press, button release) a
+					 * new data record is sent with a line feed (0x0A) at the end of the line.
+					 * This means that a lot of the data needs to be ignored.
 			    	 */
 			    	//Read from port into buffer while not LF (10)
 			    	while ((intReadFromPort=input.read()) != 10){
@@ -154,6 +154,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
             	// switch is used quickly, it doesn't hear the reset request
                 if(resetting)
                 {
+                            	
                 	if(!strReadPosition.equals("0"))
                 	{
                 		log.debug("Platform reset request ignored... retrying (attempt "+resetCounter+")");
@@ -183,24 +184,38 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
             	
 		    	// Handle any correction factor
 		    	intValue = getCorrectedValue(intValue);
-            	                
+		    	
+		    	
 		    	//Only process the data if the add button is set and the reset button is not set.
                 if( strReadBuffer.endsWith(";10") || fireOnNextValue) 
-                {
+                {				                
+					// Do calculation if working in cumulative mode
+					if(this.measureCumulatively)
+					{
+						Integer cumValue = intValue;
+						intValue = intValue - getPreviousPosition();
+						setPreviousPosition(cumValue);
+					}
+                	
                 	fireOnNextValue = false;
                 	fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
-                	zeroMeasurement();
-                }
+                	
+        			// Only zero the measurement if we're not measuring cumulatively
+        			if(!measureCumulatively)
+        			{
+        				zeroMeasurement();
+        			}
+        		}
                 else if( strReadBuffer.endsWith(";01") || strReadBuffer.endsWith(";11")) 
                 {
-                	zeroMeasurement();
-                }
+        			zeroMeasurement();	
+        		}
                 else
                 {
                 	// Not recording this value just updating current value counter
                 	fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.UPDATED_CURRENT_VALUE_EVENT, intValue);
                 }
-							
+		
 			}
 			catch (IOException ioe) {
 				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port");
@@ -241,6 +256,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 			String strCommand = "RESET";
 			resetRequestTrack(true);
 			this.sendData(strCommand);
+			this.setPreviousPosition(0);
 		}
 	}
 	
@@ -327,7 +343,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 
 	@Override
 	public Boolean isMeasureCumulativelyConfigurable() {
-		return false;
+		return true;
 	}
 
 	@Override
