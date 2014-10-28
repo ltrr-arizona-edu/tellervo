@@ -22,3 +22,9 @@ mvn install:install-file -DgroupId=postgresql          -DartifactId=pljava-publi
 #mvn install:install-file -DgroupId=com.michaelbaranov.microba -DartifactId=microba             -Dversion=0.4.4.3       -Dpackaging=jar -Dfile=microba-0.4.4.3.jar
 
 mvn install:install-file  -DgroupId=org.jhlabs          	   -DartifactId=jmapprojlib         -Dversion=1.2.0	        -Dpackaging=jar -Dfile=jmapprojlib-1.2.0.jar
+
+mvn install:install-file -DgroupId=org.jvnet.jaxb2_commons    -DartifactId=xjc-if-ins                -Dversion=0.5.2	     -Dpackaging=jar -Dfile=xjc-if-ins-0.5.2.jar	
+mvn install:install-file  -DgroupId=org.tridas.schema    -DartifactId=tridasaandi                -Dversion=1.0	          -Dpackaging=jar -Dfile=tridasaandi-1.0.jar		    
+mvn install:install-file  -DgroupId=org.tridas.schema    -DartifactId=tridas-annotations         -Dversion=1.0	          -Dpackaging=jar -Dfile=tridas-annotations-1.0.jar		   
+mvn install:install-file  -DgroupId=com.sun.tools.xjc    -DartifactId=collection-setter-injector  -Dversion=0.1	           -Dpackaging=jar -Dfile=collection-setter-injector-0.1.jar		    
+mvn install:install-file  -DgroupId=jpedal                -DartifactId=jpedal                     -Dversion=4.45-b-105     -Dpackaging=jar -Dfile=jpedal-4.45-b-105.ja
