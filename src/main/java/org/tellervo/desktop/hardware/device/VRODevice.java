@@ -28,6 +28,9 @@ import java.io.OutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.hardware.MeasurePanel;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 
@@ -35,6 +38,7 @@ import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 
 
 public class VRODevice extends GenericASCIIDevice {
+	private final static Logger log = LoggerFactory.getLogger(VRODevice.class);
 
 	@Override
 	public String toString() {
@@ -138,10 +142,20 @@ public class VRODevice extends GenericASCIIDevice {
 			    	while ((intReadFromPort=input.read()) != 10){
 			    		//If a timeout then show bad sample
 						if(intReadFromPort == -1) {
-							fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, null);
-							return;
+							//fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, null);
+							log.debug("Serial port time out");
+							if(readBuffer.toString().length()>0)
+							{
+								break;
+							}
+							else
+							{
+								return;
+							}
 
 						}
+						
+
 
 						//Ignore CR (13)
 			    		if(intReadFromPort!=13)  {

@@ -131,7 +131,14 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	
 
 	public void receiverUpdateStatus(String status) {
-		 txtText.setText(txtText.getText()+"["+I18n.getText("preferences.hardware.status")+"] : "+status.trim());
+		if(status.trim().length()==0)
+		{
+			txtText.setText(txtText.getText()+"["+I18n.getText("preferences.hardware.status")+"] : ");
+		}
+		else
+		{
+			txtText.setText(txtText.getText()+"["+I18n.getText("preferences.hardware.status")+"] : "+status.trim()+"\n");
+		}
 	}
 	
 	public void receiverNewMeasurement(Integer value) {

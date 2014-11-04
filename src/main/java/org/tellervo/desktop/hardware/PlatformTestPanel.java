@@ -201,7 +201,7 @@ public class PlatformTestPanel extends JPanel implements ActionListener {
 			return;
 		}
 
-		contentPanel.setLayout(new MigLayout("", "[][428.00px,grow,fill][]", "[75.00px,fill][247.00px,grow]"));
+		contentPanel.setLayout(new MigLayout("", "[][242.00px,grow,fill]", "[75.00px,fill][247.00px,grow]"));
 
 		{
 			JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
@@ -210,7 +210,7 @@ public class PlatformTestPanel extends JPanel implements ActionListener {
 				JPanel panelTitle = new JPanel();
 				panelTitle.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 				panelTitle.setBackground(Color.WHITE);
-				contentPanel.add(panelTitle, "cell 0 0 3 1,growx,aligny top");
+				contentPanel.add(panelTitle, "cell 0 0 2 1,growx,aligny top");
 				panelTitle.setLayout(new MigLayout("", "[grow]", "[75px,top]"));
 				{
 					JLabel lblIcon = new JLabel("");
