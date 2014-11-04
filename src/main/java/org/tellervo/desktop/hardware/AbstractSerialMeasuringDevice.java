@@ -60,6 +60,11 @@ public abstract class AbstractSerialMeasuringDevice extends
 		addMeasuringSampleIOListener(this);
 	}
 	
+	protected void sendRequest(String strCommand)
+	{
+		return;
+	}
+	
 	/**
 	 * Get a vector of all the ports identified on this computer
 	 * 

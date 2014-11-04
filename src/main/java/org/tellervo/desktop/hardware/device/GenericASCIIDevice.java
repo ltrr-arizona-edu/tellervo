@@ -198,11 +198,6 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 		
 	}
 	
-	protected void sendRequest(String strCommand)
-	{
-		return;
-	}
-
 	@Override
 	public Boolean isCurrentValueCapable() {
 		return false;

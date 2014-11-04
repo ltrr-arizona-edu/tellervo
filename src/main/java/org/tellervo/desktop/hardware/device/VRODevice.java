@@ -49,7 +49,7 @@ public class VRODevice extends GenericASCIIDevice {
 		
 		baudRate = BaudRate.B_9600;
 		dataBits = DataBits.DATABITS_8;
-		stopBits = StopBits.STOPBITS_2;
+		stopBits = StopBits.STOPBITS_1;
 		parity = PortParity.NONE;
 		flowControl = FlowControl.NONE;
 		lineFeed = LineFeed.CR;
@@ -221,20 +221,14 @@ public class VRODevice extends GenericASCIIDevice {
 	}
 	
 	
-	/**
-	 * Send zero command to VRO
-	 */
 	@Override
 	public void zeroMeasurement()
 	{
-		String strZeroDataCommand = "C";
-		sendRequest(strZeroDataCommand);
+		sendRequest("C");
 	}
 	
 	@Override
 	public void requestMeasurement() {
-		String strZeroDataCommand = "S";
-		sendRequest(strZeroDataCommand);
-		
+		sendRequest("S");	
 	}
 }

@@ -47,8 +47,9 @@ import javax.swing.border.BevelBorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.ui.Builder;
+import javax.swing.JTextField;
 
-public class PlatformTestPanel extends JPanel {
+public class PlatformTestPanel extends JPanel implements ActionListener {
 	private final static Logger log = LoggerFactory.getLogger(PlatformTestPanel.class);
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPanel = new JPanel();
@@ -61,6 +62,8 @@ public class PlatformTestPanel extends JPanel {
 	private String errorMessage;
 	private final JDialog parent;
 	private Color bgcolor;
+	private JTextField txtSend;
+	private JButton btnSend;
 	
 	/**
 	 * Create the dialog.
@@ -164,7 +167,7 @@ public class PlatformTestPanel extends JPanel {
 		dialog.getContentPane().setLayout(new BorderLayout());
 		dialog.getContentPane().add(panel, BorderLayout.CENTER);
 		dialog.pack();
-		dialog.setSize(650, 500);
+		dialog.setSize(700, 600);
 		dialog.setLocationRelativeTo(parent);
 		dialog.setVisible(true);
 		
@@ -198,15 +201,16 @@ public class PlatformTestPanel extends JPanel {
 			return;
 		}
 
-		contentPanel.setLayout(new MigLayout("", "[428.00px,grow,fill]", "[75.00px,grow,fill][247.00px,grow][]"));
+		contentPanel.setLayout(new MigLayout("", "[][428.00px,grow,fill][]", "[75.00px,fill][247.00px,grow]"));
+
 		{
 			JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-			contentPanel.add(tabbedPane, "cell 0 1,grow");
+			contentPanel.add(tabbedPane, "cell 1 1,grow");
 			{
 				JPanel panelTitle = new JPanel();
 				panelTitle.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 				panelTitle.setBackground(Color.WHITE);
-				contentPanel.add(panelTitle, "cell 0 0,growx,aligny top");
+				contentPanel.add(panelTitle, "cell 0 0 3 1,growx,aligny top");
 				panelTitle.setLayout(new MigLayout("", "[grow]", "[75px,top]"));
 				{
 					JLabel lblIcon = new JLabel("");
@@ -308,7 +312,7 @@ public class PlatformTestPanel extends JPanel {
 				JPanel panelCommLog = new JPanel();
 				panelCommLog.setBackground(bgcolor);
 				tabbedPane.addTab("Communications Log", null, panelCommLog, null);
-				panelCommLog.setLayout(new MigLayout("", "[3px,grow,fill]", "[3px,grow,fill]"));
+				panelCommLog.setLayout(new MigLayout("", "[3px,grow,fill]", "[3px,grow,fill][]"));
 				{
 					JScrollPane scrollPane = new JScrollPane();
 					panelCommLog.add(scrollPane, "cell 0 0,alignx left,aligny top");
@@ -320,13 +324,32 @@ public class PlatformTestPanel extends JPanel {
 					
 					}
 				}
+				{
+					JPanel panel = new JPanel();
+					panelCommLog.add(panel, "flowx,cell 0 1");
+					panel.setLayout(new MigLayout("", "[114px,grow,fill][70px]", "[25px]"));
+					{
+						txtSend = new JTextField();
+						panel.add(txtSend, "cell 0 0,alignx left,aligny center");
+						txtSend.setColumns(10);
+						txtSend.setVisible(device instanceof AbstractSerialMeasuringDevice && device.isRequestDataCapable());
+						txtSend.setActionCommand("SendCommand");
+						txtSend.addActionListener(this);
+					}
+					{
+						btnSend = new JButton("Send");
+						panel.add(btnSend, "cell 1 0,alignx left,aligny top");
+						btnSend.setActionCommand("SendCommand");
+						btnSend.addActionListener(this);
+							
+		
+						btnSend.setVisible(device instanceof AbstractSerialMeasuringDevice && device.isRequestDataCapable());
+					}
+					
+				}
 			}
 			
 			
-		}
-		{
-			panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device, bgcolor, parent);
-			contentPanel.add(panelControls, "cell 0 2,alignx left,aligny top");
 		}
 
 		{
@@ -371,10 +394,32 @@ public class PlatformTestPanel extends JPanel {
 			}
 			
 		}
+		{
+			panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device, bgcolor, parent);
+			contentPanel.add(panelControls, "cell 0 1,alignx left,aligny top");
+		}
 
 	}
 
 	public AbstractMeasuringDevice getDevice() {
 		return device;
 	}
+
+	@Override
+	public void actionPerformed(ActionEvent evt) {
+		
+		if(evt.getActionCommand().equals("SendCommand"))
+		{
+			if(device instanceof AbstractSerialMeasuringDevice){
+				if(txtSend.getText()!=null)
+				{
+					((AbstractSerialMeasuringDevice)device).sendRequest(txtSend.getText());
+					txtSend.setText("");
+				}
+			}
+		}
+		
+		
+	}
+
 }
