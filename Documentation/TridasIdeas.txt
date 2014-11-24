@@ -1,0 +1,5 @@
+-Change element.altitude to element.elevation
+-Dimensions need work to accommodate ecology. Need diameter without height.  Also need different diameter types e.g. DBH DBSH etc.
+-Vegetation type for object
+-Tree class in element
+  
