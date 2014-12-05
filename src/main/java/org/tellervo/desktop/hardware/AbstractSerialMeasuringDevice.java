@@ -302,8 +302,7 @@ public abstract class AbstractSerialMeasuringDevice extends
 			try {
 				openPort(this.portName);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.error(e.getLocalizedMessage());
 			}
 		}
 		

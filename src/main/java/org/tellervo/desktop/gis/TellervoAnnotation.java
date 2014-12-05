@@ -34,7 +34,7 @@ import javax.media.opengl.GL;
 
 public class TellervoAnnotation extends GlobeAnnotation implements ActionListener{
 
-    protected ImageAnnotation busyImage = new BusyImage(BUSY_IMAGE_PATH);
+    //rotected ImageAnnotation busyImage = new BusyImage(BUSY_IMAGE_PATH);
 
     protected static final String CLOSE_IMAGE_PATH = "Icons/16x16/cancel.png";
     protected static final String SEARCHFORSERIES_IMAGE_PATH = "Icons/searchforseries.png";
@@ -71,12 +71,13 @@ public class TellervoAnnotation extends GlobeAnnotation implements ActionListene
     public void setBusy(boolean busy)
     {
         this.busy = busy;
-        this.getBusyImage().getAttributes().setVisible(busy);
+        //this.getBusyImage().getAttributes().setVisible(busy);
     }
 
     public ImageAnnotation getBusyImage()
     {
-        return this.busyImage;
+        //return this.busyImage;
+    	return null;
     }
     
     public java.awt.event.ActionListener[] getActionListeners()

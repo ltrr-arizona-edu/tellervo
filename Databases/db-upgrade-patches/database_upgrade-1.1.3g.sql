@@ -162,7 +162,6 @@ CREATE OR REPLACE VIEW vwtblobject AS
    JOIN tblvmeasurementderivedcache vc ON vc.measurementid = m.measurementid
   GROUP BY e.objectid) cquery ON cquery.masterobjectid = o.objectid;
 
-
 DROP VIEW vwtblelement;
 CREATE OR REPLACE VIEW vwtblelement AS 
  SELECT ( SELECT findobjecttoplevelancestor.code
@@ -180,5 +179,36 @@ CREATE OR REPLACE VIEW vwtblelement AS
    LEFT JOIN vwtlkptaxon vwt ON e.taxonid = vwt.taxonid;
 
 
+
+ALTER TABLE tblsample ADD COLUMN samplingyear integer;
+ALTER TABLE tblsample ADD COLUMN samplingmonth integer;
+ALTER TABLE tblsample ADD CONSTRAINT enforce_tblsample_sampleyearbound CHECK (samplingyear >1900);
+ALTER TABLE tblsample ADD CONSTRAINT enforce_tblsample_sampleyearbound2 CHECK (samplingyear <=date_part('year', current_timestamp));
+ALTER TABLE tblsample ADD CONSTRAINT enforce_tblsample_samplemonthbound CHECK (samplingmonth >=1 AND samplingmonth <=12);
+ALTER TABLE tblsample ADD CONSTRAINT enforce_samplingyearwithmonth CHECK (samplingmonth IS NOT NULL AND samplingyear IS NOT NULL OR samplingmonth IS NULL);
+
+CREATE OR REPLACE FUNCTION update_samplingdateatomicfields()
+  RETURNS trigger AS
+$BODY$BEGIN
+IF NEW.samplingdate IS NOT NULL THEN
+  NEW.samplingyear = date_part('year', NEW.samplingdate);
+  NEW.samplingmonth = date_part('month', NEW.samplingdate);
+END IF;
+RETURN new;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION update_samplingdateatomicfields()
+  OWNER TO tellervo;
+
+DROP VIEW vwtblsample;
+CREATE OR REPLACE VIEW vwtblsample AS 
+ SELECT s.externalid, s.sampleid, s.code, s.comments, s.code AS title, s.elementid, s.samplingdate, s.createdtimestamp, s.lastmodifiedtimestamp, st.sampletypeid, st.sampletype, s.file, s."position", s.state, s.knots, s.description, dc.datecertainty, s.boxid, lc.objectcode, lc.elementcode, c.curationstatusid, cl.curationstatus, s.samplingmonth, s.samplingyear
+   FROM tblsample s
+   LEFT JOIN tlkpdatecertainty dc ON s.datecertaintyid = dc.datecertaintyid
+   LEFT JOIN tlkpsampletype st ON s.typeid = st.sampletypeid
+   LEFT JOIN vwtblcurationmostrecent c ON s.sampleid = c.sampleid
+   LEFT JOIN tlkpcurationstatus cl ON c.curationstatusid = cl.curationstatusid
+   LEFT JOIN vwlabcodesforsamples lc ON s.sampleid = lc.sampleid;
 
 

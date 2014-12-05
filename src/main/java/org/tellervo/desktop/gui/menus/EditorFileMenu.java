@@ -19,22 +19,20 @@
  ******************************************************************************/
 package org.tellervo.desktop.gui.menus;
 
+import gov.nasa.worldwind.examples.util.ScreenShotAction;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 
 import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gis.GISPanel;
 import org.tellervo.desktop.io.control.OpenExportEvent;
-import org.tellervo.desktop.manip.TruncateDialog;
 import org.tellervo.desktop.print.SeriesReport;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-
-import gov.nasa.worldwind.examples.util.ScreenShotAction;
 
 // a FileMenu with "Export..." for samples.
 // TODO: this doesn't need to be public.

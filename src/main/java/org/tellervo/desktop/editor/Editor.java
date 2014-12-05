@@ -116,7 +116,6 @@ import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
-import org.tellervo.desktop.tridasv2.ui.ComponentViewer;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewerOld;
 import org.tellervo.desktop.tridasv2.ui.DependentsViewer;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel;

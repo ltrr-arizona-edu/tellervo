@@ -292,7 +292,16 @@ public class FileDialog {
 		setConfiguredMode(f, SINGLE_VIEWMODE_PREF);
 
 		// set the working directory
-		File workFile = new File(workingDirectory);
+		File workFile = null;
+		if(workingDirectory!=null)
+		{
+			workFile = new File(workingDirectory);
+		}
+		else
+		{
+			workFile = new File(System.getProperty("user.home"));
+		}
+		
 		if(!workFile.isDirectory()) {
 			File workDir = workFile.getParentFile();
 			f.setCurrentDirectory(workDir);

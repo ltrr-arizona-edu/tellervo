@@ -30,9 +30,7 @@ import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.hardware.MeasurePanel;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 
 
 
@@ -174,7 +172,7 @@ public class VRODevice extends GenericASCIIDevice {
                 }
                 else if (strReadBuffer.endsWith("ct"))
                 {
-					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in raw counts.  Your need to configure your VRO to transmit values in millimetres.");
+					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in raw counts.  You have not yet configured your VRO.  See your VRO Quick Start Guide for directions.");
                 }
                 
 		    	// Raw data is in mm like "2.575"

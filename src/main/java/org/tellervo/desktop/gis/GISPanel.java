@@ -51,8 +51,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.tellervo.desktop.core.App;
@@ -134,6 +138,53 @@ public class GISPanel extends JPanel implements SelectListener{
 	        	overview.setEnabled(isMiniMap);
 	        	compass.setEnabled(isMiniMap);
 	        	scale.setEnabled(isMiniMap);
+	        	
+	        	this.getWwd().addMouseListener(new MouseAdapter() {
+
+					@Override
+					public void mouseClicked(MouseEvent evt) {
+						System.out.println(evt.getButton());
+						if(evt.getButton() == MouseEvent.BUTTON3)
+						{
+		        	         // Get clicked position on the globe.
+		        	         Position clickedPosition = getWwd().getCurrentPosition();
+		        	         double latitude = clickedPosition.getLatitude().getDegrees();
+		           	         double longitude = clickedPosition.getLongitude().getDegrees();
+							
+							 GISPointDisplay dialog = new GISPointDisplay(latitude,longitude);
+							 dialog.setLocationRelativeTo(null);
+							 dialog.setVisible(true);
+						}
+						
+					}
+
+					@Override
+					public void mouseEntered(MouseEvent arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void mouseExited(MouseEvent arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void mousePressed(MouseEvent arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void mouseReleased(MouseEvent arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+	        		
+	        	});
+	        	
+	        	
         	
 			} catch (UnsatisfiedLinkError e)
 			{

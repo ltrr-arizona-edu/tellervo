@@ -700,6 +700,7 @@ public class EditorFactory {
 		}
 		else
 		{
+			TellervoWsiTridasElement.attachNewSample(sample);
 			Editor ed = new Editor(sample);
 			ed.setVisible(true);
 		}

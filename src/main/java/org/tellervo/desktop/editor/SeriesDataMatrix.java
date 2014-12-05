@@ -34,6 +34,7 @@ import java.util.Collections;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -44,6 +45,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 
 import org.slf4j.Logger;
@@ -72,6 +74,7 @@ import org.tellervo.desktop.util.PopupListener;
 import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasValue;
+
 import javax.swing.JSplitPane;
 
 
@@ -188,6 +191,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		 super.paint(g);
 		 }
 		 }; */
+		((DefaultTableCellRenderer)myTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.RIGHT);
 		myTable.setGridColor(new Color(240, 240, 240)); 
 		
 		//myTable.setDefaultEditor(Integer.class, new SeriesDataMatrixEditor());
@@ -265,13 +269,17 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		myTable.setColumnSelectionInterval(
 				mySample.getRange().getStart().column() + 1, mySample.getRange()
 						.getStart().column() + 1);
-		
-
+						
 		// don't let the columns be rearranged or resized
 		myTable.getTableHeader().setReorderingAllowed(false);
 		myTable.getColumnModel().getColumn(0).setMinWidth(100);
 		myTable.getTableHeader().setResizingAllowed(false);
 		myTable.setRowSelectionAllowed(true);
+		
+
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
+		myTable.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
 		
 		// make the last column a jprogressbar, % of max
 		int max = 0;

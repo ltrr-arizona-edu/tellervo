@@ -28,11 +28,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.JTree;
 import javax.swing.ToolTipManager;
 import javax.swing.event.EventListenerList;
 import javax.swing.text.Position;
@@ -47,6 +48,8 @@ import org.jdesktop.swingx.search.TreeSearchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
@@ -54,29 +57,32 @@ import org.tellervo.desktop.gui.hierarchy.TridasTree;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeCellRenderer;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel_UI;
 import org.tellervo.desktop.gui.hierarchy.WSITagNameDialog;
+import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
 import org.tellervo.desktop.gui.widgets.TellervoCodePanel.ObjectListMode;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.schema.TellervoRequestFormat;
-import org.tellervo.schema.TellervoRequestType;
-import org.tellervo.schema.SearchOperator;
-import org.tellervo.schema.SearchParameterName;
-import org.tellervo.schema.SearchReturnObject;
-import org.tellervo.schema.WSITag;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.PopupListener;
+import org.tellervo.desktop.util.openrecent.OpenRecent;
+import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
-import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.WebInterfaceCode;
-import org.tellervo.desktop.wsi.tellervo.WebInterfaceException;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSITag;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.util.TridasUtils.TreeDepth;
@@ -546,6 +552,25 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
         menuItem.addActionListener(this);
         popupMenu.add(menuItem);
 
+        // Open series
+        if(clazz.equals(TridasMeasurementSeries.class) || clazz.equals(TridasDerivedSeries.class))
+        {
+        	popupMenu.addSeparator();
+        	
+            menuItem = new JMenuItem("Open");
+            menuItem.setIcon(Builder.getIcon("file.png", 16));
+            menuItem.setActionCommand("openSeries");
+            menuItem.addActionListener(this);
+            popupMenu.add(menuItem);
+            
+            menuItem = new JMenuItem("Chart series");
+            menuItem.setIcon(Builder.getIcon("graph.png", 16));
+            menuItem.setActionCommand("chartSeries");
+            menuItem.addActionListener(this);
+            popupMenu.add(menuItem);
+        }
+        
+        
         popupMenu.setOpaque(true);
         popupMenu.setLightWeightPopupEnabled(false);
 
@@ -1194,6 +1219,16 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 				deleteEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
 			}			
 		}
+		else if (e.getActionCommand().equals("openSeries"))
+		{
+			openSeries();
+
+		}
+		else if (e.getActionCommand().equals("chartSeries"))
+		{
+			chartSeries();
+
+		}
 		else if (e.getActionCommand().equals("findInTree"))
 		{
 			find();
@@ -1237,6 +1272,88 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		
 	}
 	
+	public void chartSeries()
+	{
+		
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+		ITridasSeries series = (ITridasSeries) node.getUserObject();
+		
+		// Query for the master chronology used to do the crossdate
+		SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
+		search.addSearchConstraint(SearchParameterName.SERIESDBID, SearchOperator.EQUALS, series.getIdentifier().getValue());
+	
+		SeriesSearchResource searchResource = new SeriesSearchResource(search);
+		TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(new JDialog(), searchResource);
+		
+		// start our query (remotely)
+		searchResource.query();
+		dlg.setVisible(true);
+		
+		Element element = null;
+		if(!dlg.isSuccessful()) {
+			return;
+		} else {
+			element = searchResource.getAssociatedResult().get(0);
+		}
+		
+		
+		
+		Sample s;
+		try {
+			s = element.load();
+		} catch (IOException ioe) {
+			Alert.error(I18n.getText("error.loadingSample"),
+					I18n.getText("error.cantOpenFile") +":" + ioe.getMessage());
+			return;
+		}
+
+		OpenRecent.sampleOpened(new SeriesDescriptor(s));
+		
+		// plot
+		new GraphWindow(s);
+		
+		
+	}
+	
+	public void openSeries()
+	{
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+		ITridasSeries series = (ITridasSeries) node.getUserObject();
+		
+		// Query for the master chronology used to do the crossdate
+		SearchParameters search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
+		search.addSearchConstraint(SearchParameterName.SERIESDBID, SearchOperator.EQUALS, series.getIdentifier().getValue());
+	
+		SeriesSearchResource searchResource = new SeriesSearchResource(search);
+		TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(new JDialog(), searchResource);
+		
+		// start our query (remotely)
+		searchResource.query();
+		dlg.setVisible(true);
+		
+		Element element = null;
+		if(!dlg.isSuccessful()) {
+			return;
+		} else {
+			element = searchResource.getAssociatedResult().get(0);
+		}
+		
+		
+		
+		Sample s;
+		try {
+			s = element.load();
+		} catch (IOException ioe) {
+			Alert.error(I18n.getText("error.loadingSample"),
+					I18n.getText("error.cantOpenFile") +":" + ioe.getMessage());
+			return;
+		}
+
+		OpenRecent.sampleOpened(new SeriesDescriptor(s));
+		
+		// open it
+		new Editor(s);
+	}
 	
 	private void renameTag(DefaultMutableTreeNode node)
 	{

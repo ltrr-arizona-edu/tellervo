@@ -57,9 +57,9 @@ public class TridasAnnotation extends TellervoAnnotation {
         this.setLayout(layout);
         closeButton.setEnabled(true);
         
-        this.addChild(this.busyImage);
+       // this.addChild(this.busyImage);
         this.addChild(this.closeButton);
-        layout.setConstraint(this.busyImage, AVKey.NORTHWEST);
+       // layout.setConstraint(this.busyImage, AVKey.NORTHWEST);
         layout.setConstraint(this.closeButton, AVKey.NORTHEAST);
         layout.setConstraint(titleLabel, AVKey.NORTH);       
         
@@ -175,7 +175,7 @@ public class TridasAnnotation extends TellervoAnnotation {
         this.viewMetadata.addActionListener(this);
         this.viewMetadata.setToolTipText(VIEWMETADATA_TOOLTIP_TEXT);
         
-        this.busyImage = new BusyImage(BUSY_IMAGE_PATH);   
+       // this.busyImage = new BusyImage(BUSY_IMAGE_PATH);   
     }
 
     

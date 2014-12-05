@@ -208,6 +208,25 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 	        
         }
         
+        // Open series
+        if(clazz.equals(TridasMeasurementSeries.class) || clazz.equals(TridasDerivedSeries.class))
+        {
+            menuItem = new JMenuItem("Open");
+            menuItem.setIcon(Builder.getIcon("open.png", 16));
+            menuItem.setActionCommand("openSeries");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            
+            menuItem = new JMenuItem("Chart series");
+            menuItem.setIcon(Builder.getIcon("graph.png", 16));
+            menuItem.setActionCommand("chartSeries");
+            menuItem.addActionListener(this);
+            popup.add(menuItem);
+            
+            popup.addSeparator();
+        }
+        
+        
         // Refresh
         menuItem = new JMenuItem("Refresh");
         menuItem.addActionListener(this);
@@ -562,7 +581,16 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 			}
 			
 		}
-		
+		else if (e.getActionCommand().equals("openSeries"))
+		{
+			openSeries();
+
+		}
+		else if (e.getActionCommand().equals("chartSeries"))
+		{
+			chartSeries();
+
+		}
 		else if (e.getActionCommand().equals("merge"))
 		{
 			Object[] options = {"OK",
