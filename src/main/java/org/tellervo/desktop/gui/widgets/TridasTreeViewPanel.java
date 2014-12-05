@@ -28,7 +28,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
@@ -57,7 +56,6 @@ import org.tellervo.desktop.gui.hierarchy.TridasTree;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeCellRenderer;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel_UI;
 import org.tellervo.desktop.gui.hierarchy.WSITagNameDialog;
-import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
 import org.tellervo.desktop.gui.widgets.TellervoCodePanel.ObjectListMode;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
@@ -879,6 +877,11 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     		seriesSearchResource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
     	    		
     	}
+    	else if (node.getUserObject() instanceof TridasMeasurementSeries || node.getUserObject() instanceof TridasDerivedSeries)
+    	{
+    		openSeries();
+    		return;
+    	}
 
     	// Do Search     	
 		TellervoResourceAccessDialog dialog;
@@ -944,9 +947,9 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
      * @param node
      */
 	protected void doSelectEntity(DefaultMutableTreeNode node)
-	{
-   	
-    	if(node.getUserObject() instanceof ITridas)
+	{  	
+		
+		if(node.getUserObject() instanceof ITridas)
     	{
     		TridasSelectEvent event = new TridasSelectEvent(tree, TridasSelectEvent.ENTITY_SELECTED, ((ITridas)node.getUserObject()), node);
     		this.fireTridasSelectListener(event);
