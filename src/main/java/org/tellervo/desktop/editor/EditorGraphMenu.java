@@ -19,8 +19,6 @@
  ******************************************************************************/
 package org.tellervo.desktop.editor;
 
-import org.fhaes.fhchart.gui.PlotWindow;
-
 import java.awt.Frame;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -35,6 +33,7 @@ import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.fhaes.fhchart.gui.PlotWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
@@ -64,7 +63,7 @@ import org.tridas.io.TridasIO;
 import org.tridas.io.defaults.TridasMetadataFieldSet;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.ConversionWarningException;
-import org.tridas.io.exceptions.IncompleteTridasDataException;
+import org.tridas.io.exceptions.ImpossibleConversionException;
 import org.tridas.io.naming.AbstractNamingConvention;
 import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
@@ -333,7 +332,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 		    	// Get the writer to load the project
 				try {
 					writer.loadProject(p);
-				} catch (IncompleteTridasDataException e1) {
+				} catch (ImpossibleConversionException e1) {
 					e1.printStackTrace();
 				} catch (ConversionWarningException e1) {
 					e1.printStackTrace();

@@ -72,6 +72,7 @@ public class SetupWizard extends JDialog implements ActionListener{
 
 		ArrayList<AbstractWizardPanel> pages = new ArrayList<AbstractWizardPanel>();
 		pages.add(new WizardWelcome());
+		pages.add(new WizardModeChooser());
 		pages.add(new WizardProxy());
 		pages.add(new WizardServer());
 		pages.add(new WizardHardwareAsk());

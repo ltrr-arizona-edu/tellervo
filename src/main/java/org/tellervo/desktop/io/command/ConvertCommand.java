@@ -25,7 +25,7 @@ import org.tridas.io.IDendroFile;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.ConversionWarningException;
-import org.tridas.io.exceptions.IncompleteTridasDataException;
+import org.tridas.io.exceptions.ImpossibleConversionException;
 import org.tridas.io.naming.INamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.schema.TridasProject;
@@ -133,7 +133,7 @@ public class ConvertCommand implements ICommand {
 				
 				try {
 					writer.loadProject(project);
-				} catch (IncompleteTridasDataException e) {
+				} catch (ImpossibleConversionException e) {
 					struct.errorMessage = e.getMessage();
 				} catch (ConversionWarningException e) {
 					struct.errorMessage = e.getLocalizedMessage();

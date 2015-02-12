@@ -27,10 +27,8 @@ import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.InitDataGridAction;
 import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
-import org.tellervo.desktop.gui.menus.actions.PrintAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.SaveAction;
-import org.tellervo.desktop.gui.menus.actions.TruncateAction;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -40,7 +38,7 @@ import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
-import org.tridas.io.exceptions.IncompleteTridasDataException;
+import org.tridas.io.exceptions.ImpossibleConversionException;
 import org.tridas.io.gui.model.TricycleModelLocator;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.util.ITRDBTaxonConverter;
@@ -119,7 +117,7 @@ public class EditorLite extends Editor {
 
 
 		}
-		catch (IncompleteTridasDataException e){
+		catch (ImpossibleConversionException e){
 			e.printStackTrace();
 		} 
 		catch (ConversionWarningException e) { } 

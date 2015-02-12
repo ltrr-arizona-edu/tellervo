@@ -55,7 +55,7 @@ import org.tridas.io.TridasIO;
 import org.tridas.io.defaults.TridasMetadataFieldSet;
 import org.tridas.io.exceptions.ConversionWarning;
 import org.tridas.io.exceptions.ConversionWarningException;
-import org.tridas.io.exceptions.IncompleteTridasDataException;
+import org.tridas.io.exceptions.ImpossibleConversionException;
 import org.tridas.io.naming.AbstractNamingConvention;
 import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
@@ -444,7 +444,7 @@ public class ExportUI extends javax.swing.JPanel{
 	    	// Get the writer to load the project
 			try {
 				writer.loadProject(p);
-			} catch (IncompleteTridasDataException e1) {
+			} catch (ImpossibleConversionException e1) {
 				e1.printStackTrace();
 			} catch (ConversionWarningException e1) {
 				e1.printStackTrace();

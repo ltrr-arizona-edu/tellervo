@@ -307,6 +307,13 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 		}
 		
 		catch (HttpResponseException hre) {
+			
+			if(hre.getStatusCode()==404)
+			{
+				throw new IOException("The URL of the server you have specified is unknown");
+			}
+			
+			
 			BugReport bugs = new BugReport(hre);
 			
 			bugs.addDocument("sent.xml", outDocument);

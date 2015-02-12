@@ -20,10 +20,10 @@ public class WizardServer extends AbstractWizardPanel {
 				"installation program should have given you the URL.\n\n" +
 				"If you don't have access to a " +
 				"Tellervo Server yet, you should close this wizard, then go to the Tellervo " +
-				"website and download it. Alternatively you can continue with the webservice " +
+				"website and download it. Alternatively you can continue in Tellervo-lite mode with the webservice " +
 				"disabled but this will mean the vast majority of the Tellervo functionality " +
-				"is missing including mapping, data sharing, databasing etc.  Without server " +
-				"access Tellervo works as a basic file-based dendro data collection tool.");
+				"is missing including mapping, data sharing, databasing etc.  In Tellervo-lite " +
+				"mode, Tellervo works as a basic file-based dendro measuring tool.");
 		
 		setLayout(new MigLayout("", "[100px,grow]", "[][120px,grow]"));
 		

@@ -97,7 +97,7 @@ public class WSIServerDetails {
 	public boolean pingServer()
 	{
 		// First make sure we have a network connection
-		/*try{
+		try{
 		    Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();  
 		    while (interfaces.hasMoreElements()) 
 		    {  
@@ -298,10 +298,8 @@ public class WSIServerDetails {
 	
 		status = WSIServerStatus.URL_NOT_TELLERVO_WS;
 
-		return false;*/
+		return false;
 		
-		status = WSIServerStatus.VALID;
-		return true;
 		
 	}
 	
@@ -385,7 +383,7 @@ public class WSIServerDetails {
 	
 	public Boolean isServerValid(String earliestServerVersionSupported)
 	{		
-	/*	log.debug("Checking if server is valid...");
+		log.debug("Checking if server is valid...");
 		
 		if(status==WSIServerStatus.VALID)
 		{
@@ -431,9 +429,8 @@ public class WSIServerDetails {
 			
 		}
 		
-		return false;*/
-		
-		return true;
+		return false;
+	
 	}
 	
 	private void setTooOldErrorMessage()
