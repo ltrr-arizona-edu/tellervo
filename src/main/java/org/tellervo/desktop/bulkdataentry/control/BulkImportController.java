@@ -40,8 +40,6 @@ import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.view.BulkDataEntryWindow;
-import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.FrontController;

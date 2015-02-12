@@ -7,43 +7,16 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.Range;
-import org.tellervo.desktop.Year;
-import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.EditorFactory;
-import org.tellervo.desktop.editor.EditorLite;
 import org.tellervo.desktop.gui.UserCancelledException;
-import org.tellervo.desktop.io.Metadata;
-import org.tellervo.desktop.io.view.ImportDataOnly;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.ui.Alert;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroFileReader;
-import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
-import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.exceptions.InvalidDendroFileException;
-import org.tridas.io.util.ITRDBTaxonConverter;
-import org.tridas.io.util.SafeIntYear;
 import org.tridas.io.util.TridasUtils;
-import org.tridas.io.util.UnitUtils;
-import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasDerivedSeries;
-import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasMeasurementSeries;
-import org.tridas.schema.TridasObject;
-import org.tridas.schema.TridasProject;
-import org.tridas.schema.TridasRadius;
-import org.tridas.schema.TridasSample;
-import org.tridas.schema.TridasTridas;
-import org.tridas.schema.TridasUnit;
-import org.tridas.schema.TridasValues;
 
 public class LocalTridasFileLoader implements GUIAwareSampleLoader {
 	private final static Logger log = LoggerFactory.getLogger(LocalTridasFileLoader.class);

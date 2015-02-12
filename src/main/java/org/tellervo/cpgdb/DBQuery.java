@@ -32,8 +32,6 @@ import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.sql.rowset.CachedRowSet;
-
 //import com.sun.rowset.CachedRowSetImpl;
 
 public class DBQuery {

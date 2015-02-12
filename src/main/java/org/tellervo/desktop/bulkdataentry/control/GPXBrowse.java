@@ -20,7 +20,6 @@
  ******************************************************************************/
 package org.tellervo.desktop.bulkdataentry.control;
 
-import javax.swing.JDialog;
 import javax.swing.JPanel;
 
 import com.dmurph.mvc.MVCEvent;

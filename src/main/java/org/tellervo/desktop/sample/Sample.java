@@ -34,8 +34,6 @@ import javax.swing.undo.UndoableEditSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.Preview;
-import org.tellervo.desktop.Previewable;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Weiserjahre;
 import org.tellervo.desktop.Year;

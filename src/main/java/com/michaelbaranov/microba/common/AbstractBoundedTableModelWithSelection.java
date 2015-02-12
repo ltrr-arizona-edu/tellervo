@@ -17,6 +17,10 @@ import javax.swing.event.ListSelectionListener;
 public abstract class AbstractBoundedTableModelWithSelection extends
 		AbstractBoundedTableModel implements ListSelectionModel {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4711038188476313832L;
 	private DefaultListSelectionModel selection = new DefaultListSelectionModel();
 
 	public AbstractBoundedTableModelWithSelection() {

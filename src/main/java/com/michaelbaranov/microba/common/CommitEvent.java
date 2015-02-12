@@ -11,6 +11,10 @@ import java.util.EventObject;
  */
 public class CommitEvent extends EventObject {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private boolean commit;
 
 	/**

@@ -19,8 +19,6 @@
  ******************************************************************************/
 package org.tellervo.desktop.admin.control;
 
-import org.tellervo.desktop.admin.model.UserGroupAdminModel;
-
 import com.dmurph.mvc.MVCEvent;
 
 

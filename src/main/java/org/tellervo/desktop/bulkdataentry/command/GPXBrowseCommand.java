@@ -20,16 +20,13 @@
  ******************************************************************************/
 package org.tellervo.desktop.bulkdataentry.command;
 
-import java.awt.FileDialog;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel;
@@ -37,15 +34,10 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
-import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
-import org.tridas.io.TridasIO;
 
-import com.dmurph.mvc.IllegalThreadException;
-import com.dmurph.mvc.IncorrectThreadException;
-import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 import com.dmurph.mvc.model.HashModel;

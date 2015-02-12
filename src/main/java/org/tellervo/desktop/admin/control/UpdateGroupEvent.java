@@ -20,8 +20,6 @@
 
 package org.tellervo.desktop.admin.control;
 
-import java.util.ArrayList;
-
 import javax.swing.JDialog;
 
 import org.tellervo.schema.WSISecurityGroup;

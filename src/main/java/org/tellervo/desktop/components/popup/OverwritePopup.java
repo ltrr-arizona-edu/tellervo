@@ -19,24 +19,22 @@
  ******************************************************************************/
 package org.tellervo.desktop.components.popup;
 
-import java.awt.Frame;
-import java.awt.GridLayout;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-
-import net.miginfocom.swing.MigLayout;
-import java.awt.FlowLayout;
 
 /**
  * @author Daniel Murphy

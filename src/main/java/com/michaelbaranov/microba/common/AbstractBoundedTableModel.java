@@ -15,6 +15,7 @@ import javax.swing.table.AbstractTableModel;
 public abstract class AbstractBoundedTableModel extends AbstractTableModel
 		implements BoundedTableModel {
 	
+	private static final long serialVersionUID = -5865695580709358731L;
 	private PropertyChangeSupport propertySupport=new PropertyChangeSupport(this);
 
 	public void addPropertyChangeListener(PropertyChangeListener listener) {

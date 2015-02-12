@@ -21,7 +21,6 @@ package org.tellervo.desktop.admin.control;
 
 import javax.swing.JDialog;
 
-import org.tellervo.desktop.admin.model.UserGroupAdminModel;
 import org.tellervo.schema.WSISecurityUser;
 
 import com.dmurph.mvc.MVCEvent;

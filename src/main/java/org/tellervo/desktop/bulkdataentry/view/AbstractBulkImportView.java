@@ -41,7 +41,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
-import javax.swing.ScrollPaneConstants;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,11 +52,10 @@ import org.tellervo.desktop.bulkdataentry.control.DisplayColumnChooserEvent;
 import org.tellervo.desktop.bulkdataentry.control.RemoveSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportTableModel;
-import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.util.JTableSpreadsheetAdapter;
 import org.tellervo.desktop.util.JTableRowHeader;
+import org.tellervo.desktop.util.JTableSpreadsheetAdapter;
 
 
 /**

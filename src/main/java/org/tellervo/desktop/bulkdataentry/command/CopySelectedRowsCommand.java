@@ -25,9 +25,7 @@ import java.util.ArrayList;
 import org.tellervo.desktop.bulkdataentry.control.CopySelectedRowsEvent;
 import org.tellervo.desktop.bulkdataentry.model.AbstractBulkImportTableModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
-import org.tellervo.desktop.bulkdataentry.model.ObjectTableModel;
 
-import com.dmurph.mvc.ICloneable;
 import com.dmurph.mvc.IllegalThreadException;
 import com.dmurph.mvc.IncorrectThreadException;
 import com.dmurph.mvc.MVC;

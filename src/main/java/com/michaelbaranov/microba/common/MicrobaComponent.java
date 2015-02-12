@@ -18,6 +18,7 @@ import com.michaelbaranov.microba.Microba;
  */
 public class MicrobaComponent extends JComponent {
 
+	private static final long serialVersionUID = 1L;
 	public static final String PROPERTY_NAME_COLOR_OVERRIDE_MAP = "colorOverrideMap";
 
 	static {

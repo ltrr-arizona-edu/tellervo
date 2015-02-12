@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -17,6 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingWorker;
@@ -24,24 +24,17 @@ import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
-import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
-import org.tellervo.desktop.bulkdataentry.view.QuickEntrySample.Task;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.dbbrowse.TridasObjectRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ArrayListModel;
-import org.tridas.schema.ControlledVoc;
-import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
-import javax.swing.JTextPane;
-import javax.swing.JProgressBar;
 
 public class QuickEntryElement extends JDialog implements ActionListener, PropertyChangeListener {
 
