@@ -646,7 +646,7 @@
 			<!--  Create a Windows native executable 
 			      n.b. this creates a raw executable, not an installer. 
 			      The installer is created with an Ant task -->
-	    	<plugin>
+	    <!-- 	<plugin>
 				<groupId>org.bluestemsoftware.open.maven.plugin</groupId>
 				<artifactId>launch4j-plugin</artifactId>
 				<version>1.5.0.0</version>
@@ -671,14 +671,16 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
+			
 			
 			<!-- Create a MacOSX native executable 
 			     n.b. on Linux and Windows this will create an *app.zip file
-			          on MacOSX it will also create a DMG file. Also not that
+			          on MacOSX it will also create a DMG file. Also note that
 			          on Linux and Windows computers the App will not include
 			          the Apple integration portions therefore they will have
 			          an ugly menu bar. -->
-			<plugin>
+			<!-- <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>osxappbundle-maven-plugin</artifactId>
                 <version>1.0-alpha-2</version>
@@ -698,6 +700,7 @@
                     </execution>
                </executions>
            </plugin>
+           -->
            
             <!-- 
 			<plugin>
@@ -751,7 +754,7 @@
 				<executions>
 				
 					<!-- Desktop Installer -->
-					<execution>
+					<!-- <execution>
 						<id>deb-desktop-build</id>
 						<phase>package</phase>
 						<goals>
@@ -798,6 +801,7 @@
 							</dataSet>
 						</configuration>
 					</execution>
+					 -->
 					
 					<!-- Server installer -->
 					<execution>
@@ -915,7 +919,7 @@
 					
 					<!-- Strip duplicate deps from MacOSX bundle, and add native libraries
 					     manual and license files.  Finally zip up and move into binaries folder -->	 
-					<execution>
+					<!-- <execution>
 					  <id>AddLibsToMacOSXApp</id>
 					  <phase>package</phase>
 					  <configuration>
@@ -925,15 +929,12 @@
 								  
 								  <trycatch>  
 								  <try>
-									  <!-- Create the binary folder to hold the MacOSX package -->
 									  <echo> MKDIR ${project.build.directory}/binaries/desktop/${project.version}/MacOSX </echo>
 									  <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/MacOSX"/>
 									  
-									  <!-- Delete the seperate dependencies as they are included in the Tellervo jar -->
 									  <echo> Delete dependencies from JAR: ${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo</echo>
 									  <delete dir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo"/>
 									  				
-									  <!-- Copy in to our build folder the Tellervo jar -->			
 									  <echo>Copy JAR into the build folder</echo>
 									  <echo>File: ${project.build.directory}/${project.build.finalName}.jar... into ${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo/org/tellervo/tellervo/${project.version}/</echo>	
 									  <copy file="${project.build.directory}/${project.build.finalName}.jar"		
@@ -942,13 +943,11 @@
 									  <echo>Delete any previous OSX package</echo>
 									  <delete file="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" failonerror="false"/>		
 									  										  
-									  <!-- Create the app.zip file from our build folder.  555 filemode required for executing-->
 									  <echo>Create the app.zip file from our build folder.  555 filemode required for executing</echo>								  
 									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="false">
 									  	<zipfileset filemode="555" dir="${project.build.directory}/${project.build.finalName}" includes="Tellervo.app/**"/>
 									  </zip>
 									  
-									  <!-- Add license, manual and native package into the root of the zip -->
 									  <echo>Add license, manual and native package into the root of the zip</echo>
 									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="true">
 									  	     <fileset dir="Native/BuildResources/MacBuild/NativePackages/" includes="**/*.pkg"/>
@@ -970,10 +969,11 @@
 						  <goal>run</goal>
 					  </goals>					
 				  </execution>
+				  -->
 					
 					
 					<!-- Run Makensis to create the windows installers -->
-			 	    <execution>
+			 	   <!--  <execution>
 						<id>RunNSIS</id>
 						<phase>package</phase>
 						<configuration>
@@ -987,7 +987,6 @@
 								        <arg value="main.nsh"/>  
 								      </exec>  
 								      
-								      <!-- Copy setup file to final binaries folder in case the signing doesn't work -->
 								      <copy file="${project.build.directory}/${project.build.finalName}-unsigned.exe" 
 								      tofile="${project.build.directory}/binaries/desktop/${project.version}/Windows/${project.build.finalName}-setup.exe" failonerror="false"/>
 								      
@@ -1004,7 +1003,6 @@
 								 
 								<trycatch>
 							    <try>		
-							    	  <!-- Try to sign the Setup.exe with the University of Arizona certificate -->					      
 								      <exec dir="${project.build.directory}" executable="osslsigncode">  
 								        <arg value="sign"/>  
 								        <arg value="-certs"/>  <arg value="/home/pbrewer/.ssh/cert.pem"/>
@@ -1030,6 +1028,7 @@
 							<goal>run</goal>
 						</goals>					
 					</execution>
+					-->
 					
 					<execution>
 						<id>CopyJarFile</id>

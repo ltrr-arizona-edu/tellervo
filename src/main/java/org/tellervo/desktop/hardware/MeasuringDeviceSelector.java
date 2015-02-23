@@ -37,6 +37,7 @@ import org.tellervo.desktop.hardware.device.GenericASCIIDevice;
 import org.tellervo.desktop.hardware.device.HeidenhainND287;
 import org.tellervo.desktop.hardware.device.LintabDevice;
 import org.tellervo.desktop.hardware.device.Microcode2;
+import org.tellervo.desktop.hardware.device.QC1000;
 import org.tellervo.desktop.hardware.device.QC10Device;
 import org.tellervo.desktop.hardware.device.QC1100;
 import org.tellervo.desktop.hardware.device.SMCODendro1;
@@ -61,6 +62,7 @@ public class MeasuringDeviceSelector {
 		registerDevice(QC10Device.class);
 		registerDevice(GenericASCIIDevice.class);
 		registerDevice(HeidenhainND287.class);
+		registerDevice(QC1000.class);
 		registerDevice(QC1100.class);
 		registerDevice(Microcode2.class);
 		registerDevice(UParSerDevice.class);

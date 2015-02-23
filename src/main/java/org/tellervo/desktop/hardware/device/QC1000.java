@@ -20,84 +20,133 @@
  ******************************************************************************/
 package org.tellervo.desktop.hardware.device;
 
-import java.io.IOException;
+import gnu.io.SerialPortEvent;
+
+import java.io.DataOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
-import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.LineFeed;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 
-import gnu.io.SerialPortEvent;
 
-public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
-	
-	private final static Logger log = LoggerFactory.getLogger(GenericASCIIDevice.class);
-	private static final int EVE_ENQ = 5;
-		
+
+
+public class QC1000 extends GenericASCIIDevice {
+	protected final static Logger log = LoggerFactory.getLogger(QC1000.class);
+
+	@Override
+	public String toString() {
+		return "Metronics Quick-Chek 1000";
+	}
+
 	@Override
 	public void setDefaultPortParams(){
 		
-		baudRate = BaudRate.B_9600;
+		//MeasureJ2X defaults to using 2 stop bits but Tellervo/Java/something bombs if you 
+		//try to write to the port with 2 stop bits set.  So lets stick with 1 stop bit for now!
+		
+		baudRate = BaudRate.B_600;
 		dataBits = DataBits.DATABITS_8;
-		stopBits = StopBits.STOPBITS_1;
+		stopBits = StopBits.STOPBITS_2;
 		parity = PortParity.NONE;
 		flowControl = FlowControl.NONE;
-		lineFeed = LineFeed.CRLF;
+		lineFeed = LineFeed.CR;
 		unitMultiplier = UnitMultiplier.TIMES_1000;
-		measureCumulatively = false;
 	}
 	
+
 	@Override
-	public String toString() {
-		return "Generic ASCII Platform";
+	public Boolean isBaudEditable() {
+		return true;
 	}
 
 	@Override
-	protected void doInitialize() throws IOException {
-		
-		log.debug("Initalising Generic ASCII device");
-		
-		
-		openPort();
-		boolean waiting_for_init = true;
-		int tryCount = 0;
-		
-		while(waiting_for_init) {
-			synchronized(this) {
-				if(getState() == PortState.WAITING_FOR_ACK) {
-					
-					if(tryCount++ == 25) {
-						log.debug("Platform init tries exhausted; giving up.");
-						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Failed to initialize reader device.");
-						break;
-					}
-					
-					try {
-						log.debug("Initializing reader, try " + tryCount + "...");
-						fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.INITIALIZING_EVENT, new Integer(tryCount));
-						getSerialPort().getOutputStream().write(EVE_ENQ);
-					}
-					catch (IOException e) {	}
-				} else {
-					log.debug("Platform init complete.");
-					waiting_for_init = false;
-					continue;
-				}
-				
-				// no response yet.. wait.
-				try {
-					log.debug("No response yet from device.  Waiting...");
-					this.wait(300);
-				} catch (InterruptedException e) {}						
-			}					
-		}				
+	public Boolean isDatabitsEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isLineFeedEditable() {
+		return true;
+	}
+
+	@Override
+	public Boolean isParityEditable() {
+		return false;
+	}
+
+	@Override
+	public Boolean isStopbitsEditable() {
+		return false;
 	}
 	
+	@Override
+	public Boolean isFlowControlEditable(){
+		return false;
+	}
+
+	@Override
+	public Boolean isUnitsEditable() {
+		return false;
+	}
+
+	@Override
+	protected void sendRequest(String strCommand)
+	{
+		OutputStream output;
+
+
+    	try {
+    		
+	    output = getSerialPort().getOutputStream();
+	    OutputStream outToPort=new DataOutputStream(output); 
+	    
+	    byte[] command = (strCommand+lineFeed.toCommandString()).getBytes();
+	    outToPort.write(command);
+        fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strCommand, DataDirection.SENT);
+
+	    
+    	}
+    	catch (Exception ioe) {
+			fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error sending command to serial port");
+
+    	}	
+	}
+	
+	@Override
+	public Boolean isRequestDataCapable() {
+		return true;
+	}
+	
+	@Override
+	public Boolean isReverseMeasureCapable() {
+		return true;
+	}
+	
+	/**
+	 * Send zero command to Quadra-check QC10
+	 */
+	@Override
+	public void zeroMeasurement()
+	{
+		String strZeroDataCommand = "Z-";
+		sendRequest(strZeroDataCommand);
+	}
+	
+	@Override
+	public void requestMeasurement() {
+		String strZeroDataCommand = "P-";
+		sendRequest(strZeroDataCommand);
+		
+	}
+	
+	@Override
 	public void serialEvent(SerialPortEvent e) {
 		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			InputStream input;
@@ -116,15 +165,23 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 
 						}
 
-						//Ignore CR (13)
-			    		if(intReadFromPort!=13)  {
+						//Ignore CR (13) and 'a'
+			    		if(intReadFromPort!=13 && intReadFromPort!=97)  {
 			    			readBuffer.append((char) intReadFromPort);
 			    		}
+			    		
+
 			    	}
 
                 String strReadBuffer = readBuffer.toString();
                 fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
  	
+                if(strReadBuffer.trim().length()==0)
+                {
+                	log.debug("Empty line - ignored");
+                	return;
+                }
+                
                 // Check units 
                 if(strReadBuffer.endsWith("in") || strReadBuffer.endsWith("inch") )
                 {
@@ -133,12 +190,7 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
                 else if(strReadBuffer.endsWith("deg") || strReadBuffer.endsWith("dms"))
                 {
 					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in degrees.  Only millimetre units are supported in Tellervo.");
-                }
-                else if (strReadBuffer.endsWith("ct"))
-                {
-					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in raw counts.  See your device's manual for directions.");
-                }
-                
+                }                
                 
 		    	// Raw data is in mm like "2.575"
                 // Strip label and/or units if present
@@ -196,97 +248,4 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 	
 		}
 	}
-	
-	@Override
-	protected void setLineFeed(LineFeed lf){
-		
-		if(lf.equals(LineFeed.NONE)) 
-		{
-			log.error("ASCII devices can't have line feed set to 'none'");
-			return;
-		}
-		
-		
-		this.lineFeed = lf;
-
-		
-	}
-	
-	@Override
-	public void zeroMeasurement()
-	{
-		return;
-	}
-
-	@Override
-	public Boolean isRequestDataCapable() {
-		return false;
-	}
-
-	@Override
-	public void requestMeasurement() {
-		return;
-		
-	}
-	
-	@Override
-	public Boolean isCurrentValueCapable() {
-		return false;
-	}
-
-	@Override
-	public Boolean isBaudEditable() {
-		return true;
-	}
-
-	@Override
-	public Boolean isDatabitsEditable() {
-		return true;
-	}
-
-	@Override
-	public Boolean isLineFeedEditable() {
-		return true;
-	}
-
-	@Override
-	public Boolean isParityEditable() {
-		return true;
-	}
-
-	@Override
-	public Boolean isStopbitsEditable() {
-		return true;
-	}
-	
-	@Override
-	public Boolean isFlowControlEditable(){
-		return true;
-	}
-
-	@Override
-	public Boolean isUnitsEditable() {
-		return true;
-	}
-
-	@Override
-	public Boolean isMeasureCumulativelyConfigurable() {
-		return true;
-	}
-
-	@Override
-	public Boolean isReverseMeasureCapable() {
-		return false;
-	}
-	
-	@Override
-	public Boolean isCorrectionFactorEditable() {
-		return false;
-	}
-
-	@Override
-	public boolean doesInitialize() {
-		return false;
-	}
-
 }
