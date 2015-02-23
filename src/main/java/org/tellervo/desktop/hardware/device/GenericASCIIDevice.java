@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.LineFeed;
 
 import gnu.io.SerialPortEvent;
 
@@ -107,10 +108,10 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 			    StringBuffer readBuffer = new StringBuffer();
 			    int intReadFromPort;
 			    	//Read from port into buffer while not line feed
-			    	while ((intReadFromPort=input.read()) != 10){
+			    	while ((intReadFromPort=input.read()) != this.lineFeed.toInt()){
 			    		//If a timeout then show bad sample
 						if(intReadFromPort == -1) {
-							fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, null);
+							fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Port timeout or line feed problems");
 							return;
 
 						}
@@ -124,6 +125,21 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
                 String strReadBuffer = readBuffer.toString();
                 fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
  	
+                // Check units 
+                if(strReadBuffer.endsWith("in") || strReadBuffer.endsWith("inch") )
+                {
+					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in inches.  Only millimetre units are supported in Tellervo.");
+                }
+                else if(strReadBuffer.endsWith("deg") || strReadBuffer.endsWith("dms"))
+                {
+					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in degrees.  Only millimetre units are supported in Tellervo.");
+                }
+                else if (strReadBuffer.endsWith("ct"))
+                {
+					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in raw counts.  See your device's manual for directions.");
+                }
+                
+                
 		    	// Raw data is in mm like "2.575"
                 // Strip label and/or units if present
 				String regex = "[\\d\\.]+";
@@ -162,7 +178,7 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 		    	else
 		    	{
 		    		// Fire bad event as value is a negative number
-		    		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, null);
+		    		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Negative value = "+intValue);
 		    	}
 			    							
 
@@ -179,6 +195,21 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 			}
 	
 		}
+	}
+	
+	@Override
+	protected void setLineFeed(LineFeed lf){
+		
+		if(lf.equals(LineFeed.NONE)) 
+		{
+			log.error("ASCII devices can't have line feed set to 'none'");
+			return;
+		}
+		
+		
+		this.lineFeed = lf;
+
+		
 	}
 	
 	@Override

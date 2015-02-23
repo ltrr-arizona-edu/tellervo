@@ -717,8 +717,8 @@ public abstract class AbstractMeasuringDevice
 	 */
 	public enum LineFeed{
 		NONE(0),
-		CR(1),
-		CRLF(2);
+		CR(13),
+		CRLF(10);
 		
 		private int br;
 		
