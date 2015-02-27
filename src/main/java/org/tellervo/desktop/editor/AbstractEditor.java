@@ -2,14 +2,21 @@ package org.tellervo.desktop.editor;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import net.miginfocom.swing.MigLayout;
 
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JList;
 import javax.swing.JTabbedPane;
@@ -81,15 +88,46 @@ SampleListener {
 		
 		JPanel Workspace_panel = new JPanel();
 		splitPane.setLeftComponent(Workspace_panel);
-		Workspace_panel.setLayout(new MigLayout("", "[grow]", "[grow]"));
+				
+		final DefaultListModel model;
+		model= new DefaultListModel();
+		
+		model.addElement(sampleList);
+		
+		Workspace_panel.setLayout(new MigLayout("", "[][][1px]", "[235px][]"));
+		
+		JScrollPane scrollPane = new JScrollPane();
+		Workspace_panel.add(scrollPane, "cell 0 0 3 1,grow");
+		
+		JList Data_matrix_list = new JList(model);
+		scrollPane.setViewportView(Data_matrix_list);
+		Data_matrix_list.setValueIsAdjusting(true);
+		
+		
+		Data_matrix_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		Data_matrix_list.setLayoutOrientation(JList.VERTICAL);
+		Data_matrix_list.setVisibleRowCount(10);
+		
+		JButton ADD = new JButton("ADD");
+		Workspace_panel.add(ADD, "cell 0 1");
+		
+		JButton REMOVE = new JButton("REMOVE");
+		Workspace_panel.add(REMOVE, "cell 1 1");
+		
+		Data_matrix_list.addListSelectionListener(new ListSelectionListener(){
+			public void valueChanged(ListSelectionEvent e){
+				itemSelected();
+			}
+
+			public void valueChanged1(ListSelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
 			
+			
+		});
 		
-		JList Data_matrix_list = new JList(sampleList);
-		Data_matrix_list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		Data_matrix_list.setLayoutOrientation(JList.);
-		Data_matrix_list.setVisibleRowCount(-1);
 		
-		Workspace_panel.add(Data_matrix_list, "cell 0 0,grow");
 		
 		JPanel Main_panel = new JPanel();
 		splitPane.setRightComponent(Main_panel);
@@ -105,5 +143,9 @@ SampleListener {
 		tabbedPane.addTab("Metadata", null, Metadata_panel, null);
 		
 		
+	}
+	
+	public void itemSelected(){
+	
 	}
 }
