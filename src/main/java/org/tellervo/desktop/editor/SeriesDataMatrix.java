@@ -108,7 +108,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	private JPanel panelLeft;
 	private JPanel panelRight;
 	private RemarkPanel remarkPanel;
-	private Editor e;
+	private AbstractEditor e;
 	
 	// pass this along to the table
 	@Override
@@ -158,7 +158,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	}
 	
 	
-	public SeriesDataMatrix(Sample s, Editor e) {
+	public SeriesDataMatrix(Sample s, AbstractEditor e) {
 		// copy data reference, add self as observer
 		mySample = s;
 		mySample.addSampleListener(this);
@@ -197,7 +197,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		//myTable.setDefaultEditor(Integer.class, new SeriesDataMatrixEditor());
 		// mouse listener for table
 		
-		final Editor glue = e;
+		final AbstractEditor glue = e;
 		myTable.addMouseListener(new MouseListener() {
 
 

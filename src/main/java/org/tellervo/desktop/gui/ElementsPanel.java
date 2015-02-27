@@ -64,7 +64,8 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import org.tellervo.desktop.Range;
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.AbstractEditor;
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.metadata.MetadataField;
 import org.tellervo.desktop.metadata.MetadataTemplate;
 import org.tellervo.desktop.sample.BaseSample;
@@ -229,7 +230,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					}
 
 					// open it
-					new Editor(s);
+					new FullEditor(s);
 				}
 			});
 			super.add(open);
@@ -316,7 +317,7 @@ public class ElementsPanel extends JPanel implements SampleListener {
 	}
 
 	// given: editor
-	public ElementsPanel(Editor e) {
+	public ElementsPanel(AbstractEditor e) {
 		this(e.getSample(), e.getSample().getElements());
 	}
 

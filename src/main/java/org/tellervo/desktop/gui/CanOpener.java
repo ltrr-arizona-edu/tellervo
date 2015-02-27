@@ -22,7 +22,7 @@ package org.tellervo.desktop.gui;
 
 import java.io.IOException;
 
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.view.LiteEditor;
 import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.io.WrongFiletypeException;
 import org.tellervo.desktop.sample.Element;
@@ -40,7 +40,7 @@ public class CanOpener {
 	try {// is it a sample?
 		Element e = ElementFactory.createElement(filename);
 	    Sample s = e.load();
-	    new Editor(s);
+	    new LiteEditor(s);
 	    OpenRecent.sampleOpened(new SeriesDescriptor(s));
 	    return;
 	} catch (WrongFiletypeException wfte) {

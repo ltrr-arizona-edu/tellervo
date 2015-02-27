@@ -45,6 +45,7 @@ import net.miginfocom.swing.MigLayout;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.manip.Redate;
 import org.tellervo.desktop.sample.TellervoWsiTridasElement;
@@ -310,7 +311,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 				// put it in our menu
 				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 				
-				new Editor(tmp);
+				new FullEditor(tmp);
 				
 				// get out of here! :)
 				return true;

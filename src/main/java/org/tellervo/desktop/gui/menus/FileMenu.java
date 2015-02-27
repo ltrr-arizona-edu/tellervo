@@ -42,7 +42,7 @@ import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.gui.CanOpener;
 import org.tellervo.desktop.gui.FileDialog;
 import org.tellervo.desktop.gui.LoginDialog;
@@ -475,7 +475,7 @@ public class FileMenu extends JMenu {
 				try {
 					s = e.load();
 				} catch (IOException ioe) {
-					Alert.error(I18n.getText("error.loadingSample"),
+					Alert.error(browser, I18n.getText("error.loadingSample"),
 							I18n.getText("error.cantOpenFile") +":" + ioe.getMessage());
 					continue;
 				}
@@ -483,7 +483,7 @@ public class FileMenu extends JMenu {
 				OpenRecent.sampleOpened(new SeriesDescriptor(s));
 				
 				// open it
-				new Editor(s);
+				new FullEditor(s);
 			}
 		}
 	}

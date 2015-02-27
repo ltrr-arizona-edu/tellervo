@@ -20,13 +20,12 @@
  ******************************************************************************/
 package org.tellervo.desktop.versioning;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
-import java.util.Properties;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
-import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 
 public class Build {
@@ -38,7 +37,7 @@ public class Build {
     public final static String YEAR = "2001-2013";
 
     /** Author's name (for copyright). */
-    public final static String AUTHOR = "Peter Brewer, Chris Dunham, Dan Girshovich, Aaron Hamid, Ken Harris, Drew Kalina, Rocky Li, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl, Paul Sheppard and Kit Sturgeon";
+    public final static String AUTHOR = "Peter Brewer, Chris Dunham, Dan Girshovich, Aaron Hamid, Ken Harris, Drew Kalina, Pavithra Lakshminarayanan, Rocky Li, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl, Paul Sheppard and Kit Sturgeon";
 
 	/** Most primitive server version supported by this client should be a three part string e.g 1.1.1 */
 	public static final String earliestServerVersionSupported = "1.0.9";
