@@ -151,7 +151,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	protected AbstractMetadataPanel metaView;
 	private ComponentViewerOld componentsPanel = null;
 	private DependentsViewer dependentsPanel = null;
-	private BargraphPanel bargraphPanel = null;
 	protected SeriesDataMatrix dataView; // (a jpanel)
 	public GISPanel wwMapPanel;
 	protected JTabbedPane tabbedPanel;
@@ -1091,14 +1090,6 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 	public void focusLost(FocusEvent e) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	public void setBargraphPanel(BargraphPanel bargraphPanel) {
-		this.bargraphPanel = bargraphPanel;
-	}
-
-	public BargraphPanel getBargraphPanel() {
-		return bargraphPanel;
 	}
 
 	public void setEditorFileMenu(EditorFileMenu editorFileMenu) {
