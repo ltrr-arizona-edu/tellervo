@@ -14,6 +14,8 @@ import javax.swing.event.ListSelectionListener;
 
 import net.miginfocom.swing.MigLayout;
 
+import javax.swing.AbstractButton;
+import javax.swing.Action;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JScrollPane;
@@ -29,14 +31,35 @@ import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
 import org.tellervo.desktop.gui.SaveableDocument;
+import org.tellervo.desktop.gui.menus.actions.ExportDataAction;
+import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
+import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.InitDataGridAction;
+import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
+import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
+import org.tellervo.desktop.gui.menus.actions.PrintAction;
+import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
+import org.tellervo.desktop.gui.menus.actions.SaveAction;
+import org.tellervo.desktop.gui.menus.actions.TruncateAction;
+import org.tellervo.desktop.gui.widgets.TitlelessButton;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
+import org.tellervo.desktop.io.control.IOController;
 import org.tellervo.desktop.prefs.PrefsListener;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
+
+import javax.swing.ImageIcon;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JToolBar;
+import javax.swing.JPopupMenu;
+
+import java.awt.Button;
 
 public abstract class AbstractEditor extends JFrame implements SaveableDocument, PrefsListener,
 SampleListener {
@@ -56,6 +79,7 @@ SampleListener {
 		this.sampleList.add(sample);
 
 		init();
+		initbar();
 
 	}
 	
@@ -72,6 +96,7 @@ SampleListener {
 		
 		
 		init();
+		initbar();
 
 	}
 	
@@ -83,6 +108,7 @@ SampleListener {
 		
 		this.sampleList = new ArrayList<Sample>();
 		init();
+		initbar();
 	}
 
 	
@@ -98,10 +124,12 @@ SampleListener {
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new BorderLayout(0, 0));
+		contentPane.setLayout(new MigLayout("", "[424px,grow,fill]", "[20px:20.00px][94.00][214px,grow,fill][16px]"));
+		
+		
 		
 		JSplitPane splitPane = new JSplitPane();
-		contentPane.add(splitPane);
+		contentPane.add(splitPane, "cell 0 2,grow");
 		
 		JPanel Workspace_panel = new JPanel();
 		splitPane.setLeftComponent(Workspace_panel);
@@ -111,7 +139,7 @@ SampleListener {
 		
 		model.addElement(sampleList);
 		
-		Workspace_panel.setLayout(new MigLayout("", "[][]", "[235px,grow,fill][]"));
+		Workspace_panel.setLayout(new MigLayout("", "[133.00,grow,fill][142.00,grow,fill]", "[235px,grow,fill][fill]"));
 		
 		JScrollPane scrollPane = new JScrollPane();
 		Workspace_panel.add(scrollPane, "cell 0 0 2 1,grow");
@@ -126,9 +154,11 @@ SampleListener {
 		Data_matrix_list.setVisibleRowCount(10);
 		
 		JButton ADD = new JButton("ADD");
+		ADD.setIcon(new ImageIcon("C:\\Users\\Pavi\\workspace1\\ltrr\\Tellervo-multi\\src\\main\\resources\\Icons\\16x16\\edit_add.png"));
 		Workspace_panel.add(ADD, "cell 0 1");
 		
 		JButton REMOVE = new JButton("REMOVE");
+		REMOVE.setIcon(new ImageIcon("C:\\Users\\Pavi\\workspace1\\ltrr\\Tellervo-multi\\src\\main\\resources\\Icons\\16x16\\cancel.png"));
 		Workspace_panel.add(REMOVE, "cell 1 1");
 		
 		Data_matrix_list.addListSelectionListener(new ListSelectionListener(){
@@ -147,24 +177,117 @@ SampleListener {
 		
 		JPanel Main_panel = new JPanel();
 		splitPane.setRightComponent(Main_panel);
-		Main_panel.setLayout(new MigLayout("", "[grow]", "[grow]"));
+		Main_panel.setLayout(new MigLayout("", "[grow,fill]", "[grow,fill]"));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
 		Main_panel.add(tabbedPane, "cell 0 0,grow");
 		
 		JPanel dataPanel = new JPanel();
-		tabbedPane.addTab("Data", null, dataPanel, null);
+		tabbedPane.addTab("Data", new ImageIcon("C:\\Users\\Pavi\\workspace1\\ltrr\\Tellervo-multi\\src\\main\\resources\\Icons\\16x16\\data.png"), dataPanel, null);
 		dataPanel.setLayout(new BorderLayout(0, 0));
 		dataView = new SeriesDataMatrix(getSample(), this);
-		dataPanel.add(dataView);
+		dataPanel.add(dataView, BorderLayout.CENTER);
 		
 		JPanel Metadata_panel = new JPanel();
-		tabbedPane.addTab("Metadata", null, Metadata_panel, null);
+		tabbedPane.addTab("Metadata", new ImageIcon("C:\\Users\\Pavi\\workspace1\\ltrr\\Tellervo-multi\\src\\main\\resources\\Icons\\16x16\\database.png"), Metadata_panel, null);
+		
+		JMenuBar menuBar = new JMenuBar();
+		contentPane.add(menuBar, "cell 0 0,growx,aligny top");
+		
+		JMenu File = new JMenu("File");
+		menuBar.add(File);
+		
+		JMenu mnEdit = new JMenu("Edit");
+		menuBar.add(mnEdit);
+		
+		JMenu mnAdministration = new JMenu("Administration");
+		menuBar.add(mnAdministration);
+		
+		JMenu mnView = new JMenu("View");
+		menuBar.add(mnView);
+		
+		JMenu mnTools = new JMenu("Tools");
+		menuBar.add(mnTools);
+		
+		JMenu mnGraph = new JMenu("Graph");
+		menuBar.add(mnGraph);
+		
+		JMenu mnHelp = new JMenu("Help");
+		menuBar.add(mnHelp);
 		
 		
 	}
 
 	
+	
+	
+	
+	protected void initbar()
+	{
+		
+		JToolBar toolBar = new JToolBar();
+		
+		
+		// File Buttons
+		Action fileOpenAction = new FileOpenAction(this);
+		AbstractButton fileOpen = new TitlelessButton(fileOpenAction);
+		toolBar.add(fileOpen);
+		
+		Action saveAction = new SaveAction(this);
+		AbstractButton save = new TitlelessButton(saveAction);
+		toolBar.add(save);
+		
+		Action exportAction = new ExportDataAction(IOController.OPEN_EXPORT_WINDOW);
+		AbstractButton fileexport = new TitlelessButton(exportAction);
+		toolBar.add(fileexport);
+		
+		Action printAction = new PrintAction(dataView.getSample());
+		AbstractButton print = new TitlelessButton(printAction);
+		toolBar.add(print);
+		
+		// Edit Buttons
+		Action measureAction = new MeasureToggleAction(this);
+		AbstractButton measure = new TitlelessButton(measureAction);
+		toolBar.add(measure);
+		
+		// Initialize data grid button
+		Action initGridAction = new InitDataGridAction(this, dataView);
+		AbstractButton initGrid = new TitlelessButton(initGridAction);
+		toolBar.add(initGrid);
+
+		// Remarks Button
+		Action remarkAction = new RemarkToggleAction(this);
+		AbstractButton toggleRemarks = new TitlelessButton(remarkAction);
+		toolBar.add(toggleRemarks);
+				
+		// Admin Buttons
+		toolBar.addSeparator();
+		MetadatabaseBrowserAction metadbAction = new MetadatabaseBrowserAction();
+		AbstractButton launchMetadb = new TitlelessButton(metadbAction);
+		toolBar.add(launchMetadb);
+		
+		
+		
+		// s Buttons
+		toolBar.addSeparator();
+		Action truncateAction = new TruncateAction(null, dataView.getSample(), this, null);
+		AbstractButton truncate = new TitlelessButton(truncateAction);
+		toolBar.add(truncate);
+		
+		
+		
+		// Graph Buttons
+		toolBar.addSeparator();
+		Action graphSeriesAction = new GraphSeriesAction(dataView.getSample());
+		AbstractButton graph = new TitlelessButton(graphSeriesAction);
+		toolBar.add(graph);
+		
+		
+
+		contentPane.add(toolBar, "cell 0 1,growx,aligny top");
+				
+		
+	}
 	/**
 	 * Instruct the GUI to stop measuring and hide the measurement panel etc.
 	 */
@@ -290,3 +413,4 @@ SampleListener {
 	}
 
 }
+

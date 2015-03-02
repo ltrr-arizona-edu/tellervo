@@ -12,6 +12,7 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.JFrame;
 
+import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.PrintableDocument;
@@ -34,10 +35,10 @@ public class MeasureToggleAction extends AbstractAction{
 	 * 
 	 * @param frame
 	 */
-	public MeasureToggleAction(Editor editor) {
+	public MeasureToggleAction(AbstractEditor abstractEditor) {
         super(I18n.getText("menus.edit.start_measuring"), Builder.getIcon("measure.png", 22));
                 
-        this.editor = editor;
+        this.editor = abstractEditor;
         putValue(SHORT_DESCRIPTION, "Start/stop measuring");
         putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.edit.start_measuring")); 
         putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.edit.start_measuring"));
