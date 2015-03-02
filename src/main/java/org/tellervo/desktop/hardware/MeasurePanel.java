@@ -133,12 +133,12 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		this.setBackground(bgcolor);	
 		dev = device;
 		
-		setLayout(new MigLayout("hidemode 2,insets 0", "[160px:160px:160px][160px:160px:160px][grow]", "[80px,grow,fill][55.00px:55.00px:55.00px][55.00][]"));
+		setLayout(new MigLayout("hidemode 2,insets 0", "[160px:160px:160px,grow][160px:160px:160px,grow][159.00,grow][]", "[80px,grow,fill][][55.00px:55.00px:55.00px]"));
 				
 		SoundUtil.playSystemSound(SystemSound.MEASURING_PLATFORM_INIT);
 		
 		panelInfo = new JPanel();
-		add(panelInfo, "cell 0 0 3 1,growx,wmin 10");
+		add(panelInfo, "cell 0 0 3 2,growx,wmin 10");
 		panelInfo.setLayout(new MigLayout("", "[30px:30px:30px,center][126.00px,grow,fill]", "[grow]"));
 		
 		lblInfoIcon = new JLabel("");
@@ -164,7 +164,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 				
 				panelLastPosition = new JPanel();
 				panelLastPosition.setBorder(null);
-				add(panelLastPosition, "cell 0 1,grow");
+				add(panelLastPosition, "cell 0 2,grow");
 				panelLastPosition.setBackground(Color.BLACK);
 				panelLastPosition.setLayout(new MigLayout("novisualpadding", "[19px,grow,fill]", "[29.00px,grow,fill][]"));
 				
@@ -185,7 +185,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 				
 				panelLastValue = new JPanel();
 				panelLastValue.setBackground(Color.BLACK);
-				add(panelLastValue, "cell 1 1,grow");
+				add(panelLastValue, "cell 1 2,grow");
 				panelLastValue.setLayout(new MigLayout("", "[19px,grow,fill]", "[24px,grow,fill][]"));
 				
 				txtLastValue = new JLabel();
@@ -207,7 +207,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 				
 				panelCurrentPosition = new JPanel();
 				panelCurrentPosition.setBackground(Color.BLACK);
-				add(panelCurrentPosition, "cell 0 2 2 1,grow");
+				add(panelCurrentPosition, "cell 2 2,grow");
 				panelCurrentPosition.setLayout(new MigLayout("", "[150][150.00px,grow]", "[58.00,grow,fill][]"));
 				
 				txtCurrentPosition = new JLabel();
@@ -225,8 +225,8 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 				lblCurrentPosition.setFont(new Font("Dialog", Font.PLAIN, 8));
 				
 				panelButtons = new JPanel();
-				add(panelButtons, "cell 0 3 2 1,grow");
-				panelButtons.setLayout(new MigLayout("", "[105.00,grow,fill][grow,fill]", "[][][65.00,grow,fill]"));
+				add(panelButtons, "cell 3 0 1 3,grow");
+				panelButtons.setLayout(new MigLayout("", "[105.00,grow,fill][grow,fill]", "[][][grow][65.00,fill]"));
 				
 				btnMouseTrigger = new JToggleButton(I18n.getText("measuring.mousetrigger.enable"));
 				panelButtons.add(btnMouseTrigger, "cell 0 0 2 1,growx");
@@ -239,11 +239,11 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 				
 						
 						btnReset = new JButton("Zero");
-						panelButtons.add(btnReset, "cell 0 2");
+						panelButtons.add(btnReset, "cell 0 3");
 						btnReset.setIcon(Builder.getIcon("zero.png", 22));
 						
 						btnRecord = new JButton("Record");
-						panelButtons.add(btnRecord, "cell 1 2");
+						panelButtons.add(btnRecord, "cell 1 3");
 						btnRecord.setIcon(Builder.getIcon("record.png", 22));
 						btnRecord.addActionListener(new ActionListener() {
 							

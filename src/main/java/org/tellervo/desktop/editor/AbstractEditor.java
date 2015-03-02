@@ -66,17 +66,21 @@ SampleListener {
 
 	private static final long serialVersionUID = 1L;
 	private final static Logger log = LoggerFactory.getLogger(AbstractEditor.class);
-	protected ArrayList<Sample> sampleList;
+	
 	private JPanel contentPane;
 	
 	private EditorMeasurePanel measurePanel = null;
-	protected SeriesDataMatrix dataView; 
+	private SeriesDataMatrix dataView; 
 	private int measuringPanelWidth = 340;
+	protected DefaultListModel model;
+	private JList Data_matrix_list;
+	
 	
 	public AbstractEditor(Sample sample) {
+		
 		// copy data ref
-		this.sampleList = new ArrayList<Sample>();
-		this.sampleList.add(sample);
+		//this.sampleList = new ArrayList<Sample>();
+		//this.sampleList.add(sample);
 
 		init();
 		initbar();
@@ -85,14 +89,14 @@ SampleListener {
 	
 	public AbstractEditor(ArrayList<Sample> samples)
 	{
-		if(samples!=null) 
+		/*if(samples!=null) 
 		{
 			this.sampleList = samples;
 		}
 		else
 		{
 			this.sampleList = new ArrayList<Sample>();
-		}
+		}*/
 		
 		
 		init();
@@ -106,7 +110,7 @@ SampleListener {
 	 */
 	public AbstractEditor() {
 		
-		this.sampleList = new ArrayList<Sample>();
+		//this.sampleList = new ArrayList<Sample>();
 		init();
 		initbar();
 	}
@@ -134,17 +138,17 @@ SampleListener {
 		JPanel Workspace_panel = new JPanel();
 		splitPane.setLeftComponent(Workspace_panel);
 				
-		final DefaultListModel model;
+		
 		model= new DefaultListModel();
 		
-		model.addElement(sampleList);
+		//model.addElement(sampleList);
 		
 		Workspace_panel.setLayout(new MigLayout("", "[133.00,grow,fill][142.00,grow,fill]", "[235px,grow,fill][fill]"));
 		
 		JScrollPane scrollPane = new JScrollPane();
 		Workspace_panel.add(scrollPane, "cell 0 0 2 1,grow");
 		
-		JList Data_matrix_list = new JList(model);
+		Data_matrix_list = new JList(model);
 		scrollPane.setViewportView(Data_matrix_list);
 		Data_matrix_list.setValueIsAdjusting(true);
 		
@@ -164,13 +168,7 @@ SampleListener {
 		Data_matrix_list.addListSelectionListener(new ListSelectionListener(){
 			public void valueChanged(ListSelectionEvent e){
 				itemSelected();
-			}
-
-			public void valueChanged1(ListSelectionEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
+			}		
 			
 		});
 				
@@ -218,6 +216,7 @@ SampleListener {
 		
 	}
 
+
 	
 	
 	
@@ -233,7 +232,7 @@ SampleListener {
 		AbstractButton fileOpen = new TitlelessButton(fileOpenAction);
 		toolBar.add(fileOpen);
 		
-		Action saveAction = new SaveAction(this);
+		/*Action saveAction = new SaveAction(this);
 		AbstractButton save = new TitlelessButton(saveAction);
 		toolBar.add(save);
 		
@@ -256,9 +255,9 @@ SampleListener {
 		toolBar.add(initGrid);
 
 		// Remarks Button
-		Action remarkAction = new RemarkToggleAction(this);
-		AbstractButton toggleRemarks = new TitlelessButton(remarkAction);
-		toolBar.add(toggleRemarks);
+		//Action remarkAction = new RemarkToggleAction(this);
+		//AbstractButton toggleRemarks = new TitlelessButton(remarkAction);
+		//toolBar.add(toggleRemarks);
 				
 		// Admin Buttons
 		toolBar.addSeparator();
@@ -270,9 +269,9 @@ SampleListener {
 		
 		// s Buttons
 		toolBar.addSeparator();
-		Action truncateAction = new TruncateAction(null, dataView.getSample(), this, null);
-		AbstractButton truncate = new TitlelessButton(truncateAction);
-		toolBar.add(truncate);
+		//Action truncateAction = new TruncateAction(null, dataView.getSample(), this, null);
+		//AbstractButton truncate = new TitlelessButton(truncateAction);
+		//toolBar.add(truncate);
 		
 		
 		
@@ -281,8 +280,7 @@ SampleListener {
 		Action graphSeriesAction = new GraphSeriesAction(dataView.getSample());
 		AbstractButton graph = new TitlelessButton(graphSeriesAction);
 		toolBar.add(graph);
-		
-		
+		*/
 
 		contentPane.add(toolBar, "cell 0 1,growx,aligny top");
 				
@@ -371,38 +369,40 @@ SampleListener {
 		}
 		
 	}
+
+	
+	public SeriesDataMatrix getSeriesDataMatrix()
+	{
+		return dataView;
+	}
+
 	
 	/**
 	 * Get the currently selected sample
 	 * 
 	 * @return
 	 */
-	public Sample getSample()
-	{
-				
-		return sampleList.get(0);
+	public Sample getSample() {
+		try {
+			if (model != null && model.size() > 0) {
+				if (Data_matrix_list.getSelectedIndex() != -1) {
+					return (Sample) model.get(Data_matrix_list.getSelectedIndex());
+				}
+				else
+				{
+					return (Sample) model.get(0);
+				}
+
+			}
+		} catch (Exception e) {
+
+		}
+
+		return null;
+
 	}
 	
-	/**
-	 * Whole ring width value measured by serial device
-	 * 
-	 * @param x
-	 * @return
-	 */
-	public Year setCurrentRingValue(int x) {
-		return dataView.measured(x);
-	}
-	
-	/**
-	 * Early/Late wood value measured by serial device
-	 *  
-	 * @param ew
-	 * @param lw
-	 * @return
-	 */
-	public Year setCurrentRingValue(int ew, int lw) {
-		return dataView.measured(ew, lw);
-	}
+
 	
 	
 	public SeriesDataMatrix getDataMatrix()
@@ -412,7 +412,7 @@ SampleListener {
 	
 	public void itemSelected(){
 		
-		log.debug("Sample clicked in list");
+		dataView = new SeriesDataMatrix(getSample(), this);
 		
 	
 	}

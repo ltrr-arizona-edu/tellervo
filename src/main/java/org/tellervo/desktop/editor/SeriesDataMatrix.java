@@ -53,10 +53,13 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
 import org.tellervo.desktop.editor.support.ModifiableTableCellRenderer;
 import org.tellervo.desktop.editor.support.TableCellModifier;
 import org.tellervo.desktop.editor.support.TableCellModifierListener;
 import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
+import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
 import org.tellervo.desktop.manip.RedateDialog;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.prefs.PrefsListener;
@@ -70,6 +73,7 @@ import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.PopupListener;
 import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.NormalTridasUnit;
@@ -109,6 +113,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	private JPanel panelRight;
 	private RemarkPanel remarkPanel;
 	private AbstractEditor e;
+	private EditorMeasurePanel measurePanel;
 	
 	// pass this along to the table
 	@Override
@@ -338,11 +343,14 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 		panelLeft.add(sp);
 		statusBar = new EditorStatusBar(myTable, mySample);
+		
+		//measurePanel = new JPanel();
+		//panelLeft.add(measurePanel, BorderLayout.SOUTH);
 		add(statusBar, BorderLayout.SOUTH);
 		
 		initPrefs();
 		App.prefs.addPrefsListener(this);
-		splitPane.setDividerLocation(2000);
+		splitPane.setDividerLocation(200);
 		splitPane.setResizeWeight(1.0);
 		
 	}
@@ -351,6 +359,85 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	{
 		if(e!=null)	new RedateDialog(mySample, e).setVisible(true);
 	}
+	
+	public void stopMeasuring()
+	{
+		if (measurePanel != null) {
+			
+			// Make sure the size is sensible
+			int currentWidth = (int) getSize().getWidth();
+			int currentHeight = (int) getSize().getHeight();
+			
+			measurePanel.cleanup();
+			remove(measurePanel);
+			
+			//editorEditMenu.setMeasuring(false);
+			enableEditing(true);
+			
+			//setSize(currentWidth-this.measuringPanelWidth, currentHeight);
+			validate();
+			repaint();
+			measurePanel = null;
+			
+		}
+	}
+	
+	public void toggleMeasuring()
+	{
+		// are we already measuring?
+				if(measurePanel != null) {
+					stopMeasuring();
+					return;
+				}
+				
+				// ok, start measuring, if we can!
+				
+				// Set up the measuring device
+				AbstractMeasuringDevice device;
+				try {
+					device = MeasuringDeviceSelector.getSelectedDevice(true);
+					device.setPortParamsFromPrefs();
+				}
+				catch (Exception ioe) {
+					
+					Alert.error(e, I18n.getText("error"), 
+							I18n.getText("error.initExtComms")+".\n"+
+							I18n.getText("error.possWrongComPort"));
+					
+					App.showPreferencesDialog();
+					
+					return;
+				}
+				
+				try{
+					//editorEditMenu.setMeasuring(true);
+				} catch (Exception e)
+				{ 
+				}
+				
+				enableEditing(false);
+			
+				// add the measure panel...
+				measurePanel = new EditorMeasurePanel(e, device);
+				add(measurePanel, BorderLayout.SOUTH);
+				
+				// Make sure the size is sensible
+				/*int currentWidth = (int) getSize().getWidth();
+				int currentHeight = (int) getSize().getHeight();	
+				setSize(currentWidth+this.measuringPanelWidth, currentHeight);*/	
+				
+				validate();
+				repaint();
+				measurePanel.requestDefaultFocus();
+				
+				// Change the variable to EW/LW if in sub-annual mode
+				if(getSample().containsSubAnnualData())
+				{
+					App.prefs.setPref(PrefKey.MEASUREMENT_VARIABLE, MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH.toString());
+					getSample().fireMeasurementVariableChanged();
+				}
+	}
+	
 	
 	protected JPopupMenu createPopupMenu(int row, int col) {
 		
@@ -951,6 +1038,28 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 		
 	}
+	
+	/**
+	 * Whole ring width value measured by serial device
+	 * 
+	 * @param x
+	 * @return
+	 */
+	public Year setCurrentRingValue(int x) {
+		return measured(x);
+	}
+	
+	/**
+	 * Early/Late wood value measured by serial device
+	 *  
+	 * @param ew
+	 * @param lw
+	 * @return
+	 */
+	public Year setCurrentRingValue(int ew, int lw) {
+		return measured(ew, lw);
+	}
+	
 	
 	@Override
 	public void measurementVariableChanged(SampleEvent e) {

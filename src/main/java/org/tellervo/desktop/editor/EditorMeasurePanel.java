@@ -28,7 +28,7 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 	private Integer cachedValue= null;
 	
 	@SuppressWarnings("serial")
-	public EditorMeasurePanel(AbstractEditor myeditor, final AbstractMeasuringDevice device) {
+	public EditorMeasurePanel(final AbstractEditor myeditor, final AbstractMeasuringDevice device) {
 		super(device, myeditor);
 		editor = myeditor;
 		
@@ -36,7 +36,7 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 	
 		btnQuit.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
-				editor.stopMeasuring();
+				myeditor.getSeriesDataMatrix().stopMeasuring();
 			}
 		});	
 	}
@@ -65,14 +65,14 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 			}
 			else
 			{
-				y = editor.setCurrentRingValue(cachedValue, value.intValue());
+				y = editor.getSeriesDataMatrix().measured(cachedValue, value.intValue());
 				cachedValue = null;
 				setMessageText(I18n.getText("editor.measuring.earlywood"));
 			}
 		}
 		else
 		{
-			y = editor.setCurrentRingValue(value.intValue());
+			y = editor.getSeriesDataMatrix().measured(value.intValue());
 		}
 		
 		if(y.column() == 0) 
