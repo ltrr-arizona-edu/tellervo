@@ -16,12 +16,13 @@ public class GraphSeriesAction extends AbstractAction{
 
 	
 	public GraphSeriesAction(Sample sample) {
-        super(I18n.getText("menus.graph.activeSeries"), Builder.getIcon("graph.png", 22));
+       // super(I18n.getText("menus.graph.activeSeries"), Builder.getIcon("graph.png", 22));
+        super("&Graph active series [accel G]", Builder.getIcon("graph.png", 22));
         putValue(SHORT_DESCRIPTION, "Graph the current series");
 
         this.sample = sample;
-        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.graph.activeSeries")); 
-        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.graph.activeSeries"));
+        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.graph.activeSeries")); 
+        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.graph.activeSeries"));
     }
 	
 	@Override

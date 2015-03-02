@@ -24,7 +24,6 @@ import javax.swing.JList;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
 
-import org.fhaes.util.Builder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Year;
@@ -50,6 +49,7 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.ui.Alert;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 
 import javax.swing.ImageIcon;
@@ -153,12 +153,12 @@ SampleListener {
 		Data_matrix_list.setLayoutOrientation(JList.VERTICAL);
 		Data_matrix_list.setVisibleRowCount(10);
 		
-		JButton ADD = new JButton("ADD");
-		ADD.setIcon(new ImageIcon("C:\\Users\\Pavi\\workspace1\\ltrr\\Tellervo-multi\\src\\main\\resources\\Icons\\16x16\\edit_add.png"));
+		JButton ADD = new JButton();
+		ADD.setIcon(Builder.getIcon("edit_add.png", 16));
 		Workspace_panel.add(ADD, "cell 0 1");
 		
-		JButton REMOVE = new JButton("REMOVE");
-		REMOVE.setIcon(new ImageIcon("C:\\Users\\Pavi\\workspace1\\ltrr\\Tellervo-multi\\src\\main\\resources\\Icons\\16x16\\cancel.png"));
+		JButton REMOVE = new JButton();
+		REMOVE.setIcon(Builder.getIcon("edit_cancel.png", 16));
 		Workspace_panel.add(REMOVE, "cell 1 1");
 		
 		Data_matrix_list.addListSelectionListener(new ListSelectionListener(){
@@ -183,13 +183,13 @@ SampleListener {
 		Main_panel.add(tabbedPane, "cell 0 0,grow");
 		
 		JPanel dataPanel = new JPanel();
-		tabbedPane.addTab("Data", new ImageIcon("C:\\Users\\Pavi\\workspace1\\ltrr\\Tellervo-multi\\src\\main\\resources\\Icons\\16x16\\data.png"), dataPanel, null);
+		tabbedPane.addTab("Data", Builder.getIcon("edit_data.png", 16), dataPanel, null);
 		dataPanel.setLayout(new BorderLayout(0, 0));
 		dataView = new SeriesDataMatrix(getSample(), this);
 		dataPanel.add(dataView, BorderLayout.CENTER);
 		
 		JPanel Metadata_panel = new JPanel();
-		tabbedPane.addTab("Metadata", new ImageIcon("C:\\Users\\Pavi\\workspace1\\ltrr\\Tellervo-multi\\src\\main\\resources\\Icons\\16x16\\database.png"), Metadata_panel, null);
+		tabbedPane.addTab("Metadata", Builder.getIcon("edit_database.png", 16), Metadata_panel, null);
 		
 		JMenuBar menuBar = new JMenuBar();
 		contentPane.add(menuBar, "cell 0 0,growx,aligny top");
@@ -404,6 +404,11 @@ SampleListener {
 		return dataView.measured(ew, lw);
 	}
 	
+	
+	public SeriesDataMatrix getDataMatrix()
+	{
+		return this.dataView;
+	}
 	
 	public void itemSelected(){
 		

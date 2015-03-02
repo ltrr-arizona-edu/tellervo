@@ -28,7 +28,7 @@ import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 public class MeasureToggleAction extends AbstractAction{
 
 	private static final long serialVersionUID = 1L;
-	private final Editor editor;
+	private final AbstractEditor editor;
 	
 	/**
 	 * Constructor for menus
@@ -36,12 +36,13 @@ public class MeasureToggleAction extends AbstractAction{
 	 * @param frame
 	 */
 	public MeasureToggleAction(AbstractEditor abstractEditor) {
-        super(I18n.getText("menus.edit.start_measuring"), Builder.getIcon("measure.png", 22));
+       // super(I18n.getText("menus.edit.start_measuring"), Builder.getIcon("measure.png", 22));
+        super("Start measuring [F5]", Builder.getIcon("measure.png", 22));
                 
         this.editor = abstractEditor;
         putValue(SHORT_DESCRIPTION, "Start/stop measuring");
-        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.edit.start_measuring")); 
-        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.edit.start_measuring"));
+        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.edit.start_measuring")); 
+        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.edit.start_measuring"));
   
     }
 	

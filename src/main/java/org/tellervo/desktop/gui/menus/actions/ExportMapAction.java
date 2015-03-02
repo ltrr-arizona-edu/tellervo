@@ -40,10 +40,10 @@ public class ExportMapAction extends ScreenShotAction{
 		
         putValue(Action.SMALL_ICON, Builder.getIcon("captureimage.png", 22));
         putValue(Action.LARGE_ICON_KEY, Builder.getIcon("captureimage.png", 22));
-        putValue(Action.NAME, I18n.getText("menus.file.import"));
+        //putValue(Action.NAME, I18n.getText("menus.file.import"));
         putValue(SHORT_DESCRIPTION, "Export map as image");
-        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.import")); 
-        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.import"));
+        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.import")); 
+        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.import"));
   
     }
 	

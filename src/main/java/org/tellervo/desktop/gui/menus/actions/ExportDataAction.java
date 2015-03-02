@@ -26,11 +26,13 @@ public class ExportDataAction extends AbstractAction{
 	 * @param frame
 	 */
 	public ExportDataAction(String argMVCKey) {
-        super(I18n.getText("menus.file.export"), Builder.getIcon("fileexport.png", 22));
+       // super(I18n.getText("menus.file.export"), Builder.getIcon("fileexport.png", 22));
+        super("Export data and metadata...", Builder.getIcon("fileexport.png", 22));
+        
         this.argMVCKey=argMVCKey;
         putValue(SHORT_DESCRIPTION, "Export data");
-        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.export")); 
-        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.export"));
+        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.export")); 
+        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.export"));
     }
 	
 	/**

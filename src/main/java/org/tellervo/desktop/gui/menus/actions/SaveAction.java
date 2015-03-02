@@ -24,11 +24,12 @@ public class SaveAction extends AbstractAction{
 	 * @param frame
 	 */
 	public SaveAction(JFrame frame) {
-        super(I18n.getText("menus.file.save"), Builder.getIcon("filesave.png", 22));
+        //super(I18n.getText("menus.file.save"), Builder.getIcon("filesave.png", 22));
+        super("&Save [accel S]", Builder.getIcon("filesave.png", 22));
         f=frame;
         putValue(SHORT_DESCRIPTION, "Save the current document");
-        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.save")); 
-        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.save"));
+        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.save")); 
+        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.save"));
     }
 	
 	public SaveAction(JFrame frame, Boolean b) {

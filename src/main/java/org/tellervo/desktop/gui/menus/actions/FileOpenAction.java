@@ -24,10 +24,11 @@ public class FileOpenAction extends AbstractAction{
 	private Window parent;
 	
 	public FileOpenAction(Window parent) {
-        super(I18n.getText("menus.file.open"), Builder.getIcon("fileopen.png", 22));
-        putValue(SHORT_DESCRIPTION, "Open a series");
-        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.open")); 
-        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.open"));
+        //super(I18n.getText("menus.file.open"), Builder.getIcon("fileopen.png", 22));
+        super("Open", Builder.getIcon("fileopen.png", 22));
+		putValue(SHORT_DESCRIPTION, "Open a series");
+        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.open")); 
+        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.open"));
         this.parent = parent;
 
     }

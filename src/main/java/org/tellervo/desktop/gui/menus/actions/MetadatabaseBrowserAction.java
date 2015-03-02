@@ -27,10 +27,11 @@ public class MetadatabaseBrowserAction extends AbstractAction{
 	 * @param frame
 	 */
 	public MetadatabaseBrowserAction() {
-        super(I18n.getText("menus.admin.metadatabrowser"), Builder.getIcon("database.png", 22));
+        //super(I18n.getText("menus.admin.metadatabrowser"), Builder.getIcon("database.png", 22));
+        super("&Metadata browser [accel M]", Builder.getIcon("database.png", 22));
         putValue(SHORT_DESCRIPTION, "Browse metadatabase");
-        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.admin.metadatabrowser")); 
-        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.admin.metadatabrowser"));
+        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.admin.metadatabrowser")); 
+        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.admin.metadatabrowser"));
 
     }
 			

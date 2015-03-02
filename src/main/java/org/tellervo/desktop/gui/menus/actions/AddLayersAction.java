@@ -28,11 +28,12 @@ public class AddLayersAction extends AbstractAction{
 	 * @param frame
 	 */
 	public AddLayersAction(GISFrame parent) {
-        super(I18n.getText("menus.view.addlayers"), Builder.getIcon("addlayers.png", 22));
+        //super(I18n.getText("menus.view.addlayers"), Builder.getIcon("addlayers.png", 22));
+        super("Add data layers", Builder.getIcon("addlayers.png", 22));
         this.parent=parent;
         putValue(SHORT_DESCRIPTION, "Add new data layer");
-        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.view.addlayers")); 
-        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.view.addlayers"));
+        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.view.addlayers")); 
+        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.view.addlayers"));
     }
 	
 	

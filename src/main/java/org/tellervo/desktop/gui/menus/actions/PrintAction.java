@@ -33,12 +33,13 @@ public class PrintAction extends AbstractAction{
 	 * @param frame
 	 */
 	public PrintAction(Sample sample) {
-        super(I18n.getText("menus.file.print"), Builder.getIcon("printer.png", 22));
+        //super(I18n.getText("menus.file.print"), Builder.getIcon("printer.png", 22));
+        super("&Print [accel p]", Builder.getIcon("printer.png", 22));
         this.sample=sample;
         
         putValue(SHORT_DESCRIPTION, "Print this document");
-        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.print")); 
-        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.print"));
+        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.print")); 
+        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.print"));
   
     }
 	

@@ -22,14 +22,15 @@ public class InitDataGridAction extends AbstractAction{
 	 * @param frame
 	 */
 	public InitDataGridAction(Window parent, SeriesDataMatrix dataView) {
-        super(I18n.getText("menus.edit.populateditor"), Builder.getIcon("inittable.png", 22));
+        //super(I18n.getText("menus.edit.populateditor"), Builder.getIcon("inittable.png", 22));
+        super("Initialize data grid", Builder.getIcon("inittable.png", 22));
         
         this.parent = parent;
         this.dataView = dataView;
         
-        putValue(SHORT_DESCRIPTION, I18n.getText("menus.edit.populateditor"));
-        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.edit.populateditor")); 
-        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.edit.populateditor"));
+        //putValue(SHORT_DESCRIPTION, I18n.getText("menus.edit.populateditor"));
+        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.edit.populateditor")); 
+        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.edit.populateditor"));
 
     }
 			
