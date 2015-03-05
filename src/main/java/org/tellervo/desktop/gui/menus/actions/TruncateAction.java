@@ -13,20 +13,19 @@ import org.tellervo.desktop.ui.Builder;
 public class TruncateAction extends AbstractAction{
 
 	private static final long serialVersionUID = 1L;
-	private final Sample sample;
+
 	private final AbstractEditor editor;
 	
-	public TruncateAction(String text, Sample sample, AbstractEditor editor, Integer mnemonic) {
+	public TruncateAction(String text, AbstractEditor editor, Integer mnemonic) {
         super(text, Builder.getIcon("truncate.png", 22));
         putValue(SHORT_DESCRIPTION, "Truncate the current series");
         putValue(MNEMONIC_KEY, mnemonic);
-        this.sample = sample;
         this.editor = editor;
     }
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		new TruncateDialog(sample, editor);
+		new TruncateDialog(editor.getSample(), editor);
 		
 	}
 	

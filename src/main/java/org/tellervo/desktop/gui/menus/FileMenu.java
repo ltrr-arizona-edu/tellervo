@@ -632,7 +632,7 @@ public class FileMenu extends JMenu {
 
 	public void addPrintMenu() {
 		// menuitem
-		PrintAction printAction = new PrintAction(new Sample());
+		PrintAction printAction = new PrintAction(null);
 		JMenuItem print = new JMenuItem(printAction);
 		print.setEnabled(false);
 		add(print);

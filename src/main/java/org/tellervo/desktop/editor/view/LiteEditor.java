@@ -12,16 +12,19 @@ public class LiteEditor extends AbstractEditor {
 	public LiteEditor()
 	{
 		super();
+		this.setVisible(true);
 	}
 	
 	public LiteEditor(Sample sample)
 	{
 		super(sample);
+		this.setVisible(true);
 	}
 	
 	public LiteEditor(ArrayList<Sample> samples)
 	{
 		super(samples);
+		this.setVisible(true);
 	}
 	
 	
@@ -113,6 +116,14 @@ public class LiteEditor extends AbstractEditor {
 	public void measurementVariableChanged(SampleEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	@Override
+	public void itemSelected() {
+
+		super.itemSelected();
+		
+		this.getDataMatrix().hideRemarksPanel();
 	}
 
 	

@@ -11,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.editor.PickSampleDialog;
+import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.view.LiteEditor;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.sample.Sample;
@@ -182,30 +184,6 @@ public class ImportDataOnly extends Object {
 			
 		}
 		
-
-		Integer count = sampleList.size();
-		
-		if(count>1)
-		{
-			PickSampleDialog psd = new PickSampleDialog(parent, sampleList);
-			
-			if(psd.isCancelled())
-			{
-				sampleList = null;
-				return;
-			}
-			else if(psd.isOpeningAll())
-			{
-				// No need to do anything
-			}
-			else
-			{
-				sampleList.clear();
-				sampleList.add(psd.getSelectedSample());
-			}
-
-			
-		}
 		
 		Boolean unitsSet = false;
 		for(ITridasSeries ser : getSeries())
@@ -323,11 +301,15 @@ public class ImportDataOnly extends Object {
 		if(sampleList==null || sampleList.size()==0) return;
 		
 		
-		for(Sample sample : sampleList)
+		if(useEditorLite)
 		{
-			
-			EditorFactory.createEditorForSample(parent, sample,  unitsIfNotSpecified, useEditorLite);
+			LiteEditor le = new LiteEditor(sampleList);
 		}
+		else 
+		{
+			FullEditor fe = new FullEditor(sampleList);
+		}
+		
 				
 	}
 }

@@ -1,44 +1,36 @@
 package org.tellervo.desktop.editor;
 
 import java.awt.BorderLayout;
-import java.awt.EventQueue;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import java.util.List;
 
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JToolBar;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.miginfocom.swing.MigLayout;
 
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JList;
-import javax.swing.JTabbedPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
-import org.tellervo.desktop.graph.Graph;
-import org.tellervo.desktop.graph.GraphInfo;
-import org.tellervo.desktop.graph.GrapherPanel;
 import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.menus.actions.ExportDataAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
-import org.tellervo.desktop.gui.menus.actions.InitDataGridAction;
 import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
 import org.tellervo.desktop.gui.menus.actions.PrintAction;
@@ -49,22 +41,13 @@ import org.tellervo.desktop.gui.widgets.TitlelessButton;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
 import org.tellervo.desktop.io.control.IOController;
-import org.tellervo.desktop.prefs.PrefsListener;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.prefs.PrefsListener;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-
-import javax.swing.ImageIcon;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JMenu;
-import javax.swing.JToolBar;
-import javax.swing.JPopupMenu;
-
-import java.awt.Button;
 
 public abstract class AbstractEditor extends JFrame implements SaveableDocument, PrefsListener,
 SampleListener {
@@ -77,21 +60,16 @@ SampleListener {
 	private EditorMeasurePanel measurePanel = null;
 	private SeriesDataMatrix dataView; 
 	private int measuringPanelWidth = 340;
-	protected DefaultListModel model;
-	private JList Data_matrix_list;
+	protected DefaultListModel<Sample> samplesModel;
+	private JList<Sample> lstSamples;
 	private JPanel dataPanel;
 	
 
 	public AbstractEditor(Sample sample) {
-		
-		// copy data ref
-		//this.sampleList = new ArrayList<Sample>();
-		//this.sampleList.add(sample);
-
-		
+				
 		init();
-		//initbar();
-		model.addElement(sample);
+		initbar();
+		samplesModel.addElement(sample);
 		itemSelected();
 
 	}
@@ -100,76 +78,75 @@ SampleListener {
 	{
 			
 		init();
-		//initbar();
-		model.addElement(samples);
+		initbar();
+				
+		for(Sample sample: samples)
+		{
+			samplesModel.addElement(sample);
+		}
 		itemSelected();
 	}
 	
-
-	/**
-	 * Create the frame.
-	 */
 	public AbstractEditor() {
-		
-		//this.sampleList = new ArrayList<Sample>();
-		
+				
 		init();
 		initbar();
 	}
 
-
-	
 	
 	/**
 	 * Initalise the GUI
 	 */
 	protected void init()
 	{
+		if(!App.isInitialized()) App.init();
+		
+		setTitle("Tellervo Editor");
 		
 		this.setIconImage(Builder.getApplicationIcon());
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 450, 300);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 851, 540);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
-		contentPane.setLayout(new MigLayout("", "[424px,grow,fill]", "[20px:20.00px][94.00,grow][214px,grow,fill][16px]"));
-		
-		
-		
+		contentPane.setLayout(new MigLayout("", "[424px,grow,fill]", "[20px:20.00px][32px:32.00px:32px][214px,grow,fill]"));
+
 		JSplitPane splitPane = new JSplitPane();
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setResizeWeight(0.0);
 		contentPane.add(splitPane, "cell 0 2,grow");
 		
-		JPanel Workspace_panel = new JPanel();
-		splitPane.setLeftComponent(Workspace_panel);
+		JPanel workspacePanel = new JPanel();
+		splitPane.setLeftComponent(workspacePanel);
 				
 		
-		model= new DefaultListModel();
+		samplesModel= new DefaultListModel<Sample>();
 		
 		//model.addElement(sampleList);
 		
-		Workspace_panel.setLayout(new MigLayout("", "[133.00,grow,fill][142.00,grow,leading]", "[235px,grow,baseline][fill]"));
+		workspacePanel.setLayout(new MigLayout("", "[133.00,grow,fill][142.00,grow,leading]", "[235px,grow,baseline][fill]"));
 		
 		JScrollPane scrollPane = new JScrollPane();
-		Workspace_panel.add(scrollPane, "cell 0 0 2 1,grow");
+		workspacePanel.add(scrollPane, "cell 0 0 2 1,grow");
 		
-		Data_matrix_list = new JList(model);
-		scrollPane.setViewportView(Data_matrix_list);
-		Data_matrix_list.setValueIsAdjusting(true);
+		lstSamples = new JList<Sample>(samplesModel);
+		scrollPane.setViewportView(lstSamples);
+		lstSamples.setValueIsAdjusting(true);
 		
 		
-		Data_matrix_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		Data_matrix_list.setLayoutOrientation(JList.VERTICAL);
-		Data_matrix_list.setVisibleRowCount(10);
+		lstSamples.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		lstSamples.setLayoutOrientation(JList.VERTICAL);
+		lstSamples.setVisibleRowCount(10);
 		
-		JButton ADD = new JButton();
-		ADD.setIcon(Builder.getIcon("edit_add.png", 16));
-		Workspace_panel.add(ADD, "cell 0 1");
+		JButton btnAdd = new JButton();
+		btnAdd.setIcon(Builder.getIcon("edit_add.png", 16));
+		workspacePanel.add(btnAdd, "cell 0 1");
 		
-		JButton REMOVE = new JButton();
-		REMOVE.setIcon(Builder.getIcon("cancel.png", 16));
-		Workspace_panel.add(REMOVE, "cell 1 1,growx");
+		JButton btnRemove = new JButton();
+		btnRemove.setIcon(Builder.getIcon("cancel.png", 16));
+		workspacePanel.add(btnRemove, "cell 1 1,growx");
 		
-		Data_matrix_list.addListSelectionListener(new ListSelectionListener(){
+		lstSamples.addListSelectionListener(new ListSelectionListener(){
 			public void valueChanged(ListSelectionEvent e){
 				itemSelected();
 			}		
@@ -177,21 +154,30 @@ SampleListener {
 		});
 				
 		
-		JPanel Main_panel = new JPanel();
-		splitPane.setRightComponent(Main_panel);
-		Main_panel.setLayout(new MigLayout("", "[grow,fill]", "[grow,fill]"));
+		JPanel panelMain = new JPanel();
+		splitPane.setRightComponent(panelMain);
+		panelMain.setLayout(new MigLayout("", "[grow,fill]", "[grow,fill]"));
 		
 		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
-		Main_panel.add(tabbedPane, "cell 0 0,grow");
+		panelMain.add(tabbedPane, "cell 0 0,grow");
 		
 		dataPanel = new JPanel();
 		tabbedPane.addTab("Data", Builder.getIcon("data.png", 16), dataPanel, null);
 		dataPanel.setLayout(new BorderLayout(0, 0));
 		
 		
-		JPanel Metadata_panel = new JPanel();
-		tabbedPane.addTab("Metadata", Builder.getIcon("database.png", 16), Metadata_panel, null);
+		JPanel metadataPanel = new JPanel();
+		tabbedPane.addTab("Metadata", Builder.getIcon("database.png", 16), metadataPanel, null);
 		
+		initMenu();
+		
+		
+	}
+
+
+	
+	protected void initMenu()
+	{
 		JMenuBar menuBar = new JMenuBar();
 		contentPane.add(menuBar, "cell 0 0,growx,aligny top");
 		
@@ -216,13 +202,7 @@ SampleListener {
 		JMenu mnHelp = new JMenu("Help");
 		menuBar.add(mnHelp);
 		
-		
-		
 	}
-
-
-	
-	
 	
 	
 	protected void initbar()
@@ -244,7 +224,7 @@ SampleListener {
 		AbstractButton fileexport = new TitlelessButton(exportAction);
 		toolBar.add(fileexport);
 		
-		Action printAction = new PrintAction(dataView.getSample());
+		Action printAction = new PrintAction(this);
 		AbstractButton print = new TitlelessButton(printAction);
 		toolBar.add(print);
 		
@@ -273,7 +253,7 @@ SampleListener {
 		
 		// s Buttons
 		toolBar.addSeparator();
-		Action truncateAction = new TruncateAction(null, dataView.getSample(), this, null);
+		Action truncateAction = new TruncateAction(null, this, null);
 		AbstractButton truncate = new TitlelessButton(truncateAction);
 		toolBar.add(truncate);
 		
@@ -281,7 +261,7 @@ SampleListener {
 		
 		// Graph Buttons
 		toolBar.addSeparator();
-		Action graphSeriesAction = new GraphSeriesAction(dataView.getSample());
+		Action graphSeriesAction = new GraphSeriesAction(this);
 		AbstractButton graph = new TitlelessButton(graphSeriesAction);
 		toolBar.add(graph);
 		
@@ -388,13 +368,13 @@ SampleListener {
 	 */
 	public Sample getSample() {
 		try {
-			if (model != null && model.size() > 0) {
-				if (Data_matrix_list.getSelectedIndex() != -1) {
-					return (Sample) model.get(Data_matrix_list.getSelectedIndex());
+			if (samplesModel != null && samplesModel.size() > 0) {
+				if (lstSamples.getSelectedIndex() != -1) {
+					return (Sample) samplesModel.get(lstSamples.getSelectedIndex());
 				}
 				else
 				{
-					return (Sample) model.get(0);
+					return (Sample) samplesModel.get(0);
 				}
 
 			}
@@ -417,15 +397,24 @@ SampleListener {
 	public void itemSelected() {
 
 		log.debug("Item selected");
-		if (getSample() != null) {
-			dataView = new SeriesDataMatrix(getSample(), this);
+		Sample sample = getSample();
+		if (sample != null) {
+			
+			if(dataView!=null) 
+			{
+				dataView.saveRemarksDividerLocation();			
+			}
+			
+			dataView = new SeriesDataMatrix(sample, this);
 			dataPanel.removeAll();
 			dataPanel.add(dataView, BorderLayout.CENTER);
+			dataPanel.repaint();
+			this.repaint();
+			dataView.restoreRemarksDividerLocation();
 
-	
-			
 		}
 	}
+
 
 
 

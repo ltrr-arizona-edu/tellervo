@@ -350,7 +350,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 		initPrefs();
 		App.prefs.addPrefsListener(this);
-		splitPane.setDividerLocation(200);
+		splitPane.setDividerLocation(0.8d);
 		splitPane.setResizeWeight(1.0);
 		
 	}
@@ -1009,7 +1009,9 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 	}
 
-
+	/**
+	 * Open or close the remarks panel according to its current state
+	 */
 	public void toggleRemarks()
 	{
 		log.debug("toggling Remarks panel");
@@ -1031,13 +1033,40 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		else
 		{
 			log.debug("Panel appears to be open so shut");
-			splitPane.setDividerLocation(1.0);
+			hideRemarksPanel();
 		}
-		
-
-		
-		
 	}
+	
+	
+	public void saveRemarksDividerLocation()
+	{
+		App.prefs.setIntPref(PrefKey.EDITOR_REMARKS_DIVIDER_LOCAITON, splitPane.getDividerLocation());
+	}
+	
+	public void restoreRemarksDividerLocation()
+	{
+		int newloc = App.prefs.getIntPref(PrefKey.EDITOR_REMARKS_DIVIDER_LOCAITON, 999999);
+		if(newloc!=999999)
+		{
+			splitPane.setDividerLocation(newloc);
+		}
+		else
+		{
+			splitPane.setDividerLocation(0.8d);
+		}
+	}
+	
+	
+	/**
+	 * Make sure the remarks panel is collapsed
+	 */
+	public void hideRemarksPanel()
+	{
+		splitPane.setDividerLocation(1.0);
+	}
+	
+	
+	
 	
 	/**
 	 * Whole ring width value measured by serial device

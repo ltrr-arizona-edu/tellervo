@@ -99,6 +99,9 @@ public class Prefs extends AbstractSubsystem {
 	 */
 	public enum PrefKey{
 		
+		
+		EDITOR_REMARKS_DIVIDER_LOCAITON("tellervo.editor.remarks.dividerloc"),
+		
 		LOCALE_LANGUAGE_CODE("tellervo.locale.language"),
 		LOCALE_COUNTRY_CODE("tellervo.locale.country"),
 		
