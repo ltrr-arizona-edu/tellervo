@@ -53,16 +53,17 @@ public abstract class AbstractEditor extends JFrame implements SaveableDocument,
 SampleListener {
 
 	private static final long serialVersionUID = 1L;
-	private final static Logger log = LoggerFactory.getLogger(AbstractEditor.class);
+	protected final static Logger log = LoggerFactory.getLogger(AbstractEditor.class);
 	
 	private JPanel contentPane;
 	
 	private EditorMeasurePanel measurePanel = null;
-	private SeriesDataMatrix dataView; 
+	protected SeriesDataMatrix dataView; 
 	private int measuringPanelWidth = 340;
 	protected DefaultListModel<Sample> samplesModel;
 	private JList<Sample> lstSamples;
-	private JPanel dataPanel;
+	protected JPanel dataPanel;
+	protected JTabbedPane tabbedPane;
 	
 
 	public AbstractEditor(Sample sample) {
@@ -158,16 +159,12 @@ SampleListener {
 		splitPane.setRightComponent(panelMain);
 		panelMain.setLayout(new MigLayout("", "[grow,fill]", "[grow,fill]"));
 		
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
+		tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
 		panelMain.add(tabbedPane, "cell 0 0,grow");
 		
 		dataPanel = new JPanel();
 		tabbedPane.addTab("Data", Builder.getIcon("data.png", 16), dataPanel, null);
 		dataPanel.setLayout(new BorderLayout(0, 0));
-		
-		
-		JPanel metadataPanel = new JPanel();
-		tabbedPane.addTab("Metadata", Builder.getIcon("database.png", 16), metadataPanel, null);
 		
 		initMenu();
 		
@@ -394,26 +391,7 @@ SampleListener {
 	/**
 	 * A sample was selected from the list
 	 */
-	public void itemSelected() {
-
-		log.debug("Item selected");
-		Sample sample = getSample();
-		if (sample != null) {
-			
-			if(dataView!=null) 
-			{
-				dataView.saveRemarksDividerLocation();			
-			}
-			
-			dataView = new SeriesDataMatrix(sample, this);
-			dataPanel.removeAll();
-			dataPanel.add(dataView, BorderLayout.CENTER);
-			dataPanel.repaint();
-			this.repaint();
-			dataView.restoreRemarksDividerLocation();
-
-		}
-	}
+	public abstract void itemSelected();
 
 
 

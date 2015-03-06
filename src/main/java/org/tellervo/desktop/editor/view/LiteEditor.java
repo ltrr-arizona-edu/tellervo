@@ -1,31 +1,58 @@
 package org.tellervo.desktop.editor.view;
 
+import java.awt.BorderLayout;
 import java.io.File;
 import java.util.ArrayList;
 
+import javax.swing.JPanel;
+
 import org.tellervo.desktop.editor.AbstractEditor;
+import org.tellervo.desktop.editor.AbstractMetadataPanel;
+import org.tellervo.desktop.editor.BasicMetadataPanel;
+import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleEvent;
+import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel;
+import org.tellervo.desktop.ui.Builder;
 
 public class LiteEditor extends AbstractEditor {
+	
+	JPanel metadataHolder;
+	
 
 	public LiteEditor()
 	{
 		super();
 		this.setVisible(true);
+		initLiteEditor();
 	}
 	
 	public LiteEditor(Sample sample)
 	{
 		super(sample);
 		this.setVisible(true);
+		initLiteEditor();
+
 	}
 	
 	public LiteEditor(ArrayList<Sample> samples)
 	{
 		super(samples);
 		this.setVisible(true);
+		initLiteEditor();
+
+	}
+	
+	public void initLiteEditor()
+	{
+		metadataHolder = new JPanel();
+		metadataHolder.setLayout(new BorderLayout());
+		tabbedPane.addTab("Metadata", Builder.getIcon("database.png", 16), metadataHolder, null);
+
+		
+		itemSelected();
+		
 	}
 	
 	public LiteEditor(File file)
@@ -124,13 +151,41 @@ public class LiteEditor extends AbstractEditor {
 		
 	}
 	
+	
 	@Override
 	public void itemSelected() {
+	
+			log.debug("Item selected");
+			Sample sample = getSample();
+			if (sample != null) {
+				
+				if(dataView!=null) 
+				{
+					dataView.saveRemarksDividerLocation();			
+				}
+				
+				dataView = new SeriesDataMatrix(sample, this);
+				dataPanel.removeAll();
+				dataPanel.add(dataView, BorderLayout.CENTER);
+				dataPanel.repaint();
+				this.repaint();
+				dataView.restoreRemarksDividerLocation();
+				
+				try{
+					this.metadataHolder.removeAll();
+					BasicMetadataPanel metadata = new BasicMetadataPanel();
+					((BasicMetadataPanel) metadata).populateFromSample(sample);
+					this.metadataHolder.add(metadata, BorderLayout.CENTER);
+				} catch (Exception e)
+				{
+					
+				}
 
-		super.itemSelected();
-		
-		this.getSeriesDataMatrix().hideRemarksPanel();
+				
+				
+			}
+	
 	}
-
+	
 	
 }
