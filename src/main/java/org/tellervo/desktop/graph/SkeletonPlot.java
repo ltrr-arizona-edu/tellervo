@@ -122,7 +122,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 	protected Rectangle tempRect = new Rectangle();
 
 	// returns the maximum size, in pixels, that the graph will take up.
-	public int getYRange(GraphInfo gInfo, Graph g) {
+	public int getYRange(GraphSettings gInfo, Graph g) {
 		float unitScale = gInfo.getHundredUnitHeight() / 100.0f; // the size of 1 "unit" in pixels.
 		int miny = 0; // minimum always starts at zero...
 		int maxy = Integer.MIN_VALUE;
@@ -142,7 +142,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		return maxy - miny;
 	}
 	
-	public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
+	public void draw(GraphSettings gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
 		// cache yearsize, we use this a lot
 		int yearWidth = gInfo.getYearWidth(); // the size of a year, in pixels
 		float unitScale = gInfo.getHundredUnitHeight() / 100.0f; // the size of 1 "unit" in pixels.
@@ -357,7 +357,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 	// if it's within this many pixels, it's considered a hit (see "correct?" comment)
 	private final static int NEAR = 5;
 
-	public boolean contact(GraphInfo gInfo, Graph g, Point p, int bottom) {
+	public boolean contact(GraphSettings gInfo, Graph g, Point p, int bottom) {
 		// snap to year
 		int yearWidth = gInfo.getYearWidth();
 		int firstYearIdx = (p.x / yearWidth) - 1;
@@ -475,7 +475,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 	}
 	
 	
-	private final List<Point2D> getPointsFrom(GraphInfo gInfo, Graph g, Year startYear, int nYears, int bottom) {
+	private final List<Point2D> getPointsFrom(GraphSettings gInfo, Graph g, Year startYear, int nYears, int bottom) {
 
 		// make a list of points
 		// this is ok, because we know points are continuous
@@ -511,7 +511,7 @@ public class SkeletonPlot implements TellervoGraphPlotter {
 		return points;
 	}
 
-	protected final int getPosition(GraphInfo gInfo, Graph g, Year y, int bottom) {
+	protected final int getPosition(GraphSettings gInfo, Graph g, Year y, int bottom) {
 		return getYValue(g, gInfo.getHundredUnitHeight() / 100.0f, getDataValue(g, y), bottom);
 	}
 

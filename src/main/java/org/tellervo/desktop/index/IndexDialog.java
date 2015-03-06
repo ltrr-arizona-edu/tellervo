@@ -54,11 +54,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.editor.Editor;
-import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.graph.Graph;
 import org.tellervo.desktop.graph.GraphActions;
 import org.tellervo.desktop.graph.GraphController;
-import org.tellervo.desktop.graph.GraphInfo;
+import org.tellervo.desktop.graph.GraphSettings;
 import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.Graphable;
 import org.tellervo.desktop.graph.GrapherPanel;
@@ -67,10 +66,10 @@ import org.tellervo.desktop.gui.Help;
 import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.NameVersionJustificationPanel;
 import org.tellervo.desktop.gui.UserCancelledException;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -310,7 +309,7 @@ public class IndexDialog extends JDialog {
 	
 	private JComponent createGraph(final Dimension otherPanelDim, final int extraWidth) {
 		// create a new graphinfo structure, so we can tailor it to our needs.
-		GraphInfo gInfo = new GraphInfo();
+		GraphSettings gInfo = new GraphSettings();
 		
 		// force no drawing of graph names
 		gInfo.setShowGraphNames(false);

@@ -184,6 +184,8 @@ public class LiteEditor extends AbstractEditor {
 				
 				
 			}
+			
+			setTitle();
 	
 	}
 	

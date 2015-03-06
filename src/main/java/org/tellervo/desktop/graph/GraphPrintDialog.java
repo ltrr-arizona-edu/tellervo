@@ -93,7 +93,7 @@ public class GraphPrintDialog extends JPanel {
 	public final static int PRINT_PRINTER = 1;
 	public final static int PRINT_PDF = 2;
 	public final static int PRINT_PNG = 3;
-	private GraphInfo gInfo;
+	private GraphSettings gInfo;
 	
 
 	public GraphPrintDialog(JFrame parent, List graphs, GrapherPanel plot, int printType) {
@@ -143,7 +143,7 @@ public class GraphPrintDialog extends JPanel {
 	    JButton okButton = new JButton(oktext);
 	    okButtonContainer.add(okButton);
 	    
-	    final GraphInfo _info = gInfo;
+	    final GraphSettings _info = gInfo;
 	    final GrapherPanel _plotter = plot;
 	    final int _printType = printType;
 	    okButton.addActionListener(new ActionListener() {
@@ -181,7 +181,7 @@ public class GraphPrintDialog extends JPanel {
 	    d.setVisible(true);	    
 	}
 	
-	protected boolean printPDF(final GraphInfo pinfo, final GrapherPanel plotter) {
+	protected boolean printPDF(final GraphSettings pinfo, final GrapherPanel plotter) {
 		final JFileChooser chooser = new JFileChooser();
 		final Container me = getParent();
 		chooser.setFileFilter(new FileFilter() {
@@ -274,7 +274,7 @@ public class GraphPrintDialog extends JPanel {
 		return true;
 	}
 
-	protected boolean printPNG(final GraphInfo pinfo, final GrapherPanel plotter) {
+	protected boolean printPNG(final GraphSettings pinfo, final GrapherPanel plotter) {
 		final JFileChooser chooser = new JFileChooser();
 		final Container me = getParent();
 		chooser.setFileFilter(new FileFilter() {
@@ -359,7 +359,7 @@ public class GraphPrintDialog extends JPanel {
 		JRadioButton reverse_landscape;
 		JLabel printWidthHeight;
 				
-		GraphInfo gInfo;
+		GraphSettings gInfo;
 		
 	    DecimalFormat dfmt = new DecimalFormat("0.00");
 	    
@@ -377,7 +377,7 @@ public class GraphPrintDialog extends JPanel {
 	    	return PageFormat.LANDSCAPE;
 	    }
 		
-		public ParamsPanel(GraphInfo g, int printType) {
+		public ParamsPanel(GraphSettings g, int printType) {
 			super();
 		
 			gInfo = g;
@@ -669,13 +669,13 @@ public class GraphPrintDialog extends JPanel {
 		
 		private class PreviewInsidePane extends JPanel {
 			private GrapherPanel plotter;
-			private GraphInfo pinfo;
+			private GraphSettings pinfo;
 			private double scale;
 			private double zoom;
 			
 			private double fullscale;
 			
-			public PreviewInsidePane(GrapherPanel p, GraphInfo g) {
+			public PreviewInsidePane(GrapherPanel p, GraphSettings g) {
 				super();
 				
 				setBackground(g.getBackgroundColor());
@@ -716,7 +716,7 @@ public class GraphPrintDialog extends JPanel {
 			}				
 		}
 		
-		public PreviewPanel(GrapherPanel p, GraphInfo g) {
+		public PreviewPanel(GrapherPanel p, GraphSettings g) {
 			super(new BorderLayout());
 
 			inpane = new PreviewInsidePane(p, g);
@@ -785,13 +785,13 @@ public class GraphPrintDialog extends JPanel {
 	private class GraphPrinter implements Pageable, Printable {
 		private PrinterJob job;
 		private PageFormat format;
-		private GraphInfo info;
+		private GraphSettings info;
 		
 		private GrapherPanel plotter;
 		
 		private double pscale;
 		
-		public GraphPrinter(GraphInfo info, GrapherPanel plotter, ParamsPanel params) {
+		public GraphPrinter(GraphSettings info, GrapherPanel plotter, ParamsPanel params) {
 		    job = PrinterJob.getPrinterJob();
 		    Paper paper = new Paper();
 		    PageFormat pfmt = new PageFormat();

@@ -36,6 +36,7 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -61,6 +62,10 @@ import org.tellervo.desktop.editor.support.ModifiableTableCellRenderer;
 import org.tellervo.desktop.editor.support.TableCellModifier;
 import org.tellervo.desktop.editor.support.TableCellModifierListener;
 import org.tellervo.desktop.graph.Graph;
+import org.tellervo.desktop.graph.GraphActions;
+import org.tellervo.desktop.graph.GraphController;
+import org.tellervo.desktop.graph.GraphSettings;
+import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.GrapherPanel;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
@@ -85,6 +90,8 @@ import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasValue;
 
 import javax.swing.JSplitPane;
+
+import net.miginfocom.swing.MigLayout;
 
 
 /**
@@ -119,7 +126,11 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	private RemarkPanel remarkPanel;
 	private AbstractEditor e;
 	private EditorMeasurePanel measurePanel;
-	private JPanel panel;
+	private JPanel measurePanelHolder;
+	private GrapherPanel graphPanel;
+	private List<Graph> graphSamples;
+	private JSplitPane splitPane_1;
+	
 	
 	// pass this along to the table
 	@Override
@@ -182,8 +193,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		 final Color LIGHT = new Color(0.8196f, 0.8510f, 0.9216f);
 		 final int THIN = 2;
 		 final int THICK = 5;
-		 */
-		myTable = new JTable(myModel); /* {
+		 *//* {
 		 public void paint(Graphics g) {
 		 setOpaque(true);
 
@@ -202,13 +212,57 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		 super.paint(g);
 		 }
 		 }; */
-		((DefaultTableCellRenderer)myTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.RIGHT);
-		myTable.setGridColor(new Color(240, 240, 240)); 
 		
 		//myTable.setDefaultEditor(Integer.class, new SeriesDataMatrixEditor());
 		// mouse listener for table
 		
 		final AbstractEditor glue = e;
+		
+
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
+		
+
+		
+		// make nulls elsewhere shaded, to indicate "can't use"
+		// DISABLED, because it doesn't hit the area below the table yet (how?).
+		// (but it looks really cool.)
+		//SlashedIfNullRenderer slasher = new SlashedIfNullRenderer(mySample, myModel);
+		//for (int i=1; i<=10; i++)
+		//myTable.getColumnModel().getColumn(i).setCellRenderer(slasher);
+		//myTable.setIntercellSpacing(new Dimension(0, 0));
+
+		// set font, gridlines, colors ==> handled by refreshFromPreferences()
+		
+		// add to panel
+		setLayout(new BorderLayout(0, 0)); // huh?
+		
+		
+		splitPane = new JSplitPane();
+		splitPane.setOneTouchExpandable(true);
+		
+		add(splitPane, BorderLayout.CENTER);
+		
+		panelLeft = new JPanel();
+		splitPane.setLeftComponent(panelLeft);
+		
+		panelRight = new JPanel();
+		splitPane.setRightComponent(panelRight);
+		panelRight.setLayout(new BorderLayout(0, 0));
+		
+		
+		
+		panelLeft.setLayout(new MigLayout("", "[158px,grow,fill]", "[][123.00,grow,fill]"));
+		
+		measurePanelHolder = new JPanel();
+		panelLeft.add(measurePanelHolder, "cell 0 0,grow");
+		
+		splitPane_1 = new JSplitPane();
+		splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		panelLeft.add(splitPane_1, "cell 0 1,grow");
+		myTable = new JTable(myModel); 
+		((DefaultTableCellRenderer)myTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.RIGHT);
+		myTable.setGridColor(new Color(240, 240, 240)); 
 		myTable.addMouseListener(new MouseListener() {
 
 
@@ -268,34 +322,30 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 				
 			}
 		});
-
-		// key listener for table
-		myTable.addKeyListener(new DecadalKeyListener(myTable, mySample));
-
-		myTable.setCellSelectionEnabled(true);
-		myTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		
-		// select the first year
-		myTable.setRowSelectionInterval(0, 0);
-		myTable.setColumnSelectionInterval(
-				mySample.getRange().getStart().column() + 1, mySample.getRange()
-						.getStart().column() + 1);
+				// key listener for table
+				myTable.addKeyListener(new DecadalKeyListener(myTable, mySample));
+				
+						myTable.setCellSelectionEnabled(true);
+						myTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+						
+						// select the first year
+						myTable.setRowSelectionInterval(0, 0);
+						myTable.setColumnSelectionInterval(
+								mySample.getRange().getStart().column() + 1, mySample.getRange()
+										.getStart().column() + 1);
+						
+		// make the last column a jprogressbar, % of max
+		int max = 0;
+		if (mySample.hasCount())
+			max = (Collections.max(mySample.getCount())).intValue();
 						
 		// don't let the columns be rearranged or resized
 		myTable.getTableHeader().setReorderingAllowed(false);
 		myTable.getColumnModel().getColumn(0).setMinWidth(100);
 		myTable.getTableHeader().setResizingAllowed(false);
 		myTable.setRowSelectionAllowed(true);
-		
-
-		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-		rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
 		myTable.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
-		
-		// make the last column a jprogressbar, % of max
-		int max = 0;
-		if (mySample.hasCount())
-			max = (Collections.max(mySample.getCount())).intValue();
 		// DISABLED: use column-header renderer for first column (pseudo-row-headers)
 		// -- it doesn't look that great, since there are still gridlines between
 		// rows; what i should really do is make a real table-row-header, which isn't too hard.
@@ -304,54 +354,42 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		myTable.getColumnModel().getColumn(11).setCellRenderer(
 				new CountRenderer(max));
 		
+		
+
+		
 		myCellRenderer = new ModifiableTableCellRenderer(new IconBackgroundCellRenderer(mySample));
 		for(int i = 1; i < 11; i++)
 			myTable.getColumnModel().getColumn(i).setCellRenderer(myCellRenderer);
 		
-		// make nulls elsewhere shaded, to indicate "can't use"
-		// DISABLED, because it doesn't hit the area below the table yet (how?).
-		// (but it looks really cool.)
-		//SlashedIfNullRenderer slasher = new SlashedIfNullRenderer(mySample, myModel);
-		//for (int i=1; i<=10; i++)
-		//myTable.getColumnModel().getColumn(i).setCellRenderer(slasher);
-		//myTable.setIntercellSpacing(new Dimension(0, 0));
-
-		// set font, gridlines, colors ==> handled by refreshFromPreferences()
 		
-		// add to panel
-		setLayout(new BorderLayout(0, 0)); // huh?
-		JScrollPane sp = new JScrollPane(myTable,
+		
+		JScrollPane scrollPane = new JScrollPane(myTable,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		splitPane_1.setLeftComponent(scrollPane);
+		
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		
 		
-		sp.setPreferredSize(new Dimension(700, 520));
-		
-		
-		splitPane = new JSplitPane();
-		splitPane.setOneTouchExpandable(true);
-		
-		add(splitPane, BorderLayout.CENTER);
-		
-		panelLeft = new JPanel();
-		splitPane.setLeftComponent(panelLeft);
-		
-		panelRight = new JPanel();
-		splitPane.setRightComponent(panelRight);
-		panelRight.setLayout(new BorderLayout(0, 0));
-		panelLeft.setLayout(new BorderLayout(0, 0));
+		scrollPane.setPreferredSize(new Dimension(700, 520));
 		
 		remarkPanel = new RemarkPanel(myTable, mySample);
 		remarkPanel.setMinimumSize(new Dimension(280,280));
-		
 		panelRight.add(remarkPanel);
 		
-		panelLeft.add(sp);
 		statusBar = new EditorStatusBar(myTable, mySample);
 		
-		JPanel graphPanel = new JPanel();
-		panelLeft.add(graphPanel, BorderLayout.SOUTH);
+		
+		
+		
+		if(mySample!=null)
+		{
+		
+			graphSamples = new ArrayList<Graph>();
+			graphSamples.add(new Graph(mySample));
+			
+			splitPane_1.setRightComponent(this.createGraph(this.getSize(), 10 ));
+		}
 		
 
 		
@@ -364,6 +402,9 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		App.prefs.addPrefsListener(this);
 		splitPane.setDividerLocation(0.8d);
 		splitPane.setResizeWeight(1.0);
+		splitPane_1.setDividerLocation(1.0d);
+		splitPane_1.setResizeWeight(1.0d);
+		splitPane_1.setOneTouchExpandable(true);
 		
 	}
 	
@@ -1114,5 +1155,50 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	public void sampleDisplayCalendarChanged(SampleEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	private JComponent createGraph(final Dimension otherPanelDim, final int extraWidth) {
+		// create a new graphinfo structure, so we can tailor it to our needs.
+		GraphSettings gInfo = new GraphSettings();
+		
+		// force no drawing of graph names
+		gInfo.setShowGraphNames(false);
+		
+		// Make sure the graphs can't be dragged
+		graphSamples.get(0).setDraggable(false);
+		
+		// Override units and show labels
+		gInfo.setHundredUnitHeight(2);
+		gInfo.setShowGraphNames(true);
+				
+		// create a graph panel; put it in a scroll pane
+		graphPanel = new GrapherPanel(graphSamples, null, gInfo) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Dimension getPreferredScrollableViewportSize() {
+				// -10s are for insets set below in the emptyBorder
+				int screenWidth = super.getPreferredScrollableViewportSize().width - (otherPanelDim.width + extraWidth);
+				int graphWidth = getGraphPixelWidth();
+				return new Dimension((graphWidth < screenWidth) ? graphWidth : screenWidth, otherPanelDim.height);
+			}
+		};
+
+		JScrollPane scroller = new JScrollPane(graphPanel,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		
+		// make the default viewport background the same color as the graph
+		scroller.getViewport().setBackground(gInfo.getBackgroundColor());
+		
+		GraphActions actions = new GraphActions(graphPanel, null, new GraphController(graphPanel, scroller));
+		GraphToolbar toolbar = new GraphToolbar(actions);
+
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(scroller, BorderLayout.CENTER);
+		panel.add(toolbar, BorderLayout.NORTH);
+		
+		return panel;
 	}
 }

@@ -118,8 +118,8 @@ public class NativeLibWrapper {
 
                 try {
                     // disable JOGL and GlueGen runtime library loading from elsewhere
-                    com.sun.opengl.impl.NativeLibLoader.disableLoading();
-                    com.sun.gluegen.runtime.NativeLibLoader.disableLoading();
+                    //com.sun.opengl.impl.NativeLibLoader.disableLoading();
+                    //com.sun.gluegen.runtime.NativeLibLoader.disableLoading();
                     // Open GlueGen runtime library optimistically. Note that
                     // currently we do not need this on any platform except X11
                     // ones, because JOGL doesn't use the GlueGen NativeLibrary

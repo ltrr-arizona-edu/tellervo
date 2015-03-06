@@ -51,7 +51,7 @@ import org.tellervo.desktop.Range;
 import org.tellervo.desktop.graph.Graph;
 import org.tellervo.desktop.graph.GraphActions;
 import org.tellervo.desktop.graph.GraphController;
-import org.tellervo.desktop.graph.GraphInfo;
+import org.tellervo.desktop.graph.GraphSettings;
 import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.GrapherEvent;
 import org.tellervo.desktop.graph.GrapherListener;
@@ -99,7 +99,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 
 	private GraphActions actions;
 	private GrapherPanel graph;
-	private GraphInfo graphInfo;
+	private GraphSettings graphInfo;
 	private GraphController graphController;
 	private List<Graph> graphSamples;
 	private JScrollPane graphScroller;
@@ -601,7 +601,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     
     private void setupGraph() {	    	
 		// create a new graphinfo structure, so we can tailor it to our needs.
-		graphInfo = new GraphInfo();
+		graphInfo = new GraphSettings();
 		
 		// force no drawing of graph names and drawing of vertical axis
 		graphInfo.setShowGraphNames(false);

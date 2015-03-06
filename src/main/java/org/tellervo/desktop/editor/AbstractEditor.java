@@ -102,7 +102,7 @@ SampleListener {
 	{
 		if(!App.isInitialized()) App.init();
 		
-		setTitle("Tellervo Editor");
+		setTitle("Tellervo");
 		
 		this.setIconImage(Builder.getApplicationIcon());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -385,6 +385,20 @@ SampleListener {
 
 		return null;
 
+	}
+	
+	
+	protected void setTitle()
+	{
+		
+		if(getSample()!=null)
+		{
+			this.setTitle(getSample().getDisplayTitle()+" - Tellervo");
+		}
+		else
+		{
+			this.setTitle("Tellervo");
+		}
 	}
 	
 	

@@ -42,7 +42,7 @@ public class DensityPlot extends StandardPlot implements TellervoGraphPlotter {
 	}
 
 	@Override
-	public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
+	public void draw(GraphSettings gInfo, Graphics2D g2, int bottom, Graph g, int thickness, int xscroll) {
 		// cache yearsize, we use this a lot
 		int yearWidth = gInfo.getYearWidth(); // the size of a year, in pixels
 		float unitScale = gInfo.getHundredUnitHeight() / 100.0f; // the size of 1 "unit" in pixels.

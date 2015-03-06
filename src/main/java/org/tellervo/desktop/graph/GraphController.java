@@ -28,7 +28,7 @@ import org.tellervo.desktop.Year;
 
 
 public class GraphController {
-	private GraphInfo info;
+	private GraphSettings info;
 	public GrapherPanel grapher;
 	public List<Graph> graphs;
 	public JScrollPane scroller;

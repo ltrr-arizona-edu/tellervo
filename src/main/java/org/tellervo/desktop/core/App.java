@@ -155,7 +155,7 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
     if (meter != null) {
     	meter.setNote(I18n.getText("login.initJOGL"));
     	meter.setProgress(1);
-    	NativeLibWrapper natives = new NativeLibWrapper();
+    	//NativeLibWrapper natives = new NativeLibWrapper();
     	try {
 			//natives.init();
 		} catch (GLException e) {

@@ -124,7 +124,7 @@ public class GraphDialog extends JDialog {
 		// ok, so things are good now. 
 		
 		// create a new graphinfo structure, so we can tailor it to our needs.
-		GraphInfo gInfo = new GraphInfo();
+		GraphSettings gInfo = new GraphSettings();
 		
 		// force no drawing of graph names
 		gInfo.setShowGraphNames(false);

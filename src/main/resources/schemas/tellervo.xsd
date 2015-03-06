@@ -1051,6 +1051,8 @@
 	<xs:element name="tag" >
 		<xs:complexType>
 			<xs:sequence>
+				<!-- IGNORE THIS ELEMENT! It's only here to satisfy JAXB for the inheritance of WSITag  -->
+				<xs:element ref="tridas:identifier" minOccurs="0"/>
 				<xs:element name="assignedTo" minOccurs="0" maxOccurs="1" >
 					<xs:complexType>
 						<xs:sequence>

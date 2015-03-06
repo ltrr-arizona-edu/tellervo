@@ -18,7 +18,7 @@ import org.tellervo.desktop.util.ColorUtils;
  * 
  * @author Lucas Madar
  */
-public final class GraphInfo {
+public final class GraphSettings {
 
 	public final static class colorPair {
 		private String colorName;
@@ -123,7 +123,7 @@ public final class GraphInfo {
 	 * Construct a new GraphInfo structure for screen display only
 	 * Initial values based on preferences
 	 */
-	public GraphInfo() {
+	public GraphSettings() {
 		this(false);
 	}
 
@@ -132,7 +132,7 @@ public final class GraphInfo {
 	 * Initial values based on preferences
 	 * @param forprinting
 	 */
-	public GraphInfo(boolean forprinting) {
+	public GraphSettings(boolean forprinting) {
 		this.printing = forprinting;
 		
 		resetColors();
@@ -145,7 +145,7 @@ public final class GraphInfo {
 	 * @param src
 	 * @param forprinting
 	 */
-	public GraphInfo(GraphInfo src, boolean forprinting) {
+	public GraphSettings(GraphSettings src, boolean forprinting) {
 		resetColors();
 		
 		this.drawBounds = src.drawBounds;
@@ -173,8 +173,8 @@ public final class GraphInfo {
 	 * 
 	 * @return a GraphInfo copy for printing
 	 */
-	public GraphInfo getPrinter() {
-		return new GraphInfo(this, true);
+	public GraphSettings getPrinter() {
+		return new GraphSettings(this, true);
 	}
 
 	/**
