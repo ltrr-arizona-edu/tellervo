@@ -29,11 +29,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -57,6 +60,8 @@ import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
 import org.tellervo.desktop.editor.support.ModifiableTableCellRenderer;
 import org.tellervo.desktop.editor.support.TableCellModifier;
 import org.tellervo.desktop.editor.support.TableCellModifierListener;
+import org.tellervo.desktop.graph.Graph;
+import org.tellervo.desktop.graph.GrapherPanel;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
@@ -106,7 +111,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	public JTable myTable;
 
 	protected TableModel myModel;
-	
+		
 	protected ModifiableTableCellRenderer myCellRenderer;
 	private JSplitPane splitPane;
 	private JPanel panelLeft;
@@ -114,6 +119,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	private RemarkPanel remarkPanel;
 	private AbstractEditor e;
 	private EditorMeasurePanel measurePanel;
+	private JPanel panel;
 	
 	// pass this along to the table
 	@Override
@@ -344,6 +350,12 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		panelLeft.add(sp);
 		statusBar = new EditorStatusBar(myTable, mySample);
 		
+		JPanel graphPanel = new JPanel();
+		panelLeft.add(graphPanel, BorderLayout.SOUTH);
+		
+
+		
+		
 		//measurePanel = new JPanel();
 		//panelLeft.add(measurePanel, BorderLayout.SOUTH);
 		add(statusBar, BorderLayout.SOUTH);
@@ -355,6 +367,8 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 	}
 	
+
+
 	private void showRedateDialog()
 	{
 		if(e!=null)	new RedateDialog(mySample, e).setVisible(true);
