@@ -192,6 +192,7 @@ public class TellervoLayerPanel extends JPanel {
 			layers = wwd.getModel().getLayers();
 		} catch (NullPointerException e) {
 			log.debug("No layers in current WWJ map model");
+			return;
 		}
 
 		// Fill the layers panel with the titles of all layers in the world

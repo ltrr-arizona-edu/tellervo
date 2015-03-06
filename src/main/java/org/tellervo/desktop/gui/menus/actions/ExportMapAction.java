@@ -1,6 +1,6 @@
 package org.tellervo.desktop.gui.menus.actions;
 
-import gov.nasa.worldwind.examples.util.ScreenShotAction;
+import gov.nasa.worldwindx.examples.util.ScreenShotAction;
 
 import java.awt.event.ActionEvent;
 import java.awt.print.PageFormat;

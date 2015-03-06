@@ -28,7 +28,7 @@ import org.tellervo.desktop.gui.menus.actions.ExportMapAction;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 
-import gov.nasa.worldwind.examples.util.ScreenShotAction;
+import gov.nasa.worldwindx.examples.util.ScreenShotAction;
 
 public class GISFileMenu extends FileMenu {
 

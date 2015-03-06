@@ -6,7 +6,7 @@ All Rights Reserved.
 package org.tellervo.desktop.gis;
 
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.examples.util.RandomShapeAttributes;
+import gov.nasa.worldwindx.examples.util.RandomShapeAttributes;
 import gov.nasa.worldwind.formats.shapefile.*;
 import gov.nasa.worldwind.geom.*;
 import gov.nasa.worldwind.layers.*;

@@ -1,8 +1,8 @@
 package org.tellervo.desktop.gis;
 
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.examples.util.ButtonAnnotation;
-import gov.nasa.worldwind.examples.util.ImageAnnotation;
+import gov.nasa.worldwindx.examples.util.ButtonAnnotation;
+import gov.nasa.worldwindx.examples.util.ImageAnnotation;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.Annotation;
 import gov.nasa.worldwind.render.AnnotationAttributes;

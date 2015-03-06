@@ -354,7 +354,11 @@ SampleListener {
 		
 	}
 
-	
+	/**
+	 * Get the SeriesDataMatrix tab for this editor
+	 * 
+	 * @return
+	 */
 	public SeriesDataMatrix getSeriesDataMatrix()
 	{
 		return dataView;
@@ -386,14 +390,10 @@ SampleListener {
 
 	}
 	
-
 	
-	
-	public SeriesDataMatrix getDataMatrix()
-	{
-		return this.dataView;
-	}
-	
+	/**
+	 * A sample was selected from the list
+	 */
 	public void itemSelected() {
 
 		log.debug("Item selected");

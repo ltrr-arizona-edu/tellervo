@@ -54,7 +54,7 @@ public class RemarkToggleAction extends AbstractAction{
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		
-		SeriesDataMatrix sdv = e.getDataMatrix();
+		SeriesDataMatrix sdv = e.getSeriesDataMatrix();
 		
 		if(sdv!=null)
 		{

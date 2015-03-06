@@ -20,7 +20,7 @@
 package org.tellervo.desktop.gis;
 
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.examples.util.ImageAnnotation;
+import gov.nasa.worldwindx.examples.util.ImageAnnotation;
 import gov.nasa.worldwind.geom.Angle;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.DrawContext;

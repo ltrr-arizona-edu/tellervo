@@ -9,7 +9,8 @@ import org.tellervo.desktop.sample.SampleEvent;
 
 public class FullEditor extends AbstractEditor {
 
-	
+	private static final long serialVersionUID = 1L;
+
 	public FullEditor()
 	{
 		super();

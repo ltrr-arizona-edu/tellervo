@@ -1,5 +1,6 @@
 package org.tellervo.desktop.editor.view;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import org.tellervo.desktop.editor.AbstractEditor;
@@ -25,6 +26,11 @@ public class LiteEditor extends AbstractEditor {
 	{
 		super(samples);
 		this.setVisible(true);
+	}
+	
+	public LiteEditor(File file)
+	{
+		
 	}
 	
 	
@@ -123,7 +129,7 @@ public class LiteEditor extends AbstractEditor {
 
 		super.itemSelected();
 		
-		this.getDataMatrix().hideRemarksPanel();
+		this.getSeriesDataMatrix().hideRemarksPanel();
 	}
 
 	
