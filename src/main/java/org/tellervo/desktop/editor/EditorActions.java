@@ -2,6 +2,23 @@ package org.tellervo.desktop.editor;
 
 import javax.swing.Action;
 
+import org.tellervo.desktop.gui.menus.actions.AdminBasicBoxLabelAction;
+import org.tellervo.desktop.gui.menus.actions.AdminBoxLabelAction;
+import org.tellervo.desktop.gui.menus.actions.AdminChangePasswordAction;
+import org.tellervo.desktop.gui.menus.actions.AdminCurationMenuAction;
+import org.tellervo.desktop.gui.menus.actions.AdminCurationMenuBoxDetailsAction;
+import org.tellervo.desktop.gui.menus.actions.AdminCurationMenuFindSampleAction;
+import org.tellervo.desktop.gui.menus.actions.AdminCurationMenuLoanDialogAction;
+import org.tellervo.desktop.gui.menus.actions.AdminCurationMenuNewLoanAction;
+import org.tellervo.desktop.gui.menus.actions.AdminCurationMenuSampleStatusAction;
+import org.tellervo.desktop.gui.menus.actions.AdminDatabaseStatisticsAction;
+import org.tellervo.desktop.gui.menus.actions.AdminEditViewPermissionsAction;
+import org.tellervo.desktop.gui.menus.actions.AdminForgetPasswordAction;
+import org.tellervo.desktop.gui.menus.actions.AdminLabelAction;
+import org.tellervo.desktop.gui.menus.actions.AdminReportsAction;
+import org.tellervo.desktop.gui.menus.actions.AdminSampleLabelAction;
+import org.tellervo.desktop.gui.menus.actions.AdminSiteMapAction;
+import org.tellervo.desktop.gui.menus.actions.AdminUsersAndGroupsAction;
 import org.tellervo.desktop.gui.menus.actions.EditCopyAction;
 import org.tellervo.desktop.gui.menus.actions.EditDeleteAction;
 import org.tellervo.desktop.gui.menus.actions.EditInsertMissingRingPushBackwardsAction;
@@ -26,6 +43,9 @@ import org.tellervo.desktop.gui.menus.actions.EditInitDataGridAction;
 import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
 import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
+import org.tellervo.desktop.gui.menus.actions.HelpCheckForUpdatesAction;
+import org.tellervo.desktop.gui.menus.actions.HelpHelpContentsAction;
+import org.tellervo.desktop.gui.menus.actions.HelpVideoTutorialsAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsTruncateAction;
@@ -40,6 +60,7 @@ import org.tellervo.desktop.io.control.IOController;
 public class EditorActions {
 
 	private AbstractEditor editor;
+	//private String videoname;
 	
 	// File menu actions
 	public Action fileOpenAction ;
@@ -70,7 +91,24 @@ public class EditorActions {
 	
 	// Admin menu actions
 	public Action adminMetaDBAction;
-
+	public Action adminUserAndGroupsAction;
+	public Action adminEditViewPermissionsAction;
+	public Action adminChangePasswordAction;
+	public Action adminForgetPasswordAction;
+	public Action adminReportsAction;
+	public Action adminLabelAction;
+	public Action adminBoxLabelAction;
+	public Action adminBasicBoxLabelAction;
+	public Action adminSampleLabelAction;
+	public Action adminDatabaseStatisticsAction;
+	public Action adminCurationMenuAction;
+	public Action adminCurationMenuBoxDetailsAction;
+	public Action adminCurationMenuFindSampleAction;
+	public Action adminCurationMenuLoanDialogAction;
+	public Action adminCurationMenuNewLoanAction;
+	public Action adminCurationMenuSampleStatusAction;
+	public Action adminSiteMapAction;
+	
 	// View menu actions
 	
 	// Tools menu action
@@ -82,12 +120,21 @@ public class EditorActions {
 	// Toolbar only actions
 	public Action remarkAction;
 	
+	//Help Menu actions
+	public Action helpHelpContentsAction;
+	public Action helpVideoTutorialsAction;
+	public Action helpCheckForUpdatesAction;
+	
+	
+	
 	
 	
 	
 	public EditorActions(AbstractEditor editor)
 	{
 		this.editor = editor;
+		this.videoname = videoname;
+		
 		fileNewAction = new FileNewAction(editor);
 		fileOpenAction = new FileOpenAction(editor);
 		fileOpenMultiAction = new FileOpenMultiAction();
@@ -111,11 +158,36 @@ public class EditorActions {
 		editInitGridAction = new EditInitDataGridAction(editor);
 		editMeasureAction = new EditMeasureToggleAction(editor);
 		editPreferencesAction = new EditPreferencesAction();
+		
 		remarkAction = new RemarkToggleAction(editor);
+		
+		adminUserAndGroupsAction = new AdminUsersAndGroupsAction();
+		adminEditViewPermissionsAction = new AdminEditViewPermissionsAction();
+		adminChangePasswordAction = new AdminChangePasswordAction();
+		adminForgetPasswordAction = new AdminForgetPasswordAction();
+		adminReportsAction = new AdminReportsAction();
+		adminLabelAction = new AdminLabelAction();
+		adminBoxLabelAction = new AdminBoxLabelAction();
+		adminBasicBoxLabelAction = new AdminBasicBoxLabelAction();
+		adminSampleLabelAction = new AdminSampleLabelAction();
+		adminDatabaseStatisticsAction = new AdminDatabaseStatisticsAction();
+		adminCurationMenuAction = new AdminCurationMenuAction();
+		adminCurationMenuBoxDetailsAction = new AdminCurationMenuBoxDetailsAction();
+		adminCurationMenuFindSampleAction = new AdminCurationMenuFindSampleAction();
+		adminCurationMenuLoanDialogAction = new AdminCurationMenuLoanDialogAction(editor);
+		adminCurationMenuNewLoanAction = new AdminCurationMenuNewLoanAction(editor);
+		adminCurationMenuSampleStatusAction = new AdminCurationMenuSampleStatusAction();		
 		adminMetaDBAction = new AdminMetadatabaseBrowserAction();
+		adminSiteMapAction = new AdminSiteMapAction();
 		
 		toolsTruncateAction = new ToolsTruncateAction(editor);
 		graphSeriesAction = new GraphCurrentSeriesAction(editor);
+		
+		helpHelpContentsAction = new HelpHelpContentsAction();
+		//helpVideoTutorialsAction = new HelpVideoTutorialsAction(videoname);
+		helpCheckForUpdatesAction = new HelpCheckForUpdatesAction();
+		
+		
 	}
 	
 	
