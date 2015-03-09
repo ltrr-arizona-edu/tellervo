@@ -304,6 +304,7 @@ public class ImportDataOnly extends Object {
 		if(useEditorLite)
 		{
 			LiteEditor le = new LiteEditor(sampleList);
+			
 		}
 		else 
 		{

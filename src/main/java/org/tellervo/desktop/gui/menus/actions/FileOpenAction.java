@@ -107,6 +107,8 @@ public class FileOpenAction extends AbstractAction{
 					
 	        ImportDataOnly importDialog = new ImportDataOnly(parent, file, format);
 	        importDialog.openEditorLites();
+			OpenRecent.sampleOpened(new SeriesDescriptor(s));
+
 		    
 		}
 		else

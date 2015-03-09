@@ -42,6 +42,7 @@ import javax.xml.bind.Unmarshaller;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.CanOpener;
 import org.tellervo.desktop.sample.TellervoWsiTridasElement;
@@ -281,6 +282,8 @@ public class OpenRecent {
 			case CWTE: {
 				TellervoWsiTridasElement element = new TellervoWsiTridasElement(desc.getIdentifier());
 				
+				
+				
 				((SampleOpener)opener).performOpen(element.load());
 				break;
 			}
@@ -323,7 +326,7 @@ public class OpenRecent {
 		
 		public void performOpen(Sample s) {
 			OpenRecent.sampleOpened(new SeriesDescriptor(s), getTag());
-			new Editor(s);
+			new FullEditor(s);
 		}
 	}
 	

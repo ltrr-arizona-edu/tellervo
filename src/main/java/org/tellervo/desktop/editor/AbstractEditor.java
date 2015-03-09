@@ -52,6 +52,7 @@ import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.util.openrecent.OpenRecent;
 
 public abstract class AbstractEditor extends JFrame implements SaveableDocument, PrefsListener, SampleListener {
 
@@ -72,7 +73,6 @@ public abstract class AbstractEditor extends JFrame implements SaveableDocument,
 	public AbstractEditor(Sample sample) {
 
 		init();
-		initbar();
 		samplesModel.addElement(sample);
 		itemSelected();
 
@@ -81,7 +81,6 @@ public abstract class AbstractEditor extends JFrame implements SaveableDocument,
 	public AbstractEditor(ArrayList<Sample> samples) {
 
 		init();
-		initbar();
 
 		for (Sample sample : samples) {
 			samplesModel.addElement(sample);
@@ -92,7 +91,6 @@ public abstract class AbstractEditor extends JFrame implements SaveableDocument,
 	public AbstractEditor() {
 
 		init();
-		initbar();
 	}
 
 	/**
@@ -168,124 +166,18 @@ public abstract class AbstractEditor extends JFrame implements SaveableDocument,
 		dataPanel.setLayout(new BorderLayout(0, 0));
 
 		initMenu();
+		initToolbar();
 
 		linkModel();
 	}
 
 	protected void initMenu() {
-		JMenuBar menuBar = new JMenuBar();
-		contentPane.add(menuBar, "cell 0 0,growx,aligny top");
-
-		JMenu mnFile = new JMenu("File");
-
-		JMenuItem miNew = new JMenuItem(actions.fileNewAction);
-		mnFile.add(miNew);
-
-		JMenuItem miOpen = new JMenuItem(actions.fileOpenAction);
-		mnFile.add(miOpen);
-
-		JMenuItem miOpenMulti = new JMenuItem(actions.fileOpenMultiAction);
-		mnFile.add(miOpenMulti);
-
-		mnFile.addSeparator();
-
-		JMenuItem miExportData = new JMenuItem(actions.fileExportDataAction);
-		mnFile.add(miExportData);
-
-		// JMenuItem miExportMap = new JMenuItem(actions.fileExportMapAction);
-		// mnFile.add(miExportMap);
-
-		JMenuItem miBulkDataEntry = new JMenuItem(actions.fileBulkDataEntryAction);
-		mnFile.add(miBulkDataEntry);
-
-		JMenuItem miDesignODKForm = new JMenuItem(actions.fileDesignODKFormAction);
-		mnFile.add(miDesignODKForm);
-
-		JMenuItem miSave = new JMenuItem(actions.fileSaveAction);
-		mnFile.add(miSave);
-
-		mnFile.addSeparator();
-
-		JMenuItem miPrint = new JMenuItem(actions.filePrintAction);
-		mnFile.add(miPrint);
-
-		mnFile.addSeparator();
-
-		JMenuItem miLogoff = new JMenuItem(actions.fileLogoffAction);
-		mnFile.add(miLogoff);
-
-		JMenuItem miLogon = new JMenuItem(actions.fileLogonAction);
-		mnFile.add(miLogon);
-
-		JMenuItem miExit = new JMenuItem(actions.fileExitAction);
-		mnFile.add(miExit);
-
-		menuBar.add(mnFile);
-
-		JMenu mnEdit = new JMenu("Edit");
-		menuBar.add(mnEdit);
-
-		JMenuItem miCopy = new JMenuItem(actions.editCopyAction);
-		mnEdit.add(miCopy);
-
-		mnEdit.addSeparator();
-
-		JMenuItem miSelectAll = new JMenuItem(actions.editSelectAllAction);
-		mnEdit.add(miSelectAll);
-
-		mnEdit.addSeparator();
-
-		JMenuItem miInsertYearPushForwards = new JMenuItem(actions.editInsertYearPushForwardsAction);
-		mnEdit.add(miInsertYearPushForwards);
-
-		JMenuItem miInsertYearPushBackwards = new JMenuItem(actions.editInsertYearPushBackwardsAction);
-		mnEdit.add(miInsertYearPushBackwards);
-
-		JMenuItem miInsertMissingRingPushForwards = new JMenuItem(actions.editInsertMissingRingPushForwardsAction);
-		mnEdit.add(miInsertMissingRingPushForwards);
-
-		JMenuItem miInsertMissingRingPushBackwards = new JMenuItem(actions.editInsertMissingRingPushBackwardsAction);
-		mnEdit.add(miInsertMissingRingPushBackwards);
-
-		JMenuItem miDeleteYear = new JMenuItem(actions.editDeleteAction);
-		mnEdit.add(miDeleteYear);
-
-		JMenuItem miInsertYears = new JMenuItem(actions.editInsertYearsAction);
-		mnEdit.add(miInsertYears);
-
-		mnEdit.addSeparator();
-
-		JMenuItem miInitializeDataGrid = new JMenuItem(actions.editInitGridAction);
-		mnEdit.add(miInitializeDataGrid);
-
-		JMenuItem miStartMeasuring = new JMenuItem(actions.editMeasureAction);
-		mnEdit.add(miStartMeasuring);
-
-		mnEdit.addSeparator();
-
-		JMenuItem miPreferences = new JMenuItem(actions.editPreferencesAction);
-		mnEdit.add(miPreferences);
-
-		menuBar.add(mnEdit);
-
-		JMenu mnAdministration = new JMenu("Administration");
-		menuBar.add(mnAdministration);
-
-		JMenu mnView = new JMenu("View");
-		menuBar.add(mnView);
-
-		JMenu mnTools = new JMenu("Tools");
-		menuBar.add(mnTools);
-
-		JMenu mnGraph = new JMenu("Graph");
-		menuBar.add(mnGraph);
-
-		JMenu mnHelp = new JMenu("Help");
-		menuBar.add(mnHelp);
+		
+		contentPane.add(new TellervoMenuBar(actions), "cell 0 0,growx,aligny top");
 
 	}
 
-	protected void initbar() {
+	protected void initToolbar() {
 
 		JToolBar toolBar = new JToolBar();
 
