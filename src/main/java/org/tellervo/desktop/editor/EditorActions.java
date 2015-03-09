@@ -113,6 +113,7 @@ public class EditorActions {
 		editPreferencesAction = new EditPreferencesAction();
 		remarkAction = new RemarkToggleAction(editor);
 		adminMetaDBAction = new AdminMetadatabaseBrowserAction();
+		
 		toolsTruncateAction = new ToolsTruncateAction(editor);
 		graphSeriesAction = new GraphCurrentSeriesAction(editor);
 	}
