@@ -92,16 +92,16 @@ import org.tellervo.desktop.gui.menus.EditorGraphMenu;
 import org.tellervo.desktop.gui.menus.EditorToolsMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;
-import org.tellervo.desktop.gui.menus.actions.ExportDataAction;
+import org.tellervo.desktop.gui.menus.actions.FileExportDataAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
-import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
-import org.tellervo.desktop.gui.menus.actions.InitDataGridAction;
-import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
-import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
-import org.tellervo.desktop.gui.menus.actions.PrintAction;
+import org.tellervo.desktop.gui.menus.actions.GraphCurrentSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.EditInitDataGridAction;
+import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
+import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
+import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
-import org.tellervo.desktop.gui.menus.actions.SaveAction;
-import org.tellervo.desktop.gui.menus.actions.TruncateAction;
+import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsTruncateAction;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
 import org.tellervo.desktop.io.Metadata;
@@ -447,25 +447,25 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		AbstractButton fileOpen = new TitlelessButton(fileOpenAction);
 		toolbar.add(fileOpen);
 		
-		Action saveAction = new SaveAction(this);
+		Action saveAction = new FileSaveAction(this);
 		AbstractButton save = new TitlelessButton(saveAction);
 		toolbar.add(save);
 		
-		Action exportAction = new ExportDataAction(IOController.OPEN_EXPORT_WINDOW);
+		Action exportAction = new FileExportDataAction(IOController.OPEN_EXPORT_WINDOW);
 		AbstractButton fileexport = new TitlelessButton(exportAction);
 		toolbar.add(fileexport);
 		
-		Action printAction = new PrintAction(sample);
+		Action printAction = new FilePrintAction(sample);
 		AbstractButton print = new TitlelessButton(printAction);
 		toolbar.add(print);
 		
 		// Edit Buttons
-		Action measureAction = new MeasureToggleAction(this);
+		Action measureAction = new EditMeasureToggleAction(this);
 		AbstractButton measure = new TitlelessButton(measureAction);
 		toolbar.add(measure);
 		
 		// Initialize data grid button
-		Action initGridAction = new InitDataGridAction(this, dataView);
+		Action initGridAction = new EditInitDataGridAction(this, dataView);
 		AbstractButton initGrid = new TitlelessButton(initGridAction);
 		toolbar.add(initGrid);
 
@@ -476,7 +476,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 				
 		// Admin Buttons
 		toolbar.addSeparator();
-		metadbAction = new MetadatabaseBrowserAction();
+		metadbAction = new AdminMetadatabaseBrowserAction();
 		AbstractButton launchMetadb = new TitlelessButton(metadbAction);
 		toolbar.add(launchMetadb);
 		
@@ -484,7 +484,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		
 		// Tools Buttons
 		toolbar.addSeparator();
-		Action truncateAction = new TruncateAction(null, sample, this, null);
+		Action truncateAction = new ToolsTruncateAction(null, sample, this, null);
 		AbstractButton truncate = new TitlelessButton(truncateAction);
 		toolbar.add(truncate);
 		
@@ -492,7 +492,7 @@ public class Editor extends XFrame implements SaveableDocument, PrefsListener,
 		
 		// Graph Buttons
 		toolbar.addSeparator();
-		Action graphSeriesAction = new GraphSeriesAction(sample);
+		Action graphSeriesAction = new GraphCurrentSeriesAction(sample);
 		AbstractButton graph = new TitlelessButton(graphSeriesAction);
 		toolbar.add(graph);
 		

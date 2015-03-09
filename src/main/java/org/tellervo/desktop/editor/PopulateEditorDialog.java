@@ -2,7 +2,6 @@ package org.tellervo.desktop.editor;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Calendar;
@@ -13,13 +12,10 @@ import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
-import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -31,20 +27,18 @@ import org.tellervo.desktop.tridasv2.ui.ComboBoxFilterable;
 import org.tellervo.desktop.tridasv2.ui.EnumComboBoxItemRenderer;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
-import org.tridas.io.util.SafeIntYear;
 import org.tridas.schema.NormalTridasDatingType;
 import org.tridas.schema.TridasDating;
 
 
 public class PopulateEditorDialog extends JDialog implements ActionListener{
 
+	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private NormalTridasDatingType datingType ;
-	private SeriesDataMatrix dataView;
 	private JSpinner spnStartYear;
 	private JSpinner spnRingCount;
-	private Window parent;
-
+	private AbstractEditor editor;
 	private boolean disableStartYearListener = false;
 	private boolean disableEndYearListener = false;
 	
@@ -54,19 +48,17 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 	/**
 	 * Create the dialog.
 	 */
-	public PopulateEditorDialog( Window parent, SeriesDataMatrix dataView) {
+	public PopulateEditorDialog(AbstractEditor editor) {
 	
-		super(parent);
+		this.editor = editor;
 		setResizable(false);
-		this.dataView = dataView;
-		this.parent = parent;
 		range = new Range(new Year(Calendar.getInstance().get(Calendar.YEAR)-99), new Year(Calendar.getInstance().get(Calendar.YEAR)));
 
 		
 		try{
-			if(dataView.getSample().getRingWidthData().size()>0)	
+			if(editor.getSample().getRingWidthData().size()>0)	
 			{
-				Alert.error(parent, "Error", "Unable to initialize as data grid has already been initialized!");
+				Alert.error(editor, "Error", "Unable to initialize as data grid has already been initialized!");
 				dispose();
 				return;
 			}
@@ -183,7 +175,7 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 		updateStartYearModel(null);
 		spnStartYear.setEditor(new JSpinner.NumberEditor(spnStartYear, "####"));
 		spnEndYear.setEditor(new JSpinner.NumberEditor(spnEndYear, "####"));
-		this.setLocationRelativeTo(parent);
+		this.setLocationRelativeTo(editor);
 		
 	}
 
@@ -223,8 +215,8 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 		if(event.getActionCommand().equals("OK"))
 		{
 
-			dataView.insertYears(0, Integer.parseInt(spnRingCount.getValue().toString()), 0 ,2);
-			Sample sample = dataView.getSample();
+			editor.getSeriesDataMatrix().insertYears(0, Integer.parseInt(spnRingCount.getValue().toString()), 0 ,2);
+			Sample sample = editor.getSample();
 			Range range = sample.getRange();
 			range = range.redateStartTo(new Year((Integer) this.spnStartYear.getValue()));
 			TridasDating dating = new TridasDating();

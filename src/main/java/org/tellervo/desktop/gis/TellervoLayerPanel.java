@@ -17,8 +17,8 @@ import javax.swing.border.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.graph.GraphToolbar;
-import org.tellervo.desktop.gui.menus.actions.AddLayersAction;
-import org.tellervo.desktop.gui.menus.actions.ExportMapAction;
+import org.tellervo.desktop.gui.menus.actions.ViewAddLayersAction;
+import org.tellervo.desktop.gui.menus.actions.FileExportMapAction;
 import org.tellervo.desktop.gui.widgets.TitlelessButton;
 import org.tellervo.desktop.ui.Builder;
 
@@ -109,12 +109,12 @@ public class TellervoLayerPanel extends JPanel {
 		toolBar = new JToolBar();
 		topPanel.add(toolBar, "flowx,cell 0 0");
 
-		Action exportAction = new ExportMapAction(parent.wwMapPanel);
+		Action exportAction = new FileExportMapAction(parent.wwMapPanel);
 		AbstractButton btnExport = new TitlelessButton(exportAction);
 		toolBar.add(btnExport);
 		toolBar.addSeparator();
 		
-		Action addLayersAction = new AddLayersAction(parent);
+		Action addLayersAction = new ViewAddLayersAction(parent);
 		btnAddLayers = new TitlelessButton(addLayersAction);
 		toolBar.add(btnAddLayers);
 		toolBar.addSeparator();

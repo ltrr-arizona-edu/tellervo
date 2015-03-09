@@ -41,7 +41,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.graph.BargraphFrame;
 import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
-import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.GraphCurrentSeriesAction;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Element;
@@ -102,7 +102,7 @@ public class EditorGraphMenu extends JMenu implements SampleListener {
 
 		
 		// plot
-		Action graphSeriesAction = new GraphSeriesAction(sample);
+		Action graphSeriesAction = new GraphCurrentSeriesAction(sample);
 		plot = new JMenuItem(graphSeriesAction);
 		add(plot);
 

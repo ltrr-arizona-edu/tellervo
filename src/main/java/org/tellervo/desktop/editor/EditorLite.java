@@ -24,11 +24,11 @@ import org.tellervo.desktop.gui.menus.EditorLiteToolsMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
-import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
-import org.tellervo.desktop.gui.menus.actions.InitDataGridAction;
-import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
+import org.tellervo.desktop.gui.menus.actions.GraphCurrentSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.EditInitDataGridAction;
+import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
-import org.tellervo.desktop.gui.menus.actions.SaveAction;
+import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -360,17 +360,17 @@ public class EditorLite extends Editor {
 		AbstractButton fileOpen = new TitlelessButton(fileOpenAction);
 		toolbar.add(fileOpen);
 
-		Action saveAction = new SaveAction(this);
+		Action saveAction = new FileSaveAction(this);
 		AbstractButton save = new TitlelessButton(saveAction);
 		toolbar.add(save);
 
 		// Edit Buttons
-		Action measureAction = new MeasureToggleAction(this);
+		Action measureAction = new EditMeasureToggleAction(this);
 		AbstractButton measure = new TitlelessButton(measureAction);
 		toolbar.add(measure);
 
 		// Initialize data grid button
-		Action initGridAction = new InitDataGridAction(this, dataView);
+		Action initGridAction = new EditInitDataGridAction(this, dataView);
 		AbstractButton initGrid = new TitlelessButton(initGridAction);
 		toolbar.add(initGrid);
 
@@ -387,7 +387,7 @@ public class EditorLite extends Editor {
 
 		// Graph Buttons
 		toolbar.addSeparator();
-		Action graphSeriesAction = new GraphSeriesAction(sample);
+		Action graphSeriesAction = new GraphCurrentSeriesAction(sample);
 		AbstractButton graph = new TitlelessButton(graphSeriesAction);
 		toolbar.add(graph);
 

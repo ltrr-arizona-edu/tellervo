@@ -16,8 +16,8 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 
-public class MetadatabaseBrowserAction extends AbstractAction{
-	private final static Logger log = LoggerFactory.getLogger(MetadatabaseBrowserAction.class);
+public class AdminMetadatabaseBrowserAction extends AbstractAction{
+	private final static Logger log = LoggerFactory.getLogger(AdminMetadatabaseBrowserAction.class);
 
 	private static final long serialVersionUID = 1L;
 
@@ -26,7 +26,7 @@ public class MetadatabaseBrowserAction extends AbstractAction{
 	 * 
 	 * @param frame
 	 */
-	public MetadatabaseBrowserAction() {
+	public AdminMetadatabaseBrowserAction() {
         //super(I18n.getText("menus.admin.metadatabrowser"), Builder.getIcon("database.png", 22));
         super("&Metadata browser [accel M]", Builder.getIcon("database.png", 22));
         putValue(SHORT_DESCRIPTION, "Browse metadatabase");

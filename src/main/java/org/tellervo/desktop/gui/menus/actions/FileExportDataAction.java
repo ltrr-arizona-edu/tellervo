@@ -15,7 +15,7 @@ import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 
 import com.dmurph.mvc.MVCEvent;
 
-public class ExportDataAction extends AbstractAction{
+public class FileExportDataAction extends AbstractAction{
 
 	private static final long serialVersionUID = 1L;
 	private final String argMVCKey;
@@ -25,7 +25,7 @@ public class ExportDataAction extends AbstractAction{
 	 * 
 	 * @param frame
 	 */
-	public ExportDataAction(String argMVCKey) {
+	public FileExportDataAction(String argMVCKey) {
        // super(I18n.getText("menus.file.export"), Builder.getIcon("fileexport.png", 22));
         super("Export data and metadata...", Builder.getIcon("fileexport.png", 22));
         
@@ -40,7 +40,7 @@ public class ExportDataAction extends AbstractAction{
 	 * 
 	 * @param frame
 	 */
-	public ExportDataAction(String argMVCKey, Boolean b) {
+	public FileExportDataAction(String argMVCKey, Boolean b) {
         super("", Builder.getIcon("fileexport.png", 22));
         this.argMVCKey=argMVCKey;
         putValue(SHORT_DESCRIPTION, "Export data");

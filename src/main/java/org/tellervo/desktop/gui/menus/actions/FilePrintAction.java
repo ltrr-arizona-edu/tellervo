@@ -9,7 +9,7 @@ import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.print.SeriesReport;
 import org.tellervo.desktop.ui.Builder;
 
-public class PrintAction extends AbstractAction{
+public class FilePrintAction extends AbstractAction{
 
 	private static final long serialVersionUID = 1L;
 	private AbstractEditor ed;
@@ -18,7 +18,7 @@ public class PrintAction extends AbstractAction{
 	 * 
 	 * @param frame
 	 */
-	public PrintAction(AbstractEditor ed) {
+	public FilePrintAction(AbstractEditor ed) {
         //super(I18n.getText("menus.file.print"), Builder.getIcon("printer.png", 22));
         super("&Print [accel p]", Builder.getIcon("printer.png", 22));
         this.ed=ed;

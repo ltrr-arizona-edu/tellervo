@@ -17,7 +17,7 @@ import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 
 import com.dmurph.mvc.MVCEvent;
 
-public class AddLayersAction extends AbstractAction{
+public class ViewAddLayersAction extends AbstractAction{
 
 	private static final long serialVersionUID = 1L;
 	private GISFrame parent;
@@ -27,7 +27,7 @@ public class AddLayersAction extends AbstractAction{
 	 * 
 	 * @param frame
 	 */
-	public AddLayersAction(GISFrame parent) {
+	public ViewAddLayersAction(GISFrame parent) {
         //super(I18n.getText("menus.view.addlayers"), Builder.getIcon("addlayers.png", 22));
         super("Add data layers", Builder.getIcon("addlayers.png", 22));
         this.parent=parent;

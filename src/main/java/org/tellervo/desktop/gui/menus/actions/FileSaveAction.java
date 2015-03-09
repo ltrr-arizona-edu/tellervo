@@ -3,17 +3,15 @@ package org.tellervo.desktop.gui.menus.actions;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.JFrame;
 
 import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 
-public class SaveAction extends AbstractAction{
+public class FileSaveAction extends AbstractAction{
 
 	private static final long serialVersionUID = 1L;
 	private final JFrame f;
@@ -23,7 +21,7 @@ public class SaveAction extends AbstractAction{
 	 * 
 	 * @param frame
 	 */
-	public SaveAction(JFrame frame) {
+	public FileSaveAction(JFrame frame) {
         //super(I18n.getText("menus.file.save"), Builder.getIcon("filesave.png", 22));
         super("&Save [accel S]", Builder.getIcon("filesave.png", 22));
         f=frame;
@@ -32,7 +30,7 @@ public class SaveAction extends AbstractAction{
         //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.save"));
     }
 	
-	public SaveAction(JFrame frame, Boolean b) {
+	public FileSaveAction(JFrame frame, Boolean b) {
         super("", Builder.getIcon("filesave.png", 22));
         f=frame;
         putValue(SHORT_DESCRIPTION, "Save the current document");

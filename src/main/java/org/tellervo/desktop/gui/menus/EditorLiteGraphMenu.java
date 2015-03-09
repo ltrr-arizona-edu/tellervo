@@ -25,7 +25,7 @@ import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.GraphCurrentSeriesAction;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.I18n;
 
@@ -39,7 +39,7 @@ public class EditorLiteGraphMenu extends JMenu {
 		super(I18n.getText("menus.graph")); // i18n bypasses mnemonic here!
 
 		// plot
-		Action graphSeriesAction = new GraphSeriesAction(s);
+		Action graphSeriesAction = new GraphCurrentSeriesAction(s);
 		plot = new JMenuItem(graphSeriesAction);
 		add(plot);
 		

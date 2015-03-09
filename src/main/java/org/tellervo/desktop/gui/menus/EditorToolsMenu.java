@@ -35,7 +35,7 @@ import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.cross.CrossdateDialog;
 import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
-import org.tellervo.desktop.gui.menus.actions.TruncateAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsTruncateAction;
 import org.tellervo.desktop.index.IndexDialog;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.manip.ReconcileWindow;
@@ -92,7 +92,7 @@ public class EditorToolsMenu extends JMenu implements SampleListener {
 				new TruncateDialog(sample, editor);
 			}
 		});*/
-		Action truncateAction = new TruncateAction(I18n.getText("menus.tools.truncate"),
+		Action truncateAction = new ToolsTruncateAction(I18n.getText("menus.tools.truncate"),
 				sample, editor, null);
 		
 		truncate = new JMenuItem(truncateAction);

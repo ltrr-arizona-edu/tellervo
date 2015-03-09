@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -28,15 +29,15 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
 import org.tellervo.desktop.gui.SaveableDocument;
-import org.tellervo.desktop.gui.menus.actions.ExportDataAction;
+import org.tellervo.desktop.gui.menus.actions.FileExportDataAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
-import org.tellervo.desktop.gui.menus.actions.GraphSeriesAction;
-import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
-import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
-import org.tellervo.desktop.gui.menus.actions.PrintAction;
+import org.tellervo.desktop.gui.menus.actions.GraphCurrentSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
+import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
+import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
-import org.tellervo.desktop.gui.menus.actions.SaveAction;
-import org.tellervo.desktop.gui.menus.actions.TruncateAction;
+import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsTruncateAction;
 import org.tellervo.desktop.gui.widgets.TitlelessButton;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
@@ -64,7 +65,7 @@ SampleListener {
 	private JList<Sample> lstSamples;
 	protected JPanel dataPanel;
 	protected JTabbedPane tabbedPane;
-	
+	private EditorActions actions;
 
 	public AbstractEditor(Sample sample) {
 				
@@ -103,6 +104,8 @@ SampleListener {
 		if(!App.isInitialized()) App.init();
 		
 		setTitle("Tellervo");
+		
+		actions = new EditorActions(this);
 		
 		this.setIconImage(Builder.getApplicationIcon());
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -178,8 +181,12 @@ SampleListener {
 		JMenuBar menuBar = new JMenuBar();
 		contentPane.add(menuBar, "cell 0 0,growx,aligny top");
 		
-		JMenu File = new JMenu("File");
-		menuBar.add(File);
+		JMenu mnFile = new JMenu("File");
+		JMenuItem miSave = new JMenuItem(actions.fileSaveAction);
+		mnFile.add(miSave);
+		
+		
+		menuBar.add(mnFile);
 		
 		JMenu mnEdit = new JMenu("Edit");
 		menuBar.add(mnEdit);
@@ -209,57 +216,43 @@ SampleListener {
 		
 		
 		// File Buttons
-		Action fileOpenAction = new FileOpenAction(this);
-		AbstractButton fileOpen = new TitlelessButton(fileOpenAction);
+		AbstractButton fileOpen = new TitlelessButton(actions.fileOpenAction);
 		toolBar.add(fileOpen);
 		
-		Action saveAction = new SaveAction(this);
-		AbstractButton save = new TitlelessButton(saveAction);
+		AbstractButton save = new TitlelessButton(actions.fileSaveAction);
 		toolBar.add(save);
 		
-		Action exportAction = new ExportDataAction(IOController.OPEN_EXPORT_WINDOW);
-		AbstractButton fileexport = new TitlelessButton(exportAction);
+		AbstractButton fileexport = new TitlelessButton(actions.fileExportAction);
 		toolBar.add(fileexport);
 		
-		Action printAction = new PrintAction(this);
-		AbstractButton print = new TitlelessButton(printAction);
+		AbstractButton print = new TitlelessButton(actions.filePrintAction);
 		toolBar.add(print);
 		
 		// Edit Buttons
-		Action measureAction = new MeasureToggleAction(this);
-		AbstractButton measure = new TitlelessButton(measureAction);
+		AbstractButton measure = new TitlelessButton(actions.editMeasureAction);
 		toolBar.add(measure);
 		
 		// Initialize data grid button
-		//Action initGridAction = new InitDataGridAction(this, dataView);
-		//AbstractButton initGrid = new TitlelessButton(initGridAction);
-		//toolBar.add(initGrid);
+		AbstractButton initGrid = new TitlelessButton(actions.editInitGridAction);
+		toolBar.add(initGrid);
 
 		// Remarks Button
-		Action remarkAction = new RemarkToggleAction(this);
-		AbstractButton toggleRemarks = new TitlelessButton(remarkAction);
+		AbstractButton toggleRemarks = new TitlelessButton(actions.remarkAction);
 		toolBar.add(toggleRemarks);
 				
 		// Admin Buttons
 		toolBar.addSeparator();
-		MetadatabaseBrowserAction metadbAction = new MetadatabaseBrowserAction();
-		AbstractButton launchMetadb = new TitlelessButton(metadbAction);
+		AbstractButton launchMetadb = new TitlelessButton(actions.adminMetaDBAction);
 		toolBar.add(launchMetadb);
-		
-		
-		
+
 		// s Buttons
 		toolBar.addSeparator();
-		Action truncateAction = new TruncateAction(null, this, null);
-		AbstractButton truncate = new TitlelessButton(truncateAction);
+		AbstractButton truncate = new TitlelessButton(actions.toolsTruncateAction);
 		toolBar.add(truncate);
-		
-		
-		
+
 		// Graph Buttons
 		toolBar.addSeparator();
-		Action graphSeriesAction = new GraphSeriesAction(this);
-		AbstractButton graph = new TitlelessButton(graphSeriesAction);
+		AbstractButton graph = new TitlelessButton(actions.graphSeriesAction);
 		toolBar.add(graph);
 		
 

@@ -51,9 +51,9 @@ import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.XFrame;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
-import org.tellervo.desktop.gui.menus.actions.ExportDataAction;
-import org.tellervo.desktop.gui.menus.actions.PrintAction;
-import org.tellervo.desktop.gui.menus.actions.SaveAction;
+import org.tellervo.desktop.gui.menus.actions.FileExportDataAction;
+import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
+import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.io.ExportDialog;
@@ -248,7 +248,7 @@ public class FileMenu extends JMenu {
 	}
 	
 	public void addExportMenus(){
-		Action exportAction = new ExportDataAction(IOController.OPEN_EXPORT_WINDOW);
+		Action exportAction = new FileExportDataAction(IOController.OPEN_EXPORT_WINDOW);
 		fileexport = new JMenuItem(exportAction);
 		add(fileexport);
 	}
@@ -632,7 +632,7 @@ public class FileMenu extends JMenu {
 
 	public void addPrintMenu() {
 		// menuitem
-		PrintAction printAction = new PrintAction(null);
+		FilePrintAction printAction = new FilePrintAction(null);
 		JMenuItem print = new JMenuItem(printAction);
 		print.setEnabled(false);
 		add(print);
@@ -675,7 +675,7 @@ public class FileMenu extends JMenu {
 	  
 		public void addSaveMenu() {
 			
-			Action saveAction = new SaveAction(f);
+			Action saveAction = new FileSaveAction(f);
 			save = new JMenuItem(saveAction);
 			add(save);
 	

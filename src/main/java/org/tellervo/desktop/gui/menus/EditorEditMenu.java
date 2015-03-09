@@ -53,8 +53,8 @@ import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.UserCancelledException;
-import org.tellervo.desktop.gui.menus.actions.MeasureToggleAction;
-import org.tellervo.desktop.gui.menus.actions.PrintAction;
+import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
+import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.io.TwoColumn;
@@ -279,7 +279,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 		
 		if(editor==null) log.error("Editor is null");
 		
-		Action measureAction = new MeasureToggleAction(editor);
+		Action measureAction = new EditMeasureToggleAction(editor);
 		//toggleMeasureMenuItem = new JMenuItem(measureAction);		
 		toggleMeasureMenuItem = Builder.makeMenuItem("menus.edit.start_measuring", true, "measure.png");
 		toggleMeasureMenuItem.addActionListener(new AbstractAction() {

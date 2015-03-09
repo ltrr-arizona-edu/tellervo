@@ -42,7 +42,7 @@ import org.tellervo.desktop.curation.SampleStatusDialog;
 import org.tellervo.desktop.gis.GISFrame;
 import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
-import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
+import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.odk.ODKFormDesignPanel;
@@ -335,7 +335,7 @@ public class AdminMenu extends JMenu {
 	 	});
 	 	add(buildODKForm);*/
 	 	
-	 	Action metadbAction = new MetadatabaseBrowserAction();
+	 	Action metadbAction = new AdminMetadatabaseBrowserAction();
 	 	JMenuItem metadb = new JMenuItem(metadbAction);
 	 	add(metadb);
 

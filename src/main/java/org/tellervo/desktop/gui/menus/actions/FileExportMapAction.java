@@ -26,7 +26,7 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 
-public class ExportMapAction extends ScreenShotAction{
+public class FileExportMapAction extends ScreenShotAction{
 
 	private static final long serialVersionUID = 1L;
 
@@ -35,7 +35,7 @@ public class ExportMapAction extends ScreenShotAction{
 	 * 
 	 * @param frame
 	 */
-	public ExportMapAction(GISPanel panel) {
+	public FileExportMapAction(GISPanel panel) {
 		super(panel.getWwd());
 		
         putValue(Action.SMALL_ICON, Builder.getIcon("captureimage.png", 22));

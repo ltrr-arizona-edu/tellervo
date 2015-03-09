@@ -8,13 +8,13 @@ import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.ui.Builder;
 
-public class GraphSeriesAction extends AbstractAction{
+public class GraphCurrentSeriesAction extends AbstractAction{
 
 	private static final long serialVersionUID = 1L;
 	private final AbstractEditor editor;
 
 	
-	public GraphSeriesAction(AbstractEditor editor) {
+	public GraphCurrentSeriesAction(AbstractEditor editor) {
        // super(I18n.getText("menus.graph.activeSeries"), Builder.getIcon("graph.png", 22));
         super("&Graph active series [accel G]", Builder.getIcon("graph.png", 22));
         putValue(SHORT_DESCRIPTION, "Graph the current series");
