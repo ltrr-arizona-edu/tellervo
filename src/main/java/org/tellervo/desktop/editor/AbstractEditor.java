@@ -185,6 +185,19 @@ SampleListener {
 		JMenuItem miSave = new JMenuItem(actions.fileSaveAction);
 		mnFile.add(miSave);
 		
+		JMenuItem miPrint = new JMenuItem(actions.filePrintAction);
+		mnFile.add(miPrint);
+		
+		JMenuItem miLogoff = new JMenuItem(actions.fileLogoffAction);
+		mnFile.add(miLogoff);
+		
+		JMenuItem miLogon = new JMenuItem(actions.fileLogonAction);
+		mnFile.add(miLogon);
+		
+		JMenuItem miExit = new JMenuItem(actions.fileExitAction);
+		mnFile.add(miExit);
+		
+		
 		
 		menuBar.add(mnFile);
 		
@@ -222,7 +235,7 @@ SampleListener {
 		AbstractButton save = new TitlelessButton(actions.fileSaveAction);
 		toolBar.add(save);
 		
-		AbstractButton fileexport = new TitlelessButton(actions.fileExportAction);
+		AbstractButton fileexport = new TitlelessButton(actions.fileExportDataAction);
 		toolBar.add(fileexport);
 		
 		AbstractButton print = new TitlelessButton(actions.filePrintAction);

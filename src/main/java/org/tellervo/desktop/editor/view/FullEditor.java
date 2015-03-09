@@ -58,6 +58,11 @@ public class FullEditor extends AbstractEditor {
 
 	}
 	
+	public GISPanel getGISPanel()
+	{
+		//TODO
+		return null;
+	}
 	
 	public void initFullEditor()
 	{
