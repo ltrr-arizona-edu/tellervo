@@ -69,6 +69,13 @@ public abstract class AbstractEditor extends JFrame implements SaveableDocument,
 	protected JPanel dataPanel;
 	protected JTabbedPane tabbedPane;
 	private EditorActions actions;
+	
+	JMenuItem miOpenMulti;
+	JMenuItem miLogoff;
+	JMenuItem miLogon;
+	JMenuItem miExportData;
+	JMenuItem miBulkDataEntry;
+	JMenuItem miDesignODKForm;
 
 	public AbstractEditor(Sample sample) {
 
@@ -348,11 +355,17 @@ public abstract class AbstractEditor extends JFrame implements SaveableDocument,
 	
 	private void setGUILoggedIn(Boolean loggedin)
 	{
-		
+		this.miLogon.setVisible(loggedin);
+		this.miLogoff.setVisible(!loggedin);
 	}
 	
-	private void setTellervoLiteMode(Boolean liteMode)
+	private void setTellervoFullMode(Boolean fullMode)
 	{
+		this.miOpenMulti.setVisible(fullMode);
+		this.miExportData.setVisible(fullMode);
+		this.miBulkDataEntry.setVisible(fullMode);
+		this.miDesignODKForm.setVisible(fullMode);
+		
 		
 	}
 	
@@ -370,9 +383,9 @@ public abstract class AbstractEditor extends JFrame implements SaveableDocument,
 		setGUILoggedIn(App.isLoggedIn());
 
 		if (App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false)) {
-			setTellervoLiteMode(false);
+			setTellervoFullMode(true);
 		} else {
-			setTellervoLiteMode(true);
+			setTellervoFullMode(false);
 		}
 	}
 
