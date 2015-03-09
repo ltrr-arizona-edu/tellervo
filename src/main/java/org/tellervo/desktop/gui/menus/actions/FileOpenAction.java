@@ -13,8 +13,6 @@ import javax.swing.JFileChooser;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
-import org.tellervo.desktop.gui.menus.EditorLiteFileMenu;
-import org.tellervo.desktop.gui.menus.FileMenu;
 import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Element;

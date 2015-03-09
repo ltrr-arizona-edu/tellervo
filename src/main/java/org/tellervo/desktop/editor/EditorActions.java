@@ -14,6 +14,12 @@ import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsTruncateAction;
 import org.tellervo.desktop.io.control.IOController;
 
+/**
+ * A collection of actions organised by their position in a standard menu
+ * 
+ * @author pbrewer
+ *
+ */
 public class EditorActions {
 
 	private AbstractEditor editor;
@@ -48,12 +54,6 @@ public class EditorActions {
 	public EditorActions(AbstractEditor editor)
 	{
 		this.editor = editor;
-		init();
-	}
-	
-	
-	private void init()
-	{
 		fileOpenAction = new FileOpenAction(editor);
 		fileSaveAction = new FileSaveAction(editor);
 		fileExportAction = new FileExportDataAction(IOController.OPEN_EXPORT_WINDOW);
@@ -65,4 +65,6 @@ public class EditorActions {
 		toolsTruncateAction = new ToolsTruncateAction(editor);
 		graphSeriesAction = new GraphCurrentSeriesAction(editor);
 	}
+	
+	
 }
