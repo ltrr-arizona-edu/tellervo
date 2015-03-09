@@ -23,7 +23,7 @@ public class FileSaveAction extends AbstractAction{
 	 */
 	public FileSaveAction(JFrame frame) {
         //super(I18n.getText("menus.file.save"), Builder.getIcon("filesave.png", 22));
-        super("&Save [accel S]", Builder.getIcon("filesave.png", 22));
+        super("Save", Builder.getIcon("filesave.png", 22));
         f=frame;
         putValue(SHORT_DESCRIPTION, "Save the current document");
         //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.save")); 

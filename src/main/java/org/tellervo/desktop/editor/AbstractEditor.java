@@ -182,11 +182,39 @@ SampleListener {
 		contentPane.add(menuBar, "cell 0 0,growx,aligny top");
 		
 		JMenu mnFile = new JMenu("File");
+		
+		JMenuItem miNew = new JMenuItem(actions.fileNewAction);
+		mnFile.add(miNew);
+		
+		JMenuItem miOpen = new JMenuItem(actions.fileOpenAction);
+		mnFile.add(miOpen);
+		
+		JMenuItem miOpenMulti = new JMenuItem(actions.fileOpenMultiAction);
+		mnFile.add(miOpenMulti);
+		
+		mnFile.addSeparator();
+		
+		JMenuItem miExportData = new JMenuItem(actions.fileExportDataAction);
+		mnFile.add(miExportData);
+		
+		//JMenuItem miExportMap = new JMenuItem(actions.fileExportMapAction);
+		//mnFile.add(miExportMap);
+		
+		JMenuItem miBulkDataEntry = new JMenuItem(actions.fileBulkDataEntryAction);
+		mnFile.add(miBulkDataEntry);
+		
+		JMenuItem miDesignODKForm = new JMenuItem(actions.fileDesignODKFormAction);
+		mnFile.add(miDesignODKForm);
+		
 		JMenuItem miSave = new JMenuItem(actions.fileSaveAction);
 		mnFile.add(miSave);
 		
+		mnFile.addSeparator();
+		
 		JMenuItem miPrint = new JMenuItem(actions.filePrintAction);
 		mnFile.add(miPrint);
+		
+		mnFile.addSeparator();
 		
 		JMenuItem miLogoff = new JMenuItem(actions.fileLogoffAction);
 		mnFile.add(miLogoff);
@@ -197,11 +225,53 @@ SampleListener {
 		JMenuItem miExit = new JMenuItem(actions.fileExitAction);
 		mnFile.add(miExit);
 		
-		
-		
+
 		menuBar.add(mnFile);
 		
 		JMenu mnEdit = new JMenu("Edit");
+		menuBar.add(mnEdit);
+		
+		JMenuItem miCopy = new JMenuItem(actions.editCopyAction);
+		mnEdit.add(miCopy);
+		
+		mnEdit.addSeparator();
+		
+		JMenuItem miSelectAll = new JMenuItem(actions.editSelectAllAction);
+		mnEdit.add(miSelectAll);
+		
+		mnEdit.addSeparator();
+		
+		JMenuItem miInsertYearPushForwards = new JMenuItem(actions.editInsertYearPushForwardsAction);
+		mnEdit.add(miInsertYearPushForwards);
+		
+		JMenuItem miInsertYearPushBackwards = new JMenuItem(actions.editInsertYearPushBackwardsAction);
+		mnEdit.add(miInsertYearPushBackwards);
+		
+		JMenuItem miInsertMissingRingPushForwards = new JMenuItem(actions.editInsertMissingRingPushForwardsAction);
+		mnEdit.add(miInsertMissingRingPushForwards);
+		
+		JMenuItem miInsertMissingRingPushBackwards = new JMenuItem(actions.editInsertMissingRingPushBackwardsAction);
+		mnEdit.add(miInsertMissingRingPushBackwards);
+		
+		JMenuItem miDeleteYear = new JMenuItem(actions.editDeleteAction);
+		mnEdit.add(miDeleteYear);
+		
+		JMenuItem miInsertYears = new JMenuItem(actions.editInsertYearsAction);
+		mnEdit.add(miInsertYears);
+		
+		mnEdit.addSeparator();
+		
+		JMenuItem miInitializeDataGrid = new JMenuItem(actions.editInitGridAction);
+		mnEdit.add(miInitializeDataGrid);
+		
+		JMenuItem miStartMeasuring = new JMenuItem(actions.editMeasureAction);
+		mnEdit.add(miStartMeasuring);
+		
+		mnEdit.addSeparator();
+		
+		JMenuItem miPreferences = new JMenuItem(actions.editPreferencesAction);
+		mnEdit.add(miPreferences);
+		
 		menuBar.add(mnEdit);
 		
 		JMenu mnAdministration = new JMenu("Administration");

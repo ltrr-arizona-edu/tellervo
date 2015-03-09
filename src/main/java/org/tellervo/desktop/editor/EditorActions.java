@@ -2,6 +2,15 @@ package org.tellervo.desktop.editor;
 
 import javax.swing.Action;
 
+import org.tellervo.desktop.gui.menus.actions.EditCopyAction;
+import org.tellervo.desktop.gui.menus.actions.EditDeleteAction;
+import org.tellervo.desktop.gui.menus.actions.EditInsertMissingRingPushBackwardsAction;
+import org.tellervo.desktop.gui.menus.actions.EditInsertMissingRingPushForwardsAction;
+import org.tellervo.desktop.gui.menus.actions.EditInsertYearPushBackwardsAction;
+import org.tellervo.desktop.gui.menus.actions.EditInsertYearPushForwardsAction;
+import org.tellervo.desktop.gui.menus.actions.EditInsertYearsAction;
+import org.tellervo.desktop.gui.menus.actions.EditPreferencesAction;
+import org.tellervo.desktop.gui.menus.actions.EditSelectAllAction;
 import org.tellervo.desktop.gui.menus.actions.FileBulkDataEntryAction;
 import org.tellervo.desktop.gui.menus.actions.FileDesignODKFormAction;
 import org.tellervo.desktop.gui.menus.actions.FileExitAction;
@@ -49,6 +58,15 @@ public class EditorActions {
 	// Editor menu actions
 	public Action editMeasureAction;
 	public Action editInitGridAction;
+	public Action editCopyAction;
+	public Action editSelectAllAction;
+	public Action editInsertYearPushForwardsAction;
+	public Action editInsertYearPushBackwardsAction;
+	public Action editInsertMissingRingPushForwardsAction;
+	public Action editInsertMissingRingPushBackwardsAction;
+	public Action editDeleteAction;
+	public Action editInsertYearsAction;
+	public Action editPreferencesAction;
 	
 	// Admin menu actions
 	public Action adminMetaDBAction;
@@ -82,8 +100,17 @@ public class EditorActions {
 		fileLogoffAction = new FileLogoffAction();
 		fileLogonAction = new FileLogonAction();
 		fileExitAction = new FileExitAction();
-		editMeasureAction = new EditMeasureToggleAction(editor);
+		editCopyAction = new EditCopyAction(editor);
+		editSelectAllAction = new EditSelectAllAction(editor);
+		editInsertYearPushForwardsAction = new EditInsertYearPushForwardsAction(editor);
+		editInsertYearPushBackwardsAction = new EditInsertYearPushBackwardsAction(editor);
+		editInsertMissingRingPushForwardsAction = new EditInsertMissingRingPushForwardsAction(editor);
+		editInsertMissingRingPushBackwardsAction = new EditInsertMissingRingPushBackwardsAction(editor);
+		editDeleteAction = new EditDeleteAction(editor);
+		editInsertYearsAction = new EditInsertYearsAction(editor);
 		editInitGridAction = new EditInitDataGridAction(editor);
+		editMeasureAction = new EditMeasureToggleAction(editor);
+		editPreferencesAction = new EditPreferencesAction();
 		remarkAction = new RemarkToggleAction(editor);
 		adminMetaDBAction = new AdminMetadatabaseBrowserAction();
 		toolsTruncateAction = new ToolsTruncateAction(editor);
