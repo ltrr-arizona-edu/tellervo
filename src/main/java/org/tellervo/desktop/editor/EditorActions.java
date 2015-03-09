@@ -36,7 +36,7 @@ public class EditorActions {
 	public Action fileOpenAction ;
 	public Action fileSaveAction;
 	public Action fileExportDataAction;
-	public Action fileExportMapAction;
+	//public Action fileExportMapAction;
 	public Action filePrintAction;
 	public Action fileNewAction;
 	public Action fileOpenMultiAction;
@@ -74,7 +74,7 @@ public class EditorActions {
 		fileOpenAction = new FileOpenAction(editor);
 		fileOpenMultiAction = new FileOpenMultiAction();
 		fileExportDataAction = new FileExportDataAction(IOController.OPEN_EXPORT_WINDOW);
-		fileExportMapAction = new FileExportMapAction(editor);
+		//fileExportMapAction = new FileExportMapAction(editor);
 		fileBulkDataEntryAction = new FileBulkDataEntryAction(IOController.OPEN_EXPORT_WINDOW);
 		fileDesignODKFormAction = new FileDesignODKFormAction(editor);
 		fileSaveAction = new FileSaveAction(editor);

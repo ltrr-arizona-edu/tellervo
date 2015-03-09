@@ -178,8 +178,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		else
 			stopEditing(true);
 	}
-	
-	
+		
 	public SeriesDataMatrix(Sample s, AbstractEditor e) {
 		// copy data reference, add self as observer
 		mySample = s;
