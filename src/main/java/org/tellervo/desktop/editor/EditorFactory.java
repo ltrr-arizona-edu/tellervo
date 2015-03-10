@@ -437,7 +437,7 @@ public class EditorFactory {
 	}
 	
 	
-	public static Sample createSampleFromSeries(ITridas series, TridasElement el, File file, String fileType, Boolean hideWarnings)
+	public static Sample createSampleFromSeries(ITridasSeries series, TridasElement el, File file, String fileType, Boolean hideWarnings)
 	{
 		String species = null;
 		String author = null;
@@ -453,6 +453,7 @@ public class EditorFactory {
 		Sample sample = new Sample();
 		SafeIntYear endYear;
 		SafeIntYear startYear = new SafeIntYear(1001);
+		TridasUnit unit = null;
 		List<TridasValues> servalues;
 		
 		if(series instanceof TridasDerivedSeries)
@@ -472,6 +473,11 @@ public class EditorFactory {
 			author = ds.getAuthor();
 			
 			endYear = startYear.add(ds.getValues().get(0).getValues().size()-1);
+			
+			try{
+				unit = ds.getValues().get(0).getUnit();
+			} catch (Exception e)
+			{}
 			servalues = ds.getValues();
 		}
 		else
@@ -491,6 +497,11 @@ public class EditorFactory {
 			keycode = TridasUtils.getGenericFieldByName(ms, "keycode");
 			
 			endYear = startYear.add(ms.getValues().get(0).getValues().size()-1);
+			
+			try{
+				unit = ms.getValues().get(0).getUnit();
+			} catch (Exception e)
+			{}
 			servalues = ms.getValues();
 		}
 		
@@ -635,9 +646,22 @@ public class EditorFactory {
 			sample.setLatewoodWidthData(late);
 		}
 			
-			
-	    sample.getSeries().getValues().get(0).setUnit(null);
-	    sample.getSeries().getValues().get(0).setUnitless(new TridasUnitless());
+		// Make sure units are set appropriately
+		for(int i=0; i<sample.getSeries().getValues().size(); i++)
+		{
+			if(unit!=null)
+			{
+				sample.getSeries().getValues().get(i).setUnit(unit);
+			    sample.getSeries().getValues().get(i).setUnitless(null);
+			}
+			else
+			{
+				sample.getSeries().getValues().get(i).setUnit(null);
+			    sample.getSeries().getValues().get(i).setUnitless(new TridasUnitless());
+			}
+		}
+	
+
 	    
 	    return sample;
 	}

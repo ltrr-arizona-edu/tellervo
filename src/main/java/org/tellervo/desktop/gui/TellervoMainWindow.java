@@ -53,10 +53,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.editor.EditorActions;
 import org.tellervo.desktop.editor.EditorFactory;
+import org.tellervo.desktop.editor.TellervoMenuBar;
 import org.tellervo.desktop.gui.menus.AdminMenu;
 import org.tellervo.desktop.gui.menus.EditMenu;
-import org.tellervo.desktop.gui.menus.EditorLiteFileMenu;
 import org.tellervo.desktop.gui.menus.FileMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.gui.menus.WindowMenu;
@@ -169,24 +170,8 @@ public class TellervoMainWindow extends JFrame {
 
 		// menubar
 		{
-			JMenuBar menubar = new JMenuBar();
+			JMenuBar menubar = new TellervoMenuBar(new EditorActions(this));
 			
-			if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
-			{
-				menubar.add(new EditorLiteFileMenu(this));
-			}
-			else
-			{
-				menubar.add(new FileMenu(this));
-
-			}
-			
-			menubar.add(new EditMenu(this));
-			menubar.add(new AdminMenu(this));
-			//menubar.add(new OldCrossdateMenu());
-			if (Platform.isMac())
-				menubar.add(new WindowMenu(this));
-			menubar.add(new HelpMenu());
 			setJMenuBar(menubar);
 		}
 

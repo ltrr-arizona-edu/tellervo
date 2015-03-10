@@ -12,8 +12,8 @@ import javax.swing.JFileChooser;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.view.LiteEditor;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
-import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
@@ -53,63 +53,7 @@ public class FileOpenAction extends AbstractAction{
 		
 		if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
 		{
-			// custom jfilechooser
-			File file = null;
-			String format = null;
-			JFileChooser fc = new JFileChooser();
-		
-			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
-			fc.setMultiSelectionEnabled(false);
-									
-			// Loop through formats and create filters for each
-			fc.setAcceptAllFileFilterUsed(false);
-			ArrayList<DendroFileFilter> filters = TridasIO.getFileReadingFilterArray();
-			Collections.sort(filters);
-			for(DendroFileFilter filter : filters)
-			{			
-				fc.addChoosableFileFilter(filter);
-				if(App.prefs.getPref(PrefKey.IMPORT_FORMAT, null)!=null)
-				{
-					if(App.prefs.getPref(PrefKey.IMPORT_FORMAT, null).equals(filter.getFormatName()))
-					{
-						fc.setFileFilter(filter);
-					}
-				}
-			}
-			
-
-			// Pick the last used directory by default
-			try{
-				File lastDirectory = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_READ, null));
-				if(lastDirectory != null){
-					fc.setCurrentDirectory(lastDirectory);
-				}
-			} catch (Exception e)
-			{
-			}
-			
-			int retValue = fc.showOpenDialog(parent);
-			TricycleModelLocator.getInstance().setLastDirectory(fc.getCurrentDirectory());
-			if (retValue == JFileChooser.APPROVE_OPTION) {
-				file = fc.getSelectedFile();
-				String formatDesc = fc.getFileFilter().getDescription();
-				// Remember this folder for next time
-				App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
-				try{
-					//format = formatDesc.substring(0, formatDesc.indexOf("(")).trim();
-					format = ((DendroFileFilter)fc.getFileFilter()).getFormatName();
-					App.prefs.setPref(PrefKey.IMPORT_FORMAT, format);
-				} catch (Exception e){}
-			}
-			if (file == null) {
-				return;
-			}
-					
-	        ImportDataOnly importDialog = new ImportDataOnly(parent, file, format);
-	        importDialog.openEditorLites();
-			OpenRecent.sampleOpened(new SeriesDescriptor(s));
-
-		    
+			openLegacyFile(parent);		    
 		}
 		else
 		{
@@ -117,6 +61,64 @@ public class FileOpenAction extends AbstractAction{
 		}
 	}
 	
+	
+	public static void openLegacyFile(Window parent)
+	{
+		// custom jfilechooser
+		File file = null;
+		String format = null;
+		JFileChooser fc = new JFileChooser();
+	
+		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fc.setMultiSelectionEnabled(false);
+								
+		// Loop through formats and create filters for each
+		fc.setAcceptAllFileFilterUsed(false);
+		ArrayList<DendroFileFilter> filters = TridasIO.getFileReadingFilterArray();
+		Collections.sort(filters);
+		for(DendroFileFilter filter : filters)
+		{			
+			fc.addChoosableFileFilter(filter);
+			if(App.prefs.getPref(PrefKey.IMPORT_FORMAT, null)!=null)
+			{
+				if(App.prefs.getPref(PrefKey.IMPORT_FORMAT, null).equals(filter.getFormatName()))
+				{
+					fc.setFileFilter(filter);
+				}
+			}
+		}
+		
+
+		// Pick the last used directory by default
+		try{
+			File lastDirectory = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_READ, null));
+			if(lastDirectory != null){
+				fc.setCurrentDirectory(lastDirectory);
+			}
+		} catch (Exception e)
+		{
+		}
+		
+		int retValue = fc.showOpenDialog(parent);
+		TricycleModelLocator.getInstance().setLastDirectory(fc.getCurrentDirectory());
+		if (retValue == JFileChooser.APPROVE_OPTION) {
+			file = fc.getSelectedFile();
+			String formatDesc = fc.getFileFilter().getDescription();
+			// Remember this folder for next time
+			App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
+			try{
+				//format = formatDesc.substring(0, formatDesc.indexOf("(")).trim();
+				format = ((DendroFileFilter)fc.getFileFilter()).getFormatName();
+				App.prefs.setPref(PrefKey.IMPORT_FORMAT, format);
+			} catch (Exception e){}
+		}
+		if (file == null) {
+			return;
+		}
+		
+		new LiteEditor(parent, file, format);
+
+	}
 	
 	public static void opendb(boolean multi) {
 		DBBrowser browser = new DBBrowser(App.mainWindow, true, multi);

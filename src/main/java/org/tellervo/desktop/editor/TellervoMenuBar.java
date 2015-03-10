@@ -2,6 +2,8 @@ package org.tellervo.desktop.editor;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 
 import javax.swing.JFileChooser;
@@ -10,6 +12,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -22,7 +25,12 @@ import org.tridas.io.TridasIO;
 public class TellervoMenuBar extends JMenuBar{
 
 	private static final long serialVersionUID = 1L;
-
+	JMenuItem miOpenMulti;
+	JMenuItem miLogoff;
+	JMenuItem miLogon;
+	JMenuItem miExportData;
+	JMenuItem miBulkDataEntry;
+	JMenuItem miDesignODKForm;
 
 	public TellervoMenuBar(EditorActions actions)
 	{
@@ -36,7 +44,7 @@ public class TellervoMenuBar extends JMenuBar{
 		JMenuItem miOpen = new JMenuItem(actions.fileOpenAction);
 		mnFile.add(miOpen);
 
-		JMenuItem miOpenMulti = new JMenuItem(actions.fileOpenMultiAction);
+		miOpenMulti = new JMenuItem(actions.fileOpenMultiAction);
 		mnFile.add(miOpenMulti);
 		
 		JMenu openrecent = OpenRecent.makeOpenRecentMenu();
@@ -49,7 +57,7 @@ public class TellervoMenuBar extends JMenuBar{
 		mnFile.add(getImportDataAndMetadataMenu());
 
 
-		JMenuItem miExportData = new JMenuItem(actions.fileExportDataAction);
+		miExportData = new JMenuItem(actions.fileExportDataAction);
 		mnFile.add(miExportData);
 
 		// JMenuItem miExportMap = new JMenuItem(actions.fileExportMapAction);
@@ -58,14 +66,17 @@ public class TellervoMenuBar extends JMenuBar{
 		mnFile.addSeparator();
 
 		
-		JMenuItem miBulkDataEntry = new JMenuItem(actions.fileBulkDataEntryAction);
+		miBulkDataEntry = new JMenuItem(actions.fileBulkDataEntryAction);
 		mnFile.add(miBulkDataEntry);
 
-		JMenuItem miDesignODKForm = new JMenuItem(actions.fileDesignODKFormAction);
+		miDesignODKForm = new JMenuItem(actions.fileDesignODKFormAction);
 		mnFile.add(miDesignODKForm);
 
 		JMenuItem miSave = new JMenuItem(actions.fileSaveAction);
 		mnFile.add(miSave);
+		
+		JMenuItem miSaveAs = new JMenuItem(actions.fileSaveAsAction);
+		mnFile.add(miSaveAs);
 
 		mnFile.addSeparator();
 
@@ -74,10 +85,10 @@ public class TellervoMenuBar extends JMenuBar{
 
 		mnFile.addSeparator();
 
-		JMenuItem miLogoff = new JMenuItem(actions.fileLogoffAction);
+		miLogoff = new JMenuItem(actions.fileLogoffAction);
 		mnFile.add(miLogoff);
 
-		JMenuItem miLogon = new JMenuItem(actions.fileLogonAction);
+		miLogon = new JMenuItem(actions.fileLogonAction);
 		mnFile.add(miLogon);
 
 		JMenuItem miExit = new JMenuItem(actions.fileExitAction);
@@ -162,6 +173,9 @@ public class TellervoMenuBar extends JMenuBar{
 		
 		JMenu mnHelp = new JMenu("Help");
 		add(mnHelp);
+		
+		
+		linkModel();
 	}
 	
 	
@@ -281,4 +295,39 @@ public class TellervoMenuBar extends JMenuBar{
 		return fileimportdataonly;
 	}
 	
+	private void setGUILoggedIn(Boolean loggedin)
+	{
+		this.miLogon.setVisible(loggedin);
+		this.miLogoff.setVisible(!loggedin);
+	}
+	
+	private void setTellervoFullMode(Boolean fullMode)
+	{
+		this.miOpenMulti.setVisible(fullMode);
+		this.miExportData.setVisible(fullMode);
+		this.miBulkDataEntry.setVisible(fullMode);
+		this.miDesignODKForm.setVisible(fullMode);
+		
+		
+	}
+	
+	protected void linkModel() {
+		App.appmodel.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent argEvt) {
+				if (argEvt.getPropertyName().equals(AppModel.NETWORK_STATUS)) {
+					setGUILoggedIn(App.isLoggedIn());
+				}
+			}
+		});
+
+		setGUILoggedIn(App.isLoggedIn());
+
+		if (App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false)) {
+			setTellervoFullMode(true);
+		} else {
+			setTellervoFullMode(false);
+		}
+	}
 }

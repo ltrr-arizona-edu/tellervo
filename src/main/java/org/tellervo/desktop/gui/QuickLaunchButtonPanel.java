@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Cursor;
 
 import javax.swing.JPanel;
+
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.BorderFactory;
@@ -14,11 +15,12 @@ import javax.swing.JLabel;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.gui.menus.AdminMenu;
-import org.tellervo.desktop.gui.menus.EditorLiteFileMenu;
 import org.tellervo.desktop.gui.menus.FileMenu;
+import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -112,11 +114,11 @@ public class QuickLaunchButtonPanel extends JPanel implements ActionListener, Mo
 		{
 			if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
 			{
-				EditorLiteFileMenu.openLegacyFile(parent);
+				FileOpenAction.openLegacyFile(parent);
 			}
 			else
 			{
-				FileMenu.opendb();
+				FileOpenAction.opendb(false);
 			}
 		}
 		else if(evt.getActionCommand().equals("importSeries"))

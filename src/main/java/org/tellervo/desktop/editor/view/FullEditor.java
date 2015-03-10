@@ -220,7 +220,7 @@ public class FullEditor extends AbstractEditor {
 				
 				
 				
-				setTitle();
+				setEditorTitle();
 				
 			}
 	

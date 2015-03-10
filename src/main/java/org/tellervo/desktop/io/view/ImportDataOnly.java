@@ -10,7 +10,6 @@ import javax.swing.JOptionPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.editor.EditorFactory;
-import org.tellervo.desktop.editor.PickSampleDialog;
 import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.editor.view.LiteEditor;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
@@ -288,29 +287,16 @@ public class ImportDataOnly extends Object {
 	
 	public void openEditors()
 	{
-		openEditors(false);
+		if(sampleList==null || sampleList.size()==0) return;
+		
+		new FullEditor(sampleList);
 	}
 	
-	public void openEditorLites()
-	{
-		openEditors(true);
-	}
-	
-	private void openEditors(Boolean useEditorLite)
+/*	public void openEditorLites()
 	{
 		if(sampleList==null || sampleList.size()==0) return;
 		
-		
-		if(useEditorLite)
-		{
-			LiteEditor le = new LiteEditor(sampleList);
-			
-		}
-		else 
-		{
-			FullEditor fe = new FullEditor(sampleList);
-		}
-		
-				
-	}
+		new LiteEditor(file, fileType, sampleList);
+	}*/
+
 }
