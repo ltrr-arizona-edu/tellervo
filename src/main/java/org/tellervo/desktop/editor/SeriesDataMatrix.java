@@ -254,6 +254,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		panelLeft.setLayout(new MigLayout("", "[158px,grow,fill]", "[][123.00,grow,fill]"));
 		
 		measurePanelHolder = new JPanel();
+		measurePanelHolder.setLayout(new BorderLayout());
 		panelLeft.add(measurePanelHolder, "cell 0 0,grow");
 		
 		splitPane_1 = new JSplitPane();
@@ -419,11 +420,11 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		if (measurePanel != null) {
 			
 			// Make sure the size is sensible
-			int currentWidth = (int) getSize().getWidth();
-			int currentHeight = (int) getSize().getHeight();
+			//int currentWidth = (int) getSize().getWidth();
+			//int currentHeight = (int) getSize().getHeight();
 			
 			measurePanel.cleanup();
-			remove(measurePanel);
+			this.measurePanelHolder.remove(measurePanel);
 			
 			//editorEditMenu.setMeasuring(false);
 			enableEditing(true);
@@ -473,8 +474,8 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 			
 				// add the measure panel...
 				measurePanel = new EditorMeasurePanel(e, device);
-				add(measurePanel, BorderLayout.SOUTH);
-				
+				this.measurePanelHolder.add(measurePanel, BorderLayout.CENTER);
+								
 				// Make sure the size is sensible
 				/*int currentWidth = (int) getSize().getWidth();
 				int currentHeight = (int) getSize().getHeight();	

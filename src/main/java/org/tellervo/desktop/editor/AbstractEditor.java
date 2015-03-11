@@ -83,7 +83,6 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 	private JPanel contentPane;
 
-	private EditorMeasurePanel measurePanel = null;
 	protected SeriesDataMatrix dataView;
 	private int measuringPanelWidth = 340;
 	protected DefaultListModel<Sample> samplesModel;
@@ -261,78 +260,14 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	 * Instruct the GUI to stop measuring and hide the measurement panel etc.
 	 */
 	public void stopMeasuring() {
-		if (measurePanel != null) {
-
-			// Make sure the size is sensible
-			int currentWidth = (int) getSize().getWidth();
-			int currentHeight = (int) getSize().getHeight();
-
-			measurePanel.cleanup();
-			remove(measurePanel);
-
-			// editorEditMenu.setMeasuring(false);
-			dataView.enableEditing(true);
-
-			setSize(currentWidth - this.measuringPanelWidth, currentHeight);
-			getContentPane().validate();
-			getContentPane().repaint();
-			measurePanel = null;
-
-		}
+		dataView.stopMeasuring();
 	}
 
 	/**
 	 * Toggle between measuring and not-measuring mode
 	 */
 	public void toggleMeasuring() {
-		// are we already measuring?
-		if (measurePanel != null) {
-			stopMeasuring();
-			return;
-		}
-
-		// ok, start measuring, if we can!
-
-		// Set up the measuring device
-		AbstractMeasuringDevice device;
-		try {
-			device = MeasuringDeviceSelector.getSelectedDevice(true);
-			device.setPortParamsFromPrefs();
-		} catch (Exception ioe) {
-
-			Alert.error(this, I18n.getText("error"),
-					I18n.getText("error.initExtComms") + ".\n" + I18n.getText("error.possWrongComPort"));
-
-			App.showPreferencesDialog();
-
-			return;
-		}
-
-		try {
-			// editorEditMenu.setMeasuring(true);
-		} catch (Exception e) {
-		}
-
-		dataView.enableEditing(false);
-
-		// add the measure panel...
-		measurePanel = new EditorMeasurePanel(this, device);
-		getContentPane().add(measurePanel, BorderLayout.WEST);
-
-		// Make sure the size is sensible
-		int currentWidth = (int) getSize().getWidth();
-		int currentHeight = (int) getSize().getHeight();
-		setSize(currentWidth + this.measuringPanelWidth, currentHeight);
-
-		getContentPane().validate();
-		getContentPane().repaint();
-		measurePanel.setDefaultFocus();
-
-		// Change the variable to EW/LW if in sub-annual mode
-		if (getSample().containsSubAnnualData()) {
-			App.prefs.setPref(PrefKey.MEASUREMENT_VARIABLE, MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH.toString());
-			getSample().fireMeasurementVariableChanged();
-		}
+		dataView.toggleMeasuring();
 
 	}
 
