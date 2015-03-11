@@ -183,7 +183,7 @@ public class TellervoAnnotation extends GlobeAnnotation implements ActionListene
             this.updateState(dc);
         }
 
-        protected void transformBackgroundImageCoordsToAnnotationCoords(DrawContext dc, int width, int height,
+        /*protected void transformBackgroundImageCoordsToAnnotationCoords(DrawContext dc, int width, int height,
             WWTexture texture)
         {
             GL gl = dc.getGL();
@@ -196,7 +196,7 @@ public class TellervoAnnotation extends GlobeAnnotation implements ActionListene
             gl.glTranslated(-hw, -hh, 0);
 
             super.transformBackgroundImageCoordsToAnnotationCoords(dc, width, height, texture);
-        }
+        }*/
 
         protected void updateState(DrawContext dc)
         {

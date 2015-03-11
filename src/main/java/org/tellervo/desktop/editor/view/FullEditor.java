@@ -137,47 +137,7 @@ public class FullEditor extends AbstractEditor {
 
 	}
 
-	@Override
-	public void sampleRedated(SampleEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void sampleDataChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void sampleMetadataChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void sampleElementsChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void sampleDisplayUnitsChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void sampleDisplayCalendarChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void measurementVariableChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-
-	}
+	
 
 	@Override
 	public void itemSelected() {
@@ -220,7 +180,7 @@ public class FullEditor extends AbstractEditor {
 				
 				
 				
-				setEditorTitle();
+				setTitle();
 				
 			}
 	

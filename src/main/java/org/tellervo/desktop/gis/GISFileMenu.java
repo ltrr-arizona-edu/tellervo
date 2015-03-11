@@ -65,8 +65,8 @@ public class GISFileMenu extends FileMenu {
 		GISPanel panel = ((GISFrame)this.f).wwMapPanel;
 		
         JMenuItem exportmenu = new JMenuItem(I18n.getText("menus.file.exportmapimage"));
-        exportmenu.addActionListener(new FileExportMapAction(panel));
-        add(exportmenu);
+        //exportmenu.addActionListener(new FileExportMapAction(panel));
+        //add(exportmenu);
 	}
 	
 	

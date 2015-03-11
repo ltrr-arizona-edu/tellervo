@@ -109,9 +109,9 @@ public class TellervoLayerPanel extends JPanel {
 		toolBar = new JToolBar();
 		topPanel.add(toolBar, "flowx,cell 0 0");
 
-		Action exportAction = new FileExportMapAction(parent.wwMapPanel);
-		AbstractButton btnExport = new TitlelessButton(exportAction);
-		toolBar.add(btnExport);
+		//Action exportAction = new FileExportMapAction(parent.wwMapPanel);
+		//AbstractButton btnExport = new TitlelessButton(exportAction);
+		//toolBar.add(btnExport);
 		toolBar.addSeparator();
 		
 		Action addLayersAction = new ViewAddLayersAction(parent);

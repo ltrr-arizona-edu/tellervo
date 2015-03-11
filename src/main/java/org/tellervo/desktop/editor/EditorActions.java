@@ -156,9 +156,9 @@ public class EditorActions {
 		editDeleteAction = new EditDeleteAction(editor);
 		editInsertYearsAction = new EditInsertYearsAction(editor);
 		editInitGridAction = new EditInitDataGridAction(editor);
-		editMeasureAction = new EditMeasureToggleAction(editor);
+		editMeasureAction = new EditMeasureToggleAction(editor);*/
 		editPreferencesAction = new EditPreferencesAction();
-		
+		/*
 		remarkAction = new RemarkToggleAction(editor);
 		
 		adminUserAndGroupsAction = new AdminUsersAndGroupsAction();

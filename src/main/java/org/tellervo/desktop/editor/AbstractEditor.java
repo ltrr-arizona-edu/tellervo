@@ -76,7 +76,7 @@ import org.tridas.schema.TridasTridas;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValues;
 
-public abstract class AbstractEditor extends JFrame implements PrefsListener {
+public abstract class AbstractEditor extends JFrame implements PrefsListener, SaveableDocument {
 
 	private static final long serialVersionUID = 1L;
 	protected final static Logger log = LoggerFactory.getLogger(AbstractEditor.class);
@@ -158,7 +158,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener {
 		workspacePanel.setLayout(new MigLayout("", "[133.00,grow,fill][142.00,grow,leading]",
 				"[235px,grow,baseline][fill]"));
 		
-		workspacePanel.setMinimumSize(new Dimension(200,200));
+		workspacePanel.setMinimumSize(new Dimension(240,10));
 
 		JScrollPane scrollPane = new JScrollPane();
 		workspacePanel.add(scrollPane, "cell 0 0 2 1,grow");
