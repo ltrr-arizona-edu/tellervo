@@ -48,6 +48,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.ui.Builder;
 import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
 
 public class PlatformTestPanel extends JPanel implements ActionListener {
 	private final static Logger log = LoggerFactory.getLogger(PlatformTestPanel.class);
@@ -201,16 +202,16 @@ public class PlatformTestPanel extends JPanel implements ActionListener {
 			return;
 		}
 
-		contentPanel.setLayout(new MigLayout("", "[][242.00px,grow,fill]", "[75.00px,fill][247.00px,grow]"));
-
+		contentPanel.setLayout(new MigLayout("", "[157.00,grow]", "[75.00px,fill][][247.00px,grow]"));
 		{
-			JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-			contentPanel.add(tabbedPane, "cell 1 1,grow");
+			JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
+			tabbedPane.setBorder(null);
+			contentPanel.add(tabbedPane, "cell 0 2,grow");
 			{
 				JPanel panelTitle = new JPanel();
 				panelTitle.setBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null));
 				panelTitle.setBackground(Color.WHITE);
-				contentPanel.add(panelTitle, "cell 0 0 2 1,growx,aligny top");
+				contentPanel.add(panelTitle, "cell 0 0,growx,aligny top");
 				panelTitle.setLayout(new MigLayout("", "[grow]", "[75px,top]"));
 				{
 					JLabel lblIcon = new JLabel("");
@@ -254,26 +255,34 @@ public class PlatformTestPanel extends JPanel implements ActionListener {
 							JPanel panelCapabilities = new JPanel();
 							panelCapabilities.setBackground(bgcolor);
 							tabbedPane.addTab("Capabilities", null, panelCapabilities, null);
-							panelCapabilities.setLayout(new MigLayout("", "[][]", "[][][][]"));
+							panelCapabilities.setLayout(new MigLayout("", "[][]", "[][][][][]"));
 							{
-								JLabel lblZeroFromSoftware = new JLabel("Can be reset to zero from software:");
-								panelCapabilities.add(lblZeroFromSoftware, "cell 0 0");
+								JLabel lblSummaryOfThe = new JLabel("Summary of the capabilities of your measuring device:");
+								lblSummaryOfThe.setFont(new Font("Dialog", Font.BOLD, 14));
+								panelCapabilities.add(lblSummaryOfThe, "cell 0 0 2 1");
+							}
+							{
+								JLabel lblZeroFromSoftware = new JLabel("Can be reset to zero by software");
+								lblZeroFromSoftware.setFont(new Font("Dialog", Font.PLAIN, 12));
+								panelCapabilities.add(lblZeroFromSoftware, "cell 1 2");
 								
 							}
 							JLabel lblSoftZero = new JLabel("");
-							panelCapabilities.add(lblSoftZero, "cell 1 0");
+							panelCapabilities.add(lblSoftZero, "cell 0 2");
 							{
-								JLabel lblRecordFromSoftware = new JLabel("Accepts requests for data from software:");
-								panelCapabilities.add(lblRecordFromSoftware, "cell 0 1");
+								JLabel lblRecordFromSoftware = new JLabel("Accepts requests for data from software");
+								lblRecordFromSoftware.setFont(new Font("Dialog", Font.PLAIN, 12));
+								panelCapabilities.add(lblRecordFromSoftware, "cell 1 1");
 							}
 							JLabel lblSoftFire = new JLabel("");
-							panelCapabilities.add(lblSoftFire, "cell 1 1");
+							panelCapabilities.add(lblSoftFire, "cell 0 1");
 							{
-								JLabel lblRealtimeMeasurementValues = new JLabel("Reports live measurement values:");
-								panelCapabilities.add(lblRealtimeMeasurementValues, "cell 0 2");
+								JLabel lblRealtimeMeasurementValues = new JLabel("Reports current position of platform in real time");
+								lblRealtimeMeasurementValues.setFont(new Font("Dialog", Font.PLAIN, 12));
+								panelCapabilities.add(lblRealtimeMeasurementValues, "cell 1 3");
 							}
 							JLabel lblLiveValues = new JLabel("");
-							panelCapabilities.add(lblLiveValues, "cell 1 2");
+							panelCapabilities.add(lblLiveValues, "cell 0 3");
 							{
 								if(device.isRequestDataCapable())
 								{
@@ -337,7 +346,7 @@ public class PlatformTestPanel extends JPanel implements ActionListener {
 						txtSend.addActionListener(this);
 					}
 					{
-						btnSend = new JButton("Send");
+						btnSend = new JButton("Send command");
 						panel.add(btnSend, "cell 1 0,alignx left,aligny top");
 						btnSend.setActionCommand("SendCommand");
 						btnSend.addActionListener(this);
@@ -347,6 +356,12 @@ public class PlatformTestPanel extends JPanel implements ActionListener {
 					}
 					
 				}
+			}
+			
+			{
+				panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device, bgcolor, parent);
+				panelControls.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
+				contentPanel.add(panelControls, "cell 0 1,growx,aligny top");
 			}
 			
 			
@@ -393,10 +408,6 @@ public class PlatformTestPanel extends JPanel implements ActionListener {
 				}
 			}
 			
-		}
-		{
-			panelControls = new TestMeasurePanel(lblInfo, txtLog, txtDataReceived, device, bgcolor, parent);
-			contentPanel.add(panelControls, "cell 0 1,alignx left,aligny top");
 		}
 
 	}

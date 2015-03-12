@@ -38,6 +38,7 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -62,6 +63,7 @@ import org.tellervo.desktop.util.SoundUtil;
 import org.tellervo.desktop.util.SoundUtil.SystemSound;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasUnit;
+
 import javax.swing.border.TitledBorder;
 import javax.swing.border.EtchedBorder;
 
@@ -90,35 +92,39 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 
 	private Point mousePoint;
 	
-	private final Window parent;
+	private Window parent;
 	private Color parentBGColor;
 	private JPanel panelInfo;
 	private JLabel lblInfoIcon;
 	protected String measureMessage = "";
 	private JScrollPane scrollPane;
-	
-	private JPanel panelButtons;
 	private JPanel panelLastPosition;
 	private JPanel panelCurrentPosition;
 	private JPanel panelLastValue;
 	private Color lcdBlueColor = new Color(5, 116, 255);
 	private JPanel panelDigitalDisplay;
+
 	
 	public MeasurePanel(final AbstractMeasuringDevice device, Color bgcolor, Window parent)
 	{
 		this.bgcolor = bgcolor;
 		this.parent = parent;
 		
-		init(device);
+		initDevice(device);
+		init();
 	}
 	
 	/**
 	 * @wbp.parser.constructor
 	 */
 	public MeasurePanel(final AbstractMeasuringDevice device, Window parent) {
+		
+		if(!App.isInitialized()) App.init();
+		
 		this.parent = parent;
 		parentBGColor = parent.getBackground();
-		init(device);
+		initDevice(device);
+		init();
 	}
 	
 	protected void setInfoMessageVisible(Boolean b)
@@ -128,57 +134,50 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		lblInfoIcon.setVisible(b);
 	}
 	
-	private void init(final AbstractMeasuringDevice device)
+	private void initDevice(final AbstractMeasuringDevice device)
 	{
-		setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Measuring Controls", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		this.setBackground(bgcolor);	
 		dev = device;
+	}
+	
+	private void init()
+	{
+		setBorder(null);
+		this.setBackground(bgcolor);	
 		
-		setLayout(new MigLayout("hidemode 2,insets 0", "[grow,fill][][]", "[20px,grow,fill][fill]"));
+		
+		setLayout(new MigLayout("hidemode 3,insets 0", "[0,grow][][200:200:200,fill][200:200:200,fill][0,grow]", "[60:60px:60px,fill][33.00][fill][grow]"));
 				
 		SoundUtil.playSystemSound(SystemSound.MEASURING_PLATFORM_INIT);
-		
-		panelInfo = new JPanel();
-		add(panelInfo, "cell 0 0,growx,wmin 10");
-		panelInfo.setLayout(new MigLayout("", "[30px:30px:30px,center][126.00px,grow,fill]", "[grow]"));
-		
-		lblInfoIcon = new JLabel("");
-		lblInfoIcon.setIcon(Builder.getIcon("info.png", 22));
-		panelInfo.add(lblInfoIcon, "pad 5 0 5 0,cell 0 0,alignx center,aligny top");
-		
-		scrollPane = new JScrollPane();
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		panelInfo.add(scrollPane, "cell 1 0,grow");
-		
-		txtInfoMessage = new JTextArea();
-		scrollPane.setViewportView(txtInfoMessage);
-		txtInfoMessage.setBorder(new LineBorder(Color.GRAY));
-		txtInfoMessage.setBackground(Color.WHITE);
-		txtInfoMessage.setWrapStyleWord(true);
-		txtInfoMessage.setEditable(false);
-		txtInfoMessage.setLineWrap(true);
 		
 		
 		
 		long eventMask = AWTEvent.MOUSE_EVENT_MASK + AWTEvent.KEY_EVENT_MASK + AWTEvent.MOUSE_MOTION_EVENT_MASK;
 		Toolkit.getDefaultToolkit().addAWTEventListener(this, eventMask);		
-				
-				panelButtons = new JPanel();
-				add(panelButtons, "cell 1 0 2 1,grow");
-				panelButtons.setLayout(new MigLayout("", "[105.00,grow,fill]", "[][][122.00,grow]"));
-				
-				btnMouseTrigger = new JToggleButton(I18n.getText("measuring.mousetrigger.enable"));
-				panelButtons.add(btnMouseTrigger, "cell 0 0,growx");
-				btnMouseTrigger.setFocusable(false);
-				btnMouseTrigger.setIcon(Builder.getIcon("mouse.png", 22));
-				
-				btnQuit = new JButton(I18n.getText("menus.edit.stop_measuring"));
-				panelButtons.add(btnQuit, "cell 0 1,growx");
-				btnQuit.setIcon(Builder.getIcon("stop.png", 22));
+								
+								panelInfo = new JPanel();
+								add(panelInfo, "cell 0 0 5 1,wmin 10,grow");
+								panelInfo.setLayout(new MigLayout("", "[30px:30px:30px,center][grow,fill]", "[grow]"));
+								
+								lblInfoIcon = new JLabel("");
+								lblInfoIcon.setIcon(Builder.getIcon("info.png", 22));
+								panelInfo.add(lblInfoIcon, "pad 5 0 5 0,cell 0 0,alignx center,aligny top");
+								
+								scrollPane = new JScrollPane();
+								panelInfo.add(scrollPane, "cell 1 0,grow");
+								scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+								
+								txtInfoMessage = new JTextArea();
+								txtInfoMessage.setText("Platform initialized");
+								scrollPane.setViewportView(txtInfoMessage);
+								txtInfoMessage.setBorder(new LineBorder(Color.GRAY));
+								txtInfoMessage.setBackground(Color.WHITE);
+								txtInfoMessage.setWrapStyleWord(true);
+								txtInfoMessage.setEditable(false);
+								txtInfoMessage.setLineWrap(true);
 								
 								panelDigitalDisplay = new JPanel();
-								add(panelDigitalDisplay, "cell 0 1,grow");
-								panelDigitalDisplay.setLayout(new MigLayout("hidemode 3", "[grow,fill][grow,fill][grow,fill]", "[57px,fill]"));
+								add(panelDigitalDisplay, "cell 1 1 1 2,grow");
+								panelDigitalDisplay.setLayout(new MigLayout("hidemode 3", "[grow,fill][grow,fill]", "[57px,grow,fill][grow,fill]"));
 								
 								panelLastPosition = new JPanel();
 								panelDigitalDisplay.add(panelLastPosition, "cell 0 0,alignx left,aligny top");
@@ -200,38 +199,16 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 								lblLastPosition.setForeground(Color.LIGHT_GRAY);
 								panelLastPosition.add(lblLastPosition, "cell 0 1");
 								lblLastPosition.setFont(new Font("Dialog", Font.PLAIN, 8));
-								
-								panelLastValue = new JPanel();
-								panelDigitalDisplay.add(panelLastValue, "cell 1 0");
-								panelLastValue.setBackground(Color.BLACK);
-								panelLastValue.setLayout(new MigLayout("", "[grow,fill]", "[24px,grow,fill][]"));
-								
-								txtLastValue = new JLabel();
-								panelLastValue.add(txtLastValue, "cell 0 0,alignx left,aligny top");
-								
-								
-										
-										txtLastValue.setFont(FontUtil.getFontFromResources("Digitaldream.ttf", 25, Font.PLAIN));
-										txtLastValue.setForeground(lcdBlueColor);
-										txtLastValue.setHorizontalAlignment(SwingConstants.RIGHT);
-										txtLastValue.setText("-");
-										txtLastValue.setBackground(Color.WHITE);
-										txtLastValue.setBorder(null);
-										
-										lblLastValue = new JLabel("Previous measurement ("+micron()+")");
-										lblLastValue.setForeground(Color.LIGHT_GRAY);
-										panelLastValue.add(lblLastValue, "cell 0 1");
-										lblLastValue.setFont(new Font("Dialog", Font.PLAIN, 8));
 										
 										panelCurrentPosition = new JPanel();
-										panelDigitalDisplay.add(panelCurrentPosition, "cell 2 0");
+										panelDigitalDisplay.add(panelCurrentPosition, "cell 1 0 1 2");
 										panelCurrentPosition.setBackground(Color.BLACK);
 										panelCurrentPosition.setLayout(new MigLayout("", "[150,grow]", "[grow,fill][]"));
 										
 										txtCurrentPosition = new JLabel();
 										txtCurrentPosition.setText("-");
 										panelCurrentPosition.add(txtCurrentPosition, "cell 0 0,growx");
-										txtCurrentPosition.setFont(FontUtil.getFontFromResources("Digitaldream.ttf", 25, Font.PLAIN));
+										txtCurrentPosition.setFont(FontUtil.getFontFromResources("Digitaldream.ttf", 60, Font.PLAIN));
 										txtCurrentPosition.setForeground(lcdBlueColor);
 										txtCurrentPosition.setHorizontalAlignment(SwingConstants.RIGHT);
 										txtCurrentPosition.setBackground(Color.WHITE);
@@ -242,13 +219,62 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 										panelCurrentPosition.add(lblCurrentPosition, "cell 0 1");
 										lblCurrentPosition.setFont(new Font("Dialog", Font.PLAIN, 8));
 										
+										panelLastValue = new JPanel();
+										panelDigitalDisplay.add(panelLastValue, "cell 0 1");
+										panelLastValue.setBackground(Color.BLACK);
+										panelLastValue.setLayout(new MigLayout("", "[grow,fill]", "[24px,grow,fill][]"));
+										
+										txtLastValue = new JLabel();
+										panelLastValue.add(txtLastValue, "cell 0 0,alignx left,aligny top");
+										
+										
 												
-												btnReset = new JButton("Zero");
-												add(btnReset, "cell 1 1");
-												btnReset.setIcon(Builder.getIcon("zero.png", 22));
+												txtLastValue.setFont(FontUtil.getFontFromResources("Digitaldream.ttf", 25, Font.PLAIN));
+												txtLastValue.setForeground(lcdBlueColor);
+												txtLastValue.setHorizontalAlignment(SwingConstants.RIGHT);
+												txtLastValue.setText("-");
+												txtLastValue.setBackground(Color.WHITE);
+												txtLastValue.setBorder(null);
+												
+												lblLastValue = new JLabel("Previous measurement ("+micron()+")");
+												lblLastValue.setForeground(Color.LIGHT_GRAY);
+												panelLastValue.add(lblLastValue, "cell 0 1");
+												lblLastValue.setFont(new Font("Dialog", Font.PLAIN, 8));
+												
+												btnMouseTrigger = new JToggleButton(I18n.getText("measuring.mousetrigger.enable"));
+												add(btnMouseTrigger, "cell 2 1");
+												btnMouseTrigger.setFocusable(false);
+												btnMouseTrigger.setIcon(Builder.getIcon("mouse.png", 22));
+												btnMouseTrigger.addActionListener(new ActionListener(){
+
+													@Override
+													public void actionPerformed(ActionEvent arg0) {
+														//btnMouseTrigger.setSelected(btnMouseTrigger.isSelected());
+														toggleMouseTrigger(btnMouseTrigger.isSelected());
+														
+													}
+												});
+														
+														btnQuit = new JButton(I18n.getText("menus.edit.stop_measuring"));
+														add(btnQuit, "cell 3 1,aligny top");
+														btnQuit.setIcon(Builder.getIcon("stop.png", 22));
+												
+														
+														btnReset = new JButton("Zero");
+														add(btnReset, "flowx,cell 2 2");
+														btnReset.setIcon(Builder.getIcon("zero.png", 22));
+														btnReset.addActionListener(new ActionListener() {
+															
+															@Override
+															public void actionPerformed(ActionEvent e) {
+																dev.zeroMeasurement();
+																setLastPosition(0);
+																
+															}
+														});
 												
 												btnRecord = new JButton("Record");
-												add(btnRecord, "cell 2 1");
+												add(btnRecord, "cell 3 2,aligny top");
 												btnRecord.setIcon(Builder.getIcon("record.png", 22));
 												btnRecord.addActionListener(new ActionListener() {
 													
@@ -257,24 +283,6 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 														dev.requestMeasurement();	
 													}
 												});
-												btnReset.addActionListener(new ActionListener() {
-													
-													@Override
-													public void actionPerformed(ActionEvent e) {
-														dev.zeroMeasurement();
-														setLastPosition(0);
-														
-													}
-												});
-						btnMouseTrigger.addActionListener(new ActionListener(){
-
-							@Override
-							public void actionPerformed(ActionEvent arg0) {
-								//btnMouseTrigger.setSelected(btnMouseTrigger.isSelected());
-								toggleMouseTrigger(btnMouseTrigger.isSelected());
-								
-							}
-						});
 				setCurrentPosition(null);
 
 		// Set the device to zero to start with	
@@ -301,8 +309,8 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		}
 		
 		// Hide any displays that aren't supported
-		setCurrentPositionGuiVisible(device.isCurrentValueCapable());
-		setLastPositionGuiVisible(device.getMeasureCumulatively());
+		setCurrentPositionGuiVisible(dev.isCurrentValueCapable());
+		setLastPositionGuiVisible(dev.getMeasureCumulatively());
 		
 		this.setMessageText("Ready to measure...");	
 	}
