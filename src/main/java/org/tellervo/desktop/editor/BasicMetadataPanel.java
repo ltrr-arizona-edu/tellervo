@@ -6,14 +6,21 @@ import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.editor.view.LiteEditor;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
 
-public class BasicMetadataPanel extends AbstractMetadataPanel {
+public class BasicMetadataPanel extends AbstractMetadataPanel implements DocumentListener{
+
+	private static final Logger log = LoggerFactory.getLogger(BasicMetadataPanel.class);
 
 	private static final long serialVersionUID = 1L;
 	public JTextField txtTitle;
@@ -25,11 +32,16 @@ public class BasicMetadataPanel extends AbstractMetadataPanel {
 	private JLabel lblTheseBasicMetadata;
 	private JLabel txtWarning;
 	private JLabel lblAuthor;
-
+	private Sample sample;
+	private boolean listenersActive = false;
+	
+	
+	
 	/**
 	 * Create the panel.
 	 */
 	public BasicMetadataPanel() {
+		
 		setLayout(new MigLayout("", "[84.00,right][grow]", "[][][][][grow][]"));
 		
 		JLabel lblTitle = new JLabel("Title / Series name:");
@@ -80,25 +92,64 @@ public class BasicMetadataPanel extends AbstractMetadataPanel {
 		txtWarning.setFocusable(false);
 		add(txtWarning, "cell 1 5,growx");
 
+		addListeners();
 	}
-
-	public void populateFromSample(Sample s)
+	
+	private void addListeners()
 	{
-		if(s==null) return;
+		txtAuthor.getDocument().addDocumentListener(this);
+		txtKeycode.getDocument().addDocumentListener(this);
+		txtTitle.getDocument().addDocumentListener(this);
+		txtSpecies.getDocument().addDocumentListener(this);
 		
-		txtAuthor.setText(s.getMetaString(Metadata.AUTHOR));
-		txtKeycode.setText(s.getMetaString(Metadata.KEYCODE));
+		listenersActive = true;
+	}
+	
+	/**
+	 * 
+	 * @param s
+	 */
+	public void setSample(Sample s)
+	{
+		listenersActive = false;
 		
-		if(!s.getMeta(Metadata.TITLE).equals("New entry: [New series]"))
+		sample = s;
+		
+		txtAuthor.setText("");
+		txtKeycode.setText("");
+		txtTitle.setText("");
+		txtSpecies.setText("");
+		
+		if(sample==null) return;
+		
+		txtAuthor.setText(sample.getMetaString(Metadata.AUTHOR));
+		txtKeycode.setText(sample.getMetaString(Metadata.KEYCODE));
+		
+		txtTitle.setText(sample.getMetaString(Metadata.TITLE));
+		
+		
+		if(sample.getMetaString(Metadata.SPECIES)!="Plantae")
 		{
-			txtTitle.setText(s.getSeries().getTitle());
+			txtSpecies.setText(sample.getMetaString(Metadata.SPECIES));
 		}
 		
-		if(s.getMetaString(Metadata.SPECIES)!="Plantae")
+		listenersActive = true;
+	}
+	
+	private void updateSample()
+	{
+		if(!listenersActive) return;
+		
+		if(sample==null)
 		{
-			txtSpecies.setText(s.getMetaString(Metadata.SPECIES));
+			log.error("Sample is null so can't update");
 		}
 		
+		sample.getSeries().setTitle(txtTitle.getText());
+		sample.setMeta(Metadata.TITLE, txtTitle.getText());
+		sample.setMeta(Metadata.AUTHOR, txtAuthor.getText());
+		sample.setMeta(Metadata.SPECIES, txtSpecies.getText());
+		sample.setMeta(Metadata.KEYCODE, txtKeycode.getText());
 		
 	}
 	
@@ -119,6 +170,24 @@ public class BasicMetadataPanel extends AbstractMetadataPanel {
 		}
 		
 		return true;
+	}
+
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+		updateSample();
+		
+	}
+
+	@Override
+	public void insertUpdate(DocumentEvent e) {
+		updateSample();
+		
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		updateSample();
+		
 	}
 	
 

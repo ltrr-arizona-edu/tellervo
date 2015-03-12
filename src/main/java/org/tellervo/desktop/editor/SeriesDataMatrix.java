@@ -33,24 +33,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,9 +71,9 @@ import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
 import org.tellervo.desktop.manip.RedateDialog;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.prefs.PrefsListener;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.remarks.AbstractRemark;
 import org.tellervo.desktop.remarks.RemarkPanel;
 import org.tellervo.desktop.remarks.Remarks;
@@ -84,14 +84,9 @@ import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.util.PopupListener;
 import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasValue;
-
-import javax.swing.JSplitPane;
-
-import net.miginfocom.swing.MigLayout;
 
 
 /**
@@ -891,11 +886,16 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	public void sampleRedated(SampleEvent e) {
 		// update data view
 		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
+		graphPanel.update();
+		graphPanel.scrollToYear(getSelectedYear());
+
 	}
 
 	public void sampleDataChanged(SampleEvent e) {
 		// update data view
 		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
+		graphPanel.update();
+		graphPanel.scrollToYear(new Year(1893));
 		// FIXME: make myModel an AbstractTableModel, so i don't have to cast
 	}
 
@@ -903,6 +903,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	}
 
 	public void sampleElementsChanged(SampleEvent e) {
+		graphPanel.update();
 	}
 
 	private void initPrefs() {
@@ -1163,15 +1164,14 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 		// force no drawing of graph names
 		gInfo.setShowGraphNames(false);
+		gInfo.setShowVertAxis(false);
+		gInfo.setHundredUnitHeight(5);
 		
 		// Make sure the graphs can't be dragged
 		graphSamples.get(0).setDraggable(false);
 		
-		// Override units and show labels
-		gInfo.setHundredUnitHeight(2);
-		gInfo.setShowGraphNames(true);
 				
-		// create a graph panel; put it in a scroll pane
+		// create a graph panel; put it in a scroll panel
 		graphPanel = new GrapherPanel(graphSamples, null, gInfo) {
 			private static final long serialVersionUID = 1L;
 
@@ -1193,7 +1193,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 		GraphActions actions = new GraphActions(graphPanel, null, new GraphController(graphPanel, scroller));
 		GraphToolbar toolbar = new GraphToolbar(actions);
-
+		
 		JPanel panel = new JPanel();
 		panel.setLayout(new BorderLayout());
 		panel.add(scroller, BorderLayout.CENTER);

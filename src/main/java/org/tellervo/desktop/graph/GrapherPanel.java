@@ -113,7 +113,7 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	// setPreferredSize() doesn't belong here, either.
 	// -- not threadsafe -- bounds changes
 	
-	private void computeRange() {
+	public void computeRange() {
 		// convenience method for local JPanel...
 		computeRange(graphSettings, null);
 	}
@@ -1499,6 +1499,13 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	// scroll to the bottom of the graph
 	public void scrollToBottomLeft() {
 		scrollRectToVisible(new Rectangle(new Point(0, getPreferredSize().height)));
+	}
+	
+	public void scrollToYear(Year focusYear)
+	{
+		//TODO
+		
+
 	}
 
 	//

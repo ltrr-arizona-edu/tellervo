@@ -32,6 +32,11 @@ public class TellervoMenuBar extends JMenuBar{
 	JMenuItem miBulkDataEntry;
 	JMenuItem miDesignODKForm;
 
+	public TellervoMenuBar()
+	{
+		
+	}
+	
 	public TellervoMenuBar(EditorActions actions)
 	{
 

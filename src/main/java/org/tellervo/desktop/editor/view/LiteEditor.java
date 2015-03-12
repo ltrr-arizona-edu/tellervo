@@ -2,6 +2,7 @@ package org.tellervo.desktop.editor.view;
 
 import java.awt.BorderLayout;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,6 +23,7 @@ import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.io.AbstractDendroCollectionWriter;
@@ -48,7 +50,8 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	private static final long serialVersionUID = 1L;
 	private JPanel metadataHolder;
 	private boolean savedByTellervo = false;
-
+	private BasicMetadataPanel metadata;
+	
 	public LiteEditor()
 	{
 		super();
@@ -103,7 +106,8 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		metadataHolder = new JPanel();
 		metadataHolder.setLayout(new BorderLayout());
 		tabbedPane.addTab("Metadata", Builder.getIcon("database.png", 16), metadataHolder, null);
-
+		metadata = new BasicMetadataPanel();
+		this.metadataHolder.add(metadata, BorderLayout.CENTER);
 		
 		itemSelected();
 		this.setVisible(true);
@@ -137,6 +141,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 					saveToDisk();
 				} catch (Exception e) {
 					Alert.error(this, "Error Saving", "Error saving to disk.  "+e.getLocalizedMessage());
+					e.printStackTrace();
 				}
 			}
 			else
@@ -164,6 +169,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 						saveToDisk();
 					} catch (Exception e) {
 						Alert.error(this, "Error Saving", "Error saving to disk.  "+e.getLocalizedMessage());
+						e.printStackTrace();
 					}
 				}
 				return;
@@ -183,6 +189,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 					saveAs();
 				} catch (Exception e) {
 					Alert.error(this, "Error Saving", "Error saving to disk.  "+e.getLocalizedMessage());
+					e.printStackTrace();
 				}
 			}
 		}	
@@ -266,20 +273,14 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				dataView = new SeriesDataMatrix(sample, this);
 				dataPanel.removeAll();
 				dataPanel.add(dataView, BorderLayout.CENTER);
-				dataPanel.repaint();
-				this.repaint();
-				dataView.restoreRemarksDividerLocation();
-				
-				try{
-					this.metadataHolder.removeAll();
-					BasicMetadataPanel metadata = new BasicMetadataPanel();
-					((BasicMetadataPanel) metadata).populateFromSample(sample);
-					this.metadataHolder.add(metadata, BorderLayout.CENTER);
-				} catch (Exception e)
-				{
-					
-				}
 
+				dataView.restoreRemarksDividerLocation();
+
+				metadata.setSample(getSample());
+				
+				dataPanel.repaint();
+				metadataHolder.repaint();
+				repaint();
 				
 				
 			}
@@ -329,12 +330,12 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		if (retValue == JFileChooser.APPROVE_OPTION) {
 			thisFile = fc.getSelectedFile();
 			// Remember this folder for next time
-			App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
+			App.prefs.setPref(PrefKey.FOLDER_LAST_READ, thisFile.getPath());
 			format = ((DendroFileFilter)fc.getFileFilter()).getFormatName();
 			App.prefs.setPref(PrefKey.IMPORT_FORMAT, format);
 		}
 		
-		if (file == null) {
+		if (thisFile == null) {
 			return;
 		}
 				
@@ -375,8 +376,10 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 
 
 	
-
+		
 		writer = TridasIO.getFileWriter(fileType);
+		
+		
 
 		NumericalNamingConvention nc = new NumericalNamingConvention(filename);
 		nc.setAddSequenceNumbersForUniqueness(false);
@@ -500,5 +503,27 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 
 		return container;
 	}
+
+	@Override
+	public void actionPerformed(ActionEvent evt) {
+		if(evt.getActionCommand().equals("AddSample"))
+		{
+			this.addSample(new Sample());
+			
+		}
+		else if (evt.getActionCommand().equals("RemoveSample"))
+		{
+			try{
+				this.samplesModel.remove(this.lstSamples.getSelectedIndex());
+				lstSamples.repaint();
+			} catch (Exception e)
+			{
+				
+			}
+		}
+		
+	}
+
+
 	
 }

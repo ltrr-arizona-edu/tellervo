@@ -3,6 +3,7 @@ package org.tellervo.desktop.editor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.widgets.TitlelessButton;
 import org.tellervo.desktop.prefs.PrefsListener;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.sample.SampleEvent;
+import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.interfaces.ITridasSeries;
@@ -51,8 +54,11 @@ import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasTridas;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValues;
+import javax.swing.JLabel;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
-public abstract class AbstractEditor extends JFrame implements PrefsListener, SaveableDocument {
+public abstract class AbstractEditor extends JFrame implements PrefsListener, SaveableDocument, SampleListener, ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	protected final static Logger log = LoggerFactory.getLogger(AbstractEditor.class);
@@ -61,7 +67,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 	protected SeriesDataMatrix dataView;
 	protected DefaultListModel<Sample> samplesModel;
-	private JList<Sample> lstSamples;
+	protected JList<Sample> lstSamples;
 	protected JPanel dataPanel;
 	protected JTabbedPane tabbedPane;
 	private EditorActions actions;
@@ -72,6 +78,8 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	protected AbstractDendroFileReader reader;
 	protected File file;
 	protected String fileType;
+	protected JButton btnAdd;
+	protected JButton btnRemove;
 
 
 	public AbstractEditor(Sample sample) {
@@ -129,13 +137,27 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 		// model.addElement(sampleList);
 
-		workspacePanel.setLayout(new MigLayout("", "[133.00,grow,fill][142.00,grow,leading]",
-				"[235px,grow,baseline][fill]"));
+		workspacePanel.setLayout(new MigLayout("", "[125.00,grow,fill][32.00][20.00,leading]", "[][235px,grow,baseline][fill]"));
 		
 		workspacePanel.setMinimumSize(new Dimension(240,10));
+		
+				btnRemove = new JButton();
+				btnRemove.setActionCommand("RemoveSample");
+				btnRemove.addActionListener(this);
+				
+						btnAdd = new JButton();
+						btnAdd.setActionCommand("AddSample");
+						btnAdd.addActionListener(this);
+						
+						JLabel lblSeries = new JLabel("Series:");
+						workspacePanel.add(lblSeries, "cell 0 0");
+						btnAdd.setIcon(Builder.getIcon("edit_add.png", 16));
+						workspacePanel.add(btnAdd, "cell 1 0");
+				btnRemove.setIcon(Builder.getIcon("cancel.png", 16));
+				workspacePanel.add(btnRemove, "cell 2 0");
 
 		JScrollPane scrollPane = new JScrollPane();
-		workspacePanel.add(scrollPane, "cell 0 0 2 1,grow");
+		workspacePanel.add(scrollPane, "cell 0 1 3 1,grow");
 
 		lstSamples = new JList<Sample>(samplesModel);
 		scrollPane.setViewportView(lstSamples);
@@ -144,14 +166,17 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		lstSamples.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lstSamples.setLayoutOrientation(JList.VERTICAL);
 		lstSamples.setVisibleRowCount(10);
-
-		JButton btnAdd = new JButton();
-		btnAdd.setIcon(Builder.getIcon("edit_add.png", 16));
-		workspacePanel.add(btnAdd, "cell 0 1");
-
-		JButton btnRemove = new JButton();
-		btnRemove.setIcon(Builder.getIcon("cancel.png", 16));
-		workspacePanel.add(btnRemove, "cell 1 1,growx");
+		
+		JPanel panel = new JPanel();
+		workspacePanel.add(panel, "cell 0 2 3 1,grow");
+		panel.setLayout(new MigLayout("", "[][grow]", "[]"));
+		
+		JLabel lblSortBy = new JLabel("Sort:");
+		panel.add(lblSortBy, "cell 0 0,alignx trailing");
+		
+		JComboBox comboBox = new JComboBox();
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Manually", "Title (asc.)", "Title (desc.)", "Start year (asc.)", "Start year (desc.)", "End year (asc.)", "End year (desc.)"}));
+		panel.add(comboBox, "cell 1 0,growx");
 
 		lstSamples.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {
@@ -170,6 +195,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		dataPanel = new JPanel();
 		tabbedPane.addTab("Data", Builder.getIcon("data.png", 16), dataPanel, null);
 		dataPanel.setLayout(new BorderLayout(0, 0));
+		dataPanel.setMinimumSize(new Dimension(800, 300));
 
 		initMenu();
 		initToolbar();
@@ -276,6 +302,11 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 		return null;
 
+	}
+	
+	public void addSample(Sample s)
+	{
+		samplesModel.addElement(s);
 	}
 
 	protected void setTitle() {
@@ -514,6 +545,48 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		}
 		
 		return samplesList;	
+	}
+	
+	@Override
+	public void sampleRedated(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleDataChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleMetadataChanged(SampleEvent e) {
+		this.lstSamples.repaint();
+		
+	}
+
+	@Override
+	public void sampleElementsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleDisplayCalendarChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
