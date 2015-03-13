@@ -288,7 +288,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 		// Graph Buttons
 		toolBar.addSeparator();
-		AbstractButton graph = new TitlelessButton(actions.graphSeriesAction);
+		AbstractButton graph = new TitlelessButton(actions.graphAllSeriesAction);
 		toolBar.add(graph);
 
 		contentPane.add(toolBar, "cell 0 1,growx,aligny top");

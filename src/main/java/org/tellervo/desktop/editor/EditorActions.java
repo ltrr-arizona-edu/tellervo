@@ -41,6 +41,9 @@ import org.tellervo.desktop.gui.menus.actions.FileNewAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenMultiAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAsAction;
+import org.tellervo.desktop.gui.menus.actions.GraphAllSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.GraphComponentSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.GraphCreateFileHistoryPlotAction;
 import org.tellervo.desktop.gui.menus.actions.GraphCurrentSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.EditInitDataGridAction;
 import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
@@ -127,7 +130,10 @@ public class EditorActions {
 	public Action toolsTruncateAction;
 
 	// Graph menu action
-	public Action graphSeriesAction;
+	public Action graphCurrentSeriesAction;
+	public Action graphComponentSeriesAction;
+	public Action graphAllSeriesAction;
+	public Action graphCreateFileHistoryPlotAction;
 	
 	// Toolbar only actions
 	public Action remarkAction;
@@ -268,7 +274,11 @@ public class EditorActions {
 		adminSiteMapAction = new AdminSiteMapAction();
 		
 		toolsTruncateAction = new ToolsTruncateAction(editor);
-		graphSeriesAction = new GraphCurrentSeriesAction(editor);
+		
+		graphCurrentSeriesAction = new GraphCurrentSeriesAction(editor);
+		graphComponentSeriesAction = new GraphComponentSeriesAction(editor);
+		graphAllSeriesAction = new GraphAllSeriesAction(editor);
+		graphCreateFileHistoryPlotAction = new GraphCreateFileHistoryPlotAction(editor);
 		
 		helpHelpContentsAction = new HelpHelpContentsAction();
 		helpVideoIntroAction = new HelpVideoTutorialsAction("Introduction");
@@ -283,8 +293,6 @@ public class EditorActions {
 		helpVideoImportingAction = new HelpVideoTutorialsAction("Importing");
 		helpVideoGraphingAction = new HelpVideoTutorialsAction("Graphing");
 		helpVideoDataManipulationAction = new HelpVideoTutorialsAction("Data manipulation");
-		
-		
 		helpCheckForUpdatesAction = new HelpCheckForUpdatesAction();
 		helpEmailDeveloperAction = new HelpEmailDevelopersAction();
 		helpSetupWizardAction = new HelpSetupWizardAction();

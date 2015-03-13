@@ -53,6 +53,7 @@ public class TellervoMenuBar extends JMenuBar{
 	JMenuItem miSiteMap;
 	JMenuItem miReportBugOnLastTransaction;
 	JMenuItem miXMLCommunicationsViewer;
+	JMenuItem miComponentSeries;
 
 	public TellervoMenuBar()
 	{
@@ -247,6 +248,19 @@ public class TellervoMenuBar extends JMenuBar{
 		// GRAPH MENU
 		
 		JMenu mnGraph = new JMenu("Graph");
+		
+		JMenuItem miCurrentSeries = new JMenuItem(actions.graphCurrentSeriesAction);
+		mnGraph.add(miCurrentSeries);
+		
+	    miComponentSeries = new JMenuItem(actions.graphComponentSeriesAction);
+	    mnGraph.add(miComponentSeries);
+	    
+	    JMenuItem miAllSeries = new JMenuItem(actions.graphAllSeriesAction);
+	    mnGraph.add(miAllSeries);
+	    
+	    JMenuItem miCreateFileHistoryPlot = new JMenuItem(actions.graphCreateFileHistoryPlotAction);
+	    mnGraph.add(miCreateFileHistoryPlot);
+	    
 		add(mnGraph);
 
 		
@@ -486,6 +500,7 @@ public class TellervoMenuBar extends JMenuBar{
 		
 		this.miReportBugOnLastTransaction.setVisible(fullMode);
 		this.miXMLCommunicationsViewer.setVisible(fullMode);
+		this.miComponentSeries.setVisible(fullMode);
 		
 	}
 	
@@ -505,9 +520,9 @@ public class TellervoMenuBar extends JMenuBar{
 		setGUILoggedIn(App.isLoggedIn());
 
 		if (App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false)) {
-			setTellervoFullMode(true);
-		} else {
 			setTellervoFullMode(false);
+		} else {
+			setTellervoFullMode(true);
 		}
 	}
 }

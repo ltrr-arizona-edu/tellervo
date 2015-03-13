@@ -9,24 +9,24 @@ import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 
-public class GraphCurrentSeriesAction extends AbstractAction{
+public class GraphComponentSeriesAction extends AbstractAction{
 
 	private static final long serialVersionUID = 1L;
 	private final AbstractEditor editor;
 
 	
-	public GraphCurrentSeriesAction(AbstractEditor editor) {
-        super(I18n.getText("menus.graph.activeSeries"), Builder.getIcon("graph.png", 22));
-        putValue(SHORT_DESCRIPTION, "Graph the current series");
+	public GraphComponentSeriesAction(AbstractEditor editor) {
+        super(I18n.getText("menus.graph.components"));
+        putValue(SHORT_DESCRIPTION, "Graph the component series");
 
         this.editor = editor;
-        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.graph.activeSeries")); 
-        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.graph.activeSeries"));
+        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.graph.components")); 
+        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.graph.components"));
     }
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		new GraphWindow(editor.getSample());
+		new GraphWindow(editor.getSample().getElements());
 		
 	}
 	
