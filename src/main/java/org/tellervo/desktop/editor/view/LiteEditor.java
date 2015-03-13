@@ -129,6 +129,12 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	@Override
 	public void save() {
 	
+		// make sure we're not measuring
+		this.stopMeasuring();
+		
+		// make sure user isn't editing
+		dataView.stopEditing(false);
+		
 		// Save without prompt if possible
 		if(file!=null)
 		{
@@ -261,6 +267,12 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	@Override
 	public void itemSelected() {
 	
+		// make sure we're not measuring
+		this.stopMeasuring();
+		
+		// make sure user isn't editing
+		if(dataView!=null) dataView.stopEditing(false);
+		
 			log.debug("Item selected");
 			Sample sample = getSample();
 			if (sample != null) {

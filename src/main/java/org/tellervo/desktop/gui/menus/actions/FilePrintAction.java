@@ -8,6 +8,7 @@ import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.print.SeriesReport;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.ui.I18n;
 
 public class FilePrintAction extends AbstractAction{
 
@@ -19,8 +20,8 @@ public class FilePrintAction extends AbstractAction{
 	 * @param frame
 	 */
 	public FilePrintAction(AbstractEditor ed) {
-        //super(I18n.getText("menus.file.print"), Builder.getIcon("printer.png", 22));
-        super("&Print [accel p]", Builder.getIcon("printer.png", 22));
+        super(I18n.getText("menus.file.print"), Builder.getIcon("printer.png", 22));
+        //super("&Print [accel p]", Builder.getIcon("printer.png", 22));
         this.ed=ed;
         
         putValue(SHORT_DESCRIPTION, "Print this document");

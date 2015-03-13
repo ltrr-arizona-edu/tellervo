@@ -7,6 +7,7 @@ import javax.swing.AbstractAction;
 
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.ui.I18n;
 
 public class FileNewAction extends AbstractAction {
 
@@ -14,10 +15,10 @@ public class FileNewAction extends AbstractAction {
 	private Window parent;
 	
 	public FileNewAction(Window parent) {
-        super("New", Builder.getIcon("filenew.png", 22));
+        super(I18n.getText("menus.file.new"), Builder.getIcon("filenew.png", 22));
 		putValue(SHORT_DESCRIPTION, "Create a new series");
-        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.new")); 
-        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.new"));
+        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.new")); 
+        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.new"));
         this.parent = parent;
 
     }

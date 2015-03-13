@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.editor.view.LiteEditor;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -392,15 +393,6 @@ public class EditorFactory {
 				return;
 			}
     	}
-
-		/*
-		if(!result.barcodeScanSuccessful())
-		{
-			Sample sample = new Sample();
-			new Editor(sample).setVisible(true);
-		}
-		*/
-		
 		
 		// make a new measurement series
 		TridasMeasurementSeries series = new TridasMeasurementSeries();
@@ -430,9 +422,8 @@ public class EditorFactory {
 		TellervoWsiTridasElement.attachNewSample(sample);
 
 		// start the editor
-		Editor ed = new Editor(sample);
+		FullEditor ed = new FullEditor(sample);
 		ed.setVisible(true);
-		ed.setDefaultFocus();
 		
 		container.setCursor(Cursor.getDefaultCursor());
 		

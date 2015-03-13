@@ -261,14 +261,14 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	 * Instruct the GUI to stop measuring and hide the measurement panel etc.
 	 */
 	public void stopMeasuring() {
-		dataView.stopMeasuring();
+		if(dataView!=null) dataView.stopMeasuring();
 	}
 
 	/**
 	 * Toggle between measuring and not-measuring mode
 	 */
 	public void toggleMeasuring() {
-		dataView.toggleMeasuring();
+		if(dataView!=null) dataView.toggleMeasuring();
 
 	}
 

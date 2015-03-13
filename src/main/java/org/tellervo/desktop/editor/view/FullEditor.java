@@ -4,24 +4,35 @@ import gov.nasa.worldwind.layers.MarkerLayer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.gis.GISPanel;
 import org.tellervo.desktop.gis.GISViewMenu;
 import org.tellervo.desktop.gis.TridasMarkerLayerBuilder;
+import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.FileDialog;
+import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.PrefsEvent;
+import org.tellervo.desktop.sample.FileElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewerOld;
 import org.tellervo.desktop.tridasv2.ui.DependentsViewer;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel;
+import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.util.Overwrite;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
@@ -29,11 +40,11 @@ import org.tridas.schema.TridasObject;
 public class FullEditor extends AbstractEditor {
 
 	private static final long serialVersionUID = 1L;
-	JPanel metadataHolder;
-	JPanel componentHolder;
-	JPanel dependentHolder;
-	JPanel mapHolder;
-	
+	private JPanel metadataHolder;
+	private JPanel componentHolder;
+	private JPanel dependentHolder;
+	private JPanel mapHolder;
+	private TridasMetadataPanel metaView;
 	
 	public FullEditor()
 	{
@@ -91,31 +102,138 @@ public class FullEditor extends AbstractEditor {
 	
 	@Override
 	public boolean isSaved() {
-		// TODO Auto-generated method stub
-		return false;
+		Sample sample = getSample();
+		
+		if(sample.isModified()) return false;
+		
+		return true;
 	}
 
+	
+	
+	/**
+	 * Save the current sample
+	 */
 	@Override
 	public void save() {
-		// TODO Auto-generated method stub
-
+	
+		Sample sample = getSample();
+		
+		saveSample(sample);
 	}
 
+	/**
+	 * Save the specified sample to the database 
+	 * 
+	 * @param s
+	 */
+	public void saveSample(Sample s)
+	{
+		if(s==null) return;
+		
+		// make sure we're not measuring
+		this.stopMeasuring();
+		
+		// make sure user isn't editing
+		dataView.stopEditing(false);
+		
+		Sample sample = getSample();
+		
+		// get filename from sample; fall back to user's choice
+		if (sample.getLoader() == null) {
+
+			// make sure metadata was entered
+			if (!sample.wasMetadataChanged()) {
+				// what i'd prefer:
+				// Alert.ask("You didn't set the metadata!", { "Save Anyway", "Cancel" })
+				// or even: Alert.ask("You didn't set the metadata! [Save Anyway] [Cancel]"); (!)
+				/*
+				 can i put something like this directly in a resource?
+				 You didn't set the metadata! [Save Anyway] [Cancel]
+				 that's crazy talk!
+				 */
+				int x = JOptionPane.showOptionDialog(this,
+						I18n.getText("error.noMetadataSet"), I18n.getText("error.metadataUntouched"),
+						JOptionPane.YES_NO_OPTION,
+						JOptionPane.QUESTION_MESSAGE, null, // no icon
+						new String[] { I18n.getText("question.saveAnyway"), I18n.getText("general.cancel") }, null); // default
+				if (x == 1) {
+					// show metadata tab, and abort.
+					tabbedPane.setSelectedIndex(1);
+					return; // user cancelled!
+				}
+			}
+
+			String filename = (String) sample.getMeta("filename"); // BUG: why not containsKey()?
+			// get target filename
+			try {
+				filename = FileDialog.showSingle("Save");
+
+				// check for already-exists
+				Overwrite.overwrite(filename);
+			} catch (UserCancelledException uce) {
+				return;
+			}
+
+			sample.setMeta(Metadata.FILENAME, filename);
+			
+			// attach a FileElement to it
+			sample.setLoader(new FileElement(filename));
+		}
+
+		// complain if it's not complete yet 
+		// but only if it's not derived!
+		if(!sample.getSampleType().isDerived() && !sample.hasMeta(Metadata.RADIUS)) {
+			JOptionPane.showMessageDialog(this,
+					I18n.getText("error.metadataIncompleteRadiusRequired"),
+					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+			tabbedPane.setSelectedIndex(1);
+			return;
+		}
+		
+		// now, actually try and save the sample
+		try {
+			sample.getLoader().save(sample);
+		} catch (IOException ioe) {
+			Alert.error(I18n.getText("error.ioerror"), I18n.getText("error.savingError") +": \n" + ioe.getMessage());
+			return;
+		} catch (Exception e) {
+			new Bug(e);
+		}
+
+		// set the necessary bits...
+		sample.clearModified();
+		sample.fireSampleMetadataChanged(); // things may have changed...
+		App.platform.setModified(this, false);
+		setTitle();
+	}
+	
+	/**
+	 * Save all samples in the workspace
+	 */
+	public void saveAll()
+	{
+		for(int i=0; i<this.samplesModel.getSize(); i++)
+		{
+			Sample s = this.samplesModel.get(i);
+			
+			saveSample(s);
+		}
+	}
+	
 	@Override
 	public boolean isNameChangeable() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void setFilename(String fn) {
-		// TODO Auto-generated method stub
-
+		// Irrelevant
 	}
 
 	@Override
 	public String getFilename() {
-		// TODO Auto-generated method stub
+		// Irrelevant
 		return null;
 	}
 
@@ -141,7 +259,13 @@ public class FullEditor extends AbstractEditor {
 
 	@Override
 	public void itemSelected() {
-	
+		// make sure we're not measuring
+		this.stopMeasuring();
+		
+		// make sure user isn't editing
+		if(dataView!=null) dataView.stopEditing(false);
+		
+		
 			log.debug("Item selected");
 			Sample sample = getSample();
 			if (sample != null) {
@@ -160,8 +284,8 @@ public class FullEditor extends AbstractEditor {
 				
 				try{
 					this.metadataHolder.removeAll();
-					TridasMetadataPanel metadata = new TridasMetadataPanel(sample);
-					this.metadataHolder.add(metadata, BorderLayout.CENTER);
+					metaView = new TridasMetadataPanel(sample);
+					this.metadataHolder.add(metaView, BorderLayout.CENTER);
 					ComponentViewerOld componentsPanel;				
 					if(sample.getSampleType().isDerived()){
 						componentsPanel = new ComponentViewerOld(sample);
@@ -236,6 +360,19 @@ public class FullEditor extends AbstractEditor {
 		}
 		
 		return wwMapPanel;
+	}
+
+	public void showPage(EditType type)
+	{
+
+		if(metaView!=null) metaView.showPage(type);
+		
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 
