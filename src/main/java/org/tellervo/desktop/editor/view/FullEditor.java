@@ -4,10 +4,10 @@ import gov.nasa.worldwind.layers.MarkerLayer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -15,7 +15,6 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.gis.GISPanel;
-import org.tellervo.desktop.gis.GISViewMenu;
 import org.tellervo.desktop.gis.TridasMarkerLayerBuilder;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.FileDialog;
@@ -24,7 +23,6 @@ import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.sample.FileElement;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewerOld;
 import org.tellervo.desktop.tridasv2.ui.DependentsViewer;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel;
@@ -34,7 +32,6 @@ import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Overwrite;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 
 public class FullEditor extends AbstractEditor {
@@ -77,6 +74,8 @@ public class FullEditor extends AbstractEditor {
 	
 	public void initFullEditor()
 	{
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
 		metadataHolder = new JPanel();
 		metadataHolder.setLayout(new BorderLayout());
 		
@@ -213,9 +212,9 @@ public class FullEditor extends AbstractEditor {
 	 */
 	public void saveAll()
 	{
-		for(int i=0; i<this.samplesModel.getSize(); i++)
+		for(int i=0; i<this.getSamplesModel().getSize(); i++)
 		{
-			Sample s = this.samplesModel.get(i);
+			Sample s = this.getSamplesModel().getElementAt(i);
 			
 			saveSample(s);
 		}
@@ -368,12 +367,6 @@ public class FullEditor extends AbstractEditor {
 	{
 
 		if(metaView!=null) metaView.showPage(type);
-		
-	}
-	
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 

@@ -22,6 +22,7 @@ package org.tellervo.desktop.gui.dbbrowse;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -109,7 +110,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
        
 
     /** Creates new form as child of Frame */    
-    public DBBrowser(java.awt.Frame parent, boolean modal, boolean openMulti) {
+    public DBBrowser(Window parent, boolean modal, boolean openMulti) {
         super(parent, modal);
         doInitComponents();
         

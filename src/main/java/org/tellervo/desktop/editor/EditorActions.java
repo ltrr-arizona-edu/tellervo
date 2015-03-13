@@ -4,10 +4,10 @@ import java.awt.Window;
 
 import javax.swing.Action;
 
+import org.tellervo.desktop.gui.menus.actions.AddSeriesToWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBasicBoxLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBoxLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminChangePasswordAction;
-import org.tellervo.desktop.gui.menus.actions.AdminCurationMenuAction;
 import org.tellervo.desktop.gui.menus.actions.AdminCurationMenuBoxDetailsAction;
 import org.tellervo.desktop.gui.menus.actions.AdminCurationMenuFindSampleAction;
 import org.tellervo.desktop.gui.menus.actions.AdminCurationMenuLoanDialogAction;
@@ -17,38 +17,38 @@ import org.tellervo.desktop.gui.menus.actions.AdminDatabaseStatisticsAction;
 import org.tellervo.desktop.gui.menus.actions.AdminEditViewPermissionsAction;
 import org.tellervo.desktop.gui.menus.actions.AdminForgetPasswordAction;
 import org.tellervo.desktop.gui.menus.actions.AdminLabelAction;
+import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
 import org.tellervo.desktop.gui.menus.actions.AdminReportsAction;
 import org.tellervo.desktop.gui.menus.actions.AdminSampleLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminSiteMapAction;
 import org.tellervo.desktop.gui.menus.actions.AdminUsersAndGroupsAction;
 import org.tellervo.desktop.gui.menus.actions.EditCopyAction;
 import org.tellervo.desktop.gui.menus.actions.EditDeleteAction;
+import org.tellervo.desktop.gui.menus.actions.EditInitDataGridAction;
 import org.tellervo.desktop.gui.menus.actions.EditInsertMissingRingPushBackwardsAction;
 import org.tellervo.desktop.gui.menus.actions.EditInsertMissingRingPushForwardsAction;
 import org.tellervo.desktop.gui.menus.actions.EditInsertYearPushBackwardsAction;
 import org.tellervo.desktop.gui.menus.actions.EditInsertYearPushForwardsAction;
 import org.tellervo.desktop.gui.menus.actions.EditInsertYearsAction;
+import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
 import org.tellervo.desktop.gui.menus.actions.EditPreferencesAction;
 import org.tellervo.desktop.gui.menus.actions.EditSelectAllAction;
 import org.tellervo.desktop.gui.menus.actions.FileBulkDataEntryAction;
 import org.tellervo.desktop.gui.menus.actions.FileDesignODKFormAction;
 import org.tellervo.desktop.gui.menus.actions.FileExitAction;
 import org.tellervo.desktop.gui.menus.actions.FileExportDataAction;
-import org.tellervo.desktop.gui.menus.actions.FileExportMapAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogoffAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogonAction;
 import org.tellervo.desktop.gui.menus.actions.FileNewAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenMultiAction;
+import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
+import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAsAction;
 import org.tellervo.desktop.gui.menus.actions.GraphAllSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.GraphComponentSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.GraphCreateFileHistoryPlotAction;
 import org.tellervo.desktop.gui.menus.actions.GraphCurrentSeriesAction;
-import org.tellervo.desktop.gui.menus.actions.EditInitDataGridAction;
-import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
-import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
-import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.HelpAboutTellervoAction;
 import org.tellervo.desktop.gui.menus.actions.HelpCheckForUpdatesAction;
 import org.tellervo.desktop.gui.menus.actions.HelpEmailDevelopersAction;
@@ -61,7 +61,7 @@ import org.tellervo.desktop.gui.menus.actions.HelpSystemsInformationAction;
 import org.tellervo.desktop.gui.menus.actions.HelpVideoTutorialsAction;
 import org.tellervo.desktop.gui.menus.actions.HelpXMLCommunicationsViewerAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
-import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
+import org.tellervo.desktop.gui.menus.actions.RemoveSeriesFromWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsTruncateAction;
 import org.tellervo.desktop.io.control.IOController;
 
@@ -116,7 +116,6 @@ public class EditorActions {
 	public Action adminBasicBoxLabelAction;
 	public Action adminSampleLabelAction;
 	public Action adminDatabaseStatisticsAction;
-	public Action adminCurationMenuAction;
 	public Action adminCurationMenuBoxDetailsAction;
 	public Action adminCurationMenuFindSampleAction;
 	public Action adminCurationMenuLoanDialogAction;
@@ -137,6 +136,8 @@ public class EditorActions {
 	
 	// Toolbar only actions
 	public Action remarkAction;
+	public Action addSeriesAction;
+	public Action removeSeriesAction;
 	
 	//Help Menu actions
 	public Action helpHelpContentsAction;
@@ -169,7 +170,7 @@ public class EditorActions {
 	{
 		fileNewAction = new FileNewAction(parent);
 		fileOpenAction = new FileOpenAction(parent);
-		fileOpenMultiAction = new FileOpenMultiAction();
+		fileOpenMultiAction = new FileOpenMultiAction(parent);
 		//fileExportDataAction = new FileExportDataAction(IOController.OPEN_EXPORT_WINDOW);
 		//fileExportMapAction = new FileExportMapAction(editor);
 		fileBulkDataEntryAction = new FileBulkDataEntryAction(IOController.OPEN_EXPORT_WINDOW);
@@ -229,7 +230,7 @@ public class EditorActions {
 		
 		fileNewAction = new FileNewAction(editor);
 		fileOpenAction = new FileOpenAction(editor);
-		fileOpenMultiAction = new FileOpenMultiAction();
+		fileOpenMultiAction = new FileOpenMultiAction(editor);
 		fileExportDataAction = new FileExportDataAction(IOController.OPEN_EXPORT_WINDOW);
 		//fileExportMapAction = new FileExportMapAction(editor);
 		fileBulkDataEntryAction = new FileBulkDataEntryAction(IOController.OPEN_EXPORT_WINDOW);
@@ -264,7 +265,6 @@ public class EditorActions {
 		adminBasicBoxLabelAction = new AdminBasicBoxLabelAction();
 		adminSampleLabelAction = new AdminSampleLabelAction();
 		adminDatabaseStatisticsAction = new AdminDatabaseStatisticsAction();
-		adminCurationMenuAction = new AdminCurationMenuAction();
 		adminCurationMenuBoxDetailsAction = new AdminCurationMenuBoxDetailsAction();
 		adminCurationMenuFindSampleAction = new AdminCurationMenuFindSampleAction();
 		adminCurationMenuLoanDialogAction = new AdminCurationMenuLoanDialogAction(editor);
@@ -302,10 +302,12 @@ public class EditorActions {
 		helpMVCMonitorAction = new HelpMVCMonitorAction();
 		helpSystemsInformationAction = new HelpSystemsInformationAction();
 		helpAboutTellervoAction = new HelpAboutTellervoAction();
+
+		addSeriesAction = new AddSeriesToWorkspaceAction(editor);
+		removeSeriesAction = new RemoveSeriesFromWorkspaceAction(editor);
+		
 		
 
-		
-		
 	}
 	
 	

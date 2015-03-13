@@ -518,26 +518,6 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		return container;
 	}
 
-	@Override
-	public void actionPerformed(ActionEvent evt) {
-		if(evt.getActionCommand().equals("AddSample"))
-		{
-			this.addSample(new Sample());
-			
-		}
-		else if (evt.getActionCommand().equals("RemoveSample"))
-		{
-			try{
-				this.samplesModel.remove(this.lstSamples.getSelectedIndex());
-				lstSamples.repaint();
-			} catch (Exception e)
-			{
-				
-			}
-		}
-		
-	}
-
 
 	
 }

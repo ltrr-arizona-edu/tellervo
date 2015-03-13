@@ -1,5 +1,6 @@
 package org.tellervo.desktop.editor;
 
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -25,43 +26,49 @@ import org.tridas.io.TridasIO;
 public class TellervoMenuBar extends JMenuBar{
 
 	private static final long serialVersionUID = 1L;
-	JMenuItem miOpenMulti;
-	JMenuItem miLogoff;
-	JMenuItem miLogon;
-	JMenuItem miExportData;
-	JMenuItem miBulkDataEntry;
-	JMenuItem miDesignODKForm;
+	private JMenuItem miOpenMulti;
+	private JMenuItem miLogoff;
+	private JMenuItem miLogon;
+	private JMenuItem miExportData;
+	private JMenuItem miBulkDataEntry;
+	private JMenuItem miDesignODKForm;
+
+	private Window parent;
+
 	
-	JMenu mnAdministration;
-	JMenuItem miUsersAndGroups;
-	JMenuItem miEditViewPermissions;
-	JMenuItem miChangePassword;
-	JMenuItem miForgetPassword;
-	JMenuItem miReports;
-	JMenu miLabels;
-	JMenuItem miBoxLabel;
-	JMenuItem miBasicBoxLabel;
-	JMenuItem miSampleBoxLabel;
-	JMenuItem miDatabaseStatistics;
-	JMenu miCurationMenu;
-	JMenuItem miCurationMenuFindSample;
-	JMenuItem miCurationMenuSampleStatus;
-	JMenuItem miCurationMenuBoxDetails;
-	JMenuItem miCurationMenuNewLoan;
-	JMenuItem miCurationMenuLoanDialog;
-	JMenuItem miMetaDB;
-	JMenuItem miSiteMap;
-	JMenuItem miReportBugOnLastTransaction;
-	JMenuItem miXMLCommunicationsViewer;
+	private JMenu mnAdministration;
+	private JMenuItem miUsersAndGroups;
+	private JMenuItem miEditViewPermissions;
+	private JMenuItem miChangePassword;
+	private JMenuItem miForgetPassword;
+	private JMenuItem miReports;
+	private JMenu miLabels;
+	private JMenuItem miBoxLabel;
+	private JMenuItem miBasicBoxLabel;
+	private JMenuItem miSampleBoxLabel;
+	private JMenuItem miDatabaseStatistics;
+	private JMenu miCurationMenu;
+	private JMenuItem miCurationMenuFindSample;
+	private JMenuItem miCurationMenuSampleStatus;
+	private JMenuItem miCurationMenuBoxDetails;
+	private JMenuItem miCurationMenuNewLoan;
+	private JMenuItem miCurationMenuLoanDialog;
+	private JMenuItem miMetaDB;
+	private JMenuItem miSiteMap;
+	private JMenuItem miReportBugOnLastTransaction;
+	private JMenuItem miXMLCommunicationsViewer;
+	private JMenu mnView;
+	private JMenu mnTools;
 	JMenuItem miComponentSeries;
 
 	public TellervoMenuBar()
 	{
-		
+		parent = null;
 	}
 	
-	public TellervoMenuBar(EditorActions actions)
+	public TellervoMenuBar(EditorActions actions, Window editor)
 	{
+		this.parent = editor;
 
 		// FILE MENU
 		JMenu mnFile = new JMenu("File");
@@ -210,7 +217,8 @@ public class TellervoMenuBar extends JMenuBar{
 		miDatabaseStatistics = new JMenuItem(actions.adminDatabaseStatisticsAction);
 		mnAdministration.add(miDatabaseStatistics);
 		
-		miCurationMenu = new JMenu(actions.adminCurationMenuAction);
+		miCurationMenu = new JMenu("Curation...");
+		miCurationMenu.setIcon(Builder.getIcon("curation.png", 22));
 		miCurationMenuFindSample = new JMenuItem(actions.adminCurationMenuFindSampleAction);
 		miCurationMenuSampleStatus = new JMenuItem(actions.adminCurationMenuSampleStatusAction);
 		miCurationMenuBoxDetails = new JMenuItem(actions.adminCurationMenuBoxDetailsAction);
@@ -235,13 +243,13 @@ public class TellervoMenuBar extends JMenuBar{
 
 		// VIEW MENU
 		
-		JMenu mnView = new JMenu("View");
+		mnView = new JMenu("View");
 		add(mnView);
 
 		
 		// TOOLS MENU
 		
-		JMenu mnTools = new JMenu("Tools");
+		mnTools = new JMenu("Tools");
 		add(mnTools);
 
 		
@@ -271,7 +279,11 @@ public class TellervoMenuBar extends JMenuBar{
 		JMenuItem miHelpContents = new JMenuItem(actions.helpHelpContentsAction);
 		mnHelp.add(miHelpContents);
 		
-		JMenu miVideoTutorials = new JMenu("Videos");
+		JMenuItem miSetupWizard = new JMenuItem(actions.helpSetupWizardAction);
+		mnHelp.add(miSetupWizard);
+		
+		JMenu miVideoTutorials = new JMenu("Video tutorials... ");
+		miVideoTutorials.setIcon(Builder.getIcon("video.png", 16));
 				
 		JMenuItem miVideoIntro = new JMenuItem(actions.helpVideoIntroAction);
 		miVideoTutorials.add(miVideoIntro);
@@ -318,9 +330,6 @@ public class TellervoMenuBar extends JMenuBar{
 		
 		JMenuItem miEmailDevelopers = new JMenuItem(actions.helpEmailDeveloperAction);
 		mnHelp.add(miEmailDevelopers);
-		
-		JMenuItem miSetupWizard = new JMenuItem(actions.helpSetupWizardAction);
-		mnHelp.add(miSetupWizard);
 		
 		miReportBugOnLastTransaction = new JMenuItem(actions.helpReportBugOnLastTransactionAction);
 		mnHelp.add(miReportBugOnLastTransaction);
@@ -451,8 +460,11 @@ public class TellervoMenuBar extends JMenuBar{
 					// Get details from user
 				    if (returnVal == JFileChooser.APPROVE_OPTION) {
 				        File file = fc.getSelectedFile();
-				        ImportDataOnly importDialog = new ImportDataOnly(null, file, s);
+				        
+				        ImportDataOnly importDialog = new ImportDataOnly(parent, file, s);
+				        
 				        importDialog.openEditors();
+
 				        
 						// Remember this folder for next time
 						App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
@@ -495,8 +507,12 @@ public class TellervoMenuBar extends JMenuBar{
 		this.miReports.setVisible(fullMode);
 		this.miLabels.setVisible(fullMode);
 		this.miCurationMenu.setVisible(fullMode);
+		
 		this.miMetaDB.setVisible(fullMode);
 		this.miSiteMap.setVisible(fullMode); 
+		
+		this.mnView.setVisible(fullMode);
+		this.mnTools.setVisible(fullMode);
 		
 		this.miReportBugOnLastTransaction.setVisible(fullMode);
 		this.miXMLCommunicationsViewer.setVisible(fullMode);

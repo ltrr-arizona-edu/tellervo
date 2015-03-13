@@ -18,7 +18,8 @@ public class SampleListModel extends AbstractListModel<Sample> {
 	public SampleListModel(Collection<Sample> list)
 	{
 		this.list = (ArrayList<Sample>) list;
-		
+		fireContentsChanged(this, 0, this.getSize());
+
 	}
 	
 	public SampleListModel()
@@ -29,6 +30,15 @@ public class SampleListModel extends AbstractListModel<Sample> {
 	public void addElement(Sample sample)
 	{
 		list.add(sample);
+		fireContentsChanged(this, 0, this.getSize());
+
+	}
+	
+	public void addAll(Collection<Sample> items)
+	{
+		list.addAll(items);
+		fireContentsChanged(this, 0, this.getSize());
+
 	}
 	
 	@Override
@@ -44,14 +54,46 @@ public class SampleListModel extends AbstractListModel<Sample> {
 	public void sortAscending(Comparator<Sample> comp)
 	{
 		Collections.sort(list, comp);
+		fireContentsChanged(this, 0, this.getSize());
+
 	}
 
 	public void sortDescending(Comparator<Sample> comp)
 	{
 		Collections.sort(list, comp);
 		Collections.reverse(list);
+		fireContentsChanged(this, 0, this.getSize());
+
 	}
 	
+	public void remove(Sample s)
+	{
+		list.remove(s);
+		fireContentsChanged(this, 0, this.getSize());
+
+	}
 	
+	public void remove(int i)
+	{
+		list.remove(i);
+		fireContentsChanged(this, 0, this.getSize());
+
+	}
+	
+
+	public void fireContentsChanged(Object source, int index0, int index1) {
+			super.fireContentsChanged(source, index0, index1);
+		
+	}
+
+	public void fireIntervalAdded(Object source, int index0, int index1) {
+			super.fireIntervalAdded(source, index0, index1);
+		
+	}
+
+	public void fireIntervalRemoved(Object source, int index0, int index1) {
+			super.fireIntervalAdded(source, index0, index1);
+		
+	}
 	
 }

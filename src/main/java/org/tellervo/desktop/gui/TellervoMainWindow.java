@@ -170,7 +170,7 @@ public class TellervoMainWindow extends JFrame {
 
 		// menubar
 		{
-			JMenuBar menubar = new TellervoMenuBar(new EditorActions(this));
+			JMenuBar menubar = new TellervoMenuBar(new EditorActions(this), this);
 			
 			setJMenuBar(menubar);
 		}

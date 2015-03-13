@@ -5,8 +5,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import org.jdesktop.swingx.JXTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.editor.EditorFactory;
@@ -35,7 +37,15 @@ import org.tridas.schema.TridasTridas;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValues;
 
-public class ImportDataOnly extends Object {
+import javax.swing.JTable;
+
+import java.awt.BorderLayout;
+
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+
+public class ImportDataOnly extends JDialog {
 	private final static Logger log = LoggerFactory.getLogger(EditorFactory.class);
 
 	private final Window parent;
@@ -44,7 +54,39 @@ public class ImportDataOnly extends Object {
 	private AbstractDendroFileReader reader;
 	private File file;
 	private String fileType;
+	private JTable table;
 	
+	
+	public ImportDataOnly()
+	{
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		getContentPane().add(scrollPane, BorderLayout.CENTER);
+		
+		
+		
+		table = new JXTable();
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+				{"/tmp/", "abc.rwl", "abc123a", "ABC", "123", "A", null, null},
+				{null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null},
+			},
+			new String[] {
+				"Folder", "File name", "Series name", "Object code", "Element code", "Sample code", "Radius code", "Series code"
+			}
+		));
+		table.getColumnModel().getColumn(0).setPreferredWidth(74);
+		table.getColumnModel().getColumn(1).setPreferredWidth(109);
+		table.getColumnModel().getColumn(2).setPreferredWidth(117);
+
+		scrollPane.setViewportView(table);
+		parent = null;
+		
+	}
 	
 	public ImportDataOnly(Window parent, File file, String fileType)
 	{
@@ -289,7 +331,14 @@ public class ImportDataOnly extends Object {
 	{
 		if(sampleList==null || sampleList.size()==0) return;
 		
-		new FullEditor(sampleList);
+		if(parent instanceof FullEditor)
+		{
+			((FullEditor)parent).addSamples(sampleList);
+		}
+		else
+		{
+			new FullEditor(sampleList);
+		}
 	}
 	
 /*	public void openEditorLites()

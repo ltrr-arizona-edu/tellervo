@@ -57,11 +57,23 @@ public class FileOpenAction extends AbstractAction{
 		}
 		else
 		{
-			opendb(false);
+			if(parent instanceof FullEditor)
+			{
+				opendb((FullEditor)parent, false);
+			}
+			else
+			{
+				opendb(null, false);
+			}
 		}
 	}
 	
 	
+	/**
+	 * Open a legacy data file in a new LiteEditor window
+	 * 
+	 * @param parent
+	 */
 	public static void openLegacyFile(Window parent)
 	{
 		// custom jfilechooser
@@ -120,7 +132,14 @@ public class FileOpenAction extends AbstractAction{
 
 	}
 	
-	public static void opendb(boolean multi) {
+	/**
+	 * Open a series from the database.  If editor is null then the selected series is opened in a new editor, 
+	 * otherwise it is added to the existing editor.
+	 * 
+	 * @param editor
+	 * @param multi
+	 */
+	public static void opendb(FullEditor editor, boolean multi) {
 		DBBrowser browser = new DBBrowser(App.mainWindow, true, multi);
 		
 		browser.setVisible(true);
@@ -142,7 +161,15 @@ public class FileOpenAction extends AbstractAction{
 				OpenRecent.sampleOpened(new SeriesDescriptor(s));
 				
 				// open it
-				new FullEditor(s);
+				
+				if(editor==null)
+				{
+					new FullEditor(s);
+				} 
+				else
+				{
+					editor.addSample(s);
+				}
 			}
 		}
 	}

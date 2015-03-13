@@ -8,9 +8,9 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.AbstractButton;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -60,7 +60,7 @@ import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
 
-public abstract class AbstractEditor extends JFrame implements PrefsListener, SaveableDocument, SampleListener, ActionListener {
+public abstract class AbstractEditor extends JFrame implements PrefsListener, SaveableDocument, SampleListener {
 
 	private static final long serialVersionUID = 1L;
 	protected final static Logger log = LoggerFactory.getLogger(AbstractEditor.class);
@@ -68,8 +68,8 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	private JPanel contentPane;
 
 	protected SeriesDataMatrix dataView;
-	protected SampleListModel samplesModel;
-	protected JList<Sample> lstSamples;
+	private SampleListModel samplesModel;
+	private JList<Sample> lstSamples;
 	protected JPanel dataPanel;
 	protected JTabbedPane tabbedPane;
 	private EditorActions actions;
@@ -135,7 +135,9 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		JPanel workspacePanel = new JPanel();
 		splitPane.setLeftComponent(workspacePanel);
 
+
 		samplesModel = new SampleListModel();
+
 
 		// model.addElement(sampleList);
 
@@ -143,13 +145,9 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		
 		workspacePanel.setMinimumSize(new Dimension(240,10));
 		
-				btnRemove = new JButton();
-				btnRemove.setActionCommand("RemoveSample");
-				btnRemove.addActionListener(this);
-				
-						btnAdd = new JButton();
-						btnAdd.setActionCommand("AddSample");
-						btnAdd.addActionListener(this);
+		btnRemove = new TitlelessButton(actions.removeSeriesAction);
+		btnAdd = new TitlelessButton(actions.addSeriesAction);
+						
 						
 						JLabel lblSeries = new JLabel("Series:");
 						workspacePanel.add(lblSeries, "cell 0 0");
@@ -160,7 +158,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 		JScrollPane scrollPane = new JScrollPane();
 		workspacePanel.add(scrollPane, "cell 0 1 3 1,grow");
-
+		
 		lstSamples = new JList<Sample>(samplesModel);
 		scrollPane.setViewportView(lstSamples);
 		lstSamples.setValueIsAdjusting(true);
@@ -177,7 +175,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		panel.add(lblSortBy, "cell 0 0,alignx trailing");
 		
 		final JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Manually", "Title (asc.)", "Title (desc.)", "Start year (asc.)", "Start year (desc.)", "End year (asc.)", "End year (desc.)"}));
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"None", "Title (asc.)", "Title (desc.)", "Start year (asc.)", "Start year (desc.)", "End year (asc.)", "End year (desc.)", "Length (asc.)", "Length (desc.)"}));
 		panel.add(comboBox, "cell 1 0,growx");
 
 		lstSamples.addListSelectionListener(new ListSelectionListener() {
@@ -196,29 +194,39 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 					samplesModel.sortAscending(new NameComparator());
 					lstSamples.repaint();
 				}
-				if (comboBox.getSelectedIndex() == 2)
+				else if (comboBox.getSelectedIndex() == 2)
 				{
 					samplesModel.sortDescending(new NameComparator());
 					lstSamples.repaint();
 				}
-				if (comboBox.getSelectedIndex() == 3)
+				else if (comboBox.getSelectedIndex() == 3)
 				{
 					samplesModel.sortAscending(new StartYearComparator());
 					lstSamples.repaint();
 				}
-				if (comboBox.getSelectedIndex() == 4)
+				else if (comboBox.getSelectedIndex() == 4)
 				{
 					samplesModel.sortDescending(new StartYearComparator());
 					lstSamples.repaint();
 				}
-				if (comboBox.getSelectedIndex() == 5)
+				else if (comboBox.getSelectedIndex() == 5)
 				{
 					samplesModel.sortAscending(new EndYearComparator());
 					lstSamples.repaint();
 				}
-				if (comboBox.getSelectedIndex() == 6)
+				else if (comboBox.getSelectedIndex() == 6)
 				{
 					samplesModel.sortDescending(new EndYearComparator());
+					lstSamples.repaint();
+				}
+				else if (comboBox.getSelectedIndex() == 7)
+				{
+					samplesModel.sortAscending(new LengthComparator());
+					lstSamples.repaint();
+				}
+				else if (comboBox.getSelectedIndex() == 8)
+				{
+					samplesModel.sortDescending(new LengthComparator());
 					lstSamples.repaint();
 				}
 			}
@@ -242,7 +250,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 	protected void initMenu() {
 		
-		menuBar = new TellervoMenuBar(actions);
+		menuBar = new TellervoMenuBar(actions, this);
 		contentPane.add(menuBar, "cell 0 0,growx,aligny top");
 
 	}
@@ -342,11 +350,39 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 	}
 	
+
+	
+	/**
+	 * Add the specified sample to the workspace and select it
+	 * 
+	 * @param s
+	 */
 	public void addSample(Sample s)
 	{
 		samplesModel.addElement(s);
+		
+		lstSamples.setSelectedValue(s, true);
+	}
+	
+	/**
+	 * Add all the specified samples to the workspace
+	 * 
+	 * @param samples
+	 */
+	public void addSamples(Collection<Sample> samples)
+	{
+		for(Sample sample : samples)
+		{
+			samplesModel.addElement(sample);
+		}
+		
+		lstSamples.setSelectedIndex(samplesModel.getSize()-1);
 	}
 
+	/**
+	 * Set the title of the window to the name of the current sample and Tellervo
+	 * 
+	 */
 	protected void setTitle() {
 
 		if (getSample() != null) {
@@ -626,5 +662,14 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		// TODO Auto-generated method stub
 		
 	}
-	
+
+	public SampleListModel getSamplesModel() {
+		return samplesModel;
+	}
+
+	public JList<Sample> getLstSamples() {
+		return lstSamples;
+	}
+
+
 }

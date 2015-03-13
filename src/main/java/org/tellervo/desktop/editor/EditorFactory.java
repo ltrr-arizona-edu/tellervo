@@ -422,12 +422,19 @@ public class EditorFactory {
 		TellervoWsiTridasElement.attachNewSample(sample);
 
 		// start the editor
-		FullEditor ed = new FullEditor(sample);
-		ed.setVisible(true);
-		
+		if(container instanceof FullEditor)
+		{
+			((FullEditor)container).addSample(sample);
+		}
+		else
+		{
+			FullEditor ed = new FullEditor(sample);
+			ed.setVisible(true);
+			ed.showPage(EditType.OBJECT);
+		}
+				
 		container.setCursor(Cursor.getDefaultCursor());
 		
-		ed.showPage(EditType.OBJECT);
 	}
 	
 	
