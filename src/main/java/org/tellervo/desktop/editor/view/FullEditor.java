@@ -272,7 +272,8 @@ public class FullEditor extends AbstractEditor {
 				
 				if(dataView!=null) 
 				{
-					dataView.saveRemarksDividerLocation();			
+					dataView.saveRemarksDividerLocation();
+					dataView.saveGraphDividerLocation();
 				}
 				
 				dataView = new SeriesDataMatrix(sample, this);
@@ -281,6 +282,7 @@ public class FullEditor extends AbstractEditor {
 				dataPanel.repaint();
 				this.repaint();
 				dataView.restoreRemarksDividerLocation();
+				dataView.restoreGraphDividerLocation();
 				
 				try{
 					this.metadataHolder.removeAll();

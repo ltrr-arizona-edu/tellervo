@@ -110,6 +110,7 @@ public class Prefs extends AbstractSubsystem {
 		EDIT_FONT("tellervo.edit.font"),
 		EDIT_GRIDLINES("tellervo.edit.gridlines"),
 		
+		EDITOR_GRAPH_DIVIDER_LOCAITON("tellervo.editor.graph.dividerloc"),
 		GRAPH_BACKGROUND("tellervo.graph.background"),
 		GRAPH_GRIDLINES("tellervo.graph.graphpaper"),
 		GRAPH_GRIDLINES_COLOR("tellervo.graph.graphpaper.color"),

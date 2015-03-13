@@ -1104,5 +1104,7 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 	public List<TridasValue> getTridasValues() {
 		return this.getSeries().getValues().get(0).getValues(); 
 	}
+
+	
 	
 }

@@ -3,6 +3,7 @@ package org.tellervo.desktop.editor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
@@ -54,6 +55,7 @@ import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasTridas;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValues;
+
 import javax.swing.JLabel;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
@@ -66,7 +68,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	private JPanel contentPane;
 
 	protected SeriesDataMatrix dataView;
-	protected DefaultListModel<Sample> samplesModel;
+	protected SampleListModel samplesModel;
 	protected JList<Sample> lstSamples;
 	protected JPanel dataPanel;
 	protected JTabbedPane tabbedPane;
@@ -133,7 +135,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		JPanel workspacePanel = new JPanel();
 		splitPane.setLeftComponent(workspacePanel);
 
-		samplesModel = new DefaultListModel<Sample>();
+		samplesModel = new SampleListModel();
 
 		// model.addElement(sampleList);
 
@@ -174,7 +176,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		JLabel lblSortBy = new JLabel("Sort:");
 		panel.add(lblSortBy, "cell 0 0,alignx trailing");
 		
-		JComboBox comboBox = new JComboBox();
+		final JComboBox comboBox = new JComboBox();
 		comboBox.setModel(new DefaultComboBoxModel(new String[] {"Manually", "Title (asc.)", "Title (desc.)", "Start year (asc.)", "Start year (desc.)", "End year (asc.)", "End year (desc.)"}));
 		panel.add(comboBox, "cell 1 0,growx");
 
@@ -185,6 +187,42 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 		});
 
+		comboBox.addActionListener(new ActionListener(){
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0){
+				if (comboBox.getSelectedIndex() == 1)
+				{
+					samplesModel.sortAscending(new NameComparator());
+					lstSamples.repaint();
+				}
+				if (comboBox.getSelectedIndex() == 2)
+				{
+					samplesModel.sortDescending(new NameComparator());
+					lstSamples.repaint();
+				}
+				if (comboBox.getSelectedIndex() == 3)
+				{
+					samplesModel.sortAscending(new StartYearComparator());
+					lstSamples.repaint();
+				}
+				if (comboBox.getSelectedIndex() == 4)
+				{
+					samplesModel.sortDescending(new StartYearComparator());
+					lstSamples.repaint();
+				}
+				if (comboBox.getSelectedIndex() == 5)
+				{
+					samplesModel.sortAscending(new EndYearComparator());
+					lstSamples.repaint();
+				}
+				if (comboBox.getSelectedIndex() == 6)
+				{
+					samplesModel.sortDescending(new EndYearComparator());
+					lstSamples.repaint();
+				}
+			}
+		});
 		JPanel panelMain = new JPanel();
 		splitPane.setRightComponent(panelMain);
 		panelMain.setLayout(new MigLayout("", "[grow,fill]", "[grow,fill]"));
@@ -288,11 +326,11 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	 */
 	public Sample getSample() {
 		try {
-			if (samplesModel != null && samplesModel.size() > 0) {
+			if (samplesModel != null && samplesModel.getSize() > 0) {
 				if (lstSamples.getSelectedIndex() != -1) {
-					return (Sample) samplesModel.get(lstSamples.getSelectedIndex());
+					return (Sample) samplesModel.getElementAt(lstSamples.getSelectedIndex());
 				} else {
-					return (Sample) samplesModel.get(0);
+					return (Sample) samplesModel.getElementAt(0);
 				}
 
 			}
@@ -421,7 +459,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 			}
 		}
 
-		if(unitsSet==false && samplesModel.size()>0)
+		if(unitsSet==false && samplesModel.getSize()>0)
 		{
 			Object[] possibilities = {"1/1000th mm", 
 					"1/100th mm",
@@ -467,7 +505,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		
 		for(int n=0; n< samplesModel.getSize(); n++)
 		{
-			Sample sample = samplesModel.get(n);
+			Sample sample = samplesModel.getElementAt(n);
 			ITridasSeries series = sample.getSeries();
 			
 			try {				
@@ -521,7 +559,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		
 		for(int n=0; n< samplesModel.getSize(); n++)
 		{
-			Sample s = samplesModel.get(n);
+			Sample s = samplesModel.getElementAt(n);
 			serList.add(s.getSeries());
 		}
 		
@@ -540,7 +578,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		
 		for(int n=0; n< samplesModel.getSize(); n++)
 		{
-			Sample s = samplesModel.get(n);
+			Sample s = samplesModel.getElementAt(n);
 			samplesList.add(s);
 		}
 		

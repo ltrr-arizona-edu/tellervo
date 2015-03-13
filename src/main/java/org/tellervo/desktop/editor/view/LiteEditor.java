@@ -279,7 +279,8 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				
 				if(dataView!=null) 
 				{
-					dataView.saveRemarksDividerLocation();			
+					dataView.saveRemarksDividerLocation();	
+					dataView.saveGraphDividerLocation();
 				}
 				
 				dataView = new SeriesDataMatrix(sample, this);
@@ -287,6 +288,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				dataPanel.add(dataView, BorderLayout.CENTER);
 
 				dataView.restoreRemarksDividerLocation();
+				dataView.restoreGraphDividerLocation();
 
 				metadata.setSample(getSample());
 				

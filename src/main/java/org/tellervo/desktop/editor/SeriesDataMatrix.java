@@ -1112,6 +1112,24 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		}
 	}
 	
+	public void saveGraphDividerLocation()
+	{
+		App.prefs.setIntPref(PrefKey.EDITOR_GRAPH_DIVIDER_LOCAITON, splitPane.getDividerLocation());
+	}
+	
+	public void restoreGraphDividerLocation()
+	{
+		int newloc = App.prefs.getIntPref(PrefKey.EDITOR_GRAPH_DIVIDER_LOCAITON, 999999);
+		if(newloc!=999999)
+		{
+			splitPane.setDividerLocation(newloc);
+		}
+		else
+		{
+			splitPane.setDividerLocation(0.2d);
+		}
+	}
+	
 	
 	/**
 	 * Make sure the remarks panel is collapsed
