@@ -29,8 +29,8 @@ public class HelpVideoTutorialsAction extends AbstractAction {
 	
 	
 	public HelpVideoTutorialsAction(String videoname) {
-        super("Video tutorials", Builder.getIcon("video.png", 22));
-		putValue(SHORT_DESCRIPTION, "Video Tutorials");
+        super(videoname, Builder.getIcon("video.png", 22));
+		putValue(SHORT_DESCRIPTION, "Video Tutorial - "+videoname);
         //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.new")); 
         //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.new"));
 

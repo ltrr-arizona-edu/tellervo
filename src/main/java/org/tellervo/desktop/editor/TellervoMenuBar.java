@@ -31,6 +31,28 @@ public class TellervoMenuBar extends JMenuBar{
 	JMenuItem miExportData;
 	JMenuItem miBulkDataEntry;
 	JMenuItem miDesignODKForm;
+	
+	JMenu mnAdministration;
+	JMenuItem miUsersAndGroups;
+	JMenuItem miEditViewPermissions;
+	JMenuItem miChangePassword;
+	JMenuItem miForgetPassword;
+	JMenuItem miReports;
+	JMenu miLabels;
+	JMenuItem miBoxLabel;
+	JMenuItem miBasicBoxLabel;
+	JMenuItem miSampleBoxLabel;
+	JMenuItem miDatabaseStatistics;
+	JMenu miCurationMenu;
+	JMenuItem miCurationMenuFindSample;
+	JMenuItem miCurationMenuSampleStatus;
+	JMenuItem miCurationMenuBoxDetails;
+	JMenuItem miCurationMenuNewLoan;
+	JMenuItem miCurationMenuLoanDialog;
+	JMenuItem miMetaDB;
+	JMenuItem miSiteMap;
+	JMenuItem miReportBugOnLastTransaction;
+	JMenuItem miXMLCommunicationsViewer;
 
 	public TellervoMenuBar()
 	{
@@ -153,7 +175,61 @@ public class TellervoMenuBar extends JMenuBar{
 		
 		// ADMIN MENU
 
-		JMenu mnAdministration = new JMenu("Administration");
+		mnAdministration = new JMenu("Administration");
+		
+		miUsersAndGroups = new JMenuItem(actions.adminUserAndGroupsAction);
+		mnAdministration.add(miUsersAndGroups);
+		
+		miEditViewPermissions = new JMenuItem(actions.adminEditViewPermissionsAction);
+		mnAdministration.add(miEditViewPermissions);
+		
+		mnAdministration.addSeparator();
+		
+		miChangePassword = new JMenuItem(actions.adminChangePasswordAction);
+		mnAdministration.add(miChangePassword);
+		
+		miForgetPassword = new JMenuItem(actions.adminForgetPasswordAction);
+		mnAdministration.add(miForgetPassword);
+		
+		miReports = new JMenuItem(actions.adminReportsAction);
+		mnAdministration.add(miReports);
+		
+		miLabels = new JMenu(actions.adminLabelAction);
+		miBoxLabel = new JMenuItem(actions.adminBoxLabelAction);
+		miBasicBoxLabel = new JMenuItem(actions.adminBasicBoxLabelAction);
+		miSampleBoxLabel = new JMenuItem(actions.adminSampleLabelAction);
+		miLabels.add(miBoxLabel);
+		miLabels.add(miBasicBoxLabel);
+		miLabels.add(miSampleBoxLabel);
+		mnAdministration.add(miLabels);
+		
+		
+		mnAdministration.addSeparator();
+		
+		miDatabaseStatistics = new JMenuItem(actions.adminDatabaseStatisticsAction);
+		mnAdministration.add(miDatabaseStatistics);
+		
+		miCurationMenu = new JMenu(actions.adminCurationMenuAction);
+		miCurationMenuFindSample = new JMenuItem(actions.adminCurationMenuFindSampleAction);
+		miCurationMenuSampleStatus = new JMenuItem(actions.adminCurationMenuSampleStatusAction);
+		miCurationMenuBoxDetails = new JMenuItem(actions.adminCurationMenuBoxDetailsAction);
+		miCurationMenuLoanDialog = new JMenuItem(actions.adminCurationMenuLoanDialogAction);
+		miCurationMenuNewLoan = new JMenuItem(actions.adminCurationMenuNewLoanAction);
+		miCurationMenu.add(miCurationMenuFindSample);
+		miCurationMenu.add(miCurationMenuSampleStatus);
+		miCurationMenu.add(miCurationMenuBoxDetails);
+		miCurationMenu.add(miCurationMenuLoanDialog);
+		miCurationMenu.add(miCurationMenuNewLoan);
+		mnAdministration.add(miCurationMenu);
+		
+		mnAdministration.addSeparator();
+		
+		miMetaDB = new JMenuItem(actions.adminMetaDBAction);
+		mnAdministration.add(miMetaDB);
+		
+		miSiteMap = new JMenuItem(actions.adminSiteMapAction);
+		mnAdministration.add(miSiteMap);		
+		
 		add(mnAdministration);
 
 		// VIEW MENU
@@ -177,6 +253,87 @@ public class TellervoMenuBar extends JMenuBar{
 		// HELP MENU
 		
 		JMenu mnHelp = new JMenu("Help");
+		
+		JMenuItem miHelpContents = new JMenuItem(actions.helpHelpContentsAction);
+		mnHelp.add(miHelpContents);
+		
+		JMenu miVideoTutorials = new JMenu("Videos");
+				
+		JMenuItem miVideoIntro = new JMenuItem(actions.helpVideoIntroAction);
+		miVideoTutorials.add(miVideoIntro);
+		
+		JMenuItem miVideoGettingStarted = new JMenuItem(actions.helpVideoGettingStartedAction);
+		miVideoTutorials.add(miVideoGettingStarted);
+		
+		JMenuItem miVideoServerInstallation = new JMenuItem(actions.helpVideoServerInstallationAction);
+		miVideoTutorials.add(miVideoServerInstallation);
+		
+		JMenuItem miEnteringMetadata = new JMenuItem(actions.helpVideoEnteringMetadataAction);
+		miVideoTutorials.add(miEnteringMetadata);
+		
+		JMenuItem miMeasuringSamples = new JMenuItem(actions.helpVideoMeasuringSamplesAction);
+		miVideoTutorials.add(miMeasuringSamples);
+		
+		JMenuItem miMapping = new JMenuItem(actions.helpVideoMappingAction);
+		miVideoTutorials.add(miMapping);
+		
+		JMenuItem miAdministeringUsersAndGroups = new JMenuItem(actions.helpVideoAdminsteringUsersAndGroupsAction);
+		miVideoTutorials.add(miAdministeringUsersAndGroups);
+		
+		JMenuItem miCuratingYourCollection = new JMenuItem(actions.helpVideoCuratingYourCollectionAction);
+		miVideoTutorials.add(miCuratingYourCollection);
+		
+		JMenuItem miExportingData = new JMenuItem(actions.helpVideoExportingDataAction);
+		miVideoTutorials.add(miExportingData);
+		
+		JMenuItem miImporting = new JMenuItem(actions.helpVideoImportingAction);
+		miVideoTutorials.add(miImporting);
+		
+		JMenuItem miGraphing = new JMenuItem(actions.helpVideoGraphingAction);
+		miVideoTutorials.add(miGraphing);
+		
+		JMenuItem miDataManipulation = new JMenuItem(actions.helpVideoDataManipulationAction);
+		miVideoTutorials.add(miDataManipulation);
+				
+		mnHelp.add(miVideoTutorials);
+		
+		mnHelp.addSeparator();
+		
+		JMenuItem miCheckForUpdates = new JMenuItem(actions.helpCheckForUpdatesAction);
+		mnHelp.add(miCheckForUpdates);
+		
+		JMenuItem miEmailDevelopers = new JMenuItem(actions.helpEmailDeveloperAction);
+		mnHelp.add(miEmailDevelopers);
+		
+		JMenuItem miSetupWizard = new JMenuItem(actions.helpSetupWizardAction);
+		mnHelp.add(miSetupWizard);
+		
+		miReportBugOnLastTransaction = new JMenuItem(actions.helpReportBugOnLastTransactionAction);
+		mnHelp.add(miReportBugOnLastTransaction);
+		
+		mnHelp.addSeparator();
+		
+		JMenu miDebugInfo = new JMenu("Debug Information");
+		
+		JMenuItem miErrorLogViewer = new JMenuItem(actions.helpErrorLogViewerAction);
+		miDebugInfo.add(miErrorLogViewer);
+				
+		miXMLCommunicationsViewer = new JMenuItem(actions.helpXMLCommunicationsViewerAction);
+		miDebugInfo.add(miXMLCommunicationsViewer);
+		
+		JMenuItem miMVCMonitor = new JMenuItem(actions.helpMVCMonitorAction);
+		miDebugInfo.add(miMVCMonitor);
+		
+		JMenuItem miSystemsInformation = new JMenuItem(actions.helpSystemsInformationAction);
+		miDebugInfo.add(miSystemsInformation);
+		
+		mnHelp.add(miDebugInfo);
+		mnHelp.addSeparator();
+		
+		JMenuItem miAboutTellervo = new JMenuItem(actions.helpAboutTellervoAction);
+		mnHelp.add(miAboutTellervo);
+		
+		
 		add(mnHelp);
 		
 		
@@ -300,6 +457,9 @@ public class TellervoMenuBar extends JMenuBar{
 		return fileimportdataonly;
 	}
 	
+
+
+	
 	private void setGUILoggedIn(Boolean loggedin)
 	{
 		this.miLogon.setVisible(loggedin);
@@ -312,9 +472,24 @@ public class TellervoMenuBar extends JMenuBar{
 		this.miExportData.setVisible(fullMode);
 		this.miBulkDataEntry.setVisible(fullMode);
 		this.miDesignODKForm.setVisible(fullMode);
+		this.mnAdministration.setVisible(fullMode);
 		
+		this.miUsersAndGroups.setVisible(fullMode);
+		this.miEditViewPermissions.setVisible(fullMode);
+		this.miChangePassword.setVisible(fullMode);
+		this.miForgetPassword.setVisible(fullMode);
+		this.miReports.setVisible(fullMode);
+		this.miLabels.setVisible(fullMode);
+		this.miCurationMenu.setVisible(fullMode);
+		this.miMetaDB.setVisible(fullMode);
+		this.miSiteMap.setVisible(fullMode); 
+		
+		this.miReportBugOnLastTransaction.setVisible(fullMode);
+		this.miXMLCommunicationsViewer.setVisible(fullMode);
 		
 	}
+	
+
 	
 	protected void linkModel() {
 		App.appmodel.addPropertyChangeListener(new PropertyChangeListener() {

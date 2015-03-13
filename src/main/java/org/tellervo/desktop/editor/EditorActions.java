@@ -46,9 +46,17 @@ import org.tellervo.desktop.gui.menus.actions.EditInitDataGridAction;
 import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
 import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
+import org.tellervo.desktop.gui.menus.actions.HelpAboutTellervoAction;
 import org.tellervo.desktop.gui.menus.actions.HelpCheckForUpdatesAction;
+import org.tellervo.desktop.gui.menus.actions.HelpEmailDevelopersAction;
+import org.tellervo.desktop.gui.menus.actions.HelpErrorLogViewerAction;
 import org.tellervo.desktop.gui.menus.actions.HelpHelpContentsAction;
+import org.tellervo.desktop.gui.menus.actions.HelpMVCMonitorAction;
+import org.tellervo.desktop.gui.menus.actions.HelpReportBugOnLastTransactionAction;
+import org.tellervo.desktop.gui.menus.actions.HelpSetupWizardAction;
+import org.tellervo.desktop.gui.menus.actions.HelpSystemsInformationAction;
 import org.tellervo.desktop.gui.menus.actions.HelpVideoTutorialsAction;
+import org.tellervo.desktop.gui.menus.actions.HelpXMLCommunicationsViewerAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsTruncateAction;
@@ -126,9 +134,27 @@ public class EditorActions {
 	
 	//Help Menu actions
 	public Action helpHelpContentsAction;
-	public Action helpVideoTutorialsAction;
+	public Action helpVideoIntroAction;
+	public Action helpVideoGettingStartedAction;
+	public Action helpVideoServerInstallationAction;
+	public Action helpVideoEnteringMetadataAction;
+	public Action helpVideoMeasuringSamplesAction;
+	public Action helpVideoMappingAction;
+	public Action helpVideoAdminsteringUsersAndGroupsAction;
+	public Action helpVideoCuratingYourCollectionAction;
+	public Action helpVideoExportingDataAction;
+	public Action helpVideoImportingAction;
+	public Action helpVideoGraphingAction;
+	public Action helpVideoDataManipulationAction;
 	public Action helpCheckForUpdatesAction;
-	
+	public Action helpEmailDeveloperAction;
+	public Action helpSetupWizardAction;
+	public Action helpErrorLogViewerAction;
+	public Action helpReportBugOnLastTransactionAction;
+	public Action helpXMLCommunicationsViewerAction;
+	public Action helpMVCMonitorAction;
+	public Action helpSystemsInformationAction;
+	public Action helpAboutTellervoAction;
 	
 	/**
 	 * Constructor for main window
@@ -245,8 +271,31 @@ public class EditorActions {
 		graphSeriesAction = new GraphCurrentSeriesAction(editor);
 		
 		helpHelpContentsAction = new HelpHelpContentsAction();
-		//helpVideoTutorialsAction = new HelpVideoTutorialsAction(videoname);
+		helpVideoIntroAction = new HelpVideoTutorialsAction("Introduction");
+		helpVideoGettingStartedAction = new HelpVideoTutorialsAction("Getting started");
+		helpVideoServerInstallationAction = new HelpVideoTutorialsAction("Server installation");
+		helpVideoEnteringMetadataAction = new HelpVideoTutorialsAction("Entering metadata");
+		helpVideoMeasuringSamplesAction = new HelpVideoTutorialsAction("Measuring samples");
+		helpVideoMappingAction = new HelpVideoTutorialsAction("mapping");
+		helpVideoAdminsteringUsersAndGroupsAction = new HelpVideoTutorialsAction("Administering users and groups");
+		helpVideoCuratingYourCollectionAction = new HelpVideoTutorialsAction("Curating your collection");
+		helpVideoExportingDataAction = new HelpVideoTutorialsAction("Exporting data");
+		helpVideoImportingAction = new HelpVideoTutorialsAction("Importing");
+		helpVideoGraphingAction = new HelpVideoTutorialsAction("Graphing");
+		helpVideoDataManipulationAction = new HelpVideoTutorialsAction("Data manipulation");
+		
+		
 		helpCheckForUpdatesAction = new HelpCheckForUpdatesAction();
+		helpEmailDeveloperAction = new HelpEmailDevelopersAction();
+		helpSetupWizardAction = new HelpSetupWizardAction();
+		helpErrorLogViewerAction = new HelpErrorLogViewerAction();
+		helpReportBugOnLastTransactionAction = new HelpReportBugOnLastTransactionAction(); 
+		helpXMLCommunicationsViewerAction = new HelpXMLCommunicationsViewerAction();
+		helpMVCMonitorAction = new HelpMVCMonitorAction();
+		helpSystemsInformationAction = new HelpSystemsInformationAction();
+		helpAboutTellervoAction = new HelpAboutTellervoAction();
+		
+
 		
 		
 	}
