@@ -60,6 +60,8 @@ public class TellervoMenuBar extends JMenuBar{
 	private JMenu mnView;
 	private JMenu mnTools;
 	JMenuItem miComponentSeries;
+	private JMenuItem miToolsCrossdate;
+	private JMenuItem miToolsTruncate;
 
 	public TellervoMenuBar()
 	{
@@ -251,6 +253,13 @@ public class TellervoMenuBar extends JMenuBar{
 		
 		mnTools = new JMenu("Tools");
 		add(mnTools);
+		
+		miToolsTruncate = new JMenuItem(actions.toolsTruncateAction);
+		mnTools.add(miToolsTruncate);
+
+		miToolsCrossdate = new JMenuItem(actions.toolsCrossdateAction);
+		mnTools.add(miToolsCrossdate);
+		
 
 		
 		// GRAPH MENU

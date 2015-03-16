@@ -24,7 +24,17 @@ import java.awt.event.ActionListener;
 
 import org.jdesktop.swingx.JXTable;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.cross.ShotgunCrossdate;
 import org.tellervo.desktop.ui.I18n;
+
+import net.miginfocom.swing.MigLayout;
+
+import java.awt.BorderLayout;
+
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 
 
@@ -94,6 +104,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     
     private void internationalizeComponents()
     {
+    	if(!App.isInitialized()) App.init();
     	this.lblPrimary.setText(I18n.getText("crossdate.floatingSeries")+":");
     	this.lblSecondary.setText(I18n.getText("crossdate.referenceSeries")+":");
     	this.btnAddRemoveSeries.setText(I18n.getText("crossdate.addRemoveSeries"));
@@ -150,8 +161,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         tbl1ToNStats = new javax.swing.JTable();
         panelStatMap = new javax.swing.JPanel();
-        panelNToN = new javax.swing.JPanel();
-        panelMatrix = new javax.swing.JPanel();
+        panelNToN = new JPanel();
         panelChart = new javax.swing.JPanel();
         panelDetails = new javax.swing.JPanel();
         btnSwap = new javax.swing.JButton();
@@ -442,35 +452,8 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
 
         paneStatistics.addTab("Floating against all reference series (1 to n)", panel1ToN);
 
-        org.jdesktop.layout.GroupLayout panelMatrixLayout = new org.jdesktop.layout.GroupLayout(panelMatrix);
-        panelMatrix.setLayout(panelMatrixLayout);
-        panelMatrixLayout.setHorizontalGroup(
-            panelMatrixLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 833, Short.MAX_VALUE)
-        );
-        panelMatrixLayout.setVerticalGroup(
-            panelMatrixLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 66, Short.MAX_VALUE)
-        );
-
-        org.jdesktop.layout.GroupLayout panelNToNLayout = new org.jdesktop.layout.GroupLayout(panelNToN);
-        panelNToN.setLayout(panelNToNLayout);
-        panelNToNLayout.setHorizontalGroup(
-            panelNToNLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelNToNLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelMatrix, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        panelNToNLayout.setVerticalGroup(
-            panelNToNLayout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(panelNToNLayout.createSequentialGroup()
-                .addContainerGap()
-                .add(panelMatrix, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-
         paneStatistics.addTab("Compare all series (n to n)", panelNToN);
+        panelNToN.setLayout(new BorderLayout(0, 0));
 
         paneTablesAndCharts.setLeftComponent(paneStatistics);
 
@@ -625,8 +608,7 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     protected javax.swing.JPanel panelChart;
     protected javax.swing.JPanel panelDetails;
     protected javax.swing.JPanel panelHistogram;
-    protected javax.swing.JPanel panelMatrix;
-    protected javax.swing.JPanel panelNToN;
+    protected JPanel panelNToN;
     protected javax.swing.JPanel panelSignificantScores;
     protected javax.swing.JPanel panelStatMap;
     protected javax.swing.JPanel panelStats;
@@ -636,6 +618,4 @@ public class Ui_CrossdatePanel extends javax.swing.JPanel {
     protected javax.swing.JTable tblAllScores;
     protected javax.swing.JTable tblHistogram;
     protected javax.swing.JTextArea txtInfo;
-    // End of variables declaration//GEN-END:variables
-    
 }

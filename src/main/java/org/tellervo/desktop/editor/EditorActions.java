@@ -62,6 +62,7 @@ import org.tellervo.desktop.gui.menus.actions.HelpVideoTutorialsAction;
 import org.tellervo.desktop.gui.menus.actions.HelpXMLCommunicationsViewerAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.RemoveSeriesFromWorkspaceAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsTruncateAction;
 import org.tellervo.desktop.io.control.IOController;
 
@@ -127,6 +128,7 @@ public class EditorActions {
 	
 	// Tools menu action
 	public Action toolsTruncateAction;
+	public Action toolsCrossdateAction;
 
 	// Graph menu action
 	public Action graphCurrentSeriesAction;
@@ -274,6 +276,7 @@ public class EditorActions {
 		adminSiteMapAction = new AdminSiteMapAction();
 		
 		toolsTruncateAction = new ToolsTruncateAction(editor);
+		toolsCrossdateAction = new ToolsCrossdateAction(editor);
 		
 		graphCurrentSeriesAction = new GraphCurrentSeriesAction(editor);
 		graphComponentSeriesAction = new GraphComponentSeriesAction(editor);

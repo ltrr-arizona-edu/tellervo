@@ -28,7 +28,10 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -47,7 +50,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.jdesktop.swingx.JXTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
+import org.tellervo.desktop.cross.CrossdateCollection.Pairing;
+import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.graph.Graph;
 import org.tellervo.desktop.graph.GraphActions;
 import org.tellervo.desktop.graph.GraphController;
@@ -56,9 +63,10 @@ import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.GrapherEvent;
 import org.tellervo.desktop.graph.GrapherListener;
 import org.tellervo.desktop.graph.GrapherPanel;
-import org.tellervo.desktop.graph.SkeletonPlot;
 import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.ProgressMeter;
 import org.tellervo.desktop.gui.ReverseScrollBar;
+import org.tellervo.desktop.gui.SplashDialog;
 import org.tellervo.desktop.gui.cross.Ui_CrossdatePanel;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.sample.BaseSample;
@@ -66,15 +74,15 @@ import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.schema.SearchOperator;
-import org.tellervo.schema.SearchParameterName;
-import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Center;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasGenericField;
 
@@ -87,7 +95,8 @@ import org.tridas.schema.TridasGenericField;
 @SuppressWarnings("serial")
 public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListener {
 	private JFrame window;
-	
+	private final static Logger log = LoggerFactory.getLogger(CrossdateDialog.class);
+
 	private ElementList crossdatingElements;
 	private Element firstFloating = null;
 	private Element firstReference = null;
@@ -104,9 +113,11 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 	private List<Graph> graphSamples;
 	private JScrollPane graphScroller;
 	private Range newCrossdateRange;
+	private ShotgunCrossdate shotgun;
 
 	private Boolean reviewMode = false;
 	private CrossdateStatusBar status;
+	private ArrayList<Sample> samples;
 	
    
 	/**
@@ -114,9 +125,12 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 	 * 
 	 * @param parent
 	 */
-    public CrossdateDialog(java.awt.Frame parent) {
+    public CrossdateDialog() {
     	super();
     	window = new JFrame();  
+    	
+    	crossdatingElements = showOpenDialog(null, true, null);
+    	
         initialize();
     }
 
@@ -124,23 +138,48 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
      * Creates a new crossdate dialog with a list of preselected series
      * and a particular series set as the first floating 
      * 
-     * @param parent
+     * @param editor
      * @param preexistingElements
      * @param firstFloating
      */
-    public CrossdateDialog(java.awt.Frame parent,
+    public CrossdateDialog(AbstractEditor editor,
     		ElementList preexistingElements, Element firstFloating) {
     	super();
     	window = new JFrame();
         
     	// Set up lists of series and initialize gui
     	this.firstFloating = firstFloating;
-    	if(setSeriesPoolFromGUI(parent, preexistingElements)==false)
+    	if(setSeriesPoolFromGUI(editor, preexistingElements)==false)
     	{
     		return;
     	}
         initialize();
     }
+    
+    
+    public static ArrayList<Sample> createSampleList(final ElementList elements)
+    {
+
+    	ArrayList<Sample> samples = new ArrayList<Sample>();
+		
+		// first, ensure all elements are preloaded and of the correct type
+		for(Element e : elements) {
+			Sample s;
+			try {
+				s = e.load();
+			} catch (IOException ioe) {
+				System.out.println("failed loading element for xdate - should have been preloaded!");
+				continue;
+			}
+			
+			// make a list!
+			samples.add(s);
+		
+		}
+		
+		return samples;
+    }
+    
     
     /**
      * The specified element is shown in a crossdate dialog in 'review mode'
@@ -149,7 +188,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
      * @param parent
      * @param floating
      */
-    public CrossdateDialog(java.awt.Frame parent, Element floating) {
+    public CrossdateDialog(AbstractEditor editor, Element floating) {
     	super();
     	window = new JFrame();
         
@@ -219,23 +258,22 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     private ElementList doOpenDialog(DBBrowser dbb, ElementList preexistingElements) {
 		if(preexistingElements != null)
 			for(Element e : preexistingElements)
+			{
 				dbb.addElement(e);
-		
-		// select the site in the first element
-		Element e = preexistingElements.get(0);
-		if(e != null) {
-			try	{
-				BaseSample bs = e.loadBasic();
+				if(e != null) {
+					try	{
+						BaseSample bs = e.loadBasic();
 
-				String siteCode = bs.meta().getSiteCode();
-				if(siteCode != null)
-					dbb.selectSiteByCode(siteCode);
-				
-			} catch (Exception ex) {
-				// ignore...
+						String siteCode = bs.meta().getSiteCode();
+						if(siteCode != null)
+							dbb.selectSiteByCode(siteCode);
+						
+					} catch (Exception ex) {
+						// ignore...
+					}
+				}
 			}
-		}
-		
+				
     	dbb.setMinimumSelectedElements(2);
     	dbb.setTitle("Crossdate...");
     	
@@ -355,10 +393,14 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     
     private void initialize() {  	
     	
+    	
+    	
+    	
     	// start our new crossdates
     	crossdates = new CrossdateCollection();
     	status = new CrossdateStatusBar();
     	crossdatingElements = crossdates.setElements(crossdatingElements);   	
+    	samples = createSampleList(crossdatingElements);
      	
     	// Hide unwanted components
         btnSwap.setVisible(false);
@@ -369,6 +411,9 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	setupGraph();
     	setupListeners();
     	setupLists();
+    	setupShotgunPanel();
+    	
+
     	
     	// add ourself to the window, center, maximize and show
     	window.setContentPane(this);
@@ -384,7 +429,23 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	
     }
     
-    private void setupTables() {
+    /**
+     * Set up the panel for N-to-N comparison aka shotgun approach
+     */
+    private void setupShotgunPanel() {
+    	panelNToN.removeAll();
+    	
+    	shotgun = new ShotgunCrossdate(this);
+    	shotgun.setSamples(samples);
+    	
+     	
+    	panelNToN.add(shotgun, BorderLayout.CENTER);
+    	shotgun.calculate();
+    	shotgun.setRendererBoundsToFullExtent();
+		
+	}
+
+	private void setupTables() {
     	// sig scores table
        	sigScoresModel = new SigScoresTableModel(tblSignificantScores);
     	tblSignificantScores.setModel(sigScoresModel);
@@ -740,7 +801,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     	
     }
     
-    private void updateGraph(List<Graph> newGraphs) {    	
+    public void updateGraph(List<Graph> newGraphs) {    	
    		graphSamples.clear();
    		
     	if(!(newGraphs == null || newGraphs.size() != 2)) {
@@ -752,7 +813,13 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
     		newGraphs.get(0).setDraggable(false);
     		
     		// also, display the moving range
+    		try{
     		status.setMovingRange(newGraphs.get(1).getRange());
+    		} catch (ArrayIndexOutOfBoundsException e)
+    		{
+    			log.debug("AIOOBE");
+    			
+    		}
     		
     		// fit the height of the graph
         	graphController.scaleToFitHeight(5);

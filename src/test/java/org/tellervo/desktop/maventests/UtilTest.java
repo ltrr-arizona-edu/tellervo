@@ -40,6 +40,13 @@
 
 package org.tellervo.desktop.maventests;
 
+import java.awt.Color;
+import java.awt.Window;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+
+import org.tellervo.desktop.cross.TableHeatMapRenderer;
 import org.tellervo.desktop.util.StringUtils;
 
 import junit.framework.TestCase;
@@ -59,4 +66,6 @@ public class UtilTest extends TestCase {
         assertEquals(x[1], 2);
         assertEquals(x[2], 3);
     }
+    
+
 }
