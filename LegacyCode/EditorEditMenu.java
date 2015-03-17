@@ -106,7 +106,7 @@ public class EditorEditMenu extends EditMenu implements SampleListener {
 
 	private static final long serialVersionUID = 1L;
 	private Sample sample;
-	private final Editor editor;
+	private final AbstractEditor editor;
 	private SeriesDataMatrix dataView;
 	private JMenuItem insert, insertMR, delete;
 	private JMenuItem toggleMeasureMenuItem;

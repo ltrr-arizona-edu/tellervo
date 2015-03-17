@@ -33,7 +33,7 @@ public class ToolsCrossdateAction extends AbstractAction {
 		{
 		
 			Element secondary = new CachedElement(editor.getSample()); 
-			new CrossdateDialog(editor, ElementList.singletonList(secondary), secondary);
+			new CrossdateDialog(ElementList.singletonList(secondary), secondary);
 		}
 		else
 		{

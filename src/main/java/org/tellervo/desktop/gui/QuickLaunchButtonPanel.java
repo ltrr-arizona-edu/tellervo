@@ -2,36 +2,29 @@ package org.tellervo.desktop.gui;
 
 import java.awt.Color;
 import java.awt.Cursor;
-
-import javax.swing.JPanel;
-
-import net.miginfocom.swing.MigLayout;
-
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
-import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.EditorFactory;
-import org.tellervo.desktop.gui.menus.AdminMenu;
-import org.tellervo.desktop.gui.menus.FileMenu;
-import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.ui.I18n;
-
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.border.EtchedBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
+
+import net.miginfocom.swing.MigLayout;
+
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.editor.EditorFactory;
+import org.tellervo.desktop.gui.menus.AdminMenu;
+import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.ui.I18n;
 
 
 
@@ -118,12 +111,8 @@ public class QuickLaunchButtonPanel extends JPanel implements ActionListener, Mo
 			}
 			else
 			{
-				FileOpenAction.opendb(false);
+				FileOpenAction.opendb(null, false);
 			}
-		}
-		else if(evt.getActionCommand().equals("importSeries"))
-		{
-			FileMenu.importdbwithbarcode();
 		}
 		else if(evt.getActionCommand().equals("metadatabase"))
 		{

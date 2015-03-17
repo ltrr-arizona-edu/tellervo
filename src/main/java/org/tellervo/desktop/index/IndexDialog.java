@@ -53,7 +53,7 @@ import javax.swing.event.ListSelectionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Year;
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.graph.Graph;
 import org.tellervo.desktop.graph.GraphActions;
 import org.tellervo.desktop.graph.GraphController;
@@ -295,7 +295,7 @@ public class IndexDialog extends JDialog {
 				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 								
 				// open a new editor 
-				new Editor(tmp);
+				new FullEditor(tmp);
 				return true;
 			}
 		} catch (UserCancelledException uce) {

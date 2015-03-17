@@ -142,14 +142,13 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
      * @param preexistingElements
      * @param firstFloating
      */
-    public CrossdateDialog(AbstractEditor editor,
-    		ElementList preexistingElements, Element firstFloating) {
+    public CrossdateDialog(ElementList preexistingElements, Element firstFloating) {
     	super();
     	window = new JFrame();
         
     	// Set up lists of series and initialize gui
     	this.firstFloating = firstFloating;
-    	if(setSeriesPoolFromGUI(editor, preexistingElements)==false)
+    	if(setSeriesPoolFromGUI(null, preexistingElements)==false)
     	{
     		return;
     	}
@@ -185,10 +184,9 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
      * The specified element is shown in a crossdate dialog in 'review mode'
      * so the user can inspect the decision that was made  
      * 
-     * @param parent
      * @param floating
      */
-    public CrossdateDialog(AbstractEditor editor, Element floating) {
+    public CrossdateDialog(Element floating) {
     	super();
     	window = new JFrame();
         

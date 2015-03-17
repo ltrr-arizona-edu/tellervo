@@ -14,12 +14,12 @@ import javax.swing.JEditorPane;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.editor.EditorFactory.BarcodeDialogResult;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleAdapter;
 import org.tellervo.desktop.sample.SampleEvent;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.tridasv2.ui.TridasImportPanel;
 import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.LegacySampleExtractor;
@@ -47,7 +47,7 @@ public class ImportFrame extends XFrame {
 		
 		extractor = new LegacySampleExtractor(samp);
 		this.s = samp;
-		importer = new TridasImportPanel(samp, extractor, new Editor(samp));
+		importer = new TridasImportPanel(samp, extractor, new FullEditor(samp));
 		
 		setupGUI();
 	}
@@ -62,7 +62,7 @@ public class ImportFrame extends XFrame {
 		super();
 		
 		extractor = new LegacySampleExtractor(samp, result);
-		importer = new TridasImportPanel(samp, extractor, new Editor(samp));
+		importer = new TridasImportPanel(samp, extractor, new FullEditor(samp));
 		this.s = samp;
 		
 		setupGUI();
@@ -133,7 +133,7 @@ public class ImportFrame extends XFrame {
 				TellervoWsiTridasElement.attachNewSample(s);
 				
 				// and open!
-				new Editor(s).setVisible(true);
+				new FullEditor(s).setVisible(true);
 			}
 		});
 		

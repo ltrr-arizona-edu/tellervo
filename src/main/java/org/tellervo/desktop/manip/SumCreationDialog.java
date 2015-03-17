@@ -29,18 +29,18 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.graph.GraphDialog;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.BaseSample;
 import org.tellervo.desktop.sample.CachedElement;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
@@ -216,7 +216,7 @@ public class SumCreationDialog {
 				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 								
 				// open a new editor 
-				new Editor(tmp);
+				new FullEditor(tmp);
 				return true;
 			}
 		} catch (UserCancelledException uce) {

@@ -27,10 +27,10 @@ import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
 
 import org.tellervo.desktop.Range;
-import org.tellervo.desktop.editor.Editor;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
 import org.tellervo.desktop.ui.Alert;
@@ -201,7 +201,7 @@ public class Redate extends AbstractUndoableEdit {
 				// put it in our menu
 				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 				
-				new Editor(tmp).toFront();
+				new FullEditor(tmp).toFront();
 				
 				// get out of here! :)
 				return true;

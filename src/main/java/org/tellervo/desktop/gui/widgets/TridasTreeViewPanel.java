@@ -47,7 +47,7 @@ import org.jdesktop.swingx.search.TreeSearchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
@@ -1355,7 +1355,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		OpenRecent.sampleOpened(new SeriesDescriptor(s));
 		
 		// open it
-		new Editor(s);
+		new FullEditor(s);
 	}
 	
 	private void renameTag(DefaultMutableTreeNode node)

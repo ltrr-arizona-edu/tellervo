@@ -14,7 +14,6 @@ import javax.swing.AbstractAction;
 import org.fhaes.fhchart.gui.PlotWindow;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.AbstractEditor;
-import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Element;
@@ -241,7 +240,7 @@ public class GraphCreateFileHistoryPlotAction extends AbstractAction{
 				if(filescreated.length>0)
 				{
 					//logger.debug("Opening plot window with file: "+filescreated[0]);
-					PlotWindow plotwindow = new PlotWindow(App.mainWindow, filescreated[0]);
+					PlotWindow plotwindow = new PlotWindow(filescreated[0]);
 					
 					plotwindow.addWindowListener(new WindowListener(){
 

@@ -1,16 +1,12 @@
 package org.tellervo.desktop.gui.menus.actions;
 
-import java.awt.Window;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
 import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.editor.PopulateEditorDialog;
-import org.tellervo.desktop.editor.SeriesDataMatrix;
-import org.tellervo.desktop.gui.menus.FileMenu;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.ui.I18n;
 
 public class EditInitDataGridAction extends AbstractAction{
 

@@ -6,9 +6,9 @@ package org.tellervo.desktop.graph;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
-import org.tellervo.desktop.gui.menus.FileMenu;
 import org.tellervo.desktop.ui.Builder;
 
 
@@ -17,15 +17,13 @@ import org.tellervo.desktop.ui.Builder;
  *
  */
 @SuppressWarnings("serial")
-public class GraphFileMenu extends FileMenu {
+public class GraphFileMenu extends JMenu {
 	private GraphWindow window;
 	
     public GraphFileMenu(GraphWindow win) {
-    	super(win);
     	this.window = win;
     }
 
-    @Override
 	public void addPrintMenu() {
 		JMenuItem print1 = Builder.makeMenuItem("menus.graph.printplot", true, "printer.png");
 		print1.addActionListener(new AbstractAction() {

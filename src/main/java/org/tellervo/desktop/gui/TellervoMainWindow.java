@@ -25,26 +25,15 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -56,76 +45,17 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorActions;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.editor.TellervoMenuBar;
-import org.tellervo.desktop.gui.menus.AdminMenu;
-import org.tellervo.desktop.gui.menus.EditMenu;
-import org.tellervo.desktop.gui.menus.FileMenu;
-import org.tellervo.desktop.gui.menus.HelpMenu;
-import org.tellervo.desktop.gui.menus.WindowMenu;
+import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.platform.Platform;
-import org.tellervo.desktop.ui.Alert;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.util.ListUtil;
 import org.tellervo.desktop.versioning.Build;
-import org.tellervo.desktop.versioning.UpdateChecker;
-import org.tellervo.desktop.prefs.*;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 public class TellervoMainWindow extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	// --- DropLoader ----------------------------------------
-	// EXTRACT METHOD/CLASS!
-	public class DropLoader implements DropTargetListener {
-		public void dragEnter(DropTargetDragEvent event) {
-			event.acceptDrag(DnDConstants.ACTION_COPY);
-		}
-
-		public void dragOver(DropTargetDragEvent event) {
-		}
-
-		public void dragExit(DropTargetEvent event) {
-		}
-
-		public void dropActionChanged(DropTargetDragEvent event) {
-		}
-
-		public void drop(DropTargetDropEvent event) {
-			try {
-				Transferable transferable = event.getTransferable();
-
-				// we accept only filelists
-				if (transferable
-						.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-					event.acceptDrop(DnDConstants.ACTION_COPY);
-					Object o = transferable
-							.getTransferData(DataFlavor.javaFileListFlavor);
-					List<File> l = ListUtil.subListOfType((List<?>) o, File.class); // a List of Files
-
-					// load each one in turn
-					for (int i = 0; i < l.size(); i++) {
-						String pathname = l.get(i).getPath();
-						try {
-							CanOpener.open(pathname);
-						} catch (IOException ioe) {
-							System.out.println("error on " + pathname + "!"); // NEED BETTER ERROR HANDLING!
-						}
-					}
-					repaint();
-					event.getDropTargetContext().dropComplete(true);
-				} else {
-					event.rejectDrop();
-				}
-			} catch (IOException ioe) {
-				event.rejectDrop(); // handle error?
-			} catch (UnsupportedFlavorException ufe) {
-				event.rejectDrop(); // handle error?
-			}
-		}
-	}
-
-	// --- DropLoader ----------------------------------------
 
 	// SINGLETON.
 	// show the toplevel, or throw an exception if there already is one.
@@ -267,28 +197,22 @@ public class TellervoMainWindow extends JFrame {
 
 		JButton newSeries = new JButton();
 		JButton openSeries = new JButton();
-		JButton importSeries = new JButton();
 				
 		qlbutton(newSeries);
 		qlbutton(openSeries);
-		qlbutton(importSeries);
 		
 		newSeries.setToolTipText(I18n.getText("workspace.createNewSeries"));
 		openSeries.setToolTipText(I18n.getText("workspace.openExistingSeries"));
-		importSeries.setToolTipText(I18n.getText("workspace.importExistingSeries"));
 		
 		newSeries.setIcon(Builder.getIcon("filenew.png", 64));
 		openSeries.setIcon(Builder.getIcon("fileopen.png", 64));
-		importSeries.setIcon(Builder.getIcon("fileimport.png", 64));
 		
 		btnPanel.add(newSeries);
 		btnPanel.add(openSeries);
-		btnPanel.add(importSeries);		
 		
 		Dimension size = newSeries.getPreferredSize();
 		newSeries.setBounds(300, 125, size.width, size.height);
 		openSeries.setBounds(370, 125, size.width, size.height);
-		importSeries.setBounds(440, 125, size.width, size.height);
 		
 		newSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -298,16 +222,10 @@ public class TellervoMainWindow extends JFrame {
 		
 		openSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FileMenu.opendb();
+				FileOpenAction.opendb(null, false);
 			}
 		});
 		
-		importSeries.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				FileMenu.importdbwithbarcode();
-				
-			}
-		});
 
 		return btnPanel;
 	}

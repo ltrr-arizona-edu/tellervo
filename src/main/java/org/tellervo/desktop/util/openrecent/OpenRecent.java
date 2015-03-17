@@ -41,13 +41,12 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.view.LiteEditor;
 import org.tellervo.desktop.gui.Bug;
-import org.tellervo.desktop.gui.CanOpener;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -289,7 +288,9 @@ public class OpenRecent {
 			}
 				
 			case FILE: {
-				CanOpener.open(desc.getFileName());
+				//TODO Remember file type 
+				LiteEditor editor = new LiteEditor(null, new File(desc.getFileName()), "Tucson");
+				editor.setVisible(true);
 				return;
 			}
 				
@@ -306,7 +307,8 @@ public class OpenRecent {
 			return;
 		}
 
-		CanOpener.open(o.toString());		
+		new Bug(new IllegalArgumentException("Unknown item in OpenRecent"));
+
 	}
 
 	public static class SampleOpener {
