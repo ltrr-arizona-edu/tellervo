@@ -575,12 +575,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 	public GraphWindow(ElementList ss) {
 		// Empty list? Open a dialog to create it
 		if(ss == null) {
-			try {
-				ss = FileDialog.showMulti(I18n.getText("plot"));
-			} catch (UserCancelledException uce) {
-				dispose();
-				return;
-			}
+			//TODO IMPLEMENT!!!
+			ss = FileDialog.showMulti(I18n.getText("plot"));
 		}
 
 		// samples

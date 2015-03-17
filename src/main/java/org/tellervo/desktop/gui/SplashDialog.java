@@ -36,6 +36,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.BevelBorder;
 
 import org.tellervo.desktop.gui.ProgressMeter.ProgressEvent;
+import org.tellervo.desktop.gui.widgets.ImagePanel;
 
 
 @SuppressWarnings("serial")

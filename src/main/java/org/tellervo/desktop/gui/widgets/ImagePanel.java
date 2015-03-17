@@ -17,7 +17,7 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package org.tellervo.desktop.gui;
+package org.tellervo.desktop.gui.widgets;
 
 import java.awt.BorderLayout;
 import java.awt.Component;

@@ -46,6 +46,7 @@ import org.tellervo.desktop.editor.EditorActions;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.editor.TellervoMenuBar;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
+import org.tellervo.desktop.gui.widgets.ImagePanel;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
