@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -24,6 +25,7 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.JXTable;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.io.SeriesIdentity;
 import org.tellervo.desktop.io.SeriesIdentityTableCellRenderer;
 import org.tellervo.desktop.io.SeriesIdentityTableModel;
@@ -52,6 +54,12 @@ import javax.swing.JLabel;
 
 import java.awt.Font;
 
+/**
+ * GUI panel designed to enable the user to specifiy the identity of series being imported from legacy text files 
+ * 
+ * @author pbrewer
+ *
+ */
 public class IdentifySeriesPanel extends JPanel implements ActionListener, TableModelListener {
 
 	private static final long serialVersionUID = 1L;
@@ -67,23 +75,28 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		init();
 	}
 	
-	public IdentifySeriesPanel(File file, String filetype) {
+	public IdentifySeriesPanel(Window parent, File file, String filetype) {
 
+		setParent(parent);
 		init();
 		parseFile(file, filetype);
-
 	}
 	
-	public IdentifySeriesPanel(File[] files, String filetype) {
+	public IdentifySeriesPanel(Window parent, File[] files, String filetype) {
 
-		
-		
+		setParent(parent);
 		init();
-		
 		parseFiles(files, filetype);
-
 	}
 	
+	public void setParent(Window parent)
+	{
+		this.parent = parent;
+	}
+	
+	/**
+	 * Initialize the GUI
+	 */
 	private void init()
 	{
 		setLayout(new BorderLayout(0, 0));
@@ -158,9 +171,13 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		panelButton.add(btnSearchDB, "cell 0 2");
 		
 		JButton btnCancel = new JButton("Cancel");
+		btnCancel.setActionCommand("Cancel");
+		btnCancel.addActionListener(this);
 		panelButton.add(btnCancel, "cell 1 2");
 		
 		btnFinish = new JButton("Finish");
+		btnFinish.setActionCommand("Finish");
+		btnFinish.addActionListener(this);
 		btnFinish.setEnabled(false);
 		panelButton.add(btnFinish, "cell 2 2");
 		
@@ -169,6 +186,12 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	}
 	
 	
+	/**
+	 * Parse the specified legacy data file for series 
+	 * 
+	 * @param file
+	 * @param fileType
+	 */
 	private void parseFile(File file, String fileType)
 	{
 		
@@ -359,6 +382,12 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		
 	}
 	
+	/**
+	 * Helper function for parsing multiple files
+	 * 
+	 * @param files
+	 * @param filetype
+	 */
 	private void parseFiles(File[] files,  String filetype)
 	{
 		
@@ -389,35 +418,64 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	}
 	
 	
-	public static void main(String[] args)
+	/**
+	 * Test harness
+	 * 
+	 * @param args
+	 */
+	public static void showWindow(File[] files)
 	{
 		App.init();
 		
-		JDialog dialog = new JDialog();
-		File[] files = new File[2];
-		files[0] = new File("/home/pbrewer/dev/java11/DendroFileIO/TestData/Tucson/ThreeSeries.rwl");
-		files[1] = new File("/home/pbrewer/dev/java11/DendroFileIO/TestData/Tucson/OneSeries.rwl");
-		dialog.getContentPane().add(new IdentifySeriesPanel(files, "Tucson"));
+		JFrame dialog = new JFrame();
+	
+		dialog.getContentPane().add(new IdentifySeriesPanel(dialog, files, "Tucson"));
 		
+		dialog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		dialog.setSize(new Dimension(800, 500));
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
 		
 	}
 
+	/**
+	 * Search the database for entity matches based on the codes specified in the table
+	 */
+	public void searchDatabaseForMatches()
+	{
+		model.searchForMatches();
+	}
+	
+
+	/**
+	 * Open the editor with these series imported
+	 */
+	private void openEditor()
+	{
+		FullEditor editor = new FullEditor();
+		
+		editor.addSamples(model.getAllSamples());
+		
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getActionCommand().equals("SearchDB"))
 		{
 			searchDatabaseForMatches();
 		}
+		else if (evt.getActionCommand().equals("Finish"))
+		{
+			searchDatabaseForMatches();
+			openEditor();
+			parent.setVisible(false);
+		}
+		else if (evt.getActionCommand().equals("Cancel"))
+		{
+			parent.dispose();
+		}
 	}
 
-	
-	public void searchDatabaseForMatches()
-	{
-		model.searchForMatches();
-	}
 
 	@Override
 	public void tableChanged(TableModelEvent evt) {

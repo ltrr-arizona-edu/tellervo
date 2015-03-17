@@ -2,12 +2,20 @@ package org.tellervo.desktop.io;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.table.AbstractTableModel;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.tridasv2.LabCode;
+import org.tellervo.desktop.tridasv2.LabCodeFormatter;
+import org.tellervo.desktop.util.TridasManipUtil;
+import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
@@ -15,12 +23,27 @@ import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.schema.NormalTridasMeasuringMethod;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasMeasuringMethod;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+import org.tridas.util.TridasObjectEx;
 
+
+
+
+/**
+ * Table model for a table containing rows for imported data series from legacy text files.  Table contains columns to enable the 
+ * user to identify the various entities that each series should be assigned to.
+ * 
+ * @author pbrewer
+ *
+ */
 public class SeriesIdentityTableModel extends AbstractTableModel {
 
 	private final static Logger log = LoggerFactory.getLogger(SeriesIdentityTableModel.class);
@@ -63,6 +86,12 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		return null;
 	}
 	
+	/**
+	 * Get SeriesIdentity row from table
+	 * 
+	 * @param row
+	 * @return
+	 */
 	public SeriesIdentity getSeriesIdentity(int row)
 	{
 		try{
@@ -77,6 +106,11 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		
 	}
 	
+	/**
+	 * Add row to table
+	 * 
+	 * @param si
+	 */
 	public void addItem(SeriesIdentity si)
 	{
 		ids.add(si);
@@ -84,6 +118,11 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		
 	}
 	
+	/**
+	 * Remove row from table
+	 * 
+	 * @param si
+	 */
 	public void removeItem(SeriesIdentity si)
 	{
 		ids.remove(si);
@@ -156,6 +195,13 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		
 	}
 	
+	/**
+	 * Set the database searched flag for the specified entity and row
+	 * 
+	 * @param row
+	 * @param clazz
+	 * @param b
+	 */
 	public void setDatabaseSearchedStatus(int row, Class<? extends ITridas> clazz, boolean b)
 	{
 		SeriesIdentity id = getSeriesIdentity(row);
@@ -182,6 +228,13 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		}
 	}
 	
+	/**
+	 * Set the 'found in database' flag for the specified entity class 
+	 * 
+	 * @param row
+	 * @param clazz
+	 * @param b
+	 */
 	public void setDatabaseFoundStatus(int row, Class<? extends ITridas> clazz, boolean b)
 	{
 		SeriesIdentity id = getSeriesIdentity(row);
@@ -208,11 +261,19 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		}
 	}
 	
+	/**
+	 * Search the cache for matches based on the codes in the table.
+	 */
 	public void searchForMatches()
 	{
 		searchForMatches(false);
 	}
 	
+	/**
+	 * Search the cache (as well as the database if specified) for matches based on the codes specified in the table.   
+	 * 
+	 * @param cacheonly
+	 */
 	public void searchForMatches(boolean cacheonly)
 	{
 		for(int col=3; col<getColumnCount(); col++)
@@ -236,9 +297,9 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 						item.setDbChecked(true);
 						item.setInDatabase(entity!=null);
 					}
-					else if (!cacheonly)
+					else 
 					{
-						entity = searchForItemByCode(code, SearchReturnObject.OBJECT);
+						entity = TridasManipUtil.getTridasObjectByCode(code);
 						tridasCache.put(code, entity);
 						item.setDbChecked(true);
 						item.setInDatabase(entity!=null);
@@ -323,7 +384,13 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		this.fireTableDataChanged();
 	}
 	
-	
+	/**
+	 * Search the database for an entity based on the two parameters provided 
+	 * 
+	 * @param code
+	 * @param clazz
+	 * @return
+	 */
 	private ITridas searchForItemByCode(String code, SearchReturnObject clazz)
 	{
 		String[] codes = code.split(codeDelimiter);
@@ -486,6 +553,11 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		}
 	}
 	
+	/**
+	 * Returns true if the table has been completely filled out by the user
+	 * 
+	 * @return
+	 */
 	public boolean isTableComplete()
 	{
 		for(SeriesIdentity id : this.ids)
@@ -498,6 +570,85 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		}
 		
 		return true;
+	}
+	
+	public ArrayList<Sample> getAllSamples()
+	{
+		
+		ArrayList<Sample> samples = new ArrayList<Sample>();
+		
+		for(SeriesIdentity id : ids)
+		{
+			samples.add(getPopulatedSampleFromSeriesIdentity(id));
+		}
+		
+		
+		return samples;
+		
+	}
+	
+	/**
+	 * Populate the given Tellervo sample from the information we acquired
+	 * 
+	 * @param s
+	 */
+	private Sample getPopulatedSampleFromSeriesIdentity(SeriesIdentity id) {
+		LabCode labcode = new LabCode();
+		
+		Sample s = id.getSample();
+
+		TridasObject object = (TridasObject) tridasCache.get(id.getObjectItem().getCode());
+		TridasElement element = (TridasElement) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()); 
+		TridasSample sample = (TridasSample) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()  + codeDelimiter + id.getSampleItem().getCode());
+		TridasRadius radius = (TridasRadius) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()  + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode());
+		
+
+		ITridasSeries series = s.getSeries();
+		TellervoWsiTridasElement.attachNewSample(s);
+
+		if(object != null) {
+			s.setMeta(Metadata.OBJECT, object);
+			
+			
+			if(object instanceof TridasObjectEx){
+				labcode.appendSiteCode(((TridasObjectEx)object).getLabCode());
+			}
+			else{
+				labcode.appendSiteCode(object.getTitle());
+			}
+			
+		}
+		
+		if(element != null) {
+			s.setMeta(Metadata.ELEMENT, element);
+			labcode.setElementCode(element.getTitle());
+		}
+		
+		if(sample != null) {
+			s.setMeta(Metadata.SAMPLE, sample);
+			labcode.setSampleCode(sample.getTitle());
+		}
+		
+		if(radius != null) {
+			s.setMeta(Metadata.RADIUS, radius);
+			labcode.setRadiusCode(radius.getTitle());
+		}
+
+		if(series!=null)
+		{
+			series.setTitle(id.getSeriesItem().getCode());
+			TridasMeasuringMethod mm = new TridasMeasuringMethod();
+			mm.setNormalTridas(NormalTridasMeasuringMethod.MEASURING_PLATFORM);
+			((TridasMeasurementSeries) series).setMeasuringMethod(mm);
+			labcode.setSeriesCode(s.getSeries().getTitle());
+		}
+
+		s.setMeta(Metadata.LABCODE, labcode);
+		s.setMeta(Metadata.TITLE, LabCodeFormatter.getDefaultFormatter().format(labcode));
+		
+		
+		
+		return s;
 	}
 	
 }

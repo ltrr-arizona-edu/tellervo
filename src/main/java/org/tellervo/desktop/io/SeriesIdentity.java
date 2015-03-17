@@ -4,6 +4,12 @@ import java.io.File;
 
 import org.tellervo.desktop.sample.Sample;
 
+/**
+ * This class contains the identity of a series being imported from a legacy text file 
+ * 
+ * @author pbrewer
+ *
+ */
 public class SeriesIdentity {
 
 	private IdentityItem objectItem = new IdentityItem();
@@ -127,4 +133,7 @@ public class SeriesIdentity {
 	public void setSeriesItem(IdentityItem seriesItem) {
 		this.seriesItem = seriesItem;
 	}
+	
+	
+	
 }

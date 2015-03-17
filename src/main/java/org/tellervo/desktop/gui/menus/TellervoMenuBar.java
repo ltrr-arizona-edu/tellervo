@@ -15,6 +15,7 @@ import javax.swing.JMenuItem;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.editor.EditorActions;
+import org.tellervo.desktop.io.view.IdentifySeriesPanel;
 import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -464,22 +465,26 @@ public class TellervoMenuBar extends JMenuBar{
 					JFileChooser fc = new JFileChooser(lastFolder);
 					fc.addChoosableFileFilter(filter);
 					fc.setFileFilter(filter);
-					
+					fc.setMultiSelectionEnabled(true);
 					int returnVal = fc.showOpenDialog(null);
 						
 					// Get details from user
 				    if (returnVal == JFileChooser.APPROVE_OPTION) {
-				        File file = fc.getSelectedFile();
 				        
-				        
-				     
+				    	File[] files = fc.getSelectedFiles();
+				    	
+				    	/*File file = fc.getSelectedFile();
 				        ImportDataOnly importDialog = new ImportDataOnly(parent, file, s);
-				        
-				        importDialog.openEditors();
+				        importDialog.openEditors();*/
+				    	
+				    	
 
 				        
 						// Remember this folder for next time
-						App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
+						App.prefs.setPref(PrefKey.FOLDER_LAST_READ, files[0].getPath());
+						
+				    	IdentifySeriesPanel.showWindow(files);
+
 					    
 				    } else {
 				    	return;
