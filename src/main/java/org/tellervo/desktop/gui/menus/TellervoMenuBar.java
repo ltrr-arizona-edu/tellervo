@@ -1,4 +1,4 @@
-package org.tellervo.desktop.editor;
+package org.tellervo.desktop.gui.menus;
 
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -14,6 +14,7 @@ import javax.swing.JMenuItem;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
+import org.tellervo.desktop.editor.EditorActions;
 import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -470,6 +471,8 @@ public class TellervoMenuBar extends JMenuBar{
 				    if (returnVal == JFileChooser.APPROVE_OPTION) {
 				        File file = fc.getSelectedFile();
 				        
+				        
+				     
 				        ImportDataOnly importDialog = new ImportDataOnly(parent, file, s);
 				        
 				        importDialog.openEditors();

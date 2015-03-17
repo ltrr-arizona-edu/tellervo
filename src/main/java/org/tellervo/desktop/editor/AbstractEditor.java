@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.SaveableDocument;
+import org.tellervo.desktop.gui.menus.TellervoMenuBar;
 import org.tellervo.desktop.gui.widgets.TitlelessButton;
 import org.tellervo.desktop.prefs.PrefsListener;
 import org.tellervo.desktop.sample.Sample;

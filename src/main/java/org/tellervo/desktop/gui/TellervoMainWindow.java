@@ -44,7 +44,7 @@ import javax.swing.JPanel;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorActions;
 import org.tellervo.desktop.editor.EditorFactory;
-import org.tellervo.desktop.editor.TellervoMenuBar;
+import org.tellervo.desktop.gui.menus.TellervoMenuBar;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.widgets.ImagePanel;
 import org.tellervo.desktop.platform.Platform;
