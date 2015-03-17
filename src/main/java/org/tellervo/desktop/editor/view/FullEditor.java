@@ -163,21 +163,7 @@ public class FullEditor extends AbstractEditor {
 				}
 			}
 
-			String filename = (String) sample.getMeta("filename"); // BUG: why not containsKey()?
-			// get target filename
-			try {
-				filename = FileDialog.showSingle("Save");
 
-				// check for already-exists
-				Overwrite.overwrite(filename);
-			} catch (UserCancelledException uce) {
-				return;
-			}
-
-			sample.setMeta(Metadata.FILENAME, filename);
-			
-			// attach a FileElement to it
-			sample.setLoader(new FileElement(filename));
 		}
 
 		// complain if it's not complete yet 

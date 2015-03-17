@@ -423,14 +423,15 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	 * 
 	 * @param args
 	 */
-	public static void showWindow(File[] files)
+	public static void showWindow(File[] files, String format)
 	{
 		App.init();
 		
 		JFrame dialog = new JFrame();
 	
-		dialog.getContentPane().add(new IdentifySeriesPanel(dialog, files, "Tucson"));
-		
+		dialog.getContentPane().add(new IdentifySeriesPanel(dialog, files, format));
+		dialog.setIconImage(Builder.getApplicationIcon());
+		dialog.setTitle("Import Data");
 		dialog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		dialog.setSize(new Dimension(800, 500));
 		dialog.setLocationRelativeTo(null);

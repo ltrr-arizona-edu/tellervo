@@ -116,6 +116,14 @@ public class TellervoMenuBar extends JMenuBar{
 		
 		JMenuItem miSaveAs = new JMenuItem(actions.fileSaveAsAction);
 		mnFile.add(miSaveAs);
+		
+		try{
+			JMenuItem miSaveAll = new JMenuItem(actions.fileSaveAllAction);
+			mnFile.add(miSaveAll);
+		} catch (Exception e)
+		{
+			
+		}
 
 		mnFile.addSeparator();
 
@@ -483,7 +491,7 @@ public class TellervoMenuBar extends JMenuBar{
 						// Remember this folder for next time
 						App.prefs.setPref(PrefKey.FOLDER_LAST_READ, files[0].getPath());
 						
-				    	IdentifySeriesPanel.showWindow(files);
+				    	IdentifySeriesPanel.showWindow(files, s);
 
 					    
 				    } else {

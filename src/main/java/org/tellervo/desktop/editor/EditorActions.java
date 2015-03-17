@@ -4,6 +4,7 @@ import java.awt.Window;
 
 import javax.swing.Action;
 
+import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.gui.menus.actions.AddSeriesToWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBasicBoxLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBoxLabelAction;
@@ -44,6 +45,7 @@ import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenMultiAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
+import org.tellervo.desktop.gui.menus.actions.FileSaveAllAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAsAction;
 import org.tellervo.desktop.gui.menus.actions.GraphAllSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.GraphComponentSeriesAction;
@@ -81,6 +83,8 @@ public class EditorActions {
 	public Action fileOpenAction ;
 	public Action fileSaveAction;
 	public Action fileSaveAsAction;
+	public Action fileSaveAllAction;
+
 	public Action fileExportDataAction;
 	//public Action fileExportMapAction;
 	public Action filePrintAction;
@@ -239,6 +243,7 @@ public class EditorActions {
 		fileDesignODKFormAction = new FileDesignODKFormAction(editor);
 		fileSaveAction = new FileSaveAction(editor);
 		fileSaveAsAction = new FileSaveAsAction(editor);
+		if(editor instanceof FullEditor) fileSaveAllAction = new FileSaveAllAction((FullEditor) editor);
 		filePrintAction = new FilePrintAction(editor);
 		fileLogoffAction = new FileLogoffAction();
 		fileLogonAction = new FileLogonAction();
