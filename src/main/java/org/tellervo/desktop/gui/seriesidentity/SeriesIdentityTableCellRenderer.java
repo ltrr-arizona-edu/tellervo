@@ -1,4 +1,4 @@
-package org.tellervo.desktop.io;
+package org.tellervo.desktop.gui.seriesidentity;
 
 import java.awt.Component;
 
@@ -8,6 +8,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.io.IdentityItem;
 import org.tellervo.desktop.ui.Builder;
 
 /**
@@ -26,7 +27,7 @@ public class SeriesIdentityTableCellRenderer extends JLabel implements TableCell
 	public Component getTableCellRendererComponent(JTable table, Object item, boolean isSelected, boolean hasFocus,
 			int row, int column) {
 
-		this.setOpaque(true);
+		//this.setOpaque(true);
 		setText(item.toString());
 
 		if (item instanceof IdentityItem) {

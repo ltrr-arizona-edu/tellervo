@@ -1,4 +1,4 @@
-package org.tellervo.desktop.io.view;
+package org.tellervo.desktop.gui.seriesidentity;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -26,9 +26,6 @@ import org.jdesktop.swingx.JXTable;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.editor.view.FullEditor;
-import org.tellervo.desktop.io.SeriesIdentity;
-import org.tellervo.desktop.io.SeriesIdentityTableCellRenderer;
-import org.tellervo.desktop.io.SeriesIdentityTableModel;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;

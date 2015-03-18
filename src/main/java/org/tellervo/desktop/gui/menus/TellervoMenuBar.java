@@ -15,7 +15,7 @@ import javax.swing.JMenuItem;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.editor.EditorActions;
-import org.tellervo.desktop.io.view.IdentifySeriesPanel;
+import org.tellervo.desktop.gui.seriesidentity.IdentifySeriesPanel;
 import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;

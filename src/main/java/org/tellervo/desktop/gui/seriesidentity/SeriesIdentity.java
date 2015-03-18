@@ -1,7 +1,8 @@
-package org.tellervo.desktop.io;
+package org.tellervo.desktop.gui.seriesidentity;
 
 import java.io.File;
 
+import org.tellervo.desktop.io.IdentityItem;
 import org.tellervo.desktop.sample.Sample;
 
 /**
