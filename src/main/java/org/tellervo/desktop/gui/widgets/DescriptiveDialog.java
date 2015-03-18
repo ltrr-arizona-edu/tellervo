@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
@@ -15,6 +18,9 @@ import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.tellervo.desktop.ui.Builder;
 
 /**
@@ -23,7 +29,8 @@ import org.tellervo.desktop.ui.Builder;
  * @author pwb48
  *
  */
-public class DescriptiveDialog extends JDialog {
+public abstract class DescriptiveDialog extends JDialog implements ActionListener{
+	private final static Logger log = LoggerFactory.getLogger(DescriptiveDialog.class);
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
@@ -41,12 +48,21 @@ public class DescriptiveDialog extends JDialog {
 	protected JButton btnCancel;
 		
 
-	public DescriptiveDialog(String title, String description, Icon icon) 
+	public DescriptiveDialog(Window parent, String title, String description, Icon icon) 
 	{
 		init();
 		setDescriptiveText(description);
 		setTitleText(title);
-		setIcon(icon);
+		setBannerIcon(icon);
+		
+		try{
+			this.setIconImage(parent.getIconImages().get(0));
+		} catch (Exception e)
+		{
+			
+		}
+		
+		this.setLocationRelativeTo(parent);
 		
 	}
 	
@@ -75,7 +91,7 @@ public class DescriptiveDialog extends JDialog {
 	 * 
 	 * @param icon
 	 */
-	protected void setIcon(Icon icon)
+	protected void setBannerIcon(Icon icon)
 	{
 		lblIcon.setIcon(icon);
 	}
@@ -126,12 +142,14 @@ public class DescriptiveDialog extends JDialog {
 			{
 				btnOK = new JButton("OK");
 				btnOK.setActionCommand("OK");
+				btnOK.addActionListener(this);
 				buttonPane.add(btnOK);
 				getRootPane().setDefaultButton(btnOK);
 			}
 			{
 				btnCancel = new JButton("Cancel");
 				btnCancel.setActionCommand("Cancel");
+				btnCancel.addActionListener(this);
 				buttonPane.add(btnCancel);
 			}
 		}
@@ -153,7 +171,8 @@ public class DescriptiveDialog extends JDialog {
 
 	
 	/**
-	 * Get the panel that holds the ok and cancel buttons
+	 * Get the panel that holds the ok and cancel buttons. 
+	 * Action commands for buttons are "OK" and "Cancel"
 	 * 
 	 * @return
 	 */
@@ -161,5 +180,7 @@ public class DescriptiveDialog extends JDialog {
 	{
 		return this.buttonPane;
 	}
+
+	
 
 }

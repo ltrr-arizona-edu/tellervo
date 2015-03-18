@@ -61,7 +61,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 
 	private static final long serialVersionUID = 1L;
 	private JXTable table;
-	private Window parent = null; 
+	private Window containerFrame = null; 
 	private NormalTridasUnit unitsIfNotSpecified = null;
 	private SeriesIdentityTableModel model;
 	private JButton btnFinish;
@@ -74,21 +74,21 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	
 	public IdentifySeriesPanel(Window parent, File file, String filetype) {
 
-		setParent(parent);
+		setContainerFrame(parent);
 		init();
 		parseFile(file, filetype);
 	}
 	
 	public IdentifySeriesPanel(Window parent, File[] files, String filetype) {
 
-		setParent(parent);
+		setContainerFrame(parent);
 		init();
 		parseFiles(files, filetype);
 	}
 	
-	public void setParent(Window parent)
+	public void setContainerFrame(Window parent)
 	{
-		this.parent = parent;
+		this.containerFrame = parent;
 	}
 	
 	/**
@@ -165,6 +165,12 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		JButton btnSearchDB = new JButton("Search Database");
 		btnSearchDB.setActionCommand("SearchDB");
 		btnSearchDB.addActionListener(this);
+		
+		JButton btnDefineByPattern = new JButton("Define by pattern");
+		btnDefineByPattern.setActionCommand("DefineByPattern");
+		btnDefineByPattern.addActionListener(this);
+		
+		panelButton.add(btnDefineByPattern, "cell 2 1");
 		panelButton.add(btnSearchDB, "cell 0 2");
 		
 		JButton btnCancel = new JButton("Cancel");
@@ -199,7 +205,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		AbstractDendroFileReader reader = TridasIO.getFileReader(fileType);
 		if(reader==null) 
 		{
-			Alert.error(parent, "Error", "Unknown file type");
+			Alert.error(containerFrame, "Error", "Unknown file type");
 			return;
 		}
 		
@@ -210,12 +216,12 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			Alert.errorLoading(file.getAbsolutePath(), e);
 			return;
 		} catch (InvalidDendroFileException e) {
-			Alert.error(parent, "Error", "The selected file is not a valid "+fileType+ " file.\nPlease check and try again");
+			Alert.error(containerFrame, "Error", "The selected file is not a valid "+fileType+ " file.\nPlease check and try again");
 			return;
 		}
 		catch(NullPointerException e)
 		{
-			Alert.error(parent, "Invalid File", e.getLocalizedMessage());
+			Alert.error(containerFrame, "Invalid File", e.getLocalizedMessage());
 		}
 
 		TridasTridas tc = reader.getTridasContainer();
@@ -291,7 +297,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 					"1/20th mm",
 					"1/10th mm"};
 			Object s = JOptionPane.showInputDialog(
-			                    parent,
+			                    containerFrame,
 			                    "One or more series has no units defined.\n"
 			                    + "Please specify units below:",
 			                    "Set Units",
@@ -322,7 +328,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			}		
 			else
 			{
-				Alert.error(parent, "Error", "Invalid measurement units specified");
+				Alert.error(containerFrame, "Error", "Invalid measurement units specified");
 				return;
 			}
 		}
@@ -420,19 +426,19 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	 * 
 	 * @param args
 	 */
-	public static void showWindow(File[] files, String format)
+	public static void show(File[] files, String format)
 	{
 		App.init();
 		
-		JFrame dialog = new JFrame();
+		JFrame frame = new JFrame();
 	
-		dialog.getContentPane().add(new IdentifySeriesPanel(dialog, files, format));
-		dialog.setIconImage(Builder.getApplicationIcon());
-		dialog.setTitle("Import Data");
-		dialog.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		dialog.setSize(new Dimension(800, 500));
-		dialog.setLocationRelativeTo(null);
-		dialog.setVisible(true);
+		frame.getContentPane().add(new IdentifySeriesPanel(frame, files, format));
+		frame.setIconImage(Builder.getApplicationIcon());
+		frame.setTitle("Import Data");
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.setSize(new Dimension(800, 500));
+		frame.setVisible(true);
+		frame.setLocationRelativeTo(null);
 		
 	}
 
@@ -456,6 +462,19 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		
 	}
 	
+	/**
+	 * Populate the table using information specified in the regex pattern dialog
+	 */
+	private void fillTableByPattern()
+	{
+		SeriesIdentityRegexDialog dialog = new SeriesIdentityRegexDialog(containerFrame, model.getSeriesIdentity(0));
+		dialog.setLocationRelativeTo(containerFrame);
+		dialog.setVisible(true);
+		
+		
+		
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getActionCommand().equals("SearchDB"))
@@ -466,11 +485,15 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		{
 			searchDatabaseForMatches();
 			openEditor();
-			parent.setVisible(false);
+			containerFrame.setVisible(false);
 		}
 		else if (evt.getActionCommand().equals("Cancel"))
 		{
-			parent.dispose();
+			containerFrame.dispose();
+		}
+		else if (evt.getActionCommand().equals("DefineByPattern"))
+		{
+			fillTableByPattern();
 		}
 	}
 
