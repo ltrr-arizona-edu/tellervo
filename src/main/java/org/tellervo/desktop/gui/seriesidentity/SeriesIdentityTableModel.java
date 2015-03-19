@@ -1,31 +1,43 @@
 package org.tellervo.desktop.gui.seriesidentity;
 
+import java.awt.Window;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
 import org.tellervo.desktop.io.IdentityItem;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
+import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
+import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.TridasManipUtil;
 import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestType;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasMeasuringMethod;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasIdentifier;
@@ -58,7 +70,13 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 	private String codeDelimiter = "XXXXXDELIMITERXXXXX";
 	
 	private static final long serialVersionUID = 1L;
-
+	private Window parent;
+	
+	public SeriesIdentityTableModel(Window parent)
+	{
+		this.parent = parent;
+	}
+	
 	@Override
 	public int getColumnCount() {
 		return columns.length;
@@ -551,7 +569,48 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 	{
 		for(SeriesIdentity id : this.ids)
 		{
+			if(id.getObjectItem().isInDatabase()==false)
+			{
+				TridasObjectEx object = new TridasObjectEx();
+				object.setTitle(id.getObjectItem().getCode());
+				TridasUtils.setObjectCode(object, id.getObjectItem().getCode());
+				ControlledVoc cv = new ControlledVoc();
+				cv.setNormal("Site");
+				cv.setNormalId("1");
+				cv.setNormalStd("Tellervo");
+				object.setType(cv);
+				
+				object = (TridasObjectEx) doSave(object);
+				
+				if(object!=null)
+				{
+					tridasCache.put(id.getObjectItem().getCode(), object);
+				}
+				
+				searchForMatches(true);
+			}
 			
+			if(id.getElementItem().isInDatabase()==false)
+			{
+
+				
+				
+				searchForMatches(true);
+			}
+			
+			if(id.getSampleItem().isInDatabase()==false)
+			{
+
+				searchForMatches(true);
+			}
+						
+			if(id.getRadiusItem().isInDatabase()==false)
+			{
+		
+				searchForMatches(true);
+			}
+			
+
 		}
 	}
 	
@@ -573,6 +632,29 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		
 		return true;
 	}
+	
+	/**
+	 * Confirm whether any entries in the table are missing from the database.  The ignoreMissingSeries flag 
+	 * sets whether you'd like to ignore missing series.
+	 * 
+	 * @param ignoreMissingSeries
+	 * @return
+	 */
+	public boolean areThereMissingEntites(boolean ignoreMissingSeries)
+	{
+		for(SeriesIdentity id : this.ids)
+		{
+			if(id.getObjectItem().isInDatabase()==false) return true;
+			if(id.getElementItem().isInDatabase()==false) return true;
+			if(id.getSampleItem().isInDatabase()==false) return true;
+			if(id.getRadiusItem().isInDatabase()==false) return true;
+			if(!ignoreMissingSeries && id.getSeriesItem().isInDatabase()==false) return true;
+		}
+		
+		return false;
+	}
+	
+
 	
 	public ArrayList<Sample> getAllSamples()
 	{
@@ -599,7 +681,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		
 		Sample s = id.getSample();
 
-		TridasObject object = (TridasObject) tridasCache.get(id.getObjectItem().getCode());
+		TridasObjectEx object = (TridasObjectEx) tridasCache.get(id.getObjectItem().getCode());
 		TridasElement element = (TridasElement) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()); 
 		TridasSample sample = (TridasSample) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()  + codeDelimiter + id.getSampleItem().getCode());
 		TridasRadius radius = (TridasRadius) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()  + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode());
@@ -651,6 +733,81 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		
 		
 		return s;
+	}
+	
+	/**
+	 * For creating a new entity on the server
+	 * 
+	 * @param <T>
+	 * @param entity
+	 * @param parent
+	 * @param type
+	 * @return
+	 */
+	private <T extends ITridas> EntityResource<T> getNewAccessorResource(ITridas entity, ITridas parent, Class<T> type) {
+		return new EntityResource<T>(entity, parent, type);
+	}
+	
+	private ITridas doSave(ITridas temporaryEditingEntity) {
+		Class<? extends ITridas> type = temporaryEditingEntity.getClass();
+		
+				
+		// the resource we'll use
+		EntityResource<? extends ITridas> resource;
+		
+		if(temporaryEditingEntity instanceof TridasObjectEx)
+		{
+			resource = getNewAccessorResource((TridasObjectEx) temporaryEditingEntity, null, TridasObjectEx.class);
+		}
+		else if (temporaryEditingEntity instanceof TridasElement)
+		{
+			resource = getNewAccessorResource((TridasElement)temporaryEditingEntity, null, TridasElement.class);
+		}
+		else if (temporaryEditingEntity instanceof TridasSample)
+		{
+			resource = getNewAccessorResource((TridasSample)temporaryEditingEntity, null, TridasSample.class);
+		}
+		else if (temporaryEditingEntity instanceof TridasRadius)
+		{
+			resource = getNewAccessorResource((TridasRadius)temporaryEditingEntity, null, TridasRadius.class);
+		}
+		else if (temporaryEditingEntity instanceof TridasMeasurementSeries)
+		{
+			resource = getNewAccessorResource((TridasMeasurementSeries)temporaryEditingEntity, null, TridasMeasurementSeries.class);
+		}
+		else 
+		{
+			log.debug("Can't save entity.  Unsupported entity class.");
+			return null;
+		}
+		
+		// set up a dialog...
+		TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parent, resource);
+
+		// query the resource
+		resource.query();
+		dialog.setVisible(true);
+		
+		// on failure, just return
+		if(!dialog.isSuccessful()) {
+			JOptionPane.showMessageDialog(null, I18n.getText("error.savingChanges") + "\r\n" +
+					I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
+					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
+		
+		// replace the saved result
+		temporaryEditingEntity = resource.getAssociatedResult();
+		
+		// sanity check the result
+		if(temporaryEditingEntity == null) {
+			new Bug(new IllegalStateException("CREATE entity returned null"));
+			return null;
+		}
+		
+		
+		return temporaryEditingEntity;
+	
 	}
 	
 }

@@ -16,6 +16,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.gui.widgets.DescriptiveDialog;
 import org.tellervo.desktop.ui.Alert;
+import org.tridas.interfaces.ITridas;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
 
 public class SeriesIdentityRegexDialog extends DescriptiveDialog implements ActionListener{
 
@@ -355,62 +361,144 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	}
 
 	
-	private String getTestCaseText(String field)
+	public static String getStringToTest(SeriesIdentity id, FieldOptions field)
 	{
-		
-		if(field.equals("Series name"))
+		if(field.equals(FieldOptions.SERIES_NAME))
 		{
-			return testcase.getSample().getDisplayTitle();
+			return id.getSample().getDisplayTitle();
 		}
-		else if (field.equals("File name"))
+		else if (field.equals(FieldOptions.FILE_NAME))
 		{
-			return testcase.getFile().getName();
+			return id.getFile().getName();
 		}
-		else if (field.equals("File path"))
+		else if (field.equals(FieldOptions.FULL_PATH))
 		{
-			return testcase.getFile().getAbsolutePath();
+			return id.getFile().getAbsolutePath();
 		}
-		else if (field.equals("Final folder"))
+		else if (field.equals(FieldOptions.FINAL_FOLDER))
 		{
-			return testcase.getFile().getAbsolutePath();
+			//TODO Just final folder
+			return id.getFile().getAbsolutePath();
 		}
 		
 		return "";
+		
+	}
+	
+	public MethodOptions getSelectedMethodOption(Class<? extends ITridas> clazz)
+	{
+		if(clazz.equals(TridasObject.class))
+		{
+			return (MethodOptions) this.cboObjectMethod.getSelectedItem();
+		}
+		else if(clazz.equals(TridasElement.class))
+		{
+			return (MethodOptions) this.cboElementMethod.getSelectedItem();
+		}
+		else if(clazz.equals(TridasSample.class))
+		{
+			return (MethodOptions) this.cboSampleMethod.getSelectedItem();
+		}
+		if(clazz.equals(TridasRadius.class))
+		{
+			return (MethodOptions) this.cboRadiusMethod.getSelectedItem();
+		}
+		if(clazz.equals(TridasMeasurementSeries.class))
+		{
+			return (MethodOptions) this.cboSeriesMethod.getSelectedItem();
+		}
+		return null;
+	}
+	
+	public FieldOptions getSelectedFieldOption(Class<? extends ITridas> clazz)
+	{
+		if(clazz.equals(TridasObject.class))
+		{
+			return (FieldOptions) this.cboObjectField.getSelectedItem();
+		}
+		else if(clazz.equals(TridasElement.class))
+		{
+			return (FieldOptions) this.cboElementField.getSelectedItem();
+		}
+		else if(clazz.equals(TridasSample.class))
+		{
+			return (FieldOptions) this.cboSampleField.getSelectedItem();
+		}
+		if(clazz.equals(TridasRadius.class))
+		{
+			return (FieldOptions) this.cboRadiusField.getSelectedItem();
+		}
+		if(clazz.equals(TridasMeasurementSeries.class))
+		{
+			return (FieldOptions) this.cboSeriesField.getSelectedItem();
+		}
+		return null;
+	}
+	
+	public String getPattern(Class<? extends ITridas> clazz)
+	{
+		if(clazz.equals(TridasObject.class))
+		{
+			return this.txtObjectPattern.getText();
+		}
+		else if(clazz.equals(TridasElement.class))
+		{
+			return this.txtElementPattern.getText();
+		}
+		else if(clazz.equals(TridasSample.class))
+		{
+			return this.txtSamplePattern.getText();
+		}
+		if(clazz.equals(TridasRadius.class))
+		{
+			return this.txtRadiusPattern.getText();
+		}
+		if(clazz.equals(TridasMeasurementSeries.class))
+		{
+			return this.txtSeriesPattern.getText();
+		}
+		return null;
+	}
+	
+	private String getTestCaseText(FieldOptions field)
+	{
+		
+		return getStringToTest(testcase, field);
 	}
 	
 	private void runTests()
 	{
 
 		this.txtObjectTest.setText(getPatternMatch(
-				this.getTestCaseText(cboObjectField.getSelectedItem().toString()), 
-				cboObjectMethod.getSelectedItem().toString(),
+				this.getTestCaseText((FieldOptions) cboObjectField.getSelectedItem()), 
+				(MethodOptions) cboObjectMethod.getSelectedItem(),
 				txtObjectPattern.getText()));
 		
 		this.txtElementTest.setText(getPatternMatch(
-				this.getTestCaseText(cboElementField.getSelectedItem().toString()), 
-				cboElementMethod.getSelectedItem().toString(),
+				this.getTestCaseText((FieldOptions) cboElementField.getSelectedItem()), 
+				(MethodOptions) cboElementMethod.getSelectedItem(),
 				txtElementPattern.getText()));		
 		
 		this.txtSampleTest.setText(getPatternMatch(
-				this.getTestCaseText(cboSampleField.getSelectedItem().toString()), 
-				cboSampleMethod.getSelectedItem().toString(),
+				this.getTestCaseText((FieldOptions) cboSampleField.getSelectedItem()), 
+				(MethodOptions) cboSampleMethod.getSelectedItem(),
 				txtSamplePattern.getText()));		
 		
 		this.txtRadiusTest.setText(getPatternMatch(
-				this.getTestCaseText(cboRadiusField.getSelectedItem().toString()), 
-				cboRadiusMethod.getSelectedItem().toString(),
+				this.getTestCaseText((FieldOptions) cboRadiusField.getSelectedItem()), 
+				(MethodOptions) cboRadiusMethod.getSelectedItem(),
 				txtRadiusPattern.getText()));	
 		
 		this.txtSeriesTest.setText(getPatternMatch(
-				this.getTestCaseText(cboSeriesField.getSelectedItem().toString()), 
-				cboSeriesMethod.getSelectedItem().toString(),
+				this.getTestCaseText((FieldOptions) cboSeriesField.getSelectedItem()), 
+				(MethodOptions) cboSeriesMethod.getSelectedItem(),
 				txtSeriesPattern.getText()));
 
 	}
 
-	public static String getPatternMatch(String teststring, String method, String pattern)
+	public static String getPatternMatch(String teststring, MethodOptions method, String pattern)
 	{
-		if(method.equals("Fixed width"))
+		if(method.equals(MethodOptions.FIXED_WIDTH))
 		{
 			if(pattern.trim().equals("*"))
 			{
@@ -425,9 +513,9 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 				e.printStackTrace();
 			}
 		}
-		else if (method.equals("Regex"))
+		else if (method.equals(MethodOptions.REGEX))
 		{
-			
+			//TODO
 		}
 		
 		return "";

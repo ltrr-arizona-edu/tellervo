@@ -26,6 +26,7 @@ import org.jdesktop.swingx.JXTable;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.gui.seriesidentity.SeriesIdentityRegexDialog.MethodOptions;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -50,6 +51,7 @@ import org.tridas.schema.TridasValues;
 import javax.swing.JLabel;
 
 import java.awt.Font;
+import javax.swing.JCheckBox;
 
 /**
  * GUI panel designed to enable the user to specifiy the identity of series being imported from legacy text files 
@@ -121,7 +123,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		
 		table.setHorizontalScrollEnabled(true);
 		table.setColumnControlVisible(true);
-		model = new SeriesIdentityTableModel();
+		model = new SeriesIdentityTableModel(containerFrame);
 		
 		SeriesIdentityTableCellRenderer renderer = new SeriesIdentityTableCellRenderer();
 				
@@ -136,12 +138,12 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		
 		JPanel panelButton = new JPanel();
 		add(panelButton, BorderLayout.SOUTH);
-		panelButton.setLayout(new MigLayout("", "[grow][][]", "[grow][][]"));
+		panelButton.setLayout(new MigLayout("", "[grow][][]", "[grow][][][]"));
 		
 		model.addTableModelListener(this);
 		
 		JPanel panel = new JPanel();
-		panelButton.add(panel, "cell 0 0 3 1,grow");
+		panelButton.add(panel, "cell 0 0 1 2,grow");
 		panel.setLayout(new MigLayout("", "[31px][162px]", "[16px][][]"));
 		
 		JLabel lblKey = new JLabel("Key:");
@@ -162,30 +164,33 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		lblNotYet.setIcon(Builder.getIcon("wait.png", 16));
 		panel.add(lblNotYet, "cell 1 2,alignx left,aligny top");
 		
-		JButton btnSearchDB = new JButton("Search Database");
-		btnSearchDB.setActionCommand("SearchDB");
-		btnSearchDB.addActionListener(this);
-		
-		JButton btnDefineByPattern = new JButton("Define by pattern");
-		btnDefineByPattern.setActionCommand("DefineByPattern");
-		btnDefineByPattern.addActionListener(this);
-		
-		panelButton.add(btnDefineByPattern, "cell 2 1");
-		panelButton.add(btnSearchDB, "cell 0 2");
-		
 		JButton btnCancel = new JButton("Cancel");
 		btnCancel.setActionCommand("Cancel");
 		btnCancel.addActionListener(this);
-		panelButton.add(btnCancel, "cell 1 2");
+		
+		JCheckBox chckbxOpenSeriesIn = new JCheckBox("Open series in editor when finished");
+		chckbxOpenSeriesIn.setSelected(true);
+		panelButton.add(chckbxOpenSeriesIn, "cell 0 3");
+		panelButton.add(btnCancel, "cell 1 3");
 		
 		btnFinish = new JButton("Finish");
 		btnFinish.setActionCommand("Finish");
 		btnFinish.addActionListener(this);
 		btnFinish.setEnabled(false);
-		panelButton.add(btnFinish, "cell 2 2");
+		panelButton.add(btnFinish, "cell 2 3");
 		
 		JToolBar toolBar = new JToolBar();
 		add(toolBar, BorderLayout.NORTH);
+		
+		JButton btnSearchDB = new JButton("Search Database");
+		toolBar.add(btnSearchDB);
+		btnSearchDB.setActionCommand("SearchDB");
+		
+		JButton btnDefineByPattern = new JButton("Define by pattern");
+		toolBar.add(btnDefineByPattern);
+		btnDefineByPattern.setActionCommand("DefineByPattern");
+		btnDefineByPattern.addActionListener(this);
+		btnSearchDB.addActionListener(this);
 	}
 	
 	
@@ -471,9 +476,82 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		dialog.setLocationRelativeTo(containerFrame);
 		dialog.setVisible(true);
 		
+		for(int i=0; i<model.getRowCount(); i++)
+		{
+			SeriesIdentity id = model.getSeriesIdentity(i);
+			
+			// Object
+			String orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasObject.class));
+			MethodOptions method = dialog.getSelectedMethodOption(TridasObject.class);
+			String pattern = dialog.getPattern(TridasObject.class);
+			model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 3);
+			
+			// Element
+			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasElement.class));
+			method = dialog.getSelectedMethodOption(TridasElement.class);
+			pattern = dialog.getPattern(TridasElement.class);
+			model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 4);
+			
+			// Sample
+			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasSample.class));
+			method = dialog.getSelectedMethodOption(TridasSample.class);
+			pattern = dialog.getPattern(TridasSample.class);
+			model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 5);
+			
+			// Radius
+			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasRadius.class));
+			method = dialog.getSelectedMethodOption(TridasRadius.class);
+			pattern = dialog.getPattern(TridasRadius.class);
+			model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 6);
+			
+			// Series
+			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasMeasurementSeries.class));
+			method = dialog.getSelectedMethodOption(TridasMeasurementSeries.class);
+			pattern = dialog.getPattern(TridasMeasurementSeries.class);
+			model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 7);
+		}
+		
 		
 		
 	}
+	
+	private void commit()
+	{
+		searchDatabaseForMatches();
+		
+		if(model.areThereMissingEntites(true))
+		{
+			Object[] options = {"Yes",
+                    "No",
+                    "Cancel"};
+			int n = JOptionPane.showOptionDialog(this,
+			    "Some of the entities are not currently in the database.\n\n" +
+			    "Would you like to automatically create basic records for these entities?",
+			    "Confirmation",
+			    JOptionPane.YES_NO_CANCEL_OPTION,
+			    JOptionPane.QUESTION_MESSAGE,
+			    null,
+			    options,
+			    options[2]);
+			
+			if(n == JOptionPane.OK_OPTION)
+			{
+				model.generateMissingEntities();
+			}
+			else if (n== JOptionPane.CANCEL_OPTION)
+			{
+				return;
+			}
+		}
+		
+		openEditor();
+		containerFrame.setVisible(false);
+	}
+	
+	
+
+	
+	
 	
 	@Override
 	public void actionPerformed(ActionEvent evt) {
@@ -483,9 +561,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		}
 		else if (evt.getActionCommand().equals("Finish"))
 		{
-			searchDatabaseForMatches();
-			openEditor();
-			containerFrame.setVisible(false);
+			commit();
 		}
 		else if (evt.getActionCommand().equals("Cancel"))
 		{
