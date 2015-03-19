@@ -1,5 +1,6 @@
 package org.tellervo.desktop.gui.seriesidentity;
 
+import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,6 +10,8 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -22,6 +25,9 @@ import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+import java.util.regex.PatternSyntaxException;
 
 public class SeriesIdentityRegexDialog extends DescriptiveDialog implements ActionListener{
 
@@ -68,6 +74,11 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		}
 		
 		public String getHumanName()
+		{
+			return this.humanName;
+		}
+		
+		public String toString()
 		{
 			return this.humanName;
 		}
@@ -285,25 +296,97 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	public boolean validatePatterns()
 	{
 		boolean pass = true;
+		if(!validPattern(txtObjectPattern.getText(),  (MethodOptions) cboObjectMethod.getSelectedItem()))  {
+			txtObjectPattern.setBorder(getBorderInvalid());
+			pass = false;
+		}
+		else
+		{
+			txtObjectPattern.setBorder(getBorderValid());
+		}
 		
-		if(!validPattern(txtObjectPattern.getText(),  (MethodOptions) cboObjectMethod.getSelectedItem()))  return false;
-		if(!validPattern(txtElementPattern.getText(), (MethodOptions) cboElementMethod.getSelectedItem())) return false;
-		if(!validPattern(txtSamplePattern.getText(),  (MethodOptions) cboSampleMethod.getSelectedItem()))  return false;
-		if(!validPattern(txtRadiusPattern.getText(),  (MethodOptions) cboRadiusMethod.getSelectedItem()))  return false;
-		if(!validPattern(txtSeriesPattern.getText(),  (MethodOptions) cboSeriesMethod.getSelectedItem()))  return false;
+		if(!validPattern(txtElementPattern.getText(), (MethodOptions) cboElementMethod.getSelectedItem())) {
+			txtElementPattern.setBorder(getBorderInvalid());
+			pass = false;
+		}
+		else
+		{
+			txtElementPattern.setBorder(getBorderValid());
+		}
+		
+		
+		if(!validPattern(txtSamplePattern.getText(),  (MethodOptions) cboSampleMethod.getSelectedItem())) {
+			txtSamplePattern.setBorder(getBorderInvalid());
+			pass = false;
+		}
+		else
+		{
+			txtSamplePattern.setBorder(getBorderValid());
+		}
+		
+		if(!validPattern(txtRadiusPattern.getText(),  (MethodOptions) cboRadiusMethod.getSelectedItem())){
+			txtRadiusPattern.setBorder(getBorderInvalid());
+			pass = false;
+		}
+		else
+		{
+			txtRadiusPattern.setBorder(getBorderValid());
+		}
+		
+		if(!validPattern(txtSeriesPattern.getText(),  (MethodOptions) cboSeriesMethod.getSelectedItem())){
+			txtSeriesPattern.setBorder(getBorderInvalid());
+			pass = false;
+		}
+		else
+		{
+			txtSeriesPattern.setBorder(getBorderValid());
+		}
 		
 		return pass;
+	}
+	
+	private Border getBorderValid()
+	{
+		return new LineBorder(Color.RED);
+		
+	}
+	
+	private Border getBorderInvalid()
+	{
+		JTextField tf = new JTextField();
+		return tf.getBorder();
+		
 	}
 	
 	private boolean validPattern(String pattern, MethodOptions method)
 	{
 		if(method.equals(MethodOptions.FIXED_WIDTH))
 		{
-			return validFixedWidthPattern(pattern);
+			if (pattern.matches("^[0-9]+-[0-9]+$"))
+			{
+				return true;
+			}
+			else if (pattern.trim().equals("*"))
+			{
+				return true;
+			}
+			else if (pattern.matches("^[0-9]+"))
+			{
+				return true;
+			}
+			return false;
+			
 		}
 		else if (method.equals(MethodOptions.REGEX))
 		{
-			return validRegexPattern(pattern);
+			
+			try{
+				Pattern.compile(pattern);
+				return true;
+			} catch (PatternSyntaxException ex )
+			{
+				return false;
+			}
 		}
 		else if (method.equals(MethodOptions.NONE))
 		{
@@ -312,28 +395,6 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		return false;
 	}
 	
-	private boolean validFixedWidthPattern(String pattern)
-	{
-		log.debug("Validating fixed width pattern: "+pattern);
-		
-		if (pattern.matches("^[0-9]+-[0-9]+$"))
-		{
-			return true;
-		}
-		else if (pattern.trim().equals("*"))
-		{
-			return true;
-		}
-		return false;
-		
-	}
-	
-	private boolean validRegexPattern(String pattern)
-	{
-		log.debug("Validating regex pattern: "+pattern);
-		return false;
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getSource().equals(cboObjectMethod) || 
@@ -496,7 +557,7 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 
 	}
 
-	public static String getPatternMatch(String teststring, MethodOptions method, String pattern)
+	public static String getPatternMatch(String teststring, MethodOptions method, String pattern) 
 	{
 		if(method.equals(MethodOptions.FIXED_WIDTH))
 		{
@@ -506,16 +567,45 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			}
 			
 			try{
+				// Get range values as integer positions
 				String[] rangevalues = pattern.split("-");
-				return teststring.substring(Integer.valueOf(rangevalues[0])-1, Integer.valueOf(rangevalues[1]));
+				Integer[] rangeints = new Integer[rangevalues.length];
+				for(int i=0; i<rangevalues.length; i++)
+				{
+						rangeints[i] = Integer.valueOf(rangevalues[i]);
+				}
+				
+				if(rangevalues.length==2)
+				{
+					// Set end position to end of string if necessary
+					if(rangeints[1]>=teststring.length()) rangeints[1]=teststring.length()-1;
+					return teststring.substring(rangeints[0]-1, rangeints[1]);
+				}
+				else if (rangevalues.length==1)
+				{
+					return teststring.substring(rangeints[0]-1, rangeints[0]);
+				}
 			} catch (Exception e)
 			{				
-				e.printStackTrace();
+				log.error("Failed to get fixed width pattern. "+ e.getMessage());
 			}
 		}
 		else if (method.equals(MethodOptions.REGEX))
 		{
-			//TODO
+
+			try {
+				Pattern regexpattern = Pattern.compile(pattern);
+				Matcher matcher = regexpattern.matcher(teststring);
+
+				while (matcher.find()) {
+					return matcher.group();
+				}
+			} catch (Exception e) {
+				log.error("Failed to perform regex pattern match. "
+						+ e.getMessage());
+
+			}
+  
 		}
 		
 		return "";
