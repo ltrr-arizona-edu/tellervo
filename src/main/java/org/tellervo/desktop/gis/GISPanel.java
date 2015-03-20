@@ -21,6 +21,7 @@ package org.tellervo.desktop.gis;
 
 import gov.nasa.worldwind.Model;
 import gov.nasa.worldwind.WorldWind;
+import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.RenderingExceptionListener;
@@ -58,6 +59,7 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.media.opengl.GLProfile;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -73,7 +75,7 @@ import org.tridas.interfaces.ITridas;
 public class GISPanel extends JPanel implements SelectListener{
 
 	private static final long serialVersionUID = 6769486491009238118L;
-		protected WorldWindowGLCanvas wwd;
+		protected WorldWindow wwd;
         protected StatusBar statusBar;
         protected Marker selectedMarker;
         protected RenderableLayer annotationLayer;
@@ -139,7 +141,7 @@ public class GISPanel extends JPanel implements SelectListener{
 	        	compass.setEnabled(isMiniMap);
 	        	scale.setEnabled(isMiniMap);
 	        	
-	        	this.getWwd().addMouseListener(new MouseAdapter() {
+	        	/*this.getWwd().addMouseListener(new MouseAdapter() {
 
 					@Override
 					public void mouseClicked(MouseEvent evt) {
@@ -182,7 +184,7 @@ public class GISPanel extends JPanel implements SelectListener{
 						
 					}
 	        		
-	        	});
+	        	});*/
 	        	
 	        	
         	
@@ -239,8 +241,8 @@ public class GISPanel extends JPanel implements SelectListener{
         private void setupGui(Dimension canvasSize, boolean includeStatusBar)
         {
         	
-            this.wwd = this.createWorldWindow();
-            this.wwd.setPreferredSize(canvasSize);
+            this.wwd = new WorldWindowGLCanvas();
+            ((Component) this.wwd).setPreferredSize(canvasSize);
                 
             // Create the default model as described in the current worldwind properties.
             Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
@@ -261,7 +263,7 @@ public class GISPanel extends JPanel implements SelectListener{
             });
             
             
-            this.add(this.wwd, BorderLayout.CENTER);
+            this.add((Component) this.wwd, BorderLayout.CENTER);
            
             
             if (includeStatusBar)
@@ -285,12 +287,12 @@ public class GISPanel extends JPanel implements SelectListener{
             
         }
         
-        protected WorldWindowGLCanvas createWorldWindow()
+        protected WorldWindow createWorldWindow()
         {
             return new WorldWindowGLCanvas();
         }
 
-        public WorldWindowGLCanvas getWwd()
+        public WorldWindow getWwd()
         {
             return wwd;
         }

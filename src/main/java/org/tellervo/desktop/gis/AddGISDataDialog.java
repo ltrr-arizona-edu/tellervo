@@ -2,6 +2,7 @@ package org.tellervo.desktop.gis;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -277,7 +278,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
         int status = fileChooser.showOpenDialog(wwMapPanel);
         if (status == JFileChooser.APPROVE_OPTION)
         {
-        	wwMapPanel.getWwd().setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        	((Component) wwMapPanel.getWwd()).setCursor(new Cursor(Cursor.WAIT_CURSOR));
             new KMLWorkerThread(fileChooser.getSelectedFile(), parent).start();
             return true;
         }
@@ -301,7 +302,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 
         Thread t = new ShapefileWorkerThread(fc.getSelectedFile(), parent);
         t.start();
-        wwMapPanel.getWwd().setCursor(new Cursor(Cursor.WAIT_CURSOR));
+        ((Component) wwMapPanel.getWwd()).setCursor(new Cursor(Cursor.WAIT_CURSOR));
         return true;
     }
     
@@ -467,7 +468,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
             }
             finally
             {
-            	gisFrame.wwMapPanel.getWwd().setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            	((Component) gisFrame.wwMapPanel.getWwd()).setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
             }
         }
 
@@ -536,7 +537,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
                 {
                     public void run()
                     {
-                        frame.wwMapPanel.getWwd().setCursor(Cursor.getDefaultCursor());
+                        ((Component) frame.wwMapPanel.getWwd()).setCursor(Cursor.getDefaultCursor());
                     }
                 });
             }

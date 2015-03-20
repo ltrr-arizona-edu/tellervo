@@ -19,6 +19,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.gis;
 
+import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 
 import java.awt.BorderLayout;
@@ -48,7 +49,7 @@ import com.dmurph.mvc.model.MVCArrayList;
 @SuppressWarnings("serial")
 public class WMSManager extends JFrame {
     private final Dimension wmsPanelSize = new Dimension(400, 600);
-    protected WorldWindowGLCanvas wwd;
+    protected WorldWindow wwd;
     private JTabbedPane tabbedPane;
     private int previousTabIndex;
     
@@ -64,7 +65,7 @@ public class WMSManager extends JFrame {
     ArrayList<WSIWmsServer> serverDetails = new ArrayList<WSIWmsServer>();
     
     
-    public WMSManager(WorldWindowGLCanvas wwd)
+    public WMSManager(WorldWindow wwd)
     {
     	this.wwd = wwd;
     	setupGUI();

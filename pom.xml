@@ -139,58 +139,14 @@
 
 	<!-- Packages that this project depends upon-->
 	<dependencies>
-
-		<!--  Super charge XML parsing!  -->
-		<!-- <dependency>
-			<groupId>org.codehaus.woodstox</groupId>
-			<artifactId>woodstox-core-lgpl</artifactId>
-			<version>4.4.0</version>
-		</dependency>-->
-
-		<!-- 3D Mapping library -->		
-		<!-- <dependency>
+		
+		<!-- Locally build WWJ package because the one in Maven central is knackered -->
+		<dependency>
 			<groupId>gov.nasa.worldwind</groupId>
-			<artifactId>worldwind</artifactId>
-			<version>0.6.874.15796</version>			
-		</dependency>-->
-		
-		<dependency>
-			<groupId>gov.nasa</groupId>
-			<artifactId>worldwind</artifactId>
-			<version>2.0.0-986</version>			
+		  <artifactId>worldwindjava-tellervo</artifactId>
+		  <version>2.0.0</version>		
 		</dependency>
-		
-		<dependency>
-			<groupId>gov.nasa</groupId>
-			<artifactId>worldwindx</artifactId>
-			<version>2.0.0-986</version>			
-		</dependency>
-		
-		<dependency>
-            <groupId>org.jogamp.jogl</groupId>
-            <artifactId>jogl-all-main</artifactId>
-            <version>2.2.4</version>	
-        </dependency> 
-        <dependency>
-            <groupId>org.jogamp.gluegen</groupId>
-            <artifactId>gluegen</artifactId>
-            <version>2.2.4</version>	
-        </dependency> 
-		<dependency>
-		  <groupId>org.jogamp.gluegen</groupId>
-		  <artifactId>gluegen-rt</artifactId>
-		  <version>2.2.4</version>
-		</dependency>
-		
-		    
-	    <!-- Geospatial Data Abstraction Library required by
-	    WWJ.  Unknown version taken from the WWJ  -->
-	    <dependency>
-	      <groupId>org.osgeo</groupId>
-	      <artifactId>gdal</artifactId>
-	      <version>0.1</version>
-	    </dependency>
-
+				   
 		<!-- PDF Creation library -->
 		<dependency>
 			<groupId>com.lowagie</groupId>
@@ -200,6 +156,8 @@
 			<scope>compile</scope>
 		</dependency>
 		<!-- Logger -->
+		<!-- Diverts System.out calls to logger can be removed
+		once code has been refactored to use proper logger calls -->
 		<!-- <dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-log4j12</artifactId>
@@ -233,8 +191,6 @@
 			<type>jar</type>
 			<scope>compile</scope>
 		</dependency>
-		<!-- Diverts System.out calls to logger can be removed
-		once code has been refactored to use proper logger calls -->
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
@@ -283,22 +239,8 @@
 			<version>2.1.7</version>
 			<type>jar</type>
 			<scope>compile</scope>
-		</dependency>        
-		<!-- 3D Graphics for Mapping  -->
-		<!-- <dependency>
-            <groupId>org.processing</groupId>
-            <artifactId>jogl</artifactId>
-            <version>1.5.r0196</version>	
-        </dependency> 
-        <dependency>
-            <groupId>org.processing</groupId>
-            <artifactId>gluegen-rt</artifactId>
-            <version>1.5.r0196</version>	
-        </dependency>-->
-        
-
-		
-		
+		</dependency>            
+			
 		<dependency>
 			<groupId>org.netbeans.api</groupId>
 			<artifactId>org-netbeans-swing-outline</artifactId>
