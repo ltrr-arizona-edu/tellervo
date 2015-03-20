@@ -11,6 +11,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
@@ -67,13 +68,19 @@ public class TellervoMenuBar extends JMenuBar{
 
 	public TellervoMenuBar()
 	{
+		
+        JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+
 		parent = null;
 	}
 	
 	public TellervoMenuBar(EditorActions actions, Window editor)
 	{
-		this.parent = editor;
+        JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 
+		
+		this.parent = editor;
+		
 		// FILE MENU
 		JMenu mnFile = new JMenu("File");
 

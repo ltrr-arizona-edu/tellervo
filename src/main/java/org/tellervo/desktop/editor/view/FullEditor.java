@@ -255,6 +255,7 @@ public class FullEditor extends AbstractEditor {
 			Sample sample = getSample();
 			if (sample != null) {
 				
+				// Data tab
 				if(dataView!=null) 
 				{
 					dataView.saveRemarksDividerLocation();
@@ -270,20 +271,31 @@ public class FullEditor extends AbstractEditor {
 				dataView.restoreGraphDividerLocation();
 				
 				try{
-					this.metadataHolder.removeAll();
+					
+					// Metadata tab
+					metadataHolder.removeAll();
 					metaView = new TridasMetadataPanel(sample);
-					this.metadataHolder.add(metaView, BorderLayout.CENTER);
+					metadataHolder.add(metaView, BorderLayout.CENTER);
+					
+					
+					// Components tab
 					ComponentViewerOld componentsPanel;				
+					componentHolder.removeAll();
 					if(sample.getSampleType().isDerived()){
 						componentsPanel = new ComponentViewerOld(sample);
 						this.componentHolder.add(componentsPanel, BorderLayout.CENTER);
 					}
+					
+					// Dependents tab
+					dependentHolder.removeAll();
 					DependentsViewer dependentsPanel = new DependentsViewer(sample);
-					this.dependentHolder.add(dependentsPanel, BorderLayout.CENTER);
+					dependentHolder.add(dependentsPanel, BorderLayout.CENTER);
 					
-					this.mapHolder.add(createMapPanel(), BorderLayout.CENTER);
+					// Map tab
+					mapHolder.removeAll();
+					mapHolder.add(createMapPanel(), BorderLayout.CENTER);
 					
-					
+					this.revalidate();
 				} catch (Exception e)
 				{
 					
