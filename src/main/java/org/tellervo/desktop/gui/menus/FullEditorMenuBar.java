@@ -15,9 +15,7 @@ import javax.swing.JPopupMenu;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
-import org.tellervo.desktop.editor.EditorActions;
 import org.tellervo.desktop.gui.seriesidentity.IdentifySeriesPanel;
-import org.tellervo.desktop.io.view.ImportDataOnly;
 import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
@@ -26,7 +24,7 @@ import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
 
-public class TellervoMenuBar extends JMenuBar{
+public class FullEditorMenuBar extends EditorMenuBar{
 
 	private static final long serialVersionUID = 1L;
 	private JMenuItem miOpenMulti;
@@ -66,21 +64,11 @@ public class TellervoMenuBar extends JMenuBar{
 	private JMenuItem miToolsCrossdate;
 	private JMenuItem miToolsTruncate;
 
-	public TellervoMenuBar()
-	{
-		
-        JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-
-		parent = null;
-	}
 	
-	public TellervoMenuBar(EditorActions actions, Window editor)
+	public FullEditorMenuBar(FullEditorActions actions, Window editor)
 	{
-        JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-
-		
-		this.parent = editor;
-		
+        super(actions, editor);
+        
 		// FILE MENU
 		JMenu mnFile = new JMenu("File");
 
@@ -385,8 +373,7 @@ public class TellervoMenuBar extends JMenuBar{
 		
 		add(mnHelp);
 		
-		
-		linkModel();
+
 	}
 	
 	
@@ -524,53 +511,9 @@ public class TellervoMenuBar extends JMenuBar{
 		this.miLogoff.setVisible(!loggedin);
 	}
 	
-	private void setTellervoFullMode(Boolean fullMode)
-	{
-		this.miOpenMulti.setVisible(fullMode);
-		this.miExportData.setVisible(fullMode);
-		this.miBulkDataEntry.setVisible(fullMode);
-		this.miDesignODKForm.setVisible(fullMode);
-		this.mnAdministration.setVisible(fullMode);
-		
-		this.miUsersAndGroups.setVisible(fullMode);
-		this.miEditViewPermissions.setVisible(fullMode);
-		this.miChangePassword.setVisible(fullMode);
-		this.miForgetPassword.setVisible(fullMode);
-		this.miReports.setVisible(fullMode);
-		this.miLabels.setVisible(fullMode);
-		this.miCurationMenu.setVisible(fullMode);
-		
-		this.miMetaDB.setVisible(fullMode);
-		this.miSiteMap.setVisible(fullMode); 
-		
-		this.mnView.setVisible(fullMode);
-		this.mnTools.setVisible(fullMode);
-		
-		this.miReportBugOnLastTransaction.setVisible(fullMode);
-		this.miXMLCommunicationsViewer.setVisible(fullMode);
-		this.miComponentSeries.setVisible(fullMode);
-		
-	}
+
 	
 
 	
-	protected void linkModel() {
-		App.appmodel.addPropertyChangeListener(new PropertyChangeListener() {
 
-			@Override
-			public void propertyChange(PropertyChangeEvent argEvt) {
-				if (argEvt.getPropertyName().equals(AppModel.NETWORK_STATUS)) {
-					setGUILoggedIn(App.isLoggedIn());
-				}
-			}
-		});
-
-		setGUILoggedIn(App.isLoggedIn());
-
-		if (App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false)) {
-			setTellervoFullMode(false);
-		} else {
-			setTellervoFullMode(true);
-		}
-	}
 }

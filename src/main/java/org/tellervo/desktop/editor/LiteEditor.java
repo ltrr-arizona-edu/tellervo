@@ -3,6 +3,7 @@ package org.tellervo.desktop.editor;
 import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,6 +15,9 @@ import javax.swing.JPanel;
 import org.apache.commons.io.FilenameUtils;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.SaveableDocument;
+import org.tellervo.desktop.gui.menus.FullEditorMenuBar;
+import org.tellervo.desktop.gui.menus.LiteEditorActions;
+import org.tellervo.desktop.gui.menus.LiteEditorMenuBar;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.io.Metadata;
@@ -49,7 +53,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	private boolean savedByTellervo = false;
 	private BasicMetadataPanel metadata;
 	
-	
+	private static ArrayList<LiteEditor> windows = new ArrayList<LiteEditor>();
 	
 	public LiteEditor()
 	{
@@ -94,7 +98,15 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		
 	}
 	
-	
+	/**
+	 * Does this editor have any samples in it?
+	 * 
+	 * @return
+	 */
+	public boolean isEmpty()
+	{
+		return this.getSamples().size()==0;
+	}
 	
 	/**
 	 * Initialise the Lite editor window
@@ -111,6 +123,9 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		itemSelected();
 		this.setVisible(true);
 		
+		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		
+		LiteEditor.windows.add(this);
 	}
 	
 	
@@ -517,6 +532,67 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		return container;
 	}
 
+	protected void initActions()
+	{
+		actions = new LiteEditorActions(this);
+	}
+	
+	protected void initMenu() {
+		
+		menuBar = new LiteEditorMenuBar((LiteEditorActions) actions, this);
+		contentPane.add(menuBar, "cell 0 0,growx,aligny top");
+
+	}
+
+	@Override
+	public void windowActivated(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosed(WindowEvent arg0) {
+		if(LiteEditor.getWindows().length<2)
+		{
+			System.exit(0);
+		}
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent evt) {
+		if(LiteEditor.getWindows().length<2)
+		{
+			System.exit(0);
+		}
+			
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 
 	
 }

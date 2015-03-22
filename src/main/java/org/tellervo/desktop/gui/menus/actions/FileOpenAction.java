@@ -80,6 +80,8 @@ public class FileOpenAction extends AbstractAction{
 	 */
 	public static void openLegacyFile(Window parent)
 	{
+		
+
 		// custom jfilechooser
 		File file = null;
 		String format = null;
@@ -133,7 +135,17 @@ public class FileOpenAction extends AbstractAction{
 		}
 		
 		new LiteEditor(parent, file, format);
-
+		
+		
+		if(parent instanceof LiteEditor)
+		{
+			LiteEditor ed = (LiteEditor) parent;
+			
+			if(ed.isEmpty())
+			{
+				ed.dispose();
+			}
+		}
 	}
 	
 	/**

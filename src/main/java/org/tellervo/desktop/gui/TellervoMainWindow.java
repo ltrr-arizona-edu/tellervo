@@ -42,9 +42,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.EditorActions;
 import org.tellervo.desktop.editor.EditorFactory;
-import org.tellervo.desktop.gui.menus.TellervoMenuBar;
+import org.tellervo.desktop.gui.menus.EditorActions;
+import org.tellervo.desktop.gui.menus.FullEditorMenuBar;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.widgets.ImagePanel;
 import org.tellervo.desktop.platform.Platform;
@@ -100,11 +100,11 @@ public class TellervoMainWindow extends JFrame {
 		}
 
 		// menubar
-		{
-			JMenuBar menubar = new TellervoMenuBar(new EditorActions(this), this);
+		/*{
+			JMenuBar menubar = new FullEditorMenuBar(new EditorActions(this), this);
 			
 			setJMenuBar(menubar);
-		}
+		}*/
 
 		ImagePanel panel = new ImagePanel(img, ImagePanel.ACTUAL);
 		panel.setLayout(new GridLayout(4, 1, 60, 0));

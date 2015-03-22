@@ -4,6 +4,7 @@ import gov.nasa.worldwind.layers.MarkerLayer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -14,6 +15,8 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GISPanel;
 import org.tellervo.desktop.gis.TridasMarkerLayerBuilder;
 import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.menus.FullEditorActions;
+import org.tellervo.desktop.gui.menus.FullEditorMenuBar;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.sample.Sample;
@@ -92,7 +95,17 @@ public class FullEditor extends AbstractEditor {
 		
 	}
 	
+	protected void initActions()
+	{
+		actions = new FullEditorActions(this);
+	}
+	
+	protected void initMenu() {
+		
+		menuBar = new FullEditorMenuBar((FullEditorActions) actions, this);
+		contentPane.add(menuBar, "cell 0 0,growx,aligny top");
 
+	}
 	
 	@Override
 	public boolean isSaved() {
@@ -360,6 +373,55 @@ public class FullEditor extends AbstractEditor {
 	{
 
 		if(metaView!=null) metaView.showPage(type);
+		
+	}
+
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void windowClosed(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 

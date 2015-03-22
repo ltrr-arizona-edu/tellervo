@@ -1,9 +1,8 @@
-package org.tellervo.desktop.editor;
-
-import java.awt.Window;
+package org.tellervo.desktop.gui.menus;
 
 import javax.swing.Action;
 
+import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.gui.menus.actions.AddSeriesToWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBasicBoxLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBoxLabelAction;
@@ -44,7 +43,6 @@ import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenMultiAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
-import org.tellervo.desktop.gui.menus.actions.FileSaveAllAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAsAction;
 import org.tellervo.desktop.gui.menus.actions.GraphAllSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.GraphComponentSeriesAction;
@@ -73,26 +71,23 @@ import org.tellervo.desktop.io.control.IOController;
  * @author pbrewer
  *
  */
-public class EditorActions {
+public abstract class EditorActions {
 
-	private AbstractEditor editor;
+	protected AbstractEditor editor;
 	//private String videoname;
 	
 	// File menu actions
 	public Action fileOpenAction ;
 	public Action fileSaveAction;
 	public Action fileSaveAsAction;
-	public Action fileSaveAllAction;
+	
 
 	public Action fileExportDataAction;
 	//public Action fileExportMapAction;
-	public Action filePrintAction;
 	public Action fileNewAction;
 	public Action fileOpenMultiAction;
 	public Action fileBulkDataEntryAction;
 	public Action fileDesignODKFormAction;
-	public Action fileLogoffAction;
-	public Action fileLogonAction;
 	public Action fileExitAction;
 
 	// Editor menu actions
@@ -168,63 +163,6 @@ public class EditorActions {
 	public Action helpSystemsInformationAction;
 	public Action helpAboutTellervoAction;
 	
-	/**
-	 * Constructor for main window
-	 */
-	public EditorActions(Window parent)
-	{
-		fileNewAction = new FileNewAction(parent);
-		fileOpenAction = new FileOpenAction(parent);
-		fileOpenMultiAction = new FileOpenMultiAction(parent);
-		//fileExportDataAction = new FileExportDataAction(IOController.OPEN_EXPORT_WINDOW);
-		//fileExportMapAction = new FileExportMapAction(editor);
-		fileBulkDataEntryAction = new FileBulkDataEntryAction(IOController.OPEN_EXPORT_WINDOW);
-		fileDesignODKFormAction = new FileDesignODKFormAction(editor);
-		//fileSaveAction = new FileSaveAction(editor);
-		//filePrintAction = new FilePrintAction(editor);
-		//fileLogoffAction = new FileLogoffAction();
-		//fileLogonAction = new FileLogonAction();*/
-		fileExitAction = new FileExitAction();
-		/**editCopyAction = new EditCopyAction(editor);
-		editSelectAllAction = new EditSelectAllAction(editor);
-		editInsertYearPushForwardsAction = new EditInsertYearPushForwardsAction(editor);
-		editInsertYearPushBackwardsAction = new EditInsertYearPushBackwardsAction(editor);
-		editInsertMissingRingPushForwardsAction = new EditInsertMissingRingPushForwardsAction(editor);
-		editInsertMissingRingPushBackwardsAction = new EditInsertMissingRingPushBackwardsAction(editor);
-		editDeleteAction = new EditDeleteAction(editor);
-		editInsertYearsAction = new EditInsertYearsAction(editor);
-		editInitGridAction = new EditInitDataGridAction(editor);
-		editMeasureAction = new EditMeasureToggleAction(editor);*/
-		editPreferencesAction = new EditPreferencesAction();
-		/*
-		remarkAction = new RemarkToggleAction(editor);
-		
-		adminUserAndGroupsAction = new AdminUsersAndGroupsAction();
-		adminEditViewPermissionsAction = new AdminEditViewPermissionsAction();
-		adminChangePasswordAction = new AdminChangePasswordAction();
-		adminForgetPasswordAction = new AdminForgetPasswordAction();
-		adminReportsAction = new AdminReportsAction();
-		adminLabelAction = new AdminLabelAction();
-		adminBoxLabelAction = new AdminBoxLabelAction();
-		adminBasicBoxLabelAction = new AdminBasicBoxLabelAction();
-		adminSampleLabelAction = new AdminSampleLabelAction();
-		adminDatabaseStatisticsAction = new AdminDatabaseStatisticsAction();
-		adminCurationMenuAction = new AdminCurationMenuAction();
-		adminCurationMenuBoxDetailsAction = new AdminCurationMenuBoxDetailsAction();
-		adminCurationMenuFindSampleAction = new AdminCurationMenuFindSampleAction();
-		adminCurationMenuLoanDialogAction = new AdminCurationMenuLoanDialogAction(editor);
-		adminCurationMenuNewLoanAction = new AdminCurationMenuNewLoanAction(editor);
-		adminCurationMenuSampleStatusAction = new AdminCurationMenuSampleStatusAction();		
-		adminMetaDBAction = new AdminMetadatabaseBrowserAction();
-		adminSiteMapAction = new AdminSiteMapAction();
-		
-		toolsTruncateAction = new ToolsTruncateAction(editor);
-		graphSeriesAction = new GraphCurrentSeriesAction(editor);*/
-		
-		helpHelpContentsAction = new HelpHelpContentsAction();
-		//helpVideoTutorialsAction = new HelpVideoTutorialsAction(videoname);
-		helpCheckForUpdatesAction = new HelpCheckForUpdatesAction();
-	}
 	
 	
 	
@@ -242,10 +180,8 @@ public class EditorActions {
 		fileDesignODKFormAction = new FileDesignODKFormAction(editor);
 		fileSaveAction = new FileSaveAction(editor);
 		fileSaveAsAction = new FileSaveAsAction(editor);
-		if(editor instanceof FullEditor) fileSaveAllAction = new FileSaveAllAction((FullEditor) editor);
-		filePrintAction = new FilePrintAction(editor);
-		fileLogoffAction = new FileLogoffAction();
-		fileLogonAction = new FileLogonAction();
+		
+
 		fileExitAction = new FileExitAction();
 		editCopyAction = new EditCopyAction(editor);
 		editSelectAllAction = new EditSelectAllAction(editor);
