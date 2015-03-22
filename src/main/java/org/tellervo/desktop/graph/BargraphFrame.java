@@ -92,7 +92,6 @@ import org.tellervo.desktop.gui.Tree;
 import org.tellervo.desktop.gui.XFrame;
 import org.tellervo.desktop.gui.menus.EditMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
-import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.sample.BaseSample;
 import org.tellervo.desktop.sample.Element;
@@ -763,8 +762,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 			//menubar.add(new FileMenu(this));
 			menubar.add(new EditMenu(this));
 			menubar.add(new BargraphViewMenu(this));
-			if (Platform.isMac())
-				menubar.add(new WindowMenu(this));
+
 			menubar.add(new HelpMenu());
 
 			setJMenuBar(menubar);

@@ -289,8 +289,14 @@ public class OpenRecent {
 				
 			case FILE: {
 				//TODO Remember file type 
-				LiteEditor editor = new LiteEditor(null, new File(desc.getFileName()), "Tucson");
-				editor.setVisible(true);
+				
+				LiteEditor editor = LiteEditor.getNewInstance();
+				try {
+					editor.loadFile(null, new File(desc.getFileName()), "Tucson");
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
 				return;
 			}
 				

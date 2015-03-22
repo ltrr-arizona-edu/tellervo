@@ -2,7 +2,6 @@ package org.tellervo.desktop.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -15,7 +14,6 @@ import javax.swing.JPanel;
 import org.apache.commons.io.FilenameUtils;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.SaveableDocument;
-import org.tellervo.desktop.gui.menus.FullEditorMenuBar;
 import org.tellervo.desktop.gui.menus.LiteEditorActions;
 import org.tellervo.desktop.gui.menus.LiteEditorMenuBar;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
@@ -24,14 +22,12 @@ import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
-import org.tridas.io.exceptions.ImpossibleConversionException;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.util.UnitUtils;
 import org.tridas.schema.NormalTridasUnit;
@@ -49,31 +45,125 @@ import org.tridas.schema.TridasValues;
 public class LiteEditor extends AbstractEditor implements SaveableDocument{
 
 	private static final long serialVersionUID = 1L;
+	
 	private JPanel metadataHolder;
 	private boolean savedByTellervo = false;
 	private BasicMetadataPanel metadata;
 	
 	private static ArrayList<LiteEditor> windows = new ArrayList<LiteEditor>();
 	
-	public LiteEditor()
+	/**
+	 * Do not instantiate.  Use getNewInstance() instead
+	 */
+	protected LiteEditor()
 	{
 		super();
 		this.setVisible(true);
 		initLiteEditor();
 	}
 	
-	public LiteEditor(Window parent, File file, String fileType)
+	/**
+	 * Close all LiteEditor windows open 
+	 */
+	public static void closeAllEditors()
 	{
-		this.parent = parent;
-		this.fileType = fileType;
-		this.file = file;
-		parseFile();
+		ArrayList<LiteEditor> modifiedEditors = new ArrayList<LiteEditor>();
 		
-		initLiteEditor();
+		for(LiteEditor editor : windows)
+		{
+			if(!editor.isSaved()) modifiedEditors.add(editor);
+		}
 		
+		if(modifiedEditors.size()==0)
+		{
+			for(LiteEditor editor : windows)
+			{
+				editor.cleanupAndDispose();
+			}
+		}
+		else
+		{
+			// Confirm save
+			Object[] options = {"Save",
+                    "Discard",
+                    "Cancel"};
+				int n = JOptionPane.showOptionDialog(windows.get(0),
+				    "Would you like to save changes to all modified documents before closing?",
+				    "Save document?",
+				    JOptionPane.YES_NO_CANCEL_OPTION,
+				    JOptionPane.QUESTION_MESSAGE,
+				    null,
+				    options,
+				    options[2]);
+				
+			if(n==JOptionPane.YES_OPTION)
+			{
+				for(LiteEditor ed : modifiedEditors)
+				{
+					ed.save();
+					ed.cleanupAndDispose();
+				}
+			}
+			else if (n==JOptionPane.NO_OPTION)
+			{
+				for(LiteEditor ed : modifiedEditors)
+				{
+					ed.cleanupAndDispose(true);
+				}
+			}
+			else if (n==JOptionPane.CANCEL_OPTION)
+			{
+				return;
+			}
+			
+			
+		}
 	}
 	
-	public LiteEditor(Window parent, File file, DendroFileFilter filetypefilter) throws Exception
+	/**
+	 * Get a new instance of a LiteEditor.  If there is just one editor open and it is clean with no series, then this will be reused
+	 * 
+	 * @return
+	 */
+	public synchronized static LiteEditor getNewInstance()
+	{		
+		if(windows.size()==1)
+		{
+			if(windows.get(0).getSamples().size()==0)
+			{
+				return windows.get(0);
+			}
+		}
+		
+		LiteEditor editor = new LiteEditor();
+		windows.add(editor);
+		
+		return editor;
+	}
+	
+	/**
+	 * Load a legacy dendro data file
+	 * 
+	 * @param parent
+	 * @param file
+	 * @param fileType
+	 * @throws Exception
+	 */
+	public void loadFile(Window parent, File file, String fileType) throws Exception
+	{
+		loadFile(parent, file, new DendroFileFilter(null, fileType));
+							
+	}
+	
+	/**
+	 * Load a legacy dendro data file
+	 * 
+	 * @param parent
+	 * @param file
+	 * @param filetypefilter
+	 * @throws Exception
+	 */
+	public void loadFile(Window parent, File file, DendroFileFilter filetypefilter) throws Exception
 	{
 		this.parent = parent;
 		this.file = file;
@@ -122,10 +212,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		
 		itemSelected();
 		this.setVisible(true);
-		
-		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		
-		LiteEditor.windows.add(this);
+			
 	}
 	
 	
@@ -317,6 +404,11 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				
 	}
 	
+	/**
+	 * Save the current file to disk with a new name
+	 * 
+	 * @throws Exception
+	 */
 	public void saveAs() throws Exception
 	{	
 		// custom jfilechooser
@@ -373,6 +465,12 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		saveToDisk();
 	}
 	
+	/**
+	 * Save the current file to disk 
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	private boolean saveToDisk() throws Exception
 	{
 		if(file==null )
@@ -442,10 +540,11 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		return true;
 	}
 	
-
-
-	
-	
+	/**
+	 * Got the TRiDaS container for this file
+	 * 
+	 * @return
+	 */
 	private TridasTridas getContainerForFile()
 	{
 
@@ -532,11 +631,18 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		return container;
 	}
 
+	/**
+	 * Initialise the actions for this editor
+	 * 
+	 */
 	protected void initActions()
 	{
 		actions = new LiteEditorActions(this);
 	}
 	
+	/**
+	 * Initialise the menu for this editor 
+	 */
 	protected void initMenu() {
 		
 		menuBar = new LiteEditorMenuBar((LiteEditorActions) actions, this);
@@ -552,21 +658,12 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 
 	@Override
 	public void windowClosed(WindowEvent arg0) {
-		if(LiteEditor.getWindows().length<2)
-		{
-			System.exit(0);
-		}
 		
 	}
 
 	@Override
 	public void windowClosing(WindowEvent evt) {
-		if(LiteEditor.getWindows().length<2)
-		{
-			System.exit(0);
-		}
-			
-		
+		cleanupAndDispose();	
 	}
 
 	@Override
@@ -591,6 +688,56 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	public void windowOpened(WindowEvent arg0) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	/**
+	 * Dispose of this editor but confirm saving first in necessary and not in silent mode
+	 * 
+	 * @param silentmode
+	 */
+	public void cleanupAndDispose(boolean silentmode)
+	{
+		if(!isSaved() && !silentmode)
+		{
+			// Confirm save
+			Object[] options = {"Save",
+                    "Discard",
+                    "Cancel"};
+				int n = JOptionPane.showOptionDialog(this,
+				    "Would you like to save this document before closing?",
+				    "Save document?",
+				    JOptionPane.YES_NO_CANCEL_OPTION,
+				    JOptionPane.QUESTION_MESSAGE,
+				    null,
+				    options,
+				    options[2]);
+				
+			if(n==JOptionPane.YES_OPTION)
+			{
+				save();
+			}
+			else if (n==JOptionPane.NO_OPTION)
+			{
+				
+			}
+			else if (n==JOptionPane.CANCEL_OPTION)
+			{
+				return;
+			}
+		}
+		
+		// Keep track of how many windows there are.  If this is the last, then close Tellervo.
+		LiteEditor.windows.remove(this);
+		if(LiteEditor.windows.size()==0)
+		{
+			System.exit(0);
+		}
+	}
+	
+	@Override
+	public void cleanupAndDispose() {
+		
+		cleanupAndDispose(false);
 	}
 	
 

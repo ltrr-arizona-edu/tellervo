@@ -51,7 +51,11 @@ public class FullEditor extends AbstractEditor {
 		initFullEditor();
 	}
 	
-	
+	/**
+	 * Get the FullEditor singleton. If it doesn't already exist, create it.
+	 *  
+	 * @return
+	 */
 	public synchronized static FullEditor getInstance()
 	{
 		if(instance==null)
@@ -70,10 +74,11 @@ public class FullEditor extends AbstractEditor {
 		return null;
 	}
 	
+	/**
+	 * Do initialization of features not handled by AbstractEditor 
+	 */
 	public void initFullEditor()
 	{
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
 		metadataHolder = new JPanel();
 		metadataHolder.setLayout(new BorderLayout());
 		
@@ -95,11 +100,17 @@ public class FullEditor extends AbstractEditor {
 		
 	}
 	
+	/**
+	 * Initialise the actions for this FullEditor
+	 */
 	protected void initActions()
 	{
 		actions = new FullEditorActions(this);
 	}
 	
+	/**
+	 * Initialise the menu for this FullEditor
+	 */
 	protected void initMenu() {
 		
 		menuBar = new FullEditorMenuBar((FullEditorActions) actions, this);
@@ -248,8 +259,6 @@ public class FullEditor extends AbstractEditor {
 
 	}
 
-	
-
 	@Override
 	public void itemSelected() {
 		// make sure we're not measuring
@@ -315,6 +324,66 @@ public class FullEditor extends AbstractEditor {
 				
 			}
 	
+	}
+	
+	/**
+	 * Close Tellervo but confirm save of series if necessary first.
+	 * 
+	 */
+	public void cleanupAndDispose()
+	{
+		int modifiedCount = 0;
+		for(Sample s : getSamples())
+		{
+			if(s.isModified()) modifiedCount++;
+		}
+		
+		if(modifiedCount>0)
+		{
+			String question = "";
+			if(modifiedCount==1)
+			{
+				if(getSamples().size()>1) {
+					question = "One of the series has been modified.  Would you like to save it before closing?";
+				} else 
+				{
+					question = "The series has been modified.  Would you like to save it before closing?";
+				}
+			}
+			else if(modifiedCount>1)
+			{
+				question = "There are "+modifiedCount+" series that have unsaved changes.  Would you like to save them before closing?";
+			}
+				
+			
+			// Confirm save
+			Object[] options = {"Save",
+                    "Discard",
+                    "Cancel"};
+				int n = JOptionPane.showOptionDialog(this,
+				    question,
+				    "Save document?",
+				    JOptionPane.YES_NO_CANCEL_OPTION,
+				    JOptionPane.QUESTION_MESSAGE,
+				    null,
+				    options,
+				    options[2]);
+				
+			if(n==JOptionPane.YES_OPTION)
+			{
+				save();
+			}
+			else if (n==JOptionPane.NO_OPTION)
+			{
+				
+			}
+			else if (n==JOptionPane.CANCEL_OPTION)
+			{
+				return;
+			}
+		}
+		
+		System.exit(0);
 	}
 	
 	private GISPanel createMapPanel()
@@ -393,7 +462,8 @@ public class FullEditor extends AbstractEditor {
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		// TODO Auto-generated method stub
+		
+		cleanupAndDispose();
 		
 	}
 
@@ -425,5 +495,5 @@ public class FullEditor extends AbstractEditor {
 		
 	}
 
-
+	
 }

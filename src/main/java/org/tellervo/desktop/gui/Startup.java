@@ -119,7 +119,7 @@ public class Startup  {
 			}
 			else
 			{
-				LiteEditor editor = new LiteEditor();
+				LiteEditor editor = LiteEditor.getNewInstance();
 				App.mainWindow = editor;
 				editor.setVisible(true);
 			}

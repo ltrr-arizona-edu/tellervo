@@ -25,7 +25,6 @@ import java.lang.reflect.Proxy;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Bug;
-import org.tellervo.desktop.gui.TellervoMainWindow;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.ui.TellervoAction;
 
@@ -74,7 +73,8 @@ public class OSX {
 			// and "quit"
 			OSX.registerQuitHandler(new Runnable() {
 				public void run() {
-					TellervoMainWindow.quit();
+					//TellervoMainWindow.quit();
+					//TODO!!!
 					System.exit(0);
 				}
 			});

@@ -39,8 +39,6 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import org.tellervo.desktop.gui.menus.HelpMenu;
-import org.tellervo.desktop.gui.menus.WindowMenu;
-import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.ui.Builder;
 
 public class GISFrame extends JFrame {
@@ -162,8 +160,6 @@ public class GISFrame extends JFrame {
 				
 
 	
-		if (Platform.isMac())
-			menuBar.add(new WindowMenu(this));
 		menuBar.add(new HelpMenu());
         
 		

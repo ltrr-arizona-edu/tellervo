@@ -134,17 +134,12 @@ public class FileOpenAction extends AbstractAction{
 			return;
 		}
 		
-		new LiteEditor(parent, file, format);
-		
-		
-		if(parent instanceof LiteEditor)
-		{
-			LiteEditor ed = (LiteEditor) parent;
-			
-			if(ed.isEmpty())
-			{
-				ed.dispose();
-			}
+		LiteEditor editor = LiteEditor.getNewInstance();
+		try {
+			editor.loadFile(parent, file, format);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	

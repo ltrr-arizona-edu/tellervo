@@ -182,7 +182,7 @@ public abstract class EditorActions {
 		fileSaveAsAction = new FileSaveAsAction(editor);
 		
 
-		fileExitAction = new FileExitAction();
+		fileExitAction = new FileExitAction(editor);
 		editCopyAction = new EditCopyAction(editor);
 		editSelectAllAction = new EditSelectAllAction(editor);
 		editInsertYearPushForwardsAction = new EditInsertYearPushForwardsAction(editor);
