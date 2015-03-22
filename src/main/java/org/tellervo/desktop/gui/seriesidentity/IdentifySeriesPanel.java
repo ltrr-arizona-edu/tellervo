@@ -25,7 +25,7 @@ import net.miginfocom.swing.MigLayout;
 import org.jdesktop.swingx.JXTable;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
-import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.seriesidentity.SeriesIdentityRegexDialog.MethodOptions;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
@@ -51,6 +51,7 @@ import org.tridas.schema.TridasValues;
 import javax.swing.JLabel;
 
 import java.awt.Font;
+
 import javax.swing.JCheckBox;
 
 /**
@@ -461,8 +462,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	 */
 	private void openEditor()
 	{
-		FullEditor editor = new FullEditor();
-		
+		FullEditor editor = FullEditor.getInstance();	
 		editor.addSamples(model.getAllSamples());
 		
 	}

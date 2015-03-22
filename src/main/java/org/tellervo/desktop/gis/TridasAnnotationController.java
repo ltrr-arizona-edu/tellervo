@@ -26,7 +26,7 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
-import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
 import org.tellervo.desktop.sample.Element;
@@ -104,8 +104,8 @@ public class TridasAnnotationController extends AbstractTridasAnnotationControll
 
 					OpenRecent.sampleOpened(new SeriesDescriptor(s));
 					
-					// open it
-					new FullEditor(s);
+					FullEditor editor = FullEditor.getInstance();
+					editor.addSample(s);
 				}
 			}
 			

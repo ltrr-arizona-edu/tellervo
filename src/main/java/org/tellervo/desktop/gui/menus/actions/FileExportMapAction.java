@@ -5,7 +5,7 @@ import gov.nasa.worldwindx.examples.util.ScreenShotAction;
 import javax.swing.Action;
 
 import org.tellervo.desktop.editor.AbstractEditor;
-import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.ui.Builder;
 
 public class FileExportMapAction extends ScreenShotAction{

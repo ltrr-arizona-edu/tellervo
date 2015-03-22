@@ -37,7 +37,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
-import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.TellervoWsiTridasElement;
@@ -108,7 +108,8 @@ public class TridasSeriesLinkRendererEditor extends AbstractPropertyEditor imple
 		
 		try {
 			Sample s = element.load(frame);
-			new FullEditor(s);
+			FullEditor editor = FullEditor.getInstance();
+			editor.addSample(s);
 		} catch (IOException ioe) {
 			JOptionPane.showMessageDialog(frame, "Could not load: " + 
 					ioe.getMessage(), "Error loading", JOptionPane.ERROR_MESSAGE);

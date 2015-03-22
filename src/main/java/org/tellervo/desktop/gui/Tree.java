@@ -44,7 +44,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
-import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.sample.Sample;
 
 @SuppressWarnings("serial")
@@ -93,9 +93,14 @@ public class Tree extends JLabel implements DragGestureListener {
             @Override
 			public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2)
-                    new FullEditor(s);
+                {
+                	FullEditor editor = FullEditor.getInstance();
+                	editor.addSample(s);
+                	
+                }
             }
         });
+    
     }
 
     // only used for crossdates, so far

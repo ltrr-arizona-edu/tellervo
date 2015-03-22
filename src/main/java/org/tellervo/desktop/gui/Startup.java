@@ -41,7 +41,7 @@ import javax.swing.UIManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.model.TellervoModelLocator;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.ui.Builder;
@@ -112,7 +112,7 @@ public class Startup  {
 			if(!App.isTellervoLiteMode())
 			{
 				// Full Tellervo uses editor as main window
-				FullEditor editor = new FullEditor();
+				FullEditor editor = FullEditor.getInstance();
 				App.mainWindow = editor;
 				editor.setVisible(true);
 			}

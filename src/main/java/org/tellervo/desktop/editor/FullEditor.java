@@ -1,27 +1,21 @@
-package org.tellervo.desktop.editor.view;
+package org.tellervo.desktop.editor;
 
 import gov.nasa.worldwind.layers.MarkerLayer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.AbstractEditor;
-import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.gis.GISPanel;
 import org.tellervo.desktop.gis.TridasMarkerLayerBuilder;
 import org.tellervo.desktop.gui.Bug;
-import org.tellervo.desktop.gui.FileDialog;
-import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.PrefsEvent;
-import org.tellervo.desktop.sample.FileElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewerOld;
 import org.tellervo.desktop.tridasv2.ui.DependentsViewer;
@@ -30,12 +24,12 @@ import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.desktop.util.Overwrite;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 
 public class FullEditor extends AbstractEditor {
 
+	private static FullEditor instance = null;
 	private static final long serialVersionUID = 1L;
 	private JPanel metadataHolder;
 	private JPanel componentHolder;
@@ -43,29 +37,30 @@ public class FullEditor extends AbstractEditor {
 	private JPanel mapHolder;
 	private TridasMetadataPanel metaView;
 	
-	public FullEditor()
+	
+	/**
+	 * DO NOT INSTANTIATE
+	 */
+	protected FullEditor()
 	{
 		super();
 		this.setVisible(true);
 		initFullEditor();
 	}
 	
-	public FullEditor(Sample sample)
-	{
-		super(sample);
-		
-		this.setVisible(true);
-		initFullEditor();
-	}
 	
-	public FullEditor(ArrayList<Sample> samples)
+	public synchronized static FullEditor getInstance()
 	{
-		super(samples);
-		this.setVisible(true);
-		initFullEditor();
+		if(instance==null)
+		{
+			instance = new FullEditor();
+		}
 
-	}
+		
+		return instance;
 	
+	}
+		
 	public GISPanel getGISPanel()
 	{
 		//TODO

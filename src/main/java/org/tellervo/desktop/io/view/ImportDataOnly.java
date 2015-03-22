@@ -12,8 +12,8 @@ import org.jdesktop.swingx.JXTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.editor.EditorFactory;
-import org.tellervo.desktop.editor.view.FullEditor;
-import org.tellervo.desktop.editor.view.LiteEditor;
+import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.editor.LiteEditor;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.sample.Sample;
@@ -337,7 +337,8 @@ public class ImportDataOnly extends JDialog {
 		}
 		else
 		{
-			new FullEditor(sampleList);
+			FullEditor editor = FullEditor.getInstance();
+			editor.addSamples(sampleList);
 		}
 	}
 	

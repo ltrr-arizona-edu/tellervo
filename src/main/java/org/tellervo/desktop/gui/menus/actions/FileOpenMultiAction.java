@@ -5,13 +5,16 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 
 public class FileOpenMultiAction extends AbstractAction{
+	private final static Logger log = LoggerFactory.getLogger(FileOpenMultiAction.class);
 
 	private static final long serialVersionUID = 1L;
 	private Window parent;
@@ -44,11 +47,12 @@ public class FileOpenMultiAction extends AbstractAction{
 		{
 			if(parent instanceof FullEditor)
 			{
-				FileOpenAction.opendb((FullEditor) parent, true);
+				FileOpenAction.opendb(true);
 			}
 			else
 			{
-				FileOpenAction.opendb(null, true);
+				log.error("Should never happen!");
+
 			}
 		}
 	}

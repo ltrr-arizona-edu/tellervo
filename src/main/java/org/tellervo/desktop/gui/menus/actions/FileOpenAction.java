@@ -10,9 +10,12 @@ import java.util.Collections;
 import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.view.FullEditor;
-import org.tellervo.desktop.editor.view.LiteEditor;
+import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.editor.LiteEditor;
+import org.tellervo.desktop.gui.Startup;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Element;
@@ -30,6 +33,7 @@ import org.tridas.io.gui.model.TricycleModelLocator;
 public class FileOpenAction extends AbstractAction{
 
 	private static final long serialVersionUID = 1L;
+	private final static Logger log = LoggerFactory.getLogger(FileOpenAction.class);
 
 	/**
 	 * Constructor for menus
@@ -59,11 +63,11 @@ public class FileOpenAction extends AbstractAction{
 		{
 			if(parent instanceof FullEditor)
 			{
-				opendb((FullEditor)parent, false);
+				opendb(false);
 			}
 			else
 			{
-				opendb(null, false);
+				log.error("Should never happen!");
 			}
 		}
 	}
@@ -139,7 +143,7 @@ public class FileOpenAction extends AbstractAction{
 	 * @param editor
 	 * @param multi
 	 */
-	public static void opendb(FullEditor editor, boolean multi) {
+	public static void opendb(boolean multi) {
 		DBBrowser browser = new DBBrowser(App.mainWindow, true, multi);
 		
 		browser.setVisible(true);
@@ -162,14 +166,10 @@ public class FileOpenAction extends AbstractAction{
 				
 				// open it
 				
-				if(editor==null)
-				{
-					new FullEditor(s);
-				} 
-				else
-				{
-					editor.addSample(s);
-				}
+				
+				FullEditor editor = FullEditor.getInstance();
+                editor.addSample(s);
+			
 			}
 		}
 	}

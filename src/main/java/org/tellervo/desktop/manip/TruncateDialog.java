@@ -50,7 +50,7 @@ import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.AbstractEditor;
-import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.NameVersionJustificationPanel;
 import org.tellervo.desktop.gui.RangeSlider;
@@ -244,7 +244,8 @@ public class TruncateDialog extends JDialog {
 				// put it in our menu
 				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 				
-				new FullEditor(tmp).toFront();
+				FullEditor editor = FullEditor.getInstance();
+				editor.addSample(tmp);
 				
 				// get out of here! :)
 				return true;

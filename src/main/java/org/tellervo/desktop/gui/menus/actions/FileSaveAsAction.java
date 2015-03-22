@@ -6,7 +6,7 @@ import java.io.File;
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 
-import org.tellervo.desktop.editor.view.LiteEditor;
+import org.tellervo.desktop.editor.LiteEditor;
 import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;

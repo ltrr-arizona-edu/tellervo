@@ -573,7 +573,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 			{
 				TridasObjectEx object = new TridasObjectEx();
 				object.setTitle(id.getObjectItem().getCode());
-				TridasUtils.setObjectCode(object, id.getObjectItem().getCode());
+				//TridasUtils.setObjectCode(object, id.getObjectItem().getCode());
 				ControlledVoc cv = new ControlledVoc();
 				cv.setNormal("Site");
 				cv.setNormalId("1");

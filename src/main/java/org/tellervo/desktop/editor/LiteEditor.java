@@ -1,4 +1,4 @@
-package org.tellervo.desktop.editor.view;
+package org.tellervo.desktop.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Window;
@@ -13,9 +13,6 @@ import javax.swing.JPanel;
 
 import org.apache.commons.io.FilenameUtils;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.AbstractEditor;
-import org.tellervo.desktop.editor.BasicMetadataPanel;
-import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
@@ -51,6 +48,8 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	private JPanel metadataHolder;
 	private boolean savedByTellervo = false;
 	private BasicMetadataPanel metadata;
+	
+	
 	
 	public LiteEditor()
 	{

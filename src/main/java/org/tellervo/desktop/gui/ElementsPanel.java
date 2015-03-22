@@ -65,7 +65,7 @@ import javax.swing.undo.CannotUndoException;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.editor.AbstractEditor;
-import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.metadata.MetadataField;
 import org.tellervo.desktop.metadata.MetadataTemplate;
 import org.tellervo.desktop.sample.BaseSample;
@@ -230,7 +230,8 @@ public class ElementsPanel extends JPanel implements SampleListener {
 					}
 
 					// open it
-					new FullEditor(s);
+					FullEditor editor = FullEditor.getInstance();
+	    			editor.addSample(s);
 				}
 			});
 			super.add(open);

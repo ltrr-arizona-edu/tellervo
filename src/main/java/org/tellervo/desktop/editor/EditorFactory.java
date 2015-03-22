@@ -21,8 +21,6 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.view.FullEditor;
-import org.tellervo.desktop.editor.view.LiteEditor;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.BaseSample;
@@ -428,9 +426,9 @@ public class EditorFactory {
 		}
 		else
 		{
-			FullEditor ed = new FullEditor(sample);
-			ed.setVisible(true);
-			ed.showPage(EditType.OBJECT);
+			FullEditor editor = FullEditor.getInstance();
+			editor.addSample(sample);
+			editor.showPage(EditType.OBJECT);
 		}
 				
 		container.setCursor(Cursor.getDefaultCursor());

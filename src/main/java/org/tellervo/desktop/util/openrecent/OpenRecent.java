@@ -41,8 +41,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.view.FullEditor;
-import org.tellervo.desktop.editor.view.LiteEditor;
+import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.editor.LiteEditor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
@@ -328,7 +328,8 @@ public class OpenRecent {
 		
 		public void performOpen(Sample s) {
 			OpenRecent.sampleOpened(new SeriesDescriptor(s), getTag());
-			new FullEditor(s);
+			FullEditor editor = FullEditor.getInstance();
+			editor.addSample(s);
 		}
 	}
 	

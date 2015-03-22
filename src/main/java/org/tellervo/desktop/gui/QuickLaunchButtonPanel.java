@@ -111,7 +111,7 @@ public class QuickLaunchButtonPanel extends JPanel implements ActionListener, Mo
 			}
 			else
 			{
-				FileOpenAction.opendb(null, false);
+				FileOpenAction.opendb(false);
 			}
 		}
 		else if(evt.getActionCommand().equals("metadatabase"))

@@ -4,7 +4,6 @@ import java.awt.Window;
 
 import javax.swing.Action;
 
-import org.tellervo.desktop.editor.view.FullEditor;
 import org.tellervo.desktop.gui.menus.actions.AddSeriesToWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBasicBoxLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBoxLabelAction;

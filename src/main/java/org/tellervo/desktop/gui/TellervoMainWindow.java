@@ -223,7 +223,7 @@ public class TellervoMainWindow extends JFrame {
 		
 		openSeries.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				FileOpenAction.opendb(null, false);
+				FileOpenAction.opendb(false);
 			}
 		});
 		

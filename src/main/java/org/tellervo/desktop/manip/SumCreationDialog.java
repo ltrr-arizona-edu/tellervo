@@ -29,7 +29,7 @@ import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
-import org.tellervo.desktop.editor.view.FullEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.graph.GraphDialog;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
@@ -216,7 +216,8 @@ public class SumCreationDialog {
 				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 								
 				// open a new editor 
-				new FullEditor(tmp);
+				FullEditor editor = FullEditor.getInstance();
+				editor.addSample(tmp);
 				return true;
 			}
 		} catch (UserCancelledException uce) {

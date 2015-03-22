@@ -246,6 +246,8 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 		initMenu();
 		initToolbar();
+		
+		this.setExtendedState( this.getExtendedState()|JFrame.MAXIMIZED_BOTH );
 
 	}
 
