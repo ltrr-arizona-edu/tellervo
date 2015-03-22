@@ -128,7 +128,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 		this.setIconImage(Builder.getApplicationIcon());
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		setBounds(100, 100, 851, 540);
+
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -254,7 +254,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		initMenu();
 		initToolbar();
 		
-		this.setExtendedState( this.getExtendedState()|JFrame.MAXIMIZED_BOTH );
+		this.setExtendedState( JFrame.MAXIMIZED_BOTH );
 		this.addWindowListener(this);
 
 	}

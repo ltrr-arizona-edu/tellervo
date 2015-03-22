@@ -392,16 +392,12 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				dataView.restoreGraphDividerLocation();
 
 				metadata.setSample(getSample());
-				
-				dataPanel.repaint();
-				metadataHolder.repaint();
-				repaint();
-				
-				
+							
 			}
 			
 			setTitle();
-				
+			this.pack();
+			//this.repaint();
 	}
 	
 	/**

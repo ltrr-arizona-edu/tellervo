@@ -318,10 +318,9 @@ public class FullEditor extends AbstractEditor {
 					
 				}
 				
-				
-				
 				setTitle();
-				
+				this.pack();
+				this.repaint();
 			}
 	
 	}

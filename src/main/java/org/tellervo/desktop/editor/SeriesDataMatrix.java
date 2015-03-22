@@ -243,7 +243,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		panelRight = new JPanel();
 		splitPane.setRightComponent(panelRight);
 		panelRight.setLayout(new BorderLayout(0, 0));
-		
+		panelRight.setMaximumSize(new Dimension(500, 99999));
 		
 		
 		panelLeft.setLayout(new MigLayout("", "[158px,grow,fill]", "[][123.00,grow,fill]"));
@@ -395,11 +395,12 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 		initPrefs();
 		App.prefs.addPrefsListener(this);
-		splitPane.setDividerLocation(0.8d);
+		splitPane.setDividerLocation(0.9d);
 		splitPane.setResizeWeight(1.0);
 		splitPane_1.setDividerLocation(1.0d);
 		splitPane_1.setResizeWeight(1.0d);
 		splitPane_1.setOneTouchExpandable(true);
+		
 		
 	}
 	
