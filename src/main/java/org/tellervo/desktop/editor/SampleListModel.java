@@ -35,6 +35,14 @@ public class SampleListModel extends AbstractListModel<Sample> {
 		fireContentsChanged(this, 0, this.getSize());
 
 	}
+	public void addElement(int row, Sample sample)
+	{
+		list.add(row, sample);
+		dirty = true;
+		fireContentsChanged(this, 0, this.getSize());
+
+	}
+	
 	
 	public void addAll(Collection<Sample> items)
 	{

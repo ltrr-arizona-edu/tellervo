@@ -3,6 +3,9 @@ package org.tellervo.desktop.editor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
+import java.awt.datatransfer.*;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -16,8 +19,10 @@ import java.util.Collection;
 
 import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DropMode;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -30,6 +35,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
+import javax.swing.TransferHandler;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -177,8 +183,9 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		lstSamples.setVisibleRowCount(10);
 		scrollPane.setViewportView(lstSamples);
 
-		
-		JPanel panel = new JPanel();
+
+
+	   	JPanel panel = new JPanel();
 		workspacePanel.add(panel, "cell 0 2 3 1,grow");
 		panel.setLayout(new MigLayout("", "[][grow]", "[]"));
 		
@@ -204,7 +211,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0){
-				if (comboBox.getSelectedIndex() == 1)
+				 if (comboBox.getSelectedIndex() == 1)
 				{
 					samplesModel.sortAscending(new NameComparator());
 					lstSamples.repaint();

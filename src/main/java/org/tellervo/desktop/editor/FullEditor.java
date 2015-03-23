@@ -139,6 +139,7 @@ public class FullEditor extends AbstractEditor {
 			
 		});
 		
+		this.btnAdd.setVisible(false);
 	}
 	
 	/**
@@ -316,7 +317,8 @@ public class FullEditor extends AbstractEditor {
 					
 					
 					// Components tab
-					ComponentViewerOld componentsPanel;				
+					ComponentViewerOld componentsPanel;	
+					componentHolder.setVisible(sample.getSampleType().isDerived());
 					componentHolder.removeAll();
 					if(sample.getSampleType().isDerived()){
 						componentsPanel = new ComponentViewerOld(sample);
