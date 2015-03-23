@@ -269,7 +269,7 @@ public abstract class EditorActions {
 
 		addSeriesAction = new AddSeriesToWorkspaceAction(editor);
 		removeSeriesAction = new RemoveSeriesFromWorkspaceAction(editor);
-
+		
 
 
 	}

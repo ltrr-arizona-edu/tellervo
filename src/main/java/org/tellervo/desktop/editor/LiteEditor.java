@@ -3,6 +3,8 @@ package org.tellervo.desktop.editor;
 import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -10,8 +12,10 @@ import java.util.Collections;
 
 import javax.swing.AbstractButton;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 
 import org.apache.commons.io.FilenameUtils;
@@ -229,8 +233,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		{
 			return false;
 		}
-		
-		
+
 		for(Sample s: getSamples())
 		{
 			if(s.isModified()) return false;
@@ -788,7 +791,37 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		// TODO Auto-generated method stub
 		
 	}
-	
 
-	
+	@Override
+	protected void initPopupMenu()
+	{
+		log.debug("Init popup menu");
+		
+		final JPopupMenu popupMenu = new JPopupMenu();
+		JMenuItem delete = new JMenuItem(actions.removeSeriesAction);
+		popupMenu.add(delete);
+
+		JMenuItem rename = new JMenuItem(((LiteEditorActions)actions).renameSeriesAction);
+		popupMenu.add(rename);
+		
+		this.getLstSamples().addMouseListener(new MouseAdapter() {
+		    public void mousePressed(MouseEvent e) {
+		        showPopup(e);
+		    }
+
+		    public void mouseReleased(MouseEvent e) {
+		        showPopup(e);
+		    }
+
+		    private void showPopup(MouseEvent e) {
+		       
+				if (e.isPopupTrigger()) {
+		            popupMenu.show(e.getComponent(),
+		                       e.getX(), e.getY());
+		        }
+		    }
+		});
+			
+	}
+		
 }

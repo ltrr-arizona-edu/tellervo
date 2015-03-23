@@ -56,33 +56,38 @@ public class TridasMarkerLayerBuilder {
 			
 	}
 	
-	public void addMarkerForTridasObject(TridasObject obj)
+	public boolean addMarkerForTridasObject(TridasObject obj)
 	{
-		if(obj==null) return;
+		if(obj==null) return false;
 		
 		if(obj.isSetLocation())
 		{
 			if(obj.getLocation().isSetLocationGeometry())
 			{
-				addMarkerForTridasEntity(obj.getLocation().getLocationGeometry(), obj);
+				return addMarkerForTridasEntity(obj.getLocation().getLocationGeometry(), obj);
 			}
 		}
+		
+		return false;
 	}
 	
-	public void addMarkerForTridasElement(TridasElement elem)
+	public boolean addMarkerForTridasElement(TridasElement elem)
 	{
-		if(elem==null) return;
+				
+		if(elem==null) return false;
 		 
 		if(elem.isSetLocation())
 		{
 			if(elem.getLocation().isSetLocationGeometry())
 			{
-				addMarkerForTridasEntity(elem.getLocation().getLocationGeometry(), elem);
+				return addMarkerForTridasEntity(elem.getLocation().getLocationGeometry(), elem);
 			}
 		}
+		
+		return false;
 	}
 	
-	private void addMarkerForTridasEntity(TridasLocationGeometry geom, ITridas entity)
+	private boolean addMarkerForTridasEntity(TridasLocationGeometry geom, ITridas entity)
 	{
 		if(geom.isSetPoint())
 		{
@@ -91,8 +96,10 @@ public class TridasMarkerLayerBuilder {
 			{
 				markers.add(new TridasMarker(Position.fromDegrees(coords.get(1), coords.get(0)), 
 						getMarkerAttributesForEntity(entity.getClass()), entity));
+				return true;
 			}
 		}
+		return false;
 	}
 	
 	public void addLatLongMarker(Double lat, Double lon)

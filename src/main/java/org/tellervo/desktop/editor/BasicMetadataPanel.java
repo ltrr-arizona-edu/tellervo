@@ -15,9 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.sample.SampleEvent;
+import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.ui.Builder;
 
-public class BasicMetadataPanel extends AbstractMetadataPanel implements DocumentListener{
+public class BasicMetadataPanel extends AbstractMetadataPanel implements DocumentListener, SampleListener{
 
 	private static final Logger log = LoggerFactory.getLogger(BasicMetadataPanel.class);
 
@@ -113,7 +115,15 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 		listenersActive = false;
 		
 		sample = s;
+		s.addSampleListener(this);
 		
+		setFieldsFromSample();
+		
+		listenersActive = true;
+	}
+	
+	private void setFieldsFromSample()
+	{
 		txtAuthor.setText("");
 		txtKeycode.setText("");
 		txtTitle.setText("");
@@ -131,8 +141,6 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 		{
 			txtSpecies.setText(sample.getMetaString(Metadata.SPECIES));
 		}
-		
-		listenersActive = true;
 	}
 	
 	private void updateSample()
@@ -186,6 +194,50 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 	@Override
 	public void removeUpdate(DocumentEvent e) {
 		updateSample();
+		
+	}
+
+	@Override
+	public void sampleRedated(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleDataChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleMetadataChanged(SampleEvent e) {
+		listenersActive = false;
+		setFieldsFromSample();
+		listenersActive = true;
+		
+	}
+
+	@Override
+	public void sampleElementsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleDisplayCalendarChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 	

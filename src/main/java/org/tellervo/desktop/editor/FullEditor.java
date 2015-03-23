@@ -5,7 +5,6 @@ import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVList;
 import gov.nasa.worldwind.geom.ExtentHolder;
-import gov.nasa.worldwind.geom.LatLon;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.globes.Globe;
@@ -16,18 +15,19 @@ import gov.nasa.worldwindx.examples.util.ExtentVisibilitySupport;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
 import java.awt.Rectangle;
-
 import java.awt.event.ActionEvent;
-
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.AbstractButton;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -687,6 +687,36 @@ public class FullEditor extends AbstractEditor {
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	protected void initPopupMenu()
+	{
+		log.debug("Init popup menu");
+		
+		final JPopupMenu popupMenu = new JPopupMenu();
+		JMenuItem delete = new JMenuItem(actions.removeSeriesAction);
+		popupMenu.add(delete);
+		
+		
+		this.getLstSamples().addMouseListener(new MouseAdapter() {
+		    public void mousePressed(MouseEvent e) {
+		        showPopup(e);
+		    }
+
+		    public void mouseReleased(MouseEvent e) {
+		        showPopup(e);
+		    }
+
+		    private void showPopup(MouseEvent e) {
+		       
+				if (e.isPopupTrigger()) {
+		            popupMenu.show(e.getComponent(),
+		                       e.getX(), e.getY());
+		        }
+		    }
+		});
+			
 	}
 
 	

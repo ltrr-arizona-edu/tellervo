@@ -8,16 +8,12 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.swing.AbstractButton;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DropMode;
 import javax.swing.JButton;
@@ -26,14 +22,11 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
-import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 import javax.swing.border.EmptyBorder;
@@ -256,36 +249,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		
 	}
 
-	protected void initPopupMenu()
-	{
-		log.debug("Init popup menu");
-		
-		final JPopupMenu popupMenu = new JPopupMenu();
-		JMenuItem delete = new JMenuItem(actions.removeSeriesAction);
-		popupMenu.add(delete);
-		JMenuItem rename = new JMenuItem("Rename");
-		rename.addActionListener((ActionListener) this);
-		popupMenu.add(rename);
-		
-		this.lstSamples.addMouseListener(new MouseAdapter() {
-		    public void mousePressed(MouseEvent e) {
-		        showPopup(e);
-		    }
-
-		    public void mouseReleased(MouseEvent e) {
-		        showPopup(e);
-		    }
-
-		    private void showPopup(MouseEvent e) {
-		       
-				if (e.isPopupTrigger()) {
-		            popupMenu.show(e.getComponent(),
-		                       e.getX(), e.getY());
-		        }
-		    }
-		});
-			
-	}
+	protected abstract void initPopupMenu();
 	
 	protected abstract void initMenu() ;
 
@@ -639,32 +603,45 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	protected abstract void initActions();
 		
 	@Override
-	public void sampleRedated(SampleEvent e) {		
+	public void sampleRedated(SampleEvent e) {	
+		setTitle();
+		lstSamples.repaint();
 	}
 
 	@Override
 	public void sampleDataChanged(SampleEvent e) {		
+		setTitle();
+		lstSamples.repaint();
 	}
 
 	@Override
 	public void sampleMetadataChanged(SampleEvent e) {
-		this.lstSamples.repaint();
+		setTitle();
+		lstSamples.repaint();
 	}
 
 	@Override
-	public void sampleElementsChanged(SampleEvent e) {		
+	public void sampleElementsChanged(SampleEvent e) {
+		setTitle();
+		lstSamples.repaint();
 	}
 
 	@Override
-	public void sampleDisplayUnitsChanged(SampleEvent e) {		
+	public void sampleDisplayUnitsChanged(SampleEvent e) {	
+		setTitle();
+		lstSamples.repaint();
 	}
 
 	@Override
-	public void sampleDisplayCalendarChanged(SampleEvent e) {		
+	public void sampleDisplayCalendarChanged(SampleEvent e) {
+		setTitle();
+		lstSamples.repaint();
 	}
 
 	@Override
-	public void measurementVariableChanged(SampleEvent e) {		
+	public void measurementVariableChanged(SampleEvent e) {
+		setTitle();
+		lstSamples.repaint();
 	}
 
 }

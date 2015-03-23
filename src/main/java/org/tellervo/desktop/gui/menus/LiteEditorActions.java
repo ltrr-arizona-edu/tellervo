@@ -4,11 +4,13 @@ import javax.swing.Action;
 
 import org.tellervo.desktop.editor.LiteEditor;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAsAction;
+import org.tellervo.desktop.gui.menus.actions.RenameSeriesAction;
 
 
 public class LiteEditorActions extends EditorActions {
 
 	public Action fileSaveAsAction;
+	public Action renameSeriesAction;
 
 	
 	public LiteEditorActions(LiteEditor editor)
@@ -20,7 +22,7 @@ public class LiteEditorActions extends EditorActions {
 	private void initExtraActions() {
 		
 		fileSaveAsAction = new FileSaveAsAction(editor);
-
+		renameSeriesAction = new RenameSeriesAction(editor);
 		
 		linkModel();
 		

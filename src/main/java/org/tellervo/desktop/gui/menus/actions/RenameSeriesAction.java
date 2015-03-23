@@ -1,20 +1,12 @@
 package org.tellervo.desktop.gui.menus.actions;
 
 import java.awt.event.ActionEvent;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.util.List;
 
 import javax.swing.AbstractAction;
+import javax.swing.JOptionPane;
 
-import org.tellervo.desktop.Range;
 import org.tellervo.desktop.editor.AbstractEditor;
-import org.tellervo.desktop.editor.CopyDialog;
-import org.tellervo.desktop.io.TwoColumn;
-import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.util.PureStringWriter;
-import org.tellervo.desktop.util.TextClipboard;
+import org.tellervo.desktop.io.Metadata;
 
 public class RenameSeriesAction extends AbstractAction {
 
@@ -22,8 +14,8 @@ public class RenameSeriesAction extends AbstractAction {
 	private AbstractEditor editor;
 	
 	public RenameSeriesAction(AbstractEditor editor) {
-        super("Copy", Builder.getIcon("editcopy.png", 22));
-		putValue(SHORT_DESCRIPTION, "Copy");
+        super("Rename");
+		putValue(SHORT_DESCRIPTION, "Rename series");
         //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.new")); 
         //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.new"));
 
@@ -34,6 +26,14 @@ public class RenameSeriesAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		
+		String s = JOptionPane.showInputDialog(editor.getLstSamples(), "New title for series", " ", JOptionPane.QUESTION_MESSAGE);
+		
+		if(s!=null) {
+			editor.getSample().setMeta(Metadata.KEYCODE, s);
+			editor.getSample().setMeta(Metadata.TITLE, s);
+			editor.getSample().fireSampleMetadataChanged();
+		}
 		
 	}
 

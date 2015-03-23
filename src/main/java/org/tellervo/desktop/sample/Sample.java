@@ -95,7 +95,6 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 	/** Elements (in a List) that were put into this sum. */
 	private ElementList elements = null;
 	
-	private boolean modified = false;
 	
 	/** The value of a missing ring, 0.  Anything less than or equal
 	 to this value is considered a missing ring */
@@ -997,7 +996,7 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 		}
 		
 		String name = title + " " + getRange().toStringWithSpan();
-		if (isModified()) // not aqua-ish, but how to do it the real way?
+		if (isModified()) 
 			name = "* " + name;
 		return name;
 	}
