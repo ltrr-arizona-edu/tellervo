@@ -5,6 +5,9 @@ import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
@@ -18,8 +21,10 @@ import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
@@ -62,7 +67,8 @@ import org.tridas.schema.TridasTridas;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValues;
 
-public abstract class AbstractEditor extends JFrame implements PrefsListener, SaveableDocument, SampleListener, WindowListener{
+
+public abstract class AbstractEditor extends JFrame implements PrefsListener, SaveableDocument, SampleListener, WindowListener, ActionListener{
 
 	private static final long serialVersionUID = 1L;
 	protected final static Logger log = LoggerFactory.getLogger(AbstractEditor.class);
@@ -85,6 +91,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	protected String fileType;
 	protected SeriesDataMatrix dataView;
 	private SampleListModel samplesModel;
+	
 
 
 	protected AbstractEditor() {
@@ -141,6 +148,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 		initMenu();
 		initToolbar();
+		
 
 	}
 
@@ -183,6 +191,10 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 			}
 
 		});
+		
+
+	    //Add listener to components that can bring up popup menus.
+ 
 
 		comboBox.addActionListener(new ActionListener(){
 			
@@ -233,9 +245,41 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		
 	}
 
+	protected void initPopupMenu()
+	{
+		log.debug("Init popup menu");
+		
+		final JPopupMenu popupMenu = new JPopupMenu();
+		JMenuItem delete = new JMenuItem(actions.removeSeriesAction);
+		popupMenu.add(delete);
+		JMenuItem rename = new JMenuItem("Rename");
+		rename.addActionListener((ActionListener) this);
+		popupMenu.add(rename);
+		
+		this.lstSamples.addMouseListener(new MouseAdapter() {
+		    public void mousePressed(MouseEvent e) {
+		        showPopup(e);
+		    }
+
+		    public void mouseReleased(MouseEvent e) {
+		        showPopup(e);
+		    }
+
+		    private void showPopup(MouseEvent e) {
+		       
+				if (e.isPopupTrigger()) {
+		            popupMenu.show(e.getComponent(),
+		                       e.getX(), e.getY());
+		        }
+		    }
+		});
+			
+	}
+	
 	protected abstract void initMenu() ;
 
 	protected abstract void initToolbar();
+	
 	
 	
 	/**
@@ -573,6 +617,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	/**
 	 * Dispose of this editor after doing any necessary housekeeping
 	 */
+	
 	public abstract void cleanupAndDispose();
 	
 	/**

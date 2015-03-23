@@ -4,6 +4,7 @@ import gov.nasa.worldwind.layers.MarkerLayer;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
@@ -103,6 +104,8 @@ public class FullEditor extends AbstractEditor {
 		tabbedPane.addTab("Map", Builder.getIcon("maptab.png", 16), mapHolder, null);
 		
 		itemSelected();
+		initPopupMenu();
+
 		
 	}
 	
@@ -263,6 +266,8 @@ public class FullEditor extends AbstractEditor {
 		
 		
 			log.debug("Item selected");
+			
+			
 			Sample sample = getSample();
 			if (sample != null) {
 				
@@ -520,6 +525,12 @@ public class FullEditor extends AbstractEditor {
 
 	@Override
 	public void windowOpened(WindowEvent e) {	
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	

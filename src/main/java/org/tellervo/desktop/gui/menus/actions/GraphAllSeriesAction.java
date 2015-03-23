@@ -6,6 +6,7 @@ import javax.swing.AbstractAction;
 
 import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.graph.GraphWindow;
+import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 
@@ -33,7 +34,16 @@ public class GraphAllSeriesAction extends AbstractAction{
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		new GraphWindow(editor.getSample(), editor.getSample().getElements());
+		
+		GraphWindow graphWindow = new GraphWindow(editor.getSamples().get(0));
+
+		
+		for (int i=1; i < editor.getSamples().size(); i++){
+			
+			Sample s = editor.getSamples().get(i);
+			graphWindow.add(s);
+		}
+		
 		
 	}
 	

@@ -2,6 +2,7 @@ package org.tellervo.desktop.editor;
 
 import java.awt.BorderLayout;
 import java.awt.Window;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -214,6 +215,8 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		this.metadataHolder.add(metadata, BorderLayout.CENTER);
 		
 		itemSelected();
+		initPopupMenu();
+
 		this.setVisible(true);
 			
 	}
@@ -378,6 +381,8 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		if(dataView!=null) dataView.stopEditing(false);
 		
 			log.debug("Item selected");
+			
+			
 			Sample sample = getSample();
 			if (sample != null) {
 				
@@ -774,6 +779,12 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	public void cleanupAndDispose() {
 		
 		cleanupAndDispose(false);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 
