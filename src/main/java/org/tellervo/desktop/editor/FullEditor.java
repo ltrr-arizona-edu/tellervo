@@ -38,6 +38,7 @@ public class FullEditor extends AbstractEditor {
 	private JPanel componentHolder;
 	private JPanel dependentHolder;
 	private JPanel mapHolder;
+	private GISPanel wwMapPanel;
 	private TridasMetadataPanel metaView;
 	
 	
@@ -62,16 +63,18 @@ public class FullEditor extends AbstractEditor {
 		{
 			instance = new FullEditor();
 		}
-
-		
 		return instance;
 	
 	}
 		
+	/**
+	 * Get the map panel
+	 * 
+	 * @return
+	 */
 	public GISPanel getGISPanel()
 	{
-		//TODO
-		return null;
+		return wwMapPanel;
 	}
 	
 	/**
@@ -112,7 +115,6 @@ public class FullEditor extends AbstractEditor {
 	 * Initialise the menu for this FullEditor
 	 */
 	protected void initMenu() {
-		
 		menuBar = new FullEditorMenuBar((FullEditorActions) actions, this);
 		contentPane.add(menuBar, "cell 0 0,growx,aligny top");
 
@@ -121,22 +123,16 @@ public class FullEditor extends AbstractEditor {
 	@Override
 	public boolean isSaved() {
 		Sample sample = getSample();
-		
 		if(sample.isModified()) return false;
-		
 		return true;
 	}
 
-	
-	
 	/**
 	 * Save the current sample
 	 */
 	@Override
 	public void save() {
-	
 		Sample sample = getSample();
-		
 		saveSample(sample);
 	}
 
@@ -199,7 +195,7 @@ public class FullEditor extends AbstractEditor {
 		try {
 			sample.getLoader().save(sample);
 		} catch (IOException ioe) {
-			Alert.error(I18n.getText("error.ioerror"), I18n.getText("error.savingError") +": \n" + ioe.getMessage());
+			Alert.error(this, I18n.getText("error.ioerror"), I18n.getText("error.savingError") +": \n" + ioe.getMessage());
 			return;
 		} catch (Exception e) {
 			new Bug(e);
@@ -220,7 +216,6 @@ public class FullEditor extends AbstractEditor {
 		for(int i=0; i<this.getSamplesModel().getSize(); i++)
 		{
 			Sample s = this.getSamplesModel().getElementAt(i);
-			
 			saveSample(s);
 		}
 	}
@@ -243,20 +238,16 @@ public class FullEditor extends AbstractEditor {
 
 	@Override
 	public Object getSavedDocument() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public String getDocumentTitle() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void prefChanged(PrefsEvent e) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -310,7 +301,8 @@ public class FullEditor extends AbstractEditor {
 					
 					// Map tab
 					mapHolder.removeAll();
-					mapHolder.add(createMapPanel(), BorderLayout.CENTER);
+					createMapPanel();
+					mapHolder.add(wwMapPanel, BorderLayout.CENTER);
 					
 					this.revalidate();
 				} catch (Exception e)
@@ -385,9 +377,14 @@ public class FullEditor extends AbstractEditor {
 		System.exit(0);
 	}
 	
+	/**
+	 * Create the GISPanel tab panel
+	 * 
+	 * @return
+	 */
 	private GISPanel createMapPanel()
 	{
-		GISPanel wwMapPanel;
+		
 		TridasElement elem = this.getSample().getMeta(Metadata.ELEMENT, TridasElement.class);
 		
 		
@@ -401,7 +398,7 @@ public class FullEditor extends AbstractEditor {
 			
 		} catch (Exception e)
 		{
-			Alert.error("Error", "There was an error initialising the map, most " +
+			Alert.error(this, "Error", "There was an error initialising the map, most " +
 					"probably to do with 3D graphics drivers");
 			return null;
 		}
@@ -437,61 +434,44 @@ public class FullEditor extends AbstractEditor {
 		return wwMapPanel;
 	}
 
+	/**
+	 * Set the metadata page to show
+	 * 
+	 * @param type
+	 */
 	public void showPage(EditType type)
 	{
-
 		if(metaView!=null) metaView.showPage(type);
-		
 	}
 
 
 	@Override
-	public void windowActivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void windowActivated(WindowEvent e) {		
 	}
-
 
 	@Override
-	public void windowClosed(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void windowClosed(WindowEvent e) {		
 	}
-
 
 	@Override
 	public void windowClosing(WindowEvent e) {
-		
 		cleanupAndDispose();
-		
 	}
 
-
 	@Override
-	public void windowDeactivated(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void windowDeactivated(WindowEvent e) {	
 	}
 
-
 	@Override
-	public void windowDeiconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void windowDeiconified(WindowEvent e) {	
 	}
 
-
 	@Override
-	public void windowIconified(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void windowIconified(WindowEvent e) {		
 	}
 
-
 	@Override
-	public void windowOpened(WindowEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void windowOpened(WindowEvent e) {	
 	}
 
 	

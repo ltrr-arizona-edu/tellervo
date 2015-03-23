@@ -380,24 +380,24 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				
 				if(dataView!=null) 
 				{
-					dataView.saveRemarksDividerLocation();	
-					dataView.saveGraphDividerLocation();
+					//dataView.saveRemarksDividerLocation();	
+					//dataView.saveGraphDividerLocation();
 				}
 				
 				dataView = new SeriesDataMatrix(sample, this);
 				dataPanel.removeAll();
 				dataPanel.add(dataView, BorderLayout.CENTER);
 
-				dataView.restoreRemarksDividerLocation();
-				dataView.restoreGraphDividerLocation();
+				//dataView.restoreRemarksDividerLocation();
+				//dataView.restoreGraphDividerLocation();
 
 				metadata.setSample(getSample());
 							
 			}
 			
 			setTitle();
-			this.pack();
-			//this.repaint();
+			//this.pack();
+			this.repaint();
 	}
 	
 	/**

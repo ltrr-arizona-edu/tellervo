@@ -115,7 +115,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	protected TableModel myModel;
 		
 	protected ModifiableTableCellRenderer myCellRenderer;
-	private JSplitPane splitPane;
+	private JSplitPane splitPaneTableAndRemarks;
 	private JPanel panelLeft;
 	private JPanel panelRight;
 	private RemarkPanel remarkPanel;
@@ -124,7 +124,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	private JPanel measurePanelHolder;
 	private GrapherPanel graphPanel;
 	private List<Graph> graphSamples;
-	private JSplitPane splitPane_1;
+	private JSplitPane splitPaneTableAndGraph;
 	
 	
 	// pass this along to the table
@@ -174,41 +174,18 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 			stopEditing(true);
 	}
 		
-	public SeriesDataMatrix(Sample s, AbstractEditor e) {
-		// copy data reference, add self as observer
+	public void init(Sample s, AbstractEditor e)
+	{
 		mySample = s;
 		mySample.addSampleListener(this);
 		this.e = e;
 		
 		// create table
 		myModel = new UnitAwareDecadalModel(mySample);
-		/*
-		 final Color DARK = new Color(0.7333f, 0.7765f, 0.8431f); // EXTRACT CONSTs!
-		 final Color LIGHT = new Color(0.8196f, 0.8510f, 0.9216f);
-		 final int THIN = 2;
-		 final int THICK = 5;
-		 *//* {
-		 public void paint(Graphics g) {
-		 setOpaque(true);
-
-		 int w = getWidth(), h = getHeight();
-
-		 // fill light
-		 g.setColor(LIGHT);
-		 g.fillRect(0, 0, w, h);
-
-		 // dark stripes
-		 g.setColor(DARK);
-		 ((Graphics2D) g).setStroke(new BasicStroke(THIN-1f));
-		 for (int x=0; x<w+h; x+=THIN+THICK)
-		 g.drawLine(x, 0, x-h, h);
-
-		 super.paint(g);
-		 }
-		 }; */
-		
-		//myTable.setDefaultEditor(Integer.class, new SeriesDataMatrixEditor());
-		// mouse listener for table
+	}
+	
+	public SeriesDataMatrix(Sample s, AbstractEditor e) {
+		init(s, e);
 		
 		final AbstractEditor glue = e;
 		
@@ -216,50 +193,38 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 		rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
 		
-
+		// Add table / remarks split pane
+		setLayout(new BorderLayout(0, 0)); 
+		splitPaneTableAndRemarks = new JSplitPane();
+		splitPaneTableAndRemarks.setOneTouchExpandable(true);
+		add(splitPaneTableAndRemarks, BorderLayout.CENTER);
 		
-		// make nulls elsewhere shaded, to indicate "can't use"
-		// DISABLED, because it doesn't hit the area below the table yet (how?).
-		// (but it looks really cool.)
-		//SlashedIfNullRenderer slasher = new SlashedIfNullRenderer(mySample, myModel);
-		//for (int i=1; i<=10; i++)
-		//myTable.getColumnModel().getColumn(i).setCellRenderer(slasher);
-		//myTable.setIntercellSpacing(new Dimension(0, 0));
-
-		// set font, gridlines, colors ==> handled by refreshFromPreferences()
-		
-		// add to panel
-		setLayout(new BorderLayout(0, 0)); // huh?
-		
-		
-		splitPane = new JSplitPane();
-		splitPane.setOneTouchExpandable(true);
-		
-		add(splitPane, BorderLayout.CENTER);
-		
+		// Setup table/graph panel
 		panelLeft = new JPanel();
-		splitPane.setLeftComponent(panelLeft);
-		
+		splitPaneTableAndRemarks.setLeftComponent(panelLeft);
+		panelLeft.setLayout(new MigLayout("", "[158px,grow,fill]", "[][123.00,grow,fill]"));
+
+		// Setup remarks panel
 		panelRight = new JPanel();
-		splitPane.setRightComponent(panelRight);
+		splitPaneTableAndRemarks.setRightComponent(panelRight);
 		panelRight.setLayout(new BorderLayout(0, 0));
 		panelRight.setMaximumSize(new Dimension(500, 99999));
 		
-		
-		panelLeft.setLayout(new MigLayout("", "[158px,grow,fill]", "[][123.00,grow,fill]"));
-		
+		// Setup measurement panel
 		measurePanelHolder = new JPanel();
 		measurePanelHolder.setLayout(new BorderLayout());
 		panelLeft.add(measurePanelHolder, "cell 0 0,grow");
 		
-		splitPane_1 = new JSplitPane();
-		splitPane_1.setOrientation(JSplitPane.VERTICAL_SPLIT);
-		panelLeft.add(splitPane_1, "cell 0 1,grow");
+		// Setup split for table and graph
+		splitPaneTableAndGraph = new JSplitPane();
+		splitPaneTableAndGraph.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		panelLeft.add(splitPaneTableAndGraph, "cell 0 1,grow");
+		
+		// Setup table
 		myTable = new JTable(myModel); 
 		((DefaultTableCellRenderer)myTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.RIGHT);
 		myTable.setGridColor(new Color(240, 240, 240)); 
 		myTable.addMouseListener(new MouseListener() {
-
 
 			@Override
 			public void mouseClicked(MouseEvent ev) {
@@ -292,125 +257,99 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 				}
 				
 			}
-
 			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void mouseEntered(MouseEvent arg0) {			
 			}
-
 			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void mouseExited(MouseEvent arg0) {				
 			}
-
 			@Override
-			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void mousePressed(MouseEvent arg0) {				
 			}
-
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void mouseReleased(MouseEvent arg0) {				
 			}
 		});
 		
-				// key listener for table
-				myTable.addKeyListener(new DecadalKeyListener(myTable, mySample));
-				
-						myTable.setCellSelectionEnabled(true);
-						myTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-						
-						// select the first year
-						myTable.setRowSelectionInterval(0, 0);
-						myTable.setColumnSelectionInterval(
-								mySample.getRange().getStart().column() + 1, mySample.getRange()
-										.getStart().column() + 1);
+		// key listener for table
+		myTable.addKeyListener(new DecadalKeyListener(myTable, mySample));
+		
+		myTable.setCellSelectionEnabled(true);
+		myTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+		
+		// select the first year
+		myTable.setRowSelectionInterval(0, 0);
+		myTable.setColumnSelectionInterval(
+				mySample.getRange().getStart().column() + 1, mySample.getRange()
+						.getStart().column() + 1);
 						
 		// make the last column a jprogressbar, % of max
 		int max = 0;
-		if (mySample.hasCount())
-			max = (Collections.max(mySample.getCount())).intValue();
-						
-		// don't let the columns be rearranged or resized
+		if (mySample.hasCount()) max = (Collections.max(mySample.getCount())).intValue();
 		myTable.getTableHeader().setReorderingAllowed(false);
 		myTable.getColumnModel().getColumn(0).setMinWidth(100);
 		myTable.getTableHeader().setResizingAllowed(false);
 		myTable.setRowSelectionAllowed(true);
 		myTable.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
-		// DISABLED: use column-header renderer for first column (pseudo-row-headers)
-		// -- it doesn't look that great, since there are still gridlines between
-		// rows; what i should really do is make a real table-row-header, which isn't too hard.
-		// myTable.getColumnModel().getColumn(0).setCellRenderer(new
-		//         javax.swing.table.JTableHeader().getDefaultRenderer());
-		myTable.getColumnModel().getColumn(11).setCellRenderer(
-				new CountRenderer(max));
-		
+		myTable.getColumnModel().getColumn(11).setCellRenderer(new CountRenderer(max));
 		
 
-		
 		myCellRenderer = new ModifiableTableCellRenderer(new IconBackgroundCellRenderer(mySample));
 		for(int i = 1; i < 11; i++)
+		{
 			myTable.getColumnModel().getColumn(i).setCellRenderer(myCellRenderer);
+		}
 		
-		
-		
+		// Setup scrollpane for table
 		JScrollPane scrollPane = new JScrollPane(myTable,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		splitPane_1.setLeftComponent(scrollPane);
-		
+		splitPaneTableAndGraph.setLeftComponent(scrollPane);
 		scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		
-		
-		scrollPane.setPreferredSize(new Dimension(700, 520));
-		
+		// Setup remark panel
 		remarkPanel = new RemarkPanel(myTable, mySample);
 		remarkPanel.setMinimumSize(new Dimension(280,280));
 		panelRight.add(remarkPanel);
 		
+		// Setup status bar
 		statusBar = new EditorStatusBar(myTable, mySample);
-		
-		
-		
-		
+		add(statusBar, BorderLayout.SOUTH);
+
+		// Setup graph
 		if(mySample!=null)
 		{
-		
 			graphSamples = new ArrayList<Graph>();
 			graphSamples.add(new Graph(mySample));
-			
-			splitPane_1.setRightComponent(this.createGraph(this.getSize(), 10 ));
+			splitPaneTableAndGraph.setRightComponent(this.createGraph(this.getSize(), 10 ));
 		}
-		
-
-		
-		
-		//measurePanel = new JPanel();
-		//panelLeft.add(measurePanel, BorderLayout.SOUTH);
-		add(statusBar, BorderLayout.SOUTH);
-		
+	
+		// Setup preferences
 		initPrefs();
 		App.prefs.addPrefsListener(this);
-		splitPane.setDividerLocation(0.9d);
-		splitPane.setResizeWeight(1.0);
-		splitPane_1.setDividerLocation(1.0d);
-		splitPane_1.setResizeWeight(1.0d);
-		splitPane_1.setOneTouchExpandable(true);
 		
+		
+		// Set divider locations and size
+		splitPaneTableAndRemarks.setDividerLocation(0.9d);
+		splitPaneTableAndRemarks.setResizeWeight(1.0);
+		splitPaneTableAndGraph.setDividerLocation(1.0d);
+		splitPaneTableAndGraph.setResizeWeight(1.0d);
+		splitPaneTableAndGraph.setOneTouchExpandable(true);
 		
 	}
 	
 
-
+	/**
+	 * Show the redate dialog for the current sample
+	 */
 	private void showRedateDialog()
 	{
 		if(e!=null)	new RedateDialog(mySample, e).setVisible(true);
 	}
 	
+	/**
+	 * Stop measuring
+	 */
 	public void stopMeasuring()
 	{
 		if (measurePanel != null) {
@@ -433,6 +372,9 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		}
 	}
 	
+	/**
+	 * Toggle between measuring and non-measuring mode
+	 */
 	public void toggleMeasuring()
 	{
 		// are we already measuring?
@@ -489,7 +431,13 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 				}
 	}
 	
-	
+	/**
+	 * Create a popup menu for the specified row and col of the table
+	 * 
+	 * @param row
+	 * @param col
+	 * @return
+	 */
 	protected JPopupMenu createPopupMenu(int row, int col) {
 		
 		JPopupMenu popup = new JPopupMenu();
@@ -653,7 +601,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
-			Alert.error("Can't Modify Data",
+			Alert.error(null, "Can't Modify Data",
 					"You cannot modify indexed or summed data files.");
 			return;
 		}
@@ -757,6 +705,12 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 	}
 
+	/**
+	 * Insert specified number of years at the current point in the table
+	 * 
+	 * @param val
+	 * @param nYears
+	 */
 	public void insertYears(Integer val, int nYears) {
 		int row = myTable.getSelectedRow();
 		int col = myTable.getSelectedColumn();
@@ -764,10 +718,19 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		insertYears(val, nYears, row, col);
 	}
 	
+	
+	/**
+	 * Insert specified number of years at the specified row/col in the table
+	 * 
+	 * @param val
+	 * @param nYears
+	 * @param insertpointrow
+	 * @param insertpointcol
+	 */
 	public void insertYears(Integer val, int nYears, int insertpointrow, int insertpointcol) {
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
-			Alert.error("Can't Modify Data",
+			Alert.error(null, "Can't Modify Data",
 					"You cannot modify indexed or summed data files.");
 			return;
 		}
@@ -783,7 +746,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		// make sure it's a valid place to insert a year
 		if ((!mySample.getRange().contains(y)
 				&& !mySample.getRange().getEnd().add(nYears).equals(y)) && mySample.getRange().getSpan()>1) {
-			 Alert.error("Can't insert here",
+			 Alert.error(null, "Can't insert here",
 			    "This isn't a valid place to insert a year.");
 			return;
 		}
@@ -826,7 +789,9 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		myTable.setColumnSelectionInterval(col, col);
 	}
 	
-
+	/**
+	 * Delete the current year from the table
+	 */
 	public void deleteYear() {
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
@@ -897,7 +862,6 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
 		graphPanel.update();
 		graphPanel.scrollToYear(new Year(1893));
-		// FIXME: make myModel an AbstractTableModel, so i don't have to cast
 	}
 
 	public void sampleMetadataChanged(SampleEvent e) {
@@ -907,6 +871,9 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		graphPanel.update();
 	}
 
+	/**
+	 * Initialise the GUI based on the stored preferences
+	 */
 	private void initPrefs() {
 		// reset fonts
 		Font font = App.prefs.getFontPref(PrefKey.EDIT_FONT, null);
@@ -1060,10 +1027,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 
 			
 			((UnitAwareDecadalModel) myModel).setDisplayUnits(NormalTridasUnit.valueOf(pref));
-		}
-		
-		
-		
+		}		
 	}
 
 	/**
@@ -1073,8 +1037,8 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	{
 		log.debug("toggling Remarks panel");
 		
-		int currLoc = splitPane.getDividerLocation();
-		int totalWidth = splitPane.getWidth();
+		int currLoc = splitPaneTableAndRemarks.getDividerLocation();
+		int totalWidth = splitPaneTableAndRemarks.getWidth();
 		
 		log.debug("Currloc     = "+currLoc);
 		log.debug("Total width = " + totalWidth);
@@ -1083,7 +1047,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		if(currLoc+20 >= totalWidth)
 		{
 			log.debug("Panel appears to be shut so open");
-			BasicSplitPaneUI ui = (BasicSplitPaneUI)splitPane.getUI();
+			BasicSplitPaneUI ui = (BasicSplitPaneUI)splitPaneTableAndRemarks.getUI();
 			JButton oneClick = (JButton)ui.getDivider().getComponent(0);
 			oneClick.doClick();
 		}
@@ -1097,7 +1061,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	
 	public void saveRemarksDividerLocation()
 	{
-		App.prefs.setIntPref(PrefKey.EDITOR_REMARKS_DIVIDER_LOCAITON, splitPane.getDividerLocation());
+		App.prefs.setIntPref(PrefKey.EDITOR_REMARKS_DIVIDER_LOCAITON, splitPaneTableAndRemarks.getDividerLocation());
 	}
 	
 	public void restoreRemarksDividerLocation()
@@ -1105,17 +1069,17 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		int newloc = App.prefs.getIntPref(PrefKey.EDITOR_REMARKS_DIVIDER_LOCAITON, 999999);
 		if(newloc!=999999)
 		{
-			splitPane.setDividerLocation(newloc);
+			splitPaneTableAndRemarks.setDividerLocation(newloc);
 		}
 		else
 		{
-			splitPane.setDividerLocation(0.8d);
+			splitPaneTableAndRemarks.setDividerLocation(0.8d);
 		}
 	}
 	
 	public void saveGraphDividerLocation()
 	{
-		App.prefs.setIntPref(PrefKey.EDITOR_GRAPH_DIVIDER_LOCAITON, splitPane.getDividerLocation());
+		App.prefs.setIntPref(PrefKey.EDITOR_GRAPH_DIVIDER_LOCAITON, splitPaneTableAndRemarks.getDividerLocation());
 	}
 	
 	public void restoreGraphDividerLocation()
@@ -1123,11 +1087,11 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		int newloc = App.prefs.getIntPref(PrefKey.EDITOR_GRAPH_DIVIDER_LOCAITON, 999999);
 		if(newloc!=999999)
 		{
-			splitPane.setDividerLocation(newloc);
+			splitPaneTableAndRemarks.setDividerLocation(newloc);
 		}
 		else
 		{
-			splitPane.setDividerLocation(0.2d);
+			splitPaneTableAndRemarks.setDividerLocation(0.2d);
 		}
 	}
 	
@@ -1137,12 +1101,9 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	 */
 	public void hideRemarksPanel()
 	{
-		splitPane.setDividerLocation(1.0);
+		splitPaneTableAndRemarks.setDividerLocation(1.0);
 	}
-	
-	
-	
-	
+
 	/**
 	 * Whole ring width value measured by serial device
 	 * 
@@ -1166,15 +1127,11 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	
 	
 	@Override
-	public void measurementVariableChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void measurementVariableChanged(SampleEvent e) {		
 	}
 
 	@Override
-	public void sampleDisplayCalendarChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void sampleDisplayCalendarChanged(SampleEvent e) {		
 	}
 	
 	private JComponent createGraph(final Dimension otherPanelDim, final int extraWidth) {

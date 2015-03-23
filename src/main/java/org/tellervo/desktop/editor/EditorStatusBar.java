@@ -35,8 +35,6 @@ import javax.swing.event.TableColumnModelListener;
 
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.UnitsChooser;
-import org.tellervo.desktop.gui.ElementsPanel;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.I18n;
@@ -47,14 +45,14 @@ import org.tridas.schema.NormalTridasDatingType;
 
 
 /**
-   An emacs-style modeline for an Editor's data table.
+   An emacs-style statusbar for an Editor's data table.
 
    <p>Displays the currently selected year, and that year's value,
    count, and weiserjahre up/down values.</p>
 
    <p>Watching for row-change-events requires implementing a
    ListSelectionListener, while watching for column-change-events
-   requires implementing a TableColumnModelListener.  One Modeline
+   requires implementing a TableColumnModelListener.  One statusbar
    class can implement them both, though it is incredibly
    non-intuitive.</p>
 
@@ -64,19 +62,6 @@ import org.tridas.schema.NormalTridasDatingType;
 @SuppressWarnings("serial")
 public class EditorStatusBar extends JPanel
                    implements ListSelectionListener, TableColumnModelListener {
-
-/*
-  TODO:
-  -- click on "year:" lets you type in a new year
-  -- (need multiple labels for that?  icon, year, other stuff.  probably, but it's not hard.)
-
-  RENAME:
-  -- "modeline" is an emacs term, because emacs has modes.  tellervo shouldn't really
-  (and doesn't) have modes, so "status bar" ("status line"?) is more appropriate.
-*/
-
-    // icon -- DISABLED until it's good for something.
-    // private Tree icon;
 
     // label
     private JLabel widthLabel;
@@ -98,8 +83,8 @@ public class EditorStatusBar extends JPanel
     private static final String EMPTY = " ";
 
 
-    /** Update the modeline, when a selection change occurs.  The
-	modeline will look something like this:
+    /** Update the statusbar, when a selection change occurs.  The
+	statusbar will look something like this:
 
 	<pre>
 	1001: 52 [3] 2/1

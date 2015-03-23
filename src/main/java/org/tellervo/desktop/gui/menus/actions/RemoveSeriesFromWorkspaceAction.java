@@ -17,7 +17,7 @@ public class RemoveSeriesFromWorkspaceAction extends AbstractAction {
 	protected final static Logger log = LoggerFactory.getLogger(RemoveSeriesFromWorkspaceAction.class);
 
 	public RemoveSeriesFromWorkspaceAction(AbstractEditor editor) {
-        super(I18n.getText("action.removeseriesfromworkspace"), Builder.getIcon("cancel.png", 22));
+        super(I18n.getText("action.removeseriesfromworkspace"), Builder.getIcon("cancel.png", 16));
 		putValue(SHORT_DESCRIPTION, I18n.getText("action.removeseriesfromworkspace.description"));
         this.editor = editor;
 

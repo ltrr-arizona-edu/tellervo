@@ -15,7 +15,7 @@ public class AddSeriesToWorkspaceAction extends AbstractAction {
 	private AbstractEditor editor;
 	
 	public AddSeriesToWorkspaceAction(AbstractEditor editor) {
-        super(I18n.getText("action.addseriestoworkspace"), Builder.getIcon("edit_add.png", 22));
+        super(I18n.getText("action.addseriestoworkspace"), Builder.getIcon("edit_add.png", 16));
 		putValue(SHORT_DESCRIPTION, I18n.getText("action.addseriestoworkspace.description"));
         this.editor = editor;
 

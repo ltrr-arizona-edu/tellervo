@@ -12,8 +12,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.AbstractButton;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -34,7 +37,6 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.menus.EditorActions;
 import org.tellervo.desktop.gui.menus.EditorMenuBar;
-import org.tellervo.desktop.gui.menus.FullEditorMenuBar;
 import org.tellervo.desktop.gui.widgets.TitlelessButton;
 import org.tellervo.desktop.prefs.PrefsListener;
 import org.tellervo.desktop.sample.Sample;
@@ -60,120 +62,109 @@ import org.tridas.schema.TridasTridas;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValues;
 
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-
 public abstract class AbstractEditor extends JFrame implements PrefsListener, SaveableDocument, SampleListener, WindowListener{
 
 	private static final long serialVersionUID = 1L;
 	protected final static Logger log = LoggerFactory.getLogger(AbstractEditor.class);
 
+	protected Window parent;
 	protected JPanel contentPane;
+	private JPanel workspacePanel;
 
-	protected SeriesDataMatrix dataView;
-	private SampleListModel samplesModel;
 	private JList<Sample> lstSamples;
 	protected JPanel dataPanel;
 	protected JTabbedPane tabbedPane;
 	protected EditorActions actions;
-	protected EditorMenuBar menuBar;
+	protected EditorMenuBar menuBar;	
+	protected JButton btnAdd;
+	protected JButton btnRemove;
 	
-	protected Window parent;
 	protected NormalTridasUnit unitsIfNotSpecified = NormalTridasUnit.MICROMETRES;
 	protected AbstractDendroFileReader reader;
 	protected File file;
 	protected String fileType;
-	protected JButton btnAdd;
-	protected JButton btnRemove;
+	protected SeriesDataMatrix dataView;
+	private SampleListModel samplesModel;
 
 
-	public AbstractEditor(Sample sample) {
-
-		init();
-		samplesModel.addElement(sample);
-		itemSelected();
-
-	}
-
-	public AbstractEditor(ArrayList<Sample> samples) {
-
-		init();
-
-		for (Sample sample : samples) {
-			samplesModel.addElement(sample);
-		}
-		itemSelected();
-	}
-
-	public AbstractEditor() {
-
+	protected AbstractEditor() {
 		init();
 	}
-	
-	protected abstract void initActions();
 
 	/**
 	 * Initalise the GUI
 	 */
 	protected void init() {
-		if (!App.isInitialized())
-			App.init();
-
-		setTitle("Tellervo");
 		
+		// Initialize the app (needed for WindowBuilder)
+		if (!App.isInitialized()) App.init();
+
+		// Init the actions class for menus and toolbars
 		initActions();
 
-		
-
+		setTitle("Tellervo");
 		this.setIconImage(Builder.getApplicationIcon());
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-
+		this.setExtendedState( JFrame.MAXIMIZED_BOTH );
+		this.setMinimumSize(new Dimension(640, 480));
+		this.addWindowListener(this);
+		
+		// Setup the main content pane
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 		contentPane.setLayout(new MigLayout("", "[424px,grow,fill]",
 				"[20px:20.00px][32px:32.00px:32px][214px,grow,fill]"));
 
-		JSplitPane splitPane = new JSplitPane();
-		splitPane.setOneTouchExpandable(true);
-		splitPane.setResizeWeight(0.0);
-		contentPane.add(splitPane, "cell 0 2,grow");
-
-		JPanel workspacePanel = new JPanel();
-		splitPane.setLeftComponent(workspacePanel);
-
+		// Setup the main split between workspace and content
+		JSplitPane splitPaneWorkspaceAndContent = new JSplitPane();
+		splitPaneWorkspaceAndContent.setOneTouchExpandable(true);
+		splitPaneWorkspaceAndContent.setResizeWeight(0.0);
+		contentPane.add(splitPaneWorkspaceAndContent, "cell 0 2,grow");
 
 		samplesModel = new SampleListModel();
 
+		// Setup the workspace panel and add
+		initWorkspacePanel();
+		splitPaneWorkspaceAndContent.setLeftComponent(workspacePanel);
+		
+		// Setup the main content panel and add
+		JPanel panelMain = new JPanel();
+		splitPaneWorkspaceAndContent.setRightComponent(panelMain);
+		panelMain.setLayout(new MigLayout("", "[grow,fill]", "[grow,fill]"));
+		tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
+		panelMain.add(tabbedPane, "cell 0 0,grow");
+		dataPanel = new JPanel();
+		tabbedPane.addTab("Data", Builder.getIcon("data.png", 16), dataPanel, null);
+		dataPanel.setLayout(new BorderLayout(0, 0));
+		
 
-		// model.addElement(sampleList);
+		initMenu();
+		initToolbar();
 
+	}
+
+	private void initWorkspacePanel() {
+		// Setup the workspace panel
+		workspacePanel = new JPanel();
+		
 		workspacePanel.setLayout(new MigLayout("", "[125.00,grow,fill][32.00][20.00,leading]", "[][235px,grow,baseline][fill]"));
-		
 		workspacePanel.setMinimumSize(new Dimension(240,10));
-		
 		btnRemove = new TitlelessButton(actions.removeSeriesAction);
-		btnAdd = new TitlelessButton(actions.addSeriesAction);
-						
-						
-						JLabel lblSeries = new JLabel("Series:");
-						workspacePanel.add(lblSeries, "cell 0 0");
-						btnAdd.setIcon(Builder.getIcon("edit_add.png", 16));
-						workspacePanel.add(btnAdd, "cell 1 0");
-				btnRemove.setIcon(Builder.getIcon("cancel.png", 16));
-				workspacePanel.add(btnRemove, "cell 2 0");
-
+		btnAdd = new TitlelessButton(actions.addSeriesAction);	
+		JLabel lblSeries = new JLabel("Series:");
+		workspacePanel.add(lblSeries, "cell 0 0");
+		workspacePanel.add(btnAdd, "cell 1 0");
+		workspacePanel.add(btnRemove, "cell 2 0");
 		JScrollPane scrollPane = new JScrollPane();
 		workspacePanel.add(scrollPane, "cell 0 1 3 1,grow");
-		
 		lstSamples = new JList<Sample>(samplesModel);
-		scrollPane.setViewportView(lstSamples);
 		lstSamples.setValueIsAdjusting(true);
-
 		lstSamples.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lstSamples.setLayoutOrientation(JList.VERTICAL);
 		lstSamples.setVisibleRowCount(10);
+		scrollPane.setViewportView(lstSamples);
+
 		
 		JPanel panel = new JPanel();
 		workspacePanel.add(panel, "cell 0 2 3 1,grow");
@@ -182,8 +173,8 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		JLabel lblSortBy = new JLabel("Sort:");
 		panel.add(lblSortBy, "cell 0 0,alignx trailing");
 		
-		final JComboBox comboBox = new JComboBox();
-		comboBox.setModel(new DefaultComboBoxModel(new String[] {"None", "Title (asc.)", "Title (desc.)", "Start year (asc.)", "Start year (desc.)", "End year (asc.)", "End year (desc.)", "Length (asc.)", "Length (desc.)"}));
+		final JComboBox<String> comboBox = new JComboBox<String>();
+		comboBox.setModel(new DefaultComboBoxModel<String>(new String[] {"None", "Title (asc.)", "Title (desc.)", "Start year (asc.)", "Start year (desc.)", "End year (asc.)", "End year (desc.)", "Length (asc.)", "Length (desc.)"}));
 		panel.add(comboBox, "cell 1 0,growx");
 
 		lstSamples.addListSelectionListener(new ListSelectionListener() {
@@ -239,24 +230,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 				}
 			}
 		});
-		JPanel panelMain = new JPanel();
-		splitPane.setRightComponent(panelMain);
-		panelMain.setLayout(new MigLayout("", "[grow,fill]", "[grow,fill]"));
-
-		tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
-		panelMain.add(tabbedPane, "cell 0 0,grow");
-
-		dataPanel = new JPanel();
-		tabbedPane.addTab("Data", Builder.getIcon("data.png", 16), dataPanel, null);
-		dataPanel.setLayout(new BorderLayout(0, 0));
-		dataPanel.setMinimumSize(new Dimension(800, 300));
-
-		initMenu();
-		initToolbar();
 		
-		this.setExtendedState( JFrame.MAXIMIZED_BOTH );
-		this.addWindowListener(this);
-
 	}
 
 	protected abstract void initMenu() ;
@@ -395,15 +369,6 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		}
 	}
 
-	
-
-
-	/**
-	 * A sample was selected from the list
-	 */
-	public abstract void itemSelected();
-
-	
 	/**
 	 * Parse a legacy data file to extract data for display in the editor
 	 */
@@ -624,55 +589,66 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		return samplesList;	
 	}
 	
-	@Override
-	public void sampleRedated(SampleEvent e) {
-		// TODO Auto-generated method stub
+	/**
+	 * Get the ListModel for the samples edited by this editor 
+	 * 
+	 * @return
+	 */
+	public SampleListModel getSamplesModel() {
+		return samplesModel;
+	}
+	
+	/**
+	 * Get the samples JList
+	 * 
+	 * @return
+	 */
+	public JList<Sample> getLstSamples() {
+		return lstSamples;
+	}
+	
+	/**
+	 * A sample was selected from the list
+	 */
+	public abstract void itemSelected();
+	
+	/**
+	 * Dispose of this editor after doing any necessary housekeeping
+	 */
+	public abstract void cleanupAndDispose();
+	
+	/**
+	 * Initalise the actions used by the menus and toolbar
+	 */
+	protected abstract void initActions();
 		
+	@Override
+	public void sampleRedated(SampleEvent e) {		
 	}
 
 	@Override
-	public void sampleDataChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void sampleDataChanged(SampleEvent e) {		
 	}
 
 	@Override
 	public void sampleMetadataChanged(SampleEvent e) {
 		this.lstSamples.repaint();
-		
 	}
 
 	@Override
-	public void sampleElementsChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void sampleElementsChanged(SampleEvent e) {		
 	}
 
 	@Override
-	public void sampleDisplayUnitsChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void sampleDisplayUnitsChanged(SampleEvent e) {		
 	}
 
 	@Override
-	public void sampleDisplayCalendarChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void sampleDisplayCalendarChanged(SampleEvent e) {		
 	}
 
 	@Override
-	public void measurementVariableChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void measurementVariableChanged(SampleEvent e) {		
 	}
 
-	public SampleListModel getSamplesModel() {
-		return samplesModel;
-	}
-
-	public JList<Sample> getLstSamples() {
-		return lstSamples;
-	}
-
-	public abstract void cleanupAndDispose();
 }
