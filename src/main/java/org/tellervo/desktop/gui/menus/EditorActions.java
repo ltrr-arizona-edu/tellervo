@@ -69,6 +69,11 @@ import org.tellervo.desktop.gui.menus.actions.HelpXMLCommunicationsViewerAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.RemoveSeriesFromWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsIndexAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsReconcileAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsRedateAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsReverseAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsSumAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsTruncateAction;
 import org.tellervo.desktop.io.control.IOController;
 import org.tellervo.desktop.sample.Sample;
@@ -133,7 +138,13 @@ public abstract class EditorActions {
 
 	// Tools menu action
 	public Action toolsTruncateAction;
+	public Action toolsReverseAction;
+	public Action toolsReconcileAction;
+	public Action toolsIndexAction;
+	public Action toolsSumAction;
+	public Action toolsRedateAction;
 	public Action toolsCrossdateAction;
+	
 
 	// Graph menu action
 	public Action graphCurrentSeriesAction;
@@ -222,6 +233,11 @@ public abstract class EditorActions {
 		adminSiteMapAction = new AdminSiteMapAction();
 
 		toolsTruncateAction = new ToolsTruncateAction(editor);
+		toolsReverseAction = new ToolsReverseAction(editor);
+		toolsReconcileAction = new ToolsReconcileAction(editor);
+		toolsIndexAction = new ToolsIndexAction(editor);
+		toolsSumAction = new ToolsSumAction(editor);
+		toolsRedateAction = new ToolsRedateAction(editor);
 		toolsCrossdateAction = new ToolsCrossdateAction(editor);
 
 		graphCurrentSeriesAction = new GraphCurrentSeriesAction(editor);

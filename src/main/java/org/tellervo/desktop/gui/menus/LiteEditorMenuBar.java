@@ -97,6 +97,19 @@ public class LiteEditorMenuBar extends EditorMenuBar{
 		mnEdit.add(miPreferences);
 
 		add(mnEdit);
+		
+		// TOOLS MENU
+		
+		JMenu mnTools = new JMenu("Tools");
+		add(mnTools);
+		
+		JMenuItem miToolsTruncate = new JMenuItem(actions.toolsTruncateAction);
+		mnTools.add(miToolsTruncate);
+		
+		JMenuItem miToolsReverse = new JMenuItem(actions.toolsReverseAction);
+		mnTools.add(miToolsReverse);
+		
+
 
 		
 		// GRAPH MENU

@@ -264,7 +264,22 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		
 		miToolsTruncate = new JMenuItem(actions.toolsTruncateAction);
 		mnTools.add(miToolsTruncate);
-
+		
+		JMenuItem miToolsReverse = new JMenuItem(actions.toolsReverseAction);
+		mnTools.add(miToolsReverse);
+		
+		JMenuItem miToolsReconcile = new JMenuItem(actions.toolsReconcileAction);
+		mnTools.add(miToolsReconcile);
+		
+		JMenuItem miToolsIndex = new JMenuItem(actions.toolsIndexAction);
+		mnTools.add(miToolsIndex);
+		
+		JMenuItem miToolsSum = new JMenuItem(actions.toolsSumAction);
+		mnTools.add(miToolsSum);
+		
+		JMenuItem miToolsRedate = new JMenuItem(actions.toolsRedateAction);
+		mnTools.add(miToolsRedate);
+		
 		miToolsCrossdate = new JMenuItem(actions.toolsCrossdateAction);
 		mnTools.add(miToolsCrossdate);
 		
