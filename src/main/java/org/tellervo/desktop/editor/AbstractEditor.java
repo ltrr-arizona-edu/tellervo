@@ -235,51 +235,9 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 
 	protected abstract void initMenu() ;
 
-	protected void initToolbar() {
-
-		JToolBar toolBar = new JToolBar();
-
-		// File Buttons
-		AbstractButton fileOpen = new TitlelessButton(actions.fileOpenAction);
-		toolBar.add(fileOpen);
-
-		AbstractButton save = new TitlelessButton(actions.fileSaveAction);
-		toolBar.add(save);
-
-		AbstractButton fileexport = new TitlelessButton(actions.fileExportDataAction);
-		toolBar.add(fileexport);
-
-		// Edit Buttons
-		AbstractButton measure = new TitlelessButton(actions.editMeasureAction);
-		toolBar.add(measure);
-
-		// Initialize data grid button
-		AbstractButton initGrid = new TitlelessButton(actions.editInitGridAction);
-		toolBar.add(initGrid);
-
-		// Remarks Button
-		AbstractButton toggleRemarks = new TitlelessButton(actions.remarkAction);
-		toolBar.add(toggleRemarks);
-
-		// Admin Buttons
-		toolBar.addSeparator();
-		AbstractButton launchMetadb = new TitlelessButton(actions.adminMetaDBAction);
-		toolBar.add(launchMetadb);
-
-		// s Buttons
-		toolBar.addSeparator();
-		AbstractButton truncate = new TitlelessButton(actions.toolsTruncateAction);
-		toolBar.add(truncate);
-
-		// Graph Buttons
-		toolBar.addSeparator();
-		AbstractButton graph = new TitlelessButton(actions.graphAllSeriesAction);
-		toolBar.add(graph);
-
-		contentPane.add(toolBar, "cell 0 1,growx,aligny top");
-
-	}
-
+	protected abstract void initToolbar();
+	
+	
 	/**
 	 * Instruct the GUI to stop measuring and hide the measurement panel etc.
 	 */

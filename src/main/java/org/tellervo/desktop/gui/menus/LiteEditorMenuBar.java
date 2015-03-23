@@ -1,34 +1,16 @@
 package org.tellervo.desktop.gui.menus;
 
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.File;
 
-import javax.swing.JFileChooser;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
-import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.core.AppModel;
-import org.tellervo.desktop.gui.seriesidentity.IdentifySeriesPanel;
-import org.tellervo.desktop.io.view.ImportView;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
-import org.tridas.io.AbstractDendroFileReader;
-import org.tridas.io.DendroFileFilter;
-import org.tridas.io.TridasIO;
 
 public class LiteEditorMenuBar extends EditorMenuBar{
 
 	private static final long serialVersionUID = 1L;
-	private JMenuItem miLogoff;
-	private JMenuItem miLogon;
 		
 	public LiteEditorMenuBar(LiteEditorActions actions, Window editor)
 	{
@@ -116,11 +98,6 @@ public class LiteEditorMenuBar extends EditorMenuBar{
 		mnEdit.add(miPreferences);
 
 		add(mnEdit);
-		
-		
-	
-	
-
 
 		
 		// GRAPH MENU
@@ -129,15 +106,10 @@ public class LiteEditorMenuBar extends EditorMenuBar{
 		
 		JMenuItem miCurrentSeries = new JMenuItem(actions.graphCurrentSeriesAction);
 		mnGraph.add(miCurrentSeries);
-		
-	 
-	    
+
 	    JMenuItem miAllSeries = new JMenuItem(actions.graphAllSeriesAction);
 	    mnGraph.add(miAllSeries);
-	    
-	    JMenuItem miCreateFileHistoryPlot = new JMenuItem(actions.graphCreateFileHistoryPlotAction);
-	    mnGraph.add(miCreateFileHistoryPlot);
-	    
+	    	    
 		add(mnGraph);
 
 		

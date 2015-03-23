@@ -7,6 +7,7 @@ import org.tellervo.desktop.gui.menus.actions.FileLogoffAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogonAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAllAction;
+import org.tellervo.desktop.gui.menus.actions.GraphCreateFileHistoryPlotAction;
 
 public class FullEditorActions extends EditorActions {
 
@@ -14,7 +15,8 @@ public class FullEditorActions extends EditorActions {
 	public Action filePrintAction;
 	public Action fileLogoffAction;
 	public Action fileLogonAction;
-	
+	public Action graphCreateFileHistoryPlotAction;
+
 	public FullEditorActions(FullEditor editor)
 	{
 		super(editor);
@@ -27,6 +29,9 @@ public class FullEditorActions extends EditorActions {
 		filePrintAction = new FilePrintAction(editor);
 		fileLogoffAction = new FileLogoffAction();
 		fileLogonAction = new FileLogonAction();
+		
+		graphCreateFileHistoryPlotAction = new GraphCreateFileHistoryPlotAction(editor);
+
 	}
 	
 	

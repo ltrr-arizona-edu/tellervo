@@ -7,15 +7,18 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.swing.AbstractButton;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import org.apache.commons.io.FilenameUtils;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.menus.LiteEditorActions;
 import org.tellervo.desktop.gui.menus.LiteEditorMenuBar;
+import org.tellervo.desktop.gui.widgets.TitlelessButton;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.io.Metadata;
@@ -643,6 +646,43 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		
 		menuBar = new LiteEditorMenuBar((LiteEditorActions) actions, this);
 		contentPane.add(menuBar, "cell 0 0,growx,aligny top");
+
+	}
+	
+	protected void initToolbar() {
+
+		JToolBar toolBar = new JToolBar();
+
+		// File Buttons
+		AbstractButton fileOpen = new TitlelessButton(actions.fileOpenAction);
+		toolBar.add(fileOpen);
+
+		AbstractButton save = new TitlelessButton(actions.fileSaveAction);
+		toolBar.add(save);
+
+		// Edit Buttons
+		AbstractButton measure = new TitlelessButton(actions.editMeasureAction);
+		toolBar.add(measure);
+
+		// Initialize data grid button
+		AbstractButton initGrid = new TitlelessButton(actions.editInitGridAction);
+		toolBar.add(initGrid);
+
+		// Remarks Button
+		AbstractButton toggleRemarks = new TitlelessButton(actions.remarkAction);
+		toolBar.add(toggleRemarks);
+
+		// Tools Buttons
+		toolBar.addSeparator();
+		AbstractButton truncate = new TitlelessButton(actions.toolsTruncateAction);
+		toolBar.add(truncate);
+
+		// Graph Buttons
+		toolBar.addSeparator();
+		AbstractButton graph = new TitlelessButton(actions.graphAllSeriesAction);
+		toolBar.add(graph);
+
+		contentPane.add(toolBar, "cell 0 1,growx,aligny top");
 
 	}
 

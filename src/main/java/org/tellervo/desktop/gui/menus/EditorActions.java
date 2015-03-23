@@ -132,7 +132,6 @@ public abstract class EditorActions {
 	public Action graphCurrentSeriesAction;
 	public Action graphComponentSeriesAction;
 	public Action graphAllSeriesAction;
-	public Action graphCreateFileHistoryPlotAction;
 	
 	// Toolbar only actions
 	public Action remarkAction;
@@ -221,7 +220,6 @@ public abstract class EditorActions {
 		graphCurrentSeriesAction = new GraphCurrentSeriesAction(editor);
 		graphComponentSeriesAction = new GraphComponentSeriesAction(editor);
 		graphAllSeriesAction = new GraphAllSeriesAction(editor);
-		graphCreateFileHistoryPlotAction = new GraphCreateFileHistoryPlotAction(editor);
 		
 		helpHelpContentsAction = new HelpHelpContentsAction();
 		helpVideoIntroAction = new HelpVideoTutorialsAction("Introduction");

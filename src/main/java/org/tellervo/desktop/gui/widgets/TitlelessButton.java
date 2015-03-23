@@ -5,8 +5,11 @@ import javax.swing.JButton;
 
 public class TitlelessButton extends JButton {
 
+	private static final long serialVersionUID = 1L;
+
 	public TitlelessButton(Action action) {
 		super(action);
+		this.setFocusable(false);
 	}
 	
 	@Override

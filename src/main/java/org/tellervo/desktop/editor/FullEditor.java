@@ -7,9 +7,11 @@ import java.awt.Dimension;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
+import javax.swing.AbstractButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GISPanel;
@@ -17,6 +19,7 @@ import org.tellervo.desktop.gis.TridasMarkerLayerBuilder;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.menus.FullEditorActions;
 import org.tellervo.desktop.gui.menus.FullEditorMenuBar;
+import org.tellervo.desktop.gui.widgets.TitlelessButton;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.sample.Sample;
@@ -315,6 +318,51 @@ public class FullEditor extends AbstractEditor {
 				this.repaint();
 			}
 	
+	}
+	
+	protected void initToolbar() {
+
+		JToolBar toolBar = new JToolBar();
+
+		// File Buttons
+		AbstractButton fileOpen = new TitlelessButton(actions.fileOpenAction);
+		toolBar.add(fileOpen);
+
+		AbstractButton save = new TitlelessButton(actions.fileSaveAction);
+		toolBar.add(save);
+
+		AbstractButton fileexport = new TitlelessButton(actions.fileExportDataAction);
+		toolBar.add(fileexport);
+
+		// Edit Buttons
+		AbstractButton measure = new TitlelessButton(actions.editMeasureAction);
+		toolBar.add(measure);
+
+		// Initialize data grid button
+		AbstractButton initGrid = new TitlelessButton(actions.editInitGridAction);
+		toolBar.add(initGrid);
+
+		// Remarks Button
+		AbstractButton toggleRemarks = new TitlelessButton(actions.remarkAction);
+		toolBar.add(toggleRemarks);
+
+		// Admin Buttons
+		toolBar.addSeparator();
+		AbstractButton launchMetadb = new TitlelessButton(actions.adminMetaDBAction);
+		toolBar.add(launchMetadb);
+
+		// s Buttons
+		toolBar.addSeparator();
+		AbstractButton truncate = new TitlelessButton(actions.toolsTruncateAction);
+		toolBar.add(truncate);
+
+		// Graph Buttons
+		toolBar.addSeparator();
+		AbstractButton graph = new TitlelessButton(actions.graphAllSeriesAction);
+		toolBar.add(graph);
+
+		contentPane.add(toolBar, "cell 0 1,growx,aligny top");
+
 	}
 	
 	/**
