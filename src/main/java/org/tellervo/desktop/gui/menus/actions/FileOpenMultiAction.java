@@ -21,8 +21,7 @@ public class FileOpenMultiAction extends AbstractAction{
 	
 	
 	public FileOpenMultiAction(Window parent) {
-        super(I18n.getText("menus.file.open"), Builder.getIcon("fileopen.png", 22));
-        //super("Open multiple", Builder.getIcon("folder_documents.png", 22));
+        super(I18n.getText("menus.file.openmulti"), Builder.getIcon("fileopen.png", 22));
 		putValue(SHORT_DESCRIPTION, "Open multiple series");
         putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.openmulti")); 
         putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.openmulti"));

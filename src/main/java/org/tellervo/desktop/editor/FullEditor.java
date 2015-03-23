@@ -1,18 +1,36 @@
 package org.tellervo.desktop.editor;
 
+import gov.nasa.worldwind.View;
+import gov.nasa.worldwind.WorldWindow;
+import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.avlist.AVList;
+import gov.nasa.worldwind.geom.ExtentHolder;
+import gov.nasa.worldwind.geom.LatLon;
+import gov.nasa.worldwind.geom.Position;
+import gov.nasa.worldwind.geom.Vec4;
+import gov.nasa.worldwind.globes.Globe;
 import gov.nasa.worldwind.layers.MarkerLayer;
+import gov.nasa.worldwind.render.markers.Marker;
+import gov.nasa.worldwind.util.Logging;
+import gov.nasa.worldwindx.examples.util.ExtentVisibilitySupport;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+
+import java.awt.Rectangle;
+
 import java.awt.event.ActionEvent;
+
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.swing.AbstractButton;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GISPanel;
@@ -103,9 +121,23 @@ public class FullEditor extends AbstractEditor {
 		tabbedPane.addTab("DependentsViewer", Builder.getIcon("dependent.png", 16), dependentHolder, null);
 		tabbedPane.addTab("Map", Builder.getIcon("maptab.png", 16), mapHolder, null);
 		
+			
 		itemSelected();
 		initPopupMenu();
 
+		
+		tabbedPane.addChangeListener(new ChangeListener(){
+
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				if(tabbedPane.getSelectedIndex()==4)
+				{
+
+					zoomToExtent();
+				}
+			}
+			
+		});
 		
 	}
 	
@@ -232,17 +264,6 @@ public class FullEditor extends AbstractEditor {
 	}
 
 	@Override
-	public void setFilename(String fn) {
-		// Irrelevant
-	}
-
-	@Override
-	public String getFilename() {
-		// Irrelevant
-		return null;
-	}
-
-	@Override
 	public Object getSavedDocument() {
 		return null;
 	}
@@ -319,7 +340,6 @@ public class FullEditor extends AbstractEditor {
 				}
 				
 				setTitle();
-				this.pack();
 				this.repaint();
 			}
 	
@@ -526,6 +546,140 @@ public class FullEditor extends AbstractEditor {
 	@Override
 	public void windowOpened(WindowEvent e) {	
 	}
+
+	/**
+	 * Animate zoom to the extent of all pins on the map 
+	 */
+	public void zoomToExtent()
+	{
+		log.debug("Zooming to object...");
+		WorldWindow wwd = this.wwMapPanel.getWwd();
+		if(wwd.getView().getGlobe() == null) return;
+		
+        Logging.logger().info("Zooming to Matterhorn");
+		Iterable<Marker> markers = this.wwMapPanel.getMarkerLayer().getMarkers();
+
+        View view = wwd.getView();
+
+		int count = 0;
+		
+		for(Marker marker : markers)
+		{
+			count++;
+		}
+		
+		if(count==0)
+		{
+			log.debug("No markers so can't zoom");
+			return;
+		}
+		if(count==1)
+		{
+			log.debug("Zooming to single marker");
+
+			for(Marker marker : markers)
+			{
+			         view.goTo(marker.getPosition(), 500000d);
+			         return;
+			
+			}
+			
+    		return;
+
+		}
+		
+		
+		
+		 Vec4[] lookAtPoints = this.computeViewLookAtForScene(wwd.getView());
+         if (lookAtPoints == null)
+        {
+             return;
+
+        	}
+        
+         else if (lookAtPoints.length != 3)
+         {
+        	 
+        	 
+        	 
+        	 return;
+         }
+
+         Position centerPos = wwd.getModel().getGlobe().computePositionFromPoint(lookAtPoints[1]);
+         double zoom = lookAtPoints[0].distanceTo3(lookAtPoints[1]);
+
+         wwd.getView().stopAnimations();
+         wwd.getView().goTo(centerPos, zoom);
+         
+	}
+	
+    public Vec4[] computeViewLookAtForScene(View view)
+    {
+    	WorldWindow wwd = this.wwMapPanel.getWwd();
+        Globe globe = wwd.getModel().getGlobe();
+        
+        if(globe==null) return null;
+        
+        double ve = wwd.getSceneController().getVerticalExaggeration();
+
+        ExtentVisibilitySupport vs = new ExtentVisibilitySupport();
+        this.addExtents(vs);
+
+        return vs.computeViewLookAtContainingExtents(globe, ve, view);
+    }
+	
+    protected void addExtents(ExtentVisibilitySupport vs)
+    {
+    	WorldWindow wwd = this.wwMapPanel.getWwd();
+
+    	
+        // Compute screen extents for WWIcons which have feedback information from their IconRenderer.
+        Iterable<?> iterable = this.wwMapPanel.getMarkerLayer().getMarkers();
+        if (iterable == null)
+            return;
+
+        ArrayList<ExtentHolder> extentHolders = new ArrayList<ExtentHolder>();
+        ArrayList<ExtentVisibilitySupport.ScreenExtent> screenExtents =
+            new ArrayList<ExtentVisibilitySupport.ScreenExtent>();
+
+        for (Object o : iterable)
+        {
+            if (o == null)
+                continue;
+
+            if (o instanceof ExtentHolder)
+            {
+                extentHolders.add((ExtentHolder) o);
+            }
+            else if (o instanceof AVList)
+            {
+                AVList avl = (AVList) o;
+
+                Object b = avl.getValue(AVKey.FEEDBACK_ENABLED);
+                if (b == null || !Boolean.TRUE.equals(b))
+                    continue;
+
+                if (avl.getValue(AVKey.FEEDBACK_REFERENCE_POINT) != null)
+                {
+                    screenExtents.add(new ExtentVisibilitySupport.ScreenExtent(
+                        (Vec4) avl.getValue(AVKey.FEEDBACK_REFERENCE_POINT),
+                        (Rectangle) avl.getValue(AVKey.FEEDBACK_SCREEN_BOUNDS)));
+                }
+            }
+        }
+
+        if (!extentHolders.isEmpty())
+        {
+            Globe globe = wwd.getModel().getGlobe();
+            double ve = wwd.getSceneController().getVerticalExaggeration();
+            vs.setExtents(ExtentVisibilitySupport.extentsFromExtentHolders(extentHolders, globe, ve));
+        }
+
+        if (!screenExtents.isEmpty())
+        {
+            vs.setScreenExtents(screenExtents);
+        }
+    }
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

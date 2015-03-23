@@ -76,7 +76,7 @@ public class GISPanel extends JPanel implements SelectListener{
         protected Boolean failedRetest;
         protected ViewControlsLayer viewControlsLayer;
         protected Boolean isMiniMap = false;
-        
+        private MarkerLayer markerLayer;
         
         public Boolean isMiniMap()
         {
@@ -88,10 +88,17 @@ public class GISPanel extends JPanel implements SelectListener{
         	isMiniMap = b;
         }
         
-        public GISPanel(Dimension canvasSize, boolean includeStatusBar, MarkerLayer ly)
+        public MarkerLayer getMarkerLayer()
+        {
+        	return markerLayer;
+        }
+        
+        public GISPanel(Dimension canvasSize, boolean includeStatusBar, MarkerLayer markerLyr)
         {
         	super(new BorderLayout());
         
+        	this.markerLayer = markerLyr;
+        	
         	
         	try{
 	        	if(App.prefs.getBooleanPref(PrefKey.OPENGL_FAILED, false))
@@ -102,7 +109,7 @@ public class GISPanel extends JPanel implements SelectListener{
 	        	}
 	        	            
 	        	setupGui(canvasSize, includeStatusBar);
-	        	addLayer(ly);
+	        	addLayer(markerLayer);
 	        	
 	            this.annotationLayer = new RenderableLayer();
 	            annotationLayer.setName("Popup information");
@@ -213,6 +220,7 @@ public class GISPanel extends JPanel implements SelectListener{
  
         public void addLayer(MarkerLayer layer)
         {
+        	markerLayer = layer;
         	ApplicationTemplate.insertBeforePlacenames(this.getWwd(), layer);
         }
         

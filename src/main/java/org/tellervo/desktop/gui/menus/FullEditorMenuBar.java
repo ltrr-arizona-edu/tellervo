@@ -3,18 +3,14 @@ package org.tellervo.desktop.gui.menus;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.core.AppModel;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.seriesidentity.IdentifySeriesPanel;
 import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -63,54 +59,52 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	JMenuItem miComponentSeries;
 	private JMenuItem miToolsCrossdate;
 	private JMenuItem miToolsTruncate;
+	private JMenuItem miNew;
+	private JMenuItem miOpen;
+	private JMenu openrecent;
+	private JMenuItem miSave;
+	private JMenuItem miSaveAs;
+	private JMenuItem miPrint;
 
 	
-	public FullEditorMenuBar(FullEditorActions actions, Window editor)
+	public FullEditorMenuBar(FullEditorActions actions, FullEditor editor)
 	{
         super(actions, editor);
         
 		// FILE MENU
 		JMenu mnFile = new JMenu("File");
 
-		JMenuItem miNew = new JMenuItem(actions.fileNewAction);
+		miNew = new JMenuItem(actions.fileNewAction);
 		mnFile.add(miNew);
 
-		JMenuItem miOpen = new JMenuItem(actions.fileOpenAction);
+		miOpen = new JMenuItem(actions.fileOpenAction);
 		mnFile.add(miOpen);
 
 		miOpenMulti = new JMenuItem(actions.fileOpenMultiAction);
 		mnFile.add(miOpenMulti);
 		
-		JMenu openrecent = OpenRecent.makeOpenRecentMenu();
+		openrecent = OpenRecent.makeOpenRecentMenu();
 		mnFile.add(openrecent);
 		
 		mnFile.addSeparator();
-
 		
 		mnFile.add(getImportDataOnlyMenu());
-		mnFile.add(getImportDataAndMetadataMenu());
-
+		//mnFile.add(getImportDataAndMetadataMenu());
 
 		miExportData = new JMenuItem(actions.fileExportDataAction);
 		mnFile.add(miExportData);
-
-		// JMenuItem miExportMap = new JMenuItem(actions.fileExportMapAction);
-		// mnFile.add(miExportMap);
-
-		mnFile.addSeparator();
-
 		
 		miBulkDataEntry = new JMenuItem(actions.fileBulkDataEntryAction);
 		mnFile.add(miBulkDataEntry);
 
 		miDesignODKForm = new JMenuItem(actions.fileDesignODKFormAction);
 		mnFile.add(miDesignODKForm);
-
-		JMenuItem miSave = new JMenuItem(actions.fileSaveAction);
-		mnFile.add(miSave);
 		
-		JMenuItem miSaveAs = new JMenuItem(actions.fileSaveAsAction);
-		mnFile.add(miSaveAs);
+		mnFile.addSeparator();
+
+
+		miSave = new JMenuItem(actions.fileSaveAction);
+		mnFile.add(miSave);
 		
 		try{
 			JMenuItem miSaveAll = new JMenuItem(actions.fileSaveAllAction);
@@ -122,7 +116,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 
 		mnFile.addSeparator();
 
-		JMenuItem miPrint = new JMenuItem(actions.filePrintAction);
+		miPrint = new JMenuItem(actions.filePrintAction);
 		mnFile.add(miPrint);
 
 		mnFile.addSeparator();
@@ -133,6 +127,9 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		miLogon = new JMenuItem(actions.fileLogonAction);
 		mnFile.add(miLogon);
 
+		mnFile.addSeparator();
+
+		
 		JMenuItem miExit = new JMenuItem(actions.fileExitAction);
 		mnFile.add(miExit);
 
@@ -166,17 +163,20 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		JMenuItem miInsertMissingRingPushBackwards = new JMenuItem(actions.editInsertMissingRingPushBackwardsAction);
 		mnEdit.add(miInsertMissingRingPushBackwards);
 
-		JMenuItem miDeleteYear = new JMenuItem(actions.editDeleteAction);
-		mnEdit.add(miDeleteYear);
-
 		JMenuItem miInsertYears = new JMenuItem(actions.editInsertYearsAction);
 		mnEdit.add(miInsertYears);
 
+		
+		JMenuItem miDeleteYear = new JMenuItem(actions.editDeleteAction);
+		mnEdit.add(miDeleteYear);
+		
 		mnEdit.addSeparator();
 
 		JMenuItem miInitializeDataGrid = new JMenuItem(actions.editInitGridAction);
 		mnEdit.add(miInitializeDataGrid);
 
+		mnEdit.add(this.getMeasureModeMenu());
+		
 		JMenuItem miStartMeasuring = new JMenuItem(actions.editMeasureAction);
 		mnEdit.add(miStartMeasuring);
 
@@ -252,6 +252,9 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		
 		mnView = new JMenu("View");
 		add(mnView);
+		
+		JMenuItem mnViewExtent = new JMenuItem(actions.viewZoomToExtent);
+		mnView.add(mnViewExtent);
 
 		
 		// TOOLS MENU
@@ -372,6 +375,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		
 		
 		add(mnHelp);
+
 		
 
 	}
@@ -434,6 +438,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		}
 	
 		return fileimport;
+		
 		
 	}
 	
@@ -501,19 +506,6 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		}
 		return fileimportdataonly;
 	}
-	
-
-
-	
-	private void setGUILoggedIn(Boolean loggedin)
-	{
-		this.miLogon.setVisible(loggedin);
-		this.miLogoff.setVisible(!loggedin);
-	}
-	
-
-	
-
 	
 
 }

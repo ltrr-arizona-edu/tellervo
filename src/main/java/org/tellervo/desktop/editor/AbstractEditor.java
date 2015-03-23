@@ -106,9 +106,6 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		// Initialize the app (needed for WindowBuilder)
 		if (!App.isInitialized()) App.init();
 
-		// Init the actions class for menus and toolbars
-		initActions();
-
 		setTitle("Tellervo");
 		this.setIconImage(Builder.getApplicationIcon());
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -146,9 +143,14 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		dataPanel.setLayout(new BorderLayout(0, 0));
 		
 
+		// Init the actions class for menus and toolbars
+		initActions();
 		initMenu();
 		initToolbar();
 		
+		btnRemove.setAction(actions.removeSeriesAction);
+		btnAdd.setAction(actions.addSeriesAction);	
+
 
 	}
 
@@ -158,8 +160,10 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		
 		workspacePanel.setLayout(new MigLayout("", "[125.00,grow,fill][32.00][20.00,leading]", "[][235px,grow,baseline][fill]"));
 		workspacePanel.setMinimumSize(new Dimension(240,10));
-		btnRemove = new TitlelessButton(actions.removeSeriesAction);
-		btnAdd = new TitlelessButton(actions.addSeriesAction);	
+
+		
+		btnRemove = new TitlelessButton(null);
+		btnAdd = new TitlelessButton(null);	
 		JLabel lblSeries = new JLabel("Series:");
 		workspacePanel.add(lblSeries, "cell 0 0");
 		workspacePanel.add(btnAdd, "cell 1 0");
@@ -550,6 +554,8 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 				return;
 			}
 		}
+		
+		getSamplesModel().setDirty(false);
 	}
 	
 	

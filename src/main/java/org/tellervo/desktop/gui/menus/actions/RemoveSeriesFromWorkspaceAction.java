@@ -27,11 +27,23 @@ public class RemoveSeriesFromWorkspaceAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 	
 		try{
+			int selind = editor.getLstSamples().getSelectedIndex();
 			editor.getSamplesModel().remove(editor.getLstSamples().getSelectedIndex());
+			int count = editor.getSamplesModel().getSize();
+			if(selind<count) {
+				editor.getLstSamples().setSelectedIndex(selind);
+			}
+			else
+			{
+				editor.getLstSamples().setSelectedIndex(editor.getLstSamples().getLastVisibleIndex());
+			}
+			
 			editor.getLstSamples().repaint();
+			editor.itemSelected();
 		} catch (Exception ex)
 		{
 			log.error("Error removing sample from workspace");
+			
 		}
 	}
 

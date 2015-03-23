@@ -1,18 +1,13 @@
 package org.tellervo.desktop.gui.menus.actions;
 
 import java.awt.event.ActionEvent;
-import java.io.File;
 
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 
 import org.tellervo.desktop.editor.LiteEditor;
-import org.tellervo.desktop.gui.SaveableDocument;
-import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.util.openrecent.OpenRecent;
-import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 
 public class FileSaveAsAction extends AbstractAction{
 
@@ -51,12 +46,25 @@ public class FileSaveAsAction extends AbstractAction{
 
 			// add to the recently opened files list if the user actually saved
 			// also, the user can try to save a document they didn't do anything to. argh.
-			if (editor.isSaved() && editor.getFilename() != null) {
+			/*if (editor.isSaved()) {
+			
+				OpenRecent.sampleOpened(new SeriesDescriptor(editor.getSample()));
+
+				
 				if(editor.getSavedDocument() instanceof Sample)
 					OpenRecent.sampleOpened(new SeriesDescriptor((Sample) editor.getSavedDocument()));
 				else
 					OpenRecent.fileOpened(editor.getFilename());
 			}
+			
+			if (doc.isSaved()) {
+				if(doc instanceof AbstractEditor)
+				{
+					
+					AbstractEditor editor = (AbstractEditor) doc;
+					
+				}
+			}*/
 			
 		}
 		

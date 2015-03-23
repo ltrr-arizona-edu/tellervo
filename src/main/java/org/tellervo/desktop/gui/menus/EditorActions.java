@@ -1,7 +1,14 @@
 package org.tellervo.desktop.gui.menus;
 
-import javax.swing.Action;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
+import javax.swing.Action;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.gui.menus.actions.AddSeriesToWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBasicBoxLabelAction;
@@ -64,6 +71,7 @@ import org.tellervo.desktop.gui.menus.actions.RemoveSeriesFromWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsTruncateAction;
 import org.tellervo.desktop.io.control.IOController;
+import org.tellervo.desktop.sample.Sample;
 
 /**
  * A collection of actions organised by their position in a standard menu
@@ -75,12 +83,11 @@ public abstract class EditorActions {
 
 	protected AbstractEditor editor;
 	//private String videoname;
-	
+
 	// File menu actions
 	public Action fileOpenAction ;
 	public Action fileSaveAction;
-	public Action fileSaveAsAction;
-	
+
 
 	public Action fileExportDataAction;
 	//public Action fileExportMapAction;
@@ -102,7 +109,7 @@ public abstract class EditorActions {
 	public Action editDeleteAction;
 	public Action editInsertYearsAction;
 	public Action editPreferencesAction;
-	
+
 	// Admin menu actions
 	public Action adminMetaDBAction;
 	public Action adminUserAndGroupsAction;
@@ -121,9 +128,9 @@ public abstract class EditorActions {
 	public Action adminCurationMenuNewLoanAction;
 	public Action adminCurationMenuSampleStatusAction;
 	public Action adminSiteMapAction;
-	
+
 	// View menu actions
-	
+
 	// Tools menu action
 	public Action toolsTruncateAction;
 	public Action toolsCrossdateAction;
@@ -132,12 +139,12 @@ public abstract class EditorActions {
 	public Action graphCurrentSeriesAction;
 	public Action graphComponentSeriesAction;
 	public Action graphAllSeriesAction;
-	
+
 	// Toolbar only actions
 	public Action remarkAction;
 	public Action addSeriesAction;
 	public Action removeSeriesAction;
-	
+
 	//Help Menu actions
 	public Action helpHelpContentsAction;
 	public Action helpVideoIntroAction;
@@ -161,15 +168,16 @@ public abstract class EditorActions {
 	public Action helpMVCMonitorAction;
 	public Action helpSystemsInformationAction;
 	public Action helpAboutTellervoAction;
-	
-	
-	
-	
+
+	private Sample currentSample;
+
+
+
 	public EditorActions(AbstractEditor editor)
 	{
 		this.editor = editor;
 
-		
+
 		fileNewAction = new FileNewAction(editor);
 		fileOpenAction = new FileOpenAction(editor);
 		fileOpenMultiAction = new FileOpenMultiAction(editor);
@@ -178,8 +186,7 @@ public abstract class EditorActions {
 		fileBulkDataEntryAction = new FileBulkDataEntryAction(IOController.OPEN_EXPORT_WINDOW);
 		fileDesignODKFormAction = new FileDesignODKFormAction(editor);
 		fileSaveAction = new FileSaveAction(editor);
-		fileSaveAsAction = new FileSaveAsAction(editor);
-		
+
 
 		fileExitAction = new FileExitAction(editor);
 		editCopyAction = new EditCopyAction(editor);
@@ -193,9 +200,9 @@ public abstract class EditorActions {
 		editInitGridAction = new EditInitDataGridAction(editor);
 		editMeasureAction = new EditMeasureToggleAction(editor);
 		editPreferencesAction = new EditPreferencesAction();
-		
+
 		remarkAction = new RemarkToggleAction(editor);
-		
+
 		adminUserAndGroupsAction = new AdminUsersAndGroupsAction();
 		adminEditViewPermissionsAction = new AdminEditViewPermissionsAction();
 		adminChangePasswordAction = new AdminChangePasswordAction();
@@ -213,14 +220,14 @@ public abstract class EditorActions {
 		adminCurationMenuSampleStatusAction = new AdminCurationMenuSampleStatusAction();		
 		adminMetaDBAction = new AdminMetadatabaseBrowserAction();
 		adminSiteMapAction = new AdminSiteMapAction();
-		
+
 		toolsTruncateAction = new ToolsTruncateAction(editor);
 		toolsCrossdateAction = new ToolsCrossdateAction(editor);
-		
+
 		graphCurrentSeriesAction = new GraphCurrentSeriesAction(editor);
 		graphComponentSeriesAction = new GraphComponentSeriesAction(editor);
 		graphAllSeriesAction = new GraphAllSeriesAction(editor);
-		
+
 		helpHelpContentsAction = new HelpHelpContentsAction();
 		helpVideoIntroAction = new HelpVideoTutorialsAction("Introduction");
 		helpVideoGettingStartedAction = new HelpVideoTutorialsAction("Getting started");
@@ -246,10 +253,55 @@ public abstract class EditorActions {
 
 		addSeriesAction = new AddSeriesToWorkspaceAction(editor);
 		removeSeriesAction = new RemoveSeriesFromWorkspaceAction(editor);
-		
-		
+
+
 
 	}
+
+	/**
+	 * Enable/Disable actions based on network status
+	 */
+	private void setSharedMenusForNetworkStatus() {
+
+
+		this.fileNewAction.setEnabled(App.isLoggedIn());
+		// TODO Add others
+
+		setMenusForNetworkStatus();
+	}
+	protected abstract void setMenusForNetworkStatus();
 	
 	
+	private void setMenusForSampleStatus()
+	{
+		this.editMeasureAction.setEnabled(this.currentSample!=null);
+	}
+	
+
+	protected void linkModel() {
+		App.appmodel.addPropertyChangeListener(new PropertyChangeListener() {
+
+			@Override
+			public void propertyChange(PropertyChangeEvent argEvt) {
+				if (argEvt.getPropertyName().equals(AppModel.NETWORK_STATUS)) {
+					setSharedMenusForNetworkStatus();
+				}
+			}
+		});
+		setSharedMenusForNetworkStatus();
+
+		
+		editor.getLstSamples().addListSelectionListener(new ListSelectionListener(){
+
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) {
+				currentSample = editor.getSample();
+				setMenusForSampleStatus();
+
+			}
+
+		});
+		setMenusForSampleStatus();
+		
+	}
 }

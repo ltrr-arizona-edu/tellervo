@@ -183,7 +183,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			{
 				this.fileType = filter.getDescription();
 				parseFile();
-				initLiteEditor();
+				
 				return;
 			}
 		}
@@ -224,6 +224,12 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	
 	@Override
 	public boolean isSaved() {
+		
+		if(this.getSamplesModel().isDirty())
+		{
+			return false;
+		}
+		
 		
 		for(Sample s: getSamples())
 		{
@@ -285,6 +291,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 						e.printStackTrace();
 					}
 				}
+				
 				return;
 			}
 		}
@@ -312,17 +319,6 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	@Override
 	public boolean isNameChangeable() {
 		return true;
-	}
-
-	@Override
-	public void setFilename(String fn) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getFilename() {
-		return file.getName();
 	}
 
 	@Override
@@ -388,19 +384,23 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				
 				if(dataView!=null) 
 				{
-					//dataView.saveRemarksDividerLocation();	
-					//dataView.saveGraphDividerLocation();
+					dataView.saveRemarksDividerLocation();	
+					dataView.saveGraphDividerLocation();
 				}
 				
 				dataView = new SeriesDataMatrix(sample, this);
 				dataPanel.removeAll();
 				dataPanel.add(dataView, BorderLayout.CENTER);
 
-				//dataView.restoreRemarksDividerLocation();
-				//dataView.restoreGraphDividerLocation();
+				dataView.restoreRemarksDividerLocation();
+				dataView.restoreGraphDividerLocation();
 
 				metadata.setSample(getSample());
 							
+			}
+			else
+			{
+				dataPanel.removeAll();
 			}
 			
 			setTitle();
@@ -540,6 +540,8 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 
 		setTitle();
 		repaint();
+		
+		getSamplesModel().setDirty(false);
 		
 		return true;
 	}

@@ -1,10 +1,9 @@
 package org.tellervo.desktop.gui.menus;
 
-import java.awt.Window;
-
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.tellervo.desktop.editor.LiteEditor;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 
@@ -12,7 +11,7 @@ public class LiteEditorMenuBar extends EditorMenuBar{
 
 	private static final long serialVersionUID = 1L;
 		
-	public LiteEditorMenuBar(LiteEditorActions actions, Window editor)
+	public LiteEditorMenuBar(LiteEditorActions actions, LiteEditor editor)
 	{
 		super(actions, editor);
 		

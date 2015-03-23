@@ -5,6 +5,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 
+import org.tellervo.desktop.editor.AbstractEditor;
+import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.editor.LiteEditor;
 import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
@@ -44,13 +47,14 @@ public class FileSaveAction extends AbstractAction{
 		// save
 		doc.save();
 
-		// add to the recently opened files list if the user actually saved
-		// also, the user can try to save a document they didn't do anything to. argh.
-		if (doc.isSaved() && doc.getFilename() != null) {
-			if(doc.getSavedDocument() instanceof Sample)
-				OpenRecent.sampleOpened(new SeriesDescriptor((Sample) doc.getSavedDocument()));
-			else
-				OpenRecent.fileOpened(doc.getFilename());
+		if (doc.isSaved()) {
+			if(doc instanceof FullEditor)
+			{
+				
+				FullEditor editor = (FullEditor) doc;
+				
+				OpenRecent.sampleOpened(new SeriesDescriptor(editor.getSample()));
+			}
 		}
 		
 	}

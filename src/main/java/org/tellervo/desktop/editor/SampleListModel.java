@@ -13,7 +13,8 @@ import edu.emory.mathcs.backport.java.util.Collections;
 public class SampleListModel extends AbstractListModel<Sample> {
 
 	private static final long serialVersionUID = 1L;
-	ArrayList<Sample> list = new ArrayList<Sample>();
+	private ArrayList<Sample> list = new ArrayList<Sample>();
+	private boolean dirty=false;
 	
 	public SampleListModel(Collection<Sample> list)
 	{
@@ -30,6 +31,7 @@ public class SampleListModel extends AbstractListModel<Sample> {
 	public void addElement(Sample sample)
 	{
 		list.add(sample);
+		dirty = true;
 		fireContentsChanged(this, 0, this.getSize());
 
 	}
@@ -37,8 +39,19 @@ public class SampleListModel extends AbstractListModel<Sample> {
 	public void addAll(Collection<Sample> items)
 	{
 		list.addAll(items);
+		dirty = true;
 		fireContentsChanged(this, 0, this.getSize());
 
+	}
+	
+	public boolean isDirty()
+	{
+		return dirty;
+	}
+	
+	public void setDirty(boolean b)
+	{
+		dirty = b;
 	}
 	
 	@Override
@@ -69,6 +82,7 @@ public class SampleListModel extends AbstractListModel<Sample> {
 	public void remove(Sample s)
 	{
 		list.remove(s);
+		dirty = true;
 		fireContentsChanged(this, 0, this.getSize());
 
 	}
@@ -76,6 +90,7 @@ public class SampleListModel extends AbstractListModel<Sample> {
 	public void remove(int i)
 	{
 		list.remove(i);
+		dirty = true;
 		fireContentsChanged(this, 0, this.getSize());
 
 	}
