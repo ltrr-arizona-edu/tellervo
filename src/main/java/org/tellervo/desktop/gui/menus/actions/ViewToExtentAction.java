@@ -29,7 +29,7 @@ public class ViewToExtentAction extends AbstractAction{
 	
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		parent.zoomToExtent();
+	//	parent.zoomToExtent();
 		
 	}
 	

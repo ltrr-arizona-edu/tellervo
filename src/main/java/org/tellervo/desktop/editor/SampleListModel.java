@@ -43,6 +43,10 @@ public class SampleListModel extends AbstractListModel<Sample> {
 
 	}
 	
+	public ArrayList<Sample> getSamples()
+	{
+		return list;
+	}
 	
 	public void addAll(Collection<Sample> items)
 	{

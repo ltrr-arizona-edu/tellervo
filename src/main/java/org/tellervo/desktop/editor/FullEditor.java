@@ -1,27 +1,11 @@
 package org.tellervo.desktop.editor;
 
-import gov.nasa.worldwind.View;
-import gov.nasa.worldwind.WorldWindow;
-import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.avlist.AVList;
-import gov.nasa.worldwind.geom.ExtentHolder;
-import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.geom.Vec4;
-import gov.nasa.worldwind.globes.Globe;
-import gov.nasa.worldwind.layers.MarkerLayer;
-import gov.nasa.worldwind.render.markers.Marker;
-import gov.nasa.worldwind.util.Logging;
-import gov.nasa.worldwindx.examples.util.ExtentVisibilitySupport;
-
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.AbstractButton;
 import javax.swing.JMenuItem;
@@ -29,12 +13,12 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gis.GISPanel;
-import org.tellervo.desktop.gis.TridasMarkerLayerBuilder;
+import org.tellervo.desktop.gis2.TridasEntityLayer;
+import org.tellervo.desktop.gis2.WWJPanel;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.menus.FullEditorActions;
 import org.tellervo.desktop.gui.menus.FullEditorMenuBar;
@@ -49,8 +33,6 @@ import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasObject;
 
 public class FullEditor extends AbstractEditor {
 
@@ -60,7 +42,7 @@ public class FullEditor extends AbstractEditor {
 	private JPanel componentHolder;
 	private JPanel dependentHolder;
 	private JPanel mapHolder;
-	private GISPanel wwMapPanel;
+	private WWJPanel wwMapPanel;
 	private TridasMetadataPanel metaView;
 	
 	
@@ -94,7 +76,7 @@ public class FullEditor extends AbstractEditor {
 	 * 
 	 * @return
 	 */
-	public GISPanel getGISPanel()
+	public WWJPanel getMapPanel()
 	{
 		return wwMapPanel;
 	}
@@ -114,8 +96,7 @@ public class FullEditor extends AbstractEditor {
 		dependentHolder.setLayout(new BorderLayout());
 		
 		mapHolder = new JPanel();
-		mapHolder.setLayout(new BorderLayout());
-		
+		mapHolder.setLayout(new BorderLayout());		
 		tabbedPane.addTab("Metadata", Builder.getIcon("database.png", 16), metadataHolder, null);
 		tabbedPane.addTab("ComponentsViewer", Builder.getIcon("history.png", 16), componentHolder, null);
 		tabbedPane.addTab("DependentsViewer", Builder.getIcon("dependent.png", 16), dependentHolder, null);
@@ -124,22 +105,43 @@ public class FullEditor extends AbstractEditor {
 			
 		itemSelected();
 		initPopupMenu();
-
+		initMapPanel();
+	
+		this.btnAdd.setVisible(false);
+	}
+	
+	private void initMapPanel()
+	{
+		wwMapPanel = new WWJPanel();
+		mapHolder.add(wwMapPanel, BorderLayout.CENTER);
 		
-		tabbedPane.addChangeListener(new ChangeListener(){
+		this.samplesModel.addListDataListener(new ListDataListener(){
 
 			@Override
-			public void stateChanged(ChangeEvent e) {
-				if(tabbedPane.getSelectedIndex()==4)
+			public void contentsChanged(ListDataEvent arg0) {
+				TridasEntityLayer layer = (TridasEntityLayer) wwMapPanel.getWorkspaceSeriesLayer();
+				
+				for(Sample s: samplesModel.getSamples())
 				{
-
-					zoomToExtent();
+					layer.addMarker(s);
 				}
+				
+			}
+
+			@Override
+			public void intervalAdded(ListDataEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void intervalRemoved(ListDataEvent arg0) {
+				// TODO Auto-generated method stub
+				
 			}
 			
 		});
 		
-		this.btnAdd.setVisible(false);
 	}
 	
 	/**
@@ -330,11 +332,10 @@ public class FullEditor extends AbstractEditor {
 					DependentsViewer dependentsPanel = new DependentsViewer(sample);
 					dependentHolder.add(dependentsPanel, BorderLayout.CENTER);
 					
-					// Map tab
-					mapHolder.removeAll();
-					createMapPanel();
-					mapHolder.add(wwMapPanel, BorderLayout.CENTER);
-					
+					// Zoom map
+					this.wwMapPanel.zoomToSample(sample);
+					this.wwMapPanel.getWorkspaceSeriesLayer().highlightMarkerForSample(sample);
+										
 					this.revalidate();
 				} catch (Exception e)
 				{
@@ -452,62 +453,7 @@ public class FullEditor extends AbstractEditor {
 		System.exit(0);
 	}
 	
-	/**
-	 * Create the GISPanel tab panel
-	 * 
-	 * @return
-	 */
-	private GISPanel createMapPanel()
-	{
-		
-		TridasElement elem = this.getSample().getMeta(Metadata.ELEMENT, TridasElement.class);
-		
-		
-		// Create layer of all sites
-		TridasMarkerLayerBuilder builder = new TridasMarkerLayerBuilder();
-		MarkerLayer allSites = TridasMarkerLayerBuilder.getMarkerLayerForAllSites();
-		allSites.setEnabled(false);
-		
-		try{
-			wwMapPanel = new GISPanel(new Dimension(300,400),true, allSites);
-			
-		} catch (Exception e)
-		{
-			Alert.error(this, "Error", "There was an error initialising the map, most " +
-					"probably to do with 3D graphics drivers");
-			return null;
-		}
-		
-		try{
-			// First try to add a pin for the TridasElement itself
-			//editorViewMenu = new GISViewMenu(wwMapPanel.getWwd());	
-			builder.addMarkerForTridasElement(elem);	
-			
-			// If no pin added for TridasElement, try TridasObject instead
-			if(!builder.containsMarkers())
-			{
-				builder.addMarkerForTridasObject(getSample().getMeta(Metadata.OBJECT, TridasObject.class));
-			}
-				
-			// If still no joy, disable the map
-			if(!builder.containsMarkers())
-			{
-				return null;
-			}
-				
-			//wwMapPanel.addFocusListener(this);
-			
-			// Create layer of current element
-			builder.setName("Elements of this series");
-			wwMapPanel.addLayer(builder.getMarkerLayer());
 
-		} catch (Exception e)
-		{
-			
-		}
-		
-		return wwMapPanel;
-	}
 
 	/**
 	 * Set the metadata page to show
@@ -549,139 +495,7 @@ public class FullEditor extends AbstractEditor {
 	public void windowOpened(WindowEvent e) {	
 	}
 
-	/**
-	 * Animate zoom to the extent of all pins on the map 
-	 */
-	public void zoomToExtent()
-	{
-		log.debug("Zooming to object...");
-		WorldWindow wwd = this.wwMapPanel.getWwd();
-		if(wwd.getView().getGlobe() == null) return;
-		
-        Logging.logger().info("Zooming to Matterhorn");
-		Iterable<Marker> markers = this.wwMapPanel.getMarkerLayer().getMarkers();
 
-        View view = wwd.getView();
-
-		int count = 0;
-		
-		for(Marker marker : markers)
-		{
-			count++;
-		}
-		
-		if(count==0)
-		{
-			log.debug("No markers so can't zoom");
-			return;
-		}
-		if(count==1)
-		{
-			log.debug("Zooming to single marker");
-
-			for(Marker marker : markers)
-			{
-			         view.goTo(marker.getPosition(), 500000d);
-			         return;
-			
-			}
-			
-    		return;
-
-		}
-		
-		
-		
-		 Vec4[] lookAtPoints = this.computeViewLookAtForScene(wwd.getView());
-         if (lookAtPoints == null)
-        {
-             return;
-
-        	}
-        
-         else if (lookAtPoints.length != 3)
-         {
-        	 
-        	 
-        	 
-        	 return;
-         }
-
-         Position centerPos = wwd.getModel().getGlobe().computePositionFromPoint(lookAtPoints[1]);
-         double zoom = lookAtPoints[0].distanceTo3(lookAtPoints[1]);
-
-         wwd.getView().stopAnimations();
-         wwd.getView().goTo(centerPos, zoom);
-         
-	}
-	
-    public Vec4[] computeViewLookAtForScene(View view)
-    {
-    	WorldWindow wwd = this.wwMapPanel.getWwd();
-        Globe globe = wwd.getModel().getGlobe();
-        
-        if(globe==null) return null;
-        
-        double ve = wwd.getSceneController().getVerticalExaggeration();
-
-        ExtentVisibilitySupport vs = new ExtentVisibilitySupport();
-        this.addExtents(vs);
-
-        return vs.computeViewLookAtContainingExtents(globe, ve, view);
-    }
-	
-    protected void addExtents(ExtentVisibilitySupport vs)
-    {
-    	WorldWindow wwd = this.wwMapPanel.getWwd();
-
-    	
-        // Compute screen extents for WWIcons which have feedback information from their IconRenderer.
-        Iterable<?> iterable = this.wwMapPanel.getMarkerLayer().getMarkers();
-        if (iterable == null)
-            return;
-
-        ArrayList<ExtentHolder> extentHolders = new ArrayList<ExtentHolder>();
-        ArrayList<ExtentVisibilitySupport.ScreenExtent> screenExtents =
-            new ArrayList<ExtentVisibilitySupport.ScreenExtent>();
-
-        for (Object o : iterable)
-        {
-            if (o == null)
-                continue;
-
-            if (o instanceof ExtentHolder)
-            {
-                extentHolders.add((ExtentHolder) o);
-            }
-            else if (o instanceof AVList)
-            {
-                AVList avl = (AVList) o;
-
-                Object b = avl.getValue(AVKey.FEEDBACK_ENABLED);
-                if (b == null || !Boolean.TRUE.equals(b))
-                    continue;
-
-                if (avl.getValue(AVKey.FEEDBACK_REFERENCE_POINT) != null)
-                {
-                    screenExtents.add(new ExtentVisibilitySupport.ScreenExtent(
-                        (Vec4) avl.getValue(AVKey.FEEDBACK_REFERENCE_POINT),
-                        (Rectangle) avl.getValue(AVKey.FEEDBACK_SCREEN_BOUNDS)));
-                }
-            }
-        }
-
-        if (!extentHolders.isEmpty())
-        {
-            Globe globe = wwd.getModel().getGlobe();
-            double ve = wwd.getSceneController().getVerticalExaggeration();
-            vs.setExtents(ExtentVisibilitySupport.extentsFromExtentHolders(extentHolders, globe, ve));
-        }
-
-        if (!screenExtents.isEmpty())
-        {
-            vs.setScreenExtents(screenExtents);
-        }
-    }
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

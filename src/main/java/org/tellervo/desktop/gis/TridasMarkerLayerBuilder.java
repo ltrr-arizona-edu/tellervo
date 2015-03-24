@@ -47,7 +47,7 @@ import org.tridas.util.TridasObjectEx;
 public class TridasMarkerLayerBuilder {
 
 	/** Marker attributes */
-	private BasicMarkerAttributes defaultAttributes = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
+	private static BasicMarkerAttributes defaultAttributes = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
 	private ArrayList<Marker> markers = new ArrayList<Marker>();
 	private String layerName = "Marker layer";
 	
@@ -153,12 +153,12 @@ public class TridasMarkerLayerBuilder {
 
 
 	
-	private BasicMarkerAttributes getMarkerAttributesForEntity(Class<? extends ITridas> clazz)
+	private static BasicMarkerAttributes getMarkerAttributesForEntity(Class<? extends ITridas> clazz)
 	{
 		return getMarkerAttributesForEntity(clazz, false);
 	}
 
-	private BasicMarkerAttributes getMarkerAttributesForEntity(Class<? extends ITridas> clazz, Boolean selected)
+	private static BasicMarkerAttributes getMarkerAttributesForEntity(Class<? extends ITridas> clazz, Boolean selected)
 	{
 		double opacity = 0.6d;
 		if(selected) opacity = 1.0d;

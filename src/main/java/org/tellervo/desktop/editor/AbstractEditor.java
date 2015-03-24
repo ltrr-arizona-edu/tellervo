@@ -89,7 +89,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	protected File file;
 	protected String fileType;
 	protected SeriesDataMatrix dataView;
-	private SampleListModel samplesModel;
+	protected SampleListModel samplesModel;
 	
 
 

@@ -19,7 +19,7 @@ public class FileExportMapAction extends ScreenShotAction{
 	 */
 	public FileExportMapAction(AbstractEditor editor) {
 			
-		super(((FullEditor)editor).getGISPanel().getWwd());
+		super(((FullEditor)editor).getMapPanel().getWwd());
 		
 	        putValue(Action.SMALL_ICON, Builder.getIcon("captureimage.png", 22));
 	        putValue(Action.LARGE_ICON_KEY, Builder.getIcon("captureimage.png", 22));
