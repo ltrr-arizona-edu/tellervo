@@ -26,3 +26,5 @@ mvn deploy:deploy-file  -DgroupId=jpedal    -DartifactId=jpedal                -
 ## WWJ package in Maven central is fubar so this is a manual build with the correct dependencies specified.  This should be able to be 
 ## replaced with an official build some time in the future
 mvn deploy:deploy-file -Durl=http://maven.tridas.org/repository/tridas-releases  -DrepositoryId=tridas-releases  -Dfile=worldwindjava-tellervo-2.0.0.jar     -DpomFile=../worldwindjava-pom.xml
+mvn deploy:deploy-file  -DgroupId=org.osgeo          -DartifactId=gdal              -Dversion=0.2         -Dpackaging=jar -Dfile=gdal.jar                     -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
+

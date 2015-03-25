@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 
@@ -15,6 +16,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis2.TridasEntityLayer;
@@ -108,6 +111,44 @@ public class FullEditor extends AbstractEditor {
 		initMapPanel();
 	
 		this.btnAdd.setVisible(false);
+		
+		this.getLstSamples().addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent evt) {
+				if(evt.getClickCount()>1)
+				{
+					// Zoom map
+					wwMapPanel.zoomToSample(getSample());
+				}
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			
+		});
 	}
 	
 	private void initMapPanel()
@@ -331,11 +372,10 @@ public class FullEditor extends AbstractEditor {
 					dependentHolder.removeAll();
 					DependentsViewer dependentsPanel = new DependentsViewer(sample);
 					dependentHolder.add(dependentsPanel, BorderLayout.CENTER);
+
+					// Highlight map pin
+					wwMapPanel.highlightMarkerForSample(getSample());
 					
-					// Zoom map
-					this.wwMapPanel.zoomToSample(sample);
-					this.wwMapPanel.getWorkspaceSeriesLayer().highlightMarkerForSample(sample);
-										
 					this.revalidate();
 				} catch (Exception e)
 				{

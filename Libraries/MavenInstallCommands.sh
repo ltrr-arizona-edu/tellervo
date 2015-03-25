@@ -28,3 +28,5 @@ mvn install:install-file  -DgroupId=org.tridas.schema    -DartifactId=tridasaand
 mvn install:install-file  -DgroupId=org.tridas.schema    -DartifactId=tridas-annotations         -Dversion=1.0	          -Dpackaging=jar -Dfile=tridas-annotations-1.0.jar		   
 mvn install:install-file  -DgroupId=com.sun.tools.xjc    -DartifactId=collection-setter-injector  -Dversion=0.1	           -Dpackaging=jar -Dfile=collection-setter-injector-0.1.jar		    
 mvn install:install-file  -DgroupId=jpedal                -DartifactId=jpedal                     -Dversion=4.45-b-105     -Dpackaging=jar -Dfile=jpedal-4.45-b-105.ja
+
+mvn install:install-file -DgroupId=org.osgeo          -DartifactId=gdal                       -Dversion=0.2	       -Dpackaging=jar -Dfile=gdal.jar

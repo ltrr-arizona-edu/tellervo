@@ -46,7 +46,7 @@ public class AllSitesLayer extends MarkerLayer implements TellervoDataLayer{
 	}
 	
 	
-	public static Marker getMarkerForObject(TridasObject obj)
+	public static TridasMarker getMarkerForObject(TridasObject obj)
 	{
 		if(obj==null) return null;
 		
@@ -62,7 +62,7 @@ public class AllSitesLayer extends MarkerLayer implements TellervoDataLayer{
 	}
 	
 	
-	public static Marker getMarkerForTridasEntity(TridasLocationGeometry geom, ITridas entity)
+	public static TridasMarker getMarkerForTridasEntity(TridasLocationGeometry geom, ITridas entity)
 	{
 
 		

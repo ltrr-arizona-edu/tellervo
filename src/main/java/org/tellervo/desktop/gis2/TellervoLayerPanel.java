@@ -42,7 +42,8 @@ public class TellervoLayerPanel extends LayerPanel {
         			layer instanceof UTMGraticuleLayer ||
         			layer instanceof MGRSGraticuleLayer ||
         			layer instanceof NASAWFSPlaceNameLayer ||
-        			layer instanceof CountryBoundariesLayer)
+        			layer instanceof CountryBoundariesLayer || 
+        			layer.getName().equals("Popup information"))
         	{
         		// Do not include these in layer list as they are basic controls
         		continue;
@@ -63,7 +64,9 @@ public class TellervoLayerPanel extends LayerPanel {
 	
     protected static class LayerAction extends AbstractAction
     {
-        protected WorldWindow wwd;
+
+		private static final long serialVersionUID = 1L;
+		protected WorldWindow wwd;
         protected Layer layer;
         protected boolean selected;
 

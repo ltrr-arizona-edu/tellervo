@@ -9,6 +9,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.gis.TridasMarker;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
@@ -21,8 +24,10 @@ import org.tellervo.schema.TellervoRequestFormat;
 import org.tridas.schema.TridasObject;
 
 public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer {
-
-	private HashMap<Sample, Marker> markers = new HashMap<Sample, Marker>();
+	
+	
+	protected final static Logger log = LoggerFactory.getLogger(TridasEntityLayer.class);
+	private HashMap<Sample, TridasMarker> markermap = new HashMap<Sample, TridasMarker>();
 
 	public TridasEntityLayer(String name)
 	{
@@ -31,6 +36,8 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
         setOverrideMarkerElevation(true);
         setElevation(0);
         setEnablePickSizeReturn(true);
+        
+        
 
 	}
 	
@@ -38,13 +45,13 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 	{
 		addMarker(s);
 		
-		return markers.get(s);
+		return markermap.get(s);
 		
 	}
 	
-	public void highlightMarkerForSample(Sample s)
+	protected void highlightMarkerForSample(Sample s)
 	{
-	    Iterator it = markers.entrySet().iterator();
+	    Iterator it = markermap.entrySet().iterator();
 	   
 	    while (it.hasNext()) {
 	        Map.Entry pair = (Map.Entry)it.next();
@@ -55,22 +62,27 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 		getMarkerForSample(s).setAttributes(AllSitesLayer.highlightAttributes);
 		
 		
-	}
+	}		
 	
-    public Iterable<Marker> getMarkers()
+    private void updateSuperMarkers()
     {
-        return new ArrayList<Marker>(markers.values());
+    	ArrayList<Marker> lst = new ArrayList<Marker>();
+    	
+ 	    Iterator it = markermap.entrySet().iterator();
+ 	   
+	    while (it.hasNext()) {
+	        Map.Entry pair = (Map.Entry)it.next();
+	        Marker value = (Marker) pair.getValue();
+	        lst.add(value);
+	    }
+
+    	setMarkers(lst);
     }
 	
-    
-    public void setMarkers(Iterable<Marker> markers)
-    {
-    	// not supported
-    }
     
 	public void addMarker(Sample s)
 	{
-		if(markers.containsKey(s))
+		if(markermap.containsKey(s))
 		{
 			return;
 		}
@@ -81,7 +93,8 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 			seriesid = s.getSeries().getIdentifier().getValue();
 		} catch (Exception e)
 		{
-			markers.put(s, null);
+			markermap.put(s, null);
+			updateSuperMarkers();
 			return;
 		}
 		
@@ -105,7 +118,8 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 		if(!dlg.isSuccessful()) 
 		{
 			// Search failed
-			markers.put(s, null);
+			markermap.put(s, null);
+			updateSuperMarkers();
 			return;
 		} 
 		else 
@@ -113,7 +127,7 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 			// Search successful
 			List<TridasObject> foundEntities = searchResource.getAssociatedResult();
 			
-			Marker marker = null;
+			TridasMarker marker = null;
 			
 			for(TridasObject on : foundEntities)
 			{
@@ -129,8 +143,8 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 			}
 
 
-			markers.put(s, marker);
-				
+			markermap.put(s, marker);
+			updateSuperMarkers();
 			
 			
 		}

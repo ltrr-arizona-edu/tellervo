@@ -8,18 +8,23 @@ import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVList;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
+import gov.nasa.worldwind.event.SelectEvent;
+import gov.nasa.worldwind.event.SelectListener;
 import gov.nasa.worldwind.geom.ExtentHolder;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.Globe;
+import gov.nasa.worldwind.layers.AnnotationLayer;
 import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
+import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.layers.ScalebarLayer;
 import gov.nasa.worldwind.layers.SkyColorLayer;
 import gov.nasa.worldwind.layers.SkyGradientLayer;
 import gov.nasa.worldwind.layers.StarsLayer;
+import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwind.layers.Earth.BMNGWMSLayer;
 import gov.nasa.worldwind.layers.Earth.CountryBoundariesLayer;
 import gov.nasa.worldwind.layers.Earth.LandsatI3WMSLayer;
@@ -32,6 +37,7 @@ import gov.nasa.worldwind.layers.Earth.USGSTopoLowRes;
 import gov.nasa.worldwind.layers.Earth.USGSTopoMedRes;
 import gov.nasa.worldwind.layers.Earth.USGSUrbanAreaOrtho;
 import gov.nasa.worldwind.layers.Earth.UTMGraticuleLayer;
+import gov.nasa.worldwind.pick.PickedObject;
 import gov.nasa.worldwind.render.markers.Marker;
 import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.StatusBar;
@@ -42,6 +48,8 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.JPanel;
@@ -49,9 +57,17 @@ import javax.swing.JSplitPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.gis.GISPanel;
+import org.tellervo.desktop.gis.ITRDBMarker;
+import org.tellervo.desktop.gis.TridasAnnotation;
+import org.tellervo.desktop.gis.TridasAnnotationController;
+import org.tellervo.desktop.gis.TridasMarker;
+import org.tellervo.desktop.gis.GISPanel.ContentAnnotation;
+import org.tellervo.desktop.gis.GISPanel.TridasContentAnnotation;
 import org.tellervo.desktop.sample.Sample;
+import org.tridas.interfaces.ITridas;
 
-public class WWJPanel extends JPanel {
+public class WWJPanel extends JPanel  implements SelectListener{
 
 	private static final long serialVersionUID = 1L;
 	protected final static Logger log = LoggerFactory.getLogger(WWJPanel.class);
@@ -63,6 +79,7 @@ public class WWJPanel extends JPanel {
 	protected LayerPanel layerPanel;
 	protected StatusBar statusBar;
 	protected LayerList layersList;
+	private RenderableLayer annotationLayer;
 
 	public WWJPanel() {
 		super(new BorderLayout());
@@ -86,10 +103,16 @@ public class WWJPanel extends JPanel {
 		
         // Create the Model, starting with the Globe.
         Globe earth = new Earth();
-
+        
+        
+        this.annotationLayer = new RenderableLayer();
+        annotationLayer.setName("Popup information");
+        
+        
         // Create layers that both World Windows can share.
         Layer[] layers = new Layer[]
             {
+        		annotationLayer,
                 new StarsLayer(),
                 new ScalebarLayer(),
                 new SkyColorLayer(),
@@ -100,6 +123,7 @@ public class WWJPanel extends JPanel {
                 new MGRSGraticuleLayer(),
                 new NASAWFSPlaceNameLayer(),
                 new CountryBoundariesLayer(),
+                new WorldMapLayer(),
 
                 new LandsatI3WMSLayer(),
                 new MSVirtualEarthLayer(),
@@ -112,6 +136,7 @@ public class WWJPanel extends JPanel {
                 new TridasEntityLayer("Workspace series"),
             };
         
+        // Turn off some layers by default 
         for(Layer layer : layers)
         {
         	if(layer instanceof UTMGraticuleLayer || 
@@ -123,7 +148,8 @@ public class WWJPanel extends JPanel {
         			layer instanceof USGSTopoHighRes ||
         			layer instanceof USGSTopoMedRes ||
         			layer instanceof USGSTopoLowRes ||
-        			layer instanceof USGSUrbanAreaOrtho)
+        			layer instanceof USGSUrbanAreaOrtho ||
+        			layer instanceof AllSitesLayer)
         	{
         		layer.setEnabled(false);
         	}
@@ -157,6 +183,7 @@ public class WWJPanel extends JPanel {
 		splitPane.setResizeWeight(1.0);
 		splitPane.setOneTouchExpandable(true);
 		
+		wwd.addSelectListener(this);
 	}
 	
 	public WorldWindow getWwd() {
@@ -179,8 +206,32 @@ public class WWJPanel extends JPanel {
 		
 	}
 	
+	/**
+	 * Highlight a pin for the specified sample
+	 * 
+	 * @param s
+	 */
+	public void highlightMarkerForSample(Sample s)
+	{
+		this.getWorkspaceSeriesLayer().highlightMarkerForSample(s);
+		removeAnnotations();
+		openResource(getWorkspaceSeriesLayer().getMarkerForSample(s));
+		this.repaint();
+	}
 	
+	/**
+	 * Close all open annotations
+	 */
+	public void removeAnnotations()
+	{
+		this.annotationLayer.removeAllRenderables();
+	}
 	
+	/**
+	 * Get the layer containing pins for the items open in the workspace
+	 * 
+	 * @return
+	 */
 	public TridasEntityLayer getWorkspaceSeriesLayer()
 	{
 		return (TridasEntityLayer) layersList.getLayerByName("Workspace series");
@@ -319,5 +370,217 @@ public class WWJPanel extends JPanel {
             vs.setScreenExtents(screenExtents);
         }
     }*/
+	
+    protected void closeResource(ContentAnnotation content)
+    {
+        if (content == null)
+            return;
+
+        content.detach();
+    }
+    
+    protected void openResource(Marker marker)
+    {
+        if (marker == null)
+            return;
+
+        ContentAnnotation content = this.createContent(marker);
+
+        if (content != null)
+        {
+            content.attach();
+        }
+    }
+    
+    protected ContentAnnotation createContent(Marker marker)
+    {
+    	Position position = marker.getPosition();
+    	
+    	if(marker instanceof TridasMarker)
+    	{
+    		return createTridasAnnotation(this, position, "Title", ((TridasMarker) marker).getEntity());
+    	}
+    	else if (marker instanceof ITRDBMarker)
+    	{
+    		return createITRDBAnnotation(this, position, "Title", ((ITRDBMarker) marker));
+    	}
+    	
+    	return null;
+        
+    }
+
+    public static ContentAnnotation createITRDBAnnotation(WWJPanel mapPanel, Position position, String title, ITRDBMarker marker)
+    {
+        if (mapPanel == null)
+        {
+            String message = "AppFrameIsNull";
+            Logging.logger().severe(message);
+            throw new IllegalArgumentException(message);
+        }
+
+        if (position == null)
+        {
+            String message = Logging.getMessage("nullValue.PositionIsNull");
+            Logging.logger().severe(message);
+            throw new IllegalArgumentException(message);
+        }
+
+        if (title == null)
+        {
+            String message = Logging.getMessage("nullValue.StringIsNull");
+            Logging.logger().severe(message);
+            throw new IllegalArgumentException(message);
+        }
+
+    	
+		return null;
+    	
+    }
+    
+    public static ContentAnnotation createTridasAnnotation(WWJPanel mapPanel, Position position, String title, ITridas entity)
+    {
+        if (mapPanel == null)
+        {
+            String message = "AppFrameIsNull";
+            Logging.logger().severe(message);
+            throw new IllegalArgumentException(message);
+        }
+
+        if (position == null)
+        {
+            String message = Logging.getMessage("nullValue.PositionIsNull");
+            Logging.logger().severe(message);
+            throw new IllegalArgumentException(message);
+        }
+
+        if (title == null)
+        {
+            String message = Logging.getMessage("nullValue.StringIsNull");
+            Logging.logger().severe(message);
+            throw new IllegalArgumentException(message);
+        }
+
+        if (entity == null)
+        {
+            String message = Logging.getMessage("nullValue.SourceIsNull");
+            Logging.logger().severe(message);
+            throw new IllegalArgumentException(message);
+        }
+
+        TridasAnnotation annotation = new TridasAnnotation(position, entity);
+        annotation.setAlwaysOnTop(true);
+
+        TridasAnnotationController controller = new TridasAnnotationController(mapPanel.getWwd(), annotation, entity);
+
+        
+        return new TridasContentAnnotation(mapPanel, annotation, controller, entity);
+    }
+    
+
+    protected RenderableLayer getAnnotationLayer()
+    {
+    	return this.annotationLayer;
+    }
+	
+
+    public static class ContentAnnotation implements ActionListener
+    {
+        protected WWJPanel mapPanel;
+        protected TridasAnnotation annotation;
+        protected TridasAnnotationController controller;
+
+        public ContentAnnotation(WWJPanel mapPanel, TridasAnnotation annotation, TridasAnnotationController controller)
+        {
+            this.mapPanel = mapPanel;
+            this.annotation = annotation;
+            this.annotation.addActionListener(this);
+            this.controller = controller;
+        }
+
+        public WWJPanel getMapPanel()
+        {
+            return this.mapPanel;
+        }
+
+        public TridasAnnotation getAnnotation()
+        {
+            return this.annotation;
+        }
+
+        public TridasAnnotationController getController()
+        {
+            return this.controller;
+        }
+
+        public void actionPerformed(ActionEvent e)
+        {
+            if (e == null)
+                return;
+
+            if (e.getActionCommand() == AVKey.CLOSE)
+            {
+                this.getMapPanel().closeResource(this);
+            }
+        }
+
+        public void detach()
+        {
+            this.getController().setEnabled(false);
+
+            RenderableLayer layer = this.getMapPanel().getAnnotationLayer();
+            layer.removeRenderable(this.getAnnotation());
+        }
+
+        public void attach()
+        {
+            this.getController().setEnabled(true);
+
+            RenderableLayer layer = this.mapPanel.getAnnotationLayer();
+            layer.removeRenderable(this.getAnnotation());
+            layer.addRenderable(this.getAnnotation());
+        }
+    }
+	
+    public static class TridasContentAnnotation extends ContentAnnotation
+    {
+
+    	ITridas entity;
+    	
+		public TridasContentAnnotation(WWJPanel mapPanel,
+				TridasAnnotation annotation,
+				TridasAnnotationController controller,
+				ITridas entity) {
+			super(mapPanel, annotation, controller);
+			this.entity=entity;
+		}
+    	
+    }
+
+	@Override
+	public void selected(SelectEvent e) {
+        
+		
+		log.debug("Map item selected");
+		
+		if (e == null)
+            return;
+
+        PickedObject topPickedObject = e.getTopPickedObject();
+
+        if (e.getEventAction() == SelectEvent.LEFT_PRESS)
+        {
+            if (topPickedObject != null && topPickedObject.getObject() instanceof Marker)
+            {
+            	Marker selected = (Marker) topPickedObject.getObject();
+                this.openResource(selected);
+            }
+            else if (topPickedObject != null && topPickedObject.getObject() instanceof ITRDBMarker)
+            {
+            	
+            }
+        }
+		
+	}
+    
 	
 }
