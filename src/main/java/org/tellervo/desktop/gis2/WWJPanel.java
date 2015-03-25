@@ -2,20 +2,15 @@ package org.tellervo.desktop.gis2;
 
 import gov.nasa.worldwind.BasicModel;
 import gov.nasa.worldwind.Model;
-import gov.nasa.worldwind.View;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.avlist.AVList;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
-import gov.nasa.worldwind.geom.ExtentHolder;
 import gov.nasa.worldwind.geom.Position;
-import gov.nasa.worldwind.geom.Vec4;
 import gov.nasa.worldwind.globes.Earth;
 import gov.nasa.worldwind.globes.Globe;
-import gov.nasa.worldwind.layers.AnnotationLayer;
 import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.LayerList;
@@ -42,28 +37,22 @@ import gov.nasa.worldwind.render.markers.Marker;
 import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.StatusBar;
 import gov.nasa.worldwindx.examples.LayerPanel;
-import gov.nasa.worldwindx.examples.util.ExtentVisibilitySupport;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.gis.GISPanel;
 import org.tellervo.desktop.gis.ITRDBMarker;
 import org.tellervo.desktop.gis.TridasAnnotation;
 import org.tellervo.desktop.gis.TridasAnnotationController;
 import org.tellervo.desktop.gis.TridasMarker;
-import org.tellervo.desktop.gis.GISPanel.ContentAnnotation;
-import org.tellervo.desktop.gis.GISPanel.TridasContentAnnotation;
 import org.tellervo.desktop.sample.Sample;
 import org.tridas.interfaces.ITridas;
 
@@ -118,13 +107,14 @@ public class WWJPanel extends JPanel  implements SelectListener{
                 new SkyColorLayer(),
                 new SkyGradientLayer(),
                 new BMNGWMSLayer(),
+                                
                 new CompassLayer(),
+                new WorldMapLayer(),
                 new UTMGraticuleLayer(),
                 new MGRSGraticuleLayer(),
                 new NASAWFSPlaceNameLayer(),
                 new CountryBoundariesLayer(),
-                new WorldMapLayer(),
-
+                
                 new LandsatI3WMSLayer(),
                 new MSVirtualEarthLayer(),
                 new OSMMapnikLayer(),

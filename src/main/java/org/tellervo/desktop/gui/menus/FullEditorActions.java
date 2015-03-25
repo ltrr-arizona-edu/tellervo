@@ -9,6 +9,7 @@ import org.tellervo.desktop.gui.menus.actions.FileLogonAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAllAction;
 import org.tellervo.desktop.gui.menus.actions.GraphCreateFileHistoryPlotAction;
+import org.tellervo.desktop.gui.menus.actions.MapCompassToggleAction;
 import org.tellervo.desktop.gui.menus.actions.ViewToExtentAction;
 
 public class FullEditorActions extends EditorActions {
@@ -19,6 +20,7 @@ public class FullEditorActions extends EditorActions {
 	public Action fileLogonAction;
 	public Action graphCreateFileHistoryPlotAction;
 	public Action viewZoomToExtent;
+	public Action mapCompassToggleAction;
 
 	public FullEditorActions(FullEditor editor)
 	{
@@ -36,6 +38,8 @@ public class FullEditorActions extends EditorActions {
 		graphCreateFileHistoryPlotAction = new GraphCreateFileHistoryPlotAction(editor);
 		
 		viewZoomToExtent = new ViewToExtentAction((FullEditor) editor);
+		
+		mapCompassToggleAction = new MapCompassToggleAction((FullEditor) editor);
 		
 		linkModel();
 

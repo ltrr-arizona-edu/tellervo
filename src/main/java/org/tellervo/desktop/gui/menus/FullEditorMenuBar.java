@@ -63,8 +63,9 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	private JMenuItem miOpen;
 	private JMenu openrecent;
 	private JMenuItem miSave;
-	private JMenuItem miSaveAs;
 	private JMenuItem miPrint;
+	
+	private JMenuItem miMapCompass;
 
 	
 	public FullEditorMenuBar(FullEditorActions actions, FullEditor editor)
@@ -248,6 +249,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		
 		add(mnAdministration);
 
+		
 		// VIEW MENU
 		
 		mnView = new JMenu("View");
@@ -256,6 +258,9 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		JMenuItem mnViewExtent = new JMenuItem(actions.viewZoomToExtent);
 		mnView.add(mnViewExtent);
 
+		miMapCompass = new JMenuItem(actions.mapCompassToggleAction);
+		mnView.add(miMapCompass);
+		
 		
 		// TOOLS MENU
 		
