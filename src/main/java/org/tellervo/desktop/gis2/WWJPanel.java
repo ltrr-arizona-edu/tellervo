@@ -240,58 +240,25 @@ public class WWJPanel extends JPanel  implements SelectListener{
 	/**
 	 * Animate zoom to the extent of all pins on the map 
 	 */
-	/*public void zoomToExtent()
+	/*public void zoomToObjectsExtent()
 	{
 		log.debug("Zooming to object...");
 		
 		if(wwd.getView().getGlobe() == null) return;
 		
-        Logging.logger().info("Zooming to Matterhorn");
-		Iterable<Marker> markers = this.wwMapPanel.getMarkerLayer().getMarkers();
 
-        View view = wwd.getView();
-
-		int count = 0;
-		
-		for(Marker marker : markers)
-		{
-			count++;
-		}
-		
-		if(count==0)
-		{
-			log.debug("No markers so can't zoom");
-			return;
-		}
-		if(count==1)
-		{
-			log.debug("Zooming to single marker");
-
-			for(Marker marker : markers)
-			{
-			         view.goTo(marker.getPosition(), 500000d);
-			         return;
-			
-			}
-			
-    		return;
-
-		}
-		
-		
+        View view = wwd.getView();		
 		
 		 Vec4[] lookAtPoints = this.computeViewLookAtForScene(wwd.getView());
          if (lookAtPoints == null)
-        {
+         {
              return;
 
-        	}
+         }
         
          else if (lookAtPoints.length != 3)
          {
-        	 
-        	 
-        	 
+         	 
         	 return;
          }
 
@@ -305,7 +272,7 @@ public class WWJPanel extends JPanel  implements SelectListener{
 	
     public Vec4[] computeViewLookAtForScene(View view)
     {
-    	WorldWindow wwd = this.wwMapPanel.getWwd();
+    	
         Globe globe = wwd.getModel().getGlobe();
         
         if(globe==null) return null;
@@ -320,11 +287,11 @@ public class WWJPanel extends JPanel  implements SelectListener{
 	
     protected void addExtents(ExtentVisibilitySupport vs)
     {
-    	WorldWindow wwd = this.wwMapPanel.getWwd();
+    
 
     	
         // Compute screen extents for WWIcons which have feedback information from their IconRenderer.
-        Iterable<?> iterable = this.wwMapPanel.getMarkerLayer().getMarkers();
+        Iterable<?> iterable = getMarkerLayer().getMarkers();
         if (iterable == null)
             return;
 
