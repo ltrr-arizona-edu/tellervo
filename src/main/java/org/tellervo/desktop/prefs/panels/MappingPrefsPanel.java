@@ -40,6 +40,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gis.GrfxWarning;
 import org.tellervo.desktop.gis.WMSTableModel;
+import org.tellervo.desktop.gis2.OpenGLTestCapabilities;
 import org.tellervo.desktop.prefs.AddWMSServerDialog;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.schema.WSIWmsServer;
@@ -137,7 +138,7 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 		add(panelWarning);
 
 		// Enable/Disable mapping
-		setMappingEnabled(!App.prefs.getBooleanPref(PrefKey.OPENGL_FAILED, false));
+		setMappingEnabled(OpenGLTestCapabilities.isOpenGLCapable());
 		populateWMSTable();
 		
 		tblWMS.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
@@ -197,7 +198,7 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 
 	@Override
 	public void refresh() {
-		setMappingEnabled(true);		
+		
 	}
 	
 }

@@ -13,6 +13,8 @@ public class OpenGLTestCapabilities implements GLEventListener{
 	public StringBuilder messages;
 	public boolean fail = false;
 	
+	private static boolean previouslyTestedAsOpenGLCapable = false;
+	private static boolean testedPreviously = false;
 
 	public static String getOpenGLProblems()
 	{
@@ -29,11 +31,24 @@ public class OpenGLTestCapabilities implements GLEventListener{
 	    OpenGLTestCapabilities testClass = new OpenGLTestCapabilities();
 	    canvas.addGLEventListener(testClass);
 	    
+	    
 	    return testClass.messages.toString();
 
 	}
 	
+	
+	
 	public static boolean isOpenGLCapable()
+	{
+		if(testedPreviously)
+		{
+			return previouslyTestedAsOpenGLCapable;
+		}
+		
+		return testOpenGL();
+	}
+	
+	private static boolean testOpenGL()
 	{
 	    GLCapabilities caps = new GLCapabilities(GLProfile.getMaxFixedFunc(true));
 		
@@ -48,6 +63,9 @@ public class OpenGLTestCapabilities implements GLEventListener{
 	    OpenGLTestCapabilities testClass = new OpenGLTestCapabilities();
 	    canvas.addGLEventListener(testClass);
 
+	    testedPreviously = true;
+	    previouslyTestedAsOpenGLCapable = !testClass.fail;
+	    
 	    return !testClass.fail;
 
 	}

@@ -16,10 +16,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gis2.OpenGLTestCapabilities;
 import org.tellervo.desktop.gis2.TridasEntityLayer;
 import org.tellervo.desktop.gis2.WWJPanel;
 import org.tellervo.desktop.gui.Bug;
@@ -103,7 +102,8 @@ public class FullEditor extends AbstractEditor {
 		tabbedPane.addTab("Metadata", Builder.getIcon("database.png", 16), metadataHolder, null);
 		tabbedPane.addTab("ComponentsViewer", Builder.getIcon("history.png", 16), componentHolder, null);
 		tabbedPane.addTab("DependentsViewer", Builder.getIcon("dependent.png", 16), dependentHolder, null);
-		tabbedPane.addTab("Map", Builder.getIcon("maptab.png", 16), mapHolder, null);
+		
+		if(OpenGLTestCapabilities.isOpenGLCapable()) tabbedPane.addTab("Map", Builder.getIcon("maptab.png", 16), mapHolder, null);
 		
 			
 		itemSelected();
@@ -119,7 +119,7 @@ public class FullEditor extends AbstractEditor {
 				if(evt.getClickCount()>1)
 				{
 					// Zoom map
-					wwMapPanel.zoomToSample(getSample());
+					if(OpenGLTestCapabilities.isOpenGLCapable()) wwMapPanel.zoomToSample(getSample());
 				}
 			}
 
@@ -153,6 +153,9 @@ public class FullEditor extends AbstractEditor {
 	
 	private void initMapPanel()
 	{
+		if(!OpenGLTestCapabilities.isOpenGLCapable()) return;
+
+		
 		wwMapPanel = new WWJPanel();
 		mapHolder.add(wwMapPanel, BorderLayout.CENTER);
 		
@@ -181,8 +184,7 @@ public class FullEditor extends AbstractEditor {
 				
 			}
 			
-		});
-		
+		});		
 	}
 	
 	/**
@@ -374,7 +376,7 @@ public class FullEditor extends AbstractEditor {
 					dependentHolder.add(dependentsPanel, BorderLayout.CENTER);
 
 					// Highlight map pin
-					wwMapPanel.highlightMarkerForSample(getSample());
+					if(OpenGLTestCapabilities.isOpenGLCapable()) wwMapPanel.highlightMarkerForSample(getSample());
 					
 					this.revalidate();
 				} catch (Exception e)

@@ -110,29 +110,33 @@ public class Startup  {
 			// let's go...
 
 			
-			
-			if(!App.isTellervoLiteMode())
+			// Open the editor
+			if(App.isTellervoLiteMode())
 			{
+				// Lite mode
+				LiteEditor editor = LiteEditor.getNewInstance();
+				App.mainWindow = editor;
+				editor.setVisible(true);
+			}
+			else
+			{
+				// Full mode - but first check OpenGL capabilities.
 				if(OpenGLTestCapabilities.isOpenGLCapable())
 				{
 					log.debug("Computer is OpenGL capable");
 				}
 				else
 				{
-					log.debug("Computer is not OpenGL capable");
+					log.warn("Computer is not OpenGL capable. Mapping will be disabled");
+					log.warn("The following debug report may be helpful...");
+					log.warn(OpenGLTestCapabilities.getOpenGLProblems());
 				}
 				
 				// Full Tellervo uses editor as main window
 				FullEditor editor = FullEditor.getInstance();
 				App.mainWindow = editor;
 				editor.setVisible(true);
-			}
-			else
-			{
 
-				LiteEditor editor = LiteEditor.getNewInstance();
-				App.mainWindow = editor;
-				editor.setVisible(true);
 			}
 			
 		} catch (Throwable t) {
