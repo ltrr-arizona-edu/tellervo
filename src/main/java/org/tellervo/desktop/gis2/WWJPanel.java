@@ -32,10 +32,15 @@ import gov.nasa.worldwind.layers.Earth.USGSTopoLowRes;
 import gov.nasa.worldwind.layers.Earth.USGSTopoMedRes;
 import gov.nasa.worldwind.layers.Earth.USGSUrbanAreaOrtho;
 import gov.nasa.worldwind.layers.Earth.UTMGraticuleLayer;
+import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
+import gov.nasa.worldwind.ogc.kml.KMLRoot;
+import gov.nasa.worldwind.ogc.kml.impl.KMLController;
 import gov.nasa.worldwind.pick.PickedObject;
 import gov.nasa.worldwind.render.markers.Marker;
 import gov.nasa.worldwind.util.Logging;
 import gov.nasa.worldwind.util.StatusBar;
+import gov.nasa.worldwind.util.layertree.KMLLayerTreeNode;
+import gov.nasa.worldwind.util.layertree.KMLNetworkLinkTreeNode;
 import gov.nasa.worldwindx.examples.LayerPanel;
 
 import java.awt.BorderLayout;
@@ -43,9 +48,12 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +73,7 @@ public class WWJPanel extends JPanel  implements SelectListener{
 	
 	
 	protected WorldWindow wwd;
-	protected LayerPanel layerPanel;
+	public LayerPanel layerPanel;
 	protected StatusBar statusBar;
 	protected LayerList layersList;
 	private RenderableLayer annotationLayer;
@@ -76,6 +84,11 @@ public class WWJPanel extends JPanel  implements SelectListener{
 
 	}
 
+	public LayerList getLayersList()
+	{
+		return layersList;
+	}
+	
 	private void init()
 	{
 		// Create map and holder
@@ -148,6 +161,9 @@ public class WWJPanel extends JPanel  implements SelectListener{
         
         layersList = new LayerList(layers);
 
+        WorldMapLayer layer = new WorldMapLayer();
+        //layer.get
+        
         // Create two models and pass them the shared layers.
         Model model = new BasicModel();
         model.setGlobe(earth);
@@ -538,6 +554,89 @@ public class WWJPanel extends JPanel  implements SelectListener{
         }
 		
 	}
+	
+    public static void insertBeforePlacenames(WorldWindow wwd, Layer layer)
+    {
+        // Insert the layer into the layer list just before the placenames.
+        int compassPosition = 0;
+        LayerList layers = wwd.getModel().getLayers();
+        for (Layer l : layers)
+        {
+            if (l instanceof PlaceNameLayer)
+                compassPosition = layers.indexOf(l);
+        }
+        layers.add(compassPosition, layer);
+    }
+    
+    public static void insertBeforeCompass(WorldWindow wwd, Layer layer)
+    {
+        // Insert the layer into the layer list just before the compass.
+        int compassPosition = 0;
+        LayerList layers = wwd.getModel().getLayers();
+        for (Layer l : layers)
+        {
+            if (l instanceof CompassLayer)
+                compassPosition = layers.indexOf(l);
+        }
+        layers.add(compassPosition, layer);
+    }
+
+    
+    /**
+     * Adds the specified <code>kmlRoot</code> to this app frame's <code>WorldWindow</code> as a new
+     * <code>Layer</code>, and adds a new <code>KMLLayerTreeNode</code> for the <code>kmlRoot</code> to this app
+     * frame's on-screen layer tree.
+     * <p/>
+     * This expects the <code>kmlRoot</code>'s <code>AVKey.DISPLAY_NAME</code> field to contain a display name
+     * suitable for use as a layer name.
+     *
+     * @param kmlRoot the KMLRoot to add a new layer for.
+     */
+    public void addKMLLayer(KMLRoot kmlRoot)
+    {
+        // Create a KMLController to adapt the KMLRoot to the World Wind renderable interface.
+        KMLController kmlController = new KMLController(kmlRoot);
+
+        // Adds a new layer containing the KMLRoot to the end of the WorldWindow's layer list. This
+        // retrieves the layer name from the KMLRoot's DISPLAY_NAME field.
+        RenderableLayer layer = new RenderableLayer();
+        layer.setName((String) kmlRoot.getField(AVKey.DISPLAY_NAME));
+        layer.addRenderable(kmlController);
+        this.getWwd().getModel().getLayers().add(layer);
+
+        // Adds a new layer tree node for the KMLRoot to the on-screen layer tree, and makes the new node visible
+        // in the tree. This also expands any tree paths that represent open KML containers or open KML network
+        // links.
+       // KMLLayerTreeNode layerNode = new KMLLayerTreeNode(layer, kmlRoot);
+        //wwd.getModel().getLayers().addLayer(layerNode);
+        //this.layerTree.makeVisible(layerNode.getPath());
+        //layerNode.expandOpenContainers(this.layerTree);
+
+        // Listens to refresh property change events from KML network link nodes. Upon receiving such an event this
+        // expands any tree paths that represent open KML containers. When a KML network link refreshes, its tree
+        // node replaces its children with new nodes created from the refreshed content, then sends a refresh
+        // property change event through the layer tree. By expanding open containers after a network link refresh,
+        // we ensure that the network link tree view appearance is consistent with the KML specification.
+       /* layerNode.addPropertyChangeListener(AVKey.RETRIEVAL_STATE_SUCCESSFUL, new PropertyChangeListener()
+        {
+            public void propertyChange(final PropertyChangeEvent event)
+            {
+                if (event.getSource() instanceof KMLNetworkLinkTreeNode)
+                {
+                    // Manipulate the tree on the EDT.
+                    SwingUtilities.invokeLater(new Runnable()
+                    {
+                        public void run()
+                        {
+                         //   ((KMLNetworkLinkTreeNode) event.getSource()).expandOpenContainers(layerTree);
+                            getWwd().redraw();
+                        }
+                    });
+                }
+            }
+        });*/
+    }
+}
     
 	
-}
+

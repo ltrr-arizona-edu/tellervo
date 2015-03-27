@@ -308,6 +308,36 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	    
 		add(mnGraph);
 
+		// MAP MENU
+		
+		JMenu mnMap = new JMenu("Map");
+		
+		JMenuItem miCompass = new JMenuItem(actions.mapCompassToggleAction);
+		mnMap.add(miCompass);
+		
+		JMenuItem miWorldMapLayer = new JMenuItem(actions.mapWorldMapLayerToggleAction);
+		mnMap.add(miWorldMapLayer);
+		
+		JMenuItem miStereo = new JMenuItem(actions.mapStereoModeAction);
+		mnMap.add(miStereo);
+		
+		JMenuItem miSave = new JMenuItem(actions.mapSaveCurrentMapAsImagesAction);
+		mnMap.add(miSave);
+		
+		JMenuItem miShapefileLayer = new JMenuItem(actions.mapShapefileLayerAction);
+		mnMap.add(miShapefileLayer);
+		
+		JMenuItem miKMLLayer = new JMenuItem(actions.mapKMLLayerAction);
+		mnMap.add(miKMLLayer);
+		
+		JMenuItem miGISImage = new JMenuItem(actions.mapGISImageAction);
+		mnMap.add(miGISImage);
+		
+		JMenuItem miWMSLayer = new JMenuItem(actions.mapWMSLayerAction);
+		mnMap.add(miWMSLayer);
+		
+		add(mnMap);
+		
 		
 		// HELP MENU
 		
@@ -395,6 +425,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		
 		
 		add(mnHelp);
+
 
 		
 

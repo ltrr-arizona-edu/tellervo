@@ -431,6 +431,14 @@ public class FullEditor extends AbstractEditor {
 		AbstractButton graph = new TitlelessButton(actions.graphAllSeriesAction);
 		toolBar.add(graph);
 
+		// Map Buttons
+		/*toolBar.addSeparator();
+		AbstractButton stereo = new TitlelessButton(actions.mapStereoModeAction);
+		toolBar.add(stereo);
+		
+		AbstractButton shapefile = new TitlelessButton(actions.mapShapefileLayerAction);
+		toolBar.add(shapefile);*/
+		
 		contentPane.add(toolBar, "cell 0 1,growx,aligny top");
 
 	}

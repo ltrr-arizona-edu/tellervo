@@ -10,14 +10,14 @@ import javax.swing.AbstractAction;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.ui.Builder;
 
-public class MapCompassToggleAction extends AbstractAction {
+public class MapWorldMapLayerToggleAction extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
 	private FullEditor editor;
 	
-	public MapCompassToggleAction(FullEditor editor) {
-        super("Hide/Show compass", Builder.getIcon("compass.png", 22));
-		putValue(SHORT_DESCRIPTION, "Show/show the map compass");
+	public MapWorldMapLayerToggleAction(FullEditor editor) {
+        super("Overview Map", Builder.getIcon("compass.png", 22));
+		putValue(SHORT_DESCRIPTION, "Show/show the world map layer");
         this.editor = editor;
 
     }
@@ -25,11 +25,11 @@ public class MapCompassToggleAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		Layer compasslayer = editor.getMapPanel().getWwd()
+		Layer worldMapLayer = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
-				.getLayerByName(Logging.getMessage("layers.CompassLayer.Name"));
+				.getLayerByName(Logging.getMessage("layers.Earth.WorldMapLayer.Name"));
 		
-		compasslayer.setEnabled(!compasslayer.isEnabled());
+		worldMapLayer.setEnabled(!worldMapLayer.isEnabled());
 		
 	}
 

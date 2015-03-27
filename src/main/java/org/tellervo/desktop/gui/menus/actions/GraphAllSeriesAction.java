@@ -17,7 +17,7 @@ public class GraphAllSeriesAction extends AbstractAction{
 
 	
 	public GraphAllSeriesAction(AbstractEditor editor) {
-        super(I18n.getText("menus.graph.everything"));
+        super(I18n.getText("menus.graph.everything"), Builder.getIcon("graph.png", 22));
         putValue(SHORT_DESCRIPTION, "Graph all series");
 
         this.editor = editor;

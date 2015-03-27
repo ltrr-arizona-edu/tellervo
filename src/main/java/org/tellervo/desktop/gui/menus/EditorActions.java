@@ -66,6 +66,7 @@ import org.tellervo.desktop.gui.menus.actions.HelpSetupWizardAction;
 import org.tellervo.desktop.gui.menus.actions.HelpSystemsInformationAction;
 import org.tellervo.desktop.gui.menus.actions.HelpVideoTutorialsAction;
 import org.tellervo.desktop.gui.menus.actions.HelpXMLCommunicationsViewerAction;
+import org.tellervo.desktop.gui.menus.actions.MapShapefileLayerAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.RemoveSeriesFromWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateAction;
@@ -179,6 +180,8 @@ public abstract class EditorActions {
 	public Action helpMVCMonitorAction;
 	public Action helpSystemsInformationAction;
 	public Action helpAboutTellervoAction;
+	
+
 
 	private Sample currentSample;
 
@@ -269,6 +272,8 @@ public abstract class EditorActions {
 
 		addSeriesAction = new AddSeriesToWorkspaceAction(editor);
 		removeSeriesAction = new RemoveSeriesFromWorkspaceAction(editor);
+		
+		
 		
 
 
