@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.ComplexPresenceAbsence;
 import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.NormalTridasUnit;
@@ -90,7 +91,7 @@ public class SQLMarshaller {
 		
 		// Generic fields
 		TridasGenericField labCode = new TridasGenericField();
-		labCode.setName("tellervo.objectLabCode");
+		labCode.setName(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE);
 		labCode.setType("xs:string");
 		labCode.setValue(rs.getString("code"));
 		object.getGenericFields().add(labCode);

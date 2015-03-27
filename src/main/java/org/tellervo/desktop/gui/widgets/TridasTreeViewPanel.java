@@ -83,6 +83,7 @@ import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSITag;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.io.util.TridasUtils.TreeDepth;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -1457,7 +1458,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 			// Entity is an object so highlight in tree
 			TridasObjectEx object = (TridasObjectEx) entity;
 					
-			TreePath path = tree.getNextMatch(GenericFieldUtils.findField(object, "tellervo.objectLabCode").getValue().toString(), 0, Position.Bias.Forward);
+			TreePath path = tree.getNextMatch(GenericFieldUtils.findField(object, TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE).getValue().toString(), 0, Position.Bias.Forward);
 			tree.setSelectionPath(path);
 			tree.scrollPathToVisible(path);
 		}

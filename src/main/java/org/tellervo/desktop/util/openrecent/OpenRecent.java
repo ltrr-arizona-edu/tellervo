@@ -46,7 +46,7 @@ import org.tellervo.desktop.editor.LiteEditor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -279,7 +279,7 @@ public class OpenRecent {
 			
 			switch(desc.getLoaderType()) {
 			case CWTE: {
-				TellervoWsiTridasElement element = new TellervoWsiTridasElement(desc.getIdentifier());
+				TellervoWSILoader element = new TellervoWSILoader(desc.getIdentifier());
 				
 				
 				

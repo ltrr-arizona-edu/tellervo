@@ -57,7 +57,7 @@ import org.tridas.schema.TridasRadius;
  *
  */
 
-public class TellervoWsiTridasElement extends AbstractTellervoGUIDeletableSampleLoader<SeriesResource> implements Cloneable {
+public class TellervoWSILoader extends AbstractTellervoGUIDeletableSampleLoader<SeriesResource> implements Cloneable {
 	private String shortName;
 	private String name;
 	private TridasIdentifier identifier;
@@ -67,7 +67,7 @@ public class TellervoWsiTridasElement extends AbstractTellervoGUIDeletableSample
 	 * Create a new TellervoWsiTridasElement from this identifier
 	 * @param identifier
 	 */
-	public TellervoWsiTridasElement(TridasIdentifier identifier) {
+	public TellervoWSILoader(TridasIdentifier identifier) {
 		this.identifier = identifier;
 		
 		name = shortName = identifier.toString();
@@ -77,7 +77,7 @@ public class TellervoWsiTridasElement extends AbstractTellervoGUIDeletableSample
 	 * Create a copy of this TellervoWsiTridasElement
 	 * @param src
 	 */
-	public TellervoWsiTridasElement(TellervoWsiTridasElement src) {
+	public TellervoWSILoader(TellervoWSILoader src) {
 		this.identifier = (TridasIdentifier) src.identifier.clone();
 		src.identifier.copyTo(this.identifier);
 		
@@ -94,9 +94,9 @@ public class TellervoWsiTridasElement extends AbstractTellervoGUIDeletableSample
 	 * @param s
 	 * @return the TellervoWsiTridasElement (same as s.getLoader())
 	 */
-	public static TellervoWsiTridasElement attachNewSample(Sample s) {
+	public static TellervoWSILoader attachNewSample(Sample s) {
 		TridasIdentifier newid = NewTridasIdentifier.getInstance("unknown");
-		TellervoWsiTridasElement element = new TellervoWsiTridasElement(newid);
+		TellervoWSILoader element = new TellervoWSILoader(newid);
 		
 		s.setLoader(element);
 		s.getSeries().setIdentifier(newid);
@@ -311,8 +311,8 @@ public class TellervoWsiTridasElement extends AbstractTellervoGUIDeletableSample
 
 	@Override
 	public boolean equals(Object o) {
-		if(o instanceof TellervoWsiTridasElement) {
-			TellervoWsiTridasElement o2 = (TellervoWsiTridasElement) o;
+		if(o instanceof TellervoWSILoader) {
+			TellervoWSILoader o2 = (TellervoWSILoader) o;
 
 			return identifier.equals(o2.identifier);
 		}
@@ -327,7 +327,7 @@ public class TellervoWsiTridasElement extends AbstractTellervoGUIDeletableSample
 	
 	@Override
 	public Object clone() {
-		return new TellervoWsiTridasElement(this);
+		return new TellervoWSILoader(this);
 	}
 
 	public SampleType getSampleType() {

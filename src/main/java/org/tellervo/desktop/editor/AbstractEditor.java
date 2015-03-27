@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.datatransfer.*;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
@@ -28,8 +26,11 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
+import javax.swing.ToolTipManager;
 import javax.swing.TransferHandler;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -67,7 +68,7 @@ import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValues;
 
 
-public abstract class AbstractEditor extends JFrame implements PrefsListener, SaveableDocument, SampleListener, WindowListener, ActionListener{
+public abstract class AbstractEditor extends JFrame implements PrefsListener, SaveableDocument, SampleListener, WindowListener, ActionListener, ListDataListener{
 
 	private static final long serialVersionUID = 1L;
 	protected final static Logger log = LoggerFactory.getLogger(AbstractEditor.class);
@@ -104,6 +105,8 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		
 		// Initialize the app (needed for WindowBuilder)
 		if (!App.isInitialized()) App.init();
+		
+		ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
 		setTitle("Tellervo");
 		this.setIconImage(Builder.getApplicationIcon());
@@ -126,6 +129,9 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		contentPane.add(splitPaneWorkspaceAndContent, "cell 0 2,grow");
 
 		samplesModel = new SampleListModel();
+		
+		samplesModel.addListDataListener(this);
+		
 
 		// Setup the workspace panel and add
 		initWorkspacePanel();

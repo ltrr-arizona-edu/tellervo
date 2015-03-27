@@ -29,6 +29,7 @@ import net.opengis.gml.schema.PointType;
 import net.opengis.gml.schema.Pos;
 
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasAddress;
@@ -119,7 +120,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		
 		boolean found = false;
 		for(TridasGenericField field : fields){
-			if(field.getName().equals("tellervo.objectLabCode")){
+			if(field.getName().equals(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE)){
 				setProperty(OBJECT_CODE, field.getValue());
 				found = true;
 			}
@@ -236,7 +237,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	
 	public void populateTridasObject(TridasObject argObject){
 		TridasGenericField genericField = new TridasGenericField();
-		genericField.setName("tellervo.objectLabCode");
+		genericField.setName(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE);
 		genericField.setValue(getProperty(OBJECT_CODE)+"");
 		argObject.getGenericFields().add(genericField);
 		

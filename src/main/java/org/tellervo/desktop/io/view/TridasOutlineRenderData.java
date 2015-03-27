@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.interfaces.ITridas;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
@@ -91,7 +92,7 @@ public class TridasOutlineRenderData implements RenderDataProvider {
 			TridasObject obj = ((TridasObject)entity);
 			for(TridasGenericField gf : obj.getGenericFields())
 			{
-				if (gf.getName().equals("tellervo.objectLabCode"))
+				if (gf.getName().equals(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE))
 				{
 					return gf.getValue() + " - "+obj.getTitle();
 				}

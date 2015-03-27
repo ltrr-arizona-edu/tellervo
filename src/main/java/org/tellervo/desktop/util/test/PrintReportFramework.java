@@ -27,7 +27,7 @@ import java.util.List;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.XMLDebugView;
 import org.tellervo.desktop.platform.Platform;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.desktop.tridasv2.TridasComparator;
@@ -48,7 +48,7 @@ public class PrintReportFramework {
 		identifier.setValue(id);
 		
 		// make element
-		TellervoWsiTridasElement element = new TellervoWsiTridasElement(identifier);
+		TellervoWSILoader element = new TellervoWSILoader(identifier);
 		
 		// load it
 		return element.load();

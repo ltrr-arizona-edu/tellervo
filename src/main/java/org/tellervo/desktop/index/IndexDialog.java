@@ -69,7 +69,7 @@ import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -249,7 +249,7 @@ public class IndexDialog extends JDialog {
 			return false;
 		}
 		
-		if(loader instanceof TellervoWsiTridasElement) 
+		if(loader instanceof TellervoWSILoader) 
 			return tellervoWsiApplyIndex(index);
 				
 		// well, fine then. Just apply the index to the existing sample.
@@ -287,7 +287,7 @@ public class IndexDialog extends JDialog {
 		Sample tmp = new Sample(series);
 
 		try {
-			TellervoWsiTridasElement cwe = new TellervoWsiTridasElement(series.getIdentifier());
+			TellervoWSILoader cwe = new TellervoWSILoader(series.getIdentifier());
 			
 			// here's where we do the "meat"
 			if(cwe.save(tmp, this)) {

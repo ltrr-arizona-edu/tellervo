@@ -392,8 +392,9 @@ public class FullEditor extends AbstractEditor {
 	
 	protected void initToolbar() {
 
+		
 		JToolBar toolBar = new JToolBar();
-
+		
 		// File Buttons
 		AbstractButton fileOpen = new TitlelessButton(actions.fileOpenAction);
 		toolBar.add(fileOpen);
@@ -614,6 +615,32 @@ public class FullEditor extends AbstractEditor {
 		    }
 		});
 			
+	}
+
+	@Override
+	public void contentsChanged(ListDataEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void intervalAdded(ListDataEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void intervalRemoved(ListDataEvent e) {
+		if(this.samplesModel.getSize()==0)
+		{
+			dataPanel.removeAll();
+			this.metadataHolder.removeAll();
+			this.dependentHolder.removeAll();
+			this.componentHolder.removeAll();
+			
+		}
+		
+		
 	}
 
 	

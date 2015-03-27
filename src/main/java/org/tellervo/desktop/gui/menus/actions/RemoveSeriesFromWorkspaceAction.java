@@ -38,6 +38,11 @@ public class RemoveSeriesFromWorkspaceAction extends AbstractAction {
 				editor.getLstSamples().setSelectedIndex(editor.getLstSamples().getLastVisibleIndex());
 			}
 			
+			if(editor.getSamples().size()==0)
+			{
+				
+			}
+			
 			editor.getLstSamples().repaint();
 			editor.itemSelected();
 		} catch (Exception ex)

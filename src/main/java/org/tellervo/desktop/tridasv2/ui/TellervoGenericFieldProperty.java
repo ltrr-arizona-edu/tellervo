@@ -7,6 +7,7 @@ import java.util.Iterator;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.schema.SampleStatus;
 import org.tellervo.schema.WSICuration;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
@@ -132,7 +133,7 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 	
 	public static TellervoGenericFieldProperty getObjectCodeProperty()
 	{
-		TellervoGenericFieldProperty tgf = new TellervoGenericFieldProperty("object.code", "objectCode", "tellervo.objectLabCode", 
+		TellervoGenericFieldProperty tgf = new TellervoGenericFieldProperty("object.code", "objectCode", TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE, 
 				String.class, TridasObject.class, true, false);
 		return tgf;
 	}

@@ -26,7 +26,7 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.BaseSample;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
@@ -353,7 +353,7 @@ public class EditorFactory {
 			sample.setMeta(Metadata.TITLE, I18n.getText("general.newEntry")+": " + title);
 			
 			// setup our loader and series identifier
-			TellervoWsiTridasElement.attachNewSample(sample);
+			TellervoWSILoader.attachNewSample(sample);
 
 			// start the editor
 			LiteEditor ed = new LiteEditor();
@@ -417,7 +417,7 @@ public class EditorFactory {
 		}
 		
 		// setup our loader and series identifier
-		TellervoWsiTridasElement.attachNewSample(sample);
+		TellervoWSILoader.attachNewSample(sample);
 
 		// start the editor
 		if(container instanceof FullEditor)

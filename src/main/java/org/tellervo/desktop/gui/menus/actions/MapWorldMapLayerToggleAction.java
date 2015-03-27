@@ -16,8 +16,8 @@ public class MapWorldMapLayerToggleAction extends AbstractAction {
 	private FullEditor editor;
 	
 	public MapWorldMapLayerToggleAction(FullEditor editor) {
-        super("Overview Map", Builder.getIcon("compass.png", 22));
-		putValue(SHORT_DESCRIPTION, "Show/show the world map layer");
+        super("Overview Map", Builder.getIcon("mapoverview.png", 22));
+		putValue(SHORT_DESCRIPTION, "Show/hide the overview map");
         this.editor = editor;
 
     }

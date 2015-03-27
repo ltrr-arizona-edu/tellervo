@@ -1,10 +1,6 @@
 package org.tellervo.desktop.gui.menus.actions;
 
-import gov.nasa.worldwind.Configuration;
-import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwindx.examples.ApplicationTemplate;
-import gov.nasa.worldwindx.examples.WMSLayerManager.AppFrame;
 
 import java.awt.event.ActionEvent;
 
@@ -28,7 +24,7 @@ public class MapWMSLayerAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		ApplicationTemplate.start("World Wind WMS Layers", AppFrame.class);
+		//ApplicationTemplate.start("World Wind WMS Layers", AppFrame.class);
 		
 	}
 

@@ -17,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
+import javax.swing.event.ListDataEvent;
 
 import org.apache.commons.io.FilenameUtils;
 import org.tellervo.desktop.core.App;
@@ -822,6 +823,24 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		    }
 		});
 			
+	}
+
+	@Override
+	public void contentsChanged(ListDataEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void intervalAdded(ListDataEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void intervalRemoved(ListDataEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
 		
 }

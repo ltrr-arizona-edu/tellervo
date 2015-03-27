@@ -1,15 +1,11 @@
 package org.tellervo.desktop.gui.menus.actions;
 
-import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.ogc.kml.KMLAbstractFeature;
 import gov.nasa.worldwind.ogc.kml.KMLRoot;
 import gov.nasa.worldwind.util.WWIO;
 import gov.nasa.worldwind.util.WWUtil;
-import gov.nasa.worldwindx.examples.kml.KMLViewer.AppFrame;
 
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +28,7 @@ public class MapKMLLayerAction extends AbstractAction {
 	protected WWJPanel wwjPanel;
 	
 	public MapKMLLayerAction(FullEditor editor) {
-        super("KML Layer", Builder.getIcon("map.png", 22));
+        super("KML Layer", Builder.getIcon("kml.png", 22));
 		putValue(SHORT_DESCRIPTION, "KML Layer");
         this.editor = editor;
 

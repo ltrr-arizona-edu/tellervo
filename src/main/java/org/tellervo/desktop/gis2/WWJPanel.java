@@ -20,6 +20,7 @@ import gov.nasa.worldwind.layers.SkyColorLayer;
 import gov.nasa.worldwind.layers.SkyGradientLayer;
 import gov.nasa.worldwind.layers.StarsLayer;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
+import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwind.layers.Earth.BMNGWMSLayer;
 import gov.nasa.worldwind.layers.Earth.CountryBoundariesLayer;
@@ -72,6 +73,7 @@ public class WWJPanel extends JPanel  implements SelectListener{
 
 	private JPanel mainPanel;
 	
+	private ViewControlsLayer viewControlsLayer;
 	
 	protected WorldWindow wwd;
 	public LayerPanel layerPanel;
@@ -111,6 +113,7 @@ public class WWJPanel extends JPanel  implements SelectListener{
         this.annotationLayer = new RenderableLayer();
         annotationLayer.setName("Popup information");
         
+        viewControlsLayer = new ViewControlsLayer();
         
         // Create layers that both World Windows can share.
         Layer[] layers = new Layer[]
@@ -123,7 +126,7 @@ public class WWJPanel extends JPanel  implements SelectListener{
                 new BMNGWMSLayer(),
                                 
                 new CompassLayer(),
-                new ViewControlsLayer(),
+                viewControlsLayer,
                 new WorldMapLayer(),
                 new UTMGraticuleLayer(),
                 new MGRSGraticuleLayer(),
@@ -192,6 +195,10 @@ public class WWJPanel extends JPanel  implements SelectListener{
 		splitPane.setOneTouchExpandable(true);
 		
 		wwd.addSelectListener(this);
+		
+		
+        // Create and install the view controls layer and register a controller for it with the World Window.
+        this.getWwd().addSelectListener(new ViewControlsSelectListener(this.getWwd(), viewControlsLayer));
 	}
 	
 	public WorldWindow getWwd() {

@@ -4,6 +4,7 @@ import java.awt.Window;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -19,7 +20,7 @@ import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
 import org.tellervo.desktop.io.IdentityItem;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
@@ -28,24 +29,34 @@ import org.tellervo.desktop.util.TridasManipUtil;
 import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.ComplexPresenceAbsence;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasMeasuringMethod;
+import org.tridas.schema.ObjectFactory;
+import org.tridas.schema.PresenceAbsence;
+import org.tridas.schema.TridasBark;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasHeartwood;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasMeasuringMethod;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasPith;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+import org.tridas.schema.TridasSapwood;
+import org.tridas.schema.TridasWoodCompleteness;
 import org.tridas.util.TridasObjectEx;
 
 
@@ -382,7 +393,11 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				case 7: 
 					item = id.getSeriesItem(); 
 					if(item==null || item.getCode()==null) continue;
-					code = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()+ codeDelimiter + id.getSampleItem().getCode()+codeDelimiter + id.getRadiusItem().getCode()+codeDelimiter + id.getSeriesItem().getCode();
+					code = id.getObjectItem().getCode() + codeDelimiter + 
+						   id.getElementItem().getCode()+ codeDelimiter + 
+						   id.getSampleItem().getCode()+codeDelimiter + 
+						   id.getRadiusItem().getCode()+codeDelimiter + 
+						   id.getSeriesItem().getCode();
 					if(tridasCache.containsKey(code))
 					{
 						entity = tridasCache.get(code);
@@ -423,7 +438,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	if(clazz.equals(SearchReturnObject.OBJECT))
     	{
     		if(codes.length!=1) {
-    			log.debug("Wrong number of codes"); 
+    			log.debug("Wrong number of codes for object when splitting: "+code); 
     			return null;
     		}
     		
@@ -450,7 +465,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	else if (clazz.equals(SearchReturnObject.ELEMENT))
     	{
     		if(codes.length!=2) {
-    			log.debug("Wrong number of codes"); 
+    			log.debug("Wrong number of codes for element when splitting: "+code); 
     			return null;
     		}
     		
@@ -478,7 +493,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	else if (clazz.equals(SearchReturnObject.SAMPLE))
     	{
     		if(codes.length!=3) {
-    			log.debug("Wrong number of codes"); 
+    			log.debug("Wrong number of codes for sample when splitting: "+code); 
     			return null;
     		}
     		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, codes[0]);
@@ -506,7 +521,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	else if (clazz.equals(SearchReturnObject.RADIUS))
     	{
     		if(codes.length!=4) {
-    			log.debug("Wrong number of codes"); 
+    			log.debug("Wrong number of codes for radius when splitting: "+code); 
     			return null;
     		}
     		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, codes[0]);
@@ -535,7 +550,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	else if (clazz.equals(SearchReturnObject.MEASUREMENT_SERIES))
     	{
     		if(codes.length!=5) {
-    			log.debug("Wrong number of codes"); 
+    			log.debug("Wrong number of codes for series when splitting: "+code); 
     			return null;
     		}
     		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, codes[0]);
@@ -573,14 +588,14 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 			{
 				TridasObjectEx object = new TridasObjectEx();
 				object.setTitle(id.getObjectItem().getCode());
-				//TridasUtils.setObjectCode(object, id.getObjectItem().getCode());
+				TridasUtils.setObjectCode(object, id.getObjectItem().getCode());
 				ControlledVoc cv = new ControlledVoc();
 				cv.setNormal("Site");
 				cv.setNormalId("1");
 				cv.setNormalStd("Tellervo");
 				object.setType(cv);
 				
-				object = (TridasObjectEx) doSave(object);
+				object = (TridasObjectEx) doSave(object, null);
 				
 				if(object!=null)
 				{
@@ -592,24 +607,103 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 			
 			if(id.getElementItem().isInDatabase()==false)
 			{
+				TridasElement element = new TridasElement();
+				element.setTitle(id.getElementItem().getCode());
+				ControlledVoc cv = new ControlledVoc();
+				cv.setNormal("Unknown");
+				cv.setNormalId("4");
+				cv.setNormalStd("Tellervo");
+				element.setType(cv);
+				
+				cv = new ControlledVoc();
+				cv.setNormal("Plantae");
+				cv.setNormalId("281");
+				cv.setNormalStd("Catalogue of Life Annual Checklist 2008");
+				element.setTaxon(cv);
+								
+				element = (TridasElement) doSave(element, tridasCache.get(id.getObjectItem().getCode()));
+				
+				if(element!=null)
+				{
+					tridasCache.put(id.getElementItem().getCode(), element);
+				}
 
-				
-				
 				searchForMatches(true);
 			}
 			
 			if(id.getSampleItem().isInDatabase()==false)
 			{
-
+				TridasSample sample = new TridasSample();
+				sample.setTitle(id.getSampleItem().getCode());
+				ControlledVoc cv = new ControlledVoc();
+				cv.setNormal("Unknown");
+				cv.setNormalId("4");
+				cv.setNormalStd("Tellervo");
+				sample.setType(cv);
+				
+				sample = (TridasSample) doSave(sample, tridasCache.get(id.getElementItem().getCode()));
+				
+				if(sample!=null)
+				{
+					tridasCache.put(id.getSampleItem().getCode(), sample);
+				}
+				
 				searchForMatches(true);
 			}
 						
 			if(id.getRadiusItem().isInDatabase()==false)
 			{
-		
+				TridasRadius radius = new TridasRadius();
+				radius.setTitle(id.getRadiusItem().getCode());
+				
+				TridasWoodCompleteness wc = new ObjectFactory().createTridasWoodCompleteness();
+				
+				TridasPith pith = new ObjectFactory().createTridasPith();
+				TridasHeartwood heartwd = new ObjectFactory().createTridasHeartwood();
+				TridasSapwood sapwd = new ObjectFactory().createTridasSapwood();
+				TridasBark bark = new ObjectFactory().createTridasBark();
+				
+				pith.setPresence(ComplexPresenceAbsence.UNKNOWN);
+				heartwd.setPresence(ComplexPresenceAbsence.UNKNOWN);
+				sapwd.setPresence(ComplexPresenceAbsence.UNKNOWN);
+				bark.setPresence(PresenceAbsence.ABSENT);
+				
+				wc.setPith(pith);
+				wc.setHeartwood(heartwd);
+				wc.setSapwood(sapwd);
+				wc.setBark(bark);
+				radius.setWoodCompleteness(wc);
+				
+				radius = (TridasRadius) doSave(radius, tridasCache.get(id.getSampleItem().getCode()));
+				
+				if(radius!=null)
+				{
+					tridasCache.put(id.getRadiusItem().getCode(), radius);
+				}
 				searchForMatches(true);
 			}
 			
+			if(id.getSeriesItem().isInDatabase()==false)
+			{
+				// Get the series provided by the TRiCYCLE reader
+				TridasMeasurementSeries readerpopulatedseries = (TridasMeasurementSeries) id.getSample().getSeries();
+				
+				// Override the code with that provided by the user
+				readerpopulatedseries.setTitle(id.getSeriesItem().getCode());
+				
+				TridasMeasuringMethod mm = new TridasMeasuringMethod();
+				mm.setNormalTridas(NormalTridasMeasuringMethod.MEASURING_PLATFORM);
+				readerpopulatedseries.setMeasuringMethod(mm);
+				
+				ITridas dbseries = doSave(readerpopulatedseries, tridasCache.get(id.getRadiusItem().getCode()));
+						
+				if(dbseries!=null)
+				{ 
+					id.getSample().setSeries((ITridasSeries) dbseries);
+					tridasCache.put(id.getSeriesItem().getCode(), dbseries);
+				}
+				searchForMatches(true);
+			}
 
 		}
 	}
@@ -685,10 +779,10 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		TridasElement element = (TridasElement) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()); 
 		TridasSample sample = (TridasSample) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()  + codeDelimiter + id.getSampleItem().getCode());
 		TridasRadius radius = (TridasRadius) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()  + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode());
+				
 		
-
 		ITridasSeries series = s.getSeries();
-		TellervoWsiTridasElement.attachNewSample(s);
+		//TellervoWSILoader.attachNewSample(s);
 
 		if(object != null) {
 			s.setMeta(Metadata.OBJECT, object);
@@ -725,10 +819,21 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 			mm.setNormalTridas(NormalTridasMeasuringMethod.MEASURING_PLATFORM);
 			((TridasMeasurementSeries) series).setMeasuringMethod(mm);
 			labcode.setSeriesCode(s.getSeries().getTitle());
+			
+			
+			
+			TellervoWSILoader loader = new TellervoWSILoader(series.getIdentifier());
+			s.setSeries(series);
+			s.setLoader(loader);
+			s.setMeta(Metadata.LABCODE, labcode);
+			s.setMeta(Metadata.TITLE, LabCodeFormatter.getDefaultFormatter().format(labcode));
 		}
-
-		s.setMeta(Metadata.LABCODE, labcode);
-		s.setMeta(Metadata.TITLE, LabCodeFormatter.getDefaultFormatter().format(labcode));
+		else
+		{
+			log.error("No series!");
+			return null;
+		}
+	
 		
 		
 		
@@ -748,7 +853,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		return new EntityResource<T>(entity, parent, type);
 	}
 	
-	private ITridas doSave(ITridas temporaryEditingEntity) {
+	private ITridas doSave(ITridas temporaryEditingEntity, ITridas parentEntity) {
 		Class<? extends ITridas> type = temporaryEditingEntity.getClass();
 		
 				
@@ -761,19 +866,19 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		}
 		else if (temporaryEditingEntity instanceof TridasElement)
 		{
-			resource = getNewAccessorResource((TridasElement)temporaryEditingEntity, null, TridasElement.class);
+			resource = getNewAccessorResource((TridasElement)temporaryEditingEntity, parentEntity, TridasElement.class);
 		}
 		else if (temporaryEditingEntity instanceof TridasSample)
 		{
-			resource = getNewAccessorResource((TridasSample)temporaryEditingEntity, null, TridasSample.class);
+			resource = getNewAccessorResource((TridasSample)temporaryEditingEntity, parentEntity, TridasSample.class);
 		}
 		else if (temporaryEditingEntity instanceof TridasRadius)
 		{
-			resource = getNewAccessorResource((TridasRadius)temporaryEditingEntity, null, TridasRadius.class);
+			resource = getNewAccessorResource((TridasRadius)temporaryEditingEntity, parentEntity, TridasRadius.class);
 		}
 		else if (temporaryEditingEntity instanceof TridasMeasurementSeries)
 		{
-			resource = getNewAccessorResource((TridasMeasurementSeries)temporaryEditingEntity, null, TridasMeasurementSeries.class);
+			resource = getNewAccessorResource((TridasMeasurementSeries)temporaryEditingEntity, parentEntity, TridasMeasurementSeries.class);
 		}
 		else 
 		{

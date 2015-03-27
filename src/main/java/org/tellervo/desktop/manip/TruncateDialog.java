@@ -58,7 +58,7 @@ import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
 import org.tellervo.desktop.ui.Alert;
@@ -238,7 +238,7 @@ public class TruncateDialog extends JDialog {
 		Sample tmp = new Sample(series);		
 
 		try {
-			TellervoWsiTridasElement saver = new TellervoWsiTridasElement(series.getIdentifier());
+			TellervoWSILoader saver = new TellervoWSILoader(series.getIdentifier());
 			// here's where we do the "meat"
 			if(saver.save(tmp)) {
 				// put it in our menu
@@ -295,7 +295,7 @@ public class TruncateDialog extends JDialog {
 			}
 		}
 		
-		if(s.getLoader() instanceof TellervoWsiTridasElement) {
+		if(s.getLoader() instanceof TellervoWSILoader) {
 			return applyTellervoWSITruncation();
 		}
 		

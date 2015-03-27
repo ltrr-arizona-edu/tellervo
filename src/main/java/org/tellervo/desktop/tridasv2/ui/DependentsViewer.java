@@ -59,7 +59,7 @@ import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.PopupListener;
@@ -273,10 +273,10 @@ public class DependentsViewer extends JPanel implements ResourceEventListener, E
 		
 		loadedComprehensive = true;
 		
-		if(sample.getLoader() instanceof TellervoWsiTridasElement) {
+		if(sample.getLoader() instanceof TellervoWSILoader) {
 			
 					
-			TridasIdentifier identifier = ((TellervoWsiTridasElement) sample.getLoader()).getTridasIdentifier();
+			TridasIdentifier identifier = ((TellervoWSILoader) sample.getLoader()).getTridasIdentifier();
 			
 			if((identifier.getValue()==null) || (identifier.getValue().equals("newSeries")))
 			{

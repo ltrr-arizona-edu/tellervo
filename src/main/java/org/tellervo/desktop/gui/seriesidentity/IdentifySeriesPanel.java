@@ -68,6 +68,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	private NormalTridasUnit unitsIfNotSpecified = null;
 	private SeriesIdentityTableModel model;
 	private JButton btnFinish;
+	private JCheckBox chckbxOpenSeriesIn;
 
 	
 	public IdentifySeriesPanel()
@@ -139,12 +140,12 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		
 		JPanel panelButton = new JPanel();
 		add(panelButton, BorderLayout.SOUTH);
-		panelButton.setLayout(new MigLayout("", "[grow][][]", "[grow][][][]"));
+		panelButton.setLayout(new MigLayout("", "[grow][][]", "[grow][grow][][][]"));
 		
 		model.addTableModelListener(this);
 		
 		JPanel panel = new JPanel();
-		panelButton.add(panel, "cell 0 0 1 2,grow");
+		panelButton.add(panel, "cell 0 1 1 2,grow");
 		panel.setLayout(new MigLayout("", "[31px][162px]", "[16px][][]"));
 		
 		JLabel lblKey = new JLabel("Key:");
@@ -169,29 +170,38 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		btnCancel.setActionCommand("Cancel");
 		btnCancel.addActionListener(this);
 		
-		JCheckBox chckbxOpenSeriesIn = new JCheckBox("Open series in editor when finished");
+		JPanel panel_1 = new JPanel();
+		panelButton.add(panel_1, "cell 1 1 2 2,alignx right,growy");
+		panel_1.setLayout(new MigLayout("", "[116px,fill]", "[22px][][]"));
+		
+		JButton btnSearchDB = new JButton("Search Database");
+		btnSearchDB.setFont(new Font("Dialog", Font.BOLD, 9));
+		panel_1.add(btnSearchDB, "cell 0 0,alignx left,aligny top");
+		btnSearchDB.setActionCommand("SearchDB");
+		
+		JButton btnDefineByPattern = new JButton("Define by pattern");
+		btnDefineByPattern.setFont(new Font("Dialog", Font.BOLD, 9));
+		panel_1.add(btnDefineByPattern, "cell 0 1,alignx left,aligny top");
+		btnDefineByPattern.setActionCommand("DefineByPattern");
+		
+		JButton btnGenerateMissing = new JButton("Generate missing");
+		btnGenerateMissing.setActionCommand("GenerateMissing");
+		btnGenerateMissing.addActionListener(this);
+		btnGenerateMissing.setFont(new Font("Dialog", Font.BOLD, 9));
+		panel_1.add(btnGenerateMissing, "cell 0 2");
+		btnDefineByPattern.addActionListener(this);
+		btnSearchDB.addActionListener(this);
+		
+		chckbxOpenSeriesIn = new JCheckBox("Open series in editor when finished");
 		chckbxOpenSeriesIn.setSelected(true);
-		panelButton.add(chckbxOpenSeriesIn, "cell 0 3");
-		panelButton.add(btnCancel, "cell 1 3");
+		panelButton.add(chckbxOpenSeriesIn, "cell 0 4");
+		panelButton.add(btnCancel, "cell 1 4");
 		
 		btnFinish = new JButton("Finish");
 		btnFinish.setActionCommand("Finish");
 		btnFinish.addActionListener(this);
 		btnFinish.setEnabled(false);
-		panelButton.add(btnFinish, "cell 2 3");
-		
-		JToolBar toolBar = new JToolBar();
-		add(toolBar, BorderLayout.NORTH);
-		
-		JButton btnSearchDB = new JButton("Search Database");
-		toolBar.add(btnSearchDB);
-		btnSearchDB.setActionCommand("SearchDB");
-		
-		JButton btnDefineByPattern = new JButton("Define by pattern");
-		toolBar.add(btnDefineByPattern);
-		btnDefineByPattern.setActionCommand("DefineByPattern");
-		btnDefineByPattern.addActionListener(this);
-		btnSearchDB.addActionListener(this);
+		panelButton.add(btnFinish, "cell 2 4");
 	}
 	
 	
@@ -525,8 +535,9 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
                     "No",
                     "Cancel"};
 			int n = JOptionPane.showOptionDialog(this,
-			    "Some of the entities are not currently in the database.\n\n" +
-			    "Would you like to automatically create basic records for these entities?",
+			    "Some of the entities are not currently in the database. If you continue, "+
+			    "basic records for these entities will automatically be created.\n\n"+
+			    		"Would you like to proceed?",
 			    "Confirmation",
 			    JOptionPane.YES_NO_CANCEL_OPTION,
 			    JOptionPane.QUESTION_MESSAGE,
@@ -544,7 +555,12 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			}
 		}
 		
-		openEditor();
+		// Open the series in an editor if requested
+		if(chckbxOpenSeriesIn.isSelected())
+		{
+			openEditor();
+		}
+		
 		containerFrame.setVisible(false);
 	}
 	
@@ -571,6 +587,38 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		{
 			fillTableByPattern();
 		}
+		else if (evt.getActionCommand().equals("GenerateMissing"))
+		{
+			searchDatabaseForMatches();
+			
+			if(!model.areThereMissingEntites(true))
+			{
+				Alert.message(containerFrame, "Nothing to do", "There are no entities to create!");
+				return;
+			}
+			
+			Object[] options = {"Yes",
+                    "No",
+                    "Cancel"};
+			int n = JOptionPane.showOptionDialog(this,
+			    "You are about to create basic database entities for all the red crosses in the table.\n"
+			    + "Are you sure you want to continue?",
+			    "Confirmation",
+			    JOptionPane.YES_NO_CANCEL_OPTION,
+			    JOptionPane.QUESTION_MESSAGE,
+			    null,
+			    options,
+			    options[2]);
+			
+			if(n == JOptionPane.OK_OPTION)
+			{
+				model.generateMissingEntities();
+			}
+			
+			return;
+			
+			
+		}
 	}
 
 
@@ -580,5 +628,6 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		this.btnFinish.setEnabled(model.isTableComplete());
 	}
 	
+
 
 }

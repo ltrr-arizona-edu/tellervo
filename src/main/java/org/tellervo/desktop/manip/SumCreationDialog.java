@@ -40,7 +40,7 @@ import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
@@ -208,7 +208,7 @@ public class SumCreationDialog {
 		Sample tmp = new Sample(series);
 
 		try {
-			TellervoWsiTridasElement cwe = new TellervoWsiTridasElement(NewTridasIdentifier.getInstance(domainTag));
+			TellervoWSILoader cwe = new TellervoWSILoader(NewTridasIdentifier.getInstance(domainTag));
 			
 			// here's where we do the "meat"
 			if(cwe.save(tmp, sum)) {

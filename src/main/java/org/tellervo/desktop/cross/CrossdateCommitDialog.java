@@ -50,7 +50,7 @@ import org.tellervo.desktop.manip.Redate;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
 import org.tellervo.desktop.tridasv2.support.VersionUtil;
@@ -303,7 +303,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		Sample tmp = new Sample(series);		
 
 		try {
-			TellervoWsiTridasElement saver = new TellervoWsiTridasElement(series.getIdentifier());
+			TellervoWSILoader saver = new TellervoWSILoader(series.getIdentifier());
 			// here's where we do the "meat"
 			if(saver.save(tmp)) {
 				// put it in our menu

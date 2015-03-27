@@ -46,6 +46,7 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TridasGenericFieldMap;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
@@ -145,7 +146,7 @@ public class TridasDoc implements Filetype {
 						labcode.clearSites();
 						for(TridasObject object : objArray) {
 							for(TridasGenericField f : object.getGenericFields()) {
-								if("tellervo.objectLabCode".equals(f.getName())) {
+								if(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE.equals(f.getName())) {
 									labcode.appendSiteCode(f.getValue());
 								}
 							}

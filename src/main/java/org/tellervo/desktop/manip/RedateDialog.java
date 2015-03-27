@@ -47,7 +47,7 @@ import org.tellervo.desktop.Year;
 import org.tellervo.desktop.gui.NameVersionJustificationPanel;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.ui.ComboBoxFilterable;
 import org.tellervo.desktop.tridasv2.ui.EnumComboBoxItemRenderer;
 import org.tellervo.desktop.ui.Alert;
@@ -287,7 +287,7 @@ public class RedateDialog extends JDialog {
 			}
 		}
 		
-		if(sample.getLoader() instanceof TellervoWsiTridasElement) {
+		if(sample.getLoader() instanceof TellervoWSILoader) {
 			
 			return Redate.performTellervoWsiRedate(sample, 
 					infoPanel.getSeriesName(), infoPanel.getVersion(), infoPanel.getJustification(), 

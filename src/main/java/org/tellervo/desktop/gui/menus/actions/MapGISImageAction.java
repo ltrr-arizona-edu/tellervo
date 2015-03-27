@@ -1,6 +1,5 @@
 package org.tellervo.desktop.gui.menus.actions;
 
-import gov.nasa.worldwind.Configuration;
 import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.avlist.AVList;
@@ -9,12 +8,8 @@ import gov.nasa.worldwind.data.DataRaster;
 import gov.nasa.worldwind.data.DataRasterReader;
 import gov.nasa.worldwind.data.DataRasterReaderFactory;
 import gov.nasa.worldwind.geom.Sector;
-import gov.nasa.worldwind.layers.Layer;
 import gov.nasa.worldwind.layers.SurfaceImageLayer;
 import gov.nasa.worldwind.render.SurfaceImage;
-import gov.nasa.worldwindx.examples.ApplicationTemplate;
-import gov.nasa.worldwindx.examples.dataimport.ImportImagery;
-import gov.nasa.worldwindx.examples.dataimport.ImportImagery.AppFrame;
 import gov.nasa.worldwindx.examples.util.ExampleUtil;
 
 import java.awt.Component;
@@ -30,7 +25,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gis2.WWJPanel;
-import org.tellervo.desktop.gui.menus.actions.MapShapefileLayerAction.WorkerThread;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 
 public class MapGISImageAction extends AbstractAction {
@@ -63,13 +58,14 @@ public class MapGISImageAction extends AbstractAction {
 	
 	class WorkerThread extends Thread
     {
-        protected Object source;
-        protected WWJPanel wwjPanel;
-        protected static final String IMAGE_PATH = "gov/nasa/worldwindx/examples/data/craterlake-imagery-30m.tif";
 
-        public WorkerThread(Object source, WWJPanel wwjpanel)
+        protected WWJPanel wwjPanel;
+        protected File sourceFile;
+
+        public WorkerThread(File file, WWJPanel wwjpanel)
         {
-            this.source = source;
+            
+            this.sourceFile = file;
             this.wwjPanel = wwjpanel;
         }
 
@@ -77,9 +73,6 @@ public class MapGISImageAction extends AbstractAction {
         {
             try
             {
-                // Read the data and save it in a temp file.
-                File sourceFile = ExampleUtil.saveResourceToTempFile(IMAGE_PATH, ".tif");
-
                 // Create a raster reader to read this type of file. The reader is created from the currently
                 // configured factory. The factory class is specified in the Configuration, and a different one can be
                 // specified there.
@@ -151,12 +144,17 @@ public class MapGISImageAction extends AbstractAction {
 
                         // Set the view to look at the imported image.
                         ExampleUtil.goTo(wwjPanel.getWwd(), sector);
+                        
                     }
                 });
             }
             catch (Exception e)
             {
+            	Alert.error(editor, "Error loading", "There was a problem loading the GIS image file. Check the error log.");
                 e.printStackTrace();
+            }
+            finally {
+            	 ((Component) editor.getMapPanel().getWwd()).setCursor(Cursor.getDefaultCursor());
             }
 
 }

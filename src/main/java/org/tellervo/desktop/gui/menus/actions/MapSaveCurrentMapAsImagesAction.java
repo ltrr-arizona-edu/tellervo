@@ -37,7 +37,7 @@ public class MapSaveCurrentMapAsImagesAction extends AbstractAction {
 		
 		ScreenShots frame = new ScreenShots();
 
-        frame.setJMenuBar(frame.createMenuBar()); // Create menu and associate with frame
+       // frame.setJMenuBar(frame.createMenuBar()); // Create menu and associate with frame
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();

@@ -16,7 +16,7 @@ public class MapUTMGraticuleLayerToggleAction extends AbstractAction {
 	private FullEditor editor;
 	
 	public MapUTMGraticuleLayerToggleAction(FullEditor editor) {
-        super("UTM graticule", Builder.getIcon("compass.png", 22));
+        super("UTM graticule", Builder.getIcon("grid.png", 22));
 		putValue(SHORT_DESCRIPTION, "Show/show the UTM Graticule map layer");
         this.editor = editor;
 
