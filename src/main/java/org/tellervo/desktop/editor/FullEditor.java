@@ -432,12 +432,45 @@ public class FullEditor extends AbstractEditor {
 		toolBar.add(graph);
 
 		// Map Buttons
-		/*toolBar.addSeparator();
-		AbstractButton stereo = new TitlelessButton(actions.mapStereoModeAction);
+		
+		toolBar.addSeparator();
+		AbstractButton compass = new TitlelessButton(((FullEditorActions)actions).mapCompassToggleAction);
+		toolBar.add(compass);
+		
+		AbstractButton overviewMap = new TitlelessButton(((FullEditorActions)actions).mapWorldMapLayerToggleAction);
+		toolBar.add(overviewMap);
+		
+		AbstractButton UTMGraticule = new TitlelessButton(((FullEditorActions)actions).mapUTMGraticuleLayerToggleAction);
+		toolBar.add(UTMGraticule);
+		
+		AbstractButton MGRSGraticule = new TitlelessButton(((FullEditorActions)actions).mapMGRSGraticuleLayerToggleAction);
+		toolBar.add(MGRSGraticule);
+		
+		AbstractButton placeNames = new TitlelessButton(((FullEditorActions)actions).mapNASAWFSPlaceNameLayerToggleAction);
+		toolBar.add(placeNames);
+		
+		AbstractButton politicalBoundaries = new TitlelessButton(((FullEditorActions)actions).mapCountryBoundariesLayerToggleAction);
+		toolBar.add(politicalBoundaries);
+		
+		toolBar.addSeparator();
+		
+		AbstractButton stereo = new TitlelessButton(((FullEditorActions)actions).mapStereoModeAction);
 		toolBar.add(stereo);
 		
-		AbstractButton shapefile = new TitlelessButton(actions.mapShapefileLayerAction);
-		toolBar.add(shapefile);*/
+		AbstractButton saveImage = new TitlelessButton(((FullEditorActions)actions).mapSaveCurrentMapAsImagesAction);
+		toolBar.add(saveImage);
+		
+		AbstractButton shapefile = new TitlelessButton(((FullEditorActions)actions).mapShapefileLayerAction);
+		toolBar.add(shapefile);
+		
+		AbstractButton KMLLayer = new TitlelessButton(((FullEditorActions)actions).mapKMLLayerAction);
+		toolBar.add(KMLLayer);
+		
+		AbstractButton GISImage = new TitlelessButton(((FullEditorActions)actions).mapGISImageAction);
+		toolBar.add(GISImage);
+		
+		AbstractButton WMSLayer = new TitlelessButton(((FullEditorActions)actions).mapWMSLayerAction);
+		toolBar.add(WMSLayer);
 		
 		contentPane.add(toolBar, "cell 0 1,growx,aligny top");
 

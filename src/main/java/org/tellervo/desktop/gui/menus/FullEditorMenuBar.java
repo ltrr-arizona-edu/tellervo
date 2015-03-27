@@ -318,6 +318,18 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		JMenuItem miWorldMapLayer = new JMenuItem(actions.mapWorldMapLayerToggleAction);
 		mnMap.add(miWorldMapLayer);
 		
+		JMenuItem miUTMGraticuleLayer = new JMenuItem(actions.mapUTMGraticuleLayerToggleAction);
+		mnMap.add(miUTMGraticuleLayer);
+		
+		JMenuItem miMGRSGraticuleLayer = new JMenuItem(actions.mapMGRSGraticuleLayerToggleAction);
+		mnMap.add(miMGRSGraticuleLayer);
+		
+		JMenuItem miNASAWFSPlaceName = new JMenuItem(actions.mapNASAWFSPlaceNameLayerToggleAction);
+		mnMap.add(miNASAWFSPlaceName);
+		
+		JMenuItem miCountryBoundaries = new JMenuItem(actions.mapCountryBoundariesLayerToggleAction);
+		mnMap.add(miCountryBoundaries);
+		
 		JMenuItem miStereo = new JMenuItem(actions.mapStereoModeAction);
 		mnMap.add(miStereo);
 		

@@ -19,6 +19,7 @@ import gov.nasa.worldwind.layers.ScalebarLayer;
 import gov.nasa.worldwind.layers.SkyColorLayer;
 import gov.nasa.worldwind.layers.SkyGradientLayer;
 import gov.nasa.worldwind.layers.StarsLayer;
+import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.WorldMapLayer;
 import gov.nasa.worldwind.layers.Earth.BMNGWMSLayer;
 import gov.nasa.worldwind.layers.Earth.CountryBoundariesLayer;
@@ -122,6 +123,7 @@ public class WWJPanel extends JPanel  implements SelectListener{
                 new BMNGWMSLayer(),
                                 
                 new CompassLayer(),
+                new ViewControlsLayer(),
                 new WorldMapLayer(),
                 new UTMGraticuleLayer(),
                 new MGRSGraticuleLayer(),

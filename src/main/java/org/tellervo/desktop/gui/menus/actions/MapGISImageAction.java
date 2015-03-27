@@ -49,7 +49,7 @@ public class MapGISImageAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		
 		JFileChooser fc = new JFileChooser();
-		fc.addChoosableFileFilter(new FileNameExtensionFilter("Image File", "tif"));
+		fc.addChoosableFileFilter(new FileNameExtensionFilter("Imagery", "tif"));
 			
 		int retVal = fc.showOpenDialog(editor);
         if (retVal != JFileChooser.APPROVE_OPTION)
