@@ -42,7 +42,7 @@ public class MapKMLLayerAction extends AbstractAction {
 		
 		final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setMultiSelectionEnabled(true);
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("KML/KMZ File", "kml", "kmz"));
+        fileChooser.setFileFilter(new FileNameExtensionFilter("KML/KMZ File", "kml", "kmz"));
 		fileChooser.setAcceptAllFileFilterUsed(false);
         
 		try

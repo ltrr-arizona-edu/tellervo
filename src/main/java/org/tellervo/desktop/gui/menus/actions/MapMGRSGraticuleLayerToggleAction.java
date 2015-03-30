@@ -17,7 +17,7 @@ public class MapMGRSGraticuleLayerToggleAction extends AbstractAction {
 	private FullEditor editor;
 	
 	public MapMGRSGraticuleLayerToggleAction(FullEditor editor) {
-        super("MGRS graticule", Builder.getIcon("grid.png", 22));
+        super("MGRS graticule", Builder.getIcon("MGRS.png", 22));
 		putValue(SHORT_DESCRIPTION, "Show/show the MGRS Graticule layer");
 		putValue(Action.SELECTED_KEY, false);
         this.editor = editor;

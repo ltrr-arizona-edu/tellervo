@@ -41,7 +41,8 @@ public class MapShapefileLayerAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		
 		JFileChooser fc = new JFileChooser();
-		fc.addChoosableFileFilter(new FileNameExtensionFilter("ESRI Shapefile", "shp"));
+		fc.setMultiSelectionEnabled(true);
+		fc.setFileFilter(new FileNameExtensionFilter("ESRI Shapefile", "shp"));
 		fc.setAcceptAllFileFilterUsed(false);
 			
 		int retVal = fc.showOpenDialog(editor);
