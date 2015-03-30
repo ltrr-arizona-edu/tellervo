@@ -18,7 +18,7 @@ public class MapWorldMapLayerToggleAction extends AbstractAction {
 	
 	public MapWorldMapLayerToggleAction(FullEditor editor) {
         super("Overview Map", Builder.getIcon("mapoverview.png", 22));
-		putValue(SHORT_DESCRIPTION, "Show/hide the overview map");
+		putValue(SHORT_DESCRIPTION, "Hide/Show the overview map");
 		putValue(Action.SELECTED_KEY, true);
         this.editor = editor;
 

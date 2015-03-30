@@ -18,7 +18,7 @@ public class MapScaleBarToggleAction extends AbstractAction {
 	
 	public MapScaleBarToggleAction(FullEditor editor) {
         super("Hide/Show ScaleBar", Builder.getIcon("scale.png", 22));
-		putValue(SHORT_DESCRIPTION, "Show/show the scale bar");
+		putValue(SHORT_DESCRIPTION, "Hide/Show the scale bar");
 		putValue(Action.SELECTED_KEY, true);
         this.editor = editor;
 

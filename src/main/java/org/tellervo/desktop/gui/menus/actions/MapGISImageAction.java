@@ -35,7 +35,7 @@ public class MapGISImageAction extends AbstractAction {
 	
 	public MapGISImageAction(FullEditor editor) {
         super("GIS Image", Builder.getIcon("layers.png", 22));
-		putValue(SHORT_DESCRIPTION, "GIS Images");
+		putValue(SHORT_DESCRIPTION, "Add a GIS image layer to map");
         this.editor = editor;
 
     }

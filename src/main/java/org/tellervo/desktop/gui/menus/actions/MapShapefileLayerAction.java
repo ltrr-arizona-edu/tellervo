@@ -32,7 +32,7 @@ public class MapShapefileLayerAction extends AbstractAction {
 	
 	public MapShapefileLayerAction(FullEditor editor) {
         super("Shapefile Layer", Builder.getIcon("shp.png", 22));
-		putValue(SHORT_DESCRIPTION, "Shapefile Layer");
+		putValue(SHORT_DESCRIPTION, "Add a Shapefile layer to map");
         this.editor = editor;
 
     }

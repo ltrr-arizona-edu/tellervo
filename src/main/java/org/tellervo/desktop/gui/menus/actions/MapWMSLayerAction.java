@@ -18,7 +18,7 @@ public class MapWMSLayerAction extends AbstractAction {
 
 	public MapWMSLayerAction(FullEditor editor) {
         super("WMS Layer", Builder.getIcon("wms.png", 22));
-		putValue(SHORT_DESCRIPTION, "WMS Layer");
+		putValue(SHORT_DESCRIPTION, "Add a WMS Layer to map");
         this.editor = editor;
 
     }

@@ -17,8 +17,8 @@ public class MapCountryBoundariesLayerToggleAction extends AbstractAction {
 	private FullEditor editor;
 	
 	public MapCountryBoundariesLayerToggleAction(FullEditor editor) {
-        super("Political boundaries", Builder.getIcon("compass.png", 22));
-		putValue(SHORT_DESCRIPTION, "Show/show the Political boundaries");
+        super("Political boundaries", Builder.getIcon("politicalboundary.png", 22));
+		putValue(SHORT_DESCRIPTION, "Hide/Show the Political boundaries");
 		putValue(Action.SELECTED_KEY, false);
         this.editor = editor;
 

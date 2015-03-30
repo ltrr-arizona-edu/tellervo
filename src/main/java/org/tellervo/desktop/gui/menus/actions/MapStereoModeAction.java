@@ -17,7 +17,7 @@ public class MapStereoModeAction extends AbstractAction {
 	
 	public MapStereoModeAction(FullEditor editor) {
         super("Stereo Mode", Builder.getIcon("3d.png", 22));
-		putValue(SHORT_DESCRIPTION, "Stereo mode");
+		putValue(SHORT_DESCRIPTION, "View map in Stereo mode");
         this.editor = editor;
 
     }

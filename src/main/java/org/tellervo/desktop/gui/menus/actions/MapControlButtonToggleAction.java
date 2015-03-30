@@ -18,7 +18,7 @@ public class MapControlButtonToggleAction extends AbstractAction {
 	
 	public MapControlButtonToggleAction(FullEditor editor) {
         super("Hide/Show Controls", Builder.getIcon("compass.png", 22));
-		putValue(SHORT_DESCRIPTION, "Show/show the control buttons");
+		putValue(SHORT_DESCRIPTION, "Hide/Show the control buttons");
 		putValue(Action.SELECTED_KEY, true);
         this.editor = editor;
 

@@ -313,7 +313,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		
 		JMenu mnMap = new JMenu("Map");
 		
-		JMenu mnControls = new JMenu("Controls");
+		JMenu mnControls = new JMenu(actions.mapControlsAction);
 		
 		JCheckBoxMenuItem miCompass = new JCheckBoxMenuItem(actions.mapCompassToggleAction);
 		mnControls.add(miCompass);
@@ -327,19 +327,26 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		JCheckBoxMenuItem miScaleBarLayer = new JCheckBoxMenuItem(actions.mapScaleBarLayerToggleAction);
 		mnControls.add(miScaleBarLayer);
 		
+		mnMap.add(mnControls);
+		
+		JMenu mnAnnotations = new JMenu(actions.mapAnnotationsAction);
+		
 		JCheckBoxMenuItem miUTMGraticuleLayer = new JCheckBoxMenuItem(actions.mapUTMGraticuleLayerToggleAction);
-		mnControls.add(miUTMGraticuleLayer);
+		mnAnnotations.add(miUTMGraticuleLayer);
 		
 		JCheckBoxMenuItem miMGRSGraticuleLayer = new JCheckBoxMenuItem(actions.mapMGRSGraticuleLayerToggleAction);
-		mnControls.add(miMGRSGraticuleLayer);
+		mnAnnotations.add(miMGRSGraticuleLayer);
 		
 		JCheckBoxMenuItem miNASAWFSPlaceName = new JCheckBoxMenuItem(actions.mapNASAWFSPlaceNameLayerToggleAction);
-		mnControls.add(miNASAWFSPlaceName);
+		mnAnnotations.add(miNASAWFSPlaceName);
 		
 		JCheckBoxMenuItem miCountryBoundaries = new JCheckBoxMenuItem(actions.mapCountryBoundariesLayerToggleAction);
-		mnControls.add(miCountryBoundaries);
+		mnAnnotations.add(miCountryBoundaries);
 		
-		mnMap.add(mnControls);
+		mnMap.add(mnAnnotations);
+		
+		
+		
 		mnMap.addSeparator();
 				
 		JMenuItem miStereo = new JMenuItem(actions.mapStereoModeAction);

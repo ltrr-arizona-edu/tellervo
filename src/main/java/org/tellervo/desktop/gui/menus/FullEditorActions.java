@@ -10,8 +10,10 @@ import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAllAction;
 import org.tellervo.desktop.gui.menus.actions.GraphCreateFileHistoryPlotAction;
 import org.tellervo.desktop.gui.menus.actions.MapAddLayersAction;
+import org.tellervo.desktop.gui.menus.actions.MapAnnotationsAction;
 import org.tellervo.desktop.gui.menus.actions.MapCompassToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapControlButtonToggleAction;
+import org.tellervo.desktop.gui.menus.actions.MapControlsAction;
 import org.tellervo.desktop.gui.menus.actions.MapCountryBoundariesLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapGISImageAction;
 import org.tellervo.desktop.gui.menus.actions.MapKMLLayerAction;
@@ -35,6 +37,8 @@ public class FullEditorActions extends EditorActions {
 	public Action graphCreateFileHistoryPlotAction;
 	public Action viewZoomToExtent;
 	public Action mapAddLayersAction;
+	public Action mapControlsAction;
+	public Action mapAnnotationsAction;
 	public Action mapCompassToggleAction;
 	public Action mapWorldMapLayerToggleAction;
 	public Action mapUTMGraticuleLayerToggleAction;
@@ -68,6 +72,8 @@ public class FullEditorActions extends EditorActions {
 		viewZoomToExtent = new ViewToExtentAction((FullEditor) editor);
 		
 		mapAddLayersAction = new MapAddLayersAction();
+		mapControlsAction = new MapControlsAction();
+		mapAnnotationsAction = new MapAnnotationsAction();
 		
 		mapCompassToggleAction = new MapCompassToggleAction((FullEditor) editor);
 		mapWorldMapLayerToggleAction = new MapWorldMapLayerToggleAction((FullEditor) editor);

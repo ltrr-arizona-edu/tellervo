@@ -29,7 +29,7 @@ public class MapKMLLayerAction extends AbstractAction {
 	
 	public MapKMLLayerAction(FullEditor editor) {
         super("KML Layer", Builder.getIcon("kml.png", 22));
-		putValue(SHORT_DESCRIPTION, "KML Layer");
+		putValue(SHORT_DESCRIPTION, "Add a KML Layer to map");
         this.editor = editor;
 
     }
