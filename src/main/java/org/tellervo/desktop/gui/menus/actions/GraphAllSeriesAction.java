@@ -33,7 +33,26 @@ public class GraphAllSeriesAction extends AbstractAction{
     }
 	
 	@Override
+	public boolean isEnabled()
+	{
+		
+		if(editor.getSamples()!=null)
+		{
+			if(editor.getSamples().size()>0)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	
+	@Override
 	public void actionPerformed(ActionEvent arg0) {
+		
+		
+		
 		
 		GraphWindow graphWindow = new GraphWindow(editor.getSamples().get(0));
 

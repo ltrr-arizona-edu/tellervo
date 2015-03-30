@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -312,7 +313,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		
 		JMenu mnMap = new JMenu("Map");
 		
-		JMenuItem miCompass = new JMenuItem(actions.mapCompassToggleAction);
+		JCheckBoxMenuItem miCompass = new JCheckBoxMenuItem(actions.mapCompassToggleAction);
 		mnMap.add(miCompass);
 		
 		JMenuItem miWorldMapLayer = new JMenuItem(actions.mapWorldMapLayerToggleAction);

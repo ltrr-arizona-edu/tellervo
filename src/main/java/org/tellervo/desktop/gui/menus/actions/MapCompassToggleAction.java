@@ -6,6 +6,7 @@ import gov.nasa.worldwind.util.Logging;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.ui.Builder;
@@ -18,6 +19,7 @@ public class MapCompassToggleAction extends AbstractAction {
 	public MapCompassToggleAction(FullEditor editor) {
         super("Hide/Show compass", Builder.getIcon("compass.png", 22));
 		putValue(SHORT_DESCRIPTION, "Show/show the map compass");
+		putValue(Action.SELECTED_KEY, true);
         this.editor = editor;
 
     }

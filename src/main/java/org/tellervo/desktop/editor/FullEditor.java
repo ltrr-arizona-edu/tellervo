@@ -13,6 +13,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
@@ -25,6 +26,7 @@ import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.menus.FullEditorActions;
 import org.tellervo.desktop.gui.menus.FullEditorMenuBar;
 import org.tellervo.desktop.gui.widgets.TitlelessButton;
+import org.tellervo.desktop.gui.widgets.TitlelessToggleButton;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.sample.Sample;
@@ -435,7 +437,7 @@ public class FullEditor extends AbstractEditor {
 		// Map Buttons
 		
 		toolBar.addSeparator();
-		AbstractButton compass = new TitlelessButton(((FullEditorActions)actions).mapCompassToggleAction);
+		AbstractButton compass = new TitlelessToggleButton(((FullEditorActions)actions).mapCompassToggleAction);
 		toolBar.add(compass);
 		
 		AbstractButton overviewMap = new TitlelessButton(((FullEditorActions)actions).mapWorldMapLayerToggleAction);
