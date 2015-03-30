@@ -10,12 +10,14 @@ import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAllAction;
 import org.tellervo.desktop.gui.menus.actions.GraphCreateFileHistoryPlotAction;
 import org.tellervo.desktop.gui.menus.actions.MapCompassToggleAction;
+import org.tellervo.desktop.gui.menus.actions.MapControlButtonToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapCountryBoundariesLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapGISImageAction;
 import org.tellervo.desktop.gui.menus.actions.MapKMLLayerAction;
 import org.tellervo.desktop.gui.menus.actions.MapMGRSGraticuleLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapNASAWFSPlaceNameLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapSaveCurrentMapAsImagesAction;
+import org.tellervo.desktop.gui.menus.actions.MapScaleBarToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapShapefileLayerAction;
 import org.tellervo.desktop.gui.menus.actions.MapStereoModeAction;
 import org.tellervo.desktop.gui.menus.actions.MapUTMGraticuleLayerToggleAction;
@@ -37,6 +39,8 @@ public class FullEditorActions extends EditorActions {
 	public Action mapMGRSGraticuleLayerToggleAction;
 	public Action mapNASAWFSPlaceNameLayerToggleAction;
 	public Action mapCountryBoundariesLayerToggleAction;
+	public Action mapControlLayerToggleAction;
+	public Action mapScaleBarLayerToggleAction;
 	public Action mapStereoModeAction;
 	public Action mapSaveCurrentMapAsImagesAction;
 	public Action mapGISImageAction;
@@ -67,7 +71,9 @@ public class FullEditorActions extends EditorActions {
 		mapMGRSGraticuleLayerToggleAction = new MapMGRSGraticuleLayerToggleAction((FullEditor) editor);
 		mapNASAWFSPlaceNameLayerToggleAction = new MapNASAWFSPlaceNameLayerToggleAction((FullEditor) editor);
 		mapCountryBoundariesLayerToggleAction = new MapCountryBoundariesLayerToggleAction((FullEditor) editor);
-		
+		mapControlLayerToggleAction = new MapControlButtonToggleAction((FullEditor) editor);
+		mapScaleBarLayerToggleAction = new MapScaleBarToggleAction((FullEditor) editor);
+
 		
 		mapStereoModeAction = new MapStereoModeAction((FullEditor) editor);
 		mapSaveCurrentMapAsImagesAction = new MapSaveCurrentMapAsImagesAction((FullEditor)editor);

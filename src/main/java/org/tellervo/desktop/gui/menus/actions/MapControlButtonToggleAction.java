@@ -11,15 +11,15 @@ import javax.swing.Action;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.ui.Builder;
 
-public class MapMGRSGraticuleLayerToggleAction extends AbstractAction {
+public class MapControlButtonToggleAction extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
 	private FullEditor editor;
 	
-	public MapMGRSGraticuleLayerToggleAction(FullEditor editor) {
-        super("MGRS graticule", Builder.getIcon("grid.png", 22));
-		putValue(SHORT_DESCRIPTION, "Show/show the MGRS Graticule layer");
-		putValue(Action.SELECTED_KEY, false);
+	public MapControlButtonToggleAction(FullEditor editor) {
+        super("Hide/Show Controls", Builder.getIcon("compass.png", 22));
+		putValue(SHORT_DESCRIPTION, "Show/show the control buttons");
+		putValue(Action.SELECTED_KEY, true);
         this.editor = editor;
 
     }
@@ -27,11 +27,11 @@ public class MapMGRSGraticuleLayerToggleAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-		Layer mgrsGraticuleLayer = editor.getMapPanel().getWwd()
+		Layer controllayer = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
-				.getLayerByName(Logging.getMessage("layers.Earth.MGRSGraticule.Name"));
+				.getLayerByName(Logging.getMessage("layers.ViewControlsLayer.Name"));
 		
-		mgrsGraticuleLayer.setEnabled(!mgrsGraticuleLayer.isEnabled());
+		controllayer.setEnabled(!controllayer.isEnabled());
 		
 	}
 

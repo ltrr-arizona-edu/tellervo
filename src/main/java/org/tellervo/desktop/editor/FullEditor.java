@@ -440,19 +440,25 @@ public class FullEditor extends AbstractEditor {
 		AbstractButton compass = new TitlelessToggleButton(((FullEditorActions)actions).mapCompassToggleAction);
 		toolBar.add(compass);
 		
-		AbstractButton overviewMap = new TitlelessButton(((FullEditorActions)actions).mapWorldMapLayerToggleAction);
+		AbstractButton overviewMap = new TitlelessToggleButton(((FullEditorActions)actions).mapWorldMapLayerToggleAction);
 		toolBar.add(overviewMap);
 		
-		AbstractButton UTMGraticule = new TitlelessButton(((FullEditorActions)actions).mapUTMGraticuleLayerToggleAction);
+		AbstractButton controlLayer = new TitlelessToggleButton(((FullEditorActions)actions).mapControlLayerToggleAction);
+		toolBar.add(controlLayer);
+		
+		AbstractButton scaleBarLayer = new TitlelessToggleButton(((FullEditorActions)actions).mapScaleBarLayerToggleAction);
+		toolBar.add(scaleBarLayer);
+		
+		AbstractButton UTMGraticule = new TitlelessToggleButton(((FullEditorActions)actions).mapUTMGraticuleLayerToggleAction);
 		toolBar.add(UTMGraticule);
 		
-		AbstractButton MGRSGraticule = new TitlelessButton(((FullEditorActions)actions).mapMGRSGraticuleLayerToggleAction);
+		AbstractButton MGRSGraticule = new TitlelessToggleButton(((FullEditorActions)actions).mapMGRSGraticuleLayerToggleAction);
 		toolBar.add(MGRSGraticule);
 		
-		AbstractButton placeNames = new TitlelessButton(((FullEditorActions)actions).mapNASAWFSPlaceNameLayerToggleAction);
+		AbstractButton placeNames = new TitlelessToggleButton(((FullEditorActions)actions).mapNASAWFSPlaceNameLayerToggleAction);
 		toolBar.add(placeNames);
 		
-		AbstractButton politicalBoundaries = new TitlelessButton(((FullEditorActions)actions).mapCountryBoundariesLayerToggleAction);
+		AbstractButton politicalBoundaries = new TitlelessToggleButton(((FullEditorActions)actions).mapCountryBoundariesLayerToggleAction);
 		toolBar.add(politicalBoundaries);
 		
 		toolBar.addSeparator();

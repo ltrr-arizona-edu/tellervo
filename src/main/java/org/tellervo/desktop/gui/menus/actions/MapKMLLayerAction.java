@@ -48,12 +48,12 @@ public class MapKMLLayerAction extends AbstractAction {
         {
             
             
-			int status = fileChooser.showOpenDialog(wwjPanel);
+			int status = fileChooser.showOpenDialog(editor);
             if (status == JFileChooser.APPROVE_OPTION)
             {
                 for (File file : fileChooser.getSelectedFiles())
                 {
-                    new WorkerThread(file, wwjPanel).start();
+                    new WorkerThread(file, editor.getMapPanel()).start();
                 }
             }
         }
