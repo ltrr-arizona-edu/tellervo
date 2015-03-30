@@ -44,7 +44,8 @@ public class MapGISImageAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		
 		JFileChooser fc = new JFileChooser();
-		fc.addChoosableFileFilter(new FileNameExtensionFilter("Imagery", "tif"));
+		fc.addChoosableFileFilter(new FileNameExtensionFilter("Imagery File", "tif"));
+		fc.setAcceptAllFileFilterUsed(false);
 			
 		int retVal = fc.showOpenDialog(editor);
         if (retVal != JFileChooser.APPROVE_OPTION)

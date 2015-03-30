@@ -313,48 +313,57 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		
 		JMenu mnMap = new JMenu("Map");
 		
+		JMenu mnControls = new JMenu("Controls");
+		
 		JCheckBoxMenuItem miCompass = new JCheckBoxMenuItem(actions.mapCompassToggleAction);
-		mnMap.add(miCompass);
+		mnControls.add(miCompass);
 		
 		JCheckBoxMenuItem miWorldMapLayer = new JCheckBoxMenuItem(actions.mapWorldMapLayerToggleAction);
-		mnMap.add(miWorldMapLayer);
+		mnControls.add(miWorldMapLayer);
 		
 		JCheckBoxMenuItem miControlLayer = new JCheckBoxMenuItem(actions.mapControlLayerToggleAction);
-		mnMap.add(miControlLayer);
+		mnControls.add(miControlLayer);
 		
 		JCheckBoxMenuItem miScaleBarLayer = new JCheckBoxMenuItem(actions.mapScaleBarLayerToggleAction);
-		mnMap.add(miScaleBarLayer);
+		mnControls.add(miScaleBarLayer);
 		
 		JCheckBoxMenuItem miUTMGraticuleLayer = new JCheckBoxMenuItem(actions.mapUTMGraticuleLayerToggleAction);
-		mnMap.add(miUTMGraticuleLayer);
+		mnControls.add(miUTMGraticuleLayer);
 		
 		JCheckBoxMenuItem miMGRSGraticuleLayer = new JCheckBoxMenuItem(actions.mapMGRSGraticuleLayerToggleAction);
-		mnMap.add(miMGRSGraticuleLayer);
+		mnControls.add(miMGRSGraticuleLayer);
 		
 		JCheckBoxMenuItem miNASAWFSPlaceName = new JCheckBoxMenuItem(actions.mapNASAWFSPlaceNameLayerToggleAction);
-		mnMap.add(miNASAWFSPlaceName);
+		mnControls.add(miNASAWFSPlaceName);
 		
 		JCheckBoxMenuItem miCountryBoundaries = new JCheckBoxMenuItem(actions.mapCountryBoundariesLayerToggleAction);
-		mnMap.add(miCountryBoundaries);
+		mnControls.add(miCountryBoundaries);
 		
+		mnMap.add(mnControls);
+		mnMap.addSeparator();
+				
 		JMenuItem miStereo = new JMenuItem(actions.mapStereoModeAction);
 		mnMap.add(miStereo);
 		
 		JMenuItem miSave = new JMenuItem(actions.mapSaveCurrentMapAsImagesAction);
 		mnMap.add(miSave);
+		mnMap.addSeparator();
+		
+		JMenu mnAddLayers = new JMenu("Add Layers");
 		
 		JMenuItem miShapefileLayer = new JMenuItem(actions.mapShapefileLayerAction);
-		mnMap.add(miShapefileLayer);
+		mnAddLayers.add(miShapefileLayer);
 		
 		JMenuItem miKMLLayer = new JMenuItem(actions.mapKMLLayerAction);
-		mnMap.add(miKMLLayer);
+		mnAddLayers.add(miKMLLayer);
 		
 		JMenuItem miGISImage = new JMenuItem(actions.mapGISImageAction);
-		mnMap.add(miGISImage);
+		mnAddLayers.add(miGISImage);
 		
 		JMenuItem miWMSLayer = new JMenuItem(actions.mapWMSLayerAction);
-		mnMap.add(miWMSLayer);
+		mnAddLayers.add(miWMSLayer);
 		
+		mnMap.add(mnAddLayers);
 		add(mnMap);
 		
 		

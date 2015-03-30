@@ -26,6 +26,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.ui.Builder;
@@ -50,10 +51,9 @@ public class MapSaveCurrentMapAsImagesAction extends AbstractAction implements R
 	@Override
 	public void actionPerformed(ActionEvent e) {		
 		
-        this.wwd = wwd;
+  
         this.fileChooser = new JFileChooser();
-        Component frame = wwd instanceof Component ? ((Component) wwd).getParent() : null;
-        this.snapFile = this.chooseFile(frame);
+        this.snapFile = this.chooseFile(editor);
 		
 	}
 	
@@ -67,6 +67,8 @@ public class MapSaveCurrentMapAsImagesAction extends AbstractAction implements R
 	            {
 	                fileChooser.setDialogTitle("Save Screen Shot");
 	                fileChooser.setSelectedFile(new File(composeSuggestedName()));
+	                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Screenshot", "png"));
+	                fileChooser.setAcceptAllFileFilterUsed(false);
 
 	                int status = fileChooser.showSaveDialog(parentFrame);
 	                if (status != JFileChooser.APPROVE_OPTION)
@@ -102,7 +104,7 @@ public class MapSaveCurrentMapAsImagesAction extends AbstractAction implements R
 	        }
 
 	        editor.getMapPanel().getWwd().removeRenderingListener(this); // ensure not to add a duplicate
-	        this.wwd.addRenderingListener(this);
+	        editor.getMapPanel().getWwd().addRenderingListener(this);
 
 	        return outFile;
 	    }
