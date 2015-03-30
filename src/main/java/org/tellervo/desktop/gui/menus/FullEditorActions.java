@@ -9,6 +9,7 @@ import org.tellervo.desktop.gui.menus.actions.FileLogonAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAllAction;
 import org.tellervo.desktop.gui.menus.actions.GraphCreateFileHistoryPlotAction;
+import org.tellervo.desktop.gui.menus.actions.MapAddLayersAction;
 import org.tellervo.desktop.gui.menus.actions.MapCompassToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapControlButtonToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapCountryBoundariesLayerToggleAction;
@@ -33,6 +34,7 @@ public class FullEditorActions extends EditorActions {
 	public Action fileLogonAction;
 	public Action graphCreateFileHistoryPlotAction;
 	public Action viewZoomToExtent;
+	public Action mapAddLayersAction;
 	public Action mapCompassToggleAction;
 	public Action mapWorldMapLayerToggleAction;
 	public Action mapUTMGraticuleLayerToggleAction;
@@ -64,6 +66,8 @@ public class FullEditorActions extends EditorActions {
 		graphCreateFileHistoryPlotAction = new GraphCreateFileHistoryPlotAction(editor);
 		
 		viewZoomToExtent = new ViewToExtentAction((FullEditor) editor);
+		
+		mapAddLayersAction = new MapAddLayersAction();
 		
 		mapCompassToggleAction = new MapCompassToggleAction((FullEditor) editor);
 		mapWorldMapLayerToggleAction = new MapWorldMapLayerToggleAction((FullEditor) editor);

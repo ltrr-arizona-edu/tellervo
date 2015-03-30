@@ -42,7 +42,7 @@ public class MapSaveCurrentMapAsImagesAction extends AbstractAction implements R
 	private File snapFile;
 	
 	public MapSaveCurrentMapAsImagesAction(FullEditor editor) {
-        super("Save current map as images", Builder.getIcon("map.png", 22));
+        super("Save current map as images", Builder.getIcon("captureimage.png", 22));
 		putValue(SHORT_DESCRIPTION, "Save current map as images");
         this.editor = editor;
 

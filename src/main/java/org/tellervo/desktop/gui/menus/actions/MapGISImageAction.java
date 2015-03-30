@@ -34,7 +34,7 @@ public class MapGISImageAction extends AbstractAction {
 	private FullEditor editor;
 	
 	public MapGISImageAction(FullEditor editor) {
-        super("GIS Image", Builder.getIcon("map.png", 22));
+        super("GIS Image", Builder.getIcon("layers.png", 22));
 		putValue(SHORT_DESCRIPTION, "GIS Images");
         this.editor = editor;
 

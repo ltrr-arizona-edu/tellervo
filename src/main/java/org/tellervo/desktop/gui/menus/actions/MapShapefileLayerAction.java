@@ -31,7 +31,7 @@ public class MapShapefileLayerAction extends AbstractAction {
 	private FullEditor editor;
 	
 	public MapShapefileLayerAction(FullEditor editor) {
-        super("Shapefile Layer", Builder.getIcon("map.png", 22));
+        super("Shapefile Layer", Builder.getIcon("shp.png", 22));
 		putValue(SHORT_DESCRIPTION, "Shapefile Layer");
         this.editor = editor;
 

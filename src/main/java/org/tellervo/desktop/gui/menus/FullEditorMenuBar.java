@@ -349,7 +349,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		mnMap.add(miSave);
 		mnMap.addSeparator();
 		
-		JMenu mnAddLayers = new JMenu("Add Layers");
+		JMenu mnAddLayers = new JMenu(actions.mapAddLayersAction);
 		
 		JMenuItem miShapefileLayer = new JMenuItem(actions.mapShapefileLayerAction);
 		mnAddLayers.add(miShapefileLayer);
