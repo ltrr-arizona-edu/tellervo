@@ -176,8 +176,6 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
     	meter.setProgress(2);
       meter.setNote(I18n.getText("login.initPreferences"));
     }
-
-    prefsDialog = new PreferencesDialog();
     
     // If it's the first run then hide splash and show setup wizard
     if (isFirstRun) {
@@ -187,6 +185,9 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
     	}
     	SetupWizard.launchWizard();
     }
+    
+    prefsDialog = new PreferencesDialog();
+    
     
     if(splash!=null)
     {

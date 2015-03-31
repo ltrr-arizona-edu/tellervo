@@ -143,14 +143,11 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 			}
 
 
-			markermap.put(s, marker);
-			updateSuperMarkers();
-			
-			
+			if(marker!=null){
+				markermap.put(s, marker);
+				updateSuperMarkers();
+			}
 		}
-
-		
-		
 	}
 
 

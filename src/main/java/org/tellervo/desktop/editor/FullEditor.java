@@ -75,6 +75,16 @@ public class FullEditor extends AbstractEditor {
 	
 	}
 		
+	public void switchToMapTab()
+	{
+		try{
+			this.tabbedPane.setSelectedIndex(4);
+		} catch (Exception e)
+		{
+			
+		}
+	}
+	
 	/**
 	 * Get the map panel
 	 * 
@@ -151,6 +161,20 @@ public class FullEditor extends AbstractEditor {
 			
 			
 		});
+	}
+	
+	public void reinitMapPanel()
+	{
+		initMapPanel();
+		
+		TridasEntityLayer layer = (TridasEntityLayer) wwMapPanel.getWorkspaceSeriesLayer();
+		
+		for(Sample s: samplesModel.getSamples())
+		{
+			layer.addMarker(s);
+		}
+		
+		
 	}
 	
 	private void initMapPanel()
@@ -389,6 +413,16 @@ public class FullEditor extends AbstractEditor {
 				setTitle();
 				this.repaint();
 			}
+			else 
+			{
+				// Sample is null so clean tabs
+				
+				/**dataPanel.removeAll();
+				metadataHolder.removeAll();
+				componentHolder.removeAll();
+				dependentHolder.removeAll();**/
+
+			}
 	
 	}
 	
@@ -625,28 +659,29 @@ public class FullEditor extends AbstractEditor {
 			
 	}
 
+	/**
+	 * Sample list has changed
+	 */
 	@Override
 	public void contentsChanged(ListDataEvent e) {
-		// TODO Auto-generated method stub
+
 		
 	}
 
+	/**
+	 * Sample list has had item added to it
+	 */
 	@Override
 	public void intervalAdded(ListDataEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
+	/**
+	 * Sample list has had item removed from it
+	 */
 	@Override
 	public void intervalRemoved(ListDataEvent e) {
-		if(this.samplesModel.getSize()==0)
-		{
-			dataPanel.removeAll();
-			this.metadataHolder.removeAll();
-			this.dependentHolder.removeAll();
-			this.componentHolder.removeAll();
-			
-		}
 		
 		
 	}

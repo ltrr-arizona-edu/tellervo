@@ -149,7 +149,7 @@ public abstract class EditorActions {
 
 	// Graph menu action
 	public Action graphCurrentSeriesAction;
-	public Action graphComponentSeriesAction;
+	//public Action graphComponentSeriesAction;
 	public Action graphAllSeriesAction;
 
 	// Toolbar only actions
@@ -244,7 +244,7 @@ public abstract class EditorActions {
 		toolsCrossdateAction = new ToolsCrossdateAction(editor);
 
 		graphCurrentSeriesAction = new GraphCurrentSeriesAction(editor);
-		graphComponentSeriesAction = new GraphComponentSeriesAction(editor);
+		//graphComponentSeriesAction = new GraphComponentSeriesAction(editor);
 		graphAllSeriesAction = new GraphAllSeriesAction(editor);
 
 		helpHelpContentsAction = new HelpHelpContentsAction();

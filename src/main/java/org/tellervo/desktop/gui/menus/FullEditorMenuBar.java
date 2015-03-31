@@ -55,7 +55,6 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	private JMenuItem miSiteMap;
 	private JMenuItem miReportBugOnLastTransaction;
 	private JMenuItem miXMLCommunicationsViewer;
-	private JMenu mnView;
 	private JMenu mnTools;
 	JMenuItem miComponentSeries;
 	private JMenuItem miToolsCrossdate;
@@ -66,7 +65,6 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	private JMenuItem miSave;
 	private JMenuItem miPrint;
 	
-	private JMenuItem miMapCompass;
 
 	
 	public FullEditorMenuBar(FullEditorActions actions, FullEditor editor)
@@ -249,66 +247,8 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		mnAdministration.add(miSiteMap);		
 		
 		add(mnAdministration);
-
+	
 		
-		// VIEW MENU
-		
-		mnView = new JMenu("View");
-		add(mnView);
-		
-		JMenuItem mnViewExtent = new JMenuItem(actions.viewZoomToExtent);
-		mnView.add(mnViewExtent);
-
-		miMapCompass = new JMenuItem(actions.mapCompassToggleAction);
-		mnView.add(miMapCompass);
-		
-		
-		// TOOLS MENU
-		
-		mnTools = new JMenu("Tools");
-		add(mnTools);
-		
-		miToolsTruncate = new JMenuItem(actions.toolsTruncateAction);
-		mnTools.add(miToolsTruncate);
-		
-		JMenuItem miToolsReverse = new JMenuItem(actions.toolsReverseAction);
-		mnTools.add(miToolsReverse);
-		
-		JMenuItem miToolsReconcile = new JMenuItem(actions.toolsReconcileAction);
-		mnTools.add(miToolsReconcile);
-		
-		JMenuItem miToolsIndex = new JMenuItem(actions.toolsIndexAction);
-		mnTools.add(miToolsIndex);
-		
-		JMenuItem miToolsSum = new JMenuItem(actions.toolsSumAction);
-		mnTools.add(miToolsSum);
-		
-		JMenuItem miToolsRedate = new JMenuItem(actions.toolsRedateAction);
-		mnTools.add(miToolsRedate);
-		
-		miToolsCrossdate = new JMenuItem(actions.toolsCrossdateAction);
-		mnTools.add(miToolsCrossdate);
-		
-
-		
-		// GRAPH MENU
-		
-		JMenu mnGraph = new JMenu("Graph");
-		
-		JMenuItem miCurrentSeries = new JMenuItem(actions.graphCurrentSeriesAction);
-		mnGraph.add(miCurrentSeries);
-		
-	    miComponentSeries = new JMenuItem(actions.graphComponentSeriesAction);
-	    mnGraph.add(miComponentSeries);
-	    
-	    JMenuItem miAllSeries = new JMenuItem(actions.graphAllSeriesAction);
-	    mnGraph.add(miAllSeries);
-	    
-	    JMenuItem miCreateFileHistoryPlot = new JMenuItem(actions.graphCreateFileHistoryPlotAction);
-	    mnGraph.add(miCreateFileHistoryPlot);
-	    
-		add(mnGraph);
-
 		// MAP MENU
 		
 		JMenu mnMap = new JMenu("Map");
@@ -372,6 +312,58 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		
 		mnMap.add(mnAddLayers);
 		add(mnMap);
+		
+		// TOOLS MENU
+		
+		mnTools = new JMenu("Tools");
+		add(mnTools);
+		
+		miToolsTruncate = new JMenuItem(actions.toolsTruncateAction);
+		mnTools.add(miToolsTruncate);
+		
+		JMenuItem miToolsReverse = new JMenuItem(actions.toolsReverseAction);
+		mnTools.add(miToolsReverse);
+				
+		JMenuItem miToolsRedate = new JMenuItem(actions.toolsRedateAction);
+		mnTools.add(miToolsRedate);
+		
+		mnTools.addSeparator();
+		
+		JMenuItem miToolsReconcile = new JMenuItem(actions.toolsReconcileAction);
+		mnTools.add(miToolsReconcile);
+		
+		JMenuItem miToolsIndex = new JMenuItem(actions.toolsIndexAction);
+		mnTools.add(miToolsIndex);
+		
+		JMenuItem miToolsSum = new JMenuItem(actions.toolsSumAction);
+		mnTools.add(miToolsSum);
+	
+		mnTools.addSeparator();
+		
+		miToolsCrossdate = new JMenuItem(actions.toolsCrossdateAction);
+		mnTools.add(miToolsCrossdate);
+		
+
+		
+		// GRAPH MENU
+		
+		JMenu mnGraph = new JMenu("Graph");
+		
+		JMenuItem miCurrentSeries = new JMenuItem(actions.graphCurrentSeriesAction);
+		mnGraph.add(miCurrentSeries);
+		
+	    //miComponentSeries = new JMenuItem(actions.graphComponentSeriesAction);
+	    //mnGraph.add(miComponentSeries);
+	    
+	    JMenuItem miAllSeries = new JMenuItem(actions.graphAllSeriesAction);
+	    mnGraph.add(miAllSeries);
+	    
+	    JMenuItem miCreateFileHistoryPlot = new JMenuItem(actions.graphCreateFileHistoryPlotAction);
+	    mnGraph.add(miCreateFileHistoryPlot);
+	    
+		add(mnGraph);
+
+
 		
 		
 		// HELP MENU

@@ -76,7 +76,7 @@ public class WWJPanel extends JPanel  implements SelectListener{
 	private ViewControlsLayer viewControlsLayer;
 	
 	protected WorldWindow wwd;
-	public LayerPanel layerPanel;
+	public TellervoLayerPanel layerPanel;
 	protected StatusBar statusBar;
 	protected LayerList layersList;
 	private RenderableLayer annotationLayer;

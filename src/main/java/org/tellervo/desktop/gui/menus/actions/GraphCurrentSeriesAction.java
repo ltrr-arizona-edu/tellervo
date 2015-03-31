@@ -16,7 +16,7 @@ public class GraphCurrentSeriesAction extends AbstractAction{
 
 	
 	public GraphCurrentSeriesAction(AbstractEditor editor) {
-        super(I18n.getText("menus.graph.activeSeries"), Builder.getIcon("graph.png", 22));
+        super(I18n.getText("menus.graph.activeSeries"), Builder.getIcon("graph.agent_standard.png", 22));
         putValue(SHORT_DESCRIPTION, "Graph the current series");
 
         this.editor = editor;

@@ -26,6 +26,9 @@ public class MapCompassToggleAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+
+		editor.switchToMapTab();
+
 		
 		Layer compasslayer = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
