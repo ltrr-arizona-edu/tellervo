@@ -27,6 +27,7 @@ public class MapMGRSGraticuleLayerToggleAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		editor.switchToMapTab();
 		Layer mgrsGraticuleLayer = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
 				.getLayerByName(Logging.getMessage("layers.Earth.MGRSGraticule.Name"));

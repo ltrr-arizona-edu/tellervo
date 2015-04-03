@@ -43,6 +43,8 @@ public class MapGISImageAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		editor.switchToMapTab();
+		
 		JFileChooser fc = new JFileChooser();
 		fc.setMultiSelectionEnabled(true);
 		fc.setFileFilter(new FileNameExtensionFilter("Imagery File", "tif"));

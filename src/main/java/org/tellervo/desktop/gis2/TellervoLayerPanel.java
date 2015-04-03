@@ -22,21 +22,42 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.TitledBorder;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.editor.AbstractEditor;
+import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.gui.menus.EditorActions;
+import org.tellervo.desktop.gui.menus.FullEditorActions;
+
+
+
+
 import net.miginfocom.swing.MigLayout;
 
 public class TellervoLayerPanel extends JPanel {
 
 	private static final long serialVersionUID = 1L;
+	protected final static Logger log = LoggerFactory.getLogger(TellervoLayerPanel.class);
+	protected FullEditorActions actions;
+	protected FullEditor editor;
 
 	    protected JPanel layersPanel;
 	    protected JPanel westPanel;
@@ -57,7 +78,10 @@ public class TellervoLayerPanel extends JPanel {
 	    {
 	        // Make a panel at a default size.
 	        super(new BorderLayout());
+	       
 	        this.makePanel(wwd, new Dimension(200, 400));
+
+
 	        
 	    }
 
@@ -71,7 +95,9 @@ public class TellervoLayerPanel extends JPanel {
 	    {
 	        // Make a panel at a specified size.
 	        super(new BorderLayout());
+	     
 	        this.makePanel(wwd, size);
+
 	    }
 
 	    protected void makePanel(WorldWindow wwd, Dimension size)
@@ -79,6 +105,8 @@ public class TellervoLayerPanel extends JPanel {
 	        // Make and fill the panel holding the layer titles.
 	        this.layersPanel = new JPanel(new GridLayout(0, 1, 0, 4));
 	        layersPanel.setBackground(Color.WHITE);
+//	        actions = editor.getAction();
+	        
 
 	        this.layersPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 	        this.fill(wwd);
@@ -113,13 +141,15 @@ public class TellervoLayerPanel extends JPanel {
 
 	    protected void fill(WorldWindow wwd)
 	    {
-			JLabel heading = new JLabel("Background layers");
+	        JLabel heading = new JLabel("Background layers");
 			heading.setFont(new Font("Dialog", Font.BOLD, 13));
 			this.layersPanel.add(heading);
+
 
 	        for (JCheckBox cbx : getBackgroundLayers(wwd))
 	        {
 	        	this.layersPanel.add(cbx);
+	        	initPopupMenu(wwd, cbx);
 	        }
 	        
 			heading = new JLabel("Data layers");
@@ -128,10 +158,59 @@ public class TellervoLayerPanel extends JPanel {
 			for (JCheckBox cbx : getDataLayers(wwd))
 	        {
 	        	this.layersPanel.add(cbx);
-	        }
-	        
-	    }
+	        	initPopupMenu(wwd, cbx);
+	        	
+	        }	
+	     }
+	    
+	    
+	    protected void initPopupMenu(WorldWindow wwd, JCheckBox cbx){
+	    	
+			log.debug("Init popup menu");
+			Layer layer;
+		
+			
+			final JPopupMenu popupMenu = new JPopupMenu();
+			
+			JMenu addLayers = new JMenu("actions.mapAddLayersAction");
+						
+			JMenuItem shapeFileLayer = new JMenuItem("actions.mapShapefileLayerAction");
+			addLayers.add(shapeFileLayer);
+			
+			JMenuItem KMLLayer = new JMenuItem("actions.mapKMLLayerAction");
+			addLayers.add(KMLLayer);
+			
+			JMenuItem WMSLayer = new JMenuItem("actions.mapWMSLayerAction");
+			addLayers.add(WMSLayer);
+			
+			JMenuItem GISLayer = new JMenuItem("actions.mapGISImageAction");
+			addLayers.add(GISLayer);
+			
+			popupMenu.add(addLayers);
+			
+				
+			cbx.addMouseListener(new MouseAdapter() {
+			    public void mousePressed(MouseEvent e) {
+			        showPopup(e);
+			    }
 
+			    public void mouseReleased(MouseEvent e) {
+			        showPopup(e);
+			    }
+
+			    private void showPopup(MouseEvent e) {
+			       
+					if (e.isPopupTrigger()) {
+			            popupMenu.show(e.getComponent(),
+			                       e.getX(), e.getY());
+			        }
+			    }
+			});
+	
+	    }
+      
+
+	    
 	    /**
 	     * Update the panel to match the layer list active in a WorldWindow.
 	     *
@@ -245,8 +324,8 @@ public class TellervoLayerPanel extends JPanel {
         	{
 	        	
 	            LayerAction action = new LayerAction(layer, wwd, layer.isEnabled());
-	            JCheckBox jcb = new JCheckBox(action);
-	            jcb.setSelected(action.selected);
+	            JCheckBox jcb = new JCheckBox(action);	            				            
+	            jcb.setSelected(action.selected);	           
 	            items.add(jcb);
 	
 	            if (defaultFont == null)
@@ -258,7 +337,8 @@ public class TellervoLayerPanel extends JPanel {
 
 		return items;				
 	}
-	
+
+	   	
 
 
 }

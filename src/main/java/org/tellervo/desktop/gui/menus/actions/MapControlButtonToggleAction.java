@@ -27,11 +27,13 @@ public class MapControlButtonToggleAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		editor.switchToMapTab();
 		Layer controllayer = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
 				.getLayerByName(Logging.getMessage("layers.ViewControlsLayer.Name"));
 		
 		controllayer.setEnabled(!controllayer.isEnabled());
+		
 		
 	}
 

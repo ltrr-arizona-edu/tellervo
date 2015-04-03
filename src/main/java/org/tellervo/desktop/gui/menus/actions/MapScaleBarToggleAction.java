@@ -27,6 +27,7 @@ public class MapScaleBarToggleAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		editor.switchToMapTab();
 		Layer scalebarlayer = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
 				.getLayerByName(Logging.getMessage("layers.Earth.ScalebarLayer.Name"));

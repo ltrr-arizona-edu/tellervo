@@ -27,6 +27,7 @@ public class MapUTMGraticuleLayerToggleAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		editor.switchToMapTab();
 		Layer utmGraticuleLayer = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
 				.getLayerByName(Logging.getMessage("layers.Earth.UTMGraticule.Name"));

@@ -26,6 +26,7 @@ public class MapWMSLayerAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		editor.switchToMapTab();
 		WMSManager wmsManager = new WMSManager(editor.getMapPanel().getWwd());
 		wmsManager.setEnabled(true);
 	

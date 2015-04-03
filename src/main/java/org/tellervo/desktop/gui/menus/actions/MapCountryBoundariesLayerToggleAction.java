@@ -27,6 +27,7 @@ public class MapCountryBoundariesLayerToggleAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		editor.switchToMapTab();
 		Layer countryBoundaries = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
 				.getLayerByName("Political Boundaries");

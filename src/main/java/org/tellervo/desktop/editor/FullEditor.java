@@ -58,6 +58,7 @@ public class FullEditor extends AbstractEditor {
 		super();
 		this.setVisible(true);
 		initFullEditor();
+		initActions();
 	}
 	
 	/**
@@ -65,6 +66,8 @@ public class FullEditor extends AbstractEditor {
 	 *  
 	 * @return
 	 */
+	
+	
 	public synchronized static FullEditor getInstance()
 	{
 		if(instance==null)
@@ -685,6 +688,12 @@ public class FullEditor extends AbstractEditor {
 		
 		
 	}
-
+	
+	public FullEditorActions getAction(){
+		
+		return (FullEditorActions) actions;
+	}
+	
+	
 	
 }

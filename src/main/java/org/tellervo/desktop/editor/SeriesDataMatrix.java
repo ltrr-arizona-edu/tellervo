@@ -1079,7 +1079,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	
 	public void saveGraphDividerLocation()
 	{
-		App.prefs.setIntPref(PrefKey.EDITOR_GRAPH_DIVIDER_LOCAITON, splitPaneTableAndRemarks.getDividerLocation());
+		App.prefs.setIntPref(PrefKey.EDITOR_GRAPH_DIVIDER_LOCAITON, splitPaneTableAndGraph.getDividerLocation());
 	}
 	
 	public void restoreGraphDividerLocation()
@@ -1087,11 +1087,11 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		int newloc = App.prefs.getIntPref(PrefKey.EDITOR_GRAPH_DIVIDER_LOCAITON, 999999);
 		if(newloc!=999999)
 		{
-			splitPaneTableAndRemarks.setDividerLocation(newloc);
+			splitPaneTableAndGraph.setDividerLocation(newloc);
 		}
 		else
 		{
-			splitPaneTableAndRemarks.setDividerLocation(0.2d);
+			splitPaneTableAndGraph.setDividerLocation(0.2d);
 		}
 	}
 	

@@ -6,6 +6,7 @@ import javax.swing.AbstractAction;
 
 import org.tellervo.desktop.admin.SetPasswordUI;
 import org.tellervo.desktop.admin.view.PermissionByEntityDialog;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.ui.Builder;
@@ -16,10 +17,12 @@ import org.tridas.schema.TridasSample;
 public class MapControlsAction extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
+	private FullEditor editor;
 	
-	public MapControlsAction() {
+	public MapControlsAction(FullEditor editor) {
         super("Controls", Builder.getIcon("controls.png", 22));
 		putValue(SHORT_DESCRIPTION, "Controls");
+		this.editor = editor;
         //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.new")); 
         //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.new"));
 
@@ -28,6 +31,7 @@ public class MapControlsAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
+		editor.switchToMapTab();
 		
 	}
 

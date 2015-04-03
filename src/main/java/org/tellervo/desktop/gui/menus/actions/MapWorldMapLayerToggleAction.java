@@ -27,6 +27,7 @@ public class MapWorldMapLayerToggleAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		editor.switchToMapTab();
 		Layer worldMapLayer = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
 				.getLayerByName(Logging.getMessage("layers.Earth.WorldMapLayer.Name"));

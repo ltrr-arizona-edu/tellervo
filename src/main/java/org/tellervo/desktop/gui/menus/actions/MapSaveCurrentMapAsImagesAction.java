@@ -51,7 +51,7 @@ public class MapSaveCurrentMapAsImagesAction extends AbstractAction implements R
 	@Override
 	public void actionPerformed(ActionEvent e) {		
 		
-  
+		editor.switchToMapTab();
         this.fileChooser = new JFileChooser();
         this.snapFile = this.chooseFile(editor);
 		

@@ -71,9 +71,9 @@ public class FullEditorActions extends EditorActions {
 		
 		viewZoomToExtent = new ViewToExtentAction((FullEditor) editor);
 		
-		mapAddLayersAction = new MapAddLayersAction();
-		mapControlsAction = new MapControlsAction();
-		mapAnnotationsAction = new MapAnnotationsAction();
+		mapAddLayersAction = new MapAddLayersAction((FullEditor) editor);
+		mapControlsAction = new MapControlsAction((FullEditor) editor);
+		mapAnnotationsAction = new MapAnnotationsAction((FullEditor) editor);
 		
 		mapCompassToggleAction = new MapCompassToggleAction((FullEditor) editor);
 		mapWorldMapLayerToggleAction = new MapWorldMapLayerToggleAction((FullEditor) editor);

@@ -38,7 +38,7 @@ public class MapKMLLayerAction extends AbstractAction {
 	public void actionPerformed(ActionEvent e) {
 		
 	
-		
+		editor.switchToMapTab();
 		
 		final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setMultiSelectionEnabled(true);

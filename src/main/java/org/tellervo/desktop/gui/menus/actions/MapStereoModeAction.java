@@ -37,7 +37,7 @@ public class MapStereoModeAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
-        
+		editor.switchToMapTab();
 		if(System.getProperty("gov.nasa.worldwind.stereo.mode")!=null && System.getProperty("gov.nasa.worldwind.stereo.mode").equals("redblue"))
 		{
 			System.setProperty("gov.nasa.worldwind.stereo.mode", "");

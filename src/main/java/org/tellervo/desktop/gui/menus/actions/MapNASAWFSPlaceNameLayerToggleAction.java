@@ -27,6 +27,7 @@ public class MapNASAWFSPlaceNameLayerToggleAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		editor.switchToMapTab();
 		Layer NASAWFSPlaceNameLayer = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
 				.getLayerByName(Logging.getMessage("layers.Earth.PlaceName.Name"));
