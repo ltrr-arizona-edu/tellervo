@@ -56,9 +56,11 @@ public class FullEditor extends AbstractEditor {
 	protected FullEditor()
 	{
 		super();
+		instance = this;
 		this.setVisible(true);
-		initFullEditor();
 		initActions();
+		initFullEditor();
+		//initActions();
 	}
 	
 	/**

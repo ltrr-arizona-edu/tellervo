@@ -78,7 +78,7 @@ public class TellervoLayerPanel extends JPanel {
 	    {
 	        // Make a panel at a default size.
 	        super(new BorderLayout());
-	       
+	        actions = FullEditor.getInstance().getAction();
 	        this.makePanel(wwd, new Dimension(200, 400));
 
 
@@ -95,7 +95,7 @@ public class TellervoLayerPanel extends JPanel {
 	    {
 	        // Make a panel at a specified size.
 	        super(new BorderLayout());
-	     
+	        actions = FullEditor.getInstance().getAction();
 	        this.makePanel(wwd, size);
 
 	    }
@@ -105,7 +105,7 @@ public class TellervoLayerPanel extends JPanel {
 	        // Make and fill the panel holding the layer titles.
 	        this.layersPanel = new JPanel(new GridLayout(0, 1, 0, 4));
 	        layersPanel.setBackground(Color.WHITE);
-//	        actions = editor.getAction();
+	        
 	        
 
 	        this.layersPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
@@ -172,18 +172,18 @@ public class TellervoLayerPanel extends JPanel {
 			
 			final JPopupMenu popupMenu = new JPopupMenu();
 			
-			JMenu addLayers = new JMenu("actions.mapAddLayersAction");
+			JMenu addLayers = new JMenu(actions.mapAddLayersAction);
 						
-			JMenuItem shapeFileLayer = new JMenuItem("actions.mapShapefileLayerAction");
+			JMenuItem shapeFileLayer = new JMenuItem(actions.mapShapefileLayerAction);
 			addLayers.add(shapeFileLayer);
 			
-			JMenuItem KMLLayer = new JMenuItem("actions.mapKMLLayerAction");
+			JMenuItem KMLLayer = new JMenuItem(actions.mapKMLLayerAction);
 			addLayers.add(KMLLayer);
 			
-			JMenuItem WMSLayer = new JMenuItem("actions.mapWMSLayerAction");
+			JMenuItem WMSLayer = new JMenuItem(actions.mapWMSLayerAction);
 			addLayers.add(WMSLayer);
 			
-			JMenuItem GISLayer = new JMenuItem("actions.mapGISImageAction");
+			JMenuItem GISLayer = new JMenuItem(actions.mapGISImageAction);
 			addLayers.add(GISLayer);
 			
 			popupMenu.add(addLayers);
