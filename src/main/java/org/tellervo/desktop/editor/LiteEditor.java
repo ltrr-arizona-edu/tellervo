@@ -668,9 +668,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				element = new TridasElement();
 				element.setTaxon(ITRDBTaxonConverter.getControlledVocFromName(s.getMetaString(Metadata.SPECIES)));
 
-				sample = new TridasSample();
-				radius = new TridasRadius();
-				
+				sample = new TridasSample();				
 				sample.getRadiuses().add(radius);
 				element.getSamples().add(sample);
 				object.getElements().add(element);
