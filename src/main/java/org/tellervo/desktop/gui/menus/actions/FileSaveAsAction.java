@@ -40,7 +40,7 @@ public class FileSaveAsAction extends AbstractAction{
 			try {
 				editor.saveAs();
 			} catch (Exception e) {
-				Alert.error(editor, "Error saving", "Error saving file"+e.getLocalizedMessage());
+				Alert.error(editor, "Error saving", "Error saving file.\n"+e.getLocalizedMessage());
 				return;
 			}
 

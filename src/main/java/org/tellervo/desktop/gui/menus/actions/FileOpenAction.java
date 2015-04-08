@@ -84,7 +84,7 @@ public class FileOpenAction extends AbstractAction{
 
 		// custom jfilechooser
 		File file = null;
-		String format = null;
+		DendroFileFilter chosenFilter = null;
 		JFileChooser fc = new JFileChooser();
 	
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -121,13 +121,12 @@ public class FileOpenAction extends AbstractAction{
 		TricycleModelLocator.getInstance().setLastDirectory(fc.getCurrentDirectory());
 		if (retValue == JFileChooser.APPROVE_OPTION) {
 			file = fc.getSelectedFile();
-			String formatDesc = fc.getFileFilter().getDescription();
 			// Remember this folder for next time
 			App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getPath());
 			try{
 				//format = formatDesc.substring(0, formatDesc.indexOf("(")).trim();
-				format = ((DendroFileFilter)fc.getFileFilter()).getFormatName();
-				App.prefs.setPref(PrefKey.IMPORT_FORMAT, format);
+				chosenFilter = (DendroFileFilter)fc.getFileFilter();
+				App.prefs.setPref(PrefKey.IMPORT_FORMAT, chosenFilter.toString());
 			} catch (Exception e){}
 		}
 		if (file == null) {
@@ -136,7 +135,7 @@ public class FileOpenAction extends AbstractAction{
 		
 		LiteEditor editor = LiteEditor.getNewInstance();
 		try {
-			editor.loadFile(parent, file, format);
+			editor.loadFile(parent, file, TridasIO.getDendroFormatFromDendroFileFilter((DendroFileFilter) fc.getFileFilter()));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

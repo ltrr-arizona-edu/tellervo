@@ -285,7 +285,7 @@ public class ElementsTableModel extends AbstractTableModel {
 			} catch (UserCancelledException uce) {
 				// ignore...
 			} catch (IOException ioe) {
-				Alert.error("I/O Error", "Error saving file: "
+				Alert.error("I/O Error", "Error saving file.\n"
 						+ ioe.getMessage());
 			}
 		}

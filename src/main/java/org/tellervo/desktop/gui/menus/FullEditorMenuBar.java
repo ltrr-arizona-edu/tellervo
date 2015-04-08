@@ -17,6 +17,7 @@ import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
+import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
@@ -531,16 +532,24 @@ public class FullEditorMenuBar extends EditorMenuBar{
 
 		JMenu fileimportdataonly = Builder.makeMenu("menus.file.importdataonly", "fileimport.png");
 		
-		for (final String s : TridasIO.getSupportedReadingFormats()) {
+		for (Class<? extends AbstractDendroFileReader> clazz : TridasIO.getSupportedReaders()) {
+
+
+			final AbstractDendroFileReader reader;
+			try {
+				reader = clazz.newInstance();
+			} catch (InstantiationException | IllegalAccessException e1) {
+				
+				continue;
+			}
 			
-			JMenuItem importitem = new JMenuItem(s);
+			JMenuItem importitem = new JMenuItem(reader.getFullName());
 
 			importitem.addActionListener(new ActionListener() {
 
 				@Override
 				public void actionPerformed(ActionEvent arg0) {
 					// Set up file chooser and filters
-					AbstractDendroFileReader reader = TridasIO.getFileReader(s);
 					DendroFileFilter filter = reader.getDendroFileFilter();
 					File lastFolder = null;
 					try{
@@ -568,7 +577,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 						// Remember this folder for next time
 						App.prefs.setPref(PrefKey.FOLDER_LAST_READ, files[0].getPath());
 						
-				    	IdentifySeriesPanel.show(files, s);
+				    	IdentifySeriesPanel.show(files, reader.getFormat());
 
 					    
 				    } else {

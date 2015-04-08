@@ -295,6 +295,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+				<dependency>
+			<groupId>org.tridas</groupId>
+			<artifactId>dendrofileio</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
+		</dependency>
 		<dependency>
 			<groupId>org.tridas</groupId>
 			<artifactId>tricycle</artifactId>
@@ -351,11 +356,7 @@
 			<artifactId>jide-oss</artifactId>
 			<version>3.6.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.tridas</groupId>
-			<artifactId>dendrofileio</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
-		</dependency>
+
 	</dependencies>
 
 	<build>

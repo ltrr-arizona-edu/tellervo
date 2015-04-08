@@ -46,6 +46,7 @@ import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIEntity;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.AbstractDendroFormat;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.util.SafeIntYear;
 import org.tridas.io.util.TridasUtils;
@@ -436,7 +437,7 @@ public class EditorFactory {
 	}
 	
 	
-	public static Sample createSampleFromSeries(ITridasSeries series, TridasElement el, File file, String fileType, Boolean hideWarnings)
+	public static Sample createSampleFromSeries(ITridasSeries series, TridasElement el, File file, AbstractDendroFormat fileType, Boolean hideWarnings)
 	{
 		String species = null;
 		String author = null;

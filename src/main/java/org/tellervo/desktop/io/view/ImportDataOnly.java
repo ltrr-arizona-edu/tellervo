@@ -20,6 +20,7 @@ import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroFileReader;
+import org.tridas.io.AbstractDendroFormat;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
@@ -53,7 +54,7 @@ public class ImportDataOnly extends JDialog {
 	private NormalTridasUnit unitsIfNotSpecified = NormalTridasUnit.MICROMETRES;
 	private AbstractDendroFileReader reader;
 	private File file;
-	private String fileType;
+	private AbstractDendroFormat fileFormat;
 	private JTable table;
 	
 	
@@ -88,10 +89,10 @@ public class ImportDataOnly extends JDialog {
 		
 	}
 	
-	public ImportDataOnly(Window parent, File file, String fileType)
+	public ImportDataOnly(Window parent, File file, AbstractDendroFormat fileType)
 	{
 		this.parent = parent;
-		this.fileType = fileType;
+		this.fileFormat = fileType;
 		this.file = file;
 		parseFile();
 		
@@ -102,22 +103,12 @@ public class ImportDataOnly extends JDialog {
 		this.parent = parent;
 		this.file = file;
 		
+		this.fileFormat = TridasIO.getDendroFormatFromDendroFileFilter(filetypefilter);
 				
-		for (String readername : TridasIO.getSupportedReadingFormats())
-		{
-			AbstractDendroReaderFileFilter filter = new DendroReaderFileFilter(readername);
-			String format = filetypefilter.getFormatName();
-			log.debug("Checking to see if "+format+" matches "+ filter.getDescription());
-			
-			if(filter.getDescription().equals(format))
-			{
-				this.fileType = filter.getDescription();
-				parseFile();
-				return;
-			}
-		}
+
+		parseFile();
+
 		
-		throw new Exception("Unsupported dendro data file type.  Do not know "+filetypefilter.toString());
 		
 	}
 	
@@ -154,7 +145,7 @@ public class ImportDataOnly extends JDialog {
 	{
 		// Create a reader based on the file type supplied
 		
-		reader = TridasIO.getFileReader(fileType);
+		reader = TridasIO.getFileReaderFromFormat(fileFormat);
 		if(reader==null) 
 		{
 			Alert.error(parent, "Error", "Unknown file type");
@@ -168,7 +159,7 @@ public class ImportDataOnly extends JDialog {
 			Alert.errorLoading(file.getAbsolutePath(), e);
 			return;
 		} catch (InvalidDendroFileException e) {
-			Alert.error(parent, "Error", "The selected file is not a valid "+fileType+ " file.\nPlease check and try again");
+			Alert.error(parent, "Error", "The selected file is not a valid "+fileFormat.getShortName()+ " file.\nPlease check and try again");
 			return;
 		}
 		catch(NullPointerException e)
@@ -192,7 +183,7 @@ public class ImportDataOnly extends JDialog {
 						{
 							for(TridasMeasurementSeries ms : r.getMeasurementSeries())
 							{
-								Sample sample = EditorFactory.createSampleFromSeries(ms, e, file, fileType, hideWarningsFlag);	
+								Sample sample = EditorFactory.createSampleFromSeries(ms, e, file, fileFormat, hideWarningsFlag);	
 								if(sample==null)
 								{
 									hideWarningsFlag=true;
@@ -210,7 +201,7 @@ public class ImportDataOnly extends JDialog {
 			
 			for(TridasDerivedSeries ds : p.getDerivedSeries())
 			{
-				Sample sample = EditorFactory.createSampleFromSeries(ds, null, file, fileType, hideWarningsFlag);
+				Sample sample = EditorFactory.createSampleFromSeries(ds, null, file, fileFormat, hideWarningsFlag);
 				
 				if(sample==null)
 				{

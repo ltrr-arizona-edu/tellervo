@@ -50,6 +50,7 @@ import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tridas.io.formats.tucson.TucsonFormat;
 
 
 /**
@@ -292,7 +293,8 @@ public class OpenRecent {
 				
 				LiteEditor editor = LiteEditor.getNewInstance();
 				try {
-					editor.loadFile(null, new File(desc.getFileName()), "Tucson");
+					TucsonFormat format = new TucsonFormat();
+					editor.loadFile(null, new File(desc.getFileName()), format);
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

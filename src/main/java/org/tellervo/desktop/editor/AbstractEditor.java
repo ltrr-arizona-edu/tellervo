@@ -3,7 +3,6 @@ package org.tellervo.desktop.editor;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Window;
-import java.awt.datatransfer.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
@@ -13,10 +12,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.DropMode;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -27,9 +24,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.ToolTipManager;
-import javax.swing.TransferHandler;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -51,6 +46,7 @@ import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroFileReader;
+import org.tridas.io.AbstractDendroFormat;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.exceptions.InvalidDendroFileException;
@@ -88,7 +84,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	protected NormalTridasUnit unitsIfNotSpecified = NormalTridasUnit.MICROMETRES;
 	protected AbstractDendroFileReader reader;
 	protected File file;
-	protected String fileType;
+	protected AbstractDendroFormat fileFormat;
 	protected SeriesDataMatrix dataView;
 	protected SampleListModel samplesModel;
 	
@@ -359,7 +355,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	{
 		// Create a reader based on the file type supplied
 		
-		reader = TridasIO.getFileReader(fileType);
+		reader = TridasIO.getFileReaderFromFormat(fileFormat);
 		if(reader==null) 
 		{
 			Alert.error(parent, "Error", "Unknown file type");
@@ -373,7 +369,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 			Alert.errorLoading(file.getAbsolutePath(), e);
 			return;
 		} catch (InvalidDendroFileException e) {
-			Alert.error(parent, "Error", "The selected file is not a valid "+fileType+ " file.\nPlease check and try again");
+			Alert.error(parent, "Error", "The selected file is not a valid "+fileFormat+ " file.\nPlease check and try again");
 			return;
 		}
 		catch(NullPointerException e)
@@ -397,7 +393,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 						{
 							for(TridasMeasurementSeries ms : r.getMeasurementSeries())
 							{
-								Sample sample = EditorFactory.createSampleFromSeries(ms, e, file, fileType, hideWarningsFlag);	
+								Sample sample = EditorFactory.createSampleFromSeries(ms, e, file, fileFormat, hideWarningsFlag);	
 								if(sample==null)
 								{
 									hideWarningsFlag=true;
@@ -415,7 +411,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 			
 			for(TridasDerivedSeries ds : p.getDerivedSeries())
 			{
-				Sample sample = EditorFactory.createSampleFromSeries(ds, null, file, fileType, hideWarningsFlag);
+				Sample sample = EditorFactory.createSampleFromSeries(ds, null, file, fileFormat, hideWarningsFlag);
 				
 				if(sample==null)
 				{

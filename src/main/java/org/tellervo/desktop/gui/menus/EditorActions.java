@@ -7,6 +7,7 @@ import javax.swing.Action;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.editor.AbstractEditor;
@@ -197,7 +198,7 @@ public abstract class EditorActions {
 		fileOpenMultiAction = new FileOpenMultiAction(editor);
 		fileExportDataAction = new FileExportDataAction(IOController.OPEN_EXPORT_WINDOW);
 		//fileExportMapAction = new FileExportMapAction(editor);
-		fileBulkDataEntryAction = new FileBulkDataEntryAction(IOController.OPEN_EXPORT_WINDOW);
+		fileBulkDataEntryAction = new FileBulkDataEntryAction(BulkImportController.DISPLAY_BULK_IMPORT);
 		fileDesignODKFormAction = new FileDesignODKFormAction(editor);
 		fileSaveAction = new FileSaveAction(editor);
 

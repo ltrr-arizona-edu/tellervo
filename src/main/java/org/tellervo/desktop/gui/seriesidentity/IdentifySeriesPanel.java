@@ -32,6 +32,7 @@ import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroFileReader;
+import org.tridas.io.AbstractDendroFormat;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.exceptions.InvalidDendroFileException;
@@ -76,14 +77,14 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		init();
 	}
 	
-	public IdentifySeriesPanel(Window parent, File file, String filetype) {
+	public IdentifySeriesPanel(Window parent, File file, AbstractDendroFormat filetype) {
 
 		setContainerFrame(parent);
 		init();
 		parseFile(file, filetype);
 	}
 	
-	public IdentifySeriesPanel(Window parent, File[] files, String filetype) {
+	public IdentifySeriesPanel(Window parent, File[] files, AbstractDendroFormat filetype) {
 
 		setContainerFrame(parent);
 		init();
@@ -211,14 +212,14 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	 * @param file
 	 * @param fileType
 	 */
-	private void parseFile(File file, String fileType)
+	private void parseFile(File file, AbstractDendroFormat format)
 	{
 		
 		ArrayList<Sample> sampleList = new ArrayList<Sample>();
 
 		
 		// Create a reader based on the file type supplied		
-		AbstractDendroFileReader reader = TridasIO.getFileReader(fileType);
+		AbstractDendroFileReader reader = TridasIO.getFileReaderFromFormat(format);
 		if(reader==null) 
 		{
 			Alert.error(containerFrame, "Error", "Unknown file type");
@@ -232,7 +233,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			Alert.errorLoading(file.getAbsolutePath(), e);
 			return;
 		} catch (InvalidDendroFileException e) {
-			Alert.error(containerFrame, "Error", "The selected file is not a valid "+fileType+ " file.\nPlease check and try again");
+			Alert.error(containerFrame, "Error", "The selected file is not a valid "+format.getShortName()+ " file.\nPlease check and try again");
 			return;
 		}
 		catch(NullPointerException e)
@@ -256,7 +257,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 						{
 							for(TridasMeasurementSeries ms : r.getMeasurementSeries())
 							{
-								Sample sample = EditorFactory.createSampleFromSeries(ms, e, file, fileType, hideWarningsFlag);	
+								Sample sample = EditorFactory.createSampleFromSeries(ms, e, file, format, hideWarningsFlag);	
 								if(sample==null)
 								{
 									hideWarningsFlag=true;
@@ -274,7 +275,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			
 			for(TridasDerivedSeries ds : p.getDerivedSeries())
 			{
-				Sample sample = EditorFactory.createSampleFromSeries(ds, null, file, fileType, hideWarningsFlag);
+				Sample sample = EditorFactory.createSampleFromSeries(ds, null, file, format, hideWarningsFlag);
 				
 				if(sample==null)
 				{
@@ -392,7 +393,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		
 		for(Sample s : sampleList)
 		{
-			SeriesIdentity id = new SeriesIdentity(file, fileType, s);
+			SeriesIdentity id = new SeriesIdentity(file, format, s);
 		
 			model.addItem(id);
 			
@@ -407,7 +408,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	 * @param files
 	 * @param filetype
 	 */
-	private void parseFiles(File[] files,  String filetype)
+	private void parseFiles(File[] files,  AbstractDendroFormat filetype)
 	{
 		
 		for(File file : files)
@@ -442,7 +443,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	 * 
 	 * @param args
 	 */
-	public static void show(File[] files, String format)
+	public static void show(File[] files, AbstractDendroFormat format)
 	{
 		App.init();
 		

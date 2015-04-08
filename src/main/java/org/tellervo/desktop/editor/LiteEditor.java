@@ -11,7 +11,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.swing.AbstractButton;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -19,14 +22,14 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
 import javax.swing.event.ListDataEvent;
 
+import net.miginfocom.swing.MigLayout;
+
 import org.apache.commons.io.FilenameUtils;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.menus.LiteEditorActions;
 import org.tellervo.desktop.gui.menus.LiteEditorMenuBar;
 import org.tellervo.desktop.gui.widgets.TitlelessButton;
-import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
-import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.PrefsEvent;
@@ -34,22 +37,24 @@ import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.io.AbstractDendroCollectionWriter;
+import org.tridas.io.AbstractDendroFormat;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.naming.NumericalNamingConvention;
+import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.io.util.UnitUtils;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasInterpretation;
 import org.tridas.schema.TridasMeasurementSeries;
-import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasTridas;
 import org.tridas.schema.TridasValues;
+import org.tridas.util.TridasObjectEx;
 
 public class LiteEditor extends AbstractEditor implements SaveableDocument{
 
@@ -58,6 +63,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	private JPanel metadataHolder;
 	private boolean savedByTellervo = false;
 	private BasicMetadataPanel metadata;
+	private JComboBox cboOverlap;
 	
 	private static ArrayList<LiteEditor> windows = new ArrayList<LiteEditor>();
 	
@@ -150,19 +156,6 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		return editor;
 	}
 	
-	/**
-	 * Load a legacy dendro data file
-	 * 
-	 * @param parent
-	 * @param file
-	 * @param fileType
-	 * @throws Exception
-	 */
-	public void loadFile(Window parent, File file, String fileType) throws Exception
-	{
-		loadFile(parent, file, new DendroFileFilter(null, fileType));
-							
-	}
 	
 	/**
 	 * Load a legacy dendro data file
@@ -172,29 +165,12 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	 * @param filetypefilter
 	 * @throws Exception
 	 */
-	public void loadFile(Window parent, File file, DendroFileFilter filetypefilter) throws Exception
+	public void loadFile(Window parent, File file, AbstractDendroFormat format) throws Exception
 	{
 		this.parent = parent;
 		this.file = file;
-		
-				
-		for (String readername : TridasIO.getSupportedReadingFormats())
-		{
-			AbstractDendroReaderFileFilter filter = new DendroReaderFileFilter(readername);
-			String format = filetypefilter.getFormatName();
-			log.debug("Checking to see if "+format+" matches "+ filter.getDescription());
-			
-			if(filter.getDescription().equals(format))
-			{
-				this.fileType = filter.getDescription();
-				parseFile();
-				
-				return;
-			}
-		}
-		
-		throw new Exception("Unsupported dendro data file type.  Do not know "+filetypefilter.toString());
-		
+		this.fileFormat = format;
+		parseFile();		
 	}
 	
 	/**
@@ -218,6 +194,19 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		tabbedPane.addTab("Metadata", Builder.getIcon("database.png", 16), metadataHolder, null);
 		metadata = new BasicMetadataPanel();
 		this.metadataHolder.add(metadata, BorderLayout.CENTER);
+		
+		
+		JPanel top = new JPanel();
+		top.setLayout(new MigLayout("", "[190px:190px,right][]", "[]"));
+		JLabel lblSeriesAreFrom = new JLabel("Series are from:");
+		top.add(lblSeriesAreFrom, "cell 0 1,alignx trailing");
+		
+		cboOverlap = new JComboBox();
+		cboOverlap.setModel(new DefaultComboBoxModel(OverlapType.values()));
+		top.add(cboOverlap, "cell 1 1,growx");
+		
+		
+		this.metadataHolder.add(top, BorderLayout.NORTH);
 		
 		itemSelected();
 		initPopupMenu();
@@ -400,6 +389,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				dataView.restoreGraphDividerLocation();
 
 				metadata.setSample(getSample());
+				
 							
 			}
 			else
@@ -421,7 +411,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	{	
 		// custom jfilechooser
 		File thisFile = null;
-		String format = null;
+		DendroFileFilter chosenFilter = null;
 		JFileChooser fc = new JFileChooser();
 	
 		fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -429,14 +419,17 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 								
 		// Loop through formats and create filters for each
 		fc.setAcceptAllFileFilterUsed(false);
-		ArrayList<DendroFileFilter> filters = TridasIO.getFileReadingFilterArray();
+		ArrayList<DendroFileFilter> filters = TridasIO.getFileWritingFilterArray();
 		Collections.sort(filters);
+		
+		
+		
 		for(DendroFileFilter filter : filters)
 		{			
 			fc.addChoosableFileFilter(filter);
-			if(fileType!=null)
+			if(fileFormat!=null)
 			{
-				if(fileType.equals(filter.getFormatName()))
+				if(fileFormat.getDendroFileFilter().equals(filter))
 				{
 					fc.setFileFilter(filter);
 				}
@@ -459,8 +452,8 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			thisFile = fc.getSelectedFile();
 			// Remember this folder for next time
 			App.prefs.setPref(PrefKey.FOLDER_LAST_READ, thisFile.getPath());
-			format = ((DendroFileFilter)fc.getFileFilter()).getFormatName();
-			App.prefs.setPref(PrefKey.IMPORT_FORMAT, format);
+			chosenFilter = (DendroFileFilter)fc.getFileFilter();
+			App.prefs.setPref(PrefKey.IMPORT_FORMAT, chosenFilter.toString());
 		}
 		
 		if (thisFile == null) {
@@ -469,7 +462,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				
 		
 		file = thisFile;
-		fileType = format;
+		fileFormat = TridasIO.getDendroFormatFromDendroFileFilter(chosenFilter);
 		saveToDisk();
 	}
 	
@@ -486,7 +479,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			throw new Exception("No filename provided for saving");
 		}
 		
-		if(fileType==null)
+		if(fileFormat==null)
 		{
 			throw new Exception("No file format provided for saving");
 		}
@@ -511,17 +504,14 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 
 	
 		
-		writer = TridasIO.getFileWriter(fileType);
+		writer = TridasIO.getFileWriterFromFormat(fileFormat);
 		
 		
 
 		NumericalNamingConvention nc = new NumericalNamingConvention(filename);
 		nc.setAddSequenceNumbersForUniqueness(false);
 		writer.setNamingConvention(nc);
-
-		TridasTridas container = (TridasTridas) getContainerForFile().clone();
-
-		writer.load(container);
+		writer.load(getContainerForFile());
 		// Actually save file(s) to disk
 		writer.saveAllToDisk(path);
 
@@ -531,7 +521,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		{	
 			sample.clearModified();
 			sample.setMeta(Metadata.FILENAME, file.getAbsolutePath());
-			sample.setMeta(Metadata.LEGACY_FORMAT, fileType);
+			sample.setMeta(Metadata.LEGACY_FORMAT, fileFormat.toString());
 			sample.setMeta(Metadata.LEGACY_SAVED_BY_TELLERVO, true);
 			sample.fireSampleMetadataChanged();
 			
@@ -539,7 +529,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			
 		}
 
-		App.prefs.setPref(PrefKey.EXPORT_FORMAT, fileType);
+		App.prefs.setPref(PrefKey.EXPORT_FORMAT, fileFormat.toString());
 		App.prefs.setPref(PrefKey.FOLDER_LAST_SAVE, path);
 
 		setTitle();
@@ -554,33 +544,52 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	 * Got the TRiDaS container for this file
 	 * 
 	 * @return
+	 * @throws Exception 
 	 */
-	private TridasTridas getContainerForFile()
+	private TridasTridas getContainerForFile() throws Exception
 	{
+		OverlapType overlap = (OverlapType) cboOverlap.getSelectedItem();
 
-		TridasRadius radius = new TridasRadius();
-
-		TridasSample sample = new TridasSample();
-
-		TridasElement element = new TridasElement();
-		
-		 
-		//element.setTaxon(ITRDBTaxonConverter.getControlledVocFromCode(((BasicMetadataPanel)metaView).txtSpecies.getText()));
-
-		TridasObject object = new TridasObject();
-		
-
+		TridasRadius radius = null;
+		TridasSample sample = null;
+		TridasElement element = null;				 
+		TridasObjectEx object = null;
 		TridasProject proj = new TridasProject();
+
 		
-		
-		
-		
-		for(int i=0; i<this.getSamples().size(); i++)
+		// Create the entities that will be reused between series
+		if(overlap.equals(OverlapType.SAME_OBJECT))
 		{
+			object = new TridasObjectEx();
+		}
+		else if(overlap.equals(OverlapType.SAME_ELEMENT))
+		{
+			object = new TridasObjectEx();
+			element = new TridasElement();
+		}
+		else if(overlap.equals(OverlapType.SAME_SAMPLE))
+		{
+			object = new TridasObjectEx();
+			element = new TridasElement();
+			sample = new TridasSample();
+		}
+		else
+		{
+			// all unique entities for every series 		
+		}
+
+			
+		for(int i=0; i<this.getSamples().size(); i++)
+		{			
 			Sample s = this.getSamples().get(i);
 			TridasMeasurementSeries series = (TridasMeasurementSeries) ((TridasMeasurementSeries) s.getSeries()).clone();
 			
 	
+			if(element!=null)
+			{
+				element.setTaxon(ITRDBTaxonConverter.getControlledVocFromName(s.getMetaString(Metadata.SPECIES)));
+			}
+			
 			String pref = App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.toString());
 
 			log.debug("Display pref: "+pref);
@@ -624,15 +633,65 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			gf.setValue(s.getMetaString(Metadata.KEYCODE));
 			series.getGenericFields().add(gf);
 			
+			
+			radius = new TridasRadius();
 			radius.getMeasurementSeries().add(series);
+			
+			
+			if(overlap.equals(OverlapType.SAME_OBJECT))
+			{
+				element = new TridasElement();
+				element.setTaxon(ITRDBTaxonConverter.getControlledVocFromName(s.getMetaString(Metadata.SPECIES)));
+				sample = new TridasSample();
+				
+				sample.getRadiuses().add(radius);
+				element.getSamples().add(sample);
+				object.getElements().add(element);
+			}
+			else if(overlap.equals(OverlapType.SAME_ELEMENT))
+			{
+				sample = new TridasSample();
+				radius = new TridasRadius();
+				
+				sample.getRadiuses().add(radius);
+				element.getSamples().add(sample);
+			}
+			else if(overlap.equals(OverlapType.SAME_SAMPLE))
+			{
+				radius = new TridasRadius();
+				sample.getRadiuses().add(radius);
+			}
+			else
+			{
+				object = new TridasObjectEx();
+				element = new TridasElement();
+				element.setTaxon(ITRDBTaxonConverter.getControlledVocFromName(s.getMetaString(Metadata.SPECIES)));
+
+				sample = new TridasSample();
+				radius = new TridasRadius();
+				
+				sample.getRadiuses().add(radius);
+				element.getSamples().add(sample);
+				object.getElements().add(element);
+				proj.getObjects().add(object);
+			}	
 		}
-
-
-		sample.getRadiuses().add(radius);
-		element.getSamples().add(sample);
-		object.getElements().add(element);
-		proj.getObjects().add(object);
-
+		
+		if(overlap.equals(OverlapType.SAME_OBJECT))
+		{
+			proj.getObjects().add(object);
+		}
+		else if(overlap.equals(OverlapType.SAME_ELEMENT))
+		{			
+			object.getElements().add(element);
+			proj.getObjects().add(object);
+		}
+		else if(overlap.equals(OverlapType.SAME_SAMPLE))
+		{
+			element.getSamples().add(sample);
+			object.getElements().add(element);
+			proj.getObjects().add(object);
+		}
 
 		// Extract the TridasProject
 		TridasTridas container = new TridasTridas();
@@ -843,4 +902,35 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		
 	}
 		
+	public enum OverlapType {
+
+		DIFFERENT_OBJECTS("Different sites/objects"),
+		SAME_OBJECT("Same site/object"), 
+		SAME_ELEMENT("Same tree/element"),
+		SAME_SAMPLE("Same sample");
+	    
+	    private final String value;
+
+	    OverlapType(String v) {
+	        value = v;
+	    }
+
+	    public String value() {
+	        return value;
+	    }
+
+	    public static OverlapType fromValue(String v) {
+	        for (OverlapType c: OverlapType.values()) {
+	            if (c.value.equals(v)) {
+	                return c;
+	            }
+	        }
+	        throw new IllegalArgumentException(v);
+	    }
+	    
+	    public String toString()
+	    {
+	    	return value;
+	    }
+	}
 }

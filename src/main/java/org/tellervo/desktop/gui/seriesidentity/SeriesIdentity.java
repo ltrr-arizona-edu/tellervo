@@ -4,6 +4,7 @@ import java.io.File;
 
 import org.tellervo.desktop.io.IdentityItem;
 import org.tellervo.desktop.sample.Sample;
+import org.tridas.io.AbstractDendroFormat;
 
 /**
  * This class contains the identity of a series being imported from a legacy text file 
@@ -19,10 +20,10 @@ public class SeriesIdentity {
 	private IdentityItem radiusItem = new IdentityItem();
 	private IdentityItem seriesItem = new IdentityItem();
 	private File file;
-	private String format;
+	private AbstractDendroFormat format;
 	private Sample sample;
 	
-	public SeriesIdentity(File file, String format, Sample s)
+	public SeriesIdentity(File file, AbstractDendroFormat format, Sample s)
 	{
 		this.setFile(file);
 		this.setFormat(format);
@@ -33,13 +34,13 @@ public class SeriesIdentity {
 	
 
 
-	public String getFormat() {
+	public AbstractDendroFormat getFormat() {
 		return format;
 	}
 
 
 
-	public void setFormat(String format) {
+	public void setFormat(AbstractDendroFormat format) {
 		this.format = format;
 	}
 
