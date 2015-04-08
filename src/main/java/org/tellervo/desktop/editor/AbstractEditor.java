@@ -38,6 +38,7 @@ import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.menus.EditorActions;
 import org.tellervo.desktop.gui.menus.EditorMenuBar;
 import org.tellervo.desktop.gui.widgets.TitlelessButton;
+import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.PrefsListener;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleEvent;
@@ -393,13 +394,14 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 						{
 							for(TridasMeasurementSeries ms : r.getMeasurementSeries())
 							{
-								Sample sample = EditorFactory.createSampleFromSeries(ms, e, file, fileFormat, hideWarningsFlag);	
+								Sample sample = EditorFactory.createSampleFromSeries(ms, e, file, fileFormat, hideWarningsFlag);
 								if(sample==null)
 								{
 									hideWarningsFlag=true;
 								}
 								else
 								{
+									if(o.isSetTitle()) sample.setMeta(Metadata.OBJECT_TITLE, o.getTitle());
 									samplesModel.addElement(sample);
 								}
 								

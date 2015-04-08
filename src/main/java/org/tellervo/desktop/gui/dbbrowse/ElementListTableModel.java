@@ -127,7 +127,7 @@ public class ElementListTableModel extends AbstractTableModel {
 		
 		switch(columnIndex) {
 		case 0: 
-			return bs.hasMeta("title") ? "---"+bs.getMeta("title") : "[id: " + bs.getMeta("id") + "]";
+			return bs.hasMeta("title") ? bs.getMeta("title") : "[id: " + bs.getMeta("id") + "]";
 
 		case 1:
 			return bs.getMetaString(Metadata.VERSION);

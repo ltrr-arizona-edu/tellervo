@@ -39,6 +39,7 @@ public class Metadata {
 	public final static String KEYCODE = "keycode";
 	public final static String AUTHOR = "author";
 	public final static String SPECIES = "species";
+	public final static String OBJECT_TITLE = "objectTitle";
 	
 	/* Timestamps */
 	public final static String CREATED_TIMESTAMP = "createdTimestamp";

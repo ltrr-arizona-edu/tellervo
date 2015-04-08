@@ -126,7 +126,7 @@ public class FileOpenAction extends AbstractAction{
 			try{
 				//format = formatDesc.substring(0, formatDesc.indexOf("(")).trim();
 				chosenFilter = (DendroFileFilter)fc.getFileFilter();
-				App.prefs.setPref(PrefKey.IMPORT_FORMAT, chosenFilter.toString());
+				App.prefs.setPref(PrefKey.IMPORT_FORMAT, chosenFilter.getFormatName());
 			} catch (Exception e){}
 		}
 		if (file == null) {

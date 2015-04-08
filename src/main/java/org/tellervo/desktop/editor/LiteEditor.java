@@ -34,15 +34,18 @@ import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.io.AbstractDendroFormat;
 import org.tridas.io.DendroFileFilter;
+import org.tridas.io.I18n;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.util.ITRDBTaxonConverter;
+import org.tridas.io.util.TridasFactory;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.io.util.UnitUtils;
 import org.tridas.schema.NormalTridasUnit;
@@ -50,12 +53,15 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasInterpretation;
 import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasMeasuringMethod;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasTridas;
 import org.tridas.schema.TridasValues;
 import org.tridas.util.TridasObjectEx;
+
+import com.itextpdf.text.Meta;
 
 public class LiteEditor extends AbstractEditor implements SaveableDocument{
 
@@ -193,7 +199,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		metadataHolder = new JPanel();
 		metadataHolder.setLayout(new BorderLayout());
 		tabbedPane.addTab("Metadata", Builder.getIcon("database.png", 16), metadataHolder, null);
-		metadata = new BasicMetadataPanel();
+		metadata = new BasicMetadataPanel(this);
 		this.metadataHolder.add(metadata, BorderLayout.CENTER);
 		
 		
@@ -213,6 +219,8 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		initPopupMenu();
 
 		this.setVisible(true);
+		
+		
 			
 	}
 	
@@ -429,12 +437,20 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		{			
 			fc.addChoosableFileFilter(filter);
 			if(fileFormat!=null)
-			{
+			{	
 				if(fileFormat.getDendroFileFilter().equals(filter))
 				{
 					fc.setFileFilter(filter);
 				}
 			}
+			else if(App.prefs.getPref(PrefKey.EXPORT_FORMAT, null)!=null)
+			{
+				if(App.prefs.getPref(PrefKey.EXPORT_FORMAT, null).equals(filter.getFormatName()))
+				{
+					fc.setFileFilter(filter);
+				}
+			}
+			
 		}
 		
 
@@ -454,7 +470,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			// Remember this folder for next time
 			App.prefs.setPref(PrefKey.FOLDER_LAST_READ, thisFile.getPath());
 			chosenFilter = (DendroFileFilter)fc.getFileFilter();
-			App.prefs.setPref(PrefKey.IMPORT_FORMAT, chosenFilter.toString());
+			App.prefs.setPref(PrefKey.EXPORT_FORMAT, chosenFilter.getFormatName());
 		}
 		
 		if (thisFile == null) {
@@ -502,17 +518,11 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		log.debug("Filename: "+filename);
 		log.debug("Extension: "+ext);
 
-
-	
-		
 		writer = TridasIO.getFileWriterFromFormat(fileFormat);
-		
-		
-
 		NumericalNamingConvention nc = new NumericalNamingConvention(filename);
 		nc.setAddSequenceNumbersForUniqueness(false);
 		writer.setNamingConvention(nc);
-		writer.load(getContainerForFile());
+		writer.load((TridasTridas)getContainerForFile().clone());
 		// Actually save file(s) to disk
 		writer.saveAllToDisk(path);
 
@@ -555,24 +565,24 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		TridasSample sample = null;
 		TridasElement element = null;				 
 		TridasObjectEx object = null;
-		TridasProject proj = new TridasProject();
+		TridasProject proj = TridasFactory.getNewTridasProject();
 
 		
 		// Create the entities that will be reused between series
 		if(overlap.equals(OverlapType.SAME_OBJECT))
 		{
-			object = new TridasObjectEx();
+			object = TridasFactory.getNewTridasObject();
 		}
 		else if(overlap.equals(OverlapType.SAME_ELEMENT))
 		{
-			object = new TridasObjectEx();
-			element = new TridasElement();
+			object = TridasFactory.getNewTridasObject();
+			element = TridasFactory.getNewTridasElement();
 		}
 		else if(overlap.equals(OverlapType.SAME_SAMPLE))
 		{
-			object = new TridasObjectEx();
-			element = new TridasElement();
-			sample = new TridasSample();
+			object = TridasFactory.getNewTridasObject();
+			element = TridasFactory.getNewTridasElement();
+			sample = TridasFactory.getNewTridasSample();
 		}
 		else
 		{
@@ -585,15 +595,18 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			Sample s = this.getSamples().get(i);
 			TridasMeasurementSeries series = (TridasMeasurementSeries) ((TridasMeasurementSeries) s.getSeries()).clone();
 			
-	
+			// Set attributes for shared entities
+			if(object!=null)
+			{
+				object.setTitle(s.getMetaString(Metadata.OBJECT_TITLE));
+			}
 			if(element!=null)
 			{
 				element.setTaxon(ITRDBTaxonConverter.getControlledVocFromName(s.getMetaString(Metadata.SPECIES)));
 			}
 			
+			// Handle units
 			String pref = App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.toString());
-
-			log.debug("Display pref: "+pref);
 			NormalTridasUnit selectedUnits = NormalTridasUnit.MICROMETRES;
 			for(NormalTridasUnit unit : NormalTridasUnit.values())
 			{
@@ -603,13 +616,9 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 					selectedUnits = unit;
 					break;
 				}
-			}
-						
+			}		
 			for(TridasValues tv : series.getValues())
 			{
-				log.debug("Original units are: "+tv.getUnit().toString());
-				
-				
 				try {
 					tv = UnitUtils.convertTridasValues(selectedUnits, tv, false);
 					
@@ -620,14 +629,15 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				}
 			}
 			
+			// Set attributes
 			series.setTitle(s.getMetaString(Metadata.TITLE));
 			series.setDendrochronologist(s.getMetaString(Metadata.AUTHOR));
-						
-			
+			TridasMeasuringMethod mm = new TridasMeasuringMethod();
+			mm.setValue(I18n.getText("unknown"));
+			series.setMeasuringMethod(mm);
 			TridasInterpretation interp = new TridasInterpretation();
 			interp.setFirstYear(s.getStart().tridasYearValue());
 			series.setInterpretation(interp);
-			
 			TridasGenericField gf = new TridasGenericField();
 			gf.setName("keycode");
 			gf.setType("xs:string");
@@ -635,15 +645,15 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			series.getGenericFields().add(gf);
 			
 			
-			radius = new TridasRadius();
+			radius = TridasFactory.getNewTridasRadius();
 			radius.getMeasurementSeries().add(series);
 			
-			
+			// Dynamically build and add entities depending on overlap type
 			if(overlap.equals(OverlapType.SAME_OBJECT))
 			{
-				element = new TridasElement();
+				element = TridasFactory.getNewTridasElement();
 				element.setTaxon(ITRDBTaxonConverter.getControlledVocFromName(s.getMetaString(Metadata.SPECIES)));
-				sample = new TridasSample();
+				sample = TridasFactory.getNewTridasSample();
 				
 				sample.getRadiuses().add(radius);
 				element.getSamples().add(sample);
@@ -651,24 +661,23 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			}
 			else if(overlap.equals(OverlapType.SAME_ELEMENT))
 			{
-				sample = new TridasSample();
-				radius = new TridasRadius();
-				
+				sample = TridasFactory.getNewTridasSample();
+							
 				sample.getRadiuses().add(radius);
 				element.getSamples().add(sample);
 			}
 			else if(overlap.equals(OverlapType.SAME_SAMPLE))
 			{
-				radius = new TridasRadius();
 				sample.getRadiuses().add(radius);
 			}
 			else
 			{
-				object = new TridasObjectEx();
-				element = new TridasElement();
+				object = TridasFactory.getNewTridasObject();
+				object.setTitle(s.getMetaString(Metadata.OBJECT_TITLE));
+				element = TridasFactory.getNewTridasElement();
 				element.setTaxon(ITRDBTaxonConverter.getControlledVocFromName(s.getMetaString(Metadata.SPECIES)));
 
-				sample = new TridasSample();				
+				sample = TridasFactory.getNewTridasSample();				
 				sample.getRadiuses().add(radius);
 				element.getSamples().add(sample);
 				object.getElements().add(element);
@@ -676,6 +685,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			}	
 		}
 		
+		// Add the shared entities to the project
 		if(overlap.equals(OverlapType.SAME_OBJECT))
 		{
 			proj.getObjects().add(object);
@@ -937,4 +947,34 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	    	return value;
 	    }
 	}
+	
+	public void updateOverlappingFields(Sample sourceSample)
+	{
+		if(this.cboOverlap.getSelectedItem().equals(OverlapType.SAME_OBJECT) || 
+				this.cboOverlap.getSelectedItem().equals(OverlapType.SAME_ELEMENT) ||
+				this.cboOverlap.getSelectedItem().equals(OverlapType.SAME_SAMPLE)
+			)
+		{
+			for(Sample s : this.getSamples())
+			{
+				if(s.equals(sourceSample)) continue;
+				
+				s.setMeta(Metadata.OBJECT_TITLE, sourceSample.getMeta(Metadata.OBJECT_TITLE));
+			}
+		}
+		
+		if(this.cboOverlap.getSelectedItem().equals(OverlapType.SAME_ELEMENT) ||
+				this.cboOverlap.getSelectedItem().equals(OverlapType.SAME_SAMPLE)
+				)
+		{
+			for(Sample s : this.getSamples())
+			{
+				if(s.equals(sourceSample)) continue;
+				
+				s.setMeta(Metadata.SPECIES, sourceSample.getMeta(Metadata.SPECIES));
+			}
+		}
+	}
+	
+	
 }

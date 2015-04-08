@@ -36,15 +36,18 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 	private JLabel lblAuthor;
 	private Sample sample;
 	private boolean listenersActive = false;
-	
+	private LiteEditor editor;
+	private JLabel lblSiteObject;
+	private JTextField txtObject;
 	
 	
 	/**
 	 * Create the panel.
 	 */
-	public BasicMetadataPanel() {
+	public BasicMetadataPanel(LiteEditor editor) {
 		
-		setLayout(new MigLayout("", "[190px:190px,right][grow]", "[][][][][][grow]"));
+		this.editor = editor;
+		setLayout(new MigLayout("", "[190px:190px,right][grow]", "[][][][][][][grow]"));
 		
 		JLabel lblTitle = new JLabel("Title / Series name:");
 		add(lblTitle, "cell 0 0,alignx trailing");
@@ -74,9 +77,16 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 		add(txtSpecies, "cell 1 3,growx");
 		txtSpecies.setColumns(10);
 		
+		lblSiteObject = new JLabel("Site / Object name:");
+		add(lblSiteObject, "cell 0 4,alignx trailing");
+		
+		txtObject = new JTextField();
+		add(txtObject, "cell 1 4,growx");
+		txtObject.setColumns(10);
+		
 		lblNewLabel = new JLabel();
 		lblNewLabel.setIcon(Builder.getIcon("warning.png", 22));
-		add(lblNewLabel, "cell 0 4,aligny top");
+		add(lblNewLabel, "cell 0 5,aligny top");
 		
 		txtWarning = new JLabel();
 		txtWarning.setFont(new Font("Dialog", Font.PLAIN, 10));
@@ -87,7 +97,7 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 						txtWarning.setBackground(new Color(0,0,0,0));
 						txtWarning.setBorder(new EmptyBorder(0,0,0,0));
 						txtWarning.setFocusable(false);
-						add(txtWarning, "cell 1 4,growx");
+						add(txtWarning, "cell 1 5,growx");
 
 		addListeners();
 	}
@@ -98,6 +108,7 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 		txtKeycode.getDocument().addDocumentListener(this);
 		txtTitle.getDocument().addDocumentListener(this);
 		txtSpecies.getDocument().addDocumentListener(this);
+		txtObject.getDocument().addDocumentListener(this);
 		
 		listenersActive = true;
 	}
@@ -124,14 +135,14 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 		txtKeycode.setText("");
 		txtTitle.setText("");
 		txtSpecies.setText("");
+		txtObject.setText("");
 		
 		if(sample==null) return;
 		
 		txtAuthor.setText(sample.getMetaString(Metadata.AUTHOR));
 		txtKeycode.setText(sample.getMetaString(Metadata.KEYCODE));
-		
 		txtTitle.setText(sample.getMetaString(Metadata.TITLE));
-		
+		txtObject.setText(sample.getMetaString(Metadata.OBJECT_TITLE));
 		
 		if(sample.getMetaString(Metadata.SPECIES)!="Plantae")
 		{
@@ -153,6 +164,11 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 		sample.setMeta(Metadata.AUTHOR, txtAuthor.getText());
 		sample.setMeta(Metadata.SPECIES, txtSpecies.getText());
 		sample.setMeta(Metadata.KEYCODE, txtKeycode.getText());
+		sample.setMeta(Metadata.OBJECT_TITLE, txtObject.getText());
+		
+		listenersActive = false;
+		editor.updateOverlappingFields(sample);
+		listenersActive = true;
 		
 	}
 	
@@ -167,6 +183,7 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 				&& txtKeycode.getText().isEmpty()
 				&& txtSpecies.getText().isEmpty()
 				&& txtAuthor.getText().isEmpty()
+				&& txtObject.getText().isEmpty()
 		)
 		{
 			return false;
