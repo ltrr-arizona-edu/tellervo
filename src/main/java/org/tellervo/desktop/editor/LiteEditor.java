@@ -43,6 +43,7 @@ import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.util.ITRDBTaxonConverter;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.io.util.UnitUtils;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasElement;
@@ -695,8 +696,13 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 
 		// Extract the TridasProject
 		TridasTridas container = new TridasTridas();
+		
+
+		
 		container.getProjects().add(proj);
 
+		TridasUtils.debugTridasTridas(container);
+		
 		return container;
 	}
 
