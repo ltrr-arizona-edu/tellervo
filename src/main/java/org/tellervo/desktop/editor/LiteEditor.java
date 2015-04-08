@@ -49,6 +49,7 @@ import org.tridas.io.util.TridasFactory;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.io.util.UnitUtils;
 import org.tridas.schema.NormalTridasUnit;
+import org.tridas.schema.TridasDating;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasInterpretation;
@@ -635,7 +636,18 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			TridasMeasuringMethod mm = new TridasMeasuringMethod();
 			mm.setValue(I18n.getText("unknown"));
 			series.setMeasuringMethod(mm);
-			TridasInterpretation interp = new TridasInterpretation();
+			
+			TridasInterpretation interp;
+			if(!series.isSetInterpretation())		
+			{
+				interp = new TridasInterpretation();
+				series.setInterpretation(interp);
+			}
+			else
+			{
+				interp = series.getInterpretation();
+			}
+			
 			interp.setFirstYear(s.getStart().tridasYearValue());
 			series.setInterpretation(interp);
 			TridasGenericField gf = new TridasGenericField();

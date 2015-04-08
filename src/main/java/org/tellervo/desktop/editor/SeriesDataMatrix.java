@@ -861,7 +861,6 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		// update data view
 		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
 		graphPanel.update();
-		graphPanel.scrollToYear(new Year(1893));
 	}
 
 	public void sampleMetadataChanged(SampleEvent e) {
