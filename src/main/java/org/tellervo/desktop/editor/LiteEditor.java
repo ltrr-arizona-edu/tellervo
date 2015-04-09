@@ -34,22 +34,23 @@ import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.io.AbstractDendroFormat;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.I18n;
+import org.tridas.io.IDendroFile;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
+import org.tridas.io.naming.AbstractNamingConvention;
+import org.tridas.io.naming.KeycodeNamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.io.util.TridasFactory;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.io.util.UnitUtils;
 import org.tridas.schema.NormalTridasUnit;
-import org.tridas.schema.TridasDating;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasInterpretation;
@@ -61,8 +62,6 @@ import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasTridas;
 import org.tridas.schema.TridasValues;
 import org.tridas.util.TridasObjectEx;
-
-import com.itextpdf.text.Meta;
 
 public class LiteEditor extends AbstractEditor implements SaveableDocument{
 
@@ -88,7 +87,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	/**
 	 * Close all LiteEditor windows open 
 	 */
-	public static void closeAllEditors()
+	public synchronized static void closeAllEditors()
 	{
 		ArrayList<LiteEditor> modifiedEditors = new ArrayList<LiteEditor>();
 		
@@ -432,32 +431,48 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		ArrayList<DendroFileFilter> filters = TridasIO.getFileWritingFilterArray();
 		Collections.sort(filters);
 		
-		
-		
-		for(DendroFileFilter filter : filters)
-		{			
-			fc.addChoosableFileFilter(filter);
-			if(fileFormat!=null)
-			{	
-				if(fileFormat.getDendroFileFilter().equals(filter))
-				{
-					fc.setFileFilter(filter);
+		// Add file format filters to dialog, selecting the current format if possible
+		boolean filterset = false;
+		if(fileFormat!=null)
+		{
+			for(DendroFileFilter filter : filters)
+			{			
+				// Don't allow saving to TRiDaS
+				if(filter.getFormatName().startsWith("TRiDaS")) continue;
+
+				fc.addChoosableFileFilter(filter);
+				if(fileFormat!=null)
+				{	
+					if(fileFormat.getDendroFileFilter().getDescription().equals(filter.getDescription()))
+					{
+						fc.setFileFilter(filter);
+						filterset = true;
+					}
 				}
 			}
-			else if(App.prefs.getPref(PrefKey.EXPORT_FORMAT, null)!=null)
-			{
+		}
+		
+		// If no format has been set yet, set the one used last from the preferences
+		log.debug(App.prefs.getPref(PrefKey.EXPORT_FORMAT, null));
+		if(filterset==false && App.prefs.getPref(PrefKey.EXPORT_FORMAT, null)!=null)
+		{
+			for(DendroFileFilter filter : filters)
+			{	
+				if(filter.getFormatName().startsWith("TRiDaS")) continue;
+
+				
 				if(App.prefs.getPref(PrefKey.EXPORT_FORMAT, null).equals(filter.getFormatName()))
 				{
 					fc.setFileFilter(filter);
-				}
+					break;
+				}	
 			}
-			
-		}
+		}	
 		
 
 		// Pick the last used directory by default
 		try{
-			File lastDirectory = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_READ, null));
+			File lastDirectory = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_SAVE, null));
 			if(lastDirectory != null){
 				fc.setCurrentDirectory(lastDirectory);
 			}
@@ -469,7 +484,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		if (retValue == JFileChooser.APPROVE_OPTION) {
 			thisFile = fc.getSelectedFile();
 			// Remember this folder for next time
-			App.prefs.setPref(PrefKey.FOLDER_LAST_READ, thisFile.getPath());
+			App.prefs.setPref(PrefKey.FOLDER_LAST_SAVE, thisFile.getPath());
 			chosenFilter = (DendroFileFilter)fc.getFileFilter();
 			App.prefs.setPref(PrefKey.EXPORT_FORMAT, chosenFilter.getFormatName());
 		}
@@ -519,37 +534,89 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		log.debug("Filename: "+filename);
 		log.debug("Extension: "+ext);
 
+		AbstractNamingConvention nc = new NumericalNamingConvention(filename);
 		writer = TridasIO.getFileWriterFromFormat(fileFormat);
-		NumericalNamingConvention nc = new NumericalNamingConvention(filename);
 		nc.setAddSequenceNumbersForUniqueness(false);
 		writer.setNamingConvention(nc);
 		writer.load((TridasTridas)getContainerForFile().clone());
-		// Actually save file(s) to disk
-		writer.saveAllToDisk(path);
 
+		if(writer.getFiles().length>1)
+		{
 
+			Object[] options = {"Yes",
+                    "No",
+                    "Cancel"};
+				int n = JOptionPane.showOptionDialog(this,
+				    "This file format requires multiple files to save your data.\n\nWould you like to name these using the series keycode?",
+				    "Multiple files",
+				    JOptionPane.YES_NO_CANCEL_OPTION,
+				    JOptionPane.QUESTION_MESSAGE,
+				    null,
+				    options,
+				    options[2]);
+				
+			if(n==JOptionPane.YES_OPTION)
+			{
+				nc =  new KeycodeNamingConvention();
+
+			}
+			else if (n==JOptionPane.NO_OPTION)
+			{
+				nc = new NumericalNamingConvention(filename);
+				nc.setAddSequenceNumbersForUniqueness(true);
+			}
+			else
+			{
+				return false;
+			}
+			
+			writer = TridasIO.getFileWriterFromFormat(fileFormat);
+			writer.setNamingConvention(nc);
+			writer.load((TridasTridas)getContainerForFile().clone());
+			writer.saveAllToDisk(path);
+			
+			App.prefs.setPref(PrefKey.EXPORT_FORMAT, fileFormat.getShortName());
+			App.prefs.setPref(PrefKey.FOLDER_LAST_SAVE, path);
+
+			
+			return true;
+		}
+		else
+		{
+			
+			writer.saveAllToDisk(path);
+			
+			// Grab the actual filename used as it may have had an extension added
+			String usedfilename = nc.getFilename(writer.getFiles()[0])+"."+writer.getFiles()[0].getExtension();
 		
-		for(Sample sample : getSamples())
-		{	
-			sample.clearModified();
-			sample.setMeta(Metadata.FILENAME, file.getAbsolutePath());
-			sample.setMeta(Metadata.LEGACY_FORMAT, fileFormat.toString());
-			sample.setMeta(Metadata.LEGACY_SAVED_BY_TELLERVO, true);
-			sample.fireSampleMetadataChanged();
+			
+			for(Sample sample : getSamples())
+			{	
+				sample.clearModified();
+				sample.setMeta(Metadata.FILENAME, usedfilename);
+				sample.setMeta(Metadata.LEGACY_FORMAT, fileFormat.toString());
+				sample.setMeta(Metadata.LEGACY_SAVED_BY_TELLERVO, true);
+				sample.fireSampleMetadataChanged();
+			}
 			
 			savedByTellervo = true;
 			
+			App.prefs.setPref(PrefKey.EXPORT_FORMAT, fileFormat.getShortName());
+			App.prefs.setPref(PrefKey.FOLDER_LAST_SAVE, path);
+
+			setTitle();
+			repaint();
+			
+			getSamplesModel().setDirty(false);
+			
+			return true;
+
 		}
 
-		App.prefs.setPref(PrefKey.EXPORT_FORMAT, fileFormat.toString());
-		App.prefs.setPref(PrefKey.FOLDER_LAST_SAVE, path);
 
-		setTitle();
-		repaint();
+
+
 		
-		getSamplesModel().setDirty(false);
-		
-		return true;
 	}
 	
 	/**

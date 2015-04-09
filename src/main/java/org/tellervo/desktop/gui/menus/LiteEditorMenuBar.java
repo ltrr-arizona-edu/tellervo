@@ -88,6 +88,8 @@ public class LiteEditorMenuBar extends EditorMenuBar{
 		JMenuItem miInitializeDataGrid = new JMenuItem(actions.editInitGridAction);
 		mnEdit.add(miInitializeDataGrid);
 
+		mnEdit.add(this.getMeasureModeMenu());
+		
 		JMenuItem miStartMeasuring = new JMenuItem(actions.editMeasureAction);
 		mnEdit.add(miStartMeasuring);
 

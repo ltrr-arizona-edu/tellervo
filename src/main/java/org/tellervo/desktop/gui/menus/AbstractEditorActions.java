@@ -7,6 +7,8 @@ import javax.swing.Action;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
@@ -44,17 +46,11 @@ import org.tellervo.desktop.gui.menus.actions.FileBulkDataEntryAction;
 import org.tellervo.desktop.gui.menus.actions.FileDesignODKFormAction;
 import org.tellervo.desktop.gui.menus.actions.FileExitAction;
 import org.tellervo.desktop.gui.menus.actions.FileExportDataAction;
-import org.tellervo.desktop.gui.menus.actions.FileLogoffAction;
-import org.tellervo.desktop.gui.menus.actions.FileLogonAction;
 import org.tellervo.desktop.gui.menus.actions.FileNewAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenMultiAction;
-import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
-import org.tellervo.desktop.gui.menus.actions.FileSaveAsAction;
 import org.tellervo.desktop.gui.menus.actions.GraphAllSeriesAction;
-import org.tellervo.desktop.gui.menus.actions.GraphComponentSeriesAction;
-import org.tellervo.desktop.gui.menus.actions.GraphCreateFileHistoryPlotAction;
 import org.tellervo.desktop.gui.menus.actions.GraphCurrentSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.HelpAboutTellervoAction;
 import org.tellervo.desktop.gui.menus.actions.HelpCheckForUpdatesAction;
@@ -67,7 +63,6 @@ import org.tellervo.desktop.gui.menus.actions.HelpSetupWizardAction;
 import org.tellervo.desktop.gui.menus.actions.HelpSystemsInformationAction;
 import org.tellervo.desktop.gui.menus.actions.HelpVideoTutorialsAction;
 import org.tellervo.desktop.gui.menus.actions.HelpXMLCommunicationsViewerAction;
-import org.tellervo.desktop.gui.menus.actions.MapShapefileLayerAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.RemoveSeriesFromWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateAction;
@@ -79,6 +74,8 @@ import org.tellervo.desktop.gui.menus.actions.ToolsSumAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsTruncateAction;
 import org.tellervo.desktop.io.control.IOController;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.sample.SampleEvent;
+import org.tellervo.desktop.sample.SampleListener;
 
 /**
  * A collection of actions organised by their position in a standard menu
@@ -86,7 +83,8 @@ import org.tellervo.desktop.sample.Sample;
  * @author pbrewer
  *
  */
-public abstract class EditorActions {
+public abstract class AbstractEditorActions{
+	protected final static Logger log = LoggerFactory.getLogger(AbstractEditorActions.class);
 
 	protected AbstractEditor editor;
 	//private String videoname;
@@ -116,6 +114,7 @@ public abstract class EditorActions {
 	public Action editDeleteAction;
 	public Action editInsertYearsAction;
 	public Action editPreferencesAction;
+	
 
 	// Admin menu actions
 	public Action adminMetaDBAction;
@@ -188,10 +187,10 @@ public abstract class EditorActions {
 
 
 
-	public EditorActions(AbstractEditor editor)
+	public AbstractEditorActions(AbstractEditor editor)
 	{
 		this.editor = editor;
-
+		
 
 		fileNewAction = new FileNewAction(editor);
 		fileOpenAction = new FileOpenAction(editor);
@@ -294,9 +293,21 @@ public abstract class EditorActions {
 	protected abstract void setMenusForNetworkStatus();
 	
 	
-	private void setMenusForSampleStatus()
+	private void setMenusForSample()
 	{
 		this.editMeasureAction.setEnabled(this.currentSample!=null);
+		
+		boolean sampleInitialized = true;
+		
+		try{
+			sampleInitialized = currentSample.countRings()>0;
+		}
+		 catch (Exception e)
+		 {
+			 
+		 }
+		
+		this.editInitGridAction.setEnabled(!sampleInitialized);
 	}
 	
 
@@ -318,12 +329,57 @@ public abstract class EditorActions {
 			@Override
 			public void valueChanged(ListSelectionEvent arg0) {
 				currentSample = editor.getSample();
-				setMenusForSampleStatus();
+				currentSample.addSampleListener(new SampleListener(){
+					@Override
+					public void sampleRedated(SampleEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void sampleDataChanged(SampleEvent e) {
+						setMenusForSample();
+						
+					}
+
+					@Override
+					public void sampleMetadataChanged(SampleEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void sampleElementsChanged(SampleEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void sampleDisplayUnitsChanged(SampleEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void sampleDisplayCalendarChanged(SampleEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+
+					@Override
+					public void measurementVariableChanged(SampleEvent e) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+				setMenusForSample();
 
 			}
 
 		});
-		setMenusForSampleStatus();
+		setMenusForSample();
 		
 	}
+
+
 }

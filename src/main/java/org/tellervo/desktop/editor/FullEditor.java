@@ -101,6 +101,33 @@ public class FullEditor extends AbstractEditor {
 	}
 	
 	/**
+	 * Add the specified sample to the workspace and select it
+	 * 
+	 * @param s
+	 */
+	@Override
+	public void addSample(Sample s)
+	{
+		try{
+			for(Sample sample : samplesModel.getSamples())
+			{
+				if(s.getIdentifier().equals(sample.getIdentifier()))
+				{
+					log.debug("Sample already in workspace.  Not adding again, just selecting it");
+					this.getLstSamples().setSelectedValue(sample, true);
+					return;
+				}
+			}
+		} catch (Exception e)
+		{
+			
+		}
+		
+		samplesModel.addElement(s);		
+		this.getLstSamples().setSelectedValue(s, true);
+	}
+	
+	/**
 	 * Do initialization of features not handled by AbstractEditor 
 	 */
 	public void initFullEditor()

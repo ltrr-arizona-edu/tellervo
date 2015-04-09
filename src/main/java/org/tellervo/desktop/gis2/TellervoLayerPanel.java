@@ -44,7 +44,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.editor.FullEditor;
-import org.tellervo.desktop.gui.menus.EditorActions;
+import org.tellervo.desktop.gui.menus.AbstractEditorActions;
 import org.tellervo.desktop.gui.menus.FullEditorActions;
 
 

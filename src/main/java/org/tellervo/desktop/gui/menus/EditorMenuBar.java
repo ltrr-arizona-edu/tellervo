@@ -22,10 +22,10 @@ import org.tellervo.desktop.ui.I18n;
 public abstract class EditorMenuBar extends JMenuBar {
 
 	private static final long serialVersionUID = 1L;
-	protected EditorActions actions;
+	protected AbstractEditorActions actions;
 	protected AbstractEditor editor;
 	
-	public EditorMenuBar(EditorActions actions, AbstractEditor editor)
+	public EditorMenuBar(AbstractEditorActions actions, AbstractEditor editor)
 	{
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);
         this.actions = actions;

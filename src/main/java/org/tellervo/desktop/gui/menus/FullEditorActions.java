@@ -28,7 +28,7 @@ import org.tellervo.desktop.gui.menus.actions.MapWMSLayerAction;
 import org.tellervo.desktop.gui.menus.actions.MapWorldMapLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.ViewToExtentAction;
 
-public class FullEditorActions extends EditorActions {
+public class FullEditorActions extends AbstractEditorActions {
 
 	public Action fileSaveAllAction;
 	public Action filePrintAction;
@@ -104,6 +104,8 @@ public class FullEditorActions extends EditorActions {
 		
 		
 	}
+
+	
 	
 	
 	

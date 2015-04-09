@@ -1,15 +1,19 @@
 package org.tellervo.desktop.editor;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -35,7 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.SaveableDocument;
-import org.tellervo.desktop.gui.menus.EditorActions;
+import org.tellervo.desktop.gui.menus.AbstractEditorActions;
 import org.tellervo.desktop.gui.menus.EditorMenuBar;
 import org.tellervo.desktop.gui.widgets.TitlelessButton;
 import org.tellervo.desktop.io.Metadata;
@@ -77,7 +81,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	private JList<Sample> lstSamples;
 	protected JPanel dataPanel;
 	protected JTabbedPane tabbedPane;
-	protected EditorActions actions;
+	protected AbstractEditorActions actions;
 	protected EditorMenuBar menuBar;	
 	protected JButton btnAdd;
 	protected JButton btnRemove;
@@ -88,13 +92,12 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	protected AbstractDendroFormat fileFormat;
 	protected SeriesDataMatrix dataView;
 	protected SampleListModel samplesModel;
-	
 
 
 	protected AbstractEditor() {
 		init();
 	}
-
+	
 	/**
 	 * Initalise the GUI
 	 */
@@ -531,6 +534,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		}
 		
 		getSamplesModel().setDirty(false);
+		lstSamples.setSelectedIndex(0);
 	}
 	
 	
