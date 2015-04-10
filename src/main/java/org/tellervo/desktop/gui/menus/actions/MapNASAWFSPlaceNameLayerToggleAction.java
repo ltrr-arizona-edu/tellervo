@@ -17,7 +17,7 @@ public class MapNASAWFSPlaceNameLayerToggleAction extends AbstractAction {
 	private FullEditor editor;
 	
 	public MapNASAWFSPlaceNameLayerToggleAction(FullEditor editor) {
-        super("Place names", Builder.getIcon("globewithnames.png", 22));
+        super("Place names", Builder.getIcon("label.png", 22));
 		putValue(SHORT_DESCRIPTION, "Hide/Show the place names");
 		putValue(Action.SELECTED_KEY, true);
         this.editor = editor;

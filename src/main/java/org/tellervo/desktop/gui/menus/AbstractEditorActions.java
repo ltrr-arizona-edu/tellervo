@@ -40,6 +40,8 @@ import org.tellervo.desktop.gui.menus.actions.EditInsertMissingRingPushForwardsA
 import org.tellervo.desktop.gui.menus.actions.EditInsertYearPushBackwardsAction;
 import org.tellervo.desktop.gui.menus.actions.EditInsertYearPushForwardsAction;
 import org.tellervo.desktop.gui.menus.actions.EditInsertYearsAction;
+import org.tellervo.desktop.gui.menus.actions.EditMeasureEWLWWidthsModeAction;
+import org.tellervo.desktop.gui.menus.actions.EditMeasureRingWidthsModeAction;
 import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
 import org.tellervo.desktop.gui.menus.actions.EditPreferencesAction;
 import org.tellervo.desktop.gui.menus.actions.EditSelectAllAction;
@@ -106,6 +108,8 @@ public abstract class AbstractEditorActions{
 
 	// Editor menu actions
 	public Action editMeasureAction;
+	public Action editMeasureRingWidthsModeAction;
+	public Action editMeasureEWLWWidthsModeAction;
 	public Action editInitGridAction;
 	public Action editCopyAction;
 	public Action editSelectAllAction;
@@ -215,6 +219,8 @@ public abstract class AbstractEditorActions{
 		editInsertYearsAction = new EditInsertYearsAction(editor);
 		editInitGridAction = new EditInitDataGridAction(editor);
 		editMeasureAction = new EditMeasureToggleAction(editor);
+		editMeasureRingWidthsModeAction = new EditMeasureRingWidthsModeAction(editor);
+		editMeasureEWLWWidthsModeAction = new EditMeasureEWLWWidthsModeAction(editor);
 		editPreferencesAction = new EditPreferencesAction();
 
 		remarkAction = new RemarkToggleAction(editor);
@@ -299,7 +305,30 @@ public abstract class AbstractEditorActions{
 	
 	private void setMenusForSample()
 	{
+		this.fileSaveAction.setEnabled(this.currentSample!=null);
+		this.fileExportDataAction.setEnabled(this.currentSample!=null);
+		
+		this.editCopyAction.setEnabled(this.currentSample!=null);
+		this.editDeleteAction.setEnabled(this.currentSample!=null);
+		this.editInitGridAction.setEnabled(this.currentSample!=null);
+		this.editInsertMissingRingPushBackwardsAction.setEnabled(this.currentSample!=null);
+		this.editInsertMissingRingPushForwardsAction.setEnabled(this.currentSample!=null);
+		this.editInsertYearPushBackwardsAction.setEnabled(this.currentSample!=null);
+		this.editInsertYearPushForwardsAction.setEnabled(this.currentSample!=null);
+		this.editInsertYearsAction.setEnabled(this.currentSample!=null);
 		this.editMeasureAction.setEnabled(this.currentSample!=null);
+		this.editSelectAllAction.setEnabled(this.currentSample!=null);
+
+		this.toolsCrossdateAction.setEnabled(this.currentSample!=null);
+		this.toolsIndexAction.setEnabled(this.currentSample!=null);
+		this.toolsReconcileAction.setEnabled(this.currentSample!=null);
+		this.toolsRedateAction.setEnabled(this.currentSample!=null);
+		this.toolsReverseAction.setEnabled(this.currentSample!=null);
+		this.toolsSumAction.setEnabled(this.currentSample!=null);
+		this.toolsTruncateAction.setEnabled(this.currentSample!=null);
+		
+		this.graphAllSeriesAction.setEnabled(this.currentSample!=null);
+		this.graphCurrentSeriesAction.setEnabled(this.currentSample!=null);
 		
 		boolean sampleInitialized = true;
 		

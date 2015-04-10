@@ -111,9 +111,12 @@ public class FullEditor extends AbstractEditor {
 		try{
 			for(Sample sample : samplesModel.getSamples())
 			{
-				if(s.getIdentifier().equals(sample.getIdentifier()))
+				
+				if(s.getIdentifier().isSetValue() && s.getIdentifier().getValue()!="newSeries" 
+						&& s.getIdentifier().equals(sample.getIdentifier()))
 				{
 					log.debug("Sample already in workspace.  Not adding again, just selecting it");
+					log.debug("Sample identifier: "+s.getIdentifier().getValue());
 					this.getLstSamples().setSelectedValue(sample, true);
 					return;
 				}
@@ -426,11 +429,11 @@ public class FullEditor extends AbstractEditor {
 					if(sample.getSampleType().isDerived()){
 						componentsPanel = new ComponentViewerOld(sample);
 						this.componentHolder.add(componentsPanel, BorderLayout.CENTER);
-						this.componentHolder.setEnabled(true);
+						this.tabbedPane.setEnabledAt(2, true);
 					}
 					else
 					{
-						this.componentHolder.setEnabled(false);
+						this.tabbedPane.setEnabledAt(2, false);
 					}
 					
 					

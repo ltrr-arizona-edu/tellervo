@@ -1,19 +1,17 @@
 package org.tellervo.desktop.editor;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -181,6 +179,25 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		lstSamples.setLayoutOrientation(JList.VERTICAL);
 		lstSamples.setVisibleRowCount(10);
 		scrollPane.setViewportView(lstSamples);
+
+
+        lstSamples.addKeyListener(new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_DELETE) {
+                	samplesModel.remove(lstSamples.getSelectedIndex());
+                	lstSamples.revalidate();
+                	lstSamples.repaint();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) { }
+
+            @Override
+            public void keyTyped(KeyEvent e) { }
+        });
+
 
 
 

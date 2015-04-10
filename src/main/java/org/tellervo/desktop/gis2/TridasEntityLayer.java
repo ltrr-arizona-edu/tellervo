@@ -100,7 +100,11 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 		
 		SearchParameters search = null;
 		
-		
+		if(seriesid=="newSeries")
+		{
+			// Quit if this is a fresh series.
+			return;
+		}
 		
 		search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
 		search.addSearchConstraint(SearchParameterName.SERIESDBID, SearchOperator.EQUALS, seriesid);

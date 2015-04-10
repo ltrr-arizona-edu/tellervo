@@ -19,12 +19,12 @@
  ******************************************************************************/
 package org.tellervo.desktop.gui.dbbrowse;
 
-import java.awt.Component;
 import java.awt.Dialog;
 import java.awt.Frame;
-import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
 import java.awt.Window;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 
@@ -67,6 +67,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     protected void doInitComponents(){
     	
     	setIconImage(Builder.getApplicationIcon());
+    	  	
     	
     	// Dynamic components
 	    btnAdd = new javax.swing.JButton();

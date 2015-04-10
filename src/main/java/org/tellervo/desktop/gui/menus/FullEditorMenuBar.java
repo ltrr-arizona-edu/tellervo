@@ -5,10 +5,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
@@ -16,6 +18,7 @@ import org.tellervo.desktop.gui.seriesidentity.IdentifySeriesPanel;
 import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.io.AbstractDendroFileReader;
@@ -176,7 +179,15 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		JMenuItem miInitializeDataGrid = new JMenuItem(actions.editInitGridAction);
 		mnEdit.add(miInitializeDataGrid);
 
-		mnEdit.add(this.getMeasureModeMenu());
+		JMenu measureModeMenu = Builder.makeMenu("menus.edit.measuremode");
+		final JRadioButtonMenuItem btnRingWidth = new JRadioButtonMenuItem(actions.editMeasureRingWidthsModeAction);
+		final JRadioButtonMenuItem btnEWLWWidth = new JRadioButtonMenuItem(actions.editMeasureEWLWWidthsModeAction);
+		ButtonGroup group = new ButtonGroup();
+		group.add(btnRingWidth);
+		group.add(btnEWLWWidth);
+		measureModeMenu.add(btnRingWidth);
+		measureModeMenu.add(btnEWLWWidth);
+		mnEdit.add(measureModeMenu);
 		
 		JMenuItem miStartMeasuring = new JMenuItem(actions.editMeasureAction);
 		mnEdit.add(miStartMeasuring);

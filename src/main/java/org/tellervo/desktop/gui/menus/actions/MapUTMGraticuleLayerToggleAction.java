@@ -17,7 +17,7 @@ public class MapUTMGraticuleLayerToggleAction extends AbstractAction {
 	private FullEditor editor;
 	
 	public MapUTMGraticuleLayerToggleAction(FullEditor editor) {
-        super("UTM graticule", Builder.getIcon("grid.png", 22));
+        super("UTM graticule", Builder.getIcon("utmgrid.png", 22));
 		putValue(SHORT_DESCRIPTION, "Hide/Show the UTM Graticule map layer");
 		putValue(Action.SELECTED_KEY, false);
         this.editor = editor;
