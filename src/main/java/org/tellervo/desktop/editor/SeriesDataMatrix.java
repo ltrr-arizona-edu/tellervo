@@ -185,6 +185,11 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 		// create table
 		myModel = new UnitAwareDecadalModel(mySample);
+		
+		// force no drawing of graph names
+		gInfo.setShowGraphNames(false);
+		gInfo.setShowVertAxis(false);
+		gInfo.setHundredUnitHeight(5);
 	}
 	
 	public SeriesDataMatrix(Sample s, AbstractEditor e) {
@@ -1138,12 +1143,6 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	
 	private JComponent createGraph(final Dimension otherPanelDim, final int extraWidth) {
 
-		
-		// force no drawing of graph names
-		gInfo.setShowGraphNames(false);
-		gInfo.setShowVertAxis(false);
-		gInfo.setHundredUnitHeight(5);
-	
 		
 		// Make sure the graphs can't be dragged
 		graphSamples.get(0).setDraggable(false);
