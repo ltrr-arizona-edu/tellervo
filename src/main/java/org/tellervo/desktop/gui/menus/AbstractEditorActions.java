@@ -70,6 +70,7 @@ import org.tellervo.desktop.gui.menus.actions.MapZoomAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.RemoveSeriesFromWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsIndexAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsReconcileAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsRedateAction;
@@ -151,6 +152,7 @@ public abstract class AbstractEditorActions{
 	public Action toolsSumAction;
 	public Action toolsRedateAction;
 	public Action toolsCrossdateAction;
+	public Action toolsCrossdateWorkspaceAction;
 	
 
 	// Graph menu action
@@ -250,6 +252,7 @@ public abstract class AbstractEditorActions{
 		toolsSumAction = new ToolsSumAction(editor);
 		toolsRedateAction = new ToolsRedateAction(editor);
 		toolsCrossdateAction = new ToolsCrossdateAction(editor);
+		toolsCrossdateWorkspaceAction = new ToolsCrossdateWorkspaceAction(editor);
 
 		graphCurrentSeriesAction = new GraphCurrentSeriesAction(editor);
 		//graphComponentSeriesAction = new GraphComponentSeriesAction(editor);

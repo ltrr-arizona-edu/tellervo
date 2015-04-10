@@ -114,6 +114,8 @@ public class LiteEditorMenuBar extends EditorMenuBar{
 		JMenuItem miToolsCrossdate = new JMenuItem(actions.toolsCrossdateAction);
 		mnTools.add(miToolsCrossdate);
 		
+		JMenuItem miToolsCrossdateWorkspace = new JMenuItem(actions.toolsCrossdateWorkspaceAction);
+		mnTools.add(miToolsCrossdateWorkspace);
 
 
 		

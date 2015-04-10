@@ -62,6 +62,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	private JMenu mnTools;
 	JMenuItem miComponentSeries;
 	private JMenuItem miToolsCrossdate;
+	private JMenuItem miToolsCrossdateWorkspace;
 	private JMenuItem miToolsTruncate;
 	private JMenuItem miNew;
 	private JMenuItem miOpen;
@@ -354,6 +355,9 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		
 		miToolsCrossdate = new JMenuItem(actions.toolsCrossdateAction);
 		mnTools.add(miToolsCrossdate);
+		
+		miToolsCrossdateWorkspace = new JMenuItem(actions.toolsCrossdateWorkspaceAction);
+		mnTools.add(miToolsCrossdateWorkspace);
 		
 
 		

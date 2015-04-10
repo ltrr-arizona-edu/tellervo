@@ -1,6 +1,7 @@
 package org.tellervo.desktop.gui.menus.actions;
 
 import java.awt.event.ActionEvent;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 
@@ -9,16 +10,18 @@ import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.sample.CachedElement;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
+import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 
-public class ToolsCrossdateAction extends AbstractAction {
+public class ToolsCrossdateWorkspaceAction extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
+	private static final boolean Sample = false;
 	private AbstractEditor editor;
 	
-	public ToolsCrossdateAction(AbstractEditor editor) {
-        super(I18n.getText("menus.tools.new_crossdate"), Builder.getIcon("crossdate.png", 22));
+	public ToolsCrossdateWorkspaceAction(AbstractEditor editor) {
+        super(I18n.getText("Crossdate Workspace"), Builder.getIcon("crossdate.png", 22));
 		putValue(SHORT_DESCRIPTION, I18n.getText("menus.tools.new_crossdate"));
         putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.tools.new_crossdate")); 
         putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.tools.new_crossdate"));
@@ -29,10 +32,16 @@ public class ToolsCrossdateAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		ElementList listOfElements = new ElementList();
 		if(editor.getSample()!=null)
 		{
-			Element secondary = new CachedElement(editor.getSample()); 
-			new CrossdateDialog(ElementList.singletonList(secondary), secondary);
+			for(Sample s : editor.getSamples())
+			{
+				 Element secondary = new CachedElement(s);
+				 listOfElements.add(secondary);
+			}
+						
+			new CrossdateDialog(listOfElements, listOfElements.get(0));
 		}
 		else
 		{
