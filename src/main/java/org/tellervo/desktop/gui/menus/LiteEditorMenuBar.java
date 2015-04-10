@@ -111,6 +111,9 @@ public class LiteEditorMenuBar extends EditorMenuBar{
 		JMenuItem miToolsReverse = new JMenuItem(actions.toolsReverseAction);
 		mnTools.add(miToolsReverse);
 		
+		JMenuItem miToolsCrossdate = new JMenuItem(actions.toolsCrossdateAction);
+		mnTools.add(miToolsCrossdate);
+		
 
 
 		

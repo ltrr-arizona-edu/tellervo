@@ -817,6 +817,10 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		JToolBar toolBar = new JToolBar();
 
 		// File Buttons
+		AbstractButton fileNew = new TitlelessButton(actions.fileNewAction);
+		toolBar.add(fileNew);
+
+		
 		AbstractButton fileOpen = new TitlelessButton(actions.fileOpenAction);
 		toolBar.add(fileOpen);
 

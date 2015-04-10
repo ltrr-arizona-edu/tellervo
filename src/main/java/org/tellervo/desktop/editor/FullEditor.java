@@ -46,7 +46,7 @@ public class FullEditor extends AbstractEditor {
 	private JPanel componentHolder;
 	private JPanel dependentHolder;
 	private JPanel mapHolder;
-	private WWJPanel wwMapPanel;
+	public WWJPanel wwMapPanel;
 	private TridasMetadataPanel metaView;
 	
 	
@@ -470,6 +470,9 @@ public class FullEditor extends AbstractEditor {
 		JToolBar toolBar = new JToolBar();
 		
 		// File Buttons
+		AbstractButton fileNew = new TitlelessButton(actions.fileNewAction);
+		toolBar.add(fileNew);
+		
 		AbstractButton fileOpen = new TitlelessButton(actions.fileOpenAction);
 		toolBar.add(fileOpen);
 
@@ -500,6 +503,14 @@ public class FullEditor extends AbstractEditor {
 		toolBar.addSeparator();
 		AbstractButton truncate = new TitlelessButton(actions.toolsTruncateAction);
 		toolBar.add(truncate);
+		
+		AbstractButton index = new TitlelessButton(actions.toolsIndexAction);
+		toolBar.add(index);
+		
+		AbstractButton sum = new TitlelessButton(actions.toolsSumAction);
+		toolBar.add(sum);
+		
+	
 
 		// Graph Buttons
 		toolBar.addSeparator();
@@ -675,6 +686,9 @@ public class FullEditor extends AbstractEditor {
 		final JPopupMenu popupMenu = new JPopupMenu();
 		JMenuItem delete = new JMenuItem(actions.removeSeriesAction);
 		popupMenu.add(delete);
+		
+		JMenuItem zoomMap = new JMenuItem(actions.mapZoomAction);
+		popupMenu.add(zoomMap);
 		
 		
 		this.getLstSamples().addMouseListener(new MouseAdapter() {

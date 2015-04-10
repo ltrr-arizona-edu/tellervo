@@ -423,8 +423,9 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// ooh, menubar
 		{
 			JMenuBar menubar = new JMenuBar();
-			
-			menubar.add(new GraphFileMenu(this));
+
+			GraphFileMenu filemenu = new GraphFileMenu(this);
+			menubar.add(filemenu);
 			menubar.add(new GraphEditMenu(this));
 			menubar.add(new GraphViewMenu(this, actions));
 

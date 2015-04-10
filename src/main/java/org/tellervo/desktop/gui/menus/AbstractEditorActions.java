@@ -13,6 +13,7 @@ import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.editor.AbstractEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.menus.actions.AddSeriesToWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBasicBoxLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBoxLabelAction;
@@ -63,6 +64,7 @@ import org.tellervo.desktop.gui.menus.actions.HelpSetupWizardAction;
 import org.tellervo.desktop.gui.menus.actions.HelpSystemsInformationAction;
 import org.tellervo.desktop.gui.menus.actions.HelpVideoTutorialsAction;
 import org.tellervo.desktop.gui.menus.actions.HelpXMLCommunicationsViewerAction;
+import org.tellervo.desktop.gui.menus.actions.MapZoomAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.RemoveSeriesFromWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateAction;
@@ -181,7 +183,7 @@ public abstract class AbstractEditorActions{
 	public Action helpSystemsInformationAction;
 	public Action helpAboutTellervoAction;
 	
-
+	public Action mapZoomAction;
 
 	private Sample currentSample;
 
@@ -272,6 +274,7 @@ public abstract class AbstractEditorActions{
 
 		addSeriesAction = new AddSeriesToWorkspaceAction(editor);
 		removeSeriesAction = new RemoveSeriesFromWorkspaceAction(editor);
+		mapZoomAction = new MapZoomAction((FullEditor) editor);
 		
 		
 		
@@ -285,7 +288,8 @@ public abstract class AbstractEditorActions{
 	private void setSharedMenusForNetworkStatus() {
 
 
-		this.fileNewAction.setEnabled(App.isLoggedIn());
+		//this.fileNewAction.setEnabled(!App.isLoggedIn());
+		this.remarkAction.setEnabled(App.isLoggedIn());
 		// TODO Add others
 
 		setMenusForNetworkStatus();

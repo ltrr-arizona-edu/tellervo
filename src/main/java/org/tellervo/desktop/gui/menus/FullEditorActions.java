@@ -26,6 +26,7 @@ import org.tellervo.desktop.gui.menus.actions.MapStereoModeAction;
 import org.tellervo.desktop.gui.menus.actions.MapUTMGraticuleLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapWMSLayerAction;
 import org.tellervo.desktop.gui.menus.actions.MapWorldMapLayerToggleAction;
+import org.tellervo.desktop.gui.menus.actions.MapZoomAction;
 import org.tellervo.desktop.gui.menus.actions.ViewToExtentAction;
 
 public class FullEditorActions extends AbstractEditorActions {
@@ -53,6 +54,7 @@ public class FullEditorActions extends AbstractEditorActions {
 	public Action mapShapefileLayerAction;
 	public Action mapWMSLayerAction;
 	public Action mapKMLLayerAction;
+	public Action mapZoomAction;
 
 	public FullEditorActions(FullEditor editor)
 	{
@@ -91,6 +93,7 @@ public class FullEditorActions extends AbstractEditorActions {
 		mapKMLLayerAction = new MapKMLLayerAction((FullEditor) editor);
 		mapGISImageAction = new MapGISImageAction((FullEditor) editor);
 		mapWMSLayerAction = new MapWMSLayerAction((FullEditor) editor);
+		mapZoomAction = new MapZoomAction((FullEditor) editor);
 		
 		linkModel();
 

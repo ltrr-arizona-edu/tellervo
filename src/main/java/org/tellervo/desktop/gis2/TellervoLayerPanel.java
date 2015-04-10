@@ -148,8 +148,8 @@ public class TellervoLayerPanel extends JPanel {
 
 	        for (JCheckBox cbx : getBackgroundLayers(wwd))
 	        {
-	        	this.layersPanel.add(cbx);
-	        	initPopupMenu(wwd, cbx);
+	        	this.layersPanel.add(cbx);	       
+	        	initPopupMenu(getBackgroundLayers(wwd), cbx);
 	        }
 	        
 			heading = new JLabel("Data layers");
@@ -157,17 +157,17 @@ public class TellervoLayerPanel extends JPanel {
 			this.layersPanel.add(heading);        
 			for (JCheckBox cbx : getDataLayers(wwd))
 	        {
-	        	this.layersPanel.add(cbx);
-	        	initPopupMenu(wwd, cbx);
+				this.layersPanel.add(cbx);
+	        	initPopupMenu(getDataLayers(wwd), cbx);
 	        	
 	        }	
 	     }
 	    
 	    
-	    protected void initPopupMenu(WorldWindow wwd, JCheckBox cbx){
+	    protected void initPopupMenu(ArrayList<JCheckBox> layer, JCheckBox cbx){
 	    	
 			log.debug("Init popup menu");
-			Layer layer;
+		//	Layer layer;
 		
 			
 			final JPopupMenu popupMenu = new JPopupMenu();

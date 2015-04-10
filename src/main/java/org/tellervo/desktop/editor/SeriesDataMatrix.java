@@ -126,6 +126,9 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	private List<Graph> graphSamples;
 	private JSplitPane splitPaneTableAndGraph;
 	
+	// create a new graphinfo structure, so we can tailor it to our needs.
+	GraphSettings gInfo = new GraphSettings();
+	
 	
 	// pass this along to the table
 	@Override
@@ -1134,13 +1137,13 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	}
 	
 	private JComponent createGraph(final Dimension otherPanelDim, final int extraWidth) {
-		// create a new graphinfo structure, so we can tailor it to our needs.
-		GraphSettings gInfo = new GraphSettings();
+
 		
 		// force no drawing of graph names
 		gInfo.setShowGraphNames(false);
 		gInfo.setShowVertAxis(false);
 		gInfo.setHundredUnitHeight(5);
+	
 		
 		// Make sure the graphs can't be dragged
 		graphSamples.get(0).setDraggable(false);
