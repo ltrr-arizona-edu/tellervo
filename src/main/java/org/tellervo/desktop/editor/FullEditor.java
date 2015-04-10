@@ -426,7 +426,13 @@ public class FullEditor extends AbstractEditor {
 					if(sample.getSampleType().isDerived()){
 						componentsPanel = new ComponentViewerOld(sample);
 						this.componentHolder.add(componentsPanel, BorderLayout.CENTER);
+						this.componentHolder.setEnabled(true);
 					}
+					else
+					{
+						this.componentHolder.setEnabled(false);
+					}
+					
 					
 					// Dependents tab
 					dependentHolder.removeAll();
