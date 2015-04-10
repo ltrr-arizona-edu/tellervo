@@ -973,8 +973,12 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		    private void showPopup(MouseEvent e) {
 		       
 				if (e.isPopupTrigger()) {
-		            popupMenu.show(e.getComponent(),
-		                       e.getX(), e.getY());
+					
+					if(getLstSamples().getSelectedIndex()!=-1)
+					{
+						popupMenu.show(e.getComponent(),
+								e.getX(), e.getY());
+					}
 		        }
 		    }
 		});

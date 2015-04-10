@@ -189,8 +189,6 @@ public abstract class AbstractEditorActions{
 	public Action helpSystemsInformationAction;
 	public Action helpAboutTellervoAction;
 	
-	public Action mapZoomAction;
-
 	private Sample currentSample;
 
 
@@ -283,7 +281,6 @@ public abstract class AbstractEditorActions{
 
 		addSeriesAction = new AddSeriesToWorkspaceAction(editor);
 		removeSeriesAction = new RemoveSeriesFromWorkspaceAction(editor);
-		mapZoomAction = new MapZoomAction((FullEditor) editor);
 		
 		
 		

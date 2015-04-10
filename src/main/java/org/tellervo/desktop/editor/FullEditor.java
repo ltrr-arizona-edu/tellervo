@@ -690,7 +690,7 @@ public class FullEditor extends AbstractEditor {
 		JMenuItem delete = new JMenuItem(actions.removeSeriesAction);
 		popupMenu.add(delete);
 		
-		JMenuItem zoomMap = new JMenuItem(actions.mapZoomAction);
+		JMenuItem zoomMap = new JMenuItem(((FullEditorActions)actions).mapZoomAction);
 		popupMenu.add(zoomMap);
 		
 		
@@ -706,8 +706,11 @@ public class FullEditor extends AbstractEditor {
 		    private void showPopup(MouseEvent e) {
 		       
 				if (e.isPopupTrigger()) {
-		            popupMenu.show(e.getComponent(),
-		                       e.getX(), e.getY());
+					if(getLstSamples().getSelectedIndex()!=-1)
+					{
+						popupMenu.show(e.getComponent(),
+								e.getX(), e.getY());
+					}
 		        }
 		    }
 		});

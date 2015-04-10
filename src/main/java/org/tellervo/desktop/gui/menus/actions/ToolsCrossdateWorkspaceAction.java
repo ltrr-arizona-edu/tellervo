@@ -21,7 +21,7 @@ public class ToolsCrossdateWorkspaceAction extends AbstractAction {
 	private AbstractEditor editor;
 	
 	public ToolsCrossdateWorkspaceAction(AbstractEditor editor) {
-        super(I18n.getText("Crossdate Workspace"), Builder.getIcon("crossdate.png", 22));
+        super(I18n.getText("Crossdate all series in workspace"), Builder.getIcon("crossdate.png", 22));
 		putValue(SHORT_DESCRIPTION, I18n.getText("menus.tools.new_crossdate"));
         putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.tools.new_crossdate")); 
         putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.tools.new_crossdate"));

@@ -148,9 +148,18 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
         
     	// Set up lists of series and initialize gui
     	this.firstFloating = firstFloating;
-    	if(setSeriesPoolFromGUI(null, preexistingElements)==false)
+    	
+    	if(preexistingElements.size()>1)
     	{
-    		return;
+    		crossdatingElements = preexistingElements;
+    	}
+    	else
+	
+    	{
+	    	if(setSeriesPoolFromGUI(null, preexistingElements)==false)
+	    	{
+	    		return;
+	    	}
     	}
         initialize();
     }

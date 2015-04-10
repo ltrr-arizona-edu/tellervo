@@ -553,8 +553,12 @@ public class FullEditorMenuBar extends EditorMenuBar{
 			final AbstractDendroFileReader reader;
 			try {
 				reader = clazz.newInstance();
-			} catch (InstantiationException | IllegalAccessException e1) {
+			} catch (InstantiationException e) {
 				
+				continue;
+			}
+			catch (IllegalAccessException e1)
+			{
 				continue;
 			}
 			

@@ -214,10 +214,19 @@ public class WWJPanel extends JPanel  implements SelectListener{
 
 		if(marker==null) return;
 		
+		if(wwd.getView()==null) return;
+		if(wwd.getView().getGlobe()==null) return;
+		
+		
+		try{
         wwd.getView().stopAnimations();
         wwd.getView().goTo(marker.getPosition(), 500000d);
-        return;
-		
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+			log.debug("Exception caught while zooming to sample");
+		}
+        	
 		
 	}
 	

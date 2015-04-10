@@ -134,7 +134,7 @@ public class ODKParser {
 		if(nList.getLength()==0) return null;
 	
 		try{
-			return nList.item(0).getTextContent();
+			return nList.item(0).getNodeValue();
 		} catch (Exception e)
 		{
 			System.out.println("Error getting tag text");
@@ -151,7 +151,7 @@ public class ODKParser {
 		if(nList.getLength()==0) return null;
 	
 		try{
-			Integer intval = Integer.parseInt(nList.item(0).getTextContent());
+			Integer intval = Integer.parseInt(nList.item(0).getNodeValue());
 			return intval;
 		} catch (Exception e)
 		{
@@ -169,7 +169,7 @@ public class ODKParser {
 		if(nList.getLength()==0) return null;
 	
 		try{
-			Double dblval = Double.parseDouble(nList.item(0).getTextContent());
+			Double dblval = Double.parseDouble(nList.item(0).getNodeValue());
 			return dblval;
 		} catch (Exception e)
 		{
@@ -185,7 +185,7 @@ public class ODKParser {
 		if(nList.getLength()==0) return null;
 	
 		try{
-			return nList.item(0).getTextContent();
+			return nList.item(0).getNodeValue();
 		} catch (Exception e)
 		{
 			System.out.println("Error getting tag text");

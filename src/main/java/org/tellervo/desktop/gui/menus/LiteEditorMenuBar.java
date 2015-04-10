@@ -1,7 +1,9 @@
 package org.tellervo.desktop.gui.menus;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
 
 import org.tellervo.desktop.editor.LiteEditor;
 import org.tellervo.desktop.ui.Builder;
@@ -88,7 +90,15 @@ public class LiteEditorMenuBar extends EditorMenuBar{
 		JMenuItem miInitializeDataGrid = new JMenuItem(actions.editInitGridAction);
 		mnEdit.add(miInitializeDataGrid);
 
-		mnEdit.add(this.getMeasureModeMenu());
+		JMenu measureModeMenu = Builder.makeMenu("menus.edit.measuremode");
+		final JRadioButtonMenuItem btnRingWidth = new JRadioButtonMenuItem(actions.editMeasureRingWidthsModeAction);
+		final JRadioButtonMenuItem btnEWLWWidth = new JRadioButtonMenuItem(actions.editMeasureEWLWWidthsModeAction);
+		ButtonGroup group = new ButtonGroup();
+		group.add(btnRingWidth);
+		group.add(btnEWLWWidth);
+		measureModeMenu.add(btnRingWidth);
+		measureModeMenu.add(btnEWLWWidth);
+		mnEdit.add(measureModeMenu);
 		
 		JMenuItem miStartMeasuring = new JMenuItem(actions.editMeasureAction);
 		mnEdit.add(miStartMeasuring);
