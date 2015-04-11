@@ -50,6 +50,8 @@ import org.tellervo.desktop.gui.menus.FullEditorActions;
 
 
 
+import org.tellervo.desktop.gui.menus.actions.ExportLayerToKML;
+
 import net.miginfocom.swing.MigLayout;
 
 public class TellervoLayerPanel extends JPanel {
@@ -146,30 +148,69 @@ public class TellervoLayerPanel extends JPanel {
 			this.layersPanel.add(heading);
 
 
-	        for (JCheckBox cbx : getBackgroundLayers(wwd))
+	        for (Layer layer : getBackgroundLayers(wwd))
 	        {
+	        	JCheckBox cbx = getCheckboxForLayer(wwd, layer);
 	        	this.layersPanel.add(cbx);	       
-	        	initPopupMenu(getBackgroundLayers(wwd), cbx);
+	        	
+	        	final JPopupMenu popupMenu = this.createPopupMenu(layer);
+	        	
+	        	cbx.addMouseListener(new MouseAdapter() {
+				    public void mousePressed(MouseEvent e) {
+				        showPopup(e);
+				    }
+
+				    public void mouseReleased(MouseEvent e) {
+				        showPopup(e);
+				    }
+
+				    private void showPopup(MouseEvent e) {
+				       
+						if (e.isPopupTrigger()) {
+				            popupMenu.show(e.getComponent(),
+				                       e.getX(), e.getY());
+				        }
+				    }
+				});
+	        	
+	        	
 	        }
 	        
 			heading = new JLabel("Data layers");
 			heading.setFont(new Font("Dialog", Font.BOLD, 13));
 			this.layersPanel.add(heading);        
-			for (JCheckBox cbx : getDataLayers(wwd))
+	        for (Layer layer : getDataLayers(wwd))
 	        {
-				this.layersPanel.add(cbx);
-	        	initPopupMenu(getDataLayers(wwd), cbx);
+	        	JCheckBox cbx = getCheckboxForLayer(wwd, layer);
+	        	this.layersPanel.add(cbx);	       
 	        	
-	        }	
+	        	final JPopupMenu popupMenu = this.createPopupMenu(layer);
+	        	
+	        	cbx.addMouseListener(new MouseAdapter() {
+				    public void mousePressed(MouseEvent e) {
+				        showPopup(e);
+				    }
+
+				    public void mouseReleased(MouseEvent e) {
+				        showPopup(e);
+				    }
+
+				    private void showPopup(MouseEvent e) {
+				       
+						if (e.isPopupTrigger()) {
+				            popupMenu.show(e.getComponent(),
+				                       e.getX(), e.getY());
+				        }
+				    }
+				});
+	        	
+	        	
+	        }
 	     }
 	    
 	    
-	    protected void initPopupMenu(ArrayList<JCheckBox> layer, JCheckBox cbx){
-	    	
-			log.debug("Init popup menu");
-		//	Layer layer;
-		
-			
+	    protected JPopupMenu createPopupMenu(Layer layer){
+	    				
 			final JPopupMenu popupMenu = new JPopupMenu();
 			
 			JMenu addLayers = new JMenu(actions.mapAddLayersAction);
@@ -188,24 +229,14 @@ public class TellervoLayerPanel extends JPanel {
 			
 			popupMenu.add(addLayers);
 			
-				
-			cbx.addMouseListener(new MouseAdapter() {
-			    public void mousePressed(MouseEvent e) {
-			        showPopup(e);
-			    }
-
-			    public void mouseReleased(MouseEvent e) {
-			        showPopup(e);
-			    }
-
-			    private void showPopup(MouseEvent e) {
-			       
-					if (e.isPopupTrigger()) {
-			            popupMenu.show(e.getComponent(),
-			                       e.getX(), e.getY());
-			        }
-			    }
-			});
+			if(layer instanceof TellervoDataLayer)
+			{
+				JMenuItem export = new JMenuItem(new ExportLayerToKML(((TellervoDataLayer)layer).getTridasMarkers()));
+				popupMenu.add(export);
+			}
+			
+			
+			return popupMenu;
 	
 	    }
       
@@ -287,52 +318,74 @@ public class TellervoLayerPanel extends JPanel {
 	}
 	
 	
-	private ArrayList<JCheckBox> getBackgroundLayers(WorldWindow wwd)
+	private ArrayList<Layer> getBackgroundLayers(WorldWindow wwd)
+	{
+		ArrayList<Layer> layers = new ArrayList<Layer>();
+		
+		 for (Layer layer : wwd.getModel().getLayers())
+	     {
+			 if(isHiddenLayer(layer) || layer instanceof TellervoDataLayer || layer instanceof Renderable) continue;
+	        	
+	         layers.add(layer);
+	        	
+	     }
+		 return layers;
+	}
+	
+	private ArrayList<JCheckBox> getBackgroundLayersAsCheckboxes(WorldWindow wwd)
 	{
 		ArrayList<JCheckBox> items = new ArrayList<JCheckBox>();
 		
-        for (Layer layer : wwd.getModel().getLayers())
+        for (Layer layer : getBackgroundLayers(wwd))
         {
-        	if(isHiddenLayer(layer)) continue;
-        	
-        	if(layer instanceof TellervoDataLayer || layer instanceof Renderable) continue;
-        	
-            LayerAction action = new LayerAction(layer, wwd, layer.isEnabled());
-            JCheckBox jcb = new JCheckBox(action);
-            jcb.setSelected(action.selected);
+            JCheckBox jcb = getCheckboxForLayer(wwd, layer);
             items.add(jcb);
-
-            if (defaultFont == null)
-            {
-                this.defaultFont = jcb.getFont();
-            }
         }
 
 		return items;				
 	}
 	
 	
-	private ArrayList<JCheckBox> getDataLayers(WorldWindow wwd)
+	private JCheckBox getCheckboxForLayer(WorldWindow wwd, Layer layer)
+	{
+		LayerAction action = new LayerAction(layer, wwd, layer.isEnabled());
+        JCheckBox jcb = new JCheckBox(action);
+        jcb.setSelected(action.selected);
+ 
+        if (defaultFont == null)
+        {
+            this.defaultFont = jcb.getFont();
+        }
+        
+        return jcb;
+	}
+	
+	
+	private ArrayList<Layer> getDataLayers(WorldWindow wwd)
+	{
+		ArrayList<Layer> layers = new ArrayList<Layer>();
+		
+		 for (Layer layer : wwd.getModel().getLayers())
+	     {
+	        	if(isHiddenLayer(layer)) continue;
+	        	
+	        	if(layer instanceof TellervoDataLayer || layer instanceof Renderable)
+	        	{
+	        		layers.add(layer);
+	        	}
+	     }
+		 return layers;
+	}
+	
+	private ArrayList<JCheckBox> getDataLayersAsCheckboxes(WorldWindow wwd)
 	{
 		ArrayList<JCheckBox> items = new ArrayList<JCheckBox>();
 		
-        for (Layer layer : wwd.getModel().getLayers())
+        for (Layer layer : getDataLayers(wwd))
         {
-        	if(isHiddenLayer(layer)) continue;
+            JCheckBox jcb = this.getCheckboxForLayer(wwd, layer);           				                  
+            items.add(jcb);
         	
-        	if(layer instanceof TellervoDataLayer || layer instanceof Renderable)
-        	{
-	        	
-	            LayerAction action = new LayerAction(layer, wwd, layer.isEnabled());
-	            JCheckBox jcb = new JCheckBox(action);	            				            
-	            jcb.setSelected(action.selected);	           
-	            items.add(jcb);
-	
-	            if (defaultFont == null)
-	            {
-	                this.defaultFont = jcb.getFont();
-	            }
-        	}
         }
 
 		return items;				

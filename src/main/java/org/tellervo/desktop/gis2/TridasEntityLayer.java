@@ -41,6 +41,11 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 
 	}
 	
+	public HashMap<Sample, TridasMarker> getMarkerMap()
+	{
+		return markermap;
+	}
+	
 	public Marker getMarkerForSample(Sample s)
 	{
 		addMarker(s);
@@ -181,6 +186,24 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 				updateSuperMarkers();
 			}
 		}
+	}
+
+	@Override
+	public ArrayList<TridasMarker> getTridasMarkers() {
+	
+		ArrayList<TridasMarker> markers = new ArrayList<TridasMarker>();
+	    
+ 	    Iterator it = markermap.entrySet().iterator();
+
+		while (it.hasNext()) {
+	        Map.Entry pair = (Map.Entry)it.next();
+	        TridasMarker s = (TridasMarker) pair.getValue();
+	       
+	       markers.add(s);
+	        
+	    }
+		
+		return markers;
 	}
 
 

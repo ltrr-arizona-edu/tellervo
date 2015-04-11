@@ -8,10 +8,14 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 import gov.nasa.worldwind.render.markers.Marker;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.TridasMarker;
+import org.tellervo.desktop.sample.Sample;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -44,6 +48,21 @@ public class AllSitesLayer extends MarkerLayer implements TellervoDataLayer{
 		this.setMarkers(markers);
         
 	}
+	
+	
+	@Override
+	public ArrayList<TridasMarker> getTridasMarkers() {
+	
+		ArrayList<TridasMarker> markers = new ArrayList<TridasMarker>();
+	    
+		for(Marker m : this.getMarkers())
+		{
+			markers.add((TridasMarker) m);
+		}
+		
+		return markers;
+	}
+
 	
 	
 	public static TridasMarker getMarkerForObject(TridasObject obj)
