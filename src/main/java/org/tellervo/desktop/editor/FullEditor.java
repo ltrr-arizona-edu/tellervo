@@ -136,6 +136,8 @@ public class FullEditor extends AbstractEditor {
 	 */
 	public void initFullEditor()
 	{
+		this.btnAdd.setVisible(false);
+		
 		metadataHolder = new JPanel();
 		metadataHolder.setLayout(new BorderLayout());
 		
@@ -158,7 +160,7 @@ public class FullEditor extends AbstractEditor {
 		initPopupMenu();
 		initMapPanel();
 	
-		this.btnAdd.setVisible(false);
+		
 		
 		this.getLstSamples().addMouseListener(new MouseListener(){
 
@@ -221,16 +223,21 @@ public class FullEditor extends AbstractEditor {
 		wwMapPanel = new WWJPanel();
 		mapHolder.add(wwMapPanel, BorderLayout.CENTER);
 		
-		this.samplesModel.addListDataListener(new ListDataListener(){
+		this.getSamplesModel().addListDataListener(new ListDataListener(){
 
 			@Override
 			public void contentsChanged(ListDataEvent arg0) {
+				
+				wwMapPanel.removeAnnotations();
+				
 				TridasEntityLayer layer = (TridasEntityLayer) wwMapPanel.getWorkspaceSeriesLayer();
 				
 				for(Sample s: samplesModel.getSamples())
 				{
 					layer.addMarker(s);
 				}
+				
+				layer.removeAbsentMarkers(samplesModel.getSamples());
 				
 			}
 
@@ -241,8 +248,10 @@ public class FullEditor extends AbstractEditor {
 			}
 
 			@Override
-			public void intervalRemoved(ListDataEvent arg0) {
-				// TODO Auto-generated method stub
+			public void intervalRemoved(ListDataEvent evt) {
+				TridasEntityLayer layer = (TridasEntityLayer) wwMapPanel.getWorkspaceSeriesLayer();
+
+				
 				
 			}
 			

@@ -79,6 +79,35 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
     	setMarkers(lst);
     }
 	
+    /**
+     * Removes any samples that we have in the layer that aren't in the provided array list.
+     * 
+     * @param samples
+     */
+    public void removeAbsentMarkers(ArrayList<Sample> samples)
+    {
+    	
+    	    	
+ 	    Iterator it = markermap.entrySet().iterator();
+ 	   
+ 	    HashMap<Sample, TridasMarker>  markermap2 = (HashMap<Sample, TridasMarker>) markermap.clone();
+ 	    
+	    while (it.hasNext()) {
+	        Map.Entry pair = (Map.Entry)it.next();
+	        Sample s = (Sample) pair.getKey();
+	       
+	        if(!samples.contains(s))
+	        {
+	        	markermap2.remove(s);
+	        }
+	        
+	    }
+
+	    markermap = markermap2;
+	    updateSuperMarkers();
+    	
+    }
+    
     
 	public void addMarker(Sample s)
 	{
