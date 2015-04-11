@@ -275,7 +275,7 @@ public class UnitAwareDecadalModel extends DecadalModel {
 					{
 						strval+= lwval / 20;
 					}
-					if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+					else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 					{
 						strval+= lwval / 10;
 					}
