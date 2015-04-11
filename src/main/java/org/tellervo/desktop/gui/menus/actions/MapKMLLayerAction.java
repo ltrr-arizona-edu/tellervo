@@ -17,8 +17,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.stream.XMLStreamException;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gis2.WWJPanel;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 
 public class MapKMLLayerAction extends AbstractAction {
@@ -42,7 +44,7 @@ public class MapKMLLayerAction extends AbstractAction {
 		
 		final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setMultiSelectionEnabled(true);
-        fileChooser.setFileFilter(new FileNameExtensionFilter("KML/KMZ File", "kml", "kmz"));
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Google Keyhole file (.kml; .kmz)", "kml", "kmz"));
 		fileChooser.setAcceptAllFileFilterUsed(false);
         
 		try
@@ -54,6 +56,8 @@ public class MapKMLLayerAction extends AbstractAction {
             {
                 for (File file : fileChooser.getSelectedFiles())
                 {
+                    App.prefs.setPref(PrefKey.FOLDER_LAST_READ, file.getAbsolutePath());
+
                     new WorkerThread(file, editor.getMapPanel()).start();
                 }
             }

@@ -23,8 +23,10 @@ import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gis2.WWJPanel;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 
@@ -41,19 +43,31 @@ public class MapGISImageAction extends AbstractAction {
     }
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(ActionEvent evt) {
 		
 		editor.switchToMapTab();
 		
 		JFileChooser fc = new JFileChooser();
 		fc.setMultiSelectionEnabled(true);
-		fc.setFileFilter(new FileNameExtensionFilter("Imagery File", "tif"));
+		
+		try{
+			File lastDirectory = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_READ, null));
+			if(lastDirectory != null){
+				fc.setCurrentDirectory(lastDirectory);
+			}
+		} catch (Exception e)
+		{
+		}
+		fc.setFileFilter(new FileNameExtensionFilter("GeoTIFF image (*.tif)", "tif"));
 		fc.setAcceptAllFileFilterUsed(false);
 			
 		int retVal = fc.showOpenDialog(editor);
         if (retVal != JFileChooser.APPROVE_OPTION)
             return;
 
+        App.prefs.setPref(PrefKey.FOLDER_LAST_READ, fc.getSelectedFile().getAbsolutePath());
+
+        
         Thread t = new WorkerThread(fc.getSelectedFile(), editor.getMapPanel());
         t.start();
         ((Component) editor.getMapPanel().getWwd()).setCursor(new Cursor(Cursor.WAIT_CURSOR));

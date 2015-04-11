@@ -5,7 +5,9 @@ import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.render.PointPlacemark;
 import gov.nasa.worldwindx.examples.kml.KMLDocumentBuilder;
 
+import java.awt.Window;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -13,9 +15,14 @@ import java.io.Writer;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.stream.XMLStreamException;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.TridasMarker;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.util.TridasUtils;
@@ -28,11 +35,13 @@ public class ExportLayerToKML extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
 	private ArrayList<TridasMarker> markers;
+	private Window parent;
 	
-	public ExportLayerToKML(ArrayList<TridasMarker> markers)
+	public ExportLayerToKML(Window parent, ArrayList<TridasMarker> markers)
 	{
 		super("Export to KML", Builder.getIcon("kml.png", 22));
 		this.markers =markers;
+		this.parent = parent;
 		
 	}
 	
@@ -56,16 +65,46 @@ public class ExportLayerToKML extends AbstractAction {
 	        }
 	        kmlBuilder.close();
 	
-	        FileWriter fw = new FileWriter("/tmp/out.kml");
-       
-	        fw.write(stringWriter.toString());
-	        fw.close();
+	        
+	    	JFileChooser fc = new JFileChooser();
+	    	
+			fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
+			fc.setMultiSelectionEnabled(false);
+									
+			// Loop through formats and create filters for each
+			fc.setAcceptAllFileFilterUsed(false);
+			
+			fc.addChoosableFileFilter(new FileNameExtensionFilter("Google Keyhole file (.kml; .kmz)", "kml", "kmz"));
+	        
+			// Pick the last used directory by default
+			try{
+				File lastDirectory = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_SAVE, null));
+				if(lastDirectory != null){
+					fc.setCurrentDirectory(lastDirectory);
+				}
+			} catch (Exception e)
+			{
+			}
+
+			int retValue = fc.showSaveDialog(parent);
+			if (retValue == JFileChooser.APPROVE_OPTION) {
+
+				FileWriter fw = new FileWriter( fc.getSelectedFile());
+	       
+		        fw.write(stringWriter.toString());
+		        fw.close();
+			}
+			else
+			{
+				return;
+			}
+			
+
 	        
 	        
 
 		} catch (IOException | XMLStreamException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Alert.error(parent, "Error", "Error exporting to KML file");
 		}
 		
 	}

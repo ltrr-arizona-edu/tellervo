@@ -28,7 +28,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 
 import com.jogamp.opengl.util.awt.AWTGLReadBufferUtil;
@@ -65,10 +67,18 @@ public class MapSaveCurrentMapAsImagesAction extends AbstractAction implements R
 	        {
 	            while (true)
 	            {
-	                fileChooser.setDialogTitle("Save Screen Shot");
-	                fileChooser.setSelectedFile(new File(composeSuggestedName()));
-	                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Screenshot", "png"));
+	                fileChooser.setDialogTitle("Save Image");
+	    			// Pick the last used directory by default
+	    			try{
+	    				File lastDirectory = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_SAVE, null));
+	    				if(lastDirectory != null){
+	    					fileChooser.setCurrentDirectory(lastDirectory);
+	    				}
+	    			} catch (Exception e)
+	    			{
+	    			}
 	                fileChooser.setAcceptAllFileFilterUsed(false);
+	                fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("PNG image file (*.png)", "png"));
 
 	                int status = fileChooser.showSaveDialog(parentFrame);
 	                if (status != JFileChooser.APPROVE_OPTION)
@@ -81,6 +91,8 @@ public class MapSaveCurrentMapAsImagesAction extends AbstractAction implements R
 	                        "No Location Selected", JOptionPane.ERROR_MESSAGE);
 	                    continue;
 	                }
+	                
+	                App.prefs.setPref(PrefKey.FOLDER_LAST_SAVE, outFile.getAbsolutePath());
 
 	                if (!outFile.getPath().endsWith(".png"))
 	                    outFile = new File(outFile.getPath() + ".png");

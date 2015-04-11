@@ -42,6 +42,7 @@ import javax.swing.border.TitledBorder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.menus.AbstractEditorActions;
@@ -231,7 +232,7 @@ public class TellervoLayerPanel extends JPanel {
 			
 			if(layer instanceof TellervoDataLayer)
 			{
-				JMenuItem export = new JMenuItem(new ExportLayerToKML(((TellervoDataLayer)layer).getTridasMarkers()));
+				JMenuItem export = new JMenuItem(new ExportLayerToKML(App.mainWindow, ((TellervoDataLayer)layer).getTridasMarkers()));
 				popupMenu.add(export);
 			}
 			
