@@ -136,6 +136,7 @@ public class FileOpenAction extends AbstractAction{
 		LiteEditor editor = LiteEditor.getNewInstance();
 		try {
 			editor.loadFile(parent, file, TridasIO.getDendroFormatFromDendroFileFilter((DendroFileFilter) fc.getFileFilter()));
+						
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

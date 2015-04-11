@@ -28,8 +28,8 @@ public class LiteEditorMenuBar extends EditorMenuBar{
 		mnFile.add(miOpen);
 
 		
-		JMenu openrecent = OpenRecent.makeOpenRecentMenu();
-		mnFile.add(openrecent);
+		//JMenu openrecent = OpenRecent.makeOpenRecentMenu();
+		//mnFile.add(openrecent);
 
 		// JMenuItem miExportMap = new JMenuItem(actions.fileExportMapAction);
 		// mnFile.add(miExportMap);

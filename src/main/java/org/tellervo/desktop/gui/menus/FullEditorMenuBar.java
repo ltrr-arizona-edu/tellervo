@@ -15,6 +15,7 @@ import javax.swing.JRadioButtonMenuItem;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.gui.menus.actions.FileImportLegacyFile;
 import org.tellervo.desktop.gui.seriesidentity.IdentifySeriesPanel;
 import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -550,78 +551,15 @@ public class FullEditorMenuBar extends EditorMenuBar{
 
 		JMenu fileimportdataonly = Builder.makeMenu("menus.file.importdataonly", "fileimport.png");
 		
-		ArrayList<AbstractDendroFileReader> readers = new ArrayList<AbstractDendroFileReader>();
-				
-		for (Class<? extends AbstractDendroFileReader> clazz : TridasIO.getSupportedReaders()) {
-
-
-			final AbstractDendroFileReader reader;
-			try {
-				reader = clazz.newInstance();
-			} catch (InstantiationException e) {
-				
-				continue;
-			}
-			catch (IllegalAccessException e1)
-			{
-				continue;
-			}
-			
-			readers.add(reader);
-		}
-		
+		ArrayList<AbstractDendroFileReader> readers = TridasIO.getInstantiatedReaders();
 		Collections.sort(readers);
 		
 		for(AbstractDendroFileReader r : readers)
 		{
 			final AbstractDendroFileReader reader = r;
 			
-			JMenuItem importitem = new JMenuItem(reader.getShortName());
-
-			importitem.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					// Set up file chooser and filters
-					DendroFileFilter filter = reader.getDendroFileFilter();
-					File lastFolder = null;
-					try{
-						lastFolder = new File(App.prefs.getPref(PrefKey.FOLDER_LAST_READ, null));
-					} catch (Exception e){}
-					
-					JFileChooser fc = new JFileChooser(lastFolder);
-					fc.addChoosableFileFilter(filter);
-					fc.setFileFilter(filter);
-					fc.setMultiSelectionEnabled(true);
-					int returnVal = fc.showOpenDialog(null);
-						
-					// Get details from user
-				    if (returnVal == JFileChooser.APPROVE_OPTION) {
-				        
-				    	File[] files = fc.getSelectedFiles();
-				    	
-				    	/*File file = fc.getSelectedFile();
-				        ImportDataOnly importDialog = new ImportDataOnly(parent, file, s);
-				        importDialog.openEditors();*/
-				    	
-				    	
-
-				        
-						// Remember this folder for next time
-						App.prefs.setPref(PrefKey.FOLDER_LAST_READ, files[0].getPath());
-						
-				    	IdentifySeriesPanel.show(files, reader.getFormat());
-
-					    
-				    } else {
-				    	return;
-				    }
-
-					
-				}
-				
-			});
-			
+			FileImportLegacyFile action = new FileImportLegacyFile(reader);
+			JMenuItem importitem = new JMenuItem(action);
 			fileimportdataonly.add(importitem);
 		}
 		return fileimportdataonly;
