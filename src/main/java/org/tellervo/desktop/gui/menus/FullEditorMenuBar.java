@@ -4,6 +4,7 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBoxMenuItem;
@@ -24,6 +25,8 @@ import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 public class FullEditorMenuBar extends EditorMenuBar{
 
@@ -547,6 +550,8 @@ public class FullEditorMenuBar extends EditorMenuBar{
 
 		JMenu fileimportdataonly = Builder.makeMenu("menus.file.importdataonly", "fileimport.png");
 		
+		ArrayList<AbstractDendroFileReader> readers = new ArrayList<AbstractDendroFileReader>();
+				
 		for (Class<? extends AbstractDendroFileReader> clazz : TridasIO.getSupportedReaders()) {
 
 
@@ -562,7 +567,16 @@ public class FullEditorMenuBar extends EditorMenuBar{
 				continue;
 			}
 			
-			JMenuItem importitem = new JMenuItem(reader.getFullName());
+			readers.add(reader);
+		}
+		
+		Collections.sort(readers);
+		
+		for(AbstractDendroFileReader r : readers)
+		{
+			final AbstractDendroFileReader reader = r;
+			
+			JMenuItem importitem = new JMenuItem(reader.getShortName());
 
 			importitem.addActionListener(new ActionListener() {
 
