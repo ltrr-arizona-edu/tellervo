@@ -357,7 +357,7 @@ public class EditorFactory {
 			TellervoWSILoader.attachNewSample(sample);
 
 			// start the editor
-			LiteEditor ed = new LiteEditor();
+			LiteEditor ed = LiteEditor.getNewInstance();
 			ed.addSample(sample);
 			
 			ed.setVisible(true);

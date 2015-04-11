@@ -38,6 +38,7 @@ import org.tridas.io.exceptions.ImpossibleConversionException;
 import org.tridas.io.naming.AbstractNamingConvention;
 import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
+import org.tridas.io.util.FilePermissionException;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
@@ -213,7 +214,11 @@ public class GraphCreateFileHistoryPlotAction extends AbstractAction{
 				IDendroFile[] files = writer.getFiles();
 				for (int j=0; j<files.length; j++) {
 					IDendroFile dof = files[j];
-					writer.saveFileToDisk(outputFolder, dof);
+					try {
+						writer.saveFileToDisk(outputFolder, dof);
+					} catch (FilePermissionException e1) {
+						messages += "Permission denied\n";
+					}
 					
 					// Add any warnings to our warning message cache
 					if(writer.getWarnings().length>0)

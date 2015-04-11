@@ -46,6 +46,7 @@ import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.naming.AbstractNamingConvention;
 import org.tridas.io.naming.KeycodeNamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
+import org.tridas.io.util.FilePermissionException;
 import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.io.util.TridasFactory;
 import org.tridas.io.util.TridasUtils;
@@ -77,7 +78,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	/**
 	 * Do not instantiate.  Use getNewInstance() instead
 	 */
-	protected LiteEditor()
+	private LiteEditor()
 	{
 		super();
 		this.setVisible(true);
@@ -120,10 +121,18 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				
 			if(n==JOptionPane.YES_OPTION)
 			{
+				boolean problemsSaving = false;
+				
 				for(LiteEditor ed : modifiedEditors)
 				{
-					ed.save();
-					ed.cleanupAndDispose();
+					if(ed.saveAndConfirm()==false)
+					{
+						problemsSaving = true;
+					}
+					
+					if(!problemsSaving) ed.cleanupAndDispose();
+					
+					return;
 				}
 			}
 			else if (n==JOptionPane.NO_OPTION)
@@ -242,7 +251,17 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	}
 
 	@Override
-	public void save() {
+	public void save() 
+	{
+		saveAndConfirm();
+	}
+	
+	/**
+	 * Save this file, and return a boolean to indicate success/failure
+	 * 
+	 * @return
+	 */
+	public boolean saveAndConfirm() {
 	
 		// make sure we're not measuring
 		this.stopMeasuring();
@@ -259,10 +278,11 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			{
 				// Previously saved by Tellervo
 				try {
-					saveToDisk();
+					return saveToDisk();
 				} catch (Exception e) {
 					Alert.error(this, "Error Saving", "Error saving to disk.  "+e.getLocalizedMessage());
 					e.printStackTrace();
+					return false;
 				}
 			}
 			else
@@ -287,14 +307,19 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				if(n == JOptionPane.YES_OPTION)
 				{
 					try {
-						saveToDisk();
+						return saveToDisk();
 					} catch (Exception e) {
 						Alert.error(this, "Error Saving", "Error saving to disk.  "+e.getLocalizedMessage());
 						e.printStackTrace();
+						return false;
 					}
 				}
+				else if (n==JOptionPane.NO_OPTION || n==JOptionPane.CANCEL_OPTION)
+				{
+					return false;
+				}
 				
-				return;
+				return false;
 			}
 		}
 		else
@@ -304,14 +329,22 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			if(savedByTellervo)
 			{
 				log.error("New file but has previously been saved?!? This should be impossible!");
+				return false;
 			}
 			else
 			{
 				try {
-					saveAs();
-				} catch (Exception e) {
+					return saveAs();
+					
+				} catch (FilePermissionException ex)
+				{
+					Alert.error(this, "Error Saving", ex.getLocalizedMessage());
+					return false;
+				}
+				catch (Exception e) {
 					Alert.error(this, "Error Saving", "Error saving to disk.  "+e.getLocalizedMessage());
 					e.printStackTrace();
+					return false;
 				}
 			}
 		}	
@@ -416,7 +449,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	 * 
 	 * @throws Exception
 	 */
-	public void saveAs() throws Exception
+	public boolean saveAs() throws Exception
 	{	
 		// custom jfilechooser
 		File thisFile = null;
@@ -490,13 +523,13 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		}
 		
 		if (thisFile == null) {
-			return;
+			return false;
 		}
 				
 		
 		file = thisFile;
 		fileFormat = TridasIO.getDendroFormatFromDendroFileFilter(chosenFilter);
-		saveToDisk();
+		return saveToDisk();
 	}
 	
 	/**
@@ -573,18 +606,23 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			writer = TridasIO.getFileWriterFromFormat(fileFormat);
 			writer.setNamingConvention(nc);
 			writer.load((TridasTridas)getContainerForFile().clone());
-			writer.saveAllToDisk(path);
 			
+			
+			writer.saveAllToDisk(path);
 			App.prefs.setPref(PrefKey.EXPORT_FORMAT, fileFormat.getShortName());
 			App.prefs.setPref(PrefKey.FOLDER_LAST_SAVE, path);
-
-			
 			return true;
+			
+			
+			
 		}
 		else
 		{
 			
+			
+			
 			writer.saveAllToDisk(path);
+	
 			
 			// Grab the actual filename used as it may have had an extension added
 			String usedfilename = nc.getFilename(writer.getFiles()[0])+"."+writer.getFiles()[0].getExtension();
@@ -894,7 +932,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	}
 	
 	/**
-	 * Dispose of this editor but confirm saving first in necessary and not in silent mode
+	 * Dispose of this editor but confirm saving first if necessary and not in silent mode
 	 * 
 	 * @param silentmode
 	 */
@@ -917,7 +955,8 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				
 			if(n==JOptionPane.YES_OPTION)
 			{
-				save();
+				boolean success = saveAndConfirm();
+				if(!success) return;
 			}
 			else if (n==JOptionPane.NO_OPTION)
 			{
@@ -931,10 +970,13 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		
 		// Keep track of how many windows there are.  If this is the last, then close Tellervo.
 		LiteEditor.windows.remove(this);
+		log.debug("Closed current window "+LiteEditor.windows.size()+" windows left.");
 		if(LiteEditor.windows.size()==0)
 		{
 			System.exit(0);
 		}
+		
+		this.dispose();
 	}
 	
 	@Override
