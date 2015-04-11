@@ -120,11 +120,15 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 	public void setSample(Sample s)
 	{
 		listenersActive = false;
+				
 		
 		sample = s;
-		s.addSampleListener(this);
-		
 		setFieldsFromSample();
+		
+		
+		if(sample!=null) sample.addSampleListener(this);
+		
+		
 		
 		listenersActive = true;
 	}
@@ -137,7 +141,15 @@ public class BasicMetadataPanel extends AbstractMetadataPanel implements Documen
 		txtSpecies.setText("");
 		txtObject.setText("");
 		
-		if(sample==null) return;
+		txtAuthor.setEnabled(sample!=null);
+		txtKeycode.setEnabled(sample!=null);
+		txtTitle.setEnabled(sample!=null);
+		txtSpecies.setEnabled(sample!=null);
+		txtObject.setEnabled(sample!=null);
+		
+		if(sample==null) {
+			return;
+		}
 		
 		txtAuthor.setText(sample.getMetaString(Metadata.AUTHOR));
 		txtKeycode.setText(sample.getMetaString(Metadata.KEYCODE));

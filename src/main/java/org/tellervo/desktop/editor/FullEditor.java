@@ -128,6 +128,7 @@ public class FullEditor extends AbstractEditor {
 		
 		samplesModel.addElement(s);		
 		this.getLstSamples().setSelectedValue(s, true);
+		itemSelected();
 	}
 	
 	/**
@@ -458,10 +459,14 @@ public class FullEditor extends AbstractEditor {
 			{
 				// Sample is null so clean tabs
 				
-				/**dataPanel.removeAll();
+				dataPanel.removeAll();
 				metadataHolder.removeAll();
 				componentHolder.removeAll();
-				dependentHolder.removeAll();**/
+				dependentHolder.removeAll();
+				dataPanel.repaint();
+				metadataHolder.repaint();
+				componentHolder.repaint();
+				dependentHolder.repaint();
 
 			}
 	

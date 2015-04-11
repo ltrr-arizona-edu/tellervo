@@ -37,6 +37,12 @@ public class RemoveSeriesFromWorkspaceAction extends AbstractAction {
 			{
 				editor.getLstSamples().setSelectedIndex(editor.getLstSamples().getLastVisibleIndex());
 			}
+			
+			// Force item selected when list of samples is empty to clean tabs
+			if(editor.getSamplesModel().getSize()==0)
+			{
+				editor.itemSelected();
+			}
 						
 			editor.getLstSamples().repaint();
 			editor.itemSelected();

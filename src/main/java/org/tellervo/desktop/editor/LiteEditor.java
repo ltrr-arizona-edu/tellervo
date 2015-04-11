@@ -279,7 +279,13 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				// Previously saved by Tellervo
 				try {
 					return saveToDisk();
-				} catch (Exception e) {
+				} 
+				catch (FilePermissionException ex)
+				{
+					Alert.error(this, "Error Saving", ex.getLocalizedMessage());
+					return false;
+				}
+				catch (Exception e) {
 					Alert.error(this, "Error Saving", "Error saving to disk.  "+e.getLocalizedMessage());
 					e.printStackTrace();
 					return false;
@@ -299,7 +305,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			        "Are you sure you want to overwrite this file?",
 				    "Overwrite File?",
 				    JOptionPane.YES_NO_CANCEL_OPTION,
-				    JOptionPane.QUESTION_MESSAGE,
+				    JOptionPane.WARNING_MESSAGE,
 				    null,
 				    options,
 				    options[2]);
@@ -308,7 +314,11 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 				{
 					try {
 						return saveToDisk();
-					} catch (Exception e) {
+					} catch (FilePermissionException ex)
+					{
+						Alert.error(this, "Error Saving", ex.getLocalizedMessage());
+						return false;
+					}catch (Exception e) {
 						Alert.error(this, "Error Saving", "Error saving to disk.  "+e.getLocalizedMessage());
 						e.printStackTrace();
 						return false;
@@ -437,6 +447,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			else
 			{
 				dataPanel.removeAll();
+				metadata.setSample(null);
 			}
 			
 			setTitle();
@@ -449,7 +460,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	 * 
 	 * @throws Exception
 	 */
-	public boolean saveAs() throws Exception
+	public boolean saveAs() throws FilePermissionException, Exception
 	{	
 		// custom jfilechooser
 		File thisFile = null;
@@ -526,6 +537,26 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 			return false;
 		}
 				
+		if(thisFile.exists())
+		{
+			Object[] options = {"Yes",
+                    "No",
+                    "Cancel"};
+				int n = JOptionPane.showOptionDialog(this,
+				    "The file "+file.getName()+" already exists.  Would you like to overwrite it?",
+				    "Overwrite",
+				    JOptionPane.YES_NO_CANCEL_OPTION,
+				    JOptionPane.QUESTION_MESSAGE,
+				    null,
+				    options,
+				    options[2]);
+				
+			if(n!=JOptionPane.YES_OPTION)
+			{
+				return false;
+			}
+		}
+		
 		
 		file = thisFile;
 		fileFormat = TridasIO.getDendroFormatFromDendroFileFilter(chosenFilter);
@@ -538,7 +569,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 	 * @return
 	 * @throws Exception
 	 */
-	private boolean saveToDisk() throws Exception
+	private boolean saveToDisk() throws FilePermissionException, Exception
 	{
 		if(file==null )
 		{
