@@ -219,6 +219,10 @@ public class Prefs extends AbstractSubsystem {
 		OBJECT_FIELD_VISIBLE_OWNER("tellervo.object.field.visible.owner"),
 		OBJECT_FIELD_VISIBLE_CREATOR("tellervo.object.field.visible.creator"),
 		
+		MAP_CONTROLS_ENABLED("tellervo.map.controls"),
+		
+		
+		
 		;
 		
 		

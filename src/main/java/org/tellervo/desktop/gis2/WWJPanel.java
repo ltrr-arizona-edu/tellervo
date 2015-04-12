@@ -59,10 +59,12 @@ import javax.swing.SwingUtilities;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.ITRDBMarker;
 import org.tellervo.desktop.gis.TridasAnnotation;
 import org.tellervo.desktop.gis.TridasAnnotationController;
 import org.tellervo.desktop.gis.TridasMarker;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tridas.interfaces.ITridas;
 
@@ -174,6 +176,10 @@ public class WWJPanel extends JPanel  implements SelectListener{
         model.setGlobe(earth);
         model.setLayers(layersList);
         wwd.setModel(model);
+        
+        // Set control layer enabled/disabled based on preferences
+        model.getLayers().getLayerByName(Logging.getMessage("layers.ViewControlsLayer.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_CONTROLS_ENABLED, true));
+        
 
 		// Create status bar
 		this.statusBar = new StatusBar();

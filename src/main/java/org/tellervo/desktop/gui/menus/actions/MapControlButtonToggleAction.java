@@ -8,7 +8,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 
 public class MapControlButtonToggleAction extends AbstractAction {
@@ -19,7 +21,7 @@ public class MapControlButtonToggleAction extends AbstractAction {
 	public MapControlButtonToggleAction(FullEditor editor) {
         super("Hide/Show Controls", Builder.getIcon("controls.png", 22));
 		putValue(SHORT_DESCRIPTION, "Hide/Show the control buttons");
-		putValue(Action.SELECTED_KEY, true);
+		putValue(Action.SELECTED_KEY, App.prefs.getBooleanPref(PrefKey.MAP_CONTROLS_ENABLED, true));
         this.editor = editor;
 
     }
@@ -34,6 +36,7 @@ public class MapControlButtonToggleAction extends AbstractAction {
 		
 		controllayer.setEnabled(!controllayer.isEnabled());
 		
+		App.prefs.setBooleanPref(PrefKey.MAP_CONTROLS_ENABLED, controllayer.isEnabled());
 		
 	}
 
