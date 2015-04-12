@@ -469,6 +469,10 @@ public class ExportUI extends javax.swing.JPanel{
 				} catch (FilePermissionException e1) {
 				messages += "Permission denied\n";
 				}
+				 catch (Exception ex)
+				{
+					 ex.printStackTrace();
+				}
 				
 				
 				

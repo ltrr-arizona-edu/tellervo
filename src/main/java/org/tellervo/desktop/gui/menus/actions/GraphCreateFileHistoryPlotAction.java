@@ -218,7 +218,11 @@ public class GraphCreateFileHistoryPlotAction extends AbstractAction{
 						writer.saveFileToDisk(outputFolder, dof);
 					} catch (FilePermissionException e1) {
 						messages += "Permission denied\n";
+					} catch (Exception e)
+					{
+						e.printStackTrace();
 					}
+					
 					
 					// Add any warnings to our warning message cache
 					if(writer.getWarnings().length>0)

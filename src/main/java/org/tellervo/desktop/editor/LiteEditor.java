@@ -524,7 +524,7 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		{
 		}
 		
-		int retValue = fc.showSaveDialog(parent);
+		int retValue = fc.showSaveDialog(this);
 		if (retValue == JFileChooser.APPROVE_OPTION) {
 			thisFile = fc.getSelectedFile();
 			// Remember this folder for next time
