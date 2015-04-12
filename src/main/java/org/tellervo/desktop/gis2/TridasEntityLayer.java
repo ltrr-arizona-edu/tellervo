@@ -1,6 +1,9 @@
 package org.tellervo.desktop.gis2;
 
 import gov.nasa.worldwind.layers.MarkerLayer;
+import gov.nasa.worldwind.render.Material;
+import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
+import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 import gov.nasa.worldwind.render.markers.Marker;
 
 import java.util.ArrayList;
@@ -25,6 +28,8 @@ import org.tridas.schema.TridasObject;
 
 public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer {
 	
+	private BasicMarkerAttributes marker = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
+	private BasicMarkerAttributes highlightedMarker = new BasicMarkerAttributes(Material.YELLOW, BasicMarkerShape.CYLINDER, 0.6d);
 	
 	protected final static Logger log = LoggerFactory.getLogger(TridasEntityLayer.class);
 	private HashMap<Sample, TridasMarker> markermap = new HashMap<Sample, TridasMarker>();
@@ -61,10 +66,10 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 	    while (it.hasNext()) {
 	        Map.Entry pair = (Map.Entry)it.next();
 	        Marker value = (Marker) pair.getValue();
-	        value.setAttributes(AllSitesLayer.defaultAttributes);
+	        value.setAttributes(getMarkerStyle());
 	    }
 		
-		getMarkerForSample(s).setAttributes(AllSitesLayer.highlightAttributes);
+		getMarkerForSample(s).setAttributes(getHighlightedMarkerStyle());
 		
 		
 	}		
@@ -172,11 +177,11 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 				try{
 					on.getElements().get(0).getLocation().getLocationGeometry();
 					
-					marker = AllSitesLayer.getMarkerForTridasEntity(on.getElements().get(0).getLocation().getLocationGeometry(), on.getElements().get(0));
+					marker = TridasMarkerFactory.getMarkerForTridasEntity(on.getElements().get(0).getLocation().getLocationGeometry(), on.getElements().get(0), this.getMarkerStyle());
 				
 				} catch (Exception e)
 				{
-					marker = AllSitesLayer.getMarkerForObject(on);
+					marker = TridasMarkerFactory.getMarkerForObject(on, this.getMarkerStyle());
 				}
 			}
 
@@ -204,6 +209,28 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer 
 	    }
 		
 		return markers;
+	}
+
+	@Override
+	public void setMarkerStyle(BasicMarkerAttributes marker) {
+		this.marker = marker;
+		
+	}
+
+	@Override
+	public BasicMarkerAttributes getMarkerStyle() {
+		return marker;
+	}
+
+	@Override
+	public void setHighlightedMarkerStyle(BasicMarkerAttributes marker) {
+		this.highlightedMarker = marker;
+		
+	}
+
+	@Override
+	public BasicMarkerAttributes getHighlightedMarkerStyle() {
+		return highlightedMarker;
 	}
 
 
