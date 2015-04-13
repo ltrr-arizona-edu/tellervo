@@ -90,7 +90,7 @@ public class LiteEditorMenuBar extends EditorMenuBar{
 		JMenuItem miInitializeDataGrid = new JMenuItem(actions.editInitGridAction);
 		mnEdit.add(miInitializeDataGrid);
 
-		JMenu measureModeMenu = Builder.makeMenu("menus.edit.measuremode");
+		JMenu measureModeMenu = new JMenu(actions.editMeasureModeAction);
 		final JRadioButtonMenuItem btnRingWidth = new JRadioButtonMenuItem(actions.editMeasureRingWidthsModeAction);
 		final JRadioButtonMenuItem btnEWLWWidth = new JRadioButtonMenuItem(actions.editMeasureEWLWWidthsModeAction);
 		ButtonGroup group = new ButtonGroup();
@@ -118,14 +118,13 @@ public class LiteEditorMenuBar extends EditorMenuBar{
 		JMenuItem miToolsTruncate = new JMenuItem(actions.toolsTruncateAction);
 		mnTools.add(miToolsTruncate);
 		
+		JMenuItem miToolsRedate = new JMenuItem(actions.toolsRedateAction);
+		mnTools.add(miToolsRedate);
+		
 		JMenuItem miToolsReverse = new JMenuItem(actions.toolsReverseAction);
 		mnTools.add(miToolsReverse);
 		
-		JMenuItem miToolsCrossdate = new JMenuItem(actions.toolsCrossdateAction);
-		mnTools.add(miToolsCrossdate);
-		
-		JMenuItem miToolsCrossdateWorkspace = new JMenuItem(actions.toolsCrossdateWorkspaceAction);
-		mnTools.add(miToolsCrossdateWorkspace);
+
 
 
 		

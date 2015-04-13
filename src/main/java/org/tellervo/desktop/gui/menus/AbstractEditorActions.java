@@ -41,6 +41,7 @@ import org.tellervo.desktop.gui.menus.actions.EditInsertYearPushBackwardsAction;
 import org.tellervo.desktop.gui.menus.actions.EditInsertYearPushForwardsAction;
 import org.tellervo.desktop.gui.menus.actions.EditInsertYearsAction;
 import org.tellervo.desktop.gui.menus.actions.EditMeasureEWLWWidthsModeAction;
+import org.tellervo.desktop.gui.menus.actions.EditMeasureModeAction;
 import org.tellervo.desktop.gui.menus.actions.EditMeasureRingWidthsModeAction;
 import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
 import org.tellervo.desktop.gui.menus.actions.EditPreferencesAction;
@@ -109,6 +110,7 @@ public abstract class AbstractEditorActions{
 
 	// Editor menu actions
 	public Action editMeasureAction;
+	public Action editMeasureModeAction;
 	public Action editMeasureRingWidthsModeAction;
 	public Action editMeasureEWLWWidthsModeAction;
 	public Action editInitGridAction;
@@ -147,12 +149,7 @@ public abstract class AbstractEditorActions{
 	// Tools menu action
 	public Action toolsTruncateAction;
 	public Action toolsReverseAction;
-	public Action toolsReconcileAction;
-	public Action toolsIndexAction;
-	public Action toolsSumAction;
 	public Action toolsRedateAction;
-	public Action toolsCrossdateAction;
-	public Action toolsCrossdateWorkspaceAction;
 	
 
 	// Graph menu action
@@ -189,7 +186,7 @@ public abstract class AbstractEditorActions{
 	public Action helpSystemsInformationAction;
 	public Action helpAboutTellervoAction;
 	
-	private Sample currentSample;
+	protected Sample currentSample;
 
 
 
@@ -218,6 +215,7 @@ public abstract class AbstractEditorActions{
 		editDeleteAction = new EditDeleteAction(editor);
 		editInsertYearsAction = new EditInsertYearsAction(editor);
 		editInitGridAction = new EditInitDataGridAction(editor);
+		editMeasureModeAction = new EditMeasureModeAction();
 		editMeasureAction = new EditMeasureToggleAction(editor);
 		editMeasureRingWidthsModeAction = new EditMeasureRingWidthsModeAction(editor);
 		editMeasureEWLWWidthsModeAction = new EditMeasureEWLWWidthsModeAction(editor);
@@ -245,12 +243,7 @@ public abstract class AbstractEditorActions{
 
 		toolsTruncateAction = new ToolsTruncateAction(editor);
 		toolsReverseAction = new ToolsReverseAction(editor);
-		toolsReconcileAction = new ToolsReconcileAction(editor);
-		toolsIndexAction = new ToolsIndexAction(editor);
-		toolsSumAction = new ToolsSumAction(editor);
 		toolsRedateAction = new ToolsRedateAction(editor);
-		toolsCrossdateAction = new ToolsCrossdateAction(editor);
-		toolsCrossdateWorkspaceAction = new ToolsCrossdateWorkspaceAction(editor);
 
 		graphCurrentSeriesAction = new GraphCurrentSeriesAction(editor);
 		//graphComponentSeriesAction = new GraphComponentSeriesAction(editor);
@@ -302,12 +295,12 @@ public abstract class AbstractEditorActions{
 	}
 	protected abstract void setMenusForNetworkStatus();
 	
-	
-	private void setMenusForSample()
+	protected abstract void setMenusForSample();
+	private void setSharedMenusForSample()
 	{
 		this.fileSaveAction.setEnabled(this.currentSample!=null);
 		this.fileExportDataAction.setEnabled(this.currentSample!=null);
-		
+	
 		this.editCopyAction.setEnabled(this.currentSample!=null);
 		this.editDeleteAction.setEnabled(this.currentSample!=null);
 		this.editInitGridAction.setEnabled(this.currentSample!=null);
@@ -318,14 +311,14 @@ public abstract class AbstractEditorActions{
 		this.editInsertYearsAction.setEnabled(this.currentSample!=null);
 		this.editMeasureAction.setEnabled(this.currentSample!=null);
 		this.editSelectAllAction.setEnabled(this.currentSample!=null);
+		this.editMeasureEWLWWidthsModeAction.setEnabled(this.currentSample!=null);
+		this.editMeasureRingWidthsModeAction.setEnabled(this.currentSample!=null);
+		this.editMeasureModeAction.setEnabled(this.currentSample!=null);
 
-		this.toolsCrossdateAction.setEnabled(this.currentSample!=null);
-		this.toolsIndexAction.setEnabled(this.currentSample!=null);
-		this.toolsReconcileAction.setEnabled(this.currentSample!=null);
+		this.toolsTruncateAction.setEnabled(this.currentSample!=null);
 		this.toolsRedateAction.setEnabled(this.currentSample!=null);
 		this.toolsReverseAction.setEnabled(this.currentSample!=null);
-		this.toolsSumAction.setEnabled(this.currentSample!=null);
-		this.toolsTruncateAction.setEnabled(this.currentSample!=null);
+
 		
 		this.graphAllSeriesAction.setEnabled(this.currentSample!=null);
 		this.graphCurrentSeriesAction.setEnabled(this.currentSample!=null);
@@ -341,6 +334,9 @@ public abstract class AbstractEditorActions{
 		 }
 		
 		this.editInitGridAction.setEnabled(!sampleInitialized);
+		
+		// Now call the matching function in the implementing class for all specific actions
+		this.setMenusForSample();
 	}
 	
 
@@ -371,7 +367,7 @@ public abstract class AbstractEditorActions{
 
 					@Override
 					public void sampleDataChanged(SampleEvent e) {
-						setMenusForSample();
+						setSharedMenusForSample();
 						
 					}
 
@@ -405,12 +401,12 @@ public abstract class AbstractEditorActions{
 						
 					}
 				});
-				setMenusForSample();
+				setSharedMenusForSample();
 
 			}
 
 		});
-		setMenusForSample();
+		setSharedMenusForSample();
 		
 	}
 

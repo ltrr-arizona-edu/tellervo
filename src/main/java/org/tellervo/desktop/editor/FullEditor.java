@@ -522,10 +522,10 @@ public class FullEditor extends AbstractEditor {
 		AbstractButton truncate = new TitlelessButton(actions.toolsTruncateAction);
 		toolBar.add(truncate);
 		
-		AbstractButton index = new TitlelessButton(actions.toolsIndexAction);
+		AbstractButton index = new TitlelessButton(((FullEditorActions)actions).toolsIndexAction);
 		toolBar.add(index);
 		
-		AbstractButton sum = new TitlelessButton(actions.toolsSumAction);
+		AbstractButton sum = new TitlelessButton(((FullEditorActions)actions).toolsSumAction);
 		toolBar.add(sum);
 		
 	

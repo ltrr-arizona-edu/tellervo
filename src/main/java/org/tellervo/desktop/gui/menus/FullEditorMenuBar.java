@@ -184,7 +184,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		JMenuItem miInitializeDataGrid = new JMenuItem(actions.editInitGridAction);
 		mnEdit.add(miInitializeDataGrid);
 
-		JMenu measureModeMenu = Builder.makeMenu("menus.edit.measuremode");
+		JMenu measureModeMenu = new JMenu(actions.editMeasureModeAction);
 		final JRadioButtonMenuItem btnRingWidth = new JRadioButtonMenuItem(actions.editMeasureRingWidthsModeAction);
 		final JRadioButtonMenuItem btnEWLWWidth = new JRadioButtonMenuItem(actions.editMeasureEWLWWidthsModeAction);
 		ButtonGroup group = new ButtonGroup();

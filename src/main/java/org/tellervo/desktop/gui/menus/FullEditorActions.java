@@ -27,6 +27,11 @@ import org.tellervo.desktop.gui.menus.actions.MapUTMGraticuleLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapWMSLayerAction;
 import org.tellervo.desktop.gui.menus.actions.MapWorldMapLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapZoomAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateWorkspaceAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsIndexAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsReconcileAction;
+import org.tellervo.desktop.gui.menus.actions.ToolsSumAction;
 import org.tellervo.desktop.gui.menus.actions.ViewToExtentAction;
 
 public class FullEditorActions extends AbstractEditorActions {
@@ -35,8 +40,17 @@ public class FullEditorActions extends AbstractEditorActions {
 	public Action filePrintAction;
 	public Action fileLogoffAction;
 	public Action fileLogonAction;
+	
 	public Action graphCreateFileHistoryPlotAction;
+	
 	public Action viewZoomToExtent;
+	
+	public Action toolsReconcileAction;
+	public Action toolsIndexAction;
+	public Action toolsSumAction;
+	public Action toolsCrossdateAction;
+	public Action toolsCrossdateWorkspaceAction;
+	
 	public Action mapAddLayersAction;
 	public Action mapControlsAction;
 	public Action mapAnnotationsAction;
@@ -56,6 +70,9 @@ public class FullEditorActions extends AbstractEditorActions {
 	public Action mapKMLLayerAction;
 	public Action mapZoomAction;
 
+	
+	
+	
 	public FullEditorActions(FullEditor editor)
 	{
 		super(editor);
@@ -73,10 +90,15 @@ public class FullEditorActions extends AbstractEditorActions {
 		
 		viewZoomToExtent = new ViewToExtentAction((FullEditor) editor);
 		
+		toolsReconcileAction = new ToolsReconcileAction(editor);
+		toolsIndexAction = new ToolsIndexAction(editor);
+		toolsSumAction = new ToolsSumAction(editor);
+		toolsCrossdateAction = new ToolsCrossdateAction(editor);
+		toolsCrossdateWorkspaceAction = new ToolsCrossdateWorkspaceAction(editor);
+		
 		mapAddLayersAction = new MapAddLayersAction((FullEditor) editor);
 		mapControlsAction = new MapControlsAction((FullEditor) editor);
 		mapAnnotationsAction = new MapAnnotationsAction((FullEditor) editor);
-		
 		mapCompassToggleAction = new MapCompassToggleAction((FullEditor) editor);
 		mapWorldMapLayerToggleAction = new MapWorldMapLayerToggleAction((FullEditor) editor);
 		mapUTMGraticuleLayerToggleAction = new MapUTMGraticuleLayerToggleAction((FullEditor) editor);
@@ -85,8 +107,6 @@ public class FullEditorActions extends AbstractEditorActions {
 		mapCountryBoundariesLayerToggleAction = new MapCountryBoundariesLayerToggleAction((FullEditor) editor);
 		mapControlLayerToggleAction = new MapControlButtonToggleAction((FullEditor) editor);
 		mapScaleBarLayerToggleAction = new MapScaleBarToggleAction((FullEditor) editor);
-
-		
 		mapStereoModeAction = new MapStereoModeAction((FullEditor) editor);
 		mapSaveCurrentMapAsImagesAction = new MapSaveCurrentMapAsImagesAction((FullEditor)editor);
 		mapShapefileLayerAction = new MapShapefileLayerAction((FullEditor) editor);
@@ -102,10 +122,24 @@ public class FullEditorActions extends AbstractEditorActions {
 	@Override
 	protected void setMenusForNetworkStatus() {
 		
-		this.fileLogonAction.setEnabled(!App.isLoggedIn());
-		this.fileLogoffAction.setEnabled(App.isLoggedIn());
+		fileLogonAction.setEnabled(!App.isLoggedIn());
+		fileLogoffAction.setEnabled(App.isLoggedIn());
 		
 		
+	}
+
+	@Override
+	protected void setMenusForSample() {
+		fileSaveAllAction.setEnabled(currentSample!=null);
+		filePrintAction.setEnabled(currentSample!=null);
+
+		toolsCrossdateWorkspaceAction.setEnabled(currentSample!=null);
+		toolsCrossdateAction.setEnabled(currentSample!=null);
+		toolsIndexAction.setEnabled(currentSample!=null);
+		toolsReconcileAction.setEnabled(currentSample!=null);
+		toolsSumAction.setEnabled(currentSample!=null);	
+		
+		graphCreateFileHistoryPlotAction.setEnabled(currentSample!=null);
 	}
 
 	

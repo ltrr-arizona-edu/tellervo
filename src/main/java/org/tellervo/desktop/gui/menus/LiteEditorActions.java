@@ -34,6 +34,13 @@ public class LiteEditorActions extends AbstractEditorActions {
 		
 	}
 
+	@Override
+	protected void setMenusForSample() {
+		fileSaveAsAction.setEnabled(currentSample!=null);
+		
+		
+	}
+
 	
 	
 	
