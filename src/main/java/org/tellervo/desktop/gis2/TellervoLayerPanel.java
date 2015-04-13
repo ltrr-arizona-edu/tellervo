@@ -3,6 +3,8 @@ package org.tellervo.desktop.gis2;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.layers.CompassLayer;
 import gov.nasa.worldwind.layers.Layer;
+import gov.nasa.worldwind.layers.LayerList;
+import gov.nasa.worldwind.layers.RenderableLayer;
 import gov.nasa.worldwind.layers.ScalebarLayer;
 import gov.nasa.worldwind.layers.SkyColorLayer;
 import gov.nasa.worldwind.layers.SkyGradientLayer;
@@ -112,7 +114,7 @@ public class TellervoLayerPanel extends JPanel {
 	        
 
 	        this.layersPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-	        this.fill(wwd);
+	        this.populateLayersGUI(wwd);
 
 	        // Must put the layer grid in a container to prevent scroll panel from stretching their vertical spacing.
 	        JPanel dummyPanel = new JPanel(new BorderLayout());
@@ -142,7 +144,7 @@ public class TellervoLayerPanel extends JPanel {
 	        panel.add(lblMapLayers, "cell 0 0,alignx left,aligny top");
 	    }
 
-	    protected void fill(WorldWindow wwd)
+	    protected void populateLayersGUI(WorldWindow wwd)
 	    {
 	        JLabel heading = new JLabel("Background layers");
 			heading.setFont(new Font("Dialog", Font.BOLD, 13));
@@ -230,9 +232,9 @@ public class TellervoLayerPanel extends JPanel {
 			
 			popupMenu.add(addLayers);
 			
-			if(layer instanceof TellervoDataLayer)
+			if(layer instanceof TellervoPointDataLayer)
 			{
-				JMenuItem export = new JMenuItem(new ExportLayerToKML(App.mainWindow, ((TellervoDataLayer)layer).getTridasMarkers()));
+				JMenuItem export = new JMenuItem(new ExportLayerToKML(App.mainWindow, ((TellervoPointDataLayer)layer).getTridasMarkers()));
 				popupMenu.add(export);
 			}
 			
@@ -252,7 +254,7 @@ public class TellervoLayerPanel extends JPanel {
 	    {
 	        // Replace all the layer names in the layers panel with the names of the current layers.
 	        this.layersPanel.removeAll();
-	        this.fill(wwd);
+	        this.populateLayersGUI(wwd);
 	        this.westPanel.revalidate();
 	        this.westPanel.repaint();
 	    }
@@ -322,10 +324,13 @@ public class TellervoLayerPanel extends JPanel {
 	private ArrayList<Layer> getBackgroundLayers(WorldWindow wwd)
 	{
 		ArrayList<Layer> layers = new ArrayList<Layer>();
-		
-		 for (Layer layer : wwd.getModel().getLayers())
+		LayerList wwdlayers = wwd.getModel().getLayers();
+		 for (Layer layer : wwdlayers)
 	     {
-			 if(isHiddenLayer(layer) || layer instanceof TellervoDataLayer || layer instanceof Renderable) continue;
+			 if(isHiddenLayer(layer) 
+					 || layer instanceof TellervoDataLayer 
+					 || layer instanceof Renderable 
+					 || layer instanceof RenderableLayer) continue;
 	        	
 	         layers.add(layer);
 	        	
@@ -370,7 +375,7 @@ public class TellervoLayerPanel extends JPanel {
 	     {
 	        	if(isHiddenLayer(layer)) continue;
 	        	
-	        	if(layer instanceof TellervoDataLayer || layer instanceof Renderable)
+	        	if(layer instanceof TellervoDataLayer || layer instanceof Renderable || layer instanceof RenderableLayer)
 	        	{
 	        		layers.add(layer);
 	        	}

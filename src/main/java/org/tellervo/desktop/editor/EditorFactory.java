@@ -456,6 +456,8 @@ public class EditorFactory {
 		TridasUnit unit = null;
 		List<TridasValues> servalues;
 		
+		
+		
 		if(series instanceof TridasDerivedSeries)
 		{
 			TridasDerivedSeries ds = (TridasDerivedSeries) series;
@@ -479,6 +481,8 @@ public class EditorFactory {
 			} catch (Exception e)
 			{}
 			servalues = ds.getValues();
+			
+
 		}
 		else
 		{
@@ -503,8 +507,10 @@ public class EditorFactory {
 			} catch (Exception e)
 			{}
 			servalues = ms.getValues();
+			
+			
 		}
-		
+				
 		//sample.setMeta("filename", series.getTitle());
 		sample.setMeta("title", series.getTitle());
 
@@ -563,6 +569,7 @@ public class EditorFactory {
 			}
 			else
 			{
+				var.setNormalTridas(NormalTridasVariable.RING_WIDTH);
 				log.warn("Series contains data of unknown type.  Assuming ring widths");
 			}
 			
@@ -599,6 +606,7 @@ public class EditorFactory {
 			
 		}
 
+		sample.setSeries(series);
 		
 		if(ringWidthValues!=null)
 		{
@@ -646,6 +654,8 @@ public class EditorFactory {
 			sample.setLatewoodWidthData(late);
 		}
 			
+		sample.setSeries(series);
+		
 		// Make sure units are set appropriately
 		for(int i=0; i<sample.getSeries().getValues().size(); i++)
 		{

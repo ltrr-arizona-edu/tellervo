@@ -67,7 +67,7 @@ import org.tellervo.desktop.gui.menus.actions.HelpSetupWizardAction;
 import org.tellervo.desktop.gui.menus.actions.HelpSystemsInformationAction;
 import org.tellervo.desktop.gui.menus.actions.HelpVideoTutorialsAction;
 import org.tellervo.desktop.gui.menus.actions.HelpXMLCommunicationsViewerAction;
-import org.tellervo.desktop.gui.menus.actions.MapZoomAction;
+import org.tellervo.desktop.gui.menus.actions.MapZoomToSampleAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.RemoveSeriesFromWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateAction;
@@ -299,7 +299,6 @@ public abstract class AbstractEditorActions{
 	private void setSharedMenusForSample()
 	{
 		this.fileSaveAction.setEnabled(this.currentSample!=null);
-		this.fileExportDataAction.setEnabled(this.currentSample!=null);
 	
 		this.editCopyAction.setEnabled(this.currentSample!=null);
 		this.editDeleteAction.setEnabled(this.currentSample!=null);

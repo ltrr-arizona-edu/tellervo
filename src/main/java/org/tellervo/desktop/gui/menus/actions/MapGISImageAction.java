@@ -157,7 +157,8 @@ public class MapGISImageAction extends AbstractAction {
                         layer.addRenderable(si1);
 
                         // Add the layer to the model and update the application's layer panel.
-                        WWJPanel.insertBeforeCompass(wwjPanel.getWwd(), layer);
+                        //WWJPanel.insertBeforeCompass(wwjPanel.getWwd(), layer);
+                        wwjPanel.getLayersList().add(layer);
                         wwjPanel.layerPanel.update(wwjPanel.getWwd());
 
                         // Set the view to look at the imported image.

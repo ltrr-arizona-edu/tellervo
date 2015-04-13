@@ -12,7 +12,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.TridasMarker;
 import org.tridas.util.TridasObjectEx;
 
-public class AllSitesLayer extends MarkerLayer implements TellervoDataLayer{
+public class AllSitesLayer extends MarkerLayer implements TellervoPointDataLayer, TellervoDataLayer{
 	
 	private BasicMarkerAttributes marker = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
 	private BasicMarkerAttributes highlightedMarker = new BasicMarkerAttributes(Material.YELLOW, BasicMarkerShape.CYLINDER, 0.6d);

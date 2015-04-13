@@ -10,12 +10,12 @@ import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gis2.OpenGLTestCapabilities;
 import org.tellervo.desktop.ui.Builder;
 
-public class MapZoomAction extends AbstractAction {
+public class MapZoomToSampleAction extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
 	private AbstractEditor editor;
 	
-	public MapZoomAction(AbstractEditor editor) {
+	public MapZoomToSampleAction(AbstractEditor editor) {
         super("View on map", Builder.getIcon("zoomtoextent.png", 22));
 		putValue(SHORT_DESCRIPTION, "Zoom map");
 		putValue(Action.SELECTED_KEY, true);

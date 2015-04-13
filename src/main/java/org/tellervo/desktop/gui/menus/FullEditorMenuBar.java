@@ -558,7 +558,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		{
 			final AbstractDendroFileReader reader = r;
 			
-			FileImportLegacyFile action = new FileImportLegacyFile(reader);
+			FileImportLegacyFile action = new FileImportLegacyFile(reader, editor);
 			JMenuItem importitem = new JMenuItem(action);
 			fileimportdataonly.add(importitem);
 		}

@@ -66,6 +66,7 @@ import org.tellervo.desktop.gis.TridasAnnotationController;
 import org.tellervo.desktop.gis.TridasMarker;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.ui.Alert;
 import org.tridas.interfaces.ITridas;
 
 public class WWJPanel extends JPanel  implements SelectListener{
@@ -218,7 +219,12 @@ public class WWJPanel extends JPanel  implements SelectListener{
 		
 		Marker marker = layer.getMarkerForSample(s);
 
-		if(marker==null) return;
+		if(marker==null) 
+		{
+			Alert.message(App.mainWindow, "No location", "This series does not have a location associated with it.");
+			
+			return;
+		}
 		
 		if(wwd.getView()==null) return;
 		if(wwd.getView().getGlobe()==null) return;

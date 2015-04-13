@@ -7,6 +7,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JFileChooser;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.gui.seriesidentity.IdentifySeriesPanel;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tridas.io.AbstractDendroFileReader;
@@ -16,11 +17,13 @@ public class FileImportLegacyFile extends AbstractAction {
 
 	private static final long serialVersionUID = 1L;
 	private AbstractDendroFileReader reader;
+	private AbstractEditor editor;
 	
-	public FileImportLegacyFile(AbstractDendroFileReader reader)
+	public FileImportLegacyFile(AbstractDendroFileReader reader, AbstractEditor editor)
 	{
 		super(reader.getFormat().getShortName());
 		this.reader = reader;
+		this.editor = editor;
 	}
 	
 	
@@ -43,7 +46,7 @@ public class FileImportLegacyFile extends AbstractAction {
 		fc.addChoosableFileFilter(filter);
 		fc.setFileFilter(filter);
 		fc.setMultiSelectionEnabled(true);
-		int returnVal = fc.showOpenDialog(null);
+		int returnVal = fc.showOpenDialog(editor);
 			
 		// Get details from user
 	    if (returnVal == JFileChooser.APPROVE_OPTION) {

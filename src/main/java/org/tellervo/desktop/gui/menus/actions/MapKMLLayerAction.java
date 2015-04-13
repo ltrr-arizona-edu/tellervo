@@ -44,8 +44,8 @@ public class MapKMLLayerAction extends AbstractAction {
 		
 		final JFileChooser fileChooser = new JFileChooser();
         fileChooser.setMultiSelectionEnabled(true);
-        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Google Keyhole file (.kml; .kmz)", "kml", "kmz"));
 		fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("Google Keyhole file (.kml; .kmz)", "kml", "kmz"));
         
 		try
         {

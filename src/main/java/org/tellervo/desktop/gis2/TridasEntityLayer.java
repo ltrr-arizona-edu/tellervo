@@ -26,7 +26,7 @@ import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tridas.schema.TridasObject;
 
-public class TridasEntityLayer extends MarkerLayer implements TellervoDataLayer {
+public class TridasEntityLayer extends MarkerLayer implements TellervoPointDataLayer, TellervoDataLayer {
 	
 	private BasicMarkerAttributes marker = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
 	private BasicMarkerAttributes highlightedMarker = new BasicMarkerAttributes(Material.YELLOW, BasicMarkerShape.CYLINDER, 0.6d);

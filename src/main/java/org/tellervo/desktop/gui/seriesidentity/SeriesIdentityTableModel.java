@@ -28,10 +28,12 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.TridasManipUtil;
 import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.TellervoEntityAssociatedResource;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.desktop.wsi.tellervo.resources.SeriesResource;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
@@ -621,11 +623,13 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				cv.setNormalStd("Catalogue of Life Annual Checklist 2008");
 				element.setTaxon(cv);
 								
-				element = (TridasElement) doSave(element, tridasCache.get(id.getObjectItem().getCode()));
+				String parentCode = id.getObjectItem().getCode();
+				String thisCode   =id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode();
+				element = (TridasElement) doSave(element, tridasCache.get(parentCode));
 				
 				if(element!=null)
 				{
-					tridasCache.put(id.getElementItem().getCode(), element);
+					tridasCache.put(thisCode, element);
 				}
 
 				searchForMatches(true);
@@ -641,11 +645,15 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				cv.setNormalStd("Tellervo");
 				sample.setType(cv);
 				
-				sample = (TridasSample) doSave(sample, tridasCache.get(id.getElementItem().getCode()));
+				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode();
+				String thisCode   =id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode();
+				
+				ITridas parentitem = tridasCache.get(parentCode);
+				sample = (TridasSample) doSave(sample, parentitem);
 				
 				if(sample!=null)
 				{
-					tridasCache.put(id.getSampleItem().getCode(), sample);
+					tridasCache.put(thisCode, sample);
 				}
 				
 				searchForMatches(true);
@@ -674,11 +682,14 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				wc.setBark(bark);
 				radius.setWoodCompleteness(wc);
 				
-				radius = (TridasRadius) doSave(radius, tridasCache.get(id.getSampleItem().getCode()));
+				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode();
+				String thisCode   = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode();
+				
+				radius = (TridasRadius) doSave(radius, tridasCache.get(parentCode));
 				
 				if(radius!=null)
 				{
-					tridasCache.put(id.getRadiusItem().getCode(), radius);
+					tridasCache.put(thisCode, radius);
 				}
 				searchForMatches(true);
 			}
@@ -695,12 +706,16 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				mm.setNormalTridas(NormalTridasMeasuringMethod.MEASURING_PLATFORM);
 				readerpopulatedseries.setMeasuringMethod(mm);
 				
-				ITridas dbseries = doSave(readerpopulatedseries, tridasCache.get(id.getRadiusItem().getCode()));
+				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode();
+				String thisCode   = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode() + codeDelimiter + id.getSeriesItem().getCode();
+				
+				
+				TridasMeasurementSeries dbseries = (TridasMeasurementSeries) doSave(readerpopulatedseries, tridasCache.get(parentCode));
 						
 				if(dbseries!=null)
 				{ 
 					id.getSample().setSeries((ITridasSeries) dbseries);
-					tridasCache.put(id.getSeriesItem().getCode(), dbseries);
+					tridasCache.put(thisCode, dbseries);
 				}
 				searchForMatches(true);
 			}
@@ -821,8 +836,14 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 			labcode.setSeriesCode(s.getSeries().getTitle());
 			
 			
-			
+			if(!series.isSetIdentifier())
+			{
+				
+				TridasIdentifier tid = NewTridasIdentifier.getInstance("unknown");
+				series.setIdentifier(tid);
+			}
 			TellervoWSILoader loader = new TellervoWSILoader(series.getIdentifier());
+
 			s.setSeries(series);
 			s.setLoader(loader);
 			s.setMeta(Metadata.LABCODE, labcode);
@@ -856,9 +877,23 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 	private ITridas doSave(ITridas temporaryEditingEntity, ITridas parentEntity) {
 		Class<? extends ITridas> type = temporaryEditingEntity.getClass();
 		
-				
+		log.debug("Attempting to save TRiDaS entity...");
+	  	log.debug("    - Entity type  : "+type);
+		if(parentEntity!=null && parentEntity.isSetTitle())
+		{
+			log.debug("    - Parent title : "+parentEntity.getTitle());
+		}
+		else if (parentEntity==null)
+		{
+			log.debug("    - Parent IS NULL!!!");
+		}
+		if(temporaryEditingEntity!=null && temporaryEditingEntity.isSetTitle())
+		{
+			log.debug("    - Entity title : "+temporaryEditingEntity.getTitle());
+		}
+		
 		// the resource we'll use
-		EntityResource<? extends ITridas> resource;
+		TellervoEntityAssociatedResource resource;
 		
 		if(temporaryEditingEntity instanceof TridasObjectEx)
 		{
@@ -878,7 +913,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		}
 		else if (temporaryEditingEntity instanceof TridasMeasurementSeries)
 		{
-			resource = getNewAccessorResource((TridasMeasurementSeries)temporaryEditingEntity, parentEntity, TridasMeasurementSeries.class);
+			resource = new SeriesResource((ITridasSeries)temporaryEditingEntity, parentEntity.getIdentifier().getValue(), TellervoRequestType.CREATE);
 		}
 		else 
 		{
@@ -902,17 +937,47 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		}
 		
 		// replace the saved result
-		temporaryEditingEntity = resource.getAssociatedResult();
+
 		
-		// sanity check the result
-		if(temporaryEditingEntity == null) {
-			new Bug(new IllegalStateException("CREATE entity returned null"));
-			return null;
+		if (temporaryEditingEntity instanceof TridasMeasurementSeries)
+		{
+			try{
+				ArrayList<Sample> savedEntity = (ArrayList<Sample>) resource.getAssociatedResult();
+				// sanity check the result
+				if(savedEntity == null) {
+					new Bug(new IllegalStateException("CREATE entity returned null"));
+					return null;
+				}
+	
+				return (ITridas) savedEntity.get(0).getSeries();
+				
+			} catch (IllegalStateException e)
+			{
+				new Bug(e);
+				return null;
+			}
+		}
+		else
+		{
+			try{
+				ITridas savedEntity = (ITridas) resource.getAssociatedResult();
+				// sanity check the result
+				if(savedEntity == null) {
+					new Bug(new IllegalStateException("CREATE entity returned null"));
+					return null;
+				}
+	
+				return savedEntity;
+			} catch (IllegalStateException e)
+			{
+				new Bug(e);
+				return null;
+			}
 		}
 		
 		
-		return temporaryEditingEntity;
-	
+		
+
 	}
 	
 }

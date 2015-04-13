@@ -103,7 +103,7 @@ public class MapShapefileLayerAction extends AbstractAction {
                     {
                         for (Layer layer : layers)
                         {
-                            WWJPanel.insertBeforePlacenames(wwjPanel.getWwd(), layer);
+                            //WWJPanel.insertBeforePlacenames(wwjPanel.getWwd(), layer);
                             wwjPanel.getLayersList().add(layer);
                         }
 
