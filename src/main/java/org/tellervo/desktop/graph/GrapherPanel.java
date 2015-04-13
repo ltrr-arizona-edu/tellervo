@@ -267,6 +267,11 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 		// fail: -1
 		return -1;
 	}
+	
+	public GraphSettings getGraphSettings()
+	{
+		return this.graphSettings;
+	}
 
 	// MouseMotionListener, for vertical line under cursor ----------
 	private Point dragStart = null;
@@ -802,6 +807,12 @@ public class GrapherPanel extends JPanel implements KeyListener, MouseListener,
 	}
 		
 
+	public PlotAgent getPlotAgent()
+	{	
+		return this.plotAgent;
+	}
+	
+	
 	public GrapherPanel(List<Graph> graphs, final JFrame myFrame, GraphSettings gSettings, ArrayList<PlotAgent> agents) {	
 		// my frame
 		this.myFrame = myFrame;

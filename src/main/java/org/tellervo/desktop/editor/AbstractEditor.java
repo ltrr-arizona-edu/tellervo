@@ -36,6 +36,8 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.graph.GraphSettings;
+import org.tellervo.desktop.graph.PlotAgent;
 import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.menus.AbstractEditorActions;
 import org.tellervo.desktop.gui.menus.EditorMenuBar;
@@ -91,7 +93,10 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 	protected SeriesDataMatrix dataView;
 	protected SampleListModel samplesModel;
 
-
+	// create a new graphinfo structure, so we can tailor it to our needs.
+	protected GraphSettings gInfo = new GraphSettings();
+	protected PlotAgent plotAgent = PlotAgent.getDefault();
+	
 	protected AbstractEditor() {
 		init();
 	}
@@ -106,6 +111,9 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		
 		ToolTipManager.sharedInstance().setLightWeightPopupEnabled(false);
 
+		gInfo.setShowGraphNames(false);
+		gInfo.setShowVertAxis(false);
+		
 		setTitle("Tellervo");
 		this.setIconImage(Builder.getApplicationIcon());
 		this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);

@@ -22,6 +22,8 @@ package org.tellervo.desktop.graph;
  import java.awt.event.ActionEvent;
 import java.beans.IntrospectionException;
 
+import javax.swing.Action;
+
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.ui.ToggleableAction;
@@ -245,7 +247,7 @@ public class GraphActions {
 	@SuppressWarnings("serial")
 	private void createAgentActions() {
 		PlotAgent[] agents = PlotAgent.values();
-		PlotAgent defaultAgent = PlotAgent.getDefault();
+		
 		
 		// create an array of actions for the agents
 		plotTypes = new TellervoAction[agents.length];
@@ -256,13 +258,12 @@ public class GraphActions {
 			final PlotAgent agent = agents[i];
 
 			// on action, set the plot agent and update/redraw the graph
-			TellervoAction action = new ToggleableAction(agent.getI18nTag(), (agent == defaultAgent), Builder.getIcon(agent.getI18nTag()+".png", 22)) {
+			TellervoAction action = new ToggleableAction(agent.getI18nTag(), (agent == graph.getPlotAgent()), Builder.getIcon(agent.getI18nTag()+".png", 22)) {
 				public void togglePerformed(ActionEvent ae, Boolean value) {
 					graph.setPlotAgent(agent);
 					graph.update();
 				}
 			};
-			
 			
 			agentGroup.add(action);
 			plotTypes[i] = action;

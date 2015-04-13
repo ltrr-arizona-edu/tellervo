@@ -404,6 +404,7 @@ public class FullEditor extends AbstractEditor {
 		if(dataView!=null) dataView.stopEditing(false);
 		
 		
+		
 			log.debug("Item selected");
 			
 			
@@ -415,9 +416,14 @@ public class FullEditor extends AbstractEditor {
 				{
 					dataView.saveRemarksDividerLocation();
 					dataView.saveGraphDividerLocation();
+					this.gInfo = dataView.getGraphPanel().getGraphSettings();
+					this.plotAgent = dataView.getGraphPanel().getPlotAgent();
 				}
 				
+				
 				dataView = new SeriesDataMatrix(sample, this);
+				dataView.setPlotAgent(plotAgent);
+				
 				dataPanel.removeAll();
 				dataPanel.add(dataView, BorderLayout.CENTER);
 				dataPanel.repaint();
@@ -462,8 +468,6 @@ public class FullEditor extends AbstractEditor {
 					
 				}
 				
-				setTitle();
-				this.repaint();
 			}
 			else 
 			{
@@ -479,6 +483,9 @@ public class FullEditor extends AbstractEditor {
 				dependentHolder.repaint();
 
 			}
+			
+			setTitle();
+			this.repaint();
 	
 	}
 	

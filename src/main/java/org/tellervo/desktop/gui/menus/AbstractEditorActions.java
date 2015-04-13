@@ -198,7 +198,7 @@ public abstract class AbstractEditorActions{
 		fileNewAction = new FileNewAction(editor);
 		fileOpenAction = new FileOpenAction(editor);
 		fileOpenMultiAction = new FileOpenMultiAction(editor);
-		fileExportDataAction = new FileExportDataAction(IOController.OPEN_EXPORT_WINDOW);
+		fileExportDataAction = new FileExportDataAction(editor);
 		//fileExportMapAction = new FileExportMapAction(editor);
 		fileBulkDataEntryAction = new FileBulkDataEntryAction(BulkImportController.DISPLAY_BULK_IMPORT);
 		fileDesignODKFormAction = new FileDesignODKFormAction(editor);

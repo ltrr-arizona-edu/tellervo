@@ -67,6 +67,7 @@ import org.tellervo.desktop.graph.GraphController;
 import org.tellervo.desktop.graph.GraphSettings;
 import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.GrapherPanel;
+import org.tellervo.desktop.graph.PlotAgent;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
@@ -126,8 +127,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	private List<Graph> graphSamples;
 	private JSplitPane splitPaneTableAndGraph;
 	
-	// create a new graphinfo structure, so we can tailor it to our needs.
-	GraphSettings gInfo = new GraphSettings();
+
 	
 	
 	// pass this along to the table
@@ -187,9 +187,9 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		myModel = new UnitAwareDecadalModel(mySample);
 		
 		// force no drawing of graph names
-		gInfo.setShowGraphNames(false);
-		gInfo.setShowVertAxis(false);
-		gInfo.setHundredUnitHeight(5);
+		//gInfo.setShowGraphNames(false);
+		//gInfo.setShowVertAxis(false);
+		//gInfo.setHundredUnitHeight(5);
 	}
 	
 	public SeriesDataMatrix(Sample s, AbstractEditor e) {
@@ -1141,6 +1141,11 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	public void sampleDisplayCalendarChanged(SampleEvent e) {		
 	}
 	
+	public GrapherPanel getGraphPanel()
+	{
+		return this.graphPanel;
+	}
+	
 	private JComponent createGraph(final Dimension otherPanelDim, final int extraWidth) {
 
 		
@@ -1149,7 +1154,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 				
 		// create a graph panel; put it in a scroll panel
-		graphPanel = new GrapherPanel(graphSamples, null, gInfo) {
+		graphPanel = new GrapherPanel(graphSamples, null, e.gInfo) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -1166,7 +1171,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		
 		// make the default viewport background the same color as the graph
-		scroller.getViewport().setBackground(gInfo.getBackgroundColor());
+		scroller.getViewport().setBackground(e.gInfo.getBackgroundColor());
 		
 		GraphActions actions = new GraphActions(graphPanel, null, new GraphController(graphPanel, scroller));
 		GraphToolbar toolbar = new GraphToolbar(actions);
@@ -1177,5 +1182,10 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		panel.add(toolbar, BorderLayout.NORTH);
 		
 		return panel;
+	}
+
+	public void setPlotAgent(PlotAgent plotAgent) {
+		graphPanel.setPlotAgent(plotAgent);
+		graphPanel.update(true);
 	}
 }
