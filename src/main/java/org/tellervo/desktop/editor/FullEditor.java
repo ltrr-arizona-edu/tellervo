@@ -221,6 +221,7 @@ public class FullEditor extends AbstractEditor {
 
 		
 		wwMapPanel = new WWJPanel();
+		mapHolder.removeAll();
 		mapHolder.add(wwMapPanel, BorderLayout.CENTER);
 		
 		this.getSamplesModel().addListDataListener(new ListDataListener(){
