@@ -45,10 +45,19 @@ public class SearchParameterNameEx implements Comparable<SearchParameterNameEx>{
 		    (name.equals(SearchParameterName.ELEMENTWIDTH)) ||
 		    (name.equals(SearchParameterName.ELEMENTDEPTH)) ||
 		    (name.equals(SearchParameterName.SERIESFIRSTYEAR)) ||
-		    (name.equals(SearchParameterName.SERIESVALUECOUNT))
+		    (name.equals(SearchParameterName.SERIESVALUECOUNT)) 
 		   )
 			return Integer.class;
 		
+		if((name.equals(SearchParameterName.OBJECTLATITUDE)) || 
+				(name.equals(SearchParameterName.OBJECTLONGITUDE)) || 
+				(name.equals(SearchParameterName.ELEMENTLATITUDE)) || 
+				(name.equals(SearchParameterName.ELEMENTLONGITUDE))
+				
+				)
+			return Double.class;
+			
+			
 		// Default to string
 		return String.class;
 		
@@ -68,7 +77,7 @@ public class SearchParameterNameEx implements Comparable<SearchParameterNameEx>{
 		{
 			vals.add(new SearchOperatorEx(SearchOperator.LIKE));
 		}
-		if(clazz.equals(Integer.class))
+		if(clazz.equals(Integer.class) || clazz.equals((Double.class)))
 		{
 			vals.add(new SearchOperatorEx(SearchOperator.GREATER_THAN));
 			vals.add(new SearchOperatorEx(SearchOperator.LESS_THAN));

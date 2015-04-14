@@ -163,7 +163,7 @@ class permission extends permissionEntity implements IDBAccessor
      *
      * @return unknown
      */
-    function writeToDB()
+    function writeToDB($crudMode="create")
     {
 	$this->deleteFromDB();
 

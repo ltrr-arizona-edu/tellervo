@@ -163,6 +163,8 @@
 			<xs:enumeration value="objectcode" />
 			<xs:enumeration value="parentobjectid" />
 			<xs:enumeration value="objectlocation" />
+			<xs:enumeration value="objectlatitude" />
+			<xs:enumeration value="objectlongitude" />
 			<xs:enumeration value="countOfChildSeriesOfObject"/>
 			<xs:enumeration value="anyparentobjectid"/>
 			<xs:enumeration value="anyparentobjectcode"/>
@@ -192,6 +194,8 @@
 			<xs:enumeration value="elementlocationtype"/>
 			<xs:enumeration value="elementlocationprecision"/>
 			<xs:enumeration value="elementlocationcomment"/>
+			<xs:enumeration value="elementlatitude" />
+			<xs:enumeration value="elementlongitude" />
 			<xs:enumeration value="elementprocessing"/>
 			<xs:enumeration value="elementmarks"/>
 			<xs:enumeration value="elementdescription"/>

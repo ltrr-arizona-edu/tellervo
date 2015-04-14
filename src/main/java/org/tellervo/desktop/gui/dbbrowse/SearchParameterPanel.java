@@ -77,6 +77,8 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.ANYPARENTOBJECTCODE));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.OBJECTDESCRIPTION));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.OBJECTTITLE));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.OBJECTLATITUDE));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.OBJECTLONGITUDE));
 			
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTCODE));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTDESCRIPTION));
@@ -88,6 +90,8 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 			//paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTGENUSNAME));
 			//paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTFAMILYNAME));
 			//paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTORDERNAME));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTLATITUDE));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.ELEMENTLONGITUDE));
 			
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.SAMPLECODE));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.SAMPLEDESCRIPTION));
