@@ -22,6 +22,7 @@ import org.tellervo.desktop.gui.menus.actions.MapNASAWFSPlaceNameLayerToggleActi
 import org.tellervo.desktop.gui.menus.actions.MapSaveCurrentMapAsImagesAction;
 import org.tellervo.desktop.gui.menus.actions.MapScaleBarToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapShapefileLayerAction;
+import org.tellervo.desktop.gui.menus.actions.MapSpatialSearchAction;
 import org.tellervo.desktop.gui.menus.actions.MapStereoModeAction;
 import org.tellervo.desktop.gui.menus.actions.MapUTMGraticuleLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapWMSLayerAction;
@@ -69,6 +70,7 @@ public class FullEditorActions extends AbstractEditorActions {
 	public Action mapWMSLayerAction;
 	public Action mapKMLLayerAction;
 	public Action mapZoomAction;
+	public Action mapSpatialSearchAction;
 
 	
 	
@@ -114,6 +116,7 @@ public class FullEditorActions extends AbstractEditorActions {
 		mapGISImageAction = new MapGISImageAction((FullEditor) editor);
 		mapWMSLayerAction = new MapWMSLayerAction((FullEditor) editor);
 		mapZoomAction = new MapZoomToSampleAction((FullEditor) editor);
+		mapSpatialSearchAction = new MapSpatialSearchAction((FullEditor) editor);
 		
 		linkModel();
 

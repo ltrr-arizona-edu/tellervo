@@ -489,6 +489,11 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     	//this.tabbedPane.setEnabledAt(1, false);
     }
     
+    public void doSearch(SearchParameters params)
+    {
+    	searchPanel.startSearch(params);
+    }
+    
     /** 
      * Update the filter used to remove series from the list which don't match
      * the requested criteria.  The filter works on the list returned from the 

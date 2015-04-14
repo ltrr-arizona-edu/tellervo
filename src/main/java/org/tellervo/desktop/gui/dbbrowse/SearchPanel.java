@@ -35,6 +35,7 @@ import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.WSIParam;
 
 
 /**
@@ -126,7 +127,7 @@ public class SearchPanel extends JPanel implements PropertyChangeListener, Resou
 		
 		addSearchCriteria();
 	}
-	
+		
 	private void addSearchCriteria() {		
 		// create a new panel and add it to our list
 		SearchParameterPanel newParameter = new SearchParameterPanel();
@@ -211,7 +212,7 @@ public class SearchPanel extends JPanel implements PropertyChangeListener, Resou
 	 * If one already exists, it is canceled (unless it's the same search)
 	 * @param params
 	 */
-	private void startSearch(SearchParameters params) {
+	public void startSearch(SearchParameters params) {
 		log.debug("Start search");
 		
 		// we already have a search resource?

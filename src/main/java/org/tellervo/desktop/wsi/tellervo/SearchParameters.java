@@ -20,8 +20,6 @@
  ******************************************************************************/
 package org.tellervo.desktop.wsi.tellervo;
 
-import java.util.ArrayList;
-
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;

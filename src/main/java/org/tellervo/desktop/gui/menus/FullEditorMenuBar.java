@@ -327,8 +327,13 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		JMenuItem miWMSLayer = new JMenuItem(actions.mapWMSLayerAction);
 		mnAddLayers.add(miWMSLayer);
 		
+		
+		JMenuItem miSpatialSearch = new JMenuItem(actions.mapSpatialSearchAction);
+		mnMap.add(miSpatialSearch);
+		
 		mnMap.add(mnAddLayers);
 		add(mnMap);
+
 		
 		// TOOLS MENU
 		
