@@ -105,7 +105,6 @@ public class MapSpatialSearchAction extends AbstractAction {
 		params.addSearchConstraint(SearchParameterName.OBJECTLATITUDE, SearchOperator.LESS_THAN, removeLastCharacter(sector.getMaxLatitude().toDecimalDegreesString(10)));
 		params.addSearchConstraint(SearchParameterName.OBJECTLONGITUDE, SearchOperator.GREATER_THAN, removeLastCharacter(sector.getMinLongitude().toDecimalDegreesString(10)));
 		params.addSearchConstraint(SearchParameterName.OBJECTLONGITUDE, SearchOperator.LESS_THAN, removeLastCharacter(sector.getMaxLongitude().toDecimalDegreesString(10)));
-		
 		browser.doSearch(params);
 		browser.setVisible(true);
 	}

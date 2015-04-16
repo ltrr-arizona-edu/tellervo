@@ -21,6 +21,7 @@ import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.ColorUtils;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.WSIParam;
 
 /**
  * @author Lucas Madar
@@ -117,6 +118,56 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 		setupActions();
 	}
 	
+	public void populateFromWSIParam(WSIParam p)
+	{
+		AutoCompleteComboDocument.disable(cboSearchField);
+		SearchParameterNameEx item = new SearchParameterNameEx(p.getName());
+		
+		System.out.println("Searching for match with "+item);
+		
+		for(int i=0; i< cboSearchField.getModel().getSize(); i++)
+		{
+			SearchParameterNameEx bb = (SearchParameterNameEx) cboSearchField.getModel().getElementAt(i);
+			System.out.print("cboSearchField item = "+bb);
+			if(bb.compareTo(item)==0)
+			{
+				System.out.print("  - MATCHES!\n");
+				cboSearchField.setSelectedIndex(i);
+				break;
+			}
+			else
+			{
+				System.out.print("  - does not match\n");
+			}
+
+		}
+		
+		SearchOperatorEx op = new SearchOperatorEx(p.getOperator());
+		
+		for(int i=0; i< this.cboSearchOperator.getModel().getSize(); i++)
+		{
+			SearchOperatorEx bb = (SearchOperatorEx) cboSearchOperator.getModel().getElementAt(i);
+			System.out.print("cboSearchOperator item = "+bb);
+			if(bb.compareTo(op)==0)
+			{
+				System.out.print("  - MATCHES!\n");
+				cboSearchOperator.setSelectedIndex(i);
+				break;
+			}
+			else
+			{
+				System.out.print("  - does not match\n");
+			}
+
+		}
+
+
+		this.txtSearchText.setText(p.getValue());
+		checkValid();
+		this.repaint();
+		
+	}
+	
 	public void remove()
 	{
 		boolean oldRemoved = removed;
@@ -142,7 +193,15 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 				SearchParameterNameEx name = (SearchParameterNameEx) cboSearchField.getSelectedItem();
 				
 				// set up the search operator combo, default to '='
-				ArrayListModel<SearchOperatorEx> model = new ArrayListModel<SearchOperatorEx>(name.getPossibleOperators());
+				ArrayListModel<SearchOperatorEx> model;
+				if(name!=null)
+				{
+					model = new ArrayListModel<SearchOperatorEx>(name.getPossibleOperators());
+				}
+				else
+				{
+					model = new ArrayListModel<SearchOperatorEx>(SearchOperatorEx.getPossibleOperators());
+				}
 
 				cboSearchOperator.setModel(model);
 				for(int i =0; i<model.size(); i++)
@@ -221,7 +280,7 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 		lastSearchParameter = null;
 		
 		// set up the search operator combo, default to '='
-		ArrayListModel<SearchOperatorEx> model2 = new ArrayListModel<SearchOperatorEx>(new SearchParameterNameEx(SearchParameterName.OBJECTCODE).getPossibleOperators());
+		ArrayListModel<SearchOperatorEx> model2 = new ArrayListModel<SearchOperatorEx>(SearchOperatorEx.getPossibleOperators());
 		cboSearchOperator.setModel(model2);
 		cboSearchOperator.getModel().setSelectedItem(SearchOperator.EQUALS);
 		lastSearchOperator = SearchOperator.EQUALS;

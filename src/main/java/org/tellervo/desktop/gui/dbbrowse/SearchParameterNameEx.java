@@ -91,8 +91,8 @@ public class SearchParameterNameEx implements Comparable<SearchParameterNameEx>{
 	@Override
 	public int compareTo(SearchParameterNameEx o) {
 		
-		String s1 = this.toString();
-		String s2 = o.toString();
+		String s1 = this.name.value();
+		String s2 = o.name.value();
 		
 		return s1.compareTo(s2);
 	}

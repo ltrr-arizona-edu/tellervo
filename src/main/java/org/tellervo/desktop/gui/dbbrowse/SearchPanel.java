@@ -128,19 +128,21 @@ public class SearchPanel extends JPanel implements PropertyChangeListener, Resou
 		addSearchCriteria();
 	}
 		
-	private void addSearchCriteria() {		
+	private SearchParameterPanel addSearchCriteria() {		
 		// create a new panel and add it to our list
 		SearchParameterPanel newParameter = new SearchParameterPanel();
 		parameters.add(newParameter);
 		newParameter.addSearchParameterPropertyChangeListener(this);
 
 		rebuild();
+		
+		return newParameter;
 	}
 
 	/**
 	 * Rebuild our panel: relayout everything
 	 */
-	private void rebuild() {
+	protected void rebuild() {
 		// delete the layout
 		panel.removeAll();
 
@@ -207,12 +209,42 @@ public class SearchPanel extends JPanel implements PropertyChangeListener, Resou
 		startSearch(search);
 	}
 	
+	public void runQuery(SearchParameters params)
+	{
+		parameters.clear();
+		
+		if(params.isSetLimit()) butPanel.spnLimit.setValue(params.getLimit());
+		if(params.isSetSkip()) butPanel.spnSkip.setValue(params.getSkip());
+		
+		for(WSIParam p : params.getParams())
+		{
+			SearchParameterPanel newParameter = new SearchParameterPanel();			
+			newParameter.populateFromWSIParam(p);
+			newParameter.addSearchParameterPropertyChangeListener(this);
+			parameters.add(newParameter);
+			
+		}
+		
+		rebuild();
+		doSearch();
+	}
+	
+	/**
+	 * Build the query from the GUI panels and perform search
+	 * 
+	 */
+	public void doSearch()
+	{
+		rebuildQuery();
+		
+	}
+	
 	/**
 	 * Start a search on the given parameters
 	 * If one already exists, it is canceled (unless it's the same search)
 	 * @param params
 	 */
-	public void startSearch(SearchParameters params) {
+	private void startSearch(SearchParameters params) {
 		log.debug("Start search");
 		
 		// we already have a search resource?

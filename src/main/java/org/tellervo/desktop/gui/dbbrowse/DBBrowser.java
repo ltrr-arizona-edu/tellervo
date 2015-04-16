@@ -491,7 +491,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     
     public void doSearch(SearchParameters params)
     {
-    	searchPanel.startSearch(params);
+    	this.tabbedPane.setSelectedIndex(1);
+    	searchPanel.runQuery(params);
     }
     
     /** 

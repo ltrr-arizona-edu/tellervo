@@ -61,7 +61,7 @@ public class SearchParameterPanel_UI_2 extends JPanel {
 		add(lblParameterOperator, "cell 0 0,alignx trailing,aligny center");
 		
 		cboSearchField = new JComboBox();
-		AutoCompleteComboDocument.enable(cboSearchField);
+		//AutoCompleteComboDocument.enable(cboSearchField);
 		add(cboSearchField, "cell 1 0,alignx left,aligny top");
 		
 		cboSearchOperator = new JComboBox();
