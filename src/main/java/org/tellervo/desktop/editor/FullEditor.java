@@ -524,7 +524,7 @@ public class FullEditor extends AbstractEditor {
 		AbstractButton launchMetadb = new TitlelessButton(actions.adminMetaDBAction);
 		toolBar.add(launchMetadb);
 
-		// s Buttons
+		// Tool Buttons
 		toolBar.addSeparator();
 		AbstractButton truncate = new TitlelessButton(actions.toolsTruncateAction);
 		toolBar.add(truncate);
@@ -535,7 +535,7 @@ public class FullEditor extends AbstractEditor {
 		AbstractButton sum = new TitlelessButton(((FullEditorActions)actions).toolsSumAction);
 		toolBar.add(sum);
 		
-	
+		
 
 		// Graph Buttons
 		toolBar.addSeparator();
@@ -545,6 +545,10 @@ public class FullEditor extends AbstractEditor {
 		// Map Buttons
 		
 		toolBar.addSeparator();
+		
+		AbstractButton spatialSearch = new TitlelessButton(((FullEditorActions)actions).mapSpatialSearchAction);
+		toolBar.add(spatialSearch);
+		
 		AbstractButton compass = new TitlelessToggleButton(((FullEditorActions)actions).mapCompassToggleAction);
 		toolBar.add(compass);
 		

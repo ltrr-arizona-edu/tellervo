@@ -17,6 +17,7 @@ import javax.swing.AbstractAction;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gis2.WWJPanel;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
@@ -30,7 +31,7 @@ public class MapSpatialSearchAction extends AbstractAction {
 	private SectorSelector selector;
 	
 	public MapSpatialSearchAction(FullEditor editor) {
-        super("Spatial search");
+        super("Spatial search", Builder.getIcon("spatialsearch.png", 22));
 		putValue(SHORT_DESCRIPTION, "Search for series from a specific region");
         this.editor = editor;
 
