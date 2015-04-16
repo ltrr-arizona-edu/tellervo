@@ -636,10 +636,16 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		{
 			// Ignore complaints that the request doesn't validate
 			// TODO Remove once 1.0.3 release is made
-			if(dlg.getFailException().getMessage().contains("does not validate against the schema"))
+			try{
+				if(dlg.getFailException().getMessage().contains("does not validate against the schema"))
+				{
+					return;
+				}
+			} catch (Exception e)
 			{
 				return;
 			}
+
 			// Search failed
 			new Bug(dlg.getFailException());
 			return;
