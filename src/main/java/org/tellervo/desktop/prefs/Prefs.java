@@ -220,13 +220,15 @@ public class Prefs extends AbstractSubsystem {
 		OBJECT_FIELD_VISIBLE_CREATOR("tellervo.object.field.visible.creator"),
 		
 		MAP_CONTROLS_ENABLED("tellervo.map.controls"),
-		
-		
+		MAP_COMPASS_ENABLED("tellervo.map.compass"), 
+		MAP_COUNTRYBOUNDARY_ENABLED("tellervo.map.countryboundary"),
+		MAP_MGRSGRATICULE_ENABLED("tellervo.map.mgrsgraticule"), 
+		MAP_NASAWFSPLACENAME_ENABLED("tellervo.map.nasawfsplacename"), 
+		MAP_SCALEBAR_ENABLED("tellervo.map.scalebar"), 
+		MAP_UTMGRATICULE_ENABLED("tellervo.map.utmgraticule"), 
+		MAP_WORLDMAP_ENABLED("tellervo.map.worldmap"),	
 		
 		;
-		
-		
-
 		
 		
 		private String key;

@@ -8,7 +8,9 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 
 public class MapWorldMapLayerToggleAction extends AbstractAction {
@@ -19,7 +21,7 @@ public class MapWorldMapLayerToggleAction extends AbstractAction {
 	public MapWorldMapLayerToggleAction(FullEditor editor) {
         super("Overview Map", Builder.getIcon("mapoverview.png", 22));
 		putValue(SHORT_DESCRIPTION, "Hide/Show the overview map");
-		putValue(Action.SELECTED_KEY, true);
+		putValue(Action.SELECTED_KEY, App.prefs.getBooleanPref(PrefKey.MAP_WORLDMAP_ENABLED, true));
         this.editor = editor;
 
     }
@@ -33,7 +35,8 @@ public class MapWorldMapLayerToggleAction extends AbstractAction {
 				.getLayerByName(Logging.getMessage("layers.Earth.WorldMapLayer.Name"));
 		
 		worldMapLayer.setEnabled(!worldMapLayer.isEnabled());
-		
+		App.prefs.setBooleanPref(PrefKey.MAP_WORLDMAP_ENABLED, worldMapLayer.isEnabled());
+
 	}
 
 }

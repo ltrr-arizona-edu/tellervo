@@ -181,7 +181,28 @@ public class WWJPanel extends JPanel  implements SelectListener{
         // Set control layer enabled/disabled based on preferences
         model.getLayers().getLayerByName(Logging.getMessage("layers.ViewControlsLayer.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_CONTROLS_ENABLED, true));
         
-
+        // Set compass layer enabled/disabled based on preferences
+        model.getLayers().getLayerByName(Logging.getMessage("layers.CompassLayer.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_COMPASS_ENABLED, true));
+        
+        // Set MGRS graticule layer enabled/disabled based on preferences
+        model.getLayers().getLayerByName(Logging.getMessage("layers.Earth.MGRSGraticule.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_MGRSGRATICULE_ENABLED, true));
+        
+        // Set NASAWFS place name layer enabled/disabled based on preferences
+        model.getLayers().getLayerByName(Logging.getMessage("layers.Earth.PlaceName.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_NASAWFSPLACENAME_ENABLED, true));
+        
+        // Set Scale bar layer enabled/disabled based on preferences
+        model.getLayers().getLayerByName(Logging.getMessage("layers.Earth.ScalebarLayer.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_SCALEBAR_ENABLED, true));
+     
+        // Set world map layer enabled/disabled based on preferences
+        model.getLayers().getLayerByName(Logging.getMessage("layers.Earth.WorldMapLayer.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_WORLDMAP_ENABLED, true));
+        
+        // Set UTM graticule layer enabled/disabled based on preferences
+        model.getLayers().getLayerByName(Logging.getMessage("layers.Earth.UTMGraticule.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_UTMGRATICULE_ENABLED, true));
+        
+        // Set country boundaries enabled/disabled based on preferences
+        model.getLayers().getLayerByName("Political Boundaries").setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_COUNTRYBOUNDARY_ENABLED, true));
+        
+        
 		// Create status bar
 		this.statusBar = new StatusBar();
 		this.add(statusBar, BorderLayout.PAGE_END);
