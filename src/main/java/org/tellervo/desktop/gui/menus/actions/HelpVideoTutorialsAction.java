@@ -14,6 +14,7 @@ import javax.swing.AbstractAction;
 
 import org.tellervo.desktop.admin.SetPasswordUI;
 import org.tellervo.desktop.admin.view.PermissionByEntityDialog;
+import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.ui.Builder;
@@ -26,6 +27,7 @@ public class HelpVideoTutorialsAction extends AbstractAction {
 	private static final long serialVersionUID = 1L;
 	ArrayList<Map.Entry<String, URI>> links;	
 	String videoname;
+
 	
 	
 	public HelpVideoTutorialsAction(String videoname) {
@@ -35,6 +37,7 @@ public class HelpVideoTutorialsAction extends AbstractAction {
         //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.new"));
 
 		this.videoname = videoname;
+
 		
 		links = new ArrayList<Map.Entry<String, URI>>();
     	
@@ -86,17 +89,22 @@ public class HelpVideoTutorialsAction extends AbstractAction {
 	
 	
 	
+	
 	@Override
+	
 	public void actionPerformed(ActionEvent e) {
+		for(final Map.Entry<String, URI> link : links){
+			
 		Desktop desktop = Desktop.getDesktop();
 		try {
-			Entry<String, URI> link = null;
+			if((String) link.getKey() == videoname)
 			desktop.browse((URI) link.getValue());
 		} catch (IOException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} 
 		
+		}
 		
 	}
 		
