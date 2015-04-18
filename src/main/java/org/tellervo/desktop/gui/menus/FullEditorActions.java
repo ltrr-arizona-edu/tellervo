@@ -4,6 +4,7 @@ import javax.swing.Action;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.gui.menus.actions.FileExportMapAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogoffAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogonAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
@@ -34,6 +35,7 @@ import org.tellervo.desktop.gui.menus.actions.ToolsIndexAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsReconcileAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsSumAction;
 import org.tellervo.desktop.gui.menus.actions.ViewToExtentAction;
+import org.tellervo.desktop.util.openrecent.OpenRecent;
 
 public class FullEditorActions extends AbstractEditorActions {
 
@@ -127,7 +129,59 @@ public class FullEditorActions extends AbstractEditorActions {
 		
 		fileLogonAction.setEnabled(!App.isLoggedIn());
 		fileLogoffAction.setEnabled(App.isLoggedIn());
+		fileSaveAllAction.setEnabled(App.isLoggedIn());
+		filePrintAction.setEnabled(App.isLoggedIn());
+		fileNewAction.setEnabled(App.isLoggedIn());
+		fileOpenAction.setEnabled(App.isLoggedIn());
+		fileOpenMultiAction.setEnabled(App.isLoggedIn());
+		OpenRecent.makeOpenRecentMenu().setEnabled(App.isLoggedIn());
+		fileBulkDataEntryAction.setEnabled(App.isLoggedIn());
+		fileExportDataAction.setEnabled(App.isLoggedIn());
+		fileNewAction.setEnabled(App.isLoggedIn());
+		fileSaveAction.setEnabled(App.isLoggedIn());
 		
+		editCopyAction.setEnabled(App.isLoggedIn());
+		editDeleteAction.setEnabled(App.isLoggedIn());
+		editInsertMissingRingPushBackwardsAction.setEnabled(App.isLoggedIn());
+		editInsertMissingRingPushForwardsAction.setEnabled(App.isLoggedIn());
+		editInsertYearPushBackwardsAction.setEnabled(App.isLoggedIn());
+		editInsertYearPushForwardsAction.setEnabled(App.isLoggedIn());
+		editInsertYearsAction.setEnabled(App.isLoggedIn());
+		editMeasureEWLWWidthsModeAction.setEnabled(App.isLoggedIn());
+		editMeasureModeAction.setEnabled(App.isLoggedIn());
+		editMeasureRingWidthsModeAction.setEnabled(App.isLoggedIn());
+		editSelectAllAction.setEnabled(App.isLoggedIn());
+		
+		adminBasicBoxLabelAction.setEnabled(App.isLoggedIn());
+		adminBoxLabelAction.setEnabled(App.isLoggedIn());
+		adminChangePasswordAction.setEnabled(App.isLoggedIn());
+		adminCurationMenuBoxDetailsAction.setEnabled(App.isLoggedIn());
+		adminCurationMenuFindSampleAction.setEnabled(App.isLoggedIn());
+		adminCurationMenuLoanDialogAction.setEnabled(App.isLoggedIn());
+		adminCurationMenuNewLoanAction.setEnabled(App.isLoggedIn());
+		adminCurationMenuSampleStatusAction.setEnabled(App.isLoggedIn());
+		adminDatabaseStatisticsAction.setEnabled(App.isLoggedIn());
+		adminEditViewPermissionsAction.setEnabled(App.isLoggedIn());
+		adminForgetPasswordAction.setEnabled(App.isLoggedIn());
+		adminLabelAction.setEnabled(App.isLoggedIn());
+		adminMetaDBAction.setEnabled(App.isLoggedIn());
+		adminReportsAction.setEnabled(App.isLoggedIn());
+		adminSampleLabelAction.setEnabled(App.isLoggedIn());
+		adminSiteMapAction.setEnabled(App.isLoggedIn());
+		adminUserAndGroupsAction.setEnabled(App.isLoggedIn());
+		
+		graphAllSeriesAction.setEnabled(App.isLoggedIn());
+		graphCurrentSeriesAction.setEnabled(App.isLoggedIn());
+		graphCreateFileHistoryPlotAction.setEnabled(App.isLoggedIn());
+		
+		toolsTruncateAction.setEnabled(App.isLoggedIn());
+		toolsReverseAction.setEnabled(App.isLoggedIn());
+		toolsReconcileAction.setEnabled(App.isLoggedIn());
+		toolsIndexAction.setEnabled(App.isLoggedIn());
+		toolsCrossdateAction.setEnabled(App.isLoggedIn());
+		toolsCrossdateWorkspaceAction.setEnabled(App.isLoggedIn());
+		toolsSumAction.setEnabled(App.isLoggedIn());
+		toolsRedateAction.setEnabled(App.isLoggedIn());		
 		
 	}
 
