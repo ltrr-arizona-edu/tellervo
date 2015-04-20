@@ -238,29 +238,34 @@ public class TellervoLayerPanel extends JPanel {
 			{
 				JMenuItem export = new JMenuItem(new ExportLayerToKML(App.mainWindow, ((TellervoPointDataLayer)layer).getTridasMarkers()));
 				popupMenu.add(export);
+				
+				JMenuItem properties = new JMenuItem("Properties");
+				
+				final Properties propertiesDialog = new Properties();
+				
+				properties.addMouseListener(new MouseAdapter() {
+				    public void mousePressed(MouseEvent e) {
+				        showDialog(e);
+				    }
+
+				    public void mouseReleased(MouseEvent e) {
+				        showDialog(e);
+				    }
+
+				    private void showDialog(MouseEvent e) {
+				       
+						propertiesDialog.setVisible(true);
+						// create BasicMarkerAttributes from response
+						//((TellervoPointDataLayer)layer).setMarkerStyle(marker);
+				    }
+				});
+				
+				popupMenu.add(properties);	
 			}
 			
-			JMenuItem properties = new JMenuItem("Properties");
-			
-			final Properties propertiesDialog = new Properties();
-			
-			properties.addMouseListener(new MouseAdapter() {
-			    public void mousePressed(MouseEvent e) {
-			        showDialog(e);
-			    }
 
-			    public void mouseReleased(MouseEvent e) {
-			        showDialog(e);
-			    }
-
-			    private void showDialog(MouseEvent e) {
-			       
-					propertiesDialog.setVisible(true);
-					
-			    }
-			});
 			
-			popupMenu.add(properties);	
+			
 			
 			return popupMenu;
 	
