@@ -1,15 +1,19 @@
 package org.tellervo.desktop.gis2;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.FlowLayout;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
+
 import net.miginfocom.swing.MigLayout;
+
 import javax.swing.JComboBox;
 
 public class Properties extends JDialog {
@@ -39,31 +43,39 @@ public class Properties extends JDialog {
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new MigLayout("", "[46px][grow]", "[14px][][][][][]"));
+		contentPanel.setLayout(new MigLayout("", "[76.00px,right][grow]", "[][][]"));
 		{
-			JLabel lblNewLabel = new JLabel("Color");
+			JLabel lblNewLabel = new JLabel("Color:");
 			lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-			contentPanel.add(lblNewLabel, "cell 0 1,alignx center,aligny top");
+			contentPanel.add(lblNewLabel, "cell 0 0,alignx right,aligny top");
+		}
+		{
+			JComboBox comboBox = new JComboBox();
+			int[] values = new int[] { 0, 128, 192, 255 };
+		    for (int r = 0; r < values.length; r++)
+		      for (int g = 0; g < values.length; g++)
+		        for (int b = 0; b < values.length; b++) {
+		          Color c = new Color(values[r], values[g], values[b]);
+		          comboBox.addItem(c);
+		        }
+		    comboBox.setRenderer(new ColorComboRenderer());
+			contentPanel.add(comboBox, "cell 1 0,growx");
+		}
+		{
+			JLabel lblShape = new JLabel("Shape:");
+			contentPanel.add(lblShape, "cell 0 1,alignx trailing");
 		}
 		{
 			JComboBox comboBox = new JComboBox();
 			contentPanel.add(comboBox, "cell 1 1,growx");
 		}
 		{
-			JLabel lblShape = new JLabel("Shape");
-			contentPanel.add(lblShape, "cell 0 3,alignx trailing");
+			JLabel lblOpacity = new JLabel("Opacity:");
+			contentPanel.add(lblOpacity, "cell 0 2,alignx trailing");
 		}
 		{
 			JComboBox comboBox = new JComboBox();
-			contentPanel.add(comboBox, "cell 1 3,growx");
-		}
-		{
-			JLabel lblOpacity = new JLabel("Opacity");
-			contentPanel.add(lblOpacity, "cell 0 5,alignx trailing");
-		}
-		{
-			JComboBox comboBox = new JComboBox();
-			contentPanel.add(comboBox, "cell 1 5,growx");
+			contentPanel.add(comboBox, "cell 1 2,growx");
 		}
 		{
 			JPanel buttonPane = new JPanel();

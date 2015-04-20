@@ -28,6 +28,7 @@ import gov.nasa.worldwind.layers.Earth.LandsatI3WMSLayer;
 import gov.nasa.worldwind.layers.Earth.MGRSGraticuleLayer;
 import gov.nasa.worldwind.layers.Earth.MSVirtualEarthLayer;
 import gov.nasa.worldwind.layers.Earth.NASAWFSPlaceNameLayer;
+import gov.nasa.worldwind.layers.Earth.OSMCycleMapLayer;
 import gov.nasa.worldwind.layers.Earth.OSMMapnikLayer;
 import gov.nasa.worldwind.layers.Earth.USGSTopoHighRes;
 import gov.nasa.worldwind.layers.Earth.USGSTopoLowRes;
