@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -70,6 +71,7 @@ public class TellervoLayerPanel extends JPanel {
 	    protected Font defaultFont;
 	    private JPanel panel;
 	    private JLabel lblMapLayers;
+	    private JDialog Properties;
 
 
 	    
@@ -238,9 +240,31 @@ public class TellervoLayerPanel extends JPanel {
 				popupMenu.add(export);
 			}
 			
+			JMenuItem properties = new JMenuItem("Properties");
+			
+			final Properties propertiesDialog = new Properties();
+			
+			properties.addMouseListener(new MouseAdapter() {
+			    public void mousePressed(MouseEvent e) {
+			        showDialog(e);
+			    }
+
+			    public void mouseReleased(MouseEvent e) {
+			        showDialog(e);
+			    }
+
+			    private void showDialog(MouseEvent e) {
+			       
+					propertiesDialog.setVisible(true);
+					
+			    }
+			});
+			
+			popupMenu.add(properties);	
 			
 			return popupMenu;
 	
+			
 	    }
       
 

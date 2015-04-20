@@ -202,6 +202,21 @@ public class WWJPanel extends JPanel  implements SelectListener{
         // Set country boundaries enabled/disabled based on preferences
         model.getLayers().getLayerByName("Political Boundaries").setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_COUNTRYBOUNDARY_ENABLED, true));
         
+        //Set stereo mode on based on preferences
+		if(System.getProperty("gov.nasa.worldwind.stereo.mode")!=null && System.getProperty("gov.nasa.worldwind.stereo.mode").equals("redblue"))
+		{
+			System.setProperty("gov.nasa.worldwind.stereo.mode", "");
+			setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_STEREOMODE_ENABLED, true));
+	        
+		}
+		else
+		{
+			System.setProperty("gov.nasa.worldwind.stereo.mode", "redblue");
+			setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_STEREOMODE_ENABLED, true));
+
+
+		}
+        
         
 		// Create status bar
 		this.statusBar = new StatusBar();

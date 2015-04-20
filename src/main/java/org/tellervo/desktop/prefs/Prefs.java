@@ -226,7 +226,8 @@ public class Prefs extends AbstractSubsystem {
 		MAP_NASAWFSPLACENAME_ENABLED("tellervo.map.nasawfsplacename"), 
 		MAP_SCALEBAR_ENABLED("tellervo.map.scalebar"), 
 		MAP_UTMGRATICULE_ENABLED("tellervo.map.utmgraticule"), 
-		MAP_WORLDMAP_ENABLED("tellervo.map.worldmap"),	
+		MAP_WORLDMAP_ENABLED("tellervo.map.worldmap"), 
+		MAP_STEREOMODE_ENABLED("tellervo.map.stereomode"),	
 		
 		;
 		
