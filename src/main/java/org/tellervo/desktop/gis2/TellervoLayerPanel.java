@@ -20,7 +20,6 @@ import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Renderable;
 import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
 import gov.nasa.worldwind.render.markers.BasicMarkerShape;
-import gov.nasa.worldwind.util.Logging;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -31,36 +30,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.TitledBorder;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.editor.FullEditor;
-import org.tellervo.desktop.gui.menus.AbstractEditorActions;
 import org.tellervo.desktop.gui.menus.FullEditorActions;
-
-
-
-
 import org.tellervo.desktop.gui.menus.actions.ExportLayerToKML;
-
-import net.miginfocom.swing.MigLayout;
 
 public class TellervoLayerPanel extends JPanel {
 
@@ -75,14 +64,9 @@ public class TellervoLayerPanel extends JPanel {
 	    protected Font defaultFont;
 	    private JPanel panel;
 	    private JLabel lblMapLayers;
-	    private JDialog Properties;
 
 
-		Properties propertiesDialog = new Properties(editor,"Properties",true);
-		Material color;
-		String shape;
-		double opacity;
-		BasicMarkerAttributes marker;
+
 
 	    
 	    /**
@@ -250,36 +234,27 @@ public class TellervoLayerPanel extends JPanel {
 				popupMenu.add(export);
 				
 				JMenuItem properties = new JMenuItem("Properties");
-				
-				
-				properties.addMouseListener(new MouseAdapter() {
-				    public void mousePressed(MouseEvent e) {
-				        showDialog(e);
-				    }
+						
+				properties.addActionListener(new ActionListener(){
 
-				    public void mouseReleased(MouseEvent e) {
-				        showDialog(e);
-				    }
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						TellervoPointLayerPropertiesDialog propertiesDialog = new TellervoPointLayerPropertiesDialog(popupMenu,"Properties", (TellervoPointDataLayer) layer);				    					
+						
+						if(!propertiesDialog.isSuccessful()) return;
+						
+						BasicMarkerAttributes style = propertiesDialog.getMarkerAttributes();
+						((TellervoPointDataLayer) layer).setMarkerStyle(style);
+						
+					}
+					
+				});     
 
-				    private void showDialog(MouseEvent e) {
-				       
-						propertiesDialog.setVisible(true);
-						
-						//not able to apply the color
-						
-						((TellervoPointDataLayer) layer).setMarkerStyle(marker);
-						
-						// create BasicMarkerAttributes from response
-						//((TellervoPointDataLayer)layer).setMarkerStyle(marker);
-				    }
-				});
+		
 				
 				popupMenu.add(properties);	
 			}
-			
 
-			
-			
 			
 			return popupMenu;
 	
@@ -441,35 +416,6 @@ public class TellervoLayerPanel extends JPanel {
 	}
 
 	   	
-public void setMarkerColor(Color c){
-	color = propertiesDialog.getColor();
-	if(shape!=null && opacity!=0){
-	 marker = new BasicMarkerAttributes(color, shape, opacity);
-	}
-	else
-		marker = new BasicMarkerAttributes(color, BasicMarkerShape.CYLINDER, 0.6d);
 
-	}
-
-public void setMarkerShape(String s){
-	shape = propertiesDialog.getShapeName();
-	if(color!=null && opacity!=0){
-		 marker = new BasicMarkerAttributes(color, shape, opacity);
-		}
-		else
-			marker = new BasicMarkerAttributes(Material.RED, shape, 0.6d);
-
-		
-}
-public void setMarkerOpacity(double o){
-	opacity = propertiesDialog.getOpacity();
-	if(color!=null && shape!=null){
-		 marker = new BasicMarkerAttributes(color, shape, opacity);
-		}
-		else
-			marker = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, opacity);
-
-		
-}
 
 }

@@ -118,7 +118,7 @@ public class FileOpenAction extends AbstractAction{
 		}
 		
 		int retValue = fc.showOpenDialog(parent);
-		TricycleModelLocator.getInstance().setLastDirectory(fc.getCurrentDirectory());
+		TricycleModelLocator.getInstance().setLastDirectoryRead(fc.getCurrentDirectory());
 		if (retValue == JFileChooser.APPROVE_OPTION) {
 			file = fc.getSelectedFile();
 			// Remember this folder for next time

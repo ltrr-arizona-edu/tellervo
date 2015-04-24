@@ -1,43 +1,60 @@
 package org.tellervo.desktop.gis2;
 
-import java.awt.Color;
+import gov.nasa.worldwind.render.markers.BasicMarkerShape;
+
 import java.awt.Component;
-import java.awt.Graphics;
 
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.MatteBorder;
 
-public class ShapeComboRenderer extends JPanel implements ListCellRenderer {
+import org.tellervo.desktop.ui.Builder;
+
+public class ShapeComboRenderer extends JLabel implements ListCellRenderer {
 	private JLabel labelItem = new JLabel();
-	private String shape="Cylinder";
-
 
 	  public ShapeComboRenderer() {
 	    super();
-	    setBorder(new CompoundBorder(
-		        new MatteBorder(2, 10, 2, 10, Color.white), new LineBorder(
-		            Color.white)));
-        labelItem.setOpaque(false);
-        labelItem.setHorizontalAlignment(JLabel.LEFT);
-        add(labelItem);
 	  }
 
 	  public Component getListCellRendererComponent(JList list, Object obj,
 	      int row, boolean sel, boolean hasFocus) {
 
 	  if(obj instanceof String)
-		   shape = (String) obj;
+	  {
+		  
+		  if(obj.equals(BasicMarkerShape.CYLINDER))
+		  {
+			  this.setIcon(Builder.getIcon("map-cyclinder.png", 22));
+			  this.setText(" - Cylinder");
+			  return this;
 
-		  labelItem.setText(shape);			 
-		 
-	    return this;
+		  }
+		  else if(obj.equals(BasicMarkerShape.CUBE))
+		  {
+			  this.setIcon(Builder.getIcon("map-cube.png", 22));
+			  this.setText(" - Cube");
+			  return this;
+		  }
+		  else if(obj.equals(BasicMarkerShape.CONE))
+		  {
+			  this.setIcon(Builder.getIcon("map-cone.png", 22));
+			  this.setText(" - Cone");
+			  return this;
+		  }
+		  else if(obj.equals(BasicMarkerShape.SPHERE))
+		  {
+			  this.setIcon(Builder.getIcon("map-sphere.png", 22));
+			  this.setText(" - Sphere");
+			  return this;
+		  }
+		   
 	  }
 	  
+	    this.setIcon(null);
+	  	this.setText(obj.toString());
+	  	return this;
+	  }
 	  
 	  
 }

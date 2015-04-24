@@ -14,8 +14,8 @@ import org.tridas.util.TridasObjectEx;
 
 public class AllSitesLayer extends MarkerLayer implements TellervoPointDataLayer, TellervoDataLayer{
 	
-	private BasicMarkerAttributes marker = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
-	private BasicMarkerAttributes highlightedMarker = new BasicMarkerAttributes(Material.YELLOW, BasicMarkerShape.CYLINDER, 0.6d);
+	private BasicMarkerAttributes markerAttrib = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
+	private BasicMarkerAttributes highlightedMarkerAttrib = new BasicMarkerAttributes(Material.YELLOW, BasicMarkerShape.CYLINDER, 0.6d);
 
 	public AllSitesLayer()
 	{
@@ -57,28 +57,34 @@ public class AllSitesLayer extends MarkerLayer implements TellervoPointDataLayer
 
 
 	@Override
-	public void setMarkerStyle(BasicMarkerAttributes marker) {
-		this.marker = marker;
+	public void setMarkerStyle(BasicMarkerAttributes style) {
+		this.markerAttrib = style;
+	
+		
+		for(Marker marker : this.getMarkers())
+		{			
+			marker.setAttributes(markerAttrib);
+		}
 		
 	}
 
 
 	@Override
 	public BasicMarkerAttributes getMarkerStyle() {
-		return marker;
+		return markerAttrib;
 	}
 
 
 	@Override
 	public void setHighlightedMarkerStyle(BasicMarkerAttributes marker) {
-		this.highlightedMarker = marker;
+		this.highlightedMarkerAttrib = marker;
 		
 	}
 
 
 	@Override
 	public BasicMarkerAttributes getHighlightedMarkerStyle() {
-		return highlightedMarker;
+		return highlightedMarkerAttrib;
 	}
 	
 }
