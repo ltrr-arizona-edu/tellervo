@@ -2,6 +2,7 @@ package org.tellervo.desktop.gis2;
 
 import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 
+import java.awt.Color;
 import java.awt.Component;
 
 import javax.swing.JLabel;
@@ -15,6 +16,8 @@ public class ShapeComboRenderer extends JLabel implements ListCellRenderer {
 
 	  public ShapeComboRenderer() {
 	    super();
+	    this.setOpaque(true);
+	    this.setBackground(Color.WHITE);
 	  }
 
 	  public Component getListCellRendererComponent(JList list, Object obj,
