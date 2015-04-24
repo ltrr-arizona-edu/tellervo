@@ -219,7 +219,7 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoPointDataL
 
 	@Override
 	public BasicMarkerAttributes getMarkerStyle() {
-		return marker;
+			return marker;
 	}
 
 	@Override

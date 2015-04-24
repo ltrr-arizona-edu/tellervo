@@ -249,6 +249,10 @@ public class WWJPanel extends JPanel  implements SelectListener{
 		return wwd;
 	}
 
+	public TellervoLayerPanel getLayerPanel(){
+		
+		return this.layerPanel;
+	}
 	
 	public void zoomToSample(Sample s)
 	{

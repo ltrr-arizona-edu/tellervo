@@ -16,7 +16,11 @@ import gov.nasa.worldwind.layers.Earth.CountryBoundariesLayer;
 import gov.nasa.worldwind.layers.Earth.MGRSGraticuleLayer;
 import gov.nasa.worldwind.layers.Earth.NASAWFSPlaceNameLayer;
 import gov.nasa.worldwind.layers.Earth.UTMGraticuleLayer;
+import gov.nasa.worldwind.render.Material;
 import gov.nasa.worldwind.render.Renderable;
+import gov.nasa.worldwind.render.markers.BasicMarkerAttributes;
+import gov.nasa.worldwind.render.markers.BasicMarkerShape;
+import gov.nasa.worldwind.util.Logging;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -73,6 +77,12 @@ public class TellervoLayerPanel extends JPanel {
 	    private JLabel lblMapLayers;
 	    private JDialog Properties;
 
+
+		Properties propertiesDialog = new Properties(editor,"Properties",true);
+		Material color;
+		String shape;
+		double opacity;
+		BasicMarkerAttributes marker;
 
 	    
 	    /**
@@ -214,7 +224,7 @@ public class TellervoLayerPanel extends JPanel {
 	     }
 	    
 	    
-	    protected JPopupMenu createPopupMenu(Layer layer){
+	    protected JPopupMenu createPopupMenu(final Layer layer){
 	    				
 			final JPopupMenu popupMenu = new JPopupMenu();
 			
@@ -241,7 +251,6 @@ public class TellervoLayerPanel extends JPanel {
 				
 				JMenuItem properties = new JMenuItem("Properties");
 				
-				final Properties propertiesDialog = new Properties();
 				
 				properties.addMouseListener(new MouseAdapter() {
 				    public void mousePressed(MouseEvent e) {
@@ -255,6 +264,11 @@ public class TellervoLayerPanel extends JPanel {
 				    private void showDialog(MouseEvent e) {
 				       
 						propertiesDialog.setVisible(true);
+						
+						//not able to apply the color
+						
+						((TellervoPointDataLayer) layer).setMarkerStyle(marker);
+						
 						// create BasicMarkerAttributes from response
 						//((TellervoPointDataLayer)layer).setMarkerStyle(marker);
 				    }
@@ -427,6 +441,35 @@ public class TellervoLayerPanel extends JPanel {
 	}
 
 	   	
+public void setMarkerColor(Color c){
+	color = propertiesDialog.getColor();
+	if(shape!=null && opacity!=0){
+	 marker = new BasicMarkerAttributes(color, shape, opacity);
+	}
+	else
+		marker = new BasicMarkerAttributes(color, BasicMarkerShape.CYLINDER, 0.6d);
 
+	}
+
+public void setMarkerShape(String s){
+	shape = propertiesDialog.getShapeName();
+	if(color!=null && opacity!=0){
+		 marker = new BasicMarkerAttributes(color, shape, opacity);
+		}
+		else
+			marker = new BasicMarkerAttributes(Material.RED, shape, 0.6d);
+
+		
+}
+public void setMarkerOpacity(double o){
+	opacity = propertiesDialog.getOpacity();
+	if(color!=null && shape!=null){
+		 marker = new BasicMarkerAttributes(color, shape, opacity);
+		}
+		else
+			marker = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, opacity);
+
+		
+}
 
 }

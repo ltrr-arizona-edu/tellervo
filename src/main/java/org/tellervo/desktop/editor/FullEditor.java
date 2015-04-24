@@ -775,6 +775,6 @@ public class FullEditor extends AbstractEditor {
 		return (FullEditorActions) actions;
 	}
 	
-	
+
 	
 }
