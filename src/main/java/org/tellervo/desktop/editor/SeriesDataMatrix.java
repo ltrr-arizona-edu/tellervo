@@ -320,6 +320,11 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		remarkPanel.setMinimumSize(new Dimension(280,280));
 		panelRight.add(remarkPanel);
 		
+		if(e instanceof LiteEditor)
+		{
+			panelRight.setVisible(false);
+		}
+		
 		// Setup status bar
 		statusBar = new EditorStatusBar(myTable, mySample);
 		add(statusBar, BorderLayout.SOUTH);

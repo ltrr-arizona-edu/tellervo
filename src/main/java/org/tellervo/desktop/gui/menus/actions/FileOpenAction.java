@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.editor.LiteEditor;
+import org.tellervo.desktop.editor.LiteEditor.OverlapType;
 import org.tellervo.desktop.gui.Startup;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -118,7 +119,7 @@ public class FileOpenAction extends AbstractAction{
 		}
 		
 		int retValue = fc.showOpenDialog(parent);
-		TricycleModelLocator.getInstance().setLastDirectoryRead(fc.getCurrentDirectory());
+		//TricycleModelLocator.getInstance().setLastDirectoryRead(fc.getCurrentDirectory());
 		if (retValue == JFileChooser.APPROVE_OPTION) {
 			file = fc.getSelectedFile();
 			// Remember this folder for next time
@@ -136,6 +137,11 @@ public class FileOpenAction extends AbstractAction{
 		LiteEditor editor = LiteEditor.getNewInstance();
 		try {
 			editor.loadFile(parent, file, TridasIO.getDendroFormatFromDendroFileFilter((DendroFileFilter) fc.getFileFilter()));
+			
+			if(chosenFilter.getFormatName().startsWith("Tucson"))
+			{
+				editor.setOverlapType(OverlapType.SAME_OBJECT);
+			}
 						
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

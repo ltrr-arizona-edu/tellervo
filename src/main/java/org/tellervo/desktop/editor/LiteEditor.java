@@ -85,6 +85,11 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		initLiteEditor();
 	}
 	
+	public void setOverlapType(OverlapType type)
+	{
+		cboOverlap.setSelectedItem(type);
+	}
+	
 	/**
 	 * Close all LiteEditor windows open 
 	 */
