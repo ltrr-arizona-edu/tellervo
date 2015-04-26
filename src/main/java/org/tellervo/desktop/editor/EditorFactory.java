@@ -328,7 +328,7 @@ public class EditorFactory {
 		container.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
 		// should we get this elsewhere?
-		String title = "["+I18n.getText("editor.newSeries")+ "]";
+		String title = I18n.getText("editor.untitled");
 
 		
 		if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
@@ -351,7 +351,7 @@ public class EditorFactory {
 			Sample sample = new Sample(series);
 
 			// default title
-			sample.setMeta(Metadata.TITLE, I18n.getText("general.newEntry")+": " + title);
+			sample.setMeta(Metadata.TITLE, title);
 			
 			// setup our loader and series identifier
 			TellervoWSILoader.attachNewSample(sample);
