@@ -8,6 +8,7 @@ import gov.nasa.worldwind.render.markers.BasicMarkerShape;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,7 +29,6 @@ import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.ui.Builder;
 
 public class TellervoPointLayerPropertiesDialog extends JDialog implements ActionListener {
@@ -233,6 +233,7 @@ public class TellervoPointLayerPropertiesDialog extends JDialog implements Actio
 		}
 		
 		this.pack();
+		this.setMinimumSize(new Dimension(420,240));
 		this.setLocationRelativeTo(parent);
 	
 		

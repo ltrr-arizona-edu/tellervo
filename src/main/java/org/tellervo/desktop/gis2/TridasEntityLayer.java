@@ -9,30 +9,23 @@ import gov.nasa.worldwind.render.markers.Marker;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.gis.TridasMarker;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.wsi.tellervo.SearchParameters;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
-import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
-import org.tellervo.schema.SearchOperator;
-import org.tellervo.schema.SearchParameterName;
-import org.tellervo.schema.SearchReturnObject;
-import org.tellervo.schema.TellervoRequestFormat;
+import org.tridas.interfaces.ITridas;
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 
 public class TridasEntityLayer extends MarkerLayer implements TellervoPointDataLayer, TellervoDataLayer {
 	
-	private BasicMarkerAttributes marker = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
-	private BasicMarkerAttributes highlightedMarker = new BasicMarkerAttributes(Material.YELLOW, BasicMarkerShape.CYLINDER, 0.6d);
+	private BasicMarkerAttributes markerAttrib = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
+	private BasicMarkerAttributes highlightedMarkerAttrib = new BasicMarkerAttributes(Material.YELLOW, BasicMarkerShape.CYLINDER, 0.6d);
 	
 	protected final static Logger log = LoggerFactory.getLogger(TridasEntityLayer.class);
-	private HashMap<Sample, TridasMarker> markermap = new HashMap<Sample, TridasMarker>();
+	private HashMap<ITridas, TridasMarker> markermap = new HashMap<ITridas, TridasMarker>();
 
 	public TridasEntityLayer(String name)
 	{
@@ -46,12 +39,12 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoPointDataL
 
 	}
 	
-	public HashMap<Sample, TridasMarker> getMarkerMap()
+	public HashMap<ITridas, TridasMarker> getMarkerMap()
 	{
 		return markermap;
 	}
 	
-	public Marker getMarkerForSample(Sample s)
+	public Marker getMarkerForEntity(ITridas s)
 	{
 		addMarker(s);
 		
@@ -59,7 +52,7 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoPointDataL
 		
 	}
 	
-	protected void highlightMarkerForSample(Sample s)
+	protected void highlightMarkerForSample(ITridas s)
 	{
 	    Iterator it = markermap.entrySet().iterator();
 	   
@@ -69,7 +62,7 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoPointDataL
 	        value.setAttributes(getMarkerStyle());
 	    }
 		
-		getMarkerForSample(s).setAttributes(getHighlightedMarkerStyle());
+	    getMarkerForEntity(s).setAttributes(getHighlightedMarkerStyle());
 		
 		
 	}		
@@ -89,108 +82,71 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoPointDataL
     	setMarkers(lst);
     }
 	
-    /**
-     * Removes any samples that we have in the layer that aren't in the provided array list.
-     * 
-     * @param samples
-     */
-    public void removeAbsentMarkers(ArrayList<Sample> samples)
-    {
-    	
-    	    	
- 	    Iterator it = markermap.entrySet().iterator();
- 	   
- 	    HashMap<Sample, TridasMarker>  markermap2 = (HashMap<Sample, TridasMarker>) markermap.clone();
- 	    
-	    while (it.hasNext()) {
-	        Map.Entry pair = (Map.Entry)it.next();
-	        Sample s = (Sample) pair.getKey();
-	       
-	        if(!samples.contains(s))
-	        {
-	        	markermap2.remove(s);
-	        }
-	        
-	    }
 
-	    markermap = markermap2;
-	    updateSuperMarkers();
-    	
-    }
     
     
-	public void addMarker(Sample s)
+	public void addMarker(ITridas s)
 	{
 		if(markermap.containsKey(s))
 		{
 			return;
 		}
-		
-		String seriesid = null;
-		
-		try{
-			seriesid = s.getSeries().getIdentifier().getValue();
-		} catch (Exception e)
-		{
-			markermap.put(s, null);
-			updateSuperMarkers();
-			return;
-		}
-		
-		SearchParameters search = null;
-		
-		if(seriesid=="newSeries")
-		{
-			// Quit if this is a fresh series.
-			return;
-		}
-		
-		search = new SearchParameters(SearchReturnObject.MEASUREMENT_SERIES);
-		search.addSearchConstraint(SearchParameterName.SERIESDBID, SearchOperator.EQUALS, seriesid);
-		
-		// Do the search 
-		EntitySearchResource<TridasObject> searchResource = new EntitySearchResource<TridasObject>(search, TridasObject.class);
-		
-		
-		searchResource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
-		TellervoResourceAccessDialog dlg = new TellervoResourceAccessDialog(searchResource);
-		searchResource.query();
-		dlg.setVisible(true);
-		
-		
-		if(!dlg.isSuccessful()) 
-		{
-			// Search failed
-			markermap.put(s, null);
-			updateSuperMarkers();
-			return;
-		} 
-		else 
-		{
-			// Search successful
-			List<TridasObject> foundEntities = searchResource.getAssociatedResult();
 			
-			TridasMarker marker = null;
 			
-			for(TridasObject on : foundEntities)
+		TridasMarker themarker = null;
+		
+		if(s instanceof TridasObject)
+		{
+			TridasObject obj = (TridasObject)s;		
+			if(obj.isSetLocation() && (obj.getLocation().isSetLocationGeometry()))
 			{
-				try{
-					on.getElements().get(0).getLocation().getLocationGeometry();
-					
-					marker = TridasMarkerFactory.getMarkerForTridasEntity(on.getElements().get(0).getLocation().getLocationGeometry(), on.getElements().get(0), this.getMarkerStyle());
+				try{				
+					themarker = TridasMarkerFactory.getMarkerForTridasEntity(obj.getLocation().getLocationGeometry(), obj, this.getMarkerStyle());
 				
 				} catch (Exception e)
 				{
-					marker = TridasMarkerFactory.getMarkerForObject(on, this.getMarkerStyle());
+					log.error("Failed to get TridasMarker");
 				}
 			}
-
-
-			if(marker!=null){
-				markermap.put(s, marker);
-				updateSuperMarkers();
+			else
+			{
+				return;
 			}
 		}
+		else if (s instanceof TridasElement)
+		{
+			TridasElement el = (TridasElement)s;		
+			if(el.isSetLocation() && (el.getLocation().isSetLocationGeometry()))
+			{
+				try{				
+					themarker = TridasMarkerFactory.getMarkerForTridasEntity(el.getLocation().getLocationGeometry(), el, this.getMarkerStyle());
+				
+				} catch (Exception e)
+				{
+					log.error("Failed to get TridasMarker");
+				}
+			}
+			else
+			{
+				return;
+			}
+		}
+		else{
+			return;
+		}
+		
+
+		if(themarker!=null){
+			markermap.put(s, themarker);
+			updateSuperMarkers();
+		}
+		else
+		{
+			markermap.put(s, null);
+			updateSuperMarkers();
+			return;
+		}
+		
 	}
 
 	@Override
@@ -210,27 +166,33 @@ public class TridasEntityLayer extends MarkerLayer implements TellervoPointDataL
 		
 		return markers;
 	}
-
+	
 	@Override
-	public void setMarkerStyle(BasicMarkerAttributes marker) {
-		this.marker = marker;
+	public void setMarkerStyle(BasicMarkerAttributes style) {
+	
+		this.markerAttrib = style;
+		
+		for(Marker marker : this.getMarkers())
+		{			
+			marker.setAttributes(markerAttrib);
+		}
 		
 	}
 
 	@Override
 	public BasicMarkerAttributes getMarkerStyle() {
-			return marker;
+			return markerAttrib;
 	}
 
 	@Override
 	public void setHighlightedMarkerStyle(BasicMarkerAttributes marker) {
-		this.highlightedMarker = marker;
+		this.highlightedMarkerAttrib = marker;
 		
 	}
 
 	@Override
 	public BasicMarkerAttributes getHighlightedMarkerStyle() {
-		return highlightedMarker;
+		return highlightedMarkerAttrib;
 	}
 
 

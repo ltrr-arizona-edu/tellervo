@@ -13,14 +13,13 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis2.OpenGLTestCapabilities;
-import org.tellervo.desktop.gis2.TridasEntityLayer;
+import org.tellervo.desktop.gis2.TellervoSampleLayer;
 import org.tellervo.desktop.gis2.WWJPanel;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.menus.FullEditorActions;
@@ -205,7 +204,7 @@ public class FullEditor extends AbstractEditor {
 	{
 		initMapPanel();
 		
-		TridasEntityLayer layer = (TridasEntityLayer) wwMapPanel.getWorkspaceSeriesLayer();
+		TellervoSampleLayer layer = (TellervoSampleLayer) wwMapPanel.getWorkspaceSeriesLayer();
 		
 		for(Sample s: samplesModel.getSamples())
 		{
@@ -231,7 +230,7 @@ public class FullEditor extends AbstractEditor {
 				
 				wwMapPanel.removeAnnotations();
 				
-				TridasEntityLayer layer = (TridasEntityLayer) wwMapPanel.getWorkspaceSeriesLayer();
+				TellervoSampleLayer layer = (TellervoSampleLayer) wwMapPanel.getWorkspaceSeriesLayer();
 				
 				for(Sample s: samplesModel.getSamples())
 				{
@@ -250,7 +249,7 @@ public class FullEditor extends AbstractEditor {
 
 			@Override
 			public void intervalRemoved(ListDataEvent evt) {
-				TridasEntityLayer layer = (TridasEntityLayer) wwMapPanel.getWorkspaceSeriesLayer();
+				TellervoSampleLayer layer = (TellervoSampleLayer) wwMapPanel.getWorkspaceSeriesLayer();
 
 				
 				
@@ -592,6 +591,9 @@ public class FullEditor extends AbstractEditor {
 		
 		AbstractButton WMSLayer = new TitlelessButton(((FullEditorActions)actions).mapWMSLayerAction);
 		toolBar.add(WMSLayer);
+		
+		AbstractButton DBLayer = new TitlelessButton(((FullEditorActions)actions).mapDatabaseLayerAction);
+		toolBar.add(DBLayer);	
 		
 		contentPane.add(toolBar, "cell 0 1,growx,aligny top");
 

@@ -33,6 +33,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -1256,7 +1257,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 		}
 
 
-		public void notifySearchFinished(ElementList elements) {
+		public void notifySeriesSearchFinished(ElementList elements) {
 			tblAvailMeas.setEnabled(true);
 
 			if (elements != null && !elements.isEmpty()) {
@@ -1282,6 +1283,13 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			if(index == 0) {
 				DBBrowser.this.searchPanel.cancelSearch();
 			}
+		}
+
+
+		@Override
+		public void notifyEntitySearchFinished(Collection<ITridas> entities) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 

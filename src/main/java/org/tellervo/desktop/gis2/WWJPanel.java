@@ -145,7 +145,7 @@ public class WWJPanel extends JPanel  implements SelectListener{
                 new USGSTopoLowRes(),
                 new USGSUrbanAreaOrtho(),
                 new AllSitesLayer(),
-                new TridasEntityLayer("Workspace series"),
+                new TellervoSampleLayer("Workspace series"),
             };
         
         // Turn off some layers by default 
@@ -256,7 +256,7 @@ public class WWJPanel extends JPanel  implements SelectListener{
 	
 	public void zoomToSample(Sample s)
 	{
-		TridasEntityLayer layer = getWorkspaceSeriesLayer();
+		TellervoSampleLayer layer = getWorkspaceSeriesLayer();
 		
 		Marker marker = layer.getMarkerForSample(s);
 
@@ -309,9 +309,9 @@ public class WWJPanel extends JPanel  implements SelectListener{
 	 * 
 	 * @return
 	 */
-	public TridasEntityLayer getWorkspaceSeriesLayer()
+	public TellervoSampleLayer getWorkspaceSeriesLayer()
 	{
-		return (TridasEntityLayer) layersList.getLayerByName("Workspace series");
+		return (TellervoSampleLayer) layersList.getLayerByName("Workspace series");
 	}
 
 	/**

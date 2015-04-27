@@ -107,7 +107,7 @@ public class MapShapefileLayerAction extends AbstractAction {
                             wwjPanel.getLayersList().add(layer);
                         }
 
-                        wwjPanel.layerPanel.update(wwjPanel.getWwd());
+                        wwjPanel.layerPanel.update();
                     }
                 });
             }

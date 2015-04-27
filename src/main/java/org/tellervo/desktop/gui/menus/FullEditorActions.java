@@ -16,6 +16,7 @@ import org.tellervo.desktop.gui.menus.actions.MapCompassToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapControlButtonToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapControlsAction;
 import org.tellervo.desktop.gui.menus.actions.MapCountryBoundariesLayerToggleAction;
+import org.tellervo.desktop.gui.menus.actions.MapDatabaseLayerAction;
 import org.tellervo.desktop.gui.menus.actions.MapGISImageAction;
 import org.tellervo.desktop.gui.menus.actions.MapKMLLayerAction;
 import org.tellervo.desktop.gui.menus.actions.MapMGRSGraticuleLayerToggleAction;
@@ -70,6 +71,7 @@ public class FullEditorActions extends AbstractEditorActions {
 	public Action mapGISImageAction;
 	public Action mapShapefileLayerAction;
 	public Action mapWMSLayerAction;
+	public Action mapDatabaseLayerAction;
 	public Action mapKMLLayerAction;
 	public Action mapZoomAction;
 	public Action mapSpatialSearchAction;
@@ -117,6 +119,7 @@ public class FullEditorActions extends AbstractEditorActions {
 		mapKMLLayerAction = new MapKMLLayerAction((FullEditor) editor);
 		mapGISImageAction = new MapGISImageAction((FullEditor) editor);
 		mapWMSLayerAction = new MapWMSLayerAction((FullEditor) editor);
+		mapDatabaseLayerAction = new MapDatabaseLayerAction((FullEditor) editor);
 		mapZoomAction = new MapZoomToSampleAction((FullEditor) editor);
 		mapSpatialSearchAction = new MapSpatialSearchAction((FullEditor) editor);
 		
