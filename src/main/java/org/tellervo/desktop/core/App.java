@@ -22,6 +22,7 @@ package org.tellervo.desktop.core;
 
 import gov.nasa.worldwind.util.Logging;
 
+import java.awt.Window;
 import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -30,25 +31,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.media.opengl.GLException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
-import javax.xml.stream.XMLInputFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.dictionary.StatisticsResource;
 import org.tellervo.desktop.gui.Log4JViewer;
 import org.tellervo.desktop.gui.LoginDialog;
 import org.tellervo.desktop.gui.ProgressMeter;
 import org.tellervo.desktop.gui.Splash;
-import org.tellervo.desktop.gui.TellervoMainWindow;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowserSettings;
-import org.tellervo.desktop.nativelib.NativeLibWrapper;
 import org.tellervo.desktop.platform.OSX;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.PreferencesDialog;
@@ -88,7 +83,7 @@ public class App{
   private static PreferencesDialog prefsDialog;
   public static AppModel appmodel;
   private static Log4JViewer logviewer;
-  public static TellervoMainWindow mainWindow = null;
+  public static Window mainWindow = null;
   public static DBBrowserSettings dbBrowserSettings;
   
   
@@ -138,6 +133,15 @@ public static synchronized void init() {
         
 }
 
+/**
+ * Whether we are running in Tellervo-lite mode or not
+ * 
+ * @return
+ */
+public static boolean isTellervoLiteMode()
+{
+	return App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false);
+}
 
 public static synchronized void init(ProgressMeter meter, Splash splash) 
 {
@@ -155,7 +159,7 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
     if (meter != null) {
     	meter.setNote(I18n.getText("login.initJOGL"));
     	meter.setProgress(1);
-    	NativeLibWrapper natives = new NativeLibWrapper();
+    	//NativeLibWrapper natives = new NativeLibWrapper();
     	try {
 			//natives.init();
 		} catch (GLException e) {
@@ -172,8 +176,6 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
     	meter.setProgress(2);
       meter.setNote(I18n.getText("login.initPreferences"));
     }
-
-    prefsDialog = new PreferencesDialog();
     
     // If it's the first run then hide splash and show setup wizard
     if (isFirstRun) {
@@ -183,6 +185,9 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
     	}
     	SetupWizard.launchWizard();
     }
+    
+    prefsDialog = new PreferencesDialog();
+    
     
     if(splash!=null)
     {

@@ -46,7 +46,7 @@ import org.tellervo.desktop.editor.UnitAwareDecadalModel;
 import org.tellervo.desktop.graph.Graph;
 import org.tellervo.desktop.graph.GraphActions;
 import org.tellervo.desktop.graph.GraphController;
-import org.tellervo.desktop.graph.GraphInfo;
+import org.tellervo.desktop.graph.GraphSettings;
 import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.GrapherPanel;
 import org.tellervo.desktop.gui.Bug;
@@ -80,7 +80,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 	
 	private GraphActions actions;	
 	private GrapherPanel graph;	
-	private GraphInfo graphInfo;
+	private GraphSettings graphInfo;
 	private List<Graph> graphSamples;
 	private JScrollPane graphScroller;	
 	private GraphController graphController;	
@@ -487,7 +487,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
     @SuppressWarnings("serial")
 	private void setupGraph() {	    	
 		// create a new graphinfo structure, so we can tailor it to our needs.
-		graphInfo = new GraphInfo();
+		graphInfo = new GraphSettings();
 		
 		// force no drawing of graph names and drawing of vertical axis
 		graphInfo.setShowGraphNames(false);

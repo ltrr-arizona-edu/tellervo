@@ -50,6 +50,7 @@ import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
@@ -493,7 +494,7 @@ public class SampleCuration extends javax.swing.JDialog implements ActionListene
 			{
 				for(TridasGenericField gf : obj.getGenericFields())
 				{
-					if(gf.getName().equals("tellervo.objectLabCode"))
+					if(gf.getName().equals(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE))
 					{
 						objcode = gf.getValue();
 					}

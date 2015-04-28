@@ -58,6 +58,14 @@ public class EntitySearchResource<T extends ICoreTridas> extends
 	private SearchParameters searchParameters;
 	private Class<? extends ICoreTridas> returnType;
 
+	
+	/**
+	 * @return the search parameters we are operating on
+	 */
+	public SearchParameters getSearchParameters() {
+		return searchParameters;
+	}
+	
 	/**
 	 * Search for all direct children of this entity
 	 * Works only for: object, element, sample

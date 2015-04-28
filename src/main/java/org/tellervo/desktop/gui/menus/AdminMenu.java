@@ -20,7 +20,6 @@
 
 package org.tellervo.desktop.gui.menus;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,7 +27,6 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
 import javax.swing.Action;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -42,10 +40,9 @@ import org.tellervo.desktop.curation.SampleStatusDialog;
 import org.tellervo.desktop.gis.GISFrame;
 import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
-import org.tellervo.desktop.gui.menus.actions.MetadatabaseBrowserAction;
+import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
-import org.tellervo.desktop.odk.ODKFormDesignPanel;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -335,7 +332,7 @@ public class AdminMenu extends JMenu {
 	 	});
 	 	add(buildODKForm);*/
 	 	
-	 	Action metadbAction = new MetadatabaseBrowserAction();
+	 	Action metadbAction = new AdminMetadatabaseBrowserAction();
 	 	JMenuItem metadb = new JMenuItem(metadbAction);
 	 	add(metadb);
 

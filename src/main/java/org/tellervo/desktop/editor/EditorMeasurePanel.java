@@ -24,11 +24,11 @@ import org.tellervo.desktop.util.SoundUtil.SystemSound;
 public class EditorMeasurePanel extends MeasurePanel implements MeasurementReceiver {
 
 	private static final long serialVersionUID = 1L;
-	private Editor editor;
+	private AbstractEditor editor;
 	private Integer cachedValue= null;
 	
 	@SuppressWarnings("serial")
-	public EditorMeasurePanel(Editor myeditor, final AbstractMeasuringDevice device) {
+	public EditorMeasurePanel(final AbstractEditor myeditor, final AbstractMeasuringDevice device) {
 		super(device, myeditor);
 		editor = myeditor;
 		
@@ -36,7 +36,7 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 	
 		btnQuit.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent ae) {
-				editor.stopMeasuring();
+				myeditor.getSeriesDataMatrix().stopMeasuring();
 			}
 		});	
 	}
@@ -65,14 +65,14 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 			}
 			else
 			{
-				y = editor.measured(cachedValue, value.intValue());
+				y = editor.getSeriesDataMatrix().measured(cachedValue, value.intValue());
 				cachedValue = null;
 				setMessageText(I18n.getText("editor.measuring.earlywood"));
 			}
 		}
 		else
 		{
-			y = editor.measured(value.intValue());
+			y = editor.getSeriesDataMatrix().measured(value.intValue());
 		}
 		
 		if(y.column() == 0) 

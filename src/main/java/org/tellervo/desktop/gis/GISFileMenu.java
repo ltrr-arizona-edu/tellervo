@@ -19,28 +19,23 @@
  ******************************************************************************/
 package org.tellervo.desktop.gis;
 
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.menus.FileMenu;
-import org.tellervo.desktop.gui.menus.actions.ExportMapAction;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 
-import gov.nasa.worldwind.examples.util.ScreenShotAction;
-
-public class GISFileMenu extends FileMenu {
+public class GISFileMenu extends JMenu {
 
 	private static final long serialVersionUID = 4583709816910084036L;
+	private GISFrame f;
 
 	
 	public GISFileMenu(GISFrame f) {
-		super(f);
-		
+		this.f=f;
 	}
 	
-	@Override
 	public void addPrintMenu() {
 		// Add report printing entry
 		JMenuItem reportPrint = Builder.makeMenuItem("menus.file.print", true, "printer.png");
@@ -55,7 +50,6 @@ public class GISFileMenu extends FileMenu {
 	}
 	
 
-	@Override
 	public void addIOMenus(){
 		
 		JMenuItem importmenu = Builder.makeMenuItem("menus.file.import", "org.tellervo.desktop.gui.menus.FileMenu.importdbwithbarcode()", "fileimport.png");
@@ -65,24 +59,11 @@ public class GISFileMenu extends FileMenu {
 		GISPanel panel = ((GISFrame)this.f).wwMapPanel;
 		
         JMenuItem exportmenu = new JMenuItem(I18n.getText("menus.file.exportmapimage"));
-        exportmenu.addActionListener(new ExportMapAction(panel));
-        add(exportmenu);
+        //exportmenu.addActionListener(new FileExportMapAction(panel));
+        //add(exportmenu);
 	}
 	
 	
-	  protected void setMenusForNetworkStatus()
-	  {
 
-		  logoff.setVisible(App.isLoggedIn());  
-		  logon.setVisible(!App.isLoggedIn());  
-		  fileopen.setEnabled(App.isLoggedIn());
-		  fileopenmulti.setEnabled(App.isLoggedIn());
-		  openrecent.setEnabled(App.isLoggedIn());
-		  //fileimport.setEnabled(App.isLoggedIn());
-		  //fileexport.setEnabled(App.isLoggedIn());
-		  //bulkentry.setEnabled(App.isLoggedIn());
-		  //save.setEnabled(App.isLoggedIn() && f instanceof SaveableDocument);
-
-	  }
 
 }

@@ -25,6 +25,7 @@ package org.tellervo.desktop.tridasv2.ui;
 
 import java.util.ArrayList;
 
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasGenericField;
 
 /**
@@ -48,7 +49,7 @@ public class TridasGenericFieldRenderer extends DefaultCellRendererEx {
 			{
 				if(v instanceof TridasGenericField)
 				{
-					if(((TridasGenericField)v).getName().equals("tellervo.objectLabCode"))
+					if(((TridasGenericField)v).getName().equals(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE))
 					{
 						return ((TridasGenericField)v).getValue();
 					}

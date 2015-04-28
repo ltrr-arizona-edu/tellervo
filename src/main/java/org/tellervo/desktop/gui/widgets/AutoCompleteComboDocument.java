@@ -78,6 +78,11 @@ public class AutoCompleteComboDocument extends PlainDocument {
 		// change the editor's document
 		new AutoCompleteComboDocument(comboBox);
 	}
+	
+	public static void disable(JComboBox comboBox){
+		comboBox.setEditable(false);
+	}
+	
 	void configureEditor(ComboBoxEditor newEditor) {
 		if (editor != null) {
 			editor.removeKeyListener(editorKeyListener);

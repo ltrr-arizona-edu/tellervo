@@ -5,18 +5,22 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
+import org.jdesktop.swingx.JXTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.editor.EditorFactory;
-import org.tellervo.desktop.editor.PickSampleDialog;
+import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.editor.LiteEditor;
 import org.tellervo.desktop.io.AbstractDendroReaderFileFilter;
 import org.tellervo.desktop.io.DendroReaderFileFilter;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroFileReader;
+import org.tridas.io.AbstractDendroFormat;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
@@ -34,7 +38,15 @@ import org.tridas.schema.TridasTridas;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValues;
 
-public class ImportDataOnly extends Object {
+import javax.swing.JTable;
+
+import java.awt.BorderLayout;
+
+import javax.swing.table.DefaultTableModel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+
+public class ImportDataOnly extends JDialog {
 	private final static Logger log = LoggerFactory.getLogger(EditorFactory.class);
 
 	private final Window parent;
@@ -42,13 +54,45 @@ public class ImportDataOnly extends Object {
 	private NormalTridasUnit unitsIfNotSpecified = NormalTridasUnit.MICROMETRES;
 	private AbstractDendroFileReader reader;
 	private File file;
-	private String fileType;
+	private AbstractDendroFormat fileFormat;
+	private JTable table;
 	
 	
-	public ImportDataOnly(Window parent, File file, String fileType)
+	public ImportDataOnly()
+	{
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+		getContentPane().add(scrollPane, BorderLayout.CENTER);
+		
+		
+		
+		table = new JXTable();
+		table.setModel(new DefaultTableModel(
+			new Object[][] {
+				{"/tmp/", "abc.rwl", "abc123a", "ABC", "123", "A", null, null},
+				{null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null},
+				{null, null, null, null, null, null, null, null},
+			},
+			new String[] {
+				"Folder", "File name", "Series name", "Object code", "Element code", "Sample code", "Radius code", "Series code"
+			}
+		));
+		table.getColumnModel().getColumn(0).setPreferredWidth(74);
+		table.getColumnModel().getColumn(1).setPreferredWidth(109);
+		table.getColumnModel().getColumn(2).setPreferredWidth(117);
+
+		scrollPane.setViewportView(table);
+		parent = null;
+		
+	}
+	
+	public ImportDataOnly(Window parent, File file, AbstractDendroFormat fileType)
 	{
 		this.parent = parent;
-		this.fileType = fileType;
+		this.fileFormat = fileType;
 		this.file = file;
 		parseFile();
 		
@@ -59,22 +103,12 @@ public class ImportDataOnly extends Object {
 		this.parent = parent;
 		this.file = file;
 		
+		this.fileFormat = TridasIO.getDendroFormatFromDendroFileFilter(filetypefilter);
 				
-		for (String readername : TridasIO.getSupportedReadingFormats())
-		{
-			AbstractDendroReaderFileFilter filter = new DendroReaderFileFilter(readername);
-			String format = filetypefilter.getFormatName();
-			log.debug("Checking to see if "+format+" matches "+ filter.getDescription());
-			
-			if(filter.getDescription().equals(format))
-			{
-				this.fileType = filter.getDescription();
-				parseFile();
-				return;
-			}
-		}
+
+		parseFile();
+
 		
-		throw new Exception("Unsupported dendro data file type.  Do not know "+filetypefilter.toString());
 		
 	}
 	
@@ -111,7 +145,7 @@ public class ImportDataOnly extends Object {
 	{
 		// Create a reader based on the file type supplied
 		
-		reader = TridasIO.getFileReader(fileType);
+		reader = TridasIO.getFileReaderFromFormat(fileFormat);
 		if(reader==null) 
 		{
 			Alert.error(parent, "Error", "Unknown file type");
@@ -125,7 +159,7 @@ public class ImportDataOnly extends Object {
 			Alert.errorLoading(file.getAbsolutePath(), e);
 			return;
 		} catch (InvalidDendroFileException e) {
-			Alert.error(parent, "Error", "The selected file is not a valid "+fileType+ " file.\nPlease check and try again");
+			Alert.error(parent, "Error", "The selected file is not a valid "+fileFormat.getShortName()+ " file.\nPlease check and try again");
 			return;
 		}
 		catch(NullPointerException e)
@@ -149,7 +183,7 @@ public class ImportDataOnly extends Object {
 						{
 							for(TridasMeasurementSeries ms : r.getMeasurementSeries())
 							{
-								Sample sample = EditorFactory.createSampleFromSeries(ms, e, file, fileType, hideWarningsFlag);	
+								Sample sample = EditorFactory.createSampleFromSeries(ms, e, file, fileFormat, hideWarningsFlag);	
 								if(sample==null)
 								{
 									hideWarningsFlag=true;
@@ -167,7 +201,7 @@ public class ImportDataOnly extends Object {
 			
 			for(TridasDerivedSeries ds : p.getDerivedSeries())
 			{
-				Sample sample = EditorFactory.createSampleFromSeries(ds, null, file, fileType, hideWarningsFlag);
+				Sample sample = EditorFactory.createSampleFromSeries(ds, null, file, fileFormat, hideWarningsFlag);
 				
 				if(sample==null)
 				{
@@ -182,30 +216,6 @@ public class ImportDataOnly extends Object {
 			
 		}
 		
-
-		Integer count = sampleList.size();
-		
-		if(count>1)
-		{
-			PickSampleDialog psd = new PickSampleDialog(parent, sampleList);
-			
-			if(psd.isCancelled())
-			{
-				sampleList = null;
-				return;
-			}
-			else if(psd.isOpeningAll())
-			{
-				// No need to do anything
-			}
-			else
-			{
-				sampleList.clear();
-				sampleList.add(psd.getSelectedSample());
-			}
-
-			
-		}
 		
 		Boolean unitsSet = false;
 		for(ITridasSeries ser : getSeries())
@@ -310,24 +320,24 @@ public class ImportDataOnly extends Object {
 	
 	public void openEditors()
 	{
-		openEditors(false);
+		if(sampleList==null || sampleList.size()==0) return;
+		
+		if(parent instanceof FullEditor)
+		{
+			((FullEditor)parent).addSamples(sampleList);
+		}
+		else
+		{
+			FullEditor editor = FullEditor.getInstance();
+			editor.addSamples(sampleList);
+		}
 	}
 	
-	public void openEditorLites()
-	{
-		openEditors(true);
-	}
-	
-	private void openEditors(Boolean useEditorLite)
+/*	public void openEditorLites()
 	{
 		if(sampleList==null || sampleList.size()==0) return;
 		
-		
-		for(Sample sample : sampleList)
-		{
-			
-			EditorFactory.createEditorForSample(parent, sample,  unitsIfNotSpecified, useEditorLite);
-		}
-				
-	}
+		new LiteEditor(file, fileType, sampleList);
+	}*/
+
 }

@@ -382,7 +382,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 
 		for(TridasObjectEx obj : entities)
 		{
-			if(TridasUtils.getGenericFieldByName(obj, "tellervo.objectLabCode").getValue().equals(code))
+			if(TridasUtils.getGenericFieldByName(obj, TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE).getValue().equals(code))
 			{
 				return obj;
 			}

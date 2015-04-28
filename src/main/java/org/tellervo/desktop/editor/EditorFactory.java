@@ -26,7 +26,7 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.BaseSample;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
@@ -46,6 +46,7 @@ import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIEntity;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.AbstractDendroFormat;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.util.SafeIntYear;
 import org.tridas.io.util.TridasUtils;
@@ -327,7 +328,7 @@ public class EditorFactory {
 		container.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		
 		// should we get this elsewhere?
-		String title = "["+I18n.getText("editor.newSeries")+ "]";
+		String title = I18n.getText("editor.untitled");
 
 		
 		if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
@@ -350,15 +351,17 @@ public class EditorFactory {
 			Sample sample = new Sample(series);
 
 			// default title
-			sample.setMeta(Metadata.TITLE, I18n.getText("general.newEntry")+": " + title);
+			sample.setMeta(Metadata.TITLE, title);
 			
 			// setup our loader and series identifier
-			TellervoWsiTridasElement.attachNewSample(sample);
+			TellervoWSILoader.attachNewSample(sample);
 
 			// start the editor
-			EditorLite ed = new EditorLite(sample);
+			LiteEditor ed = LiteEditor.getNewInstance();
+			ed.addSample(sample);
+			
 			ed.setVisible(true);
-			ed.setDefaultFocus();
+
 			
 			container.setCursor(Cursor.getDefaultCursor());
 			
@@ -389,15 +392,6 @@ public class EditorFactory {
 				return;
 			}
     	}
-
-		/*
-		if(!result.barcodeScanSuccessful())
-		{
-			Sample sample = new Sample();
-			new Editor(sample).setVisible(true);
-		}
-		*/
-		
 		
 		// make a new measurement series
 		TridasMeasurementSeries series = new TridasMeasurementSeries();
@@ -424,20 +418,26 @@ public class EditorFactory {
 		}
 		
 		// setup our loader and series identifier
-		TellervoWsiTridasElement.attachNewSample(sample);
+		TellervoWSILoader.attachNewSample(sample);
 
 		// start the editor
-		Editor ed = new Editor(sample);
-		ed.setVisible(true);
-		ed.setDefaultFocus();
-		
+		if(container instanceof FullEditor)
+		{
+			((FullEditor)container).addSample(sample);
+		}
+		else
+		{
+			FullEditor editor = FullEditor.getInstance();
+			editor.addSample(sample);
+			editor.showPage(EditType.OBJECT);
+		}
+				
 		container.setCursor(Cursor.getDefaultCursor());
 		
-		ed.showPage(EditType.OBJECT);
 	}
 	
 	
-	public static Sample createSampleFromSeries(ITridas series, TridasElement el, File file, String fileType, Boolean hideWarnings)
+	public static Sample createSampleFromSeries(ITridasSeries series, TridasElement el, File file, AbstractDendroFormat fileType, Boolean hideWarnings)
 	{
 		String species = null;
 		String author = null;
@@ -453,7 +453,10 @@ public class EditorFactory {
 		Sample sample = new Sample();
 		SafeIntYear endYear;
 		SafeIntYear startYear = new SafeIntYear(1001);
+		TridasUnit unit = null;
 		List<TridasValues> servalues;
+		
+		
 		
 		if(series instanceof TridasDerivedSeries)
 		{
@@ -472,7 +475,14 @@ public class EditorFactory {
 			author = ds.getAuthor();
 			
 			endYear = startYear.add(ds.getValues().get(0).getValues().size()-1);
+			
+			try{
+				unit = ds.getValues().get(0).getUnit();
+			} catch (Exception e)
+			{}
 			servalues = ds.getValues();
+			
+
 		}
 		else
 		{
@@ -491,9 +501,16 @@ public class EditorFactory {
 			keycode = TridasUtils.getGenericFieldByName(ms, "keycode");
 			
 			endYear = startYear.add(ms.getValues().get(0).getValues().size()-1);
+			
+			try{
+				unit = ms.getValues().get(0).getUnit();
+			} catch (Exception e)
+			{}
 			servalues = ms.getValues();
+			
+			
 		}
-		
+				
 		//sample.setMeta("filename", series.getTitle());
 		sample.setMeta("title", series.getTitle());
 
@@ -552,6 +569,7 @@ public class EditorFactory {
 			}
 			else
 			{
+				var.setNormalTridas(NormalTridasVariable.RING_WIDTH);
 				log.warn("Series contains data of unknown type.  Assuming ring widths");
 			}
 			
@@ -588,6 +606,7 @@ public class EditorFactory {
 			
 		}
 
+		sample.setSeries(series);
 		
 		if(ringWidthValues!=null)
 		{
@@ -635,78 +654,28 @@ public class EditorFactory {
 			sample.setLatewoodWidthData(late);
 		}
 			
-			
-	    sample.getSeries().getValues().get(0).setUnit(null);
-	    sample.getSeries().getValues().get(0).setUnitless(new TridasUnitless());
+		sample.setSeries(series);
+		
+		// Make sure units are set appropriately
+		for(int i=0; i<sample.getSeries().getValues().size(); i++)
+		{
+			if(unit!=null)
+			{
+				sample.getSeries().getValues().get(i).setUnit(unit);
+			    sample.getSeries().getValues().get(i).setUnitless(null);
+			}
+			else
+			{
+				sample.getSeries().getValues().get(i).setUnit(null);
+			    sample.getSeries().getValues().get(i).setUnitless(new TridasUnitless());
+			}
+		}
+	
+
 	    
 	    return sample;
 	}
 	
-	public static void createEditorForSample(Container container, 
-			Sample sample, 
-			NormalTridasUnit unitsIfNotSpecfied, 
-			Boolean useEditorLite) 
-	{
-		
-		if(container!=null) container.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-
-		ITridasSeries series = sample.getSeries();
-		
-		try {				
-			for(int i=0; i < series.getValues().size(); i++)
-			{
-				TridasValues tv = series.getValues().get(i);
-				
-				if(tv.isSetUnit())
-				{
-					if(!tv.getUnit().isSetNormalTridas())
-					{
-						tv.getUnit().setNormalTridas(unitsIfNotSpecfied);
-					}
-				}	
-				else
-				{
-					TridasUnit unit = new TridasUnit();
-					unit.setNormalTridas(unitsIfNotSpecfied);
-					tv.setUnit(unit);
-					tv.setUnitless(null);
-				}
-				
-				tv = UnitUtils.convertTridasValues(NormalTridasUnit.MICROMETRES, tv, true);
-				
-				TridasUnit unit = new TridasUnit();
-				unit.setNormalTridas(NormalTridasUnit.MICROMETRES);
-				tv.setUnit(unit);
-				series.getValues().set(i,tv);
-			}
-			
-		} catch (NumberFormatException e) {
-			Alert.error("Error", "One or more data values are not numbers.");
-			return;
-		} catch (ConversionWarningException e) {
-			Alert.error("Error", "Error converting units");
-			return;
-		}
-		
-		
-
-
-		// start the editor
-		
-		if(useEditorLite)
-		{
-			EditorLite ed = new EditorLite(sample);
-			ed.setVisible(true);
-		}
-		else
-		{
-			TellervoWsiTridasElement.attachNewSample(sample);
-			Editor ed = new Editor(sample);
-			ed.setVisible(true);
-		}
-
-		if(container!=null) container.setCursor(Cursor.getDefaultCursor());
-	}
 	
 
 }

@@ -19,8 +19,6 @@
  ******************************************************************************/
 package org.tellervo.desktop.gis;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
@@ -30,14 +28,10 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.event.EventListenerList;
 
-import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.Help;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.ui.Alert;
-import org.tellervo.desktop.ui.I18n;
-
 import net.miginfocom.swing.MigLayout;
-import gov.nasa.worldwind.event.RenderingExceptionListener;
+
+import org.tellervo.desktop.gui.Help;
+import org.tellervo.desktop.ui.Alert;
 
 /**
  *
@@ -66,9 +60,7 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
     {
     	this.txtGrfxWarning.setContentType("text/html");
     	this.txtGrfxWarning.setEditable(false);
-    	this.txtGrfxWarning.setText("<html><font color=\"red\"><center><b>Mapping disabled</b></center></font><p>The 3D globe mapping in Tellervo requires an OpenGL 3D capable graphics card.  Either your graphics card is not supported or you do not have the proper graphics drivers installed.  Most graphics cards manufactured since 2006 are supported. </p></html>");
-    	
-    	this.btnRetry.addActionListener(this);
+    	this.txtGrfxWarning.setText("<html><font color=\"red\"><center><b>Mapping disabled</b></center></font><p>The 3D globe mapping in Tellervo requires an OpenGL 3D capable graphics card.  Either your graphics card is not supported or you do not have the proper graphics drivers installed.</p></html>");
     }
     
     /** This method is called from within the constructor to
@@ -81,7 +73,6 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         txtGrfxWarning = new javax.swing.JTextPane();
-        btnRetry = new javax.swing.JButton();
 
         setAlignmentX(1.0F);
         setLayout(new MigLayout("", "[390px,grow]", "[153.00px,top][25px][grow]"));
@@ -111,16 +102,7 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
 			}
         	
         });
-
-        btnRetry.setText("Re-test 3D Graphics");
-        btnRetry.setAlignmentX(0.5F);
-        btnRetry.setAlignmentY(1.0F);
-        add(btnRetry, "cell 0 1,alignx center,aligny bottom");
     }// </editor-fold>//GEN-END:initComponents
-    
-    
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    protected javax.swing.JButton btnRetry;
     protected javax.swing.JScrollPane jScrollPane1;
     protected javax.swing.JTextPane txtGrfxWarning;
     private JButton btnMoreInformation;
@@ -129,36 +111,6 @@ public class GrfxWarning extends javax.swing.JPanel implements ActionListener {
     
     @Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource()==this.btnRetry)
-		{
-			App.prefs.setBooleanPref(PrefKey.OPENGL_FAILED, false);
-			if(mapPanel==null)
-			{
-				final GISFrame map = new GISFrame(true);
-				map.setVisible(true);
-				
-	            map.wwMapPanel.getWwd().addRenderingExceptionListener(new RenderingExceptionListener()
-	            {
-	                public void exceptionThrown(Throwable t)
-	                {
-	                	GrfxWarning.this.fireActionEvent(new ActionEvent(btnRetry, 1001, "fail"));
-	                	map.dispose();
-	                	Alert.message(I18n.getText("preferences.testFailed"), I18n.getText("preferences.grfxTestFailed"));
-	                	return;
-	                }
-	                
-	            });
-	            
-	            this.fireActionEvent(new ActionEvent(btnRetry, 1001, "pass"));
-				
-			}
-			else
-			{
-				GISPanel wwMapPanel = new GISPanel(new Dimension(300,300), false, TridasMarkerLayerBuilder.getMarkerLayerForAllSites());
-				mapPanel.setLayout(new BorderLayout());
-				mapPanel.add(wwMapPanel, BorderLayout.CENTER);
-			}
-		}
 
 		
 	}

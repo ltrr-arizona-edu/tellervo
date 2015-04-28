@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 public class Axis extends JPanel {
 	private final static Logger log = LoggerFactory.getLogger(Axis.class);
 
-	private GraphInfo gInfo;
+	private GraphSettings gInfo;
 	private int axisType;
 	private JPanel parent;
 	
@@ -41,7 +41,7 @@ public class Axis extends JPanel {
 	
 	public static final int AXIS_WIDTH = 65;
 
-	public Axis(GraphInfo gInfo, int type, JPanel parent) {
+	public Axis(GraphSettings gInfo, int type, JPanel parent) {
 		// background -- default is black
 		this.gInfo = gInfo;
 		this.parent = parent;

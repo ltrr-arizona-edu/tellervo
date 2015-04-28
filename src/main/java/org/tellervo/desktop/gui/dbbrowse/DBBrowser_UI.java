@@ -21,8 +21,10 @@ package org.tellervo.desktop.gui.dbbrowse;
 
 import java.awt.Dialog;
 import java.awt.Frame;
-import java.awt.GraphicsConfiguration;
 import java.awt.HeadlessException;
+import java.awt.Window;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
 
@@ -65,6 +67,7 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     protected void doInitComponents(){
     	
     	setIconImage(Builder.getApplicationIcon());
+    	  	
     	
     	// Dynamic components
 	    btnAdd = new javax.swing.JButton();
@@ -433,6 +436,11 @@ public class DBBrowser_UI extends javax.swing.JDialog {
 	
 	public DBBrowser_UI(Frame owner, boolean modal) throws HeadlessException {
 		super(owner, modal);
+	}
+	
+	public DBBrowser_UI(Window owner, boolean modal) throws HeadlessException {
+		super(owner);
+		this.setModal(modal);
 	}
     
 }

@@ -116,10 +116,11 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 	/** Class of the current entity */
 	private Class<? extends ITridas> currentEntityType;
 	DefaultMutableTreeNode nodeSelected;
-	private JFrame parent;
+	private Window parent;
 	
-    public MetadataBrowser(JFrame parent, boolean modal) {
-        super(parent, modal);
+    public MetadataBrowser(Window parent, boolean modal) {
+        super(parent);
+        setModal(modal);
         this.parent = parent;
         initComponents();
         setupGui();

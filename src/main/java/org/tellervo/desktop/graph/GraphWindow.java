@@ -49,10 +49,8 @@ import org.tellervo.desktop.gui.SaveableDocument;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.XFrame;
 import org.tellervo.desktop.gui.menus.HelpMenu;
-import org.tellervo.desktop.gui.menus.WindowMenu;
 import org.tellervo.desktop.index.Index;
 import org.tellervo.desktop.io.WrongFiletypeException;
-import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.prefs.PrefsListener;
 import org.tellervo.desktop.sample.Element;
@@ -425,12 +423,12 @@ public class GraphWindow extends XFrame implements SampleListener,
 		// ooh, menubar
 		{
 			JMenuBar menubar = new JMenuBar();
-			
-			menubar.add(new GraphFileMenu(this));
+
+			GraphFileMenu filemenu = new GraphFileMenu(this);
+			menubar.add(filemenu);
 			menubar.add(new GraphEditMenu(this));
 			menubar.add(new GraphViewMenu(this, actions));
-			if (Platform.isMac())
-				menubar.add(new WindowMenu(this));
+
 			menubar.add(new HelpMenu());
 
 			setJMenuBar(menubar);
@@ -575,12 +573,8 @@ public class GraphWindow extends XFrame implements SampleListener,
 	public GraphWindow(ElementList ss) {
 		// Empty list? Open a dialog to create it
 		if(ss == null) {
-			try {
-				ss = FileDialog.showMulti(I18n.getText("plot"));
-			} catch (UserCancelledException uce) {
-				dispose();
-				return;
-			}
+			//TODO IMPLEMENT!!!
+			ss = FileDialog.showMulti(I18n.getText("plot"));
 		}
 
 		// samples

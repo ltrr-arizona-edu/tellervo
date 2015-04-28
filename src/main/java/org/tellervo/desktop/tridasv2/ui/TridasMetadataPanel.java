@@ -21,6 +21,7 @@
 package org.tellervo.desktop.tridasv2.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Window;
@@ -52,7 +53,6 @@ import javax.swing.SwingUtilities;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.AbstractMetadataPanel;
-import org.tellervo.desktop.editor.Editor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
@@ -73,6 +73,7 @@ import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.schema.TellervoRequestType;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.ComplexPresenceAbsence;
 import org.tridas.schema.PresenceAbsence;
 import org.tridas.schema.TridasBark;
@@ -469,7 +470,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 			if(code!=null)
 			{				
 				TridasGenericField gf = new TridasGenericField();
-				gf.setName("tellervo.objectLabCode");
+				gf.setName(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE);
 				gf.setValue(code);
 				gf.setType("xs:string");
 				((TridasObject)temporarySelectingEntity).getGenericFields().add(gf);
@@ -1171,8 +1172,11 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 	 */
 	private void initButtonPanel(boolean isDerived) {
 		buttonBar = new ScrollableJButtonBar(JButtonBar.VERTICAL);
+		//buttonBar = new JButtonBar(JButtonBar.VERTICAL);
 		
 		buttonBar.setUI(new BlueishButtonBarUI());
+		
+
 		
 		AbstractButton button;
 		entityButtons = new ButtonGroup();

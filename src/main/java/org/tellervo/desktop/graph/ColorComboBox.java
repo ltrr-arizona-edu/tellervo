@@ -83,7 +83,7 @@ public class ColorComboBox extends JComboBox {
 				setForeground(list.getForeground());
 			}
 
-			GraphInfo.colorPair color = (GraphInfo.colorPair) value;
+			GraphSettings.colorPair color = (GraphSettings.colorPair) value;
 			setText(color.getColorName());
 			icon.setColor(color.getColor());
 
@@ -97,13 +97,13 @@ public class ColorComboBox extends JComboBox {
 	public void setColor(Color c) {
 		int i;
 		
-		for(i = 0; i < GraphInfo.screenColors.length; i++) {
-			if(c.equals(GraphInfo.screenColors[i].getColor()))
+		for(i = 0; i < GraphSettings.screenColors.length; i++) {
+			if(c.equals(GraphSettings.screenColors[i].getColor()))
 				break;
 		}
 		
 		// we matched a color!
-		if(i != GraphInfo.screenColors.length) {
+		if(i != GraphSettings.screenColors.length) {
 			setSelectedIndex(i);
 			otherColor.setColor(OTHER_COLOR);
 			return;
@@ -117,10 +117,10 @@ public class ColorComboBox extends JComboBox {
 	public Color getSelectedColor() {
 		int idx = getSelectedIndex();
 		
-		if(idx == GraphInfo.screenColors.length)
+		if(idx == GraphSettings.screenColors.length)
 			return otherColor.getColor();
 		
-		return GraphInfo.screenColors[idx].getColor();
+		return GraphSettings.screenColors[idx].getColor();
 	}
 
 	/**
@@ -132,11 +132,11 @@ public class ColorComboBox extends JComboBox {
 	public ColorComboBox() {
 
 		// add a bunch of standard colors
-		for (int i = 0; i < GraphInfo.screenColors.length; i++) {
-			addItem(GraphInfo.screenColors[i]);
+		for (int i = 0; i < GraphSettings.screenColors.length; i++) {
+			addItem(GraphSettings.screenColors[i]);
 		}
 		
-		otherColor = new GraphInfo.colorPair("Other...", OTHER_COLOR);
+		otherColor = new GraphSettings.colorPair("Other...", OTHER_COLOR);
 		addItem(otherColor);
 
 		// "other" item
@@ -186,5 +186,5 @@ public class ColorComboBox extends JComboBox {
 	}
 
 	// to store our colors, and other goodness..
-	private GraphInfo.colorPair otherColor;
+	private GraphSettings.colorPair otherColor;
 }

@@ -112,6 +112,8 @@ class searchParameters implements IParams
 									'objectlocationtype' => 				array('tbl' => 'vwtblobject', 'field' => 'locationtype'),
 									'objectlocationprecision' => 			array('tbl' => 'vwtblobject', 'field' => 'locationprecision'),
 									'objectlocationcomment' => 				array('tbl' => 'vwtblobject', 'field' => 'locationcomment'),
+									'objectlatitude' => 				array('tbl' => 'vwtblobject', 'field' => 'latitude'),
+									'objectlongitude' => 				array('tbl' => 'vwtblobject', 'field' => 'longitude'),
 									'objecttype' =>							array('tbl' => 'vwtblobject', 'field' => 'type'),	
 									'parentobjectid' =>						array('tbl' => 'vwtblobject', 'field' => 'parentobjectid'),
 									'objectcode' =>							array('tbl' => 'vwtblobject', 'field' => 'code'),

@@ -22,15 +22,18 @@ package org.tellervo.desktop.gui.dbbrowse;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -109,7 +112,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
        
 
     /** Creates new form as child of Frame */    
-    public DBBrowser(java.awt.Frame parent, boolean modal, boolean openMulti) {
+    public DBBrowser(Window parent, boolean modal, boolean openMulti) {
         super(parent, modal);
         doInitComponents();
         
@@ -487,6 +490,12 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     	//this.tabbedPane.setEnabledAt(1, false);
     }
     
+    public void doSearch(SearchParameters params)
+    {
+    	this.tabbedPane.setSelectedIndex(1);
+    	searchPanel.runQuery(params);
+    }
+    
     /** 
      * Update the filter used to remove series from the list which don't match
      * the requested criteria.  The filter works on the list returned from the 
@@ -613,10 +622,56 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     			}
     		});
     		
+    		tblAvailMeas.addMouseListener(new MouseListener(){
+
+				@Override
+				public void mouseClicked(MouseEvent evt) {
+					if(evt.getClickCount()>1)
+					{
+						// Load series on double click
+						if(finish()) dispose();
+					}
+					
+				}
+				@Override
+				public void mouseEntered(MouseEvent arg0) {	}
+				@Override
+				public void mouseExited(MouseEvent arg0) { }
+				@Override
+				public void mousePressed(MouseEvent arg0) { }
+				@Override
+				public void mouseReleased(MouseEvent arg0) {}
+    			
+    		});
+    		
+    		
     	} else {
 			tblAvailMeas.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 			tblChosenMeas.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
+			
+    		tblAvailMeas.addMouseListener(new MouseListener(){
+
+				@Override
+				public void mouseClicked(MouseEvent evt) {
+					if(evt.getClickCount()>1)
+					{
+						// Add series to chosen on double click
+						addSelectedToChosen();
+					}
+					
+				}
+				@Override
+				public void mouseEntered(MouseEvent arg0) {	}
+				@Override
+				public void mouseExited(MouseEvent arg0) { }
+				@Override
+				public void mousePressed(MouseEvent arg0) { }
+				@Override
+				public void mouseReleased(MouseEvent arg0) {}
+    			
+    		});
+			
     		workArea.setLayout(new BoxLayout(workArea, BoxLayout.Y_AXIS));
     		
     		JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -647,33 +702,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     		// when adding, just add things to our selectedElements list
     		btnAdd.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent ev) {
-					
-					// Convert from view to model rows
-					int viewRows[] = tblAvailMeas.getSelectedRows();
-					int modelRows[] = tblAvailMeas.getSelectedRows();
-					for(int i = 0; i < viewRows.length; i++) {
-						modelRows[i] = tblAvailMeas.convertRowIndexToModel(viewRows[i]);
-					}
-
-					// Move selected into 'chosen' list
-					for(int i = 0; i < modelRows.length; i++) {
-						Element e = ((ElementListTableModel)tblAvailMeas.getModel()).getElementAt(modelRows[i]);		
-						if(!selectedElements.contains(e)) selectedElements.add(e);
-					}
-					
-					// tell the table it's changed!
-					((ElementListTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
-					
-					// remove the selection
-					// repaint to show non-disabled rows
-					tblAvailMeas.repaint();
-					tblAvailMeas.clearSelection();
-
-					// verify a selected element
-					if(selectedElements.size() >= minimumSelectedElements)
-						btnOk.setEnabled(true);
-					else
-						btnOk.setEnabled(false);
+					addSelectedToChosen();
 				}
     		});
     		
@@ -716,6 +745,37 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     		workArea.add(buttonBar);
     		workArea.add(new JScrollPane(tblChosenMeas));
     	}	
+    }
+    
+    private void addSelectedToChosen()
+    {
+		
+		// Convert from view to model rows
+		int viewRows[] = tblAvailMeas.getSelectedRows();
+		int modelRows[] = tblAvailMeas.getSelectedRows();
+		for(int i = 0; i < viewRows.length; i++) {
+			modelRows[i] = tblAvailMeas.convertRowIndexToModel(viewRows[i]);
+		}
+
+		// Move selected into 'chosen' list
+		for(int i = 0; i < modelRows.length; i++) {
+			Element e = ((ElementListTableModel)tblAvailMeas.getModel()).getElementAt(modelRows[i]);		
+			if(!selectedElements.contains(e)) selectedElements.add(e);
+		}
+		
+		// tell the table it's changed!
+		((ElementListTableModel)tblChosenMeas.getModel()).fireTableDataChanged();
+		
+		// remove the selection
+		// repaint to show non-disabled rows
+		tblAvailMeas.repaint();
+		tblAvailMeas.clearSelection();
+
+		// verify a selected element
+		if(selectedElements.size() >= minimumSelectedElements)
+			btnOk.setEnabled(true);
+		else
+			btnOk.setEnabled(false);
     }
     
     private void setupTableColumns(JXTable table, boolean disableSelections) {
@@ -1197,7 +1257,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 		}
 
 
-		public void notifySearchFinished(ElementList elements) {
+		public void notifySeriesSearchFinished(ElementList elements) {
 			tblAvailMeas.setEnabled(true);
 
 			if (elements != null && !elements.isEmpty()) {
@@ -1223,6 +1283,13 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 			if(index == 0) {
 				DBBrowser.this.searchPanel.cancelSearch();
 			}
+		}
+
+
+		@Override
+		public void notifyEntitySearchFinished(Collection<ITridas> entities) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 

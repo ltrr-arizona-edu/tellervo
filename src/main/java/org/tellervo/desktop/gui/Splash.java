@@ -36,6 +36,7 @@ import javax.swing.SwingConstants;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.ProgressMeter.ProgressEvent;
+import org.tellervo.desktop.gui.widgets.ImagePanel;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.versioning.Build;

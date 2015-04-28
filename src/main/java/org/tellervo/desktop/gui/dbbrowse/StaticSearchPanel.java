@@ -342,7 +342,7 @@ public class StaticSearchPanel extends JPanel implements ResourceEventListener, 
 			// run this in the UI thread
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					manager.notifySearchFinished(null);
+					manager.notifySeriesSearchFinished(null);
 					
 					JOptionPane.showMessageDialog(StaticSearchPanel.this, "Search failed: " + 
 							re.getAttachedException().getLocalizedMessage(), 
@@ -368,7 +368,7 @@ public class StaticSearchPanel extends JPanel implements ResourceEventListener, 
 			// run this in the UI thread
 			EventQueue.invokeLater(new Runnable() {
 				public void run() {
-					manager.notifySearchFinished(elements);
+					manager.notifySeriesSearchFinished(elements);
 				}				
 			});		
 		}

@@ -22,7 +22,7 @@ package org.tellervo.desktop.gis;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.event.SelectEvent;
 import gov.nasa.worldwind.event.SelectListener;
-import gov.nasa.worldwind.examples.util.ButtonAnnotation;
+import gov.nasa.worldwindx.examples.util.ButtonAnnotation;
 import gov.nasa.worldwind.render.Annotation;
 import gov.nasa.worldwind.util.Logging;
 

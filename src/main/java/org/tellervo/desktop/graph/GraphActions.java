@@ -22,6 +22,8 @@ package org.tellervo.desktop.graph;
  import java.awt.event.ActionEvent;
 import java.beans.IntrospectionException;
 
+import javax.swing.Action;
+
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.TellervoAction;
 import org.tellervo.desktop.ui.ToggleableAction;
@@ -36,7 +38,7 @@ import org.tellervo.desktop.ui.ToggleableBoundAction;
  */
 public class GraphActions {
 	private GrapherPanel graph;
-	private GraphInfo info;
+	private GraphSettings info;
 	private GraphElementsPanel elements;
 	private GraphController controller;
 		
@@ -82,27 +84,27 @@ public class GraphActions {
 	protected ToggleableAction showRemarks;
 	
 	private void createGraphActions() throws IntrospectionException {
-		showVerticalAxis = new ToggleableBoundAction<GraphInfo>("graph.verticalAxis", "graph.verticalAxis", 
-				info, GraphInfo.class, GraphInfo.SHOW_VERT_AXIS_PROPERTY, "vaxisshow.png", 
+		showVerticalAxis = new ToggleableBoundAction<GraphSettings>("graph.verticalAxis", "graph.verticalAxis", 
+				info, GraphSettings.class, GraphSettings.SHOW_VERT_AXIS_PROPERTY, "vaxisshow.png", 
 				Builder.ICONS, 22);
 
-		showGridlines = new ToggleableBoundAction<GraphInfo>("graph.grid", "graph.grid",
-				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_PAPER_PROPERTY, "showgrid.png", 
+		showGridlines = new ToggleableBoundAction<GraphSettings>("graph.grid", "graph.grid",
+				info, GraphSettings.class, GraphSettings.SHOW_GRAPH_PAPER_PROPERTY, "showgrid.png", 
 				Builder.ICONS, 22);
 
-		showBaselines = new ToggleableBoundAction<GraphInfo>("graph.baselines", "graph.baselines", 
-				info, GraphInfo.class, GraphInfo.SHOW_BASELINES_PROPERTY);
+		showBaselines = new ToggleableBoundAction<GraphSettings>("graph.baselines", "graph.baselines", 
+				info, GraphSettings.class, GraphSettings.SHOW_BASELINES_PROPERTY);
 
-		showComponentNames = new ToggleableBoundAction<GraphInfo>("graph.labels", "graph.labels",
-				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_NAMES_PROPERTY, "label.png", 
+		showComponentNames = new ToggleableBoundAction<GraphSettings>("graph.labels", "graph.labels",
+				info, GraphSettings.class, GraphSettings.SHOW_GRAPH_NAMES_PROPERTY, "label.png", 
 				Builder.ICONS, 22);
 		
-		showRemarks = new ToggleableBoundAction<GraphInfo>("graph.remarks", "graph.remarks",
-				info, GraphInfo.class, GraphInfo.SHOW_GRAPH_REMARKS, "note.png", 
+		showRemarks = new ToggleableBoundAction<GraphSettings>("graph.remarks", "graph.remarks",
+				info, GraphSettings.class, GraphSettings.SHOW_GRAPH_REMARKS, "note.png", 
 				Builder.ICONS, 22);
 
-		showHundredPercentLines = new ToggleableBoundAction<GraphInfo>("graph.100percentLines", "graph.100percentLines", 
-				info, GraphInfo.class, GraphInfo.SHOW_HUNDREDPERCENTLINES_PROPERTY);
+		showHundredPercentLines = new ToggleableBoundAction<GraphSettings>("graph.100percentLines", "graph.100percentLines", 
+				info, GraphSettings.class, GraphSettings.SHOW_HUNDREDPERCENTLINES_PROPERTY);
 	}
 	
 	protected ToggleableAction showElementsPanel;
@@ -245,7 +247,7 @@ public class GraphActions {
 	@SuppressWarnings("serial")
 	private void createAgentActions() {
 		PlotAgent[] agents = PlotAgent.values();
-		PlotAgent defaultAgent = PlotAgent.getDefault();
+		
 		
 		// create an array of actions for the agents
 		plotTypes = new TellervoAction[agents.length];
@@ -256,13 +258,12 @@ public class GraphActions {
 			final PlotAgent agent = agents[i];
 
 			// on action, set the plot agent and update/redraw the graph
-			TellervoAction action = new ToggleableAction(agent.getI18nTag(), (agent == defaultAgent), Builder.getIcon(agent.getI18nTag()+".png", 22)) {
+			TellervoAction action = new ToggleableAction(agent.getI18nTag(), (agent == graph.getPlotAgent()), Builder.getIcon(agent.getI18nTag()+".png", 22)) {
 				public void togglePerformed(ActionEvent ae, Boolean value) {
 					graph.setPlotAgent(agent);
 					graph.update();
 				}
 			};
-			
 			
 			agentGroup.add(action);
 			plotTypes[i] = action;

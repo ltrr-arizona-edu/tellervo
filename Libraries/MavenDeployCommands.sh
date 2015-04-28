@@ -7,15 +7,6 @@ mvn deploy:deploy-file -DgroupId=com.l2prod.common   -DartifactId=l2fprod-common
 mvn deploy:deploy-file -DgroupId=com.google.code     -DartifactId=jsyntaxpane                -Dversion=0.9.5         -Dpackaging=jar -Dfile=jsyntaxpane-0.9.5-b17.jar       -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
 mvn deploy:deploy-file -DgroupId=org.netbeans.api    -DartifactId=org-netbeans-swing-outline -Dversion=1.0	         -Dpackaging=jar -Dfile=org-netbeans-swing-outline.jar  -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
 
-# These are for WorldWindJava.  They were taken from the WWJ zip file.  We have no idea of the correct version numbers therefore cannot use from elsewhere
-mvn deploy:deploy-file -DgroupId=gov.nasa.worldwind  -DartifactId=worldwind                  -Dversion=0.6.874.15796 -Dpackaging=jar -Dfile=worldwindjava-0.6.874.15796.jar -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
-mvn deploy:deploy-file -DgroupId=org.osgeo           -DartifactId=gdal                       -Dversion=0.1	         -Dpackaging=jar -Dfile=gdal.jar                        -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
-mvn deploy:deploy-file -DgroupId=org.processing      -DartifactId=gluegen-rt                  -Dversion=1.5.r0196	 -Dpackaging=jar -Dfile=gluegen-rt-1.5.r0196.jar        -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
-mvn deploy:deploy-file -DgroupId=org.processing      -DartifactId=jogl                       -Dversion=1.5.r0196     -Dpackaging=jar -Dfile=jogl-1.5.r0196.jar              -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
-
-# Native JOGL libraries wrapper.  Original repository (maven.iscpif.fr - http://maven.iscpif.fr/snapshots) is currently broken
-#mvn deploy:deploy-file -DgroupId=fr.iscpif           -DartifactId=jogl-wrapper               -Dversion=1.0	       -Dpackaging=jar -Dfile=jogl-wrapper-1.0.jar              -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
-
 # Postgres lib
 mvn deploy:deploy-file  -DgroupId=postgresql          -DartifactId=pljava-public              -Dversion=1.4.2         -Dpackaging=jar -Dfile=pljava.jar                     -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
 
@@ -29,3 +20,11 @@ mvn deploy:deploy-file  -DgroupId=org.tridas.schema    -DartifactId=tridasaandi 
 mvn deploy:deploy-file  -DgroupId=org.tridas.schema    -DartifactId=tridas-annotations                -Dversion=1.0	     -Dpackaging=jar -Dfile=tridas-annotations-1.0.jar		    -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
 mvn deploy:deploy-file  -DgroupId=com.sun.tools.xjc    -DartifactId=collection-setter-injector                -Dversion=0.1	     -Dpackaging=jar -Dfile=collection-setter-injector-0.1.jar		    -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
 mvn deploy:deploy-file  -DgroupId=jpedal    -DartifactId=jpedal                -Dversion=4.45-b-105     -Dpackaging=jar -Dfile=jpedal-4.45-b-105.jar		    -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
+
+
+## WorldWindJava 2
+## WWJ package in Maven central is fubar so this is a manual build with the correct dependencies specified.  This should be able to be 
+## replaced with an official build some time in the future
+mvn deploy:deploy-file -Durl=http://maven.tridas.org/repository/tridas-releases  -DrepositoryId=tridas-releases  -Dfile=worldwindjava-tellervo-2.0.0.jar     -DpomFile=../worldwindjava-pom.xml
+mvn deploy:deploy-file  -DgroupId=org.osgeo          -DartifactId=gdal              -Dversion=0.2         -Dpackaging=jar -Dfile=gdal.jar                     -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
+

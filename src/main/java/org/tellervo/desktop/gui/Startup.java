@@ -41,6 +41,9 @@ import javax.swing.UIManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.editor.LiteEditor;
+import org.tellervo.desktop.gis2.OpenGLTestCapabilities;
 import org.tellervo.desktop.model.TellervoModelLocator;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.ui.Builder;
@@ -106,7 +109,36 @@ public class Startup  {
 			// monitor.close();
 			// let's go...
 
-			TellervoMainWindow.showMainWindow();
+			
+			// Open the editor
+			if(App.isTellervoLiteMode())
+			{
+				// Lite mode
+				LiteEditor editor = LiteEditor.getNewInstance();
+				App.mainWindow = editor;
+				editor.setVisible(true);
+			}
+			else
+			{
+				// Full mode - but first check OpenGL capabilities.
+				if(OpenGLTestCapabilities.isOpenGLCapable())
+				{
+					log.debug("Computer is OpenGL capable");
+				}
+				else
+				{
+					log.warn("Computer is not OpenGL capable. Mapping will be disabled");
+					log.warn("The following debug report may be helpful...");
+					log.warn(OpenGLTestCapabilities.getOpenGLProblems());
+				}
+				
+				// Full Tellervo uses editor as main window
+				FullEditor editor = FullEditor.getInstance();
+				App.mainWindow = editor;
+				editor.setVisible(true);
+
+			}
+			
 		} catch (Throwable t) {
 			new Bug(t);
 		}

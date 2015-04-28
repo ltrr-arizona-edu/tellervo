@@ -30,6 +30,7 @@ import javax.swing.table.AbstractTableModel;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasSample;
 
@@ -142,19 +143,19 @@ public class SampleListTableModel extends AbstractTableModel {
 		
 		for(TridasGenericField gf : gflist)
 		{
-			if (gf.getName().equals("tellervo.boxCode")){
+			if (gf.getName().equals(TridasUtils.GENERIC_FIELD_STRING_BOXCODE)){
 				boxCode = gf.getValue().toString();
 			}
-			if (gf.getName().equals("tellervo.boxCurationLocation")){
+			if (gf.getName().equals(TridasUtils.GENERIC_FIELD_STRING_CURATION_LOCATION)){
 				boxCurationLocation = gf.getValue().toString();
 			}
-			if (gf.getName().equals("tellervo.boxTrackingLocation")) {
+			if (gf.getName().equals(TridasUtils.GENERIC_FIELD_STRING_BOX_TRACKING_LOCATION)) {
 				boxTrackingLocation = gf.getValue().toString();
 			}
-			if (gf.getName().equals("tellervo.objectLabCode")){
+			if (gf.getName().equals(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE)){
 				objectCode = gf.getValue().toString();
 			}
-			if (gf.getName().equals("tellervo.elementLabCode")){
+			if (gf.getName().equals(TridasUtils.GENERIC_FIELD_STRING_ELEMENTCODE)){
 				elementCode = gf.getValue().toString();
 			}
 					

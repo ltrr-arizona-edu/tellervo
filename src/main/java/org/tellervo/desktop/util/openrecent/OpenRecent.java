@@ -41,15 +41,16 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.editor.LiteEditor;
 import org.tellervo.desktop.gui.Bug;
-import org.tellervo.desktop.gui.CanOpener;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tridas.io.formats.tucson.TucsonFormat;
 
 
 /**
@@ -279,14 +280,25 @@ public class OpenRecent {
 			
 			switch(desc.getLoaderType()) {
 			case CWTE: {
-				TellervoWsiTridasElement element = new TellervoWsiTridasElement(desc.getIdentifier());
+				TellervoWSILoader element = new TellervoWSILoader(desc.getIdentifier());
+				
+				
 				
 				((SampleOpener)opener).performOpen(element.load());
 				break;
 			}
 				
 			case FILE: {
-				CanOpener.open(desc.getFileName());
+				//TODO Remember file type 
+				
+				LiteEditor editor = LiteEditor.getNewInstance();
+				try {
+					TucsonFormat format = new TucsonFormat();
+					editor.loadFile(null, new File(desc.getFileName()), format);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}	
 				return;
 			}
 				
@@ -303,7 +315,8 @@ public class OpenRecent {
 			return;
 		}
 
-		CanOpener.open(o.toString());		
+		new Bug(new IllegalArgumentException("Unknown item in OpenRecent"));
+
 	}
 
 	public static class SampleOpener {
@@ -323,7 +336,8 @@ public class OpenRecent {
 		
 		public void performOpen(Sample s) {
 			OpenRecent.sampleOpened(new SeriesDescriptor(s), getTag());
-			new Editor(s);
+			FullEditor editor = FullEditor.getInstance();
+			editor.addSample(s);
 		}
 	}
 	

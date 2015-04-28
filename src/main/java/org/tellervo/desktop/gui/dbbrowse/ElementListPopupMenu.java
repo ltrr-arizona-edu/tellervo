@@ -29,7 +29,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.tellervo.desktop.cross.CrossdateDialog;
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.gui.hierarchy.WSITagNameDialog;
 import org.tellervo.desktop.gui.hierarchy.AddRemoveWSITagDialog;
@@ -57,7 +57,8 @@ public class ElementListPopupMenu extends JPopupMenu {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					Sample s = element.load();
-					new Editor(s);
+					FullEditor editor = FullEditor.getInstance();
+                	editor.addSample(s);
 				} catch (IOException e1) {
 					Alert.errorLoading(element.getShortName(), e1);
 				} 
@@ -96,7 +97,7 @@ public class ElementListPopupMenu extends JPopupMenu {
 				item.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {			
 					
-						new CrossdateDialog(new JFrame(), element);
+						new CrossdateDialog(element);
 
 					}
 				});

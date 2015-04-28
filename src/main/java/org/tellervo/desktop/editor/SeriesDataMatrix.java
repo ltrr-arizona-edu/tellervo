@@ -29,18 +29,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
-import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
@@ -48,19 +50,31 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableModel;
 
+import net.miginfocom.swing.MigLayout;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
 import org.tellervo.desktop.editor.support.ModifiableTableCellRenderer;
 import org.tellervo.desktop.editor.support.TableCellModifier;
 import org.tellervo.desktop.editor.support.TableCellModifierListener;
+import org.tellervo.desktop.graph.Graph;
+import org.tellervo.desktop.graph.GraphActions;
+import org.tellervo.desktop.graph.GraphController;
+import org.tellervo.desktop.graph.GraphSettings;
+import org.tellervo.desktop.graph.GraphToolbar;
+import org.tellervo.desktop.graph.GrapherPanel;
+import org.tellervo.desktop.graph.PlotAgent;
 import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
+import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
 import org.tellervo.desktop.manip.RedateDialog;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.prefs.PrefsListener;
-import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.remarks.AbstractRemark;
 import org.tellervo.desktop.remarks.RemarkPanel;
 import org.tellervo.desktop.remarks.Remarks;
@@ -70,12 +84,10 @@ import org.tellervo.desktop.sample.SampleEvent;
 import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.util.PopupListener;
+import org.tellervo.desktop.ui.I18n;
 import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasValue;
-
-import javax.swing.JSplitPane;
 
 
 /**
@@ -102,13 +114,21 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	public JTable myTable;
 
 	protected TableModel myModel;
-	
+		
 	protected ModifiableTableCellRenderer myCellRenderer;
-	private JSplitPane splitPane;
+	private JSplitPane splitPaneTableAndRemarks;
 	private JPanel panelLeft;
 	private JPanel panelRight;
 	private RemarkPanel remarkPanel;
-	private Editor e;
+	private AbstractEditor e;
+	private EditorMeasurePanel measurePanel;
+	private JPanel measurePanelHolder;
+	private GrapherPanel graphPanel;
+	private List<Graph> graphSamples;
+	private JSplitPane splitPaneTableAndGraph;
+	
+
+	
 	
 	// pass this along to the table
 	@Override
@@ -156,50 +176,63 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		else
 			stopEditing(true);
 	}
-	
-	
-	public SeriesDataMatrix(Sample s, Editor e) {
-		// copy data reference, add self as observer
+		
+	public void init(Sample s, AbstractEditor e)
+	{
 		mySample = s;
 		mySample.addSampleListener(this);
 		this.e = e;
 		
 		// create table
 		myModel = new UnitAwareDecadalModel(mySample);
-		/*
-		 final Color DARK = new Color(0.7333f, 0.7765f, 0.8431f); // EXTRACT CONSTs!
-		 final Color LIGHT = new Color(0.8196f, 0.8510f, 0.9216f);
-		 final int THIN = 2;
-		 final int THICK = 5;
-		 */
-		myTable = new JTable(myModel); /* {
-		 public void paint(Graphics g) {
-		 setOpaque(true);
+		
+		// force no drawing of graph names
+		//gInfo.setShowGraphNames(false);
+		//gInfo.setShowVertAxis(false);
+		//gInfo.setHundredUnitHeight(5);
+	}
+	
+	public SeriesDataMatrix(Sample s, AbstractEditor e) {
+		init(s, e);
+		
+		final AbstractEditor glue = e;
+		
 
-		 int w = getWidth(), h = getHeight();
+		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
+		rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
+		
+		// Add table / remarks split pane
+		setLayout(new BorderLayout(0, 0)); 
+		splitPaneTableAndRemarks = new JSplitPane();
+		splitPaneTableAndRemarks.setOneTouchExpandable(true);
+		add(splitPaneTableAndRemarks, BorderLayout.CENTER);
+		
+		// Setup table/graph panel
+		panelLeft = new JPanel();
+		splitPaneTableAndRemarks.setLeftComponent(panelLeft);
+		panelLeft.setLayout(new MigLayout("", "[158px,grow,fill]", "[][123.00,grow,fill]"));
 
-		 // fill light
-		 g.setColor(LIGHT);
-		 g.fillRect(0, 0, w, h);
-
-		 // dark stripes
-		 g.setColor(DARK);
-		 ((Graphics2D) g).setStroke(new BasicStroke(THIN-1f));
-		 for (int x=0; x<w+h; x+=THIN+THICK)
-		 g.drawLine(x, 0, x-h, h);
-
-		 super.paint(g);
-		 }
-		 }; */
+		// Setup remarks panel
+		panelRight = new JPanel();
+		splitPaneTableAndRemarks.setRightComponent(panelRight);
+		panelRight.setLayout(new BorderLayout(0, 0));
+		panelRight.setMaximumSize(new Dimension(500, 99999));
+		
+		// Setup measurement panel
+		measurePanelHolder = new JPanel();
+		measurePanelHolder.setLayout(new BorderLayout());
+		panelLeft.add(measurePanelHolder, "cell 0 0,grow");
+		
+		// Setup split for table and graph
+		splitPaneTableAndGraph = new JSplitPane();
+		splitPaneTableAndGraph.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		panelLeft.add(splitPaneTableAndGraph, "cell 0 1,grow");
+		
+		// Setup table
+		myTable = new JTable(myModel); 
 		((DefaultTableCellRenderer)myTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.RIGHT);
 		myTable.setGridColor(new Color(240, 240, 240)); 
-		
-		//myTable.setDefaultEditor(Integer.class, new SeriesDataMatrixEditor());
-		// mouse listener for table
-		
-		final Editor glue = e;
 		myTable.addMouseListener(new MouseListener() {
-
 
 			@Override
 			public void mouseClicked(MouseEvent ev) {
@@ -232,35 +265,23 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 				}
 				
 			}
-
 			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void mouseEntered(MouseEvent arg0) {			
 			}
-
 			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void mouseExited(MouseEvent arg0) {				
 			}
-
 			@Override
-			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void mousePressed(MouseEvent arg0) {				
 			}
-
 			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void mouseReleased(MouseEvent arg0) {				
 			}
 		});
-
+		
 		// key listener for table
 		myTable.addKeyListener(new DecadalKeyListener(myTable, mySample));
-
+		
 		myTable.setCellSelectionEnabled(true);
 		myTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		
@@ -270,88 +291,166 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 				mySample.getRange().getStart().column() + 1, mySample.getRange()
 						.getStart().column() + 1);
 						
-		// don't let the columns be rearranged or resized
+		// make the last column a jprogressbar, % of max
+		int max = 0;
+		if (mySample.hasCount()) max = (Collections.max(mySample.getCount())).intValue();
 		myTable.getTableHeader().setReorderingAllowed(false);
 		myTable.getColumnModel().getColumn(0).setMinWidth(100);
 		myTable.getTableHeader().setResizingAllowed(false);
 		myTable.setRowSelectionAllowed(true);
+		myTable.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
+		myTable.getColumnModel().getColumn(11).setCellRenderer(new CountRenderer(max));
 		
 
-		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
-		rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
-		myTable.getColumnModel().getColumn(0).setCellRenderer(rightRenderer);
-		
-		// make the last column a jprogressbar, % of max
-		int max = 0;
-		if (mySample.hasCount())
-			max = (Collections.max(mySample.getCount())).intValue();
-		// DISABLED: use column-header renderer for first column (pseudo-row-headers)
-		// -- it doesn't look that great, since there are still gridlines between
-		// rows; what i should really do is make a real table-row-header, which isn't too hard.
-		// myTable.getColumnModel().getColumn(0).setCellRenderer(new
-		//         javax.swing.table.JTableHeader().getDefaultRenderer());
-		myTable.getColumnModel().getColumn(11).setCellRenderer(
-				new CountRenderer(max));
-		
 		myCellRenderer = new ModifiableTableCellRenderer(new IconBackgroundCellRenderer(mySample));
 		for(int i = 1; i < 11; i++)
+		{
 			myTable.getColumnModel().getColumn(i).setCellRenderer(myCellRenderer);
+		}
 		
-		// make nulls elsewhere shaded, to indicate "can't use"
-		// DISABLED, because it doesn't hit the area below the table yet (how?).
-		// (but it looks really cool.)
-		//SlashedIfNullRenderer slasher = new SlashedIfNullRenderer(mySample, myModel);
-		//for (int i=1; i<=10; i++)
-		//myTable.getColumnModel().getColumn(i).setCellRenderer(slasher);
-		//myTable.setIntercellSpacing(new Dimension(0, 0));
-
-		// set font, gridlines, colors ==> handled by refreshFromPreferences()
-		
-		// add to panel
-		setLayout(new BorderLayout(0, 0)); // huh?
-		JScrollPane sp = new JScrollPane(myTable,
+		// Setup scrollpane for table
+		JScrollPane scrollPane = new JScrollPane(myTable,
 				ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
 				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		sp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+		splitPaneTableAndGraph.setLeftComponent(scrollPane);
+		scrollPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		
-		
-		sp.setPreferredSize(new Dimension(700, 520));
-		
-		
-		splitPane = new JSplitPane();
-		splitPane.setOneTouchExpandable(true);
-		
-		add(splitPane, BorderLayout.CENTER);
-		
-		panelLeft = new JPanel();
-		splitPane.setLeftComponent(panelLeft);
-		
-		panelRight = new JPanel();
-		splitPane.setRightComponent(panelRight);
-		panelRight.setLayout(new BorderLayout(0, 0));
-		panelLeft.setLayout(new BorderLayout(0, 0));
-		
+		// Setup remark panel
 		remarkPanel = new RemarkPanel(myTable, mySample);
 		remarkPanel.setMinimumSize(new Dimension(280,280));
-		
 		panelRight.add(remarkPanel);
 		
-		panelLeft.add(sp);
+		if(e instanceof LiteEditor)
+		{
+			panelRight.setVisible(false);
+		}
+		
+		// Setup status bar
 		statusBar = new EditorStatusBar(myTable, mySample);
 		add(statusBar, BorderLayout.SOUTH);
-		
+
+		// Setup graph
+		if(mySample!=null)
+		{
+			graphSamples = new ArrayList<Graph>();
+			graphSamples.add(new Graph(mySample));
+			splitPaneTableAndGraph.setRightComponent(this.createGraph(this.getSize(), 10 ));
+		}
+	
+		// Setup preferences
 		initPrefs();
 		App.prefs.addPrefsListener(this);
-		splitPane.setDividerLocation(2000);
-		splitPane.setResizeWeight(1.0);
+		
+		
+		// Set divider locations and size
+		splitPaneTableAndRemarks.setDividerLocation(0.9d);
+		splitPaneTableAndRemarks.setResizeWeight(1.0);
+		splitPaneTableAndGraph.setDividerLocation(1.0d);
+		splitPaneTableAndGraph.setResizeWeight(1.0d);
+		splitPaneTableAndGraph.setOneTouchExpandable(true);
 		
 	}
 	
+
+	/**
+	 * Show the redate dialog for the current sample
+	 */
 	private void showRedateDialog()
 	{
 		if(e!=null)	new RedateDialog(mySample, e).setVisible(true);
 	}
 	
+	/**
+	 * Stop measuring
+	 */
+	public void stopMeasuring()
+	{
+		if (measurePanel != null) {
+			
+			// Make sure the size is sensible
+			//int currentWidth = (int) getSize().getWidth();
+			//int currentHeight = (int) getSize().getHeight();
+			
+			measurePanel.cleanup();
+			this.measurePanelHolder.remove(measurePanel);
+			
+			//editorEditMenu.setMeasuring(false);
+			enableEditing(true);
+			
+			//setSize(currentWidth-this.measuringPanelWidth, currentHeight);
+			validate();
+			repaint();
+			measurePanel = null;
+			
+		}
+	}
+	
+	/**
+	 * Toggle between measuring and non-measuring mode
+	 */
+	public void toggleMeasuring()
+	{
+		// are we already measuring?
+				if(measurePanel != null) {
+					stopMeasuring();
+					return;
+				}
+				
+				// ok, start measuring, if we can!
+				
+				// Set up the measuring device
+				AbstractMeasuringDevice device;
+				try {
+					device = MeasuringDeviceSelector.getSelectedDevice(true);
+					device.setPortParamsFromPrefs();
+				}
+				catch (Exception ioe) {
+					
+					Alert.error(e, I18n.getText("error"), 
+							I18n.getText("error.initExtComms")+".\n"+
+							I18n.getText("error.possWrongComPort"));
+					
+					App.showPreferencesDialog();
+					
+					return;
+				}
+				
+				try{
+					//editorEditMenu.setMeasuring(true);
+				} catch (Exception e)
+				{ 
+				}
+				
+				enableEditing(false);
+			
+				// add the measure panel...
+				measurePanel = new EditorMeasurePanel(e, device);
+				this.measurePanelHolder.add(measurePanel, BorderLayout.CENTER);
+								
+				// Make sure the size is sensible
+				/*int currentWidth = (int) getSize().getWidth();
+				int currentHeight = (int) getSize().getHeight();	
+				setSize(currentWidth+this.measuringPanelWidth, currentHeight);*/	
+				
+				validate();
+				repaint();
+				measurePanel.requestDefaultFocus();
+				
+				// Change the variable to EW/LW if in sub-annual mode
+				if(getSample().containsSubAnnualData())
+				{
+					App.prefs.setPref(PrefKey.MEASUREMENT_VARIABLE, MeasurementVariable.EARLY_AND_LATEWOOD_WIDTH.toString());
+					getSample().fireMeasurementVariableChanged();
+				}
+	}
+	
+	/**
+	 * Create a popup menu for the specified row and col of the table
+	 * 
+	 * @param row
+	 * @param col
+	 * @return
+	 */
 	protected JPopupMenu createPopupMenu(int row, int col) {
 		
 		JPopupMenu popup = new JPopupMenu();
@@ -515,7 +614,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
-			Alert.error("Can't Modify Data",
+			Alert.error(null, "Can't Modify Data",
 					"You cannot modify indexed or summed data files.");
 			return;
 		}
@@ -619,6 +718,12 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 	}
 
+	/**
+	 * Insert specified number of years at the current point in the table
+	 * 
+	 * @param val
+	 * @param nYears
+	 */
 	public void insertYears(Integer val, int nYears) {
 		int row = myTable.getSelectedRow();
 		int col = myTable.getSelectedColumn();
@@ -626,10 +731,19 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		insertYears(val, nYears, row, col);
 	}
 	
+	
+	/**
+	 * Insert specified number of years at the specified row/col in the table
+	 * 
+	 * @param val
+	 * @param nYears
+	 * @param insertpointrow
+	 * @param insertpointcol
+	 */
 	public void insertYears(Integer val, int nYears, int insertpointrow, int insertpointcol) {
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
-			Alert.error("Can't Modify Data",
+			Alert.error(null, "Can't Modify Data",
 					"You cannot modify indexed or summed data files.");
 			return;
 		}
@@ -645,7 +759,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		// make sure it's a valid place to insert a year
 		if ((!mySample.getRange().contains(y)
 				&& !mySample.getRange().getEnd().add(nYears).equals(y)) && mySample.getRange().getSpan()>1) {
-			 Alert.error("Can't insert here",
+			 Alert.error(null, "Can't insert here",
 			    "This isn't a valid place to insert a year.");
 			return;
 		}
@@ -688,7 +802,9 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		myTable.setColumnSelectionInterval(col, col);
 	}
 	
-
+	/**
+	 * Delete the current year from the table
+	 */
 	public void deleteYear() {
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
@@ -749,20 +865,27 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	public void sampleRedated(SampleEvent e) {
 		// update data view
 		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
+		graphPanel.update();
+		graphPanel.scrollToYear(getSelectedYear());
+
 	}
 
 	public void sampleDataChanged(SampleEvent e) {
 		// update data view
 		((UnitAwareDecadalModel) myModel).fireTableDataChanged();
-		// FIXME: make myModel an AbstractTableModel, so i don't have to cast
+		graphPanel.update();
 	}
 
 	public void sampleMetadataChanged(SampleEvent e) {
 	}
 
 	public void sampleElementsChanged(SampleEvent e) {
+		graphPanel.update();
 	}
 
+	/**
+	 * Initialise the GUI based on the stored preferences
+	 */
 	private void initPrefs() {
 		// reset fonts
 		Font font = App.prefs.getFontPref(PrefKey.EDIT_FONT, null);
@@ -916,19 +1039,18 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 
 			
 			((UnitAwareDecadalModel) myModel).setDisplayUnits(NormalTridasUnit.valueOf(pref));
-		}
-		
-		
-		
+		}		
 	}
 
-
+	/**
+	 * Open or close the remarks panel according to its current state
+	 */
 	public void toggleRemarks()
 	{
 		log.debug("toggling Remarks panel");
 		
-		int currLoc = splitPane.getDividerLocation();
-		int totalWidth = splitPane.getWidth();
+		int currLoc = splitPaneTableAndRemarks.getDividerLocation();
+		int totalWidth = splitPaneTableAndRemarks.getWidth();
 		
 		log.debug("Currloc     = "+currLoc);
 		log.debug("Total width = " + totalWidth);
@@ -937,30 +1059,138 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		if(currLoc+20 >= totalWidth)
 		{
 			log.debug("Panel appears to be shut so open");
-			BasicSplitPaneUI ui = (BasicSplitPaneUI)splitPane.getUI();
+			BasicSplitPaneUI ui = (BasicSplitPaneUI)splitPaneTableAndRemarks.getUI();
 			JButton oneClick = (JButton)ui.getDivider().getComponent(0);
 			oneClick.doClick();
 		}
 		else
 		{
 			log.debug("Panel appears to be open so shut");
-			splitPane.setDividerLocation(1.0);
+			hideRemarksPanel();
 		}
-		
-
-		
-		
 	}
 	
+	
+	public void saveRemarksDividerLocation()
+	{
+		App.prefs.setIntPref(PrefKey.EDITOR_REMARKS_DIVIDER_LOCAITON, splitPaneTableAndRemarks.getDividerLocation());
+	}
+	
+	public void restoreRemarksDividerLocation()
+	{
+		int newloc = App.prefs.getIntPref(PrefKey.EDITOR_REMARKS_DIVIDER_LOCAITON, 999999);
+		if(newloc!=999999)
+		{
+			splitPaneTableAndRemarks.setDividerLocation(newloc);
+		}
+		else
+		{
+			splitPaneTableAndRemarks.setDividerLocation(0.8d);
+		}
+	}
+	
+	public void saveGraphDividerLocation()
+	{
+		App.prefs.setIntPref(PrefKey.EDITOR_GRAPH_DIVIDER_LOCAITON, splitPaneTableAndGraph.getDividerLocation());
+	}
+	
+	public void restoreGraphDividerLocation()
+	{
+		int newloc = App.prefs.getIntPref(PrefKey.EDITOR_GRAPH_DIVIDER_LOCAITON, 999999);
+		if(newloc!=999999)
+		{
+			splitPaneTableAndGraph.setDividerLocation(newloc);
+		}
+		else
+		{
+			splitPaneTableAndGraph.setDividerLocation(0.2d);
+		}
+	}
+	
+	
+	/**
+	 * Make sure the remarks panel is collapsed
+	 */
+	public void hideRemarksPanel()
+	{
+		splitPaneTableAndRemarks.setDividerLocation(1.0);
+	}
+
+	/**
+	 * Whole ring width value measured by serial device
+	 * 
+	 * @param x
+	 * @return
+	 */
+	public Year setCurrentRingValue(int x) {
+		return measured(x);
+	}
+	
+	/**
+	 * Early/Late wood value measured by serial device
+	 *  
+	 * @param ew
+	 * @param lw
+	 * @return
+	 */
+	public Year setCurrentRingValue(int ew, int lw) {
+		return measured(ew, lw);
+	}
+	
+	
 	@Override
-	public void measurementVariableChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
-		
+	public void measurementVariableChanged(SampleEvent e) {		
 	}
 
 	@Override
-	public void sampleDisplayCalendarChanged(SampleEvent e) {
-		// TODO Auto-generated method stub
+	public void sampleDisplayCalendarChanged(SampleEvent e) {		
+	}
+	
+	public GrapherPanel getGraphPanel()
+	{
+		return this.graphPanel;
+	}
+	
+	private JComponent createGraph(final Dimension otherPanelDim, final int extraWidth) {
+
 		
+		// Make sure the graphs can't be dragged
+		graphSamples.get(0).setDraggable(false);
+		
+				
+		// create a graph panel; put it in a scroll panel
+		graphPanel = new GrapherPanel(graphSamples, null, e.gInfo) {
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Dimension getPreferredScrollableViewportSize() {
+				// -10s are for insets set below in the emptyBorder
+				int screenWidth = super.getPreferredScrollableViewportSize().width - (otherPanelDim.width + extraWidth);
+				int graphWidth = getGraphPixelWidth();
+				return new Dimension((graphWidth < screenWidth) ? graphWidth : screenWidth, otherPanelDim.height);
+			}
+		};
+
+		JScrollPane scroller = new JScrollPane(graphPanel,
+				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
+				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		
+		// make the default viewport background the same color as the graph
+		scroller.getViewport().setBackground(e.gInfo.getBackgroundColor());
+		
+		GraphActions actions = new GraphActions(graphPanel, null, new GraphController(graphPanel, scroller));
+		GraphToolbar toolbar = new GraphToolbar(actions);
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new BorderLayout());
+		panel.add(scroller, BorderLayout.CENTER);
+		panel.add(toolbar, BorderLayout.NORTH);
+		
+		return panel;
+	}
+
+	public void setPlotAgent(PlotAgent plotAgent) {
+		graphPanel.setPlotAgent(plotAgent);
+		graphPanel.update(true);
 	}
 }

@@ -25,7 +25,7 @@ import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
 
@@ -56,7 +56,8 @@ public class SamplePopupMenu extends JPopupMenu {
         JMenuItem open = Builder.makeMenuItem("menus.file.open");
         open.addActionListener(new AbstractAction() {
             public void actionPerformed(ActionEvent ae) {
-                new Editor(s);
+            	FullEditor editor = FullEditor.getInstance();
+    			editor.addSample(s);
             }
         });
 

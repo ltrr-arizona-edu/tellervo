@@ -35,9 +35,8 @@ import org.tellervo.desktop.ui.MessageDialog.DialogType;
 
 public class Alert {
 
-	@Deprecated
     public static void error(String title, String text) {
-    	MessageDialog dialog = new MessageDialog(title, text, DialogType.ERROR);
+    	MessageDialog dialog = new MessageDialog(App.mainWindow, title, text, DialogType.ERROR);
 		dialog.setVisible(true);
     }
     

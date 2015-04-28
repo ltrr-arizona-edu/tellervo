@@ -186,17 +186,17 @@ public class Remarks {
 		tellervoRemarkIconMap.put("insect damage", "bug.png");
 		tellervoRemarkIconMap.put("locally absent ring", "note.png");
 		tellervoRemarkIconMap.put("Fire scar in latewood", "fire-A.png");
-		tellervoRemarkIconMap.put("Fire injury in latewood", "fire-a.png");	
+		tellervoRemarkIconMap.put("Fire injury in latewood", "fireinj-a.png");	
 		tellervoRemarkIconMap.put("Fire scar in dormant position", "fire-D.png");
-		tellervoRemarkIconMap.put("Fire injury in dormant position", "fire-d.png");
+		tellervoRemarkIconMap.put("Fire injury in dormant position", "fireinj-d.png");
 		tellervoRemarkIconMap.put("Fire scar in first third of earlywood", "fire-E.png");
-		tellervoRemarkIconMap.put("Fire injury in first third of earlywood", "fire-e.png");
+		tellervoRemarkIconMap.put("Fire injury in first third of earlywood", "fireinj-e.png");
 		tellervoRemarkIconMap.put("Fire scar in middle third of earlywood", "fire-M.png");
-		tellervoRemarkIconMap.put("Fire injury in middle third of earlywood", "fire-m.png");
+		tellervoRemarkIconMap.put("Fire injury in middle third of earlywood", "fireinj-m.png");
 		tellervoRemarkIconMap.put("Fire scar in last third of earlywood", "fire-L.png");
-		tellervoRemarkIconMap.put("Fire injury in last third of earlywood", "fire-l.png");
+		tellervoRemarkIconMap.put("Fire injury in last third of earlywood", "fireinj-l.png");
 		tellervoRemarkIconMap.put("Fire scar - position undetermined", "fire-U.png");
-		tellervoRemarkIconMap.put("Fire injury - position undetermined", "fire-u.png");
+		tellervoRemarkIconMap.put("Fire injury - position undetermined", "fireinj-u.png");
 		tellervoRemarkIconMap.put("Not recording fires", "fire-not-recording.png");
 
 		

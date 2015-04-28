@@ -153,23 +153,23 @@ public class UnitAwareDecadalModel extends DecadalModel {
 					}
 					else if (displayUnits.equals(NormalTridasUnit.MILLIMETRES))
 					{
-						val = val.doubleValue() / 1000;
+						val = Math.round(val.doubleValue() / 1000);
 					}
 					else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
 					{
-						val = val.intValue() / 100;
+						val = Math.round(val.doubleValue() / 100);
 					}
 					else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
 					{
-						val = val.intValue() / 50;
+						val = Math.round(val.doubleValue() / 50);
 					}
 					else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
 					{
-						val = val.intValue() / 20;
+						val = Math.round(val.doubleValue() / 20);
 					}
 					else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 					{
-						val = val.intValue() / 10;
+						val = Math.round(val.doubleValue() / 10);
 					}
 					else if (displayUnits.equals(NormalTridasUnit.MICROMETRES))
 					{
@@ -275,7 +275,7 @@ public class UnitAwareDecadalModel extends DecadalModel {
 					{
 						strval+= lwval / 20;
 					}
-					if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+					else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
 					{
 						strval+= lwval / 10;
 					}

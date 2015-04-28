@@ -42,6 +42,10 @@ package org.tellervo.desktop.util;
 
 import java.awt.Color;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 /**
    Various helpful utilities which operate on Colors.
 
@@ -51,6 +55,8 @@ import java.awt.Color;
    @version $Id$
 */
 public class ColorUtils {
+	private final static Logger log = LoggerFactory.getLogger(ColorUtils.class);
+
     // don't instantiate me
     private ColorUtils() { }
 
@@ -147,4 +153,92 @@ public class ColorUtils {
 	return new Color(value, value, value);
 	// PERF: we'll get lots of these -- cache them?
     }
+    
+    
+    /**
+	 * Generates a red to blue color ramp with of 'n' colors
+	 * 
+	 * @param n
+	 * @return
+	 */
+	public static Color[] generateColorRamp(int n)
+	{
+		Color[] cols = new Color[n];
+		for(int i = 0; i < n; i++)
+		{
+			cols[i] = Color.getHSBColor((float) i / (float) (n*1.5), 0.75f, 1.0f);
+		}
+		return cols;
+	}
+	
+	/**
+	 * Get a heat amp color (red to blue) based on the value and the max value in the series
+	 *  
+	 * @param max
+	 * @param value
+	 * @return
+	 */
+	public static Color generateHeatMapColor(float max, float value)
+	{
+		return generateHeatMapColor(max, null, value);
+		
+	}
+
+	/**
+	 * Get a heat amp color (red to blue) based on the value and the max value in the series.  
+	 * If value is below min then null is returned
+	 * 
+	 *  
+	 * @param max
+ 	 * @param min
+	 * @param value
+	 * @return
+	 */
+	public static Color generateHeatMapColor(float max, Double min, float value)
+	{
+		//log.debug("Getting color for "+value+" when max is "+max);
+		
+		
+		
+		int categories = 100;
+		Color[] cols = generateColorRamp(categories);
+		
+		if(value>=max) {
+			log.debug("Value is bigger than max so return red");
+			return cols[0];
+		}
+		if(min!=null && value<min) {
+			log.debug("Value is below min so return null");
+			return null;
+		}
+		
+		float divisions = max/categories;
+		int cat  = (int) (categories-(value/divisions))-1;	
+		
+		
+		
+		
+		try{
+			log.debug("Getting color for "+value+" when max is "+max + "  -  returning color category "+cat);
+
+			return cols[cat];
+			
+		}
+		catch (IndexOutOfBoundsException e)
+		{
+			if(cat<0) {
+				log.debug("Category value " + cat + " is below zero so return the first category (red)");
+				return cols[0];
+			}
+			if(cat>categories) {
+				log.debug("Category value " + cat + " is beyond the number of categories " + categories + " so return last category (blue)");
+				return cols[categories-1];
+
+			}
+		}
+
+		
+		return null;
+		
+	}
 }

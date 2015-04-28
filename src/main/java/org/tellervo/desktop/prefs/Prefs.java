@@ -99,6 +99,9 @@ public class Prefs extends AbstractSubsystem {
 	 */
 	public enum PrefKey{
 		
+		
+		EDITOR_REMARKS_DIVIDER_LOCAITON("tellervo.editor.remarks.dividerloc"),
+		
 		LOCALE_LANGUAGE_CODE("tellervo.locale.language"),
 		LOCALE_COUNTRY_CODE("tellervo.locale.country"),
 		
@@ -107,6 +110,7 @@ public class Prefs extends AbstractSubsystem {
 		EDIT_FONT("tellervo.edit.font"),
 		EDIT_GRIDLINES("tellervo.edit.gridlines"),
 		
+		EDITOR_GRAPH_DIVIDER_LOCAITON("tellervo.editor.graph.dividerloc"),
 		GRAPH_BACKGROUND("tellervo.graph.background"),
 		GRAPH_GRIDLINES("tellervo.graph.graphpaper"),
 		GRAPH_GRIDLINES_COLOR("tellervo.graph.graphpaper.color"),
@@ -215,10 +219,17 @@ public class Prefs extends AbstractSubsystem {
 		OBJECT_FIELD_VISIBLE_OWNER("tellervo.object.field.visible.owner"),
 		OBJECT_FIELD_VISIBLE_CREATOR("tellervo.object.field.visible.creator"),
 		
+		MAP_CONTROLS_ENABLED("tellervo.map.controls"),
+		MAP_COMPASS_ENABLED("tellervo.map.compass"), 
+		MAP_COUNTRYBOUNDARY_ENABLED("tellervo.map.countryboundary"),
+		MAP_MGRSGRATICULE_ENABLED("tellervo.map.mgrsgraticule"), 
+		MAP_NASAWFSPLACENAME_ENABLED("tellervo.map.nasawfsplacename"), 
+		MAP_SCALEBAR_ENABLED("tellervo.map.scalebar"), 
+		MAP_UTMGRATICULE_ENABLED("tellervo.map.utmgraticule"), 
+		MAP_WORLDMAP_ENABLED("tellervo.map.worldmap"), 
+		MAP_STEREOMODE_ENABLED("tellervo.map.stereomode"),	
+		
 		;
-		
-		
-
 		
 		
 		private String key;

@@ -44,13 +44,13 @@ import net.miginfocom.swing.MigLayout;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.manip.Redate;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
 import org.tellervo.desktop.tridasv2.support.VersionUtil;
@@ -62,7 +62,6 @@ import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tridas.interfaces.ITridasDerivedSeries;
-import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasDatingType;
 import org.tridas.schema.SeriesLink;
@@ -304,13 +303,14 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		Sample tmp = new Sample(series);		
 
 		try {
-			TellervoWsiTridasElement saver = new TellervoWsiTridasElement(series.getIdentifier());
+			TellervoWSILoader saver = new TellervoWSILoader(series.getIdentifier());
 			// here's where we do the "meat"
 			if(saver.save(tmp)) {
 				// put it in our menu
 				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 				
-				new Editor(tmp);
+				FullEditor editor = FullEditor.getInstance();
+				editor.addSample(tmp);
 				
 				// get out of here! :)
 				return true;

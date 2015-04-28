@@ -47,7 +47,7 @@ import org.jdesktop.swingx.search.TreeSearchable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.gui.Bug;
 import org.tellervo.desktop.gui.TridasSelectEvent;
@@ -83,6 +83,7 @@ import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSITag;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.io.util.TridasUtils.TreeDepth;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -635,10 +636,16 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		{
 			// Ignore complaints that the request doesn't validate
 			// TODO Remove once 1.0.3 release is made
-			if(dlg.getFailException().getMessage().contains("does not validate against the schema"))
+			try{
+				if(dlg.getFailException().getMessage().contains("does not validate against the schema"))
+				{
+					return;
+				}
+			} catch (Exception e)
 			{
 				return;
 			}
+
 			// Search failed
 			new Bug(dlg.getFailException());
 			return;
@@ -1355,7 +1362,8 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		OpenRecent.sampleOpened(new SeriesDescriptor(s));
 		
 		// open it
-		new Editor(s);
+		FullEditor editor = FullEditor.getInstance();
+		editor.addSample(s);
 	}
 	
 	private void renameTag(DefaultMutableTreeNode node)
@@ -1456,7 +1464,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 			// Entity is an object so highlight in tree
 			TridasObjectEx object = (TridasObjectEx) entity;
 					
-			TreePath path = tree.getNextMatch(GenericFieldUtils.findField(object, "tellervo.objectLabCode").getValue().toString(), 0, Position.Bias.Forward);
+			TreePath path = tree.getNextMatch(GenericFieldUtils.findField(object, TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE).getValue().toString(), 0, Position.Bias.Forward);
 			tree.setSelectionPath(path);
 			tree.scrollPathToVisible(path);
 		}

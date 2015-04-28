@@ -19,8 +19,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.gis;
 
-import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
-import gov.nasa.worldwind.layers.LayerList;
+import gov.nasa.worldwind.WorldWindow;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,7 +27,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -45,7 +43,7 @@ public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
 	private JMenuItem overview, compass, scalebar, layerslist, stars, atmosphere, blueMarble, blueMarbleWMS2004, landsat, 
 	usda, msAerial, boundaries, placenames, wmslayermanager;
 
-	private WorldWindowGLCanvas wwd;
+	private WorldWindow wwd;
 ;
 	private WMSManager layermanager;
 	
@@ -67,7 +65,7 @@ public class GISViewMenu extends JMenu implements ItemListener, ActionListener {
 	};
 	
 	
-	public GISViewMenu(WorldWindowGLCanvas wwd)
+	public GISViewMenu(WorldWindow wwd)
 	{
         super(I18n.getText("menus.view"));
         JPopupMenu.setDefaultLightWeightPopupEnabled(false);

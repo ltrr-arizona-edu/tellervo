@@ -21,35 +21,31 @@
 package org.tellervo.desktop.gui;
 
 
-import java.io.File;
-
-import java.util.List;
-import java.util.Collections;
-
 import java.awt.Image;
-import javax.swing.JLabel;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-
-import org.tellervo.desktop.editor.Editor;
-import org.tellervo.desktop.sample.Sample;
-
-import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-
-import java.awt.dnd.DragSourceListener;
-import java.awt.dnd.DragGestureListener;
-import java.awt.dnd.DragSource;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DragGestureEvent;
-import java.awt.dnd.DragSourceEvent;
-import java.awt.dnd.DragSourceDropEvent;
-import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragGestureListener;
+import java.awt.dnd.DragSource;
 import java.awt.dnd.DragSourceContext; // new
-
+import java.awt.dnd.DragSourceDragEvent;
+import java.awt.dnd.DragSourceDropEvent;
+import java.awt.dnd.DragSourceEvent;
+import java.awt.dnd.DragSourceListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.sample.Sample;
 
 @SuppressWarnings("serial")
 public class Tree extends JLabel implements DragGestureListener {
@@ -97,9 +93,14 @@ public class Tree extends JLabel implements DragGestureListener {
             @Override
 			public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2)
-                    new Editor(s);
+                {
+                	FullEditor editor = FullEditor.getInstance();
+                	editor.addSample(s);
+                	
+                }
             }
         });
+    
     }
 
     // only used for crossdates, so far

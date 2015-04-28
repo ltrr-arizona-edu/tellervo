@@ -47,7 +47,7 @@ import org.tridas.util.TridasObjectEx;
 public class TridasMarkerLayerBuilder {
 
 	/** Marker attributes */
-	private BasicMarkerAttributes defaultAttributes = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
+	private static BasicMarkerAttributes defaultAttributes = new BasicMarkerAttributes(Material.RED, BasicMarkerShape.CYLINDER, 0.6d);
 	private ArrayList<Marker> markers = new ArrayList<Marker>();
 	private String layerName = "Marker layer";
 	
@@ -56,33 +56,38 @@ public class TridasMarkerLayerBuilder {
 			
 	}
 	
-	public void addMarkerForTridasObject(TridasObject obj)
+	public boolean addMarkerForTridasObject(TridasObject obj)
 	{
-		if(obj==null) return;
+		if(obj==null) return false;
 		
 		if(obj.isSetLocation())
 		{
 			if(obj.getLocation().isSetLocationGeometry())
 			{
-				addMarkerForTridasEntity(obj.getLocation().getLocationGeometry(), obj);
+				return addMarkerForTridasEntity(obj.getLocation().getLocationGeometry(), obj);
 			}
 		}
+		
+		return false;
 	}
 	
-	public void addMarkerForTridasElement(TridasElement elem)
+	public boolean addMarkerForTridasElement(TridasElement elem)
 	{
-		if(elem==null) return;
+				
+		if(elem==null) return false;
 		 
 		if(elem.isSetLocation())
 		{
 			if(elem.getLocation().isSetLocationGeometry())
 			{
-				addMarkerForTridasEntity(elem.getLocation().getLocationGeometry(), elem);
+				return addMarkerForTridasEntity(elem.getLocation().getLocationGeometry(), elem);
 			}
 		}
+		
+		return false;
 	}
 	
-	private void addMarkerForTridasEntity(TridasLocationGeometry geom, ITridas entity)
+	private boolean addMarkerForTridasEntity(TridasLocationGeometry geom, ITridas entity)
 	{
 		if(geom.isSetPoint())
 		{
@@ -91,8 +96,10 @@ public class TridasMarkerLayerBuilder {
 			{
 				markers.add(new TridasMarker(Position.fromDegrees(coords.get(1), coords.get(0)), 
 						getMarkerAttributesForEntity(entity.getClass()), entity));
+				return true;
 			}
 		}
+		return false;
 	}
 	
 	public void addLatLongMarker(Double lat, Double lon)
@@ -146,12 +153,12 @@ public class TridasMarkerLayerBuilder {
 
 
 	
-	private BasicMarkerAttributes getMarkerAttributesForEntity(Class<? extends ITridas> clazz)
+	private static BasicMarkerAttributes getMarkerAttributesForEntity(Class<? extends ITridas> clazz)
 	{
 		return getMarkerAttributesForEntity(clazz, false);
 	}
 
-	private BasicMarkerAttributes getMarkerAttributesForEntity(Class<? extends ITridas> clazz, Boolean selected)
+	private static BasicMarkerAttributes getMarkerAttributesForEntity(Class<? extends ITridas> clazz, Boolean selected)
 	{
 		double opacity = 0.6d;
 		if(selected) opacity = 1.0d;

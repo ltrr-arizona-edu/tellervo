@@ -66,6 +66,7 @@ public class BaseSample implements TridasIdentifiable {
 
 	private Map<String, Object> meta;
 	private ITridasSeries series;
+	protected boolean modified = false;
 
 	public static void copy(BaseSample source, BaseSample target) {
 		target.range = source.range;

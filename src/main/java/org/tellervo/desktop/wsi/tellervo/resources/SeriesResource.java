@@ -33,7 +33,7 @@ import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.io.TridasDoc;
 import org.tellervo.desktop.sample.BaseSample;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.EntityType;
@@ -157,7 +157,7 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 			}
 
 			// create a loader and associate it with this sample
-			TellervoWsiTridasElement loader = new TellervoWsiTridasElement(series.getIdentifier());
+			TellervoWSILoader loader = new TellervoWSILoader(series.getIdentifier());
 			s.setLoader(loader);
 			
 			// don't forget to populate!

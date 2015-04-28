@@ -13,6 +13,7 @@ import org.tellervo.desktop.ui.Builder;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.JLabel;
+
 import java.awt.Font;
 
 public class WizardModeChooser extends AbstractWizardPanel implements ActionListener{
@@ -70,23 +71,29 @@ public class WizardModeChooser extends AbstractWizardPanel implements ActionList
 		add(lblbasicMeasuringOnly, "cell 1 5");
 
 		radTellervoLite.setSelected(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false));
+		updateBasedOnChoice();
 
 	}
 
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
+		updateBasedOnChoice();
+	}
+	
+	private void updateBasedOnChoice()
+	{
 		if(radTellervoStandard.isSelected())
 		{
 			App.prefs.setBooleanPref(PrefKey.WEBSERVICE_DISABLED, false);
-			this.setPageClassToEnableOrDisable(WizardProxy.class, true);
-			this.setPageClassToEnableOrDisable(WizardServer.class, true);
+			setPageClassToEnableOrDisable(WizardProxy.class, true);
+			setPageClassToEnableOrDisable(WizardServer.class, true);
 		}
 		else
 		{
 			App.prefs.setBooleanPref(PrefKey.WEBSERVICE_DISABLED, true);
-			this.setPageClassToEnableOrDisable(WizardProxy.class, false);
-			this.setPageClassToEnableOrDisable(WizardServer.class, false);	
+			setPageClassToEnableOrDisable(WizardProxy.class, false);
+			setPageClassToEnableOrDisable(WizardServer.class, false);	
 		}
 	}
 }

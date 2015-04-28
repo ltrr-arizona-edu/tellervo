@@ -255,6 +255,14 @@ public class FileDialog {
 		return showSingle(prompt, prompt, workingDirectory, function);
 	}
 	
+	public static ElementList showMulti(String title)
+	{
+		
+		//TODO!!		
+		
+		return null;
+	}
+	
 	/**
 	 * Show a file selection dialog. This allows the user to select one file. It
 	 * shows a preview component, and has the default filters available.
@@ -338,93 +346,8 @@ public class FileDialog {
 	// multi
 	//
 
-	/**
-	 * Show a multiple file selection dialog. This allows the user to select any
-	 * number of files. It shows a preview component, and has the default filters
-	 * available.
-	 * 
-	 * @param prompt
-	 *          the text string to use for both the title bar and approve button
-	 * @return a List of filenames that were selected
-	 * @exception UserCancelledException
-	 *              if the user cancelled
-	 */
-	public static ElementList showMulti(String prompt) throws UserCancelledException {
-		// create a new list to use
-		ElementList list = new ElementList();
-		return showMultiReal(prompt, list, "export");
-	}
 
-	/**
-	 * Show a multiple file selection dialog, with a list of files to start with.
-	 * This allows the user to select any number of files. It shows a preview
-	 * component, and has the default filters available.
-	 * 
-	 * @param prompt
-	 *          the text string to use for both the title bar and approve button
-	 * @param list
-	 *          a List of filenames to have already selected
-	 * @return a List of filenames that were selected
-	 * @exception UserCancelledException
-	 *              if the user cancelled
-	 */
-	public static ElementList showMulti(String prompt, ElementList list)
-			throws UserCancelledException { // to edit a list
-		// use the given list
-		return showMultiReal(prompt, list, "general");
-	}
 
-	@SuppressWarnings("serial")
-	private static ElementList showMultiReal(String prompt, ElementList list, String function)
-			throws UserCancelledException {
-		// big-preview-list-component-thingy ... yeah.
-		final MultiPreview mp = new MultiPreview(list);
-
-		// make double-clicking a file call MultiPreview's addClicked() method
-		JFileChooser f = new JFileChooser(getWorkingDirectory(function)) {
-			@Override
-			public void approveSelection() {
-				mp.addClicked(); // heh heh heh...
-			}
-		};
-
-		// filters
-		addFilters(f);
-
-		// hide ok/cancel, we'll do that ourselves
-		f.setControlButtonsAreShown(false);
-		
-		// allow multiple selection!
-		f.setMultiSelectionEnabled(true);
-
-		// preview component + multi-list
-		mp.hook(f); // add reference to this jfilechooser
-		f.setAccessory(mp);
-
-		// make the window a resonable size to see everything
-		Dimension dim = App.prefs.getDimensionPref(MULTI_DIM_PREF,
-				MULTI_DEFAULT_DIMENSION);
-		f.setPreferredSize(dim);
-		setConfiguredMode(f, MULTI_VIEWMODE_PREF);
-
-		// show dialog
-		f.showDialog(null, prompt); // don't care what the return value is, it's
-		// always CANCEL
-
-		Dimension d = f.getSize();
-		App.prefs.setPref(MULTI_DIM_PREF, d.width + "," + d.height);
-		saveConfiguredMode(f, MULTI_VIEWMODE_PREF);
-
-		// store wd, if ok
-		if (mp.getElementList() != null) {
-			setWorkingDirectory(function, f.getCurrentDirectory().getPath());
-		}
-		else
-		// null? have to deal, now.
-			throw new UserCancelledException();
-
-		// return samples
-		return mp.getElementList();
-	}
+	
 
 }

@@ -49,15 +49,16 @@ import javax.swing.undo.CannotUndoException;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.AbstractEditor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.NameVersionJustificationPanel;
 import org.tellervo.desktop.gui.RangeSlider;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
 import org.tellervo.desktop.ui.Alert;
@@ -164,8 +165,8 @@ public class TruncateDialog extends JDialog {
 		// create a cell modifier for editor
 		cellModifier = new TruncationCellModifier(r);
 
-		if(owner instanceof Editor)
-			((Editor) owner).getSampleDataView().addCellModifier(cellModifier);
+		if(owner instanceof AbstractEditor)
+			((AbstractEditor) owner).getSeriesDataMatrix().addCellModifier(cellModifier);
 		
 		// setup
 		JPanel guts = setup();
@@ -187,15 +188,15 @@ public class TruncateDialog extends JDialog {
 		setVisible(true);
 
 		// clean up
-		if(owner instanceof Editor)
-			((Editor) owner).getSampleDataView().removeCellModifier(cellModifier);
+		if(owner instanceof AbstractEditor)
+			((AbstractEditor) owner).getSeriesDataMatrix().removeCellModifier(cellModifier);
 	}
 
 	/**
 	 * Apply the truncation as a new derived series on the server
 	 * @return true on success
 	 */
-	private boolean applyCorinaWsiTruncation() {
+	private boolean applyTellervoWSITruncation() {
 		// we have to have a name and a justification
 		if(!info.testAndComplainRequired(EnumSet.of(NameVersionJustificationPanel.Fields.NAME,
 				NameVersionJustificationPanel.Fields.JUSTIFICATION)))
@@ -237,13 +238,14 @@ public class TruncateDialog extends JDialog {
 		Sample tmp = new Sample(series);		
 
 		try {
-			TellervoWsiTridasElement saver = new TellervoWsiTridasElement(series.getIdentifier());
+			TellervoWSILoader saver = new TellervoWSILoader(series.getIdentifier());
 			// here's where we do the "meat"
 			if(saver.save(tmp)) {
 				// put it in our menu
 				OpenRecent.sampleOpened(new SeriesDescriptor(tmp));
 				
-				new Editor(tmp).toFront();
+				FullEditor editor = FullEditor.getInstance();
+				editor.addSample(tmp);
 				
 				// get out of here! :)
 				return true;
@@ -293,8 +295,8 @@ public class TruncateDialog extends JDialog {
 			}
 		}
 		
-		if(s.getLoader() instanceof TellervoWsiTridasElement) {
-			return applyCorinaWsiTruncation();
+		if(s.getLoader() instanceof TellervoWSILoader) {
+			return applyTellervoWSITruncation();
 		}
 		
 		Alert.error(this, I18n.getText("error"), I18n.getText("error.unableToTruncate"));

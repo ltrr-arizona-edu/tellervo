@@ -21,7 +21,6 @@ package org.tellervo.desktop.io.command;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.gui.menus.EditorEditMenu;
 import org.tellervo.desktop.io.control.ImportNodeSelectedEvent;
 import org.tridas.schema.TridasMeasurementSeries;
 

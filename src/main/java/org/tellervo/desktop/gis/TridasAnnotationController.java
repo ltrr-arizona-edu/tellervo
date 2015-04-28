@@ -19,12 +19,14 @@
  ******************************************************************************/
 package org.tellervo.desktop.gis;
 
+import gov.nasa.worldwind.WorldWindow;
+
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
 import org.tellervo.desktop.sample.Element;
@@ -35,8 +37,6 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
 import org.tridas.interfaces.ITridas;
-
-import gov.nasa.worldwind.WorldWindow;
 
 public class TridasAnnotationController extends AbstractTridasAnnotationController {
 
@@ -104,8 +104,8 @@ public class TridasAnnotationController extends AbstractTridasAnnotationControll
 
 					OpenRecent.sampleOpened(new SeriesDescriptor(s));
 					
-					// open it
-					new Editor(s);
+					FullEditor editor = FullEditor.getInstance();
+					editor.addSample(s);
 				}
 			}
 			

@@ -1,8 +1,8 @@
 package org.tellervo.desktop.gis;
 
 import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.examples.util.ButtonAnnotation;
-import gov.nasa.worldwind.examples.util.ImageAnnotation;
+import gov.nasa.worldwindx.examples.util.ButtonAnnotation;
+import gov.nasa.worldwindx.examples.util.ImageAnnotation;
 import gov.nasa.worldwind.geom.Position;
 import gov.nasa.worldwind.render.Annotation;
 import gov.nasa.worldwind.render.AnnotationAttributes;
@@ -15,6 +15,7 @@ import org.tellervo.desktop.admin.BoxCuration;
 import org.tellervo.desktop.gis.TellervoAnnotation.BusyImage;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.interfaces.ITridas;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.util.TridasObjectEx;
@@ -114,7 +115,7 @@ public class TridasAnnotation extends TellervoAnnotation {
     		String objectCode = "??";
     		for(TridasGenericField gf : elem.getGenericFields())
     		{
-    			if (gf.getName().equals("tellervo.objectLabCode")){
+    			if (gf.getName().equals(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE)){
     				objectCode = gf.getValue().toString();
     			}
     		}

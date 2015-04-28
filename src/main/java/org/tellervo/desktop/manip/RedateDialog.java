@@ -20,16 +20,13 @@
 
 package org.tellervo.desktop.manip;
 
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.EnumSet;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
@@ -37,47 +34,29 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
-import javax.swing.LayoutStyle;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
-import org.tellervo.desktop.editor.Editor;
-import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.NameVersionJustificationPanel;
-import org.tellervo.desktop.gui.menus.EditorEditMenu;
 import org.tellervo.desktop.io.Metadata;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.sample.SampleType;
-import org.tellervo.desktop.tridasv2.GenericFieldUtils;
-import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.ui.ComboBoxFilterable;
 import org.tellervo.desktop.tridasv2.ui.EnumComboBoxItemRenderer;
 import org.tellervo.desktop.ui.Alert;
-import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.OKCancel;
-import org.tellervo.desktop.util.openrecent.OpenRecent;
-import org.tellervo.desktop.util.openrecent.SeriesDescriptor;
-import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tridas.interfaces.ITridasSeries;
-import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasDatingType;
 import org.tridas.schema.TridasDating;
-import org.tridas.schema.TridasDerivedSeries;
-import org.tridas.schema.TridasInterpretation;
-import net.miginfocom.swing.MigLayout;
-import java.awt.FlowLayout;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
-import java.awt.Font;
 
 
 /**
@@ -308,7 +287,7 @@ public class RedateDialog extends JDialog {
 			}
 		}
 		
-		if(sample.getLoader() instanceof TellervoWsiTridasElement) {
+		if(sample.getLoader() instanceof TellervoWSILoader) {
 			
 			return Redate.performTellervoWsiRedate(sample, 
 					infoPanel.getSeriesName(), infoPanel.getVersion(), infoPanel.getJustification(), 

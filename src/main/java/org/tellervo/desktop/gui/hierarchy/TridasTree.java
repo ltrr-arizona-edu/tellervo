@@ -28,6 +28,7 @@ import javax.swing.tree.TreeSelectionModel;
 import org.jdesktop.swingx.JXTree;
 import org.tellervo.schema.WSITag;
 import org.tridas.interfaces.ITridas;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.util.TridasObjectEx;
 
@@ -65,7 +66,7 @@ public class TridasTree extends JXTree {
 			TridasObjectEx obj = ((TridasObjectEx)node.getUserObject());
 			for(TridasGenericField gf : obj.getGenericFields())
 			{
-				if (gf.getName().equals("tellervo.objectLabCode"))
+				if (gf.getName().equals(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE))
 				{
 					return gf.getValue() + " - "+obj.getTitle();
 				}

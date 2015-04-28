@@ -26,7 +26,7 @@ package org.tellervo.desktop.tridasv2.ui;
 import java.awt.Dimension;
 import java.util.List;
 
-import org.tellervo.desktop.editor.Editor;
+import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.util.LegacySampleExtractor;
 import org.tridas.interfaces.ITridas;
@@ -35,7 +35,6 @@ import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
-
 import org.tridas.util.TridasObjectEx;
 
 /**
@@ -51,7 +50,7 @@ public class TridasImportPanel extends TridasMetadataPanel {
 	/**
 	 * @param s
 	 */
-	public TridasImportPanel(Sample s, LegacySampleExtractor extractor, Editor e) {
+	public TridasImportPanel(Sample s, LegacySampleExtractor extractor, AbstractEditor e) {
 		super(s);
 	
 		this.s = s;

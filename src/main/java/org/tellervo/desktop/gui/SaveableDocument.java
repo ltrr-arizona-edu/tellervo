@@ -27,13 +27,11 @@ public interface SaveableDocument {
     public void save();
 
     public boolean isNameChangeable();
-    public void setFilename(String fn);
-    public String getFilename();
 
     /**
      * @return the document that was saved
      */
     public Object getSavedDocument();
 
-    public String getDocumentTitle(); // hack! -- [[ remind me why ]]
+    public String getDocumentTitle(); 
 }

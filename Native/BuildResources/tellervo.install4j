@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.0.1" transformSequenceNumber="5">
-  <directoryPresets config="../../../FHAES/src/main/resources/images" />
-  <application name="Tellervo" distributionSourceDir="" applicationId="3241-8043-2524-6669" mediaDir="../../target/binaries/desktop/${compiler:sys.version}/${compiler:platformtype}" mediaFilePattern="tellervo-${compiler:sys.version}-${compiler:sys.platform}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="true" shrinkRuntime="true" shortName="Tellervo" publisher="University of Arizona" publisherWeb="http://www.tellervo.org" version="1.0.3-SNAPSHOT" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="add89b377a765064" javaMinVersion="1.6" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
+  <directoryPresets config="../Libraries/windows-i586/rxtxSerial.dll" />
+  <application name="Tellervo" distributionSourceDir="" applicationId="3241-8043-2524-6669" mediaDir="../../target/binaries/desktop/${compiler:sys.version}/${compiler:platformtype}" mediaFilePattern="tellervo-${compiler:sys.version}-${compiler:sys.platform}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="false" shrinkRuntime="true" shortName="Tellervo" publisher="University of Arizona" publisherWeb="http://www.tellervo.org" version="1.0.3-SNAPSHOT" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="add89b377a765064" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -25,7 +25,6 @@
       <fileset name="Linux64Native" id="29" customizedId="" />
       <fileset name="OSXNative" id="31" customizedId="" />
       <fileset name="Manual" id="63" customizedId="" />
-      <fileset name="win32" id="155" customizedId="" />
     </filesets>
     <roots>
       <root id="24" fileset="23" location="" />
@@ -35,51 +34,27 @@
       <root id="32" fileset="31" location="" />
       <root id="231" fileset="31" location="/Library/Java/Extensions" />
       <root id="64" fileset="63" location="" />
-      <root id="156" fileset="155" location="" />
     </roots>
     <mountPoints>
       <mountPoint id="40" root="" location="" mode="755" />
-      <mountPoint id="41" root="24" location="" mode="755" />
+      <mountPoint id="299" root="24" location="" mode="755" />
       <mountPoint id="42" root="26" location="" mode="755" />
       <mountPoint id="43" root="28" location="" mode="755" />
       <mountPoint id="44" root="30" location="" mode="755" />
       <mountPoint id="232" root="231" location="" mode="755" />
       <mountPoint id="67" root="64" location="" mode="755" />
-      <mountPoint id="164" root="156" location="" mode="755" />
     </mountPoints>
     <entries>
+      <dirEntry mountPoint="40" file="../../target/dependency" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="lib" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+        <exclude />
+      </dirEntry>
       <fileEntry mountPoint="40" file="../../target/tellervo-${compiler:sys.version}.jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="41" file="../Libraries/windows-i586/gluegen-rt.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="41" file="../Libraries/windows-i586/jogl.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="41" file="../Libraries/windows-i586/jogl_awt.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="41" file="../Libraries/windows-i586/jogl_cg.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="41" file="../Libraries/windows-i586/rxtxSerial.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="42" file="../Libraries/windows-amd64/gluegen-rt.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="42" file="../Libraries/windows-amd64/jogl.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="42" file="../Libraries/windows-amd64/jogl_awt.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="42" file="../Libraries/windows-amd64/jogl_cg.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="299" file="../Libraries/windows-i586/rxtxSerial.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="42" file="../Libraries/windows-amd64/rxtxSerial.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="43" file="../Libraries/linux-i586/libgluegen-rt.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="43" file="../Libraries/linux-i586/libjogl.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="43" file="../Libraries/linux-i586/libjogl_awt.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="43" file="../Libraries/linux-i586/libjogl_cg.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="43" file="../Libraries/linux-i586/librxtxSerial.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="44" file="../Libraries/linux-amd64/libgluegen-rt.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="44" file="../Libraries/linux-amd64/libjogl.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="44" file="../Libraries/linux-amd64/libjogl_awt.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="44" file="../Libraries/linux-amd64/libjogl_cg.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="44" file="../Libraries/linux-amd64/librxtxSerial.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="232" file="../Libraries/macosx-universal/libgluegen-rt.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="232" file="../Libraries/macosx-universal/libjogl.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="232" file="../Libraries/macosx-universal/libjogl_awt.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="232" file="../Libraries/macosx-universal/libjogl_cg.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="232" file="../Libraries/macosx-universal/librxtxSerial.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="67" file="../../../../../tellervo-manual.pdf" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="164" file="../Libraries/windows-i586/gluegen-rt.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="164" file="../Libraries/windows-i586/jogl.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="164" file="../Libraries/windows-i586/jogl_awt.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="164" file="../Libraries/windows-i586/jogl_cg.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="164" file="../Libraries/windows-i586/rxtxSerial.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
     </entries>
     <components>
       <component name="Tellervo Desktop" id="58" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="false" downloadable="false" hidden="false">
@@ -89,36 +64,36 @@
         </include>
         <dependencies />
       </component>
-      <component name="Windows 3D graphics and serial port libraries for 32-bit Java" id="50" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="true" downloadable="false" hidden="false">
-        <description>Required for 3D mapping and for access to measuring platform hardware. Install these if you have a 32-bit Java VM (standard).</description>
+      <component name="Windows serial port library for 32-bit Java" id="50" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="true" downloadable="false" hidden="false">
+        <description>Required to access your measuring platform hardware. Install these if you have a 32-bit Java VM (standard).</description>
         <include all="false">
           <entry location=".i4j_fileset_23" fileType="regular" />
         </include>
         <dependencies />
       </component>
-      <component name="Windows 3D graphics and serial port libraries for 64-bit Java" id="51" customizedId="" displayDescription="true" hideHelpButton="false" selected="false" changeable="true" downloadable="false" hidden="false">
-        <description>Required for 3D mapping and for access to measuring platform hardware.  Only install these if you have a 64-bit Java VM.  If you are running 64-bit Windows but 32-bit Java then you need the 32-bit drivers above.</description>
+      <component name="Windows serial port library for 64-bit Java" id="51" customizedId="" displayDescription="true" hideHelpButton="false" selected="false" changeable="true" downloadable="false" hidden="false">
+        <description>Required to access your measuring platform hardware. Only install this if you have a 64-bit Java VM.  If you are running 64-bit Windows but 32-bit Java then you need the 32-bit drivers above.</description>
         <include all="false">
           <entry location=".i4j_fileset_25" fileType="regular" />
         </include>
         <dependencies />
       </component>
-      <component name="OSX 3D graphics and serial port libraries" id="60" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="true" downloadable="false" hidden="false">
-        <description>Required for 3D mapping and for access to measuring platform hardware</description>
+      <component name="OSX serial port library" id="60" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="true" downloadable="false" hidden="false">
+        <description>Required to access your measuring platform hardware.</description>
         <include all="false">
           <entry location=".i4j_fileset_31" fileType="regular" />
         </include>
         <dependencies />
       </component>
-      <component name="32-bit Linux 3D graphics and serial port libraries" id="82" customizedId="" displayDescription="true" hideHelpButton="false" selected="false" changeable="true" downloadable="false" hidden="false">
-        <description>Required for 3D mapping and for access to measuring platform hardware.  Only suitable for a Linux distribution running a 32-bit version of Java.</description>
+      <component name="32-bit Linux serial port library" id="82" customizedId="" displayDescription="true" hideHelpButton="false" selected="false" changeable="true" downloadable="false" hidden="false">
+        <description>Required to access your measuring platform hardware.  Only suitable for a Linux distribution running a 32-bit version of Java.</description>
         <include all="false">
           <entry location=".i4j_fileset_27" fileType="regular" />
         </include>
         <dependencies />
       </component>
-      <component name="64-bit Linux 3D graphics and serial port libraries" id="83" customizedId="" displayDescription="true" hideHelpButton="false" selected="false" changeable="true" downloadable="false" hidden="false">
-        <description>Required for 3D mapping and for access to measuring platform hardware.  Only suitable for a 64-bit Linux distribution running a 64-bit version of Java. If you are running a 32-bit version of Java you must use the 32-bit drivers regardless of what type of Linux distribution you are running.</description>
+      <component name="64-bit Linux serial port library" id="83" customizedId="" displayDescription="true" hideHelpButton="false" selected="false" changeable="true" downloadable="false" hidden="false">
+        <description>Required to access your measuring platform hardware. Only suitable for a 64-bit Linux distribution running a 64-bit version of Java. If you are running a 32-bit version of Java you must use the 32-bit drivers regardless of what type of Linux distribution you are running.</description>
         <include all="false">
           <entry location=".i4j_fileset_29" fileType="regular" />
         </include>
@@ -128,14 +103,6 @@
         <description>The PDF manual for the Tellervo software</description>
         <include all="false">
           <entry location=".i4j_fileset_63" fileType="regular" />
-        </include>
-        <dependencies />
-      </component>
-      <component name="win32bit" id="103" customizedId="" displayDescription="false" hideHelpButton="false" selected="true" changeable="false" downloadable="false" hidden="true">
-        <description />
-        <include all="false">
-          <entry location=".i4j_fileset_" fileType="regular" />
-          <entry location=".i4j_fileset_155" fileType="regular" />
         </include>
         <dependencies />
       </component>
@@ -195,7 +162,7 @@
       <application name="" id="installer" customizedId="" beanClass="com.install4j.runtime.beans.applications.InstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="" customIcoFile="" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
-            <object class="com.install4j.runtime.beans.applications.InstallerApplication">
+            <object class="com.install4j.runtime.beans.applications.InstallerApplication" id="InstallerApplication0">
               <void property="customHeaderImage">
                 <object class="com.install4j.api.beans.ExternalFile">
                   <string>../../src/main/resources/Icons/install4j-titlebarimage.png</string>
@@ -388,7 +355,7 @@
               <action name="" id="10" customizedId="" beanClass="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction" enabled="true" commentSet="false" comment="" actionElevationType="elevated" rollbackBarrier="false" multiExec="false" failureStrategy="1" errorMessage="">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction">
+                    <object class="com.install4j.runtime.beans.actions.desktop.CreateProgramGroupAction" id="CreateProgramGroupAction0">
                       <void property="programGroupEntryConfigs">
                         <void method="add">
                           <object class="com.install4j.runtime.beans.screens.components.ProgramGroupFileConfig">
@@ -449,7 +416,7 @@
       <application name="" id="uninstaller" customizedId="" beanClass="com.install4j.runtime.beans.applications.UninstallerApplication" enabled="true" commentSet="false" comment="" actionElevationType="none" fileset="" customIcnsFile="" customIcoFile="" macEntitlementsFile="" automaticLauncherIntegration="false" launchMode="startupFirstWindow" launchInNewProcess="false" launchSchedule="updateSchedule" allLaunchers="true">
         <serializedBean>
           <java class="java.beans.XMLDecoder">
-            <object class="com.install4j.runtime.beans.applications.UninstallerApplication">
+            <object class="com.install4j.runtime.beans.applications.UninstallerApplication" id="UninstallerApplication0">
               <void property="customIconImageFiles">
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
@@ -718,6 +685,10 @@
     </macos>
   </mediaSets>
   <buildIds buildAll="false">
+    <mediaSet refId="39" />
+    <mediaSet refId="81" />
+    <mediaSet refId="88" />
+    <mediaSet refId="93" />
     <mediaSet refId="171" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />

@@ -30,7 +30,6 @@ import org.netbeans.swing.outline.RowModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.menus.EditorEditMenu;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow.ImportStatus;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;

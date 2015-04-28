@@ -3,17 +3,27 @@ package org.tellervo.desktop.editor;
 import java.awt.Color;
 import java.awt.Font;
 
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.sample.SampleEvent;
+import org.tellervo.desktop.sample.SampleListener;
 import org.tellervo.desktop.ui.Builder;
 
-public class BasicMetadataPanel extends AbstractMetadataPanel {
+public class BasicMetadataPanel extends AbstractMetadataPanel implements DocumentListener, SampleListener{
+
+	private static final Logger log = LoggerFactory.getLogger(BasicMetadataPanel.class);
 
 	private static final long serialVersionUID = 1L;
 	public JTextField txtTitle;
@@ -22,15 +32,22 @@ public class BasicMetadataPanel extends AbstractMetadataPanel {
 	public JTextField txtAuthor;
 
 	private JLabel lblNewLabel;
-	private JLabel lblTheseBasicMetadata;
 	private JLabel txtWarning;
 	private JLabel lblAuthor;
-
+	private Sample sample;
+	private boolean listenersActive = false;
+	private LiteEditor editor;
+	private JLabel lblSiteObject;
+	private JTextField txtObject;
+	
+	
 	/**
 	 * Create the panel.
 	 */
-	public BasicMetadataPanel() {
-		setLayout(new MigLayout("", "[84.00,right][grow]", "[][][][][grow][]"));
+	public BasicMetadataPanel(LiteEditor editor) {
+		
+		this.editor = editor;
+		setLayout(new MigLayout("", "[190px:190px,right][grow]", "[][][][][][][grow]"));
 		
 		JLabel lblTitle = new JLabel("Title / Series name:");
 		add(lblTitle, "cell 0 0,alignx trailing");
@@ -39,66 +56,131 @@ public class BasicMetadataPanel extends AbstractMetadataPanel {
 		add(txtTitle, "cell 1 0,growx");
 		txtTitle.setColumns(10);
 		
-		JLabel lblKeycode = new JLabel("Sample code / Keycode:");
+		JLabel lblKeycode = new JLabel("Series code / Keycode:");
 		add(lblKeycode, "cell 0 1,alignx trailing");
 		
 		txtKeycode = new JTextField();
 		add(txtKeycode, "cell 1 1,growx");
 		txtKeycode.setColumns(10);
 		
-		JLabel lblSpecies = new JLabel("Species:");
-		add(lblSpecies, "cell 0 2,alignx trailing");
-		
-		txtSpecies = new JTextField();
-		add(txtSpecies, "cell 1 2,growx");
-		txtSpecies.setColumns(10);
-		
 		lblAuthor = new JLabel("Author:");
-		add(lblAuthor, "cell 0 3,alignx trailing");
+		add(lblAuthor, "cell 0 2,alignx trailing");
 		
 		txtAuthor = new JTextField();
-		add(txtAuthor, "cell 1 3,growx");
+		add(txtAuthor, "cell 1 2,growx");
 		txtAuthor.setColumns(10);
+		
+		JLabel lblSpecies = new JLabel("Species:");
+		add(lblSpecies, "cell 0 3,alignx trailing");
+		
+		txtSpecies = new JTextField();
+		add(txtSpecies, "cell 1 3,growx");
+		txtSpecies.setColumns(10);
+		
+		lblSiteObject = new JLabel("Site / Object name:");
+		add(lblSiteObject, "cell 0 4,alignx trailing");
+		
+		txtObject = new JTextField();
+		add(txtObject, "cell 1 4,growx");
+		txtObject.setColumns(10);
 		
 		lblNewLabel = new JLabel();
 		lblNewLabel.setIcon(Builder.getIcon("warning.png", 22));
 		add(lblNewLabel, "cell 0 5,aligny top");
 		
-		lblTheseBasicMetadata = new JLabel("");
-		add(lblTheseBasicMetadata, "flowx,cell 1 5");
-		
 		txtWarning = new JLabel();
 		txtWarning.setFont(new Font("Dialog", Font.PLAIN, 10));
+		
+				txtWarning.setText("<html>These basic metadata fields simply provide you with a method of adding rudimentary metadata to legacy dendro file formats. They are supported sporadically depending on the format you save to and therefore may be truncated or omitted. When you load legacy files into Tellervo-<i>lite</i> unsupported fields will be ignored so you may prefer to make copies of files before editing.  Note that if the series within the file a from the same site, tree etc, then one or more of these fields will be syncronised between series.");
+				
+						txtWarning.setOpaque(false);
+						txtWarning.setBackground(new Color(0,0,0,0));
+						txtWarning.setBorder(new EmptyBorder(0,0,0,0));
+						txtWarning.setFocusable(false);
+						add(txtWarning, "cell 1 5,growx");
 
-		txtWarning.setText("<html>These basic metadata fields simply provide you with a method of adding rudimentary metadata to legacy dendro file formats. They are supported sporadically" +
-				" depending on the format you save to and therefore may be truncated or omitted. When you load legacy files into Tellervo-<i>lite</i> unsupported" +
-				" fields will be ignored so you may prefer to make copies of files before editing.");
-
-		txtWarning.setOpaque(false);
-		txtWarning.setBackground(new Color(0,0,0,0));
-		txtWarning.setBorder(new EmptyBorder(0,0,0,0));
-		txtWarning.setFocusable(false);
-		add(txtWarning, "cell 1 5,growx");
-
+		addListeners();
 	}
-
-	public void populateFromSample(Sample s)
+	
+	private void addListeners()
 	{
-		if(s==null) return;
+		txtAuthor.getDocument().addDocumentListener(this);
+		txtKeycode.getDocument().addDocumentListener(this);
+		txtTitle.getDocument().addDocumentListener(this);
+		txtSpecies.getDocument().addDocumentListener(this);
+		txtObject.getDocument().addDocumentListener(this);
 		
-		txtAuthor.setText(s.getMetaString(Metadata.AUTHOR));
-		txtKeycode.setText(s.getMetaString(Metadata.KEYCODE));
+		listenersActive = true;
+	}
+	
+	/**
+	 * 
+	 * @param s
+	 */
+	public void setSample(Sample s)
+	{
+		listenersActive = false;
+				
 		
-		if(!s.getMeta(Metadata.TITLE).equals("New entry: [New series]"))
-		{
-			txtTitle.setText(s.getSeries().getTitle());
+		sample = s;
+		setFieldsFromSample();
+		
+		
+		if(sample!=null) sample.addSampleListener(this);
+		
+		
+		
+		listenersActive = true;
+	}
+	
+	private void setFieldsFromSample()
+	{
+		txtAuthor.setText("");
+		txtKeycode.setText("");
+		txtTitle.setText("");
+		txtSpecies.setText("");
+		txtObject.setText("");
+		
+		txtAuthor.setEnabled(sample!=null);
+		txtKeycode.setEnabled(sample!=null);
+		txtTitle.setEnabled(sample!=null);
+		txtSpecies.setEnabled(sample!=null);
+		txtObject.setEnabled(sample!=null);
+		
+		if(sample==null) {
+			return;
 		}
 		
-		if(s.getMetaString(Metadata.SPECIES)!="Plantae")
+		txtAuthor.setText(sample.getMetaString(Metadata.AUTHOR));
+		txtKeycode.setText(sample.getMetaString(Metadata.KEYCODE));
+		txtTitle.setText(sample.getMetaString(Metadata.TITLE));
+		txtObject.setText(sample.getMetaString(Metadata.OBJECT_TITLE));
+		
+		if(sample.getMetaString(Metadata.SPECIES)!="Plantae")
 		{
-			txtSpecies.setText(s.getMetaString(Metadata.SPECIES));
+			txtSpecies.setText(sample.getMetaString(Metadata.SPECIES));
+		}
+	}
+	
+	private void updateSample()
+	{
+		if(!listenersActive) return;
+		
+		if(sample==null)
+		{
+			log.error("Sample is null so can't update");
 		}
 		
+		sample.getSeries().setTitle(txtTitle.getText());
+		sample.setMeta(Metadata.TITLE, txtTitle.getText());
+		sample.setMeta(Metadata.AUTHOR, txtAuthor.getText());
+		sample.setMeta(Metadata.SPECIES, txtSpecies.getText());
+		sample.setMeta(Metadata.KEYCODE, txtKeycode.getText());
+		sample.setMeta(Metadata.OBJECT_TITLE, txtObject.getText());
+		
+		listenersActive = false;
+		editor.updateOverlappingFields(sample);
+		listenersActive = true;
 		
 	}
 	
@@ -113,6 +195,7 @@ public class BasicMetadataPanel extends AbstractMetadataPanel {
 				&& txtKeycode.getText().isEmpty()
 				&& txtSpecies.getText().isEmpty()
 				&& txtAuthor.getText().isEmpty()
+				&& txtObject.getText().isEmpty()
 		)
 		{
 			return false;
@@ -120,6 +203,67 @@ public class BasicMetadataPanel extends AbstractMetadataPanel {
 		
 		return true;
 	}
-	
 
+	@Override
+	public void changedUpdate(DocumentEvent e) {
+		updateSample();
+		
+	}
+
+	@Override
+	public void insertUpdate(DocumentEvent e) {
+		updateSample();
+		
+	}
+
+	@Override
+	public void removeUpdate(DocumentEvent e) {
+		updateSample();
+		
+	}
+
+	@Override
+	public void sampleRedated(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleDataChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleMetadataChanged(SampleEvent e) {
+		listenersActive = false;
+		setFieldsFromSample();
+		listenersActive = true;
+		
+	}
+
+	@Override
+	public void sampleElementsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleDisplayUnitsChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void sampleDisplayCalendarChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void measurementVariableChanged(SampleEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

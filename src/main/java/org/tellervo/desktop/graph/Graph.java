@@ -248,7 +248,7 @@ public final class Graph {
     	return graphAgent.getPlotter();
     }
     
-    public void draw(GraphInfo gInfo, Graphics2D g2, int bottom, int thickness, int xscroll) {
+    public void draw(GraphSettings gInfo, Graphics2D g2, int bottom, int thickness, int xscroll) {
     	graphAgent.getPlotter().draw(gInfo, g2, bottom, this, thickness, xscroll);
     }
     
@@ -260,12 +260,12 @@ public final class Graph {
      * @param xcoord  - xcoord of the data point (start point for the first remark)
      * @param ycoord  - ycoord of the data point (start point for the first remark)
      */
-    public static void drawRemarkIcons(Graphics2D g2, GraphInfo info, List<TridasRemark> remarks, TridasValue value, int xcoord, int ycoord)
+    public static void drawRemarkIcons(Graphics2D g2, GraphSettings info, List<TridasRemark> remarks, TridasValue value, int xcoord, int ycoord)
     {
     	drawRemarkIcons(g2, info, remarks, value, xcoord, ycoord, false);
     }
     
-    public static void drawRemarkIcons(Graphics2D g2, GraphInfo info, List<TridasRemark> remarks, TridasValue value, int xcoord, int ycoord, Boolean stackBelow)
+    public static void drawRemarkIcons(Graphics2D g2, GraphSettings info, List<TridasRemark> remarks, TridasValue value, int xcoord, int ycoord, Boolean stackBelow)
     {
 		xcoord = xcoord-8;
 		

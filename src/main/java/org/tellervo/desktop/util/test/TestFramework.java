@@ -25,7 +25,7 @@ import java.io.IOException;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.XMLDebugView;
 import org.tellervo.desktop.platform.Platform;
-import org.tellervo.desktop.sample.TellervoWsiTridasElement;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.sample.Sample;
 import org.tridas.schema.TridasIdentifier;
 
@@ -39,7 +39,7 @@ public class TestFramework {
 		identifier.setValue(id);
 		
 		// make element
-		TellervoWsiTridasElement element = new TellervoWsiTridasElement(identifier);
+		TellervoWSILoader element = new TellervoWSILoader(identifier);
 		
 		// load it
 		return element.load();
