@@ -373,6 +373,11 @@
 			<artifactId>jfreechart</artifactId>
 			<version>1.0.17</version>
 		</dependency>
+		<dependency>
+			<groupId>org.tridas</groupId>
+			<artifactId>dendrofileio</artifactId>
+			<version>1.1.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 
 	<build>
