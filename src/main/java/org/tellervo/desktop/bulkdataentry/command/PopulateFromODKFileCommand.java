@@ -374,7 +374,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 	 * @param code
 	 * @return
 	 */
-	private TridasObjectEx getTridasObjectByCode(String code)
+	private static TridasObjectEx getTridasObjectByCode(String code)
 	{
 		if(code==null) return null;
 

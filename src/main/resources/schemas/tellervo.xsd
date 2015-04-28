@@ -1063,6 +1063,7 @@
 					</xs:complexType>
 				</xs:element>
 			</xs:sequence>	
+			<xs:element ref="tridas:identifier" minOccurs="0"/>
 			<xs:attribute name="id" type="xs:string" use="optional"/>
 			<xs:attribute name="ownerid" type="xs:string" use="optional"/>
 			<xs:attribute name="value" type="xs:string" use="required"/>
