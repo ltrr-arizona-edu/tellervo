@@ -138,7 +138,16 @@ public class MappingPrefsPanel extends AbstractPreferencesPanel {
 		add(panelWarning);
 
 		// Enable/Disable mapping
-		setMappingEnabled(OpenGLTestCapabilities.isOpenGLCapable());
+		
+		if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
+		{
+			setMappingEnabled(false);
+		}
+		else
+		{
+			setMappingEnabled(OpenGLTestCapabilities.isOpenGLCapable());
+		}
+		
 		populateWMSTable();
 		
 		tblWMS.getSelectionModel().addListSelectionListener(new ListSelectionListener(){

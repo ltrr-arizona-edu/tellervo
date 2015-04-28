@@ -482,24 +482,23 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 		
 		// Add file format filters to dialog, selecting the current format if possible
 		boolean filterset = false;
-		if(fileFormat!=null)
-		{
-			for(DendroFileFilter filter : filters)
-			{			
-				// Don't allow saving to TRiDaS
-				if(filter.getFormatName().startsWith("TRiDaS")) continue;
+		
+		for(DendroFileFilter filter : filters)
+		{			
+			// Don't allow saving to TRiDaS
+			if(filter.getFormatName().startsWith("TRiDaS")) continue;
 
-				fc.addChoosableFileFilter(filter);
-				if(fileFormat!=null)
-				{	
-					if(fileFormat.getDendroFileFilter().getDescription().equals(filter.getDescription()))
-					{
-						fc.setFileFilter(filter);
-						filterset = true;
-					}
+			fc.addChoosableFileFilter(filter);
+			if(fileFormat!=null)
+			{	
+				if(fileFormat.getDendroFileFilter().getDescription().equals(filter.getDescription()))
+				{
+					fc.setFileFilter(filter);
+					filterset = true;
 				}
 			}
 		}
+		
 		
 		// If no format has been set yet, set the one used last from the preferences
 		log.debug(App.prefs.getPref(PrefKey.EXPORT_FORMAT, null));
