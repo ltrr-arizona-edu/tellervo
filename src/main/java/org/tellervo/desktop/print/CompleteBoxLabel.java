@@ -283,34 +283,49 @@ public class CompleteBoxLabel extends ReportBase{
 		Integer sampleCountInBox = 0; 
 		
 		// Loop through objects
-		List<TridasObject> objdone = new ArrayList<TridasObject>(); // Array of top level objects that have already been dealt with
-		mainobjloop:
+		List<TridasObject> objlist = new ArrayList<TridasObject>(); // Array of top level objects that have already been dealt with
+		
 		for(TridasObject myobj : obj)
+		{
+			objlist.add(myobj);
+			if(myobj.isSetObjects())
+			{
+				for(TridasObject obj2 : myobj.getObjects())
+				{
+					objlist.add(obj2);
+				}
+			}
+		}
+		
+		Collections.sort(objlist, sorter);
+		
+		mainobjloop:
+		for(TridasObject myobj : objlist)
 		{	
 			// Need to check if this object has already been done as there will be duplicate top level objects if there are samples 
 			// from more than one subobject in the box 
-			if(objdone.size()>0)
+			/*if(objdone.size()>0)
 			{
 				try{for(TridasObject tlo : objdone){
 					TridasObjectEx tloex = (TridasObjectEx) tlo;
 					TridasObjectEx myobjex = (TridasObjectEx) myobj;
 					
-					if (tloex.getLabCode().compareTo(myobjex.getLabCode())==0){
+					//if (tloex.getLabCode().compareTo(myobjex.getLabCode())==0){
 						// Object already been done so skip to next
-						continue mainobjloop;
-					}
-					else {
+					//	continue mainobjloop;
+					//}
+					//else {
 						// Object has not been done so add to the done list and keep going
 						objdone.add(myobj);
-					}
+					//}
 				}} catch (Exception e){}
 				
 			}
 			else
 			{
 				objdone.add(myobj);
-			}
-		
+			}*/
+
 			// Add object code to first column			
 			PdfPCell dataCell = new PdfPCell();
 			dataCell.setBorderWidthBottom(0);
@@ -322,15 +337,13 @@ public class CompleteBoxLabel extends ReportBase{
 			
 		
 			
-			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getLabCode(); 	
-			dataCell.setPhrase(new Phrase(objCode, bodyFontLarge));
-			tbl.addCell(dataCell);
-			
+			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getMultiLevelLabCode(); 	
+
 			// Search for elements associated with this object
 			System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
 			SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
 			sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
-			sp.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
+			sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
 			EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
 			resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
 			TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(resource);
@@ -343,6 +356,13 @@ public class CompleteBoxLabel extends ReportBase{
 			}
 			//XMLDebugView.showDialog();
 			List<TridasElement> elements = resource.getAssociatedResult();
+			
+			if(elements==null || elements.size()==0) continue;
+			
+			dataCell.setPhrase(new Phrase(objCode, bodyFontLarge));
+			tbl.addCell(dataCell);
+			
+			
 			TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
 					TridasComparator.NullBehavior.NULLS_LAST, 
 					TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
