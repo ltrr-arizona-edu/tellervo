@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.0.1" transformSequenceNumber="5">
   <directoryPresets config="../Libraries/windows-i586/rxtxSerial.dll" />
-  <application name="Tellervo" distributionSourceDir="" applicationId="3241-8043-2524-6669" mediaDir="../../target/binaries/desktop/${compiler:sys.version}/${compiler:platformtype}" mediaFilePattern="tellervo-${compiler:sys.version}-${compiler:sys.platform}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="false" shrinkRuntime="true" shortName="Tellervo" publisher="University of Arizona" publisherWeb="http://www.tellervo.org" version="1.0.3-SNAPSHOT" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="add89b377a765064" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
+  <application name="Tellervo" distributionSourceDir="" applicationId="3241-8043-2524-6669" mediaDir="../../target/binaries/desktop/${compiler:sys.version}/${compiler:platformtype}" mediaFilePattern="tellervo-${compiler:sys.version}-${compiler:sys.platform}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="false" shrinkRuntime="true" shortName="Tellervo" publisher="University of Arizona" publisherWeb="http://www.tellervo.org" version="1.1.0-SNAPSHOT" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="add89b377a765064" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -103,6 +103,14 @@
         <description>The PDF manual for the Tellervo software</description>
         <include all="false">
           <entry location=".i4j_fileset_63" fileType="regular" />
+        </include>
+        <dependencies />
+      </component>
+      <component name="Tellervo Desktop for Windows" id="384" customizedId="" displayDescription="false" hideHelpButton="false" selected="true" changeable="true" downloadable="false" hidden="false">
+        <description>Tellervo Desktop application, serial and 3D graphics drivers</description>
+        <include all="false">
+          <entry location=".i4j_fileset_" fileType="regular" />
+          <entry location=".i4j_fileset_23" fileType="regular" />
         </include>
         <dependencies />
       </component>
@@ -573,7 +581,7 @@
         <component id="60" />
         <component id="82" />
         <component id="83" />
-        <component id="103" />
+        <component id="384" />
       </excludedComponents>
       <includedDownloadableComponents />
     </windows>
@@ -585,7 +593,6 @@
         <entry location=".i4j_fileset_23" fileType="regular" />
         <entry location=".i4j_fileset_25" fileType="regular" />
         <entry location=".i4j_fileset_31" fileType="regular" />
-        <entry location=".i4j_fileset_155" fileType="regular" />
       </exclude>
       <variables>
         <variable name="platformtype" value="Unix" description="" category="" />
@@ -598,7 +605,7 @@
         <component id="50" />
         <component id="51" />
         <component id="60" />
-        <component id="103" />
+        <component id="384" />
       </excludedComponents>
       <includedDownloadableComponents />
       <installerScript mode="1" file="">
@@ -648,6 +655,7 @@
         <customAttributes />
       </autoUpdate>
       <excludedComponents>
+        <component id="58" />
         <component id="50" />
         <component id="51" />
         <component id="60" />
@@ -678,7 +686,7 @@
         <component id="51" />
         <component id="82" />
         <component id="83" />
-        <component id="103" />
+        <component id="384" />
       </excludedComponents>
       <includedDownloadableComponents />
       <topLevelFiles />
@@ -686,10 +694,7 @@
   </mediaSets>
   <buildIds buildAll="false">
     <mediaSet refId="39" />
-    <mediaSet refId="81" />
-    <mediaSet refId="88" />
     <mediaSet refId="93" />
-    <mediaSet refId="171" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>

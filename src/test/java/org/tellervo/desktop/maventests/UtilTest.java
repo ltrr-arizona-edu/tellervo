@@ -40,16 +40,13 @@
 
 package org.tellervo.desktop.maventests;
 
-import java.awt.Color;
-import java.awt.Window;
-
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-
-import org.tellervo.desktop.cross.TableHeatMapRenderer;
-import org.tellervo.desktop.util.StringUtils;
-
 import junit.framework.TestCase;
+
+import org.tellervo.desktop.util.GeonamesUtil;
+import org.tellervo.desktop.util.StringUtils;
+import org.tridas.schema.TridasLocation;
+import org.tridas.schema.TridasLocationGeometry;
+import org.tridas.spatial.SpatialUtils;
 
 public class UtilTest extends TestCase {
     public UtilTest(String name) {
@@ -68,4 +65,34 @@ public class UtilTest extends TestCase {
     }
     
 
+    public void testGeonamesCountry(){
+    	
+    	TridasLocation location = new TridasLocation();
+    	TridasLocationGeometry geom = SpatialUtils.getWGS84LocationGeometry(32.2, -110.9, false);
+    	
+    	location.setLocationGeometry(geom);
+    	
+    	String country = GeonamesUtil.getCountryForLocation(location);
+    
+    	if(country==null) fail();
+    	
+    	System.out.println("Country = "+country);
+    }
+    
+    public void testGeonamesCity(){
+    	
+    	TridasLocation location = new TridasLocation();
+    	TridasLocationGeometry geom = SpatialUtils.getWGS84LocationGeometry(32.2, -110.9, false);
+    	
+       	
+    	location.setLocationGeometry(geom);
+    	
+    	String city = GeonamesUtil.getCityForLocation(location);
+    
+    	if(city==null) fail();
+    	
+    	System.out.println("City = "+city);
+    }
+    
 }
+

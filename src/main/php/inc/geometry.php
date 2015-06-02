@@ -139,7 +139,8 @@ class geometry
 		//$sql = "select st_asgml(".pg_escape_string($gmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
 		
 		// PG v9.1 
-		$sql = "select st_asgml(".pg_escape_string($gmlversion).", '".pg_escape_string($this->geometry)."'::geometry, 15, 1) as thevalue";
+		// the final parameter of 17 in st_asgml flips the coordinates to lat/lon as they should be for EPSG:4326.  
+		$sql = "select st_asgml(".pg_escape_string($gmlversion).", '".pg_escape_string($this->geometry)."'::geometry, 15, 17) as thevalue";
 				
 		return $this->runSQLCalculation($sql);
 	}
@@ -172,6 +173,7 @@ class geometry
 						//$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
 						
 						// PG v9.1
+						// TODO Check whether st_askml needs final parameter switching to 17 like st_asgml does
 						$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."'::geometry, 15, 1) as thevalue";
 						
 						$kml .= $this->runSQLCalculation($sql);	

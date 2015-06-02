@@ -37,6 +37,7 @@ import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
+import org.tellervo.desktop.bulkdataentry.control.PopulateFromGeonamesEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
@@ -171,7 +172,7 @@ public class ObjectView extends AbstractBulkImportView{
 	}*/
 	
 	protected JToolBar setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
-				JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB){
+				JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
 		/*Box box = Box.createHorizontalBox();
 		box.add(argAddRowButton);
 		box.add(argDeleteRowButton);
@@ -188,6 +189,7 @@ public class ObjectView extends AbstractBulkImportView{
 		 toolbar.add(argDeleteRowButton);
 		 toolbar.add(argCopyRow);
 		 toolbar.add(argPopulateFromDB);
+		 toolbar.add(argPopulateFromGeonames);
 		
 			browseODK = new JButton("");
 			browseODK.setIcon(Builder.getIcon("odk.png", 22));
@@ -239,6 +241,15 @@ public class ObjectView extends AbstractBulkImportView{
 	protected void populateFromDatabase() {
 		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
 		PopulateFromDatabaseEvent event = new PopulateFromDatabaseEvent(model);
+		
+		event.dispatch();
+		
+	}
+
+	@Override
+	protected void populateFromGeonames() {
+		ObjectModel model = BulkImportModel.getInstance().getObjectModel();
+		PopulateFromGeonamesEvent event = new PopulateFromGeonamesEvent(model);
 		
 		event.dispatch();
 		

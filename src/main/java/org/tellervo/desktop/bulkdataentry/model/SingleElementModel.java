@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import net.opengis.gml.schema.PointType;
 import net.opengis.gml.schema.Pos;
 
+import org.tridas.io.formats.heidelberg.HeidelbergToTridasDefaults.DefaultFields;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasAddress;
@@ -41,6 +42,7 @@ import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasSlope;
 import org.tridas.schema.TridasSoil;
 import org.tridas.schema.TridasUnit;
+import org.tridas.spatial.GMLPointSRSHandler;
 
 import com.dmurph.mvc.model.HashModel;
 
@@ -285,8 +287,15 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 				argElement.getLocation().getLocationGeometry().getPoint() != null &&
 				argElement.getLocation().getLocationGeometry().getPoint().getPos() != null &&
 				argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().size() == 2){
-			setProperty(LATITUDE, argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(0));
-			setProperty(LONGITUDE, argElement.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(1));
+			
+			GMLPointSRSHandler tph = new GMLPointSRSHandler(argElement.getLocation().getLocationGeometry().getPoint());
+			
+			if(tph.hasPointData())
+			{
+				setProperty(LATITUDE, tph.getWGS84LatCoord());
+				setProperty(LONGITUDE, tph.getWGS84LongCoord());
+			}
+
 		}else{
 			setProperty(LATITUDE, null);
 			setProperty(LONGITUDE, null);

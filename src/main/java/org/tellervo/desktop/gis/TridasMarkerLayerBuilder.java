@@ -35,6 +35,7 @@ import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.TridasObject;
+import org.tridas.spatial.GMLPointSRSHandler;
 import org.tridas.util.TridasObjectEx;
 
 /**
@@ -91,13 +92,16 @@ public class TridasMarkerLayerBuilder {
 	{
 		if(geom.isSetPoint())
 		{
-			List<Double> coords = geom.getPoint().getPos().getValues();
-			if(coords.size()==2)
+			
+			GMLPointSRSHandler tph = new GMLPointSRSHandler(geom.getPoint());
+			
+			if(tph.hasPointData())
 			{
-				markers.add(new TridasMarker(Position.fromDegrees(coords.get(1), coords.get(0)), 
+				markers.add(new TridasMarker(Position.fromDegrees(tph.getWGS84LatCoord(), tph.getWGS84LongCoord()), 
 						getMarkerAttributesForEntity(entity.getClass()), entity));
 				return true;
 			}
+			
 		}
 		return false;
 	}

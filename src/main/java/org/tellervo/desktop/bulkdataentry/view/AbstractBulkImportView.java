@@ -33,6 +33,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
@@ -76,6 +77,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 	private JButton importSelected;
 	protected JButton copyRow;
 	protected JButton populateFromDB;
+	protected JButton populateFromGeonames;
+
 	
 	protected JPopupMenu tablePopupMenu;
 	private JMenuItem addrow;
@@ -109,6 +112,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		selectNone = new JButton();
 		importSelected = new JButton();
 		populateFromDB = new JButton();
+		populateFromGeonames = new JButton();
 		importSelected.putClientProperty("JButton.buttonType", "bevel");
 		importSelected.setIcon(Builder.getIcon("importtodatabase.png", 22));
 		
@@ -117,7 +121,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		setLayout(new BorderLayout());
 		
 	
-		add(setupHeaderElements(addRow, removeSelected, copyRow, showHideColumns, populateFromDB), "North");
+		add(setupHeaderElements(addRow, removeSelected, copyRow, showHideColumns, populateFromDB, populateFromGeonames), "North");
 		//add(setupToolbar(showHideColumns, selectAll, selectNone), "West");
 
 		JScrollPane panel = new JScrollPane(table);
@@ -202,9 +206,15 @@ public abstract class AbstractBulkImportView extends JPanel{
 				populateFromDatabase();
 				
 			}
-			
-			
-			
+		});
+		
+		populateFromGeonames.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				populateFromGeonames();
+				
+			}
 		});
 		
 		table.addMouseListener(new MouseListener(){
@@ -415,7 +425,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 	}
 	
 	protected JToolBar setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyButton, JButton argShowHideColumnButton, JButton argPopulateFromDB){
+			JButton argCopyButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
 		
 		 JToolBar toolbar = new JToolBar();
 		 
@@ -424,6 +434,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		 toolbar.add(argCopyButton);
 		 toolbar.add(argShowHideColumnButton);
 		 toolbar.add(argPopulateFromDB);
+		 toolbar.add(argPopulateFromGeonames);
 		 
 		 return toolbar;
 		/*
@@ -466,6 +477,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 	protected abstract void importSelectedPressed();
 	
 	protected abstract void populateFromDatabase();
+	
+	protected abstract void populateFromGeonames();
 	
 	protected void addRowPressed(){
 		AddRowEvent event = new AddRowEvent(model);
@@ -514,6 +527,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 		populateFromDB.setToolTipText("Populate table from database");
 		populateFromDB.setIcon(Builder.getIcon("database.png", 22));
 		
+		populateFromGeonames.setToolTipText("Populate from Geonames");
+		populateFromGeonames.setIcon(Builder.getIcon("database.png", 22));
 		
 		importSelected.setText(I18n.getText("bulkimport.importselected"));
 		

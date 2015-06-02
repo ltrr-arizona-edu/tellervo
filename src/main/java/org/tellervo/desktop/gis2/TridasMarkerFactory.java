@@ -9,6 +9,7 @@ import org.tellervo.desktop.gis.TridasMarker;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.TridasObject;
+import org.tridas.spatial.GMLPointSRSHandler;
 
 public class TridasMarkerFactory {
 
@@ -35,13 +36,17 @@ public class TridasMarkerFactory {
 		
 		if(geom.isSetPoint())
 		{
-			List<Double> coords = geom.getPoint().getPos().getValues();
-			if(coords.size()==2)
-			{
-				return new TridasMarker(Position.fromDegrees(coords.get(1), coords.get(0)), 
-						markerStyle, entity);
+			
+			GMLPointSRSHandler tph = new GMLPointSRSHandler(geom.getPoint());
 
+			
+			if(tph.getWGS84LatCoord()!=null && tph.getWGS84LongCoord()!=null)
+			{
+			
+				return new TridasMarker(Position.fromDegrees(tph.getWGS84LatCoord(), tph.getWGS84LongCoord()), 
+						markerStyle, entity);
 			}
+			
 		}
 		return null;
 	}

@@ -38,6 +38,7 @@ import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.TridasObject;
+import org.tridas.spatial.GMLPointSRSHandler;
 
 import com.dmurph.mvc.model.HashModel;
 
@@ -155,8 +156,11 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 				argObject.getLocation().getLocationGeometry().getPoint() != null &&
 				argObject.getLocation().getLocationGeometry().getPoint().getPos() != null &&
 				argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().size() == 2){
-			setProperty(LATITUDE, argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(0));
-			setProperty(LONGITUDE, argObject.getLocation().getLocationGeometry().getPoint().getPos().getValues().get(1));
+			
+			GMLPointSRSHandler tph = new GMLPointSRSHandler(argObject.getLocation().getLocationGeometry().getPoint());
+			
+			setProperty(LATITUDE, tph.getWGS84LatCoord());
+			setProperty(LONGITUDE, tph.getWGS84LongCoord());
 		}else{
 			setProperty(LATITUDE, null);
 			setProperty(LONGITUDE, null);

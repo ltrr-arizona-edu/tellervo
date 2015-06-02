@@ -39,6 +39,7 @@ import org.tellervo.desktop.bulkdataentry.control.ColumnsModifiedEvent;
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
+import org.tellervo.desktop.bulkdataentry.control.PopulateFromGeonamesEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
@@ -160,7 +161,7 @@ public class ElementView extends AbstractBulkImportView{
 
 	@Override
 	protected JToolBar setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB){
+			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
 
 
 		JToolBar toolbar = new JToolBar();
@@ -170,6 +171,7 @@ public class ElementView extends AbstractBulkImportView{
 		toolbar.add(argDeleteRowButton);
 		toolbar.add(argCopyRowButton);
 		toolbar.add(argPopulateFromDB);
+		toolbar.add(argPopulateFromGeonames);
 
 		quickFill = new JButton();
 		quickFill.setIcon(Builder.getIcon("quickfill.png", 22));
@@ -263,5 +265,14 @@ public class ElementView extends AbstractBulkImportView{
 
 		event.dispatch();
 
+	}
+
+	@Override
+	protected void populateFromGeonames() {
+		ElementModel model = BulkImportModel.getInstance().getElementModel();
+		PopulateFromGeonamesEvent event = new PopulateFromGeonamesEvent(model);
+		
+		event.dispatch();
+		
 	}
 }
