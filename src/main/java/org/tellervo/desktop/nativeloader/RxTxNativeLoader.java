@@ -66,14 +66,12 @@ public class RxTxNativeLoader {
 			throw new Exception(os+" OS is not supported");
 		}
 
-		//lib = "/home/pbrewer/dev/java11/Tellervo/src/main/resources/"+lib;
 		log.debug("Loading lib from "+lib);
 		
 		NativeUtils nu = new NativeUtils();
 		nu.loadLibraryFromJar(lib);
 		
-		//System.load(lib);
-		//System.load("/tmp/librxtxSerial6968542935373932168.so");
+
 	}
 	
 	

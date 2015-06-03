@@ -162,15 +162,13 @@ public abstract class AbstractSerialMeasuringDevice extends
 		hscChecked = true;
 		
 		try {
-			
-			/* Check what libs are loaded
-			final String[] libraries = ClassScope.getLoadedLibraries(ClassLoader.getSystemClassLoader()); 
+			// Check what libs are loaded
+			/*final String[] libraries = ClassScope.getLoadedLibraries(ClassLoader.getSystemClassLoader()); 
 			//MyClassName.class.getClassLoader()
 			for(String lib: libraries)
 			{
 				log.debug(lib+" is loaded");
 			}*/
-			
 			
 			Class.forName("gnu.io.RXTXCommDriver");
 			hscResult = true;
@@ -480,5 +478,7 @@ public abstract class AbstractSerialMeasuringDevice extends
 		}
 
 	}
+	
+
 
 }

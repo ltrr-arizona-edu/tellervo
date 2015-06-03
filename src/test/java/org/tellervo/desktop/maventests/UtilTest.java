@@ -96,7 +96,7 @@ public class UtilTest extends TestCase {
     	if(city==null) fail();
     	
     	System.out.println("City = "+city);
-    }
+    }*/
     
     public void testLoadSerialLib(){
     	
@@ -104,12 +104,11 @@ public class UtilTest extends TestCase {
     	      RxTxNativeLoader.loadNativeLib();
     	    } catch (Exception e) {  
     	    	
-    	    	
-    	      e.printStackTrace(); // This is probably not the best way to handle exception :-)  
+    	      e.printStackTrace(); 
     	      fail();
     	    }    
     	
-    }*/
+    }
     
 }
 

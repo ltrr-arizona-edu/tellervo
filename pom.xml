@@ -396,6 +396,8 @@
 		          <exclude>**/*.xml</exclude>
 		          <exclude>**/*.wav</exclude>
 		          <exclude>**/*.ttf</exclude>
+		          <exclude>**/*.dll</exclude>
+		          <exclude>**/*.so</exclude>
 		        </excludes>
 		      </resource>
 		      <resource>
@@ -413,10 +415,7 @@
 		          <include>**/*.so</include>
 		        </includes>
 		      </resource>
-		      <resource>
-		  		<directory>src/main/resources/Libraries</directory>
-		        <filtering>false</filtering>
-		      </resource>
+		  
 		</resources>
 
 		<plugins>
@@ -936,7 +935,7 @@
 							<tasks>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
 									classpathref="maven.plugin.classpath" />
-								<exec dir="${project.build.directory}" executable="install4jc">
+								<exec dir="${project.build.directory}" executable="/home/pbrewer/bin/install4j6/bin/install4jc">
 									<arg value="--win-keystore-password" />
 									<arg value="${cert.password}" />
 									<arg value="--mac-keystore-password" />

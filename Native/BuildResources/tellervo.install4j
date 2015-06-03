@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<install4j version="6.0.1" transformSequenceNumber="5">
-  <directoryPresets config="../Libraries/windows-i586/rxtxSerial.dll" />
+<install4j version="6.0.3" transformSequenceNumber="5">
+  <directoryPresets config="../../Documentation/tellervo-manual.pdf" />
   <application name="Tellervo" distributionSourceDir="" applicationId="3241-8043-2524-6669" mediaDir="../../target/binaries/desktop/${compiler:sys.version}/${compiler:platformtype}" mediaFilePattern="tellervo-${compiler:sys.version}-${compiler:sys.platform}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="false" shrinkRuntime="true" shortName="Tellervo" publisher="University of Arizona" publisherWeb="http://www.tellervo.org" version="1.1.0-SNAPSHOT" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="add89b377a765064" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
@@ -54,7 +54,7 @@
       <fileEntry mountPoint="43" file="../Libraries/linux-i586/librxtxSerial.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="44" file="../Libraries/linux-amd64/librxtxSerial.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="232" file="../Libraries/macosx-universal/librxtxSerial.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="67" file="../../../../../tellervo-manual.pdf" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="67" file="../../Documentation/tellervo-manual.pdf" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
     </entries>
     <components>
       <component name="Tellervo Desktop" id="58" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="false" downloadable="false" hidden="false">
@@ -64,19 +64,25 @@
         </include>
         <dependencies />
       </component>
-      <component name="Windows serial port library for 32-bit Java" id="50" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="true" downloadable="false" hidden="false">
-        <description>Required to access your measuring platform hardware. Install these if you have a 32-bit Java VM (standard).</description>
+      <component name="Windows serial port library for 32-bit Java" id="50" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="false" downloadable="false" hidden="true">
+        <description>Tellervo with 32bit JVM and native libraries</description>
         <include all="false">
+          <entry location=".i4j_fileset_" fileType="regular" />
           <entry location=".i4j_fileset_23" fileType="regular" />
         </include>
-        <dependencies />
+        <dependencies>
+          <component id="58" />
+        </dependencies>
       </component>
-      <component name="Windows serial port library for 64-bit Java" id="51" customizedId="" displayDescription="true" hideHelpButton="false" selected="false" changeable="true" downloadable="false" hidden="false">
-        <description>Required to access your measuring platform hardware. Only install this if you have a 64-bit Java VM.  If you are running 64-bit Windows but 32-bit Java then you need the 32-bit drivers above.</description>
+      <component name="Windows serial port library for 64-bit Java" id="51" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="false" downloadable="false" hidden="true">
+        <description>Tellervo with 64bit JVM and native libraries</description>
         <include all="false">
+          <entry location=".i4j_fileset_" fileType="regular" />
           <entry location=".i4j_fileset_25" fileType="regular" />
         </include>
-        <dependencies />
+        <dependencies>
+          <component id="58" />
+        </dependencies>
       </component>
       <component name="OSX serial port library" id="60" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="true" downloadable="false" hidden="false">
         <description>Required to access your measuring platform hardware.</description>
@@ -239,6 +245,9 @@
                         <boolean>true</boolean>
                       </void>
                       <void property="obtainIfNormalMac">
+                        <boolean>true</boolean>
+                      </void>
+                      <void property="obtainIfNormalWin">
                         <boolean>true</boolean>
                       </void>
                     </object>
@@ -560,32 +569,14 @@
     </applications>
   </installerGui>
   <mediaSets>
-    <windows name="WindowsNoJVM" id="39" customizedId="" mediaFileName="tellervo-${compiler:sys.version}-${compiler:sys.platform}-nojvm" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="http://tellervo.org/support/tellervo-manual.pdf" verifyIntegrity="true">
-      <excludedLaunchers />
-      <excludedBeans />
-      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude>
-        <entry location=".i4j_fileset_27" fileType="regular" />
-        <entry location=".i4j_fileset_29" fileType="regular" />
-        <entry location=".i4j_fileset_31" fileType="regular" />
-        <entry location=".i4j_fileset_155" fileType="regular" />
-      </exclude>
-      <variables>
-        <variable name="platformtype" value="Windows" description="" category="" />
-      </variables>
-      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
-        <commentFiles />
-        <customAttributes />
-      </autoUpdate>
+    <unixInstaller name="Unix Installer" id="81" customizedId="" mediaFileName="" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1">
       <excludedComponents>
+        <component id="50" />
+        <component id="51" />
         <component id="60" />
-        <component id="82" />
-        <component id="83" />
         <component id="384" />
       </excludedComponents>
       <includedDownloadableComponents />
-    </windows>
-    <unixInstaller name="Unix Installer" id="81" customizedId="" mediaFileName="" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="">
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -601,18 +592,13 @@
         <commentFiles />
         <customAttributes />
       </autoUpdate>
-      <excludedComponents>
-        <component id="50" />
-        <component id="51" />
-        <component id="60" />
-        <component id="384" />
-      </excludedComponents>
-      <includedDownloadableComponents />
       <installerScript mode="1" file="">
         <content />
       </installerScript>
     </unixInstaller>
-    <linuxDeb name="Linux Deb Archive" id="88" customizedId="" mediaFileName="" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bzip="false" description="Application for measuring, managing and curating dendrochronology samples" dependencies="default-jre | openjdk-7-jre | openjdk-6-jre | sun-java6-jre , librxtx-java, libjogl-java" maintainerEmail="Peter Brewer &lt;p.brewer@ltrr.arizona.edu&gt;" architectureSet="false" architecture="">
+    <linuxDeb name="Linux Deb Archive" id="88" customizedId="" mediaFileName="" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" bzip="false" description="Application for measuring, managing and curating dendrochronology samples" dependencies="default-jre | openjdk-7-jre | openjdk-6-jre | sun-java6-jre , librxtx-java, libjogl-java" maintainerEmail="Peter Brewer &lt;p.brewer@ltrr.arizona.edu&gt;" architectureSet="false" architecture="">
+      <excludedComponents />
+      <includedDownloadableComponents />
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -642,7 +628,15 @@
         <content />
       </postUninstallScript>
     </linuxDeb>
-    <windows name="Windows" id="93" customizedId="" mediaFileName="tellervo-${compiler:sys.version}-${compiler:sys.platform}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="windows-x86-1.8.0_31" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
+    <windows name="Windows32" id="93" customizedId="" mediaFileName="tellervo-${compiler:sys.version}-${compiler:sys.platform}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-x86-1.8.0_45" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="true" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+      <excludedComponents>
+        <component id="58" />
+        <component id="51" />
+        <component id="60" />
+        <component id="82" />
+        <component id="83" />
+      </excludedComponents>
+      <includedDownloadableComponents />
       <excludedLaunchers />
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -654,17 +648,16 @@
         <commentFiles />
         <customAttributes />
       </autoUpdate>
+    </windows>
+    <macos name="Mac OS X Single Bundle" id="171" customizedId="" mediaFileName="" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="macosx-amd64-1.8.0_31" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" launcherId="22">
       <excludedComponents>
-        <component id="58" />
         <component id="50" />
         <component id="51" />
-        <component id="60" />
         <component id="82" />
         <component id="83" />
+        <component id="384" />
       </excludedComponents>
       <includedDownloadableComponents />
-    </windows>
-    <macos name="Mac OS X Single Bundle" id="171" customizedId="" mediaFileName="" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="macosx-amd64-1.8.0_31" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" downloadURL="" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" launcherId="22">
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
@@ -681,20 +674,38 @@
         <commentFiles />
         <customAttributes />
       </autoUpdate>
-      <excludedComponents>
-        <component id="50" />
-        <component id="51" />
-        <component id="82" />
-        <component id="83" />
-        <component id="384" />
-      </excludedComponents>
-      <includedDownloadableComponents />
       <topLevelFiles />
     </macos>
+    <windows name="Windows64" id="437" customizedId="" mediaFileName="tellervo-${compiler:sys.version}-${compiler:sys.platform}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="64" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-amd64-1.8.0_45" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="true" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+      <excludedComponents>
+        <component id="58" />
+        <component id="50" />
+        <component id="60" />
+        <component id="82" />
+        <component id="83" />
+      </excludedComponents>
+      <includedDownloadableComponents />
+      <excludedLaunchers />
+      <excludedBeans />
+      <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
+      <exclude>
+        <entry location=".i4j_fileset_23" fileType="regular" />
+        <entry location=".i4j_fileset_27" fileType="regular" />
+        <entry location=".i4j_fileset_29" fileType="regular" />
+        <entry location=".i4j_fileset_31" fileType="regular" />
+      </exclude>
+      <variables>
+        <variable name="platformtype" value="Windows64" description="" category="" />
+      </variables>
+      <autoUpdate useMinUpdatableVersion="false" minUpdatableVersion="" useMaxUpdatableVersion="false" maxUpdatableVersion="">
+        <commentFiles />
+        <customAttributes />
+      </autoUpdate>
+    </windows>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="39" />
     <mediaSet refId="93" />
+    <mediaSet refId="437" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>
