@@ -40,8 +40,12 @@
 
 package org.tellervo.desktop.maventests;
 
+import java.io.IOException;
+
 import junit.framework.TestCase;
 
+import org.tellervo.desktop.nativeloader.NativeUtils;
+import org.tellervo.desktop.nativeloader.RxTxNativeLoader;
 import org.tellervo.desktop.util.GeonamesUtil;
 import org.tellervo.desktop.util.StringUtils;
 import org.tridas.schema.TridasLocation;
@@ -65,7 +69,7 @@ public class UtilTest extends TestCase {
     }
     
 
-    public void testGeonamesCountry(){
+    /*public void testGeonamesCountry(){
     	
     	TridasLocation location = new TridasLocation();
     	TridasLocationGeometry geom = SpatialUtils.getWGS84LocationGeometry(32.2, -110.9, false);
@@ -93,6 +97,19 @@ public class UtilTest extends TestCase {
     	
     	System.out.println("City = "+city);
     }
+    
+    public void testLoadSerialLib(){
+    	
+    	try {    
+    	      RxTxNativeLoader.loadNativeLib();
+    	    } catch (Exception e) {  
+    	    	
+    	    	
+    	      e.printStackTrace(); // This is probably not the best way to handle exception :-)  
+    	      fail();
+    	    }    
+    	
+    }*/
     
 }
 

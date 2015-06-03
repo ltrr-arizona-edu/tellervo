@@ -409,7 +409,13 @@
 		          <include>**/log4j.xml</include>
 		          <include>**/*.wav</include>
 		          <include>**/*.ttf</include>
+		          <include>**/*.dll</include>
+		          <include>**/*.so</include>
 		        </includes>
+		      </resource>
+		      <resource>
+		  		<directory>src/main/resources/Libraries</directory>
+		        <filtering>false</filtering>
 		      </resource>
 		</resources>
 
