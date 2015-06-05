@@ -100,9 +100,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 	/**
 	 * Create the panel.
 	 */
-	public ODKFormDesignPanel(JDialog parent) {
+	public ODKFormDesignPanel(JDialog theparent) {
 		setLayout(new BorderLayout(0, 0));
-		this.parent = parent;
+		this.parent = theparent;
 		
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -311,20 +311,14 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 			@Override
 			public void actionPerformed(ActionEvent evt) {
 				
-				ODKUserDefinedFieldDialog dialog = new ODKUserDefinedFieldDialog();
+				boolean isObjectField = cboFormType.getSelectedIndex()==0;
+				
+				ODKUserDefinedFieldDialog dialog = new ODKUserDefinedFieldDialog(isObjectField, parent);
 				dialog.setVisible(true);
 				
 				if(dialog.success)
 				{
-					ODKUserDefinedField userfield = new ODKUserDefinedField(dialog.getDataType(),
-							"tellervo.user."+dialog.txtName.getText().toLowerCase(),
-							dialog.txtName.getText(),
-							dialog.txtDescription.getText(),
-							null,
-							TridasObject.class
-							);
-				
-					selectedFieldsModel.addField(userfield);
+					selectedFieldsModel.addField(dialog.getField());
 				}
 				else
 				{
