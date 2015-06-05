@@ -7,22 +7,30 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.ODKDataType;
+import org.tellervo.desktop.odk.fields.ODKUserDefinedChoiceField;
+import org.tellervo.desktop.odk.fields.ODKUserDefinedDecimalField;
 import org.tellervo.desktop.odk.fields.ODKUserDefinedField;
+import org.tellervo.desktop.odk.fields.ODKUserDefinedIntegerField;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
@@ -38,18 +46,26 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 	private JComboBox<String> cboFieldType ;
 	public boolean success  =false;
 	private String[] datatypenames = {"String", 
-			//"Choose from list", 
+			"Choose from list", 
 			"Integer", "Decimal", "Location", "Image", "Audio", "Video"};
 	private DefaultComboBoxModel<String> dataTypeModel;
 	private DefaultComboBoxModel<Class <? extends ITridas>> attachToModel;
 	private JComboBox<Class <? extends ITridas>> cboAttachTo;
 	private boolean attachToObject = true;
+	private JList lstOptions;
+	private DefaultListModel<String> optionChoices;
+	private JButton btnAddOption;
+	private JButton btnRemoveOption;
+	private JLabel lblOptions;
+	private JScrollPane scrollPane;
+	private final JDialog parent;
 	
 	/**
 	 * Create the dialog.
 	 */
 	public ODKUserDefinedFieldDialog() {
 	
+		parent = null;
 		init();
 	}
 
@@ -57,6 +73,7 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 		
 		this.attachToObject = attachToObject;
 		init();
+		this.parent = parent;
 		this.setLocationRelativeTo(parent);
 	}
 	
@@ -65,11 +82,12 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 		this.setModal(true);
 		this.setIconImage(Builder.getApplicationIcon());
 		this.setTitle("User defined field");
-		setBounds(100, 100, 486, 436);
+		this.setDefaultCloseOperation(JDialog.HIDE_ON_CLOSE);
+		setBounds(100, 100, 486, 291);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new MigLayout("hidemode 3", "[right][grow]", "[][][][][]"));
+		contentPanel.setLayout(new MigLayout("hidemode 3", "[right][grow][fill]", "[][][][][][][grow]"));
 		{
 			JLabel lblFieldType = new JLabel("Field type:");
 			contentPanel.add(lblFieldType, "cell 0 0,alignx trailing");
@@ -88,11 +106,13 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 				@Override
 				public void actionPerformed(ActionEvent evt) {
 					
+					setGUIForFieldType();
+					
 				}
 				
 			});
 			
-			contentPanel.add(cboFieldType, "cell 1 0,growx");
+			contentPanel.add(cboFieldType, "cell 1 0 2 1,growx");
 		}
 		{
 			JLabel lblFieldName = new JLabel("Name:");
@@ -100,7 +120,7 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 		}
 		{
 			txtName = new JTextField();
-			contentPanel.add(txtName, "cell 1 1,growx");
+			contentPanel.add(txtName, "cell 1 1 2 1,growx");
 			txtName.setColumns(10);
 		}
 		{
@@ -109,7 +129,7 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 		}
 		{
 			txtDescription = new JTextField();
-			contentPanel.add(txtDescription, "cell 1 2,growx");
+			contentPanel.add(txtDescription, "cell 1 2 2 1,growx");
 			txtDescription.setColumns(10);
 		}
 		{
@@ -152,7 +172,64 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 				cboAttachTo.setVisible(false);
 			}
 			
-			contentPanel.add(cboAttachTo, "cell 1 3,growx");
+			contentPanel.add(cboAttachTo, "cell 1 3 2 1,growx");
+		}
+		{
+			lblOptions = new JLabel("Choices:");
+			contentPanel.add(lblOptions, "cell 0 4,aligny top");
+		}
+		{
+			scrollPane = new JScrollPane();
+			contentPanel.add(scrollPane, "cell 1 4 1 3,grow");
+			{
+				lstOptions = new JList();
+				optionChoices = new DefaultListModel<String>();
+				
+				lstOptions.setModel(this.optionChoices);
+				lstOptions.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+				scrollPane.setViewportView(lstOptions);
+			}
+		}
+		{
+			btnAddOption = new JButton();
+			btnAddOption.setIcon(Builder.getIcon("edit_add.png", 16));
+			btnAddOption.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					String s = (String)JOptionPane.showInputDialog(
+		                    parent,
+		                    "Enter new choice:",
+		                    "Enter new choice",
+		                    JOptionPane.PLAIN_MESSAGE                
+		                    );
+					if(s==null) return;
+					
+					optionChoices.addElement(s);
+					
+				}
+				
+			});
+			contentPanel.add(btnAddOption, "cell 2 4");
+		}
+		{
+			btnRemoveOption = new JButton();
+			btnRemoveOption.setIcon(Builder.getIcon("cancel.png", 16));
+			
+			btnRemoveOption.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					if(lstOptions.getSelectedIndex()!=-1)
+					{
+						optionChoices.remove(lstOptions.getSelectedIndex());
+					}
+					
+				}
+				
+				
+			});
+			contentPanel.add(btnRemoveOption, "cell 2 5");
 		}
 		{
 			JPanel buttonPane = new JPanel();
@@ -196,6 +273,7 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
+		setGUIForFieldType();
 	}
 	
 	public String getFieldCode()
@@ -227,7 +305,7 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 		}
 	}
 	
-	public ODKDataType getDataType()
+	public ODKDataType getFieldType()
 	{
 		if(cboFieldType.getSelectedItem().equals("String"))
 		{
@@ -268,22 +346,75 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 		
 	}
 	
-	public ODKUserDefinedField getField()
-	{
-		ODKUserDefinedField userfield = new ODKUserDefinedField(getDataType(),
-				getFieldCode(),
-				getFieldName(),
-				getDescription(),
-				null,
-				getAttachedTo()
-				);
-		
-		if(getDataType().equals(ODKDataType.SELECT_ONE))
+	private void setGUIForFieldType() {
+		if(getFieldType().equals(ODKDataType.SELECT_ONE))
 		{
-			
+			this.lstOptions.setVisible(true);
+			this.lblOptions.setVisible(true);
+			this.btnAddOption.setVisible(true);
+			this.btnRemoveOption.setVisible(true);
+			this.scrollPane.setVisible(true);
+		}
+		else
+		{
+			this.lstOptions.setVisible(false);
+			this.lblOptions.setVisible(false);
+			this.btnAddOption.setVisible(false);
+			this.btnRemoveOption.setVisible(false);
+			this.scrollPane.setVisible(false);
 		}
 		
-		return userfield;
+	}
+	
+	/**
+	 * Get a representation of this field as an AbstractODKField
+	 * 
+	 * @return
+	 */
+	public AbstractODKField getField()
+	{
+		if(getFieldType().equals(ODKDataType.SELECT_ONE))
+		{
+			return new ODKUserDefinedChoiceField(
+					getFieldCode(),
+					getFieldName(),
+					getDescription(),
+					null,
+					getAttachedTo(),
+					optionChoices.elements()
+					);			
+		}
+		else if(getFieldType().equals(ODKDataType.DECIMAL))
+		{
+			return new ODKUserDefinedDecimalField(
+					getFieldCode(),
+					getFieldName(),
+					getDescription(),
+					null,
+					getAttachedTo()
+					);			
+		}
+		else if(getFieldType().equals(ODKDataType.INTEGER))
+		{
+			return new ODKUserDefinedIntegerField(
+					getFieldCode(),
+					getFieldName(),
+					getDescription(),
+					null,
+					getAttachedTo()
+					);			
+		}
+		else 
+		{
+			return new ODKUserDefinedField(
+					getFieldType(),
+					getFieldCode(),
+					getFieldName(),
+					getDescription(),
+					null,
+					getAttachedTo()
+					);
+		}
 	}
 
 }

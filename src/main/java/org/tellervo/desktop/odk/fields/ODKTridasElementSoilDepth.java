@@ -8,7 +8,7 @@ public class ODKTridasElementSoilDepth extends AbstractODKDecimalField {
 	
 	public ODKTridasElementSoilDepth()
 	{
-		super(ODKDataType.DECIMAL, "tridas_element_soil_depth", "Soil depth", Documentation.getDocumentation("element.soil.depth"), null);
+		super("tridas_element_soil_depth", "Soil depth", Documentation.getDocumentation("element.soil.depth"), null);
 		setMinValue(0.0);
 	}
 	

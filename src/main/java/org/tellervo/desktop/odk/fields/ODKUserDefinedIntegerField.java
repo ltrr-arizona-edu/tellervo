@@ -2,13 +2,13 @@ package org.tellervo.desktop.odk.fields;
 
 import org.tridas.interfaces.ITridas;
 
-public class ODKUserDefinedField extends AbstractODKField {
+public class ODKUserDefinedIntegerField extends AbstractODKIntegerField {
 
 	private Class<? extends ITridas> attachedTo;
 	
-	public ODKUserDefinedField(ODKDataType type, String fieldcode, String fieldname, String description,
+	public ODKUserDefinedIntegerField(String fieldcode, String fieldname, String description,
 			Object defaultvalue, Class<? extends ITridas> attachedTo) {
-		super(type, fieldcode, fieldname, description, null);
+		super(fieldcode, fieldname, description, null);
 		this.attachedTo = attachedTo;
 		
 	}

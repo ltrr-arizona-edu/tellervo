@@ -8,7 +8,7 @@ public class ODKTridasElementSlopeAngle extends AbstractODKIntegerField {
 	
 	public ODKTridasElementSlopeAngle()
 	{
-		super(ODKDataType.INTEGER, "tridas_element_slope_angle", "Slope angle", Documentation.getDocumentation("element.slope.angle"), null);
+		super("tridas_element_slope_angle", "Slope angle", Documentation.getDocumentation("element.slope.angle"), null);
 		setMinValue(0);
 		setMaxValue(90);
 	}

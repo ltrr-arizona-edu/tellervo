@@ -8,7 +8,7 @@ public class ODKTridasElementSlopeAzimuth extends AbstractODKIntegerField {
 	
 	public ODKTridasElementSlopeAzimuth()
 	{
-		super(ODKDataType.INTEGER, "tridas_element_slope_azimuth", "Slope azimuth", Documentation.getDocumentation("element.slope.azimuth"), null);
+		super("tridas_element_slope_azimuth", "Slope azimuth", Documentation.getDocumentation("element.slope.azimuth"), null);
 		setMinValue(0);
 		setMaxValue(360);
 	}

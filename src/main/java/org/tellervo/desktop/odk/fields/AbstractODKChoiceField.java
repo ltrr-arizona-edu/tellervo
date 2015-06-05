@@ -26,6 +26,14 @@ public abstract class AbstractODKChoiceField extends AbstractODKField {
 	
 	}
 	
+	public void selectAllChoices()
+	{
+		for(SelectableChoice choice : choices)
+		{
+			choice.setSelected(true);
+		}
+	}
+	
 	public void setSelectedChoices(Object[] selchoice)
 	{
 		for(SelectableChoice c : choices)

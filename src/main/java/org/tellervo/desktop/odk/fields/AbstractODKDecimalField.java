@@ -7,9 +7,9 @@ public abstract class AbstractODKDecimalField extends AbstractODKField {
 	private Double minValue = Double.MIN_VALUE;
 	private Double maxValue = Double.MAX_VALUE;
 	
-	public AbstractODKDecimalField(ODKDataType datatype, String fieldcode, String fieldname, String description, Object defaultvalue )
+	public AbstractODKDecimalField(String fieldcode, String fieldname, String description, Object defaultvalue )
 	{
-		super(datatype, fieldcode, fieldname, description, defaultvalue);
+		super(ODKDataType.DECIMAL, fieldcode, fieldname, description, defaultvalue);
 
 	}
 	
