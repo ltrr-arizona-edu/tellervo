@@ -51,9 +51,11 @@ import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.ODKDataType;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 import org.tellervo.desktop.odk.fields.ODKFields;
+import org.tellervo.desktop.odk.fields.ODKUserDefinedField;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ExtensionFileFilter;
+import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -130,13 +132,13 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		
 		JPanel panelFieldPicker = new JPanel();
 		panelMain.add(panelFieldPicker, "cell 0 2 2 1,grow");
-		panelFieldPicker.setLayout(new MigLayout("", "[300px,grow,fill][70px:70px:70px][300px,grow,fill]", "[][grow,center]"));
+		panelFieldPicker.setLayout(new MigLayout("", "[300px,grow,fill][70px:70px:70px][300px,grow,fill]", "[][grow,center][]"));
 		
 		JLabel lblAvailableFields = new JLabel("Available fields:");
 		panelFieldPicker.add(lblAvailableFields, "cell 0 0");
 		
 		JLabel lblSelectedFields = new JLabel("Selected fields:");
-		panelFieldPicker.add(lblSelectedFields, "cell 2 0");
+		panelFieldPicker.add(lblSelectedFields, "flowx,cell 2 0");
 		
 		scrollPaneAvailable = new JScrollPane();
 		panelFieldPicker.add(scrollPaneAvailable, "cell 0 1,grow");
@@ -302,6 +304,37 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener{
 		});
 		
 		scrollPaneSelected.setViewportView(lstSelectedFields);
+		
+		JButton btnAddUserDefined = new JButton("Add user defined field");
+		btnAddUserDefined.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent evt) {
+				
+				ODKUserDefinedFieldDialog dialog = new ODKUserDefinedFieldDialog();
+				dialog.setVisible(true);
+				
+				if(dialog.success)
+				{
+					ODKUserDefinedField userfield = new ODKUserDefinedField(dialog.getDataType(),
+							"tellervo.user."+dialog.txtName.getText().toLowerCase(),
+							dialog.txtName.getText(),
+							dialog.txtDescription.getText(),
+							null,
+							TridasObject.class
+							);
+				
+					selectedFieldsModel.addField(userfield);
+				}
+				else
+				{
+					return;
+				}
+				
+			}
+			
+		});
+		panelFieldPicker.add(btnAddUserDefined, "cell 2 2,alignx right");
 		
 		JScrollPane fieldOptionsScrollPane = new JScrollPane();
 		fieldOptionsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
