@@ -1,11 +1,9 @@
 package org.tellervo.desktop.gui.menus.actions;
 
-import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
-import javax.swing.JDialog;
 
 import org.tellervo.desktop.odk.ODKFormDesignPanel;
 import org.tellervo.desktop.ui.Builder;
@@ -33,15 +31,7 @@ public class FileDesignODKFormAction extends AbstractAction{
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		
-		JDialog dialog = new JDialog();
-		ODKFormDesignPanel panel = new ODKFormDesignPanel(dialog);
-		dialog.setIconImage(Builder.getApplicationIcon());
-		dialog.setTitle("ODK Form Builder");
-		dialog.setLayout(new BorderLayout());
-		dialog.add(panel, BorderLayout.CENTER);
-		dialog.pack();
-		dialog.setVisible(true);
-		dialog.setLocationRelativeTo(parent);
+		ODKFormDesignPanel.showDialog(parent);
 	}
 	
 	

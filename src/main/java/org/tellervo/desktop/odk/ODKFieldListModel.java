@@ -1,20 +1,19 @@
 package org.tellervo.desktop.odk;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.AbstractListModel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 
-public class ODKFieldListModel extends AbstractListModel {
+public class ODKFieldListModel extends AbstractListModel<ODKFieldInterface> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	ArrayList<ODKFieldInterface> fields;
-	private static final Logger log = LoggerFactory.getLogger(ODKFieldListModel.class);
+	//private static final Logger log = LoggerFactory.getLogger(ODKFieldListModel.class);
 
 	public ODKFieldListModel()
 	{
@@ -47,7 +46,7 @@ public class ODKFieldListModel extends AbstractListModel {
 		
 		if(index==-1)
 		{
-			log.debug("Cannont remove field from list as it's not in the list");
+			//log.debug("Cannont remove field from list as it's not in the list");
 			return;
 		}
 		
@@ -56,9 +55,9 @@ public class ODKFieldListModel extends AbstractListModel {
 			this.fireIntervalRemoved(this, index, index);
 		} catch (IndexOutOfBoundsException e)
 		{
-			log.debug("Index out of bounds exception.  Trying to remove index: "+index+" when list size is now "+getSize());
+			//log.debug("Index out of bounds exception.  Trying to remove index: "+index+" when list size is now "+getSize());
 		}
-		log.debug("Removed field at index "+index+ " the size of list is now "+getSize());
+		//log.debug("Removed field at index "+index+ " the size of list is now "+getSize());
 
 	
 	}
@@ -71,10 +70,10 @@ public class ODKFieldListModel extends AbstractListModel {
 			this.fireIntervalRemoved(this, index, index);
 		} catch (IndexOutOfBoundsException e)
 		{
-			log.debug("Index out of bounds exception.  Trying to remove index: "+index+" when list size is now "+getSize());
+			//log.debug("Index out of bounds exception.  Trying to remove index: "+index+" when list size is now "+getSize());
 		}
 		
-		log.debug("Removed field at index "+index+ " the size of list is now "+getSize());
+		//log.debug("Removed field at index "+index+ " the size of list is now "+getSize());
 		
 		
 	}
@@ -90,7 +89,7 @@ public class ODKFieldListModel extends AbstractListModel {
 		{
 			this.fireIntervalRemoved(this, 0, fields.size()-1);
 		}
-		log.debug("Removed a bunch of fields, the size of list is now "+getSize());
+		//log.debug("Removed a bunch of fields, the size of list is now "+getSize());
 
 	}
 	
@@ -100,7 +99,7 @@ public class ODKFieldListModel extends AbstractListModel {
 			return fields.get(i);
 		} catch (IndexOutOfBoundsException e)
 		{
-			log.debug("IndexOutOfBoundsException fired when trying to get index "+i+ " when size = "+getSize());
+			//log.debug("IndexOutOfBoundsException fired when trying to get index "+i+ " when size = "+getSize());
 		}
 		return null;
 	}
@@ -110,7 +109,7 @@ public class ODKFieldListModel extends AbstractListModel {
 		return fields.size();
 	}
 	
-	public ArrayList<ODKFieldInterface> getAllFields()
+	public Collection<ODKFieldInterface> getAllFields()
 	{
 		return fields;
 	}

@@ -1,5 +1,6 @@
 package org.tellervo.desktop.odk;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -9,8 +10,9 @@ import org.tridas.schema.NormalTridasShape;
 
 import com.jidesoft.swing.Selectable;
 
-public class SelectableChoice implements Selectable {
+public class SelectableChoice implements Selectable, Serializable {
 
+	private static final long serialVersionUID = 1L;
 	boolean selected = false;
 	boolean enabled = true;
 	Object item;

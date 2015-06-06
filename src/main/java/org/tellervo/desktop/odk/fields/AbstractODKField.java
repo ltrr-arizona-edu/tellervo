@@ -1,8 +1,11 @@
 package org.tellervo.desktop.odk.fields;
 
+import java.io.Serializable;
 
-public abstract class AbstractODKField implements ODKFieldInterface {
 
+public abstract class AbstractODKField implements ODKFieldInterface, Serializable{
+
+	private static final long serialVersionUID = 1L;
 	protected String name;
 	protected String description;
 	protected Object defaultvalue;
