@@ -227,13 +227,17 @@ public class PopulateFromODKFileCommand implements ICommand {
 	{
 		SingleObjectModel newrow = (SingleObjectModel) model.createRowInstance();
 
-		String objcode = parser.getFieldValueAsString("tridas_parent_object_code").toString();
-		TridasObjectEx obj = getTridasObjectByCode(objcode);
+		String objcode = parser.getFieldValueAsString("tridas_parent_object_code");
+		TridasObjectEx obj = null;
+		if(objcode!=null) obj = getTridasObjectByCode(objcode);
 		if(obj!=null) newrow.setProperty(SingleObjectModel.PARENT_OBJECT, obj);
+		
 		newrow.setProperty(SingleObjectModel.OBJECT_CODE, parser.getFieldValueAsString("tridas_object_code"));
 		newrow.setProperty(SingleObjectModel.TITLE, parser.getFieldValueAsString("tridas_object_title"));
 		newrow.setProperty(SingleObjectModel.TYPE, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_object_type"), "objectTypeDictionary"));
-		newrow.setProperty(SingleObjectModel.COMMENTS, parser.getFieldValueAsString("tridas_object_comments") +" -- Imported from "+ parser.getFile().getName());
+		String comments = "Imported from ODK file: '"+ parser.getFile().getName()+"'. ";
+		if(parser.getFieldValueAsString("tridas_object_comments")!=null) comments += parser.getFieldValueAsString("tridas_object_comments");
+		newrow.setProperty(SingleObjectModel.COMMENTS, comments);
 		newrow.setProperty(SingleObjectModel.DESCRIPTION, parser.getFieldValueAsString("tridas_object_description"));
 		newrow.setProperty(SingleObjectModel.LATITUDE, parser.getLatitude("tridas_object_location"));
 		newrow.setProperty(SingleObjectModel.LONGITUDE, parser.getLongitude("tridas_object_location"));
