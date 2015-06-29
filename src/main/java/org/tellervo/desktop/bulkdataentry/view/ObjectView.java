@@ -45,6 +45,8 @@ import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.components.table.DynamicJComboBox;
 import org.tellervo.desktop.components.table.DynamicKeySelectionManager;
+import org.tellervo.desktop.components.table.LocationTypeComboBox;
+import org.tellervo.desktop.components.table.LocationTypeRenderer;
 import org.tellervo.desktop.components.table.StringCellEditor;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.core.App;
@@ -54,6 +56,7 @@ import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.schema.WSIObjectTypeDictionary;
+import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
@@ -84,6 +87,9 @@ public class ObjectView extends AbstractBulkImportView{
 		argTable.setDefaultEditor(String.class, new StringCellEditor());
 		argTable.setDefaultEditor(WSIObjectTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("objectTypeDictionary")));
 		argTable.setDefaultRenderer(WSIObjectTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
+				
+		argTable.setDefaultEditor(NormalTridasLocationType.class, new ComboBoxCellEditor(new LocationTypeComboBox()));
+		argTable.setDefaultRenderer(NormalTridasLocationType.class, new LocationTypeRenderer());
 		
 		
 		ObjectModel model = BulkImportModel.getInstance().getObjectModel();

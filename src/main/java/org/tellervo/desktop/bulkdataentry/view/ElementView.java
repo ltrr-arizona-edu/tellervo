@@ -47,6 +47,8 @@ import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.components.table.DynamicJComboBox;
 import org.tellervo.desktop.components.table.DynamicKeySelectionManager;
+import org.tellervo.desktop.components.table.LocationTypeComboBox;
+import org.tellervo.desktop.components.table.LocationTypeRenderer;
 import org.tellervo.desktop.components.table.StringCellEditor;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.components.table.TridasShapeComboBox;
@@ -61,6 +63,7 @@ import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.schema.WSIElementTypeDictionary;
 import org.tellervo.schema.WSITaxonDictionary;
+import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasUnit;
@@ -98,7 +101,8 @@ public class ElementView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(TridasUnit.class, new TridasUnitRenderer());
 		argTable.setDefaultEditor(WSITaxonDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("taxonDictionary")));
 		argTable.setDefaultRenderer(WSITaxonDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
-
+		argTable.setDefaultEditor(NormalTridasLocationType.class, new ComboBoxCellEditor(new LocationTypeComboBox()));
+		argTable.setDefaultRenderer(NormalTridasLocationType.class, new LocationTypeRenderer());
 		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(),
 				new Comparator<TridasObjectEx>() {
 			public int compare(TridasObjectEx argO1, TridasObjectEx argO2) {

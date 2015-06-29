@@ -25,6 +25,7 @@ package org.tellervo.desktop.bulkdataentry.model;
 
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
 import org.tellervo.schema.WSIObjectTypeDictionary;
+import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasObject;
 
 
@@ -54,6 +55,8 @@ public class ObjectTableModel extends AbstractBulkImportTableModel {
 			return Double.class;
 		}else if(argColumn.equals(SingleObjectModel.LONGITUDE)){
 			return Double.class;
+		}else if(argColumn.equals(SingleObjectModel.LOCATION_TYPE)){
+			return NormalTridasLocationType.class;
 		}else if(argColumn.equals(SingleObjectModel.LOCATION_PRECISION)){
 			return Double.class;
 		}else if(argColumn.equals(SingleObjectModel.WAYPOINT)){

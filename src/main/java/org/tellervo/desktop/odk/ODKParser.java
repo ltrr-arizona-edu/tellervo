@@ -67,16 +67,20 @@ public class ODKParser {
 			return;
 		}
 		
-		log.debug("---"+doc.getElementsByTagName("tridas_object_code").item(0).getTextContent());
+		//
 		
 		if(clazz.equals(TridasObject.class))
 		{
-			if(getFieldValueAsString("tridas_object_code")==null)
+			/*if(getFieldValueAsString("tridas_object_code")==null)
 			{
 				errorMessage = "No object code field";
 				failedParse = true;
 				return;
-			}
+			} 
+			else
+			{
+				log.debug("---"+doc.getElementsByTagName("tridas_object_code").item(0).getTextContent());
+			}*/
 			
 			if(getFieldValueAsString("TreeNO")!=null  || getFieldValueAsString("tridas_element_code")!=null)
 			{
@@ -138,6 +142,17 @@ public class ODKParser {
 			System.out.println("Error getting tag text");
 			return null;
 		}
+		
+	}
+	
+	public String getFieldValueAsString(String field1, String field2)
+	{
+		String one = getFieldValueAsString(field1);
+		String two = getFieldValueAsString(field2);
+
+		if(one!=null) return one;
+		if(two!=null) return two;
+		return null;
 		
 	}
 	
@@ -214,6 +229,26 @@ public class ODKParser {
 		}
 	}
 	
+	public Double getLatitude(String fieldname1, String fieldname2)
+	{
+		Double one = getLatitude(fieldname1);
+		Double two = getLatitude(fieldname2);
+		
+		if(one!=null) return one;
+		if(two!=null) return two;
+		return null;
+	}
+	
+	public Double getLongitude(String fieldname1, String fieldname2)
+	{
+		Double one = getLongitude(fieldname1);
+		Double two = getLongitude(fieldname2);
+		
+		if(one!=null) return one;
+		if(two!=null) return two;
+		return null;
+	}
+	
 	public Double getLongitude(String fieldname)
 	{
 		String[] parts = getSpaceDelimitedFieldParts(fieldname);
@@ -242,6 +277,16 @@ public class ODKParser {
 		return null;
 	}
 	
+	public Double getElevation(String fieldname1, String fieldname2)
+	{
+		Double one = getElevation(fieldname1);
+		Double two = getElevation(fieldname2);
+		
+		if(one!=null) return one;
+		if(two!=null) return two;
+		return null;	
+	}
+	
 	public Double getError(String fieldname)
 	{
 		String[] parts = getSpaceDelimitedFieldParts(fieldname);
@@ -253,6 +298,16 @@ public class ODKParser {
 				return Double.parseDouble(parts[3]);
 			} catch (NumberFormatException e) {}
 		}
+		return null;
+	}
+	
+	public Double getError(String fieldname1, String fieldname2)
+	{
+		Double one = getError(fieldname1);
+		Double two = getError(fieldname2);
+		
+		if(one!=null) return one;
+		if(two!=null) return two;
 		return null;
 	}
 	
@@ -317,7 +372,18 @@ public class ODKParser {
 		return element;
 	}
 	
-	
+	public TridasElement getChrisTridasElement(TridasElementTemporaryCacher cache, String objectCodeField, String elementCodeField, String objectCodeField2, String elementCodeField2)
+	{
+		TridasElement element1 = getTridasElement(cache, objectCodeField, elementCodeField);
+		TridasElement element2 = getTridasElement(cache, objectCodeField2, elementCodeField2);
+		
+		
+		if(element1!=null) return element1;
+		if(element2!=null) return element2;
+
+		return null;
+
+	}
 	public static String formatFileNameForReport(File file)
 	{	
 		return "<b>"+file.getAbsoluteFile()+"</b>";	

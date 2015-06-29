@@ -28,6 +28,7 @@ import java.math.BigDecimal;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
 import org.tellervo.schema.WSIElementTypeDictionary;
 import org.tellervo.schema.WSITaxonDictionary;
+import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasUnit;
@@ -66,6 +67,8 @@ public class ElementTableModel extends AbstractBulkImportTableModel {
 			return Double.class;
 		}else if(argColumn.equals(SingleElementModel.LONGITUDE)){
 			return Double.class;
+		}else if(argColumn.equals(SingleElementModel.LOCATION_TYPE)){
+			return NormalTridasLocationType.class;
 		}else if(argColumn.equals(SingleElementModel.SLOPE_ANGLE)){
 			return Integer.class;
 		}else if(argColumn.equals(SingleElementModel.SLOPE_AZIMUTH)){
