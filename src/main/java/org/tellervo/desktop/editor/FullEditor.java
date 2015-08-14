@@ -1,6 +1,7 @@
 package org.tellervo.desktop.editor;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -152,7 +153,10 @@ public class FullEditor extends AbstractEditor {
 		tabbedPane.addTab("ComponentsViewer", Builder.getIcon("history.png", 16), componentHolder, null);
 		tabbedPane.addTab("DependentsViewer", Builder.getIcon("dependent.png", 16), dependentHolder, null);
 		
-		if(OpenGLTestCapabilities.isOpenGLCapable()) tabbedPane.addTab("Map", Builder.getIcon("maptab.png", 16), mapHolder, null);
+		// Important hack to ensure resizing of whole GUI works correctly.  Without this gui grows but doesn't shrink!
+		mapHolder.setMinimumSize(new Dimension(0, 0));
+		
+		if(OpenGLTestCapabilities.isOpenGLCapable()) tabbedPane.addTab("Map", Builder.getIcon("maptab.png", 16), mapHolder, BorderLayout.CENTER);
 		
 			
 		itemSelected();

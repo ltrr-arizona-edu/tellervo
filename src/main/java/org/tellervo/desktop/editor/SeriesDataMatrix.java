@@ -64,7 +64,6 @@ import org.tellervo.desktop.editor.support.TableCellModifierListener;
 import org.tellervo.desktop.graph.Graph;
 import org.tellervo.desktop.graph.GraphActions;
 import org.tellervo.desktop.graph.GraphController;
-import org.tellervo.desktop.graph.GraphSettings;
 import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.GrapherPanel;
 import org.tellervo.desktop.graph.PlotAgent;
@@ -346,7 +345,6 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		splitPaneTableAndRemarks.setDividerLocation(0.9d);
 		splitPaneTableAndRemarks.setResizeWeight(1.0);
 		splitPaneTableAndGraph.setDividerLocation(1.0d);
-		splitPaneTableAndGraph.setResizeWeight(1.0d);
 		splitPaneTableAndGraph.setOneTouchExpandable(true);
 		
 	}

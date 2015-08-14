@@ -38,7 +38,8 @@ public class GeonamesUtil {
 
 		log.debug("Looking up lat: "+tph.getWGS84LatCoord()+", long: "+tph.getWGS84LongCoord()+" in the Geonames webservice");
 				
-		String url = GEONAMES_URL+"/"+"findNearbyJSON"+"?lat="+tph.getWGS84LatCoord()+"&featureClass=a&lng="+tph.getWGS84LongCoord()+"&username="+GEONAMES_USR;
+		String url = GEONAMES_URL+"/"+"findNearbyJSON"+"?lat="+tph.getWGS84LatCoord()+"&featureClpi"
+				+ "ass=a&lng="+tph.getWGS84LongCoord()+"&username="+GEONAMES_USR;
 		
 		log.debug("Geonames URL : "+url);
 		

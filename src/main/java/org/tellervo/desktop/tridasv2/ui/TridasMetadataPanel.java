@@ -21,7 +21,6 @@
 package org.tellervo.desktop.tridasv2.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Window;
@@ -73,7 +72,6 @@ import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.schema.TellervoRequestType;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
-import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.ComplexPresenceAbsence;
 import org.tridas.schema.PresenceAbsence;
 import org.tridas.schema.TridasBark;
@@ -106,7 +104,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 	private TellervoPropertySheetPanel propertiesPanel;
 	/** Our properties table */
 	private TellervoPropertySheetTable propertiesTable;
-	/** The sidebar that has buttons for sample, series, etc */
+	/** The sidebar that has buttons for sample, series, etc */	
 	private JButtonBar buttonBar;
 	/** The current entity selected */
 	private EditType currentMode;
@@ -1346,6 +1344,8 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 				case RADIUS:
 					labcode.setRadiusCode((entity == null) ? null : entity.getTitle());
 					break;
+				default:
+					break;
 					
 				//case BOX:
 					// ignore this...
@@ -1490,6 +1490,9 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 		if(currentMode == null)
 			throw new IllegalStateException("Property changed with null mode??");
 
+		if(currentMode.getType().equals(TridasObjectEx.class))
+			return;
+		
 		currentMode.propertyChanged();
 	}
 	

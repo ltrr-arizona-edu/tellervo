@@ -30,6 +30,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.DefaultCaret;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -146,7 +147,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		// Setup the main content panel and add
 		JPanel panelMain = new JPanel();
 		splitPaneWorkspaceAndContent.setRightComponent(panelMain);
-		panelMain.setLayout(new MigLayout("", "[grow,fill]", "[grow,fill]"));
+		panelMain.setLayout(new MigLayout("", "[100px:n,grow]", "[100px:n,grow]"));
 		tabbedPane = new JTabbedPane(JTabbedPane.BOTTOM);
 		panelMain.add(tabbedPane, "cell 0 0,grow");
 		dataPanel = new JPanel();
@@ -169,7 +170,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		// Setup the workspace panel
 		workspacePanel = new JPanel();
 		
-		workspacePanel.setLayout(new MigLayout("", "[125.00,grow,fill][32.00][20.00,leading]", "[][235px,grow,baseline][fill]"));
+		workspacePanel.setLayout(new MigLayout("", "[125.00,grow,fill][32.00][20.00,leading]", "[][235px,grow,fill][fill]"));
 		workspacePanel.setMinimumSize(new Dimension(240,10));
 
 		
@@ -187,8 +188,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		lstSamples.setLayoutOrientation(JList.VERTICAL);
 		lstSamples.setVisibleRowCount(10);
 		scrollPane.setViewportView(lstSamples);
-
-
+		
         lstSamples.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -676,5 +676,4 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		setTitle();
 		lstSamples.repaint();
 	}
-
 }
