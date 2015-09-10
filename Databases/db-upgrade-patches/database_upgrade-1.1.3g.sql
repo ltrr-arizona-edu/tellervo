@@ -43,7 +43,7 @@ CREATE TABLE tlkpprojectcategory
   vocabularyid integer,
   projectcategoryid integer NOT NULL DEFAULT nextval('tlkpprojectcategory_projectcategory_seq'::regclass),
   CONSTRAINT pkey_projectcategory PRIMARY KEY (projectcategoryid),
-  CONSTRAINT "fkey_projectcategory-vocabulary" FOREIGN KEY (projectcategoryid)
+  CONSTRAINT "fkey_projectcategory-vocabulary" FOREIGN KEY (vocabularyid)
       REFERENCES tlkpvocabulary (vocabularyid) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION,
   CONSTRAINT "tlkpprojectcategory-nodupsinvocab" UNIQUE (projectcategory, vocabularyid)

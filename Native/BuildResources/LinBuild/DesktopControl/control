@@ -3,7 +3,7 @@ Version: [[version]]
 Section: misc
 Priority: optional
 Architecture: all
-Depends: default-jre | openjdk-7-jre | openjdk-6-jre | sun-java6-jre , librxtx-java, libjogl-java
+Depends: default-jre:i386 | openjdk-7-jre:i386 | openjdk-8-jre:i386 | sun-java6-jre:i386, libjogl-java
 Maintainer: Peter Brewer <p.brewer@ltrr.arizona.edu>
 Description: Application for measuring, managing and curating dendrochronology samples
 Distribution: development

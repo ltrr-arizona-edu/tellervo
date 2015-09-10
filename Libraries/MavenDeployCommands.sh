@@ -28,3 +28,4 @@ mvn deploy:deploy-file  -DgroupId=jpedal    -DartifactId=jpedal                -
 mvn deploy:deploy-file -Durl=http://maven.tridas.org/repository/tridas-releases  -DrepositoryId=tridas-releases  -Dfile=worldwindjava-tellervo-2.0.0.jar     -DpomFile=../worldwindjava-pom.xml
 mvn deploy:deploy-file  -DgroupId=org.osgeo          -DartifactId=gdal              -Dversion=0.2         -Dpackaging=jar -Dfile=gdal.jar                     -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
 
+mvn deploy:deploy-file -DgroupId=org.rxtx         -DartifactId=rxtx                       -Dversion=2.2-20081207	       -Dpackaging=jar -Dfile=RXTXcomm.jar -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
