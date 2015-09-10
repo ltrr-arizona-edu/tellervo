@@ -5,7 +5,7 @@
 
   <!-- Standard log file -->
   <appender name="logfile" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${java.io.tmpdir}/tellervo.log"/>
+    <param name="File" value="${user.home}/tellervo.log"/>
     <param name="MaxFileSize" value="2mb"/>
     <param name="MaxBackupIndex" value="5"/>
     <layout class="org.apache.log4j.TTCCLayout">
@@ -20,7 +20,7 @@
   
   <!-- Small log file that is sent in bug submission emails -->
   <appender name="logsubmission" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="${java.io.tmpdir}/tellervo-submission.log"/>
+    <param name="File" value="${user.home}/tellervo-submission.log"/>
     <param name="MaxFileSize" value="100kb"/>
     <param name="MaxBackupIndex" value="1"/>
     <layout class="org.apache.log4j.TTCCLayout">

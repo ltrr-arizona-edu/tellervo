@@ -25,17 +25,9 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.security.AccessController;
-import java.security.PrivilegedAction;
+import java.util.ArrayList;
 
 import javax.security.auth.Subject;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.NameCallback;
-import javax.security.auth.callback.PasswordCallback;
-import javax.security.auth.login.LoginContext;
-import javax.security.auth.login.LoginException;
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import org.slf4j.Logger;
@@ -46,6 +38,7 @@ import org.tellervo.desktop.editor.LiteEditor;
 import org.tellervo.desktop.gis2.OpenGLTestCapabilities;
 import org.tellervo.desktop.model.TellervoModelLocator;
 import org.tellervo.desktop.platform.Platform;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 
 
@@ -65,10 +58,15 @@ import org.tellervo.desktop.ui.Builder;
 public class Startup  {
 	private final static Logger log = LoggerFactory.getLogger(Startup.class);
 	
-	private Startup(String[] args) {
+	private Startup() {
+		
+		
+
+		
+		
 	}
 
-	public Object run() {
+	public Object run(String[] args) {
 		Subject subject = Subject.getSubject(AccessController.getContext());
 		if (subject != null) {
 			// replace the event queue with one that has the Subject stored
@@ -76,6 +74,9 @@ public class Startup  {
 					new AccessControlContextEventQueue());
 		}
 
+		
+		
+		
 		/*
 		 * Font f = new Font("courier", java.awt.Font.PLAIN, 24);
 		 * UIManager.put("Menu.font", f); UIManager.put("MenuItem.font", f);
@@ -85,6 +86,15 @@ public class Startup  {
 		    App.platform = new Platform();
 		    App.platform.init();
 			
+		    ArrayList<String> ar = new ArrayList<String>();
+		    
+		    for(String s : args)
+		    {
+		    	ar.add(s.toLowerCase());
+		    }
+		    
+
+		    
 			ClassLoader cl = this.getClass().getClassLoader();
 			URL url = cl.getResource("Images/splashscreen.png");
 			BufferedImage img = null;
@@ -104,6 +114,18 @@ public class Startup  {
 			pm.addProgressListener(splash);
 			pm.setMillisToDecideToPopup(0);
 			pm.setMillisToPopup(0);
+
+			// Check for arguments to force start in lite or full mode
+		    if(ar.contains("litemode"))
+		    {
+		    	App.init();
+		    	App.prefs.setBooleanPref(PrefKey.WEBSERVICE_DISABLED, true);
+		    }
+		    else if (ar.contains("fullmode"))
+		    {
+		    	App.init();
+		    	App.prefs.setBooleanPref(PrefKey.WEBSERVICE_DISABLED, false);
+		    }
 			
 			App.init(pm, splash);
 			// monitor.close();
@@ -157,7 +179,7 @@ public class Startup  {
 		TellervoModelLocator.getInstance();
 
 		if (args.length == 0 || !"-a".equals(args[0])) {
-			new Startup(args).run();
+			new Startup().run(args);
 			return;
 		}
 		
