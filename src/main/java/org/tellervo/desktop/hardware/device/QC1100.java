@@ -28,7 +28,7 @@ import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 
 
 
-public class QC1100 extends GenericASCIIDevice {
+public class QC1100 extends QC1000 {
 
 	@Override
 	public String toString() {
@@ -41,12 +41,12 @@ public class QC1100 extends GenericASCIIDevice {
 		//MeasureJ2X defaults to using 2 stop bits but Tellervo/Java/something bombs if you 
 		//try to write to the port with 2 stop bits set.  So lets stick with 1 stop bit for now!
 		
-		baudRate = BaudRate.B_600;
+		baudRate = BaudRate.B_9600;
 		dataBits = DataBits.DATABITS_8;
 		stopBits = StopBits.STOPBITS_2;
 		parity = PortParity.NONE;
 		flowControl = FlowControl.NONE;
-		lineFeed = LineFeed.CR;
+		lineFeed = LineFeed.CRLF;
 		unitMultiplier = UnitMultiplier.TIMES_1000;
 	}
 	
@@ -85,29 +85,6 @@ public class QC1100 extends GenericASCIIDevice {
 	public Boolean isUnitsEditable() {
 		return false;
 	}
-
-	@Override
-	protected void sendRequest(String strCommand)
-	{
-		OutputStream output;
-
-
-    	try {
-    		
-	    output = getSerialPort().getOutputStream();
-	    OutputStream outToPort=new DataOutputStream(output); 
-	    
-	    byte[] command = (strCommand+lineFeed.toCommandString()).getBytes();
-	    outToPort.write(command);
-        fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strCommand, DataDirection.SENT);
-
-	    
-    	}
-    	catch (Exception ioe) {
-			fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error sending command to serial port");
-
-    	}	
-	}
 	
 	@Override
 	public Boolean isRequestDataCapable() {
@@ -118,21 +95,5 @@ public class QC1100 extends GenericASCIIDevice {
 	public Boolean isReverseMeasureCapable() {
 		return true;
 	}
-	
-	/**
-	 * Send zero command to Quadra-check QC10
-	 */
-	@Override
-	public void zeroMeasurement()
-	{
-		String strZeroDataCommand = "@3";
-		sendRequest(strZeroDataCommand);
-	}
-	
-	@Override
-	public void requestMeasurement() {
-		String strZeroDataCommand = "@16";
-		sendRequest(strZeroDataCommand);
-		
-	}
+
 }

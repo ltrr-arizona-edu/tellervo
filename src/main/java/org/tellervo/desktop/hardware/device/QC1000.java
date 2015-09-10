@@ -23,6 +23,7 @@ package org.tellervo.desktop.hardware.device;
 import gnu.io.SerialPortEvent;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.regex.Matcher;
@@ -151,8 +152,11 @@ public class QC1000 extends GenericASCIIDevice {
 		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
 			InputStream input;
 			
-			try {
-				input = getSerialPort().getInputStream();
+			//try {
+			 String strReadBuffer = null;
+				try {
+					input = getSerialPort().getInputStream();
+			
 	    
 			    StringBuffer readBuffer = new StringBuffer();
 			    int intReadFromPort;
@@ -160,7 +164,7 @@ public class QC1000 extends GenericASCIIDevice {
 			    	while ((intReadFromPort=input.read()) != this.lineFeed.toInt()){
 			    		//If a timeout then show bad sample
 						if(intReadFromPort == -1) {
-							fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Port timeout or line feed problems");
+							fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Port timeout or line feed problems.  Check baud and line feed settings.");
 							return;
 
 						}
@@ -173,14 +177,21 @@ public class QC1000 extends GenericASCIIDevice {
 
 			    	}
 
-                String strReadBuffer = readBuffer.toString();
+                 strReadBuffer = readBuffer.toString();
                 fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
- 	
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+                log.debug("Raw string from device ="+strReadBuffer);
+                
                 if(strReadBuffer.trim().length()==0)
                 {
                 	log.debug("Empty line - ignored");
                 	return;
                 }
+                
+                
                 
                 // Check units 
                 if(strReadBuffer.endsWith("in") || strReadBuffer.endsWith("inch") )
@@ -234,11 +245,11 @@ public class QC1000 extends GenericASCIIDevice {
 		    	}
 			    							
 
-			}
-			catch (Exception ioe) {
-				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port");
+		//	}
+			//catch (Exception ioe) {
+			//	fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port");
 
-			}   	
+			//}   	
 			 
 			// Only zero the measurement if we're not measuring cumulatively
 			if(!measureCumulatively)

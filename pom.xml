@@ -252,9 +252,7 @@
 		<dependency>
 			<groupId>org.rxtx</groupId>
 			<artifactId>rxtx</artifactId>
-			<version>2.1.7</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<version>2.2-20081207</version>
 		</dependency>            
 			
 		<dependency>
@@ -306,15 +304,10 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-				<dependency>
-			<groupId>org.tridas</groupId>
-			<artifactId>dendrofileio</artifactId>
-			<version>1.1.1</version>
-		</dependency>
 		<dependency>
 			<groupId>org.tridas</groupId>
 			<artifactId>tricycle</artifactId>
-			<version>0.2.9-SNAPSHOT</version>
+			<version>0.2.9</version>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
@@ -376,7 +369,7 @@
 		<dependency>
 			<groupId>org.tridas</groupId>
 			<artifactId>dendrofileio</artifactId>
-			<version>1.1.1-SNAPSHOT</version>
+			<version>1.1.1</version>
 		</dependency>
 	</dependencies>
 

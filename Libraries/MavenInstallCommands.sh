@@ -30,3 +30,5 @@ mvn install:install-file  -DgroupId=com.sun.tools.xjc    -DartifactId=collection
 mvn install:install-file  -DgroupId=jpedal                -DartifactId=jpedal                     -Dversion=4.45-b-105     -Dpackaging=jar -Dfile=jpedal-4.45-b-105.ja
 
 mvn install:install-file -DgroupId=org.osgeo          -DartifactId=gdal                       -Dversion=0.2	       -Dpackaging=jar -Dfile=gdal.jar
+
+mvn install:install-file -DgroupId=org.rxtx         -DartifactId=rxtx                       -Dversion=2.2-20081207	       -Dpackaging=jar -Dfile=RXTXcomm.jar
