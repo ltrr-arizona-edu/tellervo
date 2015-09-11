@@ -764,8 +764,9 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 					tv = UnitUtils.convertTridasValues(selectedUnits, tv, false);
 					
 					log.debug("New units are: "+tv.getUnit().toString());
-				} catch (NumberFormatException | ConversionWarningException e) {
-					// TODO Auto-generated catch block
+				} catch (NumberFormatException e){
+					e.printStackTrace();
+				} catch (ConversionWarningException e) {
 					e.printStackTrace();
 				}
 			}

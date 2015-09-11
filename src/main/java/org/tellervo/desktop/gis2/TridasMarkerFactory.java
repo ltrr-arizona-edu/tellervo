@@ -43,12 +43,12 @@ public class TridasMarkerFactory {
 			if(tph.getWGS84LatCoord()!=null && tph.getWGS84LongCoord()!=null)
 			{
 			
-				//return new TridasMarker(Position.fromDegrees(tph.getWGS84LatCoord(), tph.getWGS84LongCoord()), 
-				//		markerStyle, entity);
+				return new TridasMarker(Position.fromDegrees(tph.getWGS84LatCoord(), tph.getWGS84LongCoord()), 
+						markerStyle, entity);
 				
 				// TODO FIX ME!!!!
-				return new TridasMarker(Position.fromDegrees(tph.getWGS84LongCoord(), tph.getWGS84LatCoord()), 
-						markerStyle, entity);
+				//return new TridasMarker(Position.fromDegrees(tph.getWGS84LongCoord(), tph.getWGS84LatCoord()), 
+				//		markerStyle, entity);
 	
 			}
 			

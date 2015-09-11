@@ -390,7 +390,7 @@ class loan extends loanEntity implements IDBAccessor
 	    			foreach ($this->entityIdArray as $entityid)
 	    			{
 	    				$curationsql = "INSERT INTO tblcuration (curationstatusid, curatorid, sampleid, loanid) values (";
-	    				$curationsql .= "2, ".$myMetaHeader->securityUserID.", '".$entityid."', '".$this->getID()."')";
+	    				$curationsql .= "2, '".$myMetaHeader->securityUserID."', '".$entityid."', '".$this->getID()."')";
 	    				
 	    				array_push($transaction, $curationsql);
 	    			}
@@ -422,7 +422,7 @@ class loan extends loanEntity implements IDBAccessor
    							if($row['curationstatusid']==2 || $row['curationstatusid']==3)
     						{
     							$curationsql = "INSERT INTO tblcuration (curationstatusid, curatorid, sampleid) values (";
-	    						$curationsql .= "1, ".$myMetaHeader->securityUserID.", '".$row['sampleid']."')";
+	    						$curationsql .= "1, '".$myMetaHeader->securityUserID."', '".$row['sampleid']."')";
 	    			
 	    						array_push($transaction, $curationsql);
     						}

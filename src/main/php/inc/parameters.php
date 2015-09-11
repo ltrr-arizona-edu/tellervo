@@ -149,6 +149,9 @@ class searchParameters implements IParams
 									'elementlocationtype' => 				array('tbl' => 'vwtblelement', 'field' => 'locationtype'),
 									'elementlocationprecision' => 			array('tbl' => 'vwtblelement', 'field' => 'locationprecision'),
 									'elementlocationcomment' => 			array('tbl' => 'vwtblelement', 'field' => 'locationcomment'),
+									'elementlatitude' => 				array('tbl' => 'vwtblelement', 'field' => 'latitude'),
+									'elementlongitude' => 				array('tbl' => 'vwtblelement', 'field' => 'longitude'),
+									
 									'elementprocessing' => 					array('tbl' => 'vwtblelement', 'field' => 'processing'),
 									'elementmarks' => 						array('tbl' => 'vwtblelement', 'field' => 'marks'),
 									'elementdescription' => 				array('tbl' => 'vwtblelement', 'field' => 'description'),

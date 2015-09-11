@@ -34,7 +34,7 @@ public class FileExportDataAction extends AbstractAction{
 		
 		if(editor.getSample()!=null)
 		{
-			OpenExportEvent event = new OpenExportEvent(editor.getSample());
+			OpenExportEvent event = new OpenExportEvent(editor.getSamples(), editor.getSample());
 			event.dispatch();
 		}
 		else

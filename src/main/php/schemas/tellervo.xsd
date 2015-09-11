@@ -166,6 +166,8 @@
 			<xs:enumeration value="countOfChildSeriesOfObject"/>
 			<xs:enumeration value="anyparentobjectid"/>
 			<xs:enumeration value="anyparentobjectcode"/>
+			<xs:enumeration value="objectlatitude"/>
+			<xs:enumeration value="objectlongitude"/>
 			
 			<!-- ELEMENT ATTRIBUTES -->
 			<xs:enumeration value="elementid" />
@@ -198,6 +200,8 @@
 			<xs:enumeration value="elementcreated" />
 			<xs:enumeration value="elementlastmodified"/>
 			<xs:enumeration value="elementcode"/>
+			<xs:enumeration value="elementlatitude"/>
+			<xs:enumeration value="elementlongitude"/>
 			
 			<!-- SAMPLE ATTRIBUTES -->
 			<xs:enumeration value="sampleid"/>

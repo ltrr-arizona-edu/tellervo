@@ -103,8 +103,12 @@ public class ExportLayerToKML extends AbstractAction {
 	        
 	        
 
-		} catch (IOException | XMLStreamException e) {
+		} catch (IOException e) {
 			Alert.error(parent, "Error", "Error exporting to KML file");
+		} catch (XMLStreamException e)
+		{
+			Alert.error(parent, "Error", "Error exporting to KML file");
+
 		}
 		
 	}

@@ -7,7 +7,9 @@ public class ClassScope {
     static {
         try {
 			LIBRARIES = ClassLoader.class.getDeclaredField("loadedLibraryNames");
-		} catch (NoSuchFieldException | SecurityException e) {
+		} catch (NoSuchFieldException e){
+			e.printStackTrace();
+		} catch (SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -17,8 +19,11 @@ public class ClassScope {
         Vector<String> libraries = null;
 		try {
 			libraries = (Vector<String>) LIBRARIES.get(loader);
-		} catch (IllegalArgumentException | IllegalAccessException e) {
+		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e)
+		{
 			e.printStackTrace();
 		}
         return libraries.toArray(new String[] {});

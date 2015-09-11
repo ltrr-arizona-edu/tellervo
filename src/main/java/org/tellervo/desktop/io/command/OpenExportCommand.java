@@ -3,6 +3,8 @@
  */
 package org.tellervo.desktop.io.command;
 
+import java.util.Collection;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
@@ -37,8 +39,10 @@ public class OpenExportCommand implements ICommand {
 	@Override
 	public void execute(MVCEvent argEvent) {
 		Sample s = null;
+		Collection<Sample> samples = null;
 		if( argEvent instanceof OpenExportEvent){
 			s = ((OpenExportEvent) argEvent).sample;
+			samples = ((OpenExportEvent) argEvent).allSamples;
 		}
 		
 		try {
@@ -49,7 +53,7 @@ public class OpenExportCommand implements ICommand {
 			log.warn("Couldn't split off, not a big deal", e);
 		}
 		ElementList list = null;
-		
+
 		if(s == null){
 			DBBrowser browser = new DBBrowser(true, true);
 			browser.setVisible(true);
@@ -64,7 +68,22 @@ public class OpenExportCommand implements ICommand {
 			list = ElementList.singletonList(new Element((BaseSample) s)); // what am I doing here...
 		}
 		
-		if(list != null && !list.isEmpty()){
+		if(samples!=null)
+		{
+			ExportModel model = new ExportModel();
+			
+			for(Sample x : samples)
+			{
+				Element el = new Element(x);
+				list.add(el);
+			}
+			model.setElements(list);
+			
+			ExportView view = new ExportView(model);
+			model.setExportView(view);
+			view.setVisible(true);
+		}
+		else if(list != null && !list.isEmpty()){
 			ExportModel model = new ExportModel();
 			model.setElements(list);
 			
