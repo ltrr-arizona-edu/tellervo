@@ -1490,8 +1490,8 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 		if(currentMode == null)
 			throw new IllegalStateException("Property changed with null mode??");
 
-		if(currentMode.getType().equals(TridasObjectEx.class))
-			return;
+		/*if(currentMode.getType().equals(TridasObjectEx.class))
+			return;*/
 		
 		currentMode.propertyChanged();
 	}
