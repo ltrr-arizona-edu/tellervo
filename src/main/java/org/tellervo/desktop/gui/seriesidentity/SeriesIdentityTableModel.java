@@ -586,8 +586,10 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 	{
 		for(SeriesIdentity id : this.ids)
 		{
-			if(id.getObjectItem().isInDatabase()==false)
-			{
+			if(id.getObjectItem().isInDatabase()==false && 
+					id.getObjectItem().getCode()!=null && 
+					id.getObjectItem().getCode().length()>0)
+			{				
 				TridasObjectEx object = new TridasObjectEx();
 				object.setTitle(id.getObjectItem().getCode());
 				TridasUtils.setObjectCode(object, id.getObjectItem().getCode());
@@ -607,7 +609,9 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				searchForMatches(true);
 			}
 			
-			if(id.getElementItem().isInDatabase()==false)
+			if(id.getElementItem().isInDatabase()==false && 
+					id.getElementItem().getCode()!=null && 
+					id.getElementItem().getCode().length()>0)
 			{
 				TridasElement element = new TridasElement();
 				element.setTitle(id.getElementItem().getCode());
@@ -617,11 +621,13 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				cv.setNormalStd("Tellervo");
 				element.setType(cv);
 				
+				
 				cv = new ControlledVoc();
 				cv.setNormal("Plantae");
 				cv.setNormalId("281");
 				cv.setNormalStd("Catalogue of Life Annual Checklist 2008");
 				element.setTaxon(cv);
+
 								
 				String parentCode = id.getObjectItem().getCode();
 				String thisCode   =id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode();
@@ -635,7 +641,9 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				searchForMatches(true);
 			}
 			
-			if(id.getSampleItem().isInDatabase()==false)
+			if(id.getSampleItem().isInDatabase()==false && 
+					id.getSampleItem().getCode()!=null && 
+					id.getSampleItem().getCode().length()>0)
 			{
 				TridasSample sample = new TridasSample();
 				sample.setTitle(id.getSampleItem().getCode());
@@ -659,7 +667,9 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				searchForMatches(true);
 			}
 						
-			if(id.getRadiusItem().isInDatabase()==false)
+			if(id.getRadiusItem().isInDatabase()==false && 
+					id.getRadiusItem().getCode()!=null && 
+					id.getRadiusItem().getCode().length()>0)
 			{
 				TridasRadius radius = new TridasRadius();
 				radius.setTitle(id.getRadiusItem().getCode());
@@ -694,23 +704,32 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				searchForMatches(true);
 			}
 			
-			if(id.getSeriesItem().isInDatabase()==false)
+			if(id.getSeriesItem().isInDatabase()==false&& 
+					id.getSeriesItem().getCode()!=null && 
+					id.getSeriesItem().getCode().length()>0)
 			{
 				// Get the series provided by the TRiCYCLE reader
-				TridasMeasurementSeries readerpopulatedseries = (TridasMeasurementSeries) id.getSample().getSeries();
+				ITridasSeries readerpopulatedseries = (ITridasSeries) id.getSample().getSeries();
 				
 				// Override the code with that provided by the user
 				readerpopulatedseries.setTitle(id.getSeriesItem().getCode());
 				
-				TridasMeasuringMethod mm = new TridasMeasuringMethod();
-				mm.setNormalTridas(NormalTridasMeasuringMethod.MEASURING_PLATFORM);
-				readerpopulatedseries.setMeasuringMethod(mm);
+				
+				if(readerpopulatedseries instanceof TridasMeasurementSeries)
+				{
+				
+					TridasMeasuringMethod mm = new TridasMeasuringMethod();
+					mm.setNormalTridas(NormalTridasMeasuringMethod.MEASURING_PLATFORM);
+					((TridasMeasurementSeries) readerpopulatedseries).setMeasuringMethod(mm);
+				}
 				
 				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode();
 				String thisCode   = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode() + codeDelimiter + id.getSeriesItem().getCode();
 				
 				
-				TridasMeasurementSeries dbseries = (TridasMeasurementSeries) doSave(readerpopulatedseries, tridasCache.get(parentCode));
+				
+				
+				ITridasSeries dbseries = (ITridasSeries) doSave(readerpopulatedseries, tridasCache.get(parentCode));
 						
 				if(dbseries!=null)
 				{ 
@@ -763,7 +782,22 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		return false;
 	}
 	
-
+	public boolean areThereEmptyCells()
+	{
+		for(int row=0; row<this.getRowCount(); row++)
+		{
+			for(int col=3; col<this.getColumnCount(); col++)
+			{
+				if(this.getValueAt(row, col)==null || this.getValueAt(row, col).toString().length()==0)
+				{
+					return true;
+				}
+			}
+		}
+		
+		
+		return false;
+	}
 	
 	public ArrayList<Sample> getAllSamples()
 	{
@@ -915,6 +949,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		{
 			resource = new SeriesResource((ITridasSeries)temporaryEditingEntity, parentEntity.getIdentifier().getValue(), TellervoRequestType.CREATE);
 		}
+		
 		else 
 		{
 			log.debug("Can't save entity.  Unsupported entity class.");

@@ -23,6 +23,8 @@ import javax.swing.event.TableModelListener;
 import net.miginfocom.swing.MigLayout;
 
 import org.jdesktop.swingx.JXTable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.editor.FullEditor;
@@ -36,6 +38,8 @@ import org.tridas.io.AbstractDendroFormat;
 import org.tridas.io.TridasIO;
 import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.exceptions.InvalidDendroFileException;
+import org.tridas.io.formats.corina.CorinaToTridasDefaults;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.io.util.UnitUtils;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasDerivedSeries;
@@ -62,6 +66,7 @@ import javax.swing.JCheckBox;
  *
  */
 public class IdentifySeriesPanel extends JPanel implements ActionListener, TableModelListener {
+	private static final Logger log = LoggerFactory.getLogger(IdentifySeriesPanel.class);
 
 	private static final long serialVersionUID = 1L;
 	private JXTable table;
@@ -242,14 +247,18 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		}
 
 		TridasTridas tc = reader.getTridasContainer();
+		log.debug("Project count: "+tc.getProjects().size());
 		
 		Boolean hideWarningsFlag = false;
 		for(TridasProject p : tc.getProjects())
 		{
 			for(TridasObject o : p.getObjects())
 			{
-				for(TridasElement e : o.getElements())
-				{
+
+				for(TridasElement e : TridasUtils.getElementList(o))
+				{	
+					log.debug("Element count: "+o.getElements().size());
+
 					
 					for(TridasSample s : e.getSamples())
 					{
@@ -353,6 +362,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		for(Sample sample : sampleList)
 		{
 			ITridasSeries series = sample.getSeries();
+			
 			
 			try {				
 				for(int i=0; i < series.getValues().size(); i++)
@@ -495,31 +505,31 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			String orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasObject.class));
 			MethodOptions method = dialog.getSelectedMethodOption(TridasObject.class);
 			String pattern = dialog.getPattern(TridasObject.class);
-			model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 3);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 3);
 			
 			// Element
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasElement.class));
 			method = dialog.getSelectedMethodOption(TridasElement.class);
 			pattern = dialog.getPattern(TridasElement.class);
-			model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 4);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 4);
 			
 			// Sample
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasSample.class));
 			method = dialog.getSelectedMethodOption(TridasSample.class);
 			pattern = dialog.getPattern(TridasSample.class);
-			model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 5);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 5);
 			
 			// Radius
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasRadius.class));
 			method = dialog.getSelectedMethodOption(TridasRadius.class);
 			pattern = dialog.getPattern(TridasRadius.class);
-			model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 6);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 6);
 			
 			// Series
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasMeasurementSeries.class));
 			method = dialog.getSelectedMethodOption(TridasMeasurementSeries.class);
 			pattern = dialog.getPattern(TridasMeasurementSeries.class);
-			model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 7);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 7);
 		}
 		
 		
@@ -590,6 +600,12 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		}
 		else if (evt.getActionCommand().equals("GenerateMissing"))
 		{
+			if(model.areThereEmptyCells())
+			{
+				Alert.message(containerFrame, "Missing entries", "You must provide titles for all entities in the table.");
+				return;
+			}
+			
 			searchDatabaseForMatches();
 			
 			if(!model.areThereMissingEntites(true))

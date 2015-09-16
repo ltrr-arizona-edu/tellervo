@@ -54,7 +54,7 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	private SeriesIdentity testcase = null;
 	
 	public enum FieldOptions{
-		SERIES_NAME("Series name"),
+		KEYCODE("Keycode"),
 		FILE_NAME("File name"),
 		FULL_PATH("Full path"),
 		FINAL_FOLDER("Final folder");
@@ -80,7 +80,8 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	public enum MethodOptions{
 		NONE("None"),
 		FIXED_WIDTH("Fixed width"),
-		REGEX("Regex");
+		REGEX("Regex"),
+		ALL("All");
 		
 		String humanName;
 		
@@ -143,7 +144,7 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		setBounds(100, 100, 676, 450);
 		this.testcase = testcase;
 		
-		getMainPanel().setLayout(new MigLayout("", "[grow][grow][grow][grow][grow]", "[][][fill][fill][fill][fill][fill][]"));
+		getMainPanel().setLayout(new MigLayout("", "[][grow][grow][grow][grow]", "[][][fill][fill][fill][fill][fill][]"));
 		{
 			panel = new JPanel();
 			getMainPanel().add(panel, "cell 0 0 5 1,alignx center,growy");
@@ -456,6 +457,10 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		{
 			return true;
 		}
+		else if (method.equals(MethodOptions.ALL))
+		{
+			return true;
+		}
 		return false;
 	}
 	
@@ -488,7 +493,7 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	
 	public static String getStringToTest(SeriesIdentity id, FieldOptions field)
 	{
-		if(field.equals(FieldOptions.SERIES_NAME))
+		if(field.equals(FieldOptions.KEYCODE))
 		{
 			return id.getSample().getDisplayTitle();
 		}
@@ -498,12 +503,11 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		}
 		else if (field.equals(FieldOptions.FULL_PATH))
 		{
-			return id.getFile().getAbsolutePath();
+			return id.getFile().getParentFile().getAbsolutePath();
 		}
 		else if (field.equals(FieldOptions.FINAL_FOLDER))
-		{
-			//TODO Just final folder
-			return id.getFile().getAbsolutePath();
+		{		
+			return org.tridas.io.util.FileUtils.getFileParentName(id.getFile());
 		}
 		
 		return "";
@@ -670,6 +674,13 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 
 			}
   
+		}
+		else if (method.equals(MethodOptions.ALL))
+		{
+			return teststring;
+		} else if (method.equals(MethodOptions.NONE))
+		{
+			return null;
 		}
 		
 		return "";
