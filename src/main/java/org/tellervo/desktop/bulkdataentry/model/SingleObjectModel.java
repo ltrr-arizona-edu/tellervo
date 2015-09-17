@@ -39,6 +39,7 @@ import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.TridasObject;
 import org.tridas.spatial.GMLPointSRSHandler;
+import org.tridas.spatial.SpatialUtils;
 
 import com.dmurph.mvc.model.HashModel;
 
@@ -290,20 +291,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 			
 			if(latitude != null && longitude != null)
 			{
-				// Lat/Long is set so use these
-				double lat = (Double)latitude;
-				double lon = (Double)longitude;
-				Pos p = new Pos();
-				p.getValues().add(lat);
-				p.getValues().add(lon);
-				
-				PointType pt = new PointType();
-				pt.setPos(p);
-				
-				TridasLocationGeometry locgeo = new TridasLocationGeometry();
-				locgeo.setPoint(pt);
-				
-				
+				TridasLocationGeometry locgeo = SpatialUtils.getWGS84LocationGeometry((Double)latitude, (Double)longitude);				
 				loc.setLocationGeometry(locgeo);
 			}
 					
