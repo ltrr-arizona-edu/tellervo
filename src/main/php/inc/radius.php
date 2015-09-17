@@ -583,7 +583,7 @@ class radius extends radiusEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "DELETE FROM tblradius WHERE radiusid='".pg_escape_string($this->getID()."'");
+                $sql = "DELETE FROM tblradius WHERE radiusid='".pg_escape_string($this->getID())."'";
 
                 // Run SQL command
                 if ($sql)

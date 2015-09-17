@@ -29,6 +29,7 @@ import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.interfaces.TridasIdentifiable;
 import org.tridas.schema.TridasIdentifier;
+import org.tridas.schema.TridasMeasurementSeries;
 
 
 public class BaseSample implements TridasIdentifiable {
@@ -226,16 +227,27 @@ public class BaseSample implements TridasIdentifiable {
 	 * Attach a different series
 	 * @param series
 	 */
-	public void setSeries(ITridasSeries series) {
-		this.series = series;
+	public void setSeries(ITridasSeries argseries) {
+		this.series = argseries;
 
 		// update our sample type to reflect what's going on
 		if(series instanceof ITridasDerivedSeries) {
-			if(!sampleType.isDerived())
-				sampleType = SampleType.UNKNOWN_DERIVED;
+			
+			TridasMeasurementSeries newseries = new TridasMeasurementSeries();
+			
+			newseries.setTitle(argseries.getTitle());
+			newseries.setValues(argseries.getValues());
+			
+			this.series = newseries;
+			
+			
+			/*if(!sampleType.isDerived())
+				sampleType = SampleType.UNKNOWN_DERIVED;*/
 		}
 		else if(sampleType.isDerived())
+		{
 			sampleType = SampleType.UNKNOWN;
+		}
 	}
 	
 	/** Our implementation of Metadata */

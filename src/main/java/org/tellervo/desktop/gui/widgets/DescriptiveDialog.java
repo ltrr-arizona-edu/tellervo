@@ -35,7 +35,7 @@ public abstract class DescriptiveDialog extends JDialog implements ActionListene
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	
-	String[] fieldOptions = {"Series name", "File name", "Full path", "Final folder"};
+	String[] fieldOptions = {"Keycode", "File name", "Full path", "Final folder"};
 	String[] methodOptions = {"None", "Fixed width", "Regex"};
 	private JPanel panelTitle;
 	private JLabel lblTitle;

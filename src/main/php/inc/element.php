@@ -562,7 +562,7 @@ class element extends elementEntity implements IDBAccessor
 	                
 	                if($format!="minimal") $xml.= $this->taxon->getHigherTaxonomyXML();
         
-            		$xml.="<tridas:genericField name=\"tellervo.objectLabCode\" type=\"xs:string\">".$this->getSummaryObjectCode()."</tridas:genericField>\n";           
+            		$xml.="<tridas:genericField name=\"tellervo.objectLabCode\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryObjectCode())."</tridas:genericField>\n";           
                     
                     if($format=="summary")
                     {

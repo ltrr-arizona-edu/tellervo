@@ -380,9 +380,9 @@ class object extends objectEntity implements IDBAccessor
             	}
             	if($this->hasGeometry()) 			$xml.= $this->location->asXML();
             	if($this->hasGeometry())			$xml.="<tridas:genericField name=\"tellervo.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";
-            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"tellervo.objectLabCode\" type=\"xs:string\">".$this->getCode()."</tridas:genericField>\n";
+            	if($this->getCode()!=NULL)			$xml.="<tridas:genericField name=\"tellervo.objectLabCode\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getCode())."</tridas:genericField>\n";
             	if($this->getCountOfChildVMeasurements()!=NULL) $xml.="<tridas:genericField name=\"tellervo.countOfChildSeries\" type=\"xs:int\">".$this->getCountOfChildVMeasurements()."</tridas:genericField>\n";
-            	if($this->getVegetationType()!=NULL) 		$xml.="<tridas:genericField name=\"tellervo.vegetationType\" type=\"xs:string\">".$this->getVegetationType()."</tridas:genericField>\n";	
+            	if($this->getVegetationType()!=NULL) 		$xml.="<tridas:genericField name=\"tellervo.vegetationType\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getVegetationType())."</tridas:genericField>\n";	
             
             }  
             

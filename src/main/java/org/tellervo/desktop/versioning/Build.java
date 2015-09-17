@@ -34,7 +34,7 @@ public class Build {
     private final static String VERSION = Build.class.getPackage().getImplementationVersion(); // beta
 
     /** Year (for copyright). */
-    public final static String YEAR = "2001-2013";
+    public final static String YEAR = "2001-2015";
 
     /** Author's name (for copyright). */
     public final static String AUTHOR = "Peter Brewer, Chris Dunham, Dan Girshovich, Aaron Hamid, Ken Harris, Drew Kalina, Pavithra Lakshminarayanan, Rocky Li, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl, Paul Sheppard and Kit Sturgeon";

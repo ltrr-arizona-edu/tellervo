@@ -307,7 +307,7 @@
 		<dependency>
 			<groupId>org.tridas</groupId>
 			<artifactId>tricycle</artifactId>
-			<version>0.2.9</version>
+			<version>0.3.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
@@ -365,11 +365,6 @@
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>
 			<version>1.0.17</version>
-		</dependency>
-		<dependency>
-			<groupId>org.tridas</groupId>
-			<artifactId>dendrofileio</artifactId>
-			<version>1.1.1</version>
 		</dependency>
 	</dependencies>
 
@@ -576,6 +571,9 @@
 		            <manifestEntries>
 		              <Implementation-Build>${buildNumber}</Implementation-Build>
 		              <Implementation-Build-Timestamp>${maven.build.timestamp}</Implementation-Build-Timestamp>
+		              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                      <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+		              
 		            </manifestEntries>
 		        </archive>
 		      </configuration>
@@ -862,7 +860,7 @@
 									<type>file</type>
 									<mapper>
 										<type>perm</type>
-										<prefix>/tmp</prefix>
+										<prefix>/usr/share/tellervo-server</prefix>
 										<filemode>777</filemode>
 									</mapper>
 								</data>

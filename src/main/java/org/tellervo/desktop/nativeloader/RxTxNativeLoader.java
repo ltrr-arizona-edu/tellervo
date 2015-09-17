@@ -48,7 +48,7 @@ public class RxTxNativeLoader {
 		}
 		else if(os.startsWith("Linux"))
 		{
-			if(arch.equals("x86"))
+			if(arch.equals("x86") || arch.equals("i386"))
 			{
 				lib = "/Libraries/linux-i586/librxtxSerial.so";
 			}

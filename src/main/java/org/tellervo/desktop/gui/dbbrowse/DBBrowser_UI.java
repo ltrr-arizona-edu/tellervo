@@ -58,7 +58,6 @@ public class DBBrowser_UI extends javax.swing.JDialog {
     public DBBrowser_UI(javax.swing.JDialog parent, boolean modal) {
         super(parent, modal);
         initComponents();
-		
     }
     
     /**

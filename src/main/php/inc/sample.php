@@ -459,18 +459,18 @@ class sample extends sampleEntity implements IDBAccessor
             {
             	$thisbox = new Box();
             	$thisbox->setParamsFromDB($this->getBoxID());
-            	$xml.="<tridas:genericField name=\"tellervo.boxCode\" type=\"xs:string\">".$thisbox->getTitle()."</tridas:genericField>\n";
-            	$xml.="<tridas:genericField name=\"tellervo.boxCurationLocation\" type=\"xs:string\">".$thisbox->getCurationLocation()."</tridas:genericField>\n";
-            	$xml.="<tridas:genericField name=\"tellervo.boxTrackingLocation\" type=\"xs:string\">".$thisbox->getTrackingLocation()."</tridas:genericField>\n";
+            	$xml.="<tridas:genericField name=\"tellervo.boxCode\" type=\"xs:string\">".dbHelper::escapeXMLChars($thisbox->getTitle())."</tridas:genericField>\n";
+            	$xml.="<tridas:genericField name=\"tellervo.boxCurationLocation\" type=\"xs:string\">".dbHelper::escapeXMLChars($thisbox->getCurationLocation())."</tridas:genericField>\n";
+            	$xml.="<tridas:genericField name=\"tellervo.boxTrackingLocation\" type=\"xs:string\">".dbHelper::escapeXMLChars($thisbox->getTrackingLocation())."</tridas:genericField>\n";
             }
             
-            $xml.="<tridas:genericField name=\"tellervo.curationStatus\" type=\"xs:string\">".$this->getCurationStatus()."</tridas:genericField>\n";
-            $xml.="<tridas:genericField name=\"tellervo.sampleStatus\" type=\"xs:string\">".$this->getSampleStatus()."</tridas:genericField>\n";
+            $xml.="<tridas:genericField name=\"tellervo.curationStatus\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getCurationStatus())."</tridas:genericField>\n";
+            $xml.="<tridas:genericField name=\"tellervo.sampleStatus\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSampleStatus())."</tridas:genericField>\n";
             
             if ($format=="summary")
             {
-            	$xml.="<tridas:genericField name=\"tellervo.objectLabCode\" type=\"xs:string\">".$this->getSummaryObjectCode()."</tridas:genericField>\n";           
-            	$xml.="<tridas:genericField name=\"tellervo.elementLabCode\" type=\"xs:string\">".$this->getSummaryElementCode()."</tridas:genericField>\n";           
+            	$xml.="<tridas:genericField name=\"tellervo.objectLabCode\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryObjectCode())."</tridas:genericField>\n";           
+            	$xml.="<tridas:genericField name=\"tellervo.elementLabCode\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getSummaryElementCode())."</tridas:genericField>\n";           
             }
             
 

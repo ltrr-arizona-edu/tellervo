@@ -60,12 +60,12 @@ class geometry
         libxml_use_internal_errors(true);		
 		
         // Do various checks for unsupported GML data
-        $tags = $doc->getElementsByTagName("tridas:locationGeometry")->item(0)->childNodes;
+        $tags = $doc->getElementsByTagName("locationGeometry")->item(0)->childNodes;
         foreach($tags as $tag)
         {
 		   if($tag->nodeType != XML_ELEMENT_NODE) continue;   
 			
-		   if(strtolower($tag->tagName)!="gml:point")
+		   if(strtolower($tag->tagName)!="point")
 		   {
 		   		trigger_error("104"."This webservice does not accept gml:".$tag->tagName.". Please resubmit your request with either no GML data or with gml:point data.", E_USER_ERROR);
 		   		return false;
@@ -81,7 +81,7 @@ class geometry
 		   }
 		   
 		   // Extract coordinates from point GML
-		   $coords = explode(" ", $doc->getElementsByTagName("gml:pos")->item(0)->nodeValue, 2);
+		   $coords = explode(" ", $doc->getElementsByTagName("pos")->item(0)->nodeValue, 2);
 		     
 		   
 		   // Calculate geometry value and store
