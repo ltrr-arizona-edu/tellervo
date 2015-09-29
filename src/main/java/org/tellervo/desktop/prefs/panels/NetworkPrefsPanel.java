@@ -38,9 +38,11 @@ import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.border.TitledBorder;
 
+import net.miginfocom.swing.MigLayout;
+
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.RadioButtonWrapper;
@@ -52,9 +54,6 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.WSIServerDetails;
 import org.tellervo.desktop.wsi.WSIServerDetails.WSIServerStatus;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
-import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
-
-import net.miginfocom.swing.MigLayout;
 
 public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 
@@ -143,7 +142,7 @@ public class NetworkPrefsPanel extends AbstractPreferencesPanel {
 				
 				if(!dlg.isSuccessful()) {
 					// Dictionary reload failed
-					new Bug(dlg.getFailException());
+					new BugDialog(dlg.getFailException());
 				}
 			}
 			

@@ -45,7 +45,7 @@ import net.miginfocom.swing.MigLayout;
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.manip.Redate;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleLoader;
@@ -241,7 +241,7 @@ public class CrossdateCommitDialog extends javax.swing.JDialog {
 		
 		SampleLoader loader = sampleToDate.getLoader();
 		if(loader == null) {
-			new Bug(new Exception("Attempting to apply an crossdate to a sample without a loader. Shouldn't be possible!"));
+			new BugDialog(new Exception("Attempting to apply an crossdate to a sample without a loader. Shouldn't be possible!"));
 			return false;
 		}
 		

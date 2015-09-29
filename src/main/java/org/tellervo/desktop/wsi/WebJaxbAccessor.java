@@ -53,7 +53,7 @@ import org.jdom.transform.JDOMResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.XMLDebugView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.util.BugReport;
@@ -124,7 +124,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			}
 			
 		} catch (URISyntaxException e) {
-			new Bug(e);
+			new BugDialog(e);
 		}		
 	}
 	
@@ -318,7 +318,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			
 			bugs.addDocument("sent.xml", outDocument);
 			
-			new Bug(hre, bugs);
+			new BugDialog(bugs);
 
 			throw new IOException("The server returned a protocol error " + hre.getStatusCode() + 
 					": " + hre.getLocalizedMessage());
@@ -341,7 +341,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			if(invalidFile != null)
 				bugs.addDocument("recv-malformed.xml", invalidFile);
 			
-			new Bug(cause, bugs);
+			new BugDialog(bugs);
 			
 			XMLDebugView.addDocument(BugReport.getStackTrace(cause), "Parsing Exception", true);
 			
@@ -362,7 +362,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 			if(invalidFile != null)
 				bugs.addDocument("recv-malformed.xml", invalidFile);
 			
-			new Bug(cause, bugs);
+			new BugDialog(bugs);
 			
 			XMLDebugView.addDocument(BugReport.getStackTrace(cause), "Parsing Exception", true);
 			
@@ -385,7 +385,7 @@ public class WebJaxbAccessor<INTYPE, OUTTYPE> implements DataAccessor<INTYPE, OU
 				bugs.addDocument("received.xml", inDocument);
 			*/
 			
-			new Bug(uhe, bugs);
+			new BugDialog(bugs);
 			
 			throw new IOException("Exception " + uhe.getClass().getName() + ": " + uhe.getLocalizedMessage());
 		} finally {

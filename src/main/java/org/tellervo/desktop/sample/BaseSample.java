@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.tellervo.desktop.Range;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.interfaces.TridasIdentifiable;
@@ -134,7 +134,7 @@ public class BaseSample implements TridasIdentifiable {
 		try {
 			return (o != null) ? clazz.cast(o) : null;
 		} catch (ClassCastException cce) {
-			new Bug(cce);
+			new BugDialog(cce);
 			return null;
 		}
 	}

@@ -30,7 +30,7 @@ import javax.swing.event.EventListenerList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.UserCancelledException;
 
 
@@ -186,7 +186,7 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 						dummyException));
 
 				// prompt that it's a bug, too
-				new Bug(dummyException);
+				new BugDialog(dummyException);
 			}
 		}
 		

@@ -29,17 +29,16 @@ import java.util.Random;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.graph.SkeletonPlot;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
+import org.tellervo.desktop.util.StringUtils;
+import org.tellervo.desktop.wsi.ResourceException;
+import org.tellervo.desktop.wsi.tellervo.TellervoResource;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIAuthenticate;
 import org.tellervo.schema.WSINonce;
 import org.tellervo.schema.WSIRequest;
 import org.tellervo.schema.WSIRootElement;
 import org.tellervo.schema.WSISecurityUser;
-import org.tellervo.desktop.util.StringUtils;
-import org.tellervo.desktop.wsi.ResourceException;
-import org.tellervo.desktop.wsi.tellervo.TellervoResource;
 
 
 /**
@@ -123,7 +122,7 @@ public class AuthenticateResource extends TellervoResource {
 			digest.update(in.getBytes());
 			return StringUtils.bytesToHex(digest.digest());
 		} catch (Exception e) {
-			new Bug(e);
+			new BugDialog(e);
 			return "<error>";
 		}	
 	}

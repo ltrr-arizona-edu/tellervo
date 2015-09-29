@@ -24,9 +24,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.validation.Schema;
 
-import org.tellervo.desktop.gui.Bug;
-import org.tellervo.schema.WSIRootElement;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.wsi.WebJaxbAccessor;
+import org.tellervo.schema.WSIRootElement;
 
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
@@ -78,7 +78,7 @@ public class TellervoWsiAccessor extends WebJaxbAccessor<WSIRootElement, WSIRoot
 		try {
 			getTellervoContext();
 		} catch (Exception e) {
-			new Bug(e);
+			new BugDialog(e);
 		}
 	}
 

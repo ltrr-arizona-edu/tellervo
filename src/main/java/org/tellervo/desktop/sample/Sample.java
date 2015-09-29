@@ -38,7 +38,7 @@ import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Weiserjahre;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.graph.Graphable;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.tridasv2.support.TridasWeiserjahreWrapper;
 import org.tellervo.desktop.tridasv2.support.TridasWidthValueWrapper;
 import org.tellervo.desktop.ui.I18n;
@@ -801,7 +801,7 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 			return false;
 			
 		default:
-			new Bug(new IllegalArgumentException("Dating type " + 
+			new BugDialog(new IllegalArgumentException("Dating type " + 
 					series.getInterpretation().getDating() + " not supported"));
 			return false;
 		}

@@ -20,15 +20,12 @@
  ******************************************************************************/
 package org.tellervo.desktop.wsi;
 
-import java.awt.Frame;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import org.jdom.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.BugReportDialog;
 import org.tellervo.desktop.gui.XMLDebugView;
 import org.tellervo.desktop.util.BugReport;
@@ -102,7 +99,7 @@ public class TransactionDebug {
 		if(lastInDocument != null)
 			report.addDocument("received.xml", lastInDocument);
 		
-		new BugReportDialog((Frame)null, report);
+		new BugReportDialog(report);
 	}	
 
 }

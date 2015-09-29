@@ -43,7 +43,7 @@ import javax.xml.bind.Unmarshaller;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.editor.LiteEditor;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
 import org.tellervo.desktop.sample.TellervoWSILoader;
@@ -303,11 +303,11 @@ public class OpenRecent {
 			}
 				
 			case UNKNOWN:
-				new Bug(new IllegalArgumentException("UNKNOWN type element in OpenRecent"));
+				new BugDialog(new IllegalArgumentException("UNKNOWN type element in OpenRecent"));
 				break;
 				
 			default:
-				new Bug(new IllegalArgumentException("Unhandled type element in OpenRecent"));
+				new BugDialog(new IllegalArgumentException("Unhandled type element in OpenRecent"));
 				break;
 				
 			}
@@ -315,7 +315,7 @@ public class OpenRecent {
 			return;
 		}
 
-		new Bug(new IllegalArgumentException("Unknown item in OpenRecent"));
+		new BugDialog(new IllegalArgumentException("Unknown item in OpenRecent"));
 
 	}
 

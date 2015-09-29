@@ -20,25 +20,15 @@
 package org.tellervo.desktop.admin.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.JDialog;
-import javax.swing.JTable;
 import javax.swing.table.TableRowSorter;
 
 import org.tellervo.desktop.admin.view.UserGroupAdminView;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.gui.Bug;
-import org.tellervo.schema.TellervoRequestType;
-import org.tellervo.schema.EntityType;
-import org.tellervo.schema.WSIEntity;
 import org.tellervo.schema.WSISecurityGroup;
 import org.tellervo.schema.WSISecurityUser;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
-import org.tellervo.desktop.wsi.tellervo.resources.SecurityUserEntityResource;
-import org.tellervo.desktop.wsi.tellervo.resources.WSIEntityResource;
 
 import com.dmurph.mvc.model.AbstractModel;
 

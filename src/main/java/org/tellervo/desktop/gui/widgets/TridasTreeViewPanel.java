@@ -49,7 +49,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.graph.GraphWindow;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.hierarchy.TridasTree;
@@ -647,7 +647,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 			}
 
 			// Search failed
-			new Bug(dlg.getFailException());
+			new BugDialog(dlg.getFailException());
 			return;
 		} 
 		else 
@@ -981,7 +981,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     		if(!dlg.isSuccessful()) 
     		{
     			// Search failed
-    			new Bug(dlg.getFailException());
+    			new BugDialog(dlg.getFailException());
     			return;
     		} 
     		else 

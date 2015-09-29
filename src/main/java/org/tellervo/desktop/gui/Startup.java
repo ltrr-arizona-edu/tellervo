@@ -142,6 +142,7 @@ public class Startup  {
 			}
 			else
 			{
+			
 				// Full mode - but first check OpenGL capabilities.
 				if(OpenGLTestCapabilities.isOpenGLCapable())
 				{
@@ -158,11 +159,13 @@ public class Startup  {
 				FullEditor editor = FullEditor.getInstance();
 				App.mainWindow = editor;
 				editor.setVisible(true);
-
+				 
 			}
 			
+			
+			
 		} catch (Throwable t) {
-			new Bug(t);
+			new BugDialog(t);
 		}
 		return null;
 	}

@@ -67,7 +67,7 @@ import org.tellervo.desktop.graph.GraphController;
 import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.GrapherPanel;
 import org.tellervo.desktop.graph.PlotAgent;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringDeviceSelector;
 import org.tellervo.desktop.manip.RedateDialog;
@@ -806,7 +806,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	public void deleteYear() {
 		// make sure it's not indexed or summed
 		if (!mySample.isEditable()) {
-			new Bug(new IllegalArgumentException(
+			new BugDialog(new IllegalArgumentException(
 					"deleteYear() called on non-editable sample"));
 			return;
 		}

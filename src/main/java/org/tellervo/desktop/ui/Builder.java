@@ -24,15 +24,12 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.StringTokenizer;
 
-import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -48,7 +45,7 @@ import javax.swing.KeyStroke;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.platform.Platform;
 
 import com.dmurph.mvc.MVCEvent;
@@ -404,7 +401,7 @@ public class Builder {
 		else {
 			log.error("Error loading icon: "+resourceurl);
 			IllegalStateException ise = new IllegalStateException("Can't load missing icon icon!");
-			new Bug(ise);
+			new BugDialog(ise);
 			throw ise;
 		}
 	}

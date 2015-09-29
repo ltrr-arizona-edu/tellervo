@@ -3,41 +3,32 @@ package org.tellervo.desktop.gui.seriesidentity;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.Bug;
-import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.io.IdentityItem;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
-import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.TridasManipUtil;
 import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoEntityAssociatedResource;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesResource;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
-import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
@@ -980,7 +971,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				ArrayList<Sample> savedEntity = (ArrayList<Sample>) resource.getAssociatedResult();
 				// sanity check the result
 				if(savedEntity == null) {
-					new Bug(new IllegalStateException("CREATE entity returned null"));
+					new BugDialog(new IllegalStateException("CREATE entity returned null"));
 					return null;
 				}
 	
@@ -988,7 +979,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				
 			} catch (IllegalStateException e)
 			{
-				new Bug(e);
+				new BugDialog(e);
 				return null;
 			}
 		}
@@ -998,14 +989,14 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				ITridas savedEntity = (ITridas) resource.getAssociatedResult();
 				// sanity check the result
 				if(savedEntity == null) {
-					new Bug(new IllegalStateException("CREATE entity returned null"));
+					new BugDialog(new IllegalStateException("CREATE entity returned null"));
 					return null;
 				}
 	
 				return savedEntity;
 			} catch (IllegalStateException e)
 			{
-				new Bug(e);
+				new BugDialog(e);
 				return null;
 			}
 		}

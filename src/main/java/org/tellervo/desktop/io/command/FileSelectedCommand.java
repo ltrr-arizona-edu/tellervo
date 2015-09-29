@@ -23,7 +23,7 @@ import java.io.IOException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.io.control.FileSelectedEvent;
 import org.tellervo.desktop.io.model.TridasRepresentationTreeModel;
 import org.tellervo.desktop.ui.Alert;
@@ -189,7 +189,7 @@ public class FileSelectedCommand implements ICommand {
 		} catch (Exception ex)
 		{
 			log.error("Error modifying series to deal with Tellervo limitations");
-			new Bug(ex);
+			new BugDialog(ex);
 		}
 		
 		

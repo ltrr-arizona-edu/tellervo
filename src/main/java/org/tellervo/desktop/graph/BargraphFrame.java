@@ -85,14 +85,13 @@ import javax.swing.event.ChangeListener;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.PrintableDocument;
 import org.tellervo.desktop.gui.Tree;
 import org.tellervo.desktop.gui.XFrame;
 import org.tellervo.desktop.gui.menus.EditMenu;
 import org.tellervo.desktop.gui.menus.HelpMenu;
-import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.sample.BaseSample;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementFactory;
@@ -689,7 +688,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 							Element e = ElementFactory.createElement(pathname);
 							bars.add(e.loadBasic());
 						} catch (IOException ioe) {
-							new Bug(ioe); // FIXME: need better error handling!
+							new BugDialog(ioe); // FIXME: need better error handling!
 						}
 					}
 					repaint();
@@ -782,7 +781,7 @@ public class BargraphFrame extends XFrame implements PrintableDocument {
 				bars.add(ss.get(i).loadBasic());
 			}
 		} catch (IOException ioe) {
-			new Bug(ioe);
+			new BugDialog(ioe);
 			dispose();
 			return;
 		}

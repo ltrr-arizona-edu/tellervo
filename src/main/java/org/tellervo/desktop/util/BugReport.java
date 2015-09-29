@@ -89,6 +89,11 @@ public class BugReport {
 		}
 	}
 	
+	public Throwable getThrowable()
+	{
+		return bug;
+	}
+	
 	public void setFromEmail(String fromEmail) {
 		this.fromEmail = fromEmail;
 	}
@@ -106,6 +111,7 @@ public class BugReport {
 			// create a new file, loghistory.txt
 			out.putNextEntry(new ZipEntry("loghistory.txt"));
 			// make it a utf-8 representation of the 
+			
 			ByteArrayInputStream in = new ByteArrayInputStream(getLogTrace().getBytes("utf-8"));
 
 			int len;
@@ -122,7 +128,7 @@ public class BugReport {
 			
 			in = new ByteArrayInputStream(bytebuf.toByteArray());
 			addDocument("loghistory.zip", in);
-		} catch (IOException ioe) {
+		} catch (Exception e) {
 			// just don't include it, then
 		}
 	}
@@ -131,10 +137,23 @@ public class BugReport {
 		return System.getProperty("user.name", "(unknown user)");
 	}
 	
-	public static String getStackTrace(Throwable t) {
+	@Deprecated
+	public static String getStackTrace(Throwable e)
+	{
+		
 		PureStringWriter sw = new PureStringWriter();
 		PrintWriter pw = new PrintWriter(sw);
-		t.printStackTrace(pw);
+		e.printStackTrace(pw);
+		
+		return sw.toString();
+	}
+	
+	public String getStackTrace() {
+		
+		
+		PureStringWriter sw = new PureStringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		this.getThrowable().printStackTrace(pw);
 		
 		return sw.toString();
 	}
@@ -145,7 +164,7 @@ public class BugReport {
 		try{
 			  // Open the file that is the first 
 			  // command line parameter
-			  FileInputStream fstream = new FileInputStream(System.getProperty("java.io.tmpdir")
+			  FileInputStream fstream = new FileInputStream(System.getProperty("user.home")
 						+File.separator+"tellervo-submission.log" );
 			  // Get the object of DataInputStream
 			  in = new DataInputStream(fstream);
@@ -343,7 +362,7 @@ public class BugReport {
 			postEntity.addPart("timestamp", new StringBody(Build.TIMESTAMP));
 			postEntity.addPart("error", new StringBody(toString()));
 			postEntity.addPart("sysinfo", new StringBody(getSystemInfo()));
-			postEntity.addPart("stacktrace", new StringBody(getStackTrace(bug)));
+			postEntity.addPart("stacktrace", new StringBody(getStackTrace()));
 			
 			if(!getIsAnonymous())
 			{
@@ -382,7 +401,7 @@ public class BugReport {
 			BasicResponseHandler handler = new BasicResponseHandler();
 			String result = client.execute(post, handler);
 			
-			Alert.message("Bug report submitted", result);
+			Alert.message(null, "Bug report submitted", result);
 		} catch (Exception e) {
 			Alert.error("Error submitting bug report", "There was a problem submitting your bug report. \nPlease email the Tellervo developers directly");
 			return false;

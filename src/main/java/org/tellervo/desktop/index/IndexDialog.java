@@ -61,7 +61,7 @@ import org.tellervo.desktop.graph.GraphSettings;
 import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.Graphable;
 import org.tellervo.desktop.graph.GrapherPanel;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.Help;
 import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.NameVersionJustificationPanel;
@@ -245,7 +245,7 @@ public class IndexDialog extends JDialog {
 	private boolean applyIndex(Index index) {
 		SampleLoader loader = sample.getLoader();
 		if(loader == null) {
-			new Bug(new Exception(I18n.getText("error.indexingWithoutLoader")));
+			new BugDialog(new Exception(I18n.getText("error.indexingWithoutLoader")));
 			return false;
 		}
 		

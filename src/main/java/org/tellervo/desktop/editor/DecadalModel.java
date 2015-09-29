@@ -34,7 +34,7 @@ import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.VariableChooser.MeasurementVariable;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.manip.RedateDialog;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
@@ -350,7 +350,7 @@ public abstract class DecadalModel extends AbstractTableModel {
 			} catch (NumberFormatException nfe) {
 				// tell the user this is bad?
 			} catch (Exception e) {
-				new Bug(e);
+				new BugDialog(e);
 			}
 
 			// stop, either way
@@ -389,7 +389,7 @@ public abstract class DecadalModel extends AbstractTableModel {
 						return;
 					}
 				} catch (Exception e) {
-					new Bug(e);
+					new BugDialog(e);
 					return;
 				}
 				
@@ -408,7 +408,7 @@ public abstract class DecadalModel extends AbstractTableModel {
 						return;
 					}
 				} catch (Exception e) {
-					new Bug(e);
+					new BugDialog(e);
 					return;
 				}
 			}

@@ -20,7 +20,6 @@
 package org.tellervo.desktop.gui.dbbrowse;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -28,30 +27,24 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JToggleButton;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectException;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.widgets.ManagementTreeViewPanel;
 import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
-import org.tellervo.desktop.io.control.ExpandImportTreeEvent;
-import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.tridasv2.TridasCloner;
 import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel;
 import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetTable;
@@ -63,12 +56,12 @@ import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tellervo.schema.TellervoRequestType;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.util.TridasUtils.TreeDepth;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -76,7 +69,6 @@ import org.tridas.schema.TridasSample;
 
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
-import com.l2fprod.common.propertysheet.PropertySheetPanel;
 import com.lowagie.text.Font;
 
 
@@ -423,7 +415,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		
 		// sanity check the result
 		if(temporaryEditingEntity == null) {
-			new Bug(new IllegalStateException("CREATE or UPDATE entity returned null"));
+			new BugDialog(new IllegalStateException("CREATE or UPDATE entity returned null"));
 			return;
 		}
 		

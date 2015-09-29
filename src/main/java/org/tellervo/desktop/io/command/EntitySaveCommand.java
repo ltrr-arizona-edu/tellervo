@@ -24,17 +24,17 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.io.control.ImportEntitySaveEvent;
 import org.tellervo.desktop.io.control.ImportSwapEntityEvent;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow.ImportStatus;
-import org.tellervo.schema.TellervoRequestFormat;
-import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.TellervoRequestType;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
@@ -84,7 +84,7 @@ public class EntitySaveCommand implements ICommand {
 		
 		// sanity check to ensure parent entity being null means we're an object
 		if(parentEntity == null && !currentEntityType.equals(TridasObject.class)) {
-			new Bug(new IllegalStateException("parentEntity is null, but not an object"));
+			new BugDialog(new IllegalStateException("parentEntity is null, but not an object"));
 			return;
 		}
 				
@@ -132,7 +132,7 @@ public class EntitySaveCommand implements ICommand {
 		{
 			// Sanity check
 			log.debug(e.getLocalizedMessage());
-			new Bug(new IllegalStateException("CREATE or UPDATE entity returned null"));
+			new BugDialog(new IllegalStateException("CREATE or UPDATE entity returned null"));
 			return;
 		}
 		

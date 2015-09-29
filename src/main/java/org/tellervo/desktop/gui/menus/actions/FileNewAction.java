@@ -25,6 +25,7 @@ public class FileNewAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		EditorFactory.newSeries(parent);
 		
 	}

@@ -38,7 +38,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 
 import org.tellervo.desktop.editor.FullEditor;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.ui.Builder;
@@ -96,7 +96,7 @@ public class TridasSeriesLinkRendererEditor extends AbstractPropertyEditor imple
 		SeriesLink link = getSeriesLinkForValue(myValue);
 		
 		if(!link.isSetIdentifier()) {
-			new Bug(new IllegalArgumentException("doOpen() called for non-identifier link?"));
+			new BugDialog(new IllegalArgumentException("doOpen() called for non-identifier link?"));
 			return;
 		}
 		

@@ -28,6 +28,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -35,72 +36,123 @@ import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.BugReport;
-import org.tellervo.desktop.util.Center;
 import org.tellervo.desktop.util.BugReport.DocumentHolder;
+import org.tellervo.desktop.util.Center;
+import net.miginfocom.swing.MigLayout;
+import javax.swing.JSplitPane;
+import javax.swing.JLabel;
+import java.awt.Font;
 
 
 
 @SuppressWarnings("serial")
-public class BugReportDialog extends BugReportInfoPanel_UI implements ActionListener {
-	private BugReport report;
+public class BugReportDialog implements ActionListener {
+	private final BugReport report;
+	private BugSubmissionPanel submissionPanel;
 	private JDialog dialog;
+	private final Window parent;
+
+	/**
+	 * @wbp.parser.constructor
+	 */
+	public BugReportDialog(Throwable error)
+	{
+		this.parent = App.mainWindow;
+		
+		report = new BugReport(error);
+		init();
+	}
+		
+	public BugReportDialog(Window parent, Throwable error)
+	{
+		this.parent = parent;
+		report = new BugReport(error);
+		init();
+	}
 	
 	public BugReportDialog(Window parent, BugReport report) {
 		
-		try{
+		this.parent = parent;
 		this.report = report;
 
-		new TextComponentWrapper(txtEmailAddress, PrefKey.PERSONAL_DETAILS_EMAIL, "");
-				
-		DocumentHolder[] docs = report.getDocuments().toArray(new DocumentHolder[0]);
-		lstAttachments.setListData(docs);
-
-		btnSubmit.addActionListener(this);
+		init();
+	
+	}
+	
+	public BugReportDialog(BugReport report) {
 		
-		pbProgress.setMaximum(100);
-		pbProgress.setValue(50);
-		txtProgressLabel.setText("");
+		this.parent = App.mainWindow;
+		this.report = report;
 
-		// JDialog constructor fails when parent is a null dialog (!@#)
-		if(parent instanceof Dialog)
-			dialog = new JDialog((Dialog) parent, "Submitting bug report...", true);
-		else
-			dialog = new JDialog((Frame) parent, "Submitting bug report...", true);
+		init();
+	
+	}
+	
+	private void init()
+	{		
+		try{
+					
+			DocumentHolder[] docs = report.getDocuments().toArray(new DocumentHolder[0]);
+
+			// JDialog constructor fails when parent is a null dialog (!@#)
+			if(parent instanceof Dialog)
+				dialog = new JDialog((Dialog) parent, "Submitting bug report...", true);
+			else
+				dialog = new JDialog((Frame) parent, "Submitting bug report...", true);
+			
+			
+		
+		JPanel mainPanel = new JPanel();
+		mainPanel.setLayout(new MigLayout("", "[739px,grow]", "[grow]"));
 		
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-		dialog.setContentPane(this);
-		dialog.pack();
-		Center.center(dialog);
-        dialog.setIconImage(Builder.getApplicationIcon());
-		
-		txtComments.setLineWrap(true);
-		txtComments.setWrapStyleWord(true);
-		txtComments.requestFocus();
-		
-		dialog.setVisible(true);
+		dialog.setContentPane(mainPanel);
+	        submissionPanel = new BugSubmissionPanel();
+	        mainPanel.add(submissionPanel, "cell 0 0,growy");
+	        
+	        			
+	        			new TextComponentWrapper(submissionPanel.txtEmailAddress, PrefKey.PERSONAL_DETAILS_EMAIL, "");
+	        			submissionPanel.lstAttachments.setListData(docs);
+	        			
+	        						submissionPanel.btnSubmit.addActionListener(this);
+	        						
+	        						submissionPanel.pbProgress.setMaximum(100);
+	        						submissionPanel.pbProgress.setValue(50);
+	        						submissionPanel.txtProgressLabel.setText("");
+	        						
+	        						
+	        						
+	        submissionPanel.txtComments.setLineWrap(true);
+	        submissionPanel.txtComments.setWrapStyleWord(true);
+	        submissionPanel.txtComments.requestFocus();
 		} catch (Exception e)
 		{
 			Alert.error("Bug bug!", "How embarrassing! There was a bug creating the bug report!");
 		}
+		
+		dialog.pack();
+        dialog.setIconImage(Builder.getApplicationIcon());
+        dialog.setLocationRelativeTo(App.mainWindow);
+		dialog.setVisible(true);
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		String email = txtEmailAddress.getText();
-		String comments = txtComments.getText();
+		String email = submissionPanel.txtEmailAddress.getText();
+		String comments = submissionPanel.txtComments.getText();
 		
 		
 		
 		
 		// attach stuff to the bug report...
 		if(email.length() > 0) {
-			App.prefs.setPref(PrefKey.PERSONAL_DETAILS_EMAIL, txtEmailAddress.getText());
+			App.prefs.setPref(PrefKey.PERSONAL_DETAILS_EMAIL, submissionPanel.txtEmailAddress.getText());
 			
 			report.setFromEmail(email);
 		}
 		else
 		{
 			int n = JOptionPane.showConfirmDialog(
-				    null,
+				    dialog,
 				    "If you don't provide your email address, we won't be able to help you\n" +
 				    "with your problem.  We may also need more information to understand\n" +
 				    "what has gone wrong.\n\n" +
@@ -114,9 +166,9 @@ public class BugReportDialog extends BugReportInfoPanel_UI implements ActionList
 		if(comments != null && comments.length() > 0)
 			report.setComments(comments);
 		
-		pbProgress.setValue(75);
-		txtProgressLabel.setText("Submitting report...");
-		btnSubmit.setEnabled(false);
+		submissionPanel.pbProgress.setValue(75);
+		submissionPanel.txtProgressLabel.setText("Submitting report...");
+		submissionPanel.btnSubmit.setEnabled(false);
 
 		
 		// run this separately!

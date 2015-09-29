@@ -49,7 +49,7 @@ import org.tellervo.desktop.graph.GraphController;
 import org.tellervo.desktop.graph.GraphSettings;
 import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.GrapherPanel;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.Help;
 import org.tellervo.desktop.gui.ReverseScrollBar;
 import org.tellervo.desktop.gui.SaveableDocument;
@@ -313,7 +313,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 						Alert.error("I/O Error", "There was an error while saving the reference measurement series: \n" + ioe.getMessage());
 						return;
 					} catch (Exception e) {
-						new Bug(e);
+						new BugDialog(e);
 					}
 				}
 
@@ -326,7 +326,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 						Alert.error("I/O Error", "There was an error while saving the current measurement series: \n" + ioe.getMessage());
 						return;
 					} catch (Exception e) {
-						new Bug(e);
+						new BugDialog(e);
 					}
 				}
 
@@ -474,7 +474,7 @@ public class ReconcileWindow extends XFrame implements ReconcileNotifier, Saveab
 			Alert.error("I/O Error", "There was an error while saving the sample: \n" + ioe.getMessage());
 			return;
 		} catch (Exception e) {
-			new Bug(e);
+			new BugDialog(e);
 		}
 
 		// set the necessary bits...

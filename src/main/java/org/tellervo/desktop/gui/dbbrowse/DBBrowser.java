@@ -56,7 +56,7 @@ import org.jdesktop.swingx.table.TableColumnModelExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
@@ -377,7 +377,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 	
 		if(!dlg.isSuccessful()) {
 			// Search failed
-			new Bug(dlg.getFailException());
+			new BugDialog(dlg.getFailException());
 			return false;
 		} else {
 			// Search successful
@@ -1202,7 +1202,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 		
 		if(!dlg.isSuccessful()) {
 			// Search failed
-			new Bug(dlg.getFailException());
+			new BugDialog(dlg.getFailException());
 			return false;
 		} else {
 			// Search successful

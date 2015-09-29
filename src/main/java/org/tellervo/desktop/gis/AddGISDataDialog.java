@@ -1,5 +1,12 @@
 package org.tellervo.desktop.gis;
 
+import gov.nasa.worldwind.avlist.AVKey;
+import gov.nasa.worldwind.layers.Layer;
+import gov.nasa.worldwind.ogc.kml.KMLAbstractFeature;
+import gov.nasa.worldwind.ogc.kml.KMLRoot;
+import gov.nasa.worldwind.util.WWIO;
+import gov.nasa.worldwind.util.WWUtil;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -29,33 +36,25 @@ import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
-import org.tellervo.desktop.gui.widgets.TellervoCodePanel;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
-import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.desktop.ui.Alert;
+import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
-import org.tellervo.desktop.ui.Alert;
-import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
-import org.tellervo.desktop.wsi.tellervo.SearchParameters;
-import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
-
-import gov.nasa.worldwind.avlist.AVKey;
-import gov.nasa.worldwind.layers.Layer;
-import gov.nasa.worldwind.ogc.kml.KMLAbstractFeature;
-import gov.nasa.worldwind.ogc.kml.KMLRoot;
-import gov.nasa.worldwind.util.WWIO;
-import gov.nasa.worldwind.util.WWUtil;
 
 public class AddGISDataDialog extends JDialog implements ActionListener, TridasSelectListener{
 
@@ -372,7 +371,7 @@ public class AddGISDataDialog extends JDialog implements ActionListener, TridasS
 				if(!dlg.isSuccessful()) 
 				{
 					// Search failed
-					new Bug(dlg.getFailException());
+					new BugDialog(dlg.getFailException());
 					return;
 				} 
 				else 

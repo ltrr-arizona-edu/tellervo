@@ -122,7 +122,7 @@ public class FullEditorActions extends AbstractEditorActions {
 		mapDatabaseLayerAction = new MapDatabaseLayerAction((FullEditor) editor);
 		mapZoomAction = new MapZoomToSampleAction((FullEditor) editor);
 		mapSpatialSearchAction = new MapSpatialSearchAction((FullEditor) editor);
-		
+				
 		linkModel();
 
 	}

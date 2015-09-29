@@ -22,7 +22,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis2.OpenGLTestCapabilities;
 import org.tellervo.desktop.gis2.TellervoSampleLayer;
 import org.tellervo.desktop.gis2.WWJPanel;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.menus.FullEditorActions;
 import org.tellervo.desktop.gui.menus.FullEditorMenuBar;
 import org.tellervo.desktop.gui.widgets.TitlelessButton;
@@ -357,7 +357,7 @@ public class FullEditor extends AbstractEditor {
 			Alert.error(this, I18n.getText("error.ioerror"), I18n.getText("error.savingError") +": \n" + ioe.getMessage());
 			return;
 		} catch (Exception e) {
-			new Bug(e);
+			new BugDialog(e);
 		}
 
 		// set the necessary bits...
@@ -724,7 +724,8 @@ public class FullEditor extends AbstractEditor {
 		
 		JMenuItem zoomMap = new JMenuItem(((FullEditorActions)actions).mapZoomAction);
 		popupMenu.add(zoomMap);
-		
+
+	
 		
 		this.getLstSamples().addMouseListener(new MouseAdapter() {
 		    public void mousePressed(MouseEvent e) {
@@ -746,6 +747,8 @@ public class FullEditor extends AbstractEditor {
 		        }
 		    }
 		});
+		
+		
 			
 	}
 

@@ -23,7 +23,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 
 
 public class ElementList extends ArrayList<Element> {
@@ -139,7 +139,7 @@ public class ElementList extends ArrayList<Element> {
 					dest.activeMap.put(newe, isActive);
 			}
 		} catch (Exception e) {
-			new Bug(e);
+			new BugDialog(e);
 		}		
 		
 		return dest;
@@ -187,7 +187,7 @@ public class ElementList extends ArrayList<Element> {
 					activeMap.put(newe, isActive);
 			}
 		} catch (Exception e) {
-			new Bug(e);
+			new BugDialog(e);
 		}		
 		
 		// force quick cleanup

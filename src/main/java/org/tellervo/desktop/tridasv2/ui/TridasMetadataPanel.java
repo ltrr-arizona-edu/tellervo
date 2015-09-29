@@ -52,7 +52,7 @@ import javax.swing.SwingUtilities;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.AbstractMetadataPanel;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleType;
@@ -645,7 +645,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 			
 			// sanity check to ensure parent entity being null means we're an object
 			if(parentEntity == null && currentMode != EditType.OBJECT) {
-				new Bug(new IllegalStateException("parentEntity is null, but not an object"));
+				new BugDialog(new IllegalStateException("parentEntity is null, but not an object"));
 				return;
 			}
 			
@@ -682,7 +682,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 			
 			// sanity check the result
 			if(temporaryEditingEntity == null) {
-				new Bug(new IllegalStateException("CREATE or UPDATE entity returned null"));
+				new BugDialog(new IllegalStateException("CREATE or UPDATE entity returned null"));
 				return;
 			}
 			
@@ -793,7 +793,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 			try {
 				list = lists.getChildList(currentMode.previous().getEntity(sample), goRemote);
 			} catch (Exception e) {
-				new Bug(e);
+				new BugDialog(e);
 				list = null;
 			}	
 
@@ -1414,7 +1414,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 			try {
 				return type.newInstance();
 			} catch (Exception e) {
-				new Bug(e);
+				new BugDialog(e);
 				return null;
 			}
 		}

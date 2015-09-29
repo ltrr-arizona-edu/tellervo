@@ -34,7 +34,7 @@ import javax.swing.event.EventListenerList;
 import net.miginfocom.swing.MigLayout;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectEvent.TridasSelectType;
 import org.tellervo.desktop.gui.TridasSelectListener;
@@ -301,7 +301,7 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
 		if(!dlg.isSuccessful()) 
 		{
 			// Search failed
-			new Bug(dlg.getFailException());
+			new BugDialog(dlg.getFailException());
 			return;
 		} 
 		else 

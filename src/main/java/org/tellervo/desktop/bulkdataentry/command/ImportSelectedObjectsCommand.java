@@ -204,6 +204,6 @@ public class ImportSelectedObjectsCommand implements ICommand {
 //		event.dispatch();
 		
 		// FIXME this should be removed once other lists listen for changes in the object list
-		App.dictionary.query();
+		App.updateTridasObjectList();
 	}
 }

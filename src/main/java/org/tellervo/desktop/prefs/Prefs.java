@@ -34,7 +34,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -61,13 +60,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.AbstractSubsystem;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.platform.Platform;
-import org.tellervo.schema.WSIWmsServer;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.BugReport;
 import org.tellervo.desktop.util.JDisclosureTriangle;
 import org.tellervo.desktop.util.WeakEventListenerList;
+import org.tellervo.schema.WSIWmsServer;
 
 
 /**
@@ -414,7 +413,7 @@ public class Prefs extends AbstractSubsystem {
 		try {
 			load();
 		} catch (IOException ioe) {
-			new Bug(ioe);
+			new BugDialog(ioe);
 		}
 
 		setInitialized(true);

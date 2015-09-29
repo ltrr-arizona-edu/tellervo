@@ -28,10 +28,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -53,8 +50,6 @@ import org.jdesktop.swingx.JXTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
-import org.tellervo.desktop.cross.CrossdateCollection.Pairing;
-import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.graph.Graph;
 import org.tellervo.desktop.graph.GraphActions;
 import org.tellervo.desktop.graph.GraphController;
@@ -63,10 +58,8 @@ import org.tellervo.desktop.graph.GraphToolbar;
 import org.tellervo.desktop.graph.GrapherEvent;
 import org.tellervo.desktop.graph.GrapherListener;
 import org.tellervo.desktop.graph.GrapherPanel;
-import org.tellervo.desktop.gui.Bug;
-import org.tellervo.desktop.gui.ProgressMeter;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.ReverseScrollBar;
-import org.tellervo.desktop.gui.SplashDialog;
 import org.tellervo.desktop.gui.cross.Ui_CrossdatePanel;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowser;
 import org.tellervo.desktop.sample.BaseSample;
@@ -210,7 +203,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 		TridasDerivedSeries ds = (TridasDerivedSeries) bs.getSeries();
 		if(!ds.getType().getValue().equals("Crossdate"))
 		{
-			new Bug(new Exception(I18n.getText("error.mustBeCrossdate")));
+			new BugDialog(new Exception(I18n.getText("error.mustBeCrossdate")));
 			return;
 		}
 		    	
@@ -228,7 +221,7 @@ public class CrossdateDialog extends Ui_CrossdatePanel implements GrapherListene
 		
 		Element reference = null;
 		if(!dlg.isSuccessful()) {
-			new Bug(dlg.getFailException());
+			new BugDialog(dlg.getFailException());
 		} else {
 			reference = searchResource.getAssociatedResult().get(0);
 		}

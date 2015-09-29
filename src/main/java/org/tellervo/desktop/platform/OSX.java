@@ -24,7 +24,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.Bug;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.menus.HelpMenu;
 import org.tellervo.desktop.ui.TellervoAction;
 
@@ -113,7 +113,7 @@ public class OSX {
 			register.invoke(appUtils.newInstance(), new Object[] { aboutHandler });
 		} catch (Exception e) {
 			// can't happen <=> bug!
-			new Bug(e);
+			new BugDialog(e);
 		}
 	}
 
@@ -173,7 +173,7 @@ public class OSX {
 			register.invoke(appUtils.newInstance(), new Object[] { quitHandler });
 		} catch (Exception e) {
 			// can't happen <=> bug!
-			new Bug(e);
+			new BugDialog(e);
 		}
 	}
 
@@ -208,7 +208,7 @@ public class OSX {
 			register.invoke(appUtils.newInstance(), new Object[] { prefsHandler });
 		} catch (Exception e) {
 			// can't happen <=> bug!
-			new Bug(e);
+			new BugDialog(e);
 		}
 	}
 	
