@@ -341,15 +341,8 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
     if (meter != null) {
     	meter.setProgress(9);
     	meter.setNote(I18n.getText("login.initObjectList"));
-    }
-    tridasObjects = new TridasObjectList();
-    if(splash != null && appmodel.isLoggedIn()) { // must be logged in...
-    	// don't update the site list in debug mode...
-    	if(!DEBUGGING)
-    		tridasObjects.query();
-        if (meter != null) {
-        	meter.setNote(I18n.getText("login.updateObjectList"));
-        }
+    	updateTridasObjectList();
+        meter.setNote(I18n.getText("login.updateObjectList"));
     }
     
 	// Check whether updates are available
@@ -370,9 +363,6 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
     	meter.setNote("");
     }
 
-
-
-
     initialized = true;   
     
     // Get the domain of the WS used
@@ -389,6 +379,16 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
 		
 	}
   
+  }
+
+  public static void updateTridasObjectList()
+  {
+	  tridasObjects = new TridasObjectList();
+
+	  if(appmodel.isLoggedIn())
+	  {
+		  tridasObjects.query();
+	  }
   }
 
   public static void setLogViewerVisible(Boolean b)
