@@ -55,6 +55,7 @@ import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenMultiAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
 import org.tellervo.desktop.gui.menus.actions.GraphAllSeriesAction;
+import org.tellervo.desktop.gui.menus.actions.GraphComponentSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.GraphCurrentSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.HelpAboutTellervoAction;
 import org.tellervo.desktop.gui.menus.actions.HelpCheckForUpdatesAction;
@@ -154,7 +155,7 @@ public abstract class AbstractEditorActions{
 
 	// Graph menu action
 	public Action graphCurrentSeriesAction;
-	//public Action graphComponentSeriesAction;
+	public Action graphComponentSeriesAction;
 	public Action graphAllSeriesAction;
 
 	// Toolbar only actions
@@ -246,7 +247,7 @@ public abstract class AbstractEditorActions{
 		toolsRedateAction = new ToolsRedateAction(editor);
 
 		graphCurrentSeriesAction = new GraphCurrentSeriesAction(editor);
-		//graphComponentSeriesAction = new GraphComponentSeriesAction(editor);
+		graphComponentSeriesAction = new GraphComponentSeriesAction(editor);
 		graphAllSeriesAction = new GraphAllSeriesAction(editor);
 
 		helpHelpContentsAction = new HelpHelpContentsAction();

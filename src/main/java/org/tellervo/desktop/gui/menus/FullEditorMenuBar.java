@@ -380,8 +380,8 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		JMenuItem miCurrentSeries = new JMenuItem(actions.graphCurrentSeriesAction);
 		mnGraph.add(miCurrentSeries);
 		
-	    //miComponentSeries = new JMenuItem(actions.graphComponentSeriesAction);
-	    //mnGraph.add(miComponentSeries);
+	    miComponentSeries = new JMenuItem(actions.graphComponentSeriesAction);
+	    mnGraph.add(miComponentSeries);
 	    
 	    JMenuItem miAllSeries = new JMenuItem(actions.graphAllSeriesAction);
 	    mnGraph.add(miAllSeries);

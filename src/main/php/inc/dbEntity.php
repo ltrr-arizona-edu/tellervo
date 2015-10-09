@@ -451,8 +451,15 @@ class dbEntity
  
     function getDomain()
     {
-	return $this->identifierDomain;
+        global $domain;
+
+        if($this->identifierDomain=='localhost' || $this->identifierDomain=='' || $this->identifierDomain==null)
+        {
+                return $domain;
+        }
+        return $this->identifierDomain;
     }
+
     
     /**
      * Returns the internal XML reference string for this entity

@@ -69,7 +69,6 @@ public class TellervoWSILoader extends AbstractTellervoGUIDeletableSampleLoader<
 	 */
 	public TellervoWSILoader(TridasIdentifier identifier) {
 		this.identifier = identifier;
-		
 		name = shortName = identifier.toString();
 	}
 	
@@ -173,7 +172,7 @@ public class TellervoWSILoader extends AbstractTellervoGUIDeletableSampleLoader<
 	protected SeriesResource getResource(Map<String, ? extends Object> properties) {
 		SeriesResource resource = new SeriesResource(identifier,
 				EntityType.MEASUREMENT_SERIES, TellervoRequestType.READ);
-		
+				
 		// set resource properties
 		if(properties != null && !properties.isEmpty())
 			resource.setProperties(properties);

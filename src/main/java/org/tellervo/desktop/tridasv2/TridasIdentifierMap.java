@@ -23,6 +23,9 @@ package org.tellervo.desktop.tridasv2;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.io.TridasDoc;
 import org.tridas.interfaces.TridasIdentifiable;
 import org.tridas.schema.TridasIdentifier;
 
@@ -36,7 +39,8 @@ import org.tridas.schema.TridasIdentifier;
 
 public class TridasIdentifierMap<V extends TridasIdentifiable> extends HashMap<TridasIdentifier, V> {
 	private static final long serialVersionUID = -8714556821286002816L;
-	
+	private final static Logger log = LoggerFactory.getLogger(TridasIdentifierMap.class);
+
 	public TridasIdentifierMap() {
 		super();
 	}
@@ -65,10 +69,10 @@ public class TridasIdentifierMap<V extends TridasIdentifiable> extends HashMap<T
 	 */
 	public final V put(V e) {
 		TridasIdentifier identifier = e.getIdentifier();
-		
+			
 		if(identifier == null)
 			throw new IllegalArgumentException(e.getClass().getName() + " is missing identifier");
-		
+				
 		return put(identifier, e);
 	}
 }

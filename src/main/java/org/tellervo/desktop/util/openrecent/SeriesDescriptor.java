@@ -89,7 +89,7 @@ public class SeriesDescriptor implements OpenableDocumentDescriptor {
     		setVersion(((ITridasDerivedSeries)series).getVersion());
     	
     	if(s.getLoader() instanceof TellervoWSILoader)
-    		setLoaderType(LoaderType.CWTE);
+    		setLoaderType(LoaderType.TELLERVO_WSI);
     	else if(s.getLoader() instanceof FileElement)
     		setLoaderType(LoaderType.FILE);
     	else
@@ -219,7 +219,7 @@ public class SeriesDescriptor implements OpenableDocumentDescriptor {
 	 * An enum to represent our loader types
 	 */
 	public enum LoaderType {
-		@XmlEnumValue("Tellervo/TRiDaS WSI") CWTE("Tellervo/TRiDaS WSI"),
+		@XmlEnumValue("Tellervo/TRiDaS WSI") TELLERVO_WSI("Tellervo/TRiDaS WSI"),
 		@XmlEnumValue("File") FILE("File"),
 		@XmlEnumValue("Unknown") UNKNOWN("Unknown");
 	    private final String value;

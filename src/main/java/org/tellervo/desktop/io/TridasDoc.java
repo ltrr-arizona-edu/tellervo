@@ -24,7 +24,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.math.util.MultidimensionalCounter.Iterator;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
@@ -220,7 +222,7 @@ public class TridasDoc implements Filetype {
 		
 		if(!(s.getSeries() instanceof ITridasDerivedSeries))
 			throw new IllegalArgumentException("loadReferences requires derived series!");
-		
+				
 		// only works with a derived series
 		ITridasDerivedSeries series = (ITridasDerivedSeries) s.getSeries();
 		
@@ -238,7 +240,11 @@ public class TridasDoc implements Filetype {
 				elements.add(new CachedElement(ref));
 			}
 			else {
-				log.error("Sample " + s + " references unknown element: " + identifier);
+				log.error("Sample " + s + " references unknown element: [" + identifier.getDomain()+"] "+identifier.getValue());
+				log.debug("References list has "+references.size()+" items in it");
+				for (TridasIdentifier key : references.keySet()) {
+					log.debug("   - ["+key.getDomain()+"] "+key.getValue());
+				}
 			}
 		}
 		
@@ -287,7 +293,7 @@ public class TridasDoc implements Filetype {
 			s = new Sample(series);
 		else
 			s = new BaseSample(series);
-		
+
 		// add to references
 		references.put(s);
 		

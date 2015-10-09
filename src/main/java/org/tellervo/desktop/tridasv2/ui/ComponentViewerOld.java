@@ -298,8 +298,6 @@ public class ComponentViewerOld extends JPanel implements ResourceEventListener,
 		btnTreeView.putClientProperty("cv.cardName", TREEPANEL);
 		btnTableView = new JRadioButton("table");
 		btnTableView.putClientProperty("cv.cardName", TABLEPANEL);
-		JRadioButton btnTree2View = new JRadioButton("tree2");
-		btnTree2View.putClientProperty("cv.cardName", TREE2PANEL);
 		
 		ActionListener btnListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -311,13 +309,11 @@ public class ComponentViewerOld extends JPanel implements ResourceEventListener,
 		};
 		btnTableView.addActionListener(btnListener);
 		btnTreeView.addActionListener(btnListener);	
-		btnTree2View.addActionListener(btnListener);
 		
 		// connect buttons
 		ButtonGroup group = new ButtonGroup();
 		group.add(btnTreeView);
 		group.add(btnTableView);
-		group.add(btnTree2View);
 		topPanel.setLayout(new MigLayout("", "[64px][55px][62px][63px][][]", "[23px]"));
 		
 		
@@ -325,7 +321,6 @@ public class ComponentViewerOld extends JPanel implements ResourceEventListener,
 		topPanel.add(label, "cell 0 0,alignx left,aligny center");
 		topPanel.add(btnTreeView, "cell 1 0,alignx left,aligny center");
 		topPanel.add(btnTableView, "cell 2 0,alignx left,aligny center");
-		topPanel.add(btnTree2View, "cell 3 0,alignx left,aligny center");
 		
 		
 		topPanel.setBorder(BorderFactory.createEmptyBorder(2, 8, 8, 8));

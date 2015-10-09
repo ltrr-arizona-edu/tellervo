@@ -260,11 +260,11 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		// create button panel
 		JPanel topPanel = new JPanel();
 		label = new JLabel("View as: ");
-		btnTreeView = new JRadioButton("tree");
+		btnTreeView = new JRadioButton("Tree");
 		btnTreeView.putClientProperty("cv.cardName", TREEPANEL);
-		btnTableView = new JRadioButton("table");
+		btnTableView = new JRadioButton("Table");
 		btnTableView.putClientProperty("cv.cardName", TABLEPANEL);
-		JRadioButton btnTree2View = new JRadioButton("tree2");
+		JRadioButton btnTree2View = new JRadioButton("Flow chart");
 		btnTree2View.putClientProperty("cv.cardName", TREE2PANEL);
 		
 		ActionListener btnListener = new ActionListener() {

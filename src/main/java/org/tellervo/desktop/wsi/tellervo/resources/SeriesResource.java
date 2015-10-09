@@ -29,6 +29,8 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.io.TridasDoc;
@@ -63,6 +65,7 @@ import org.tridas.schema.TridasSample;
  *
  */
 public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSample>> {
+	private final static Logger log = LoggerFactory.getLogger(SeriesResource.class);
 
 	/**
 	 * @param identifier
@@ -113,6 +116,7 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 		try {
 			// load the tridas object tree first
 			for(TridasObject obj : tridasObjects) {
+			
 				doc.loadFromObject(obj, samples, refmap, true);
 			}
 			
@@ -177,7 +181,7 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 	 */
 	public Sample getSample(TridasIdentifier identifier) {
 		for(BaseSample bs : getAssociatedResult()) {
-			if(bs.getSeries().getIdentifier().equals(identifier)) {
+			if(bs.getSeries().getIdentifier().getValue().equals(identifier.getValue())) {
 				if(!(bs instanceof Sample))
 					throw new IllegalStateException("Found identifier but no sample??");
 				

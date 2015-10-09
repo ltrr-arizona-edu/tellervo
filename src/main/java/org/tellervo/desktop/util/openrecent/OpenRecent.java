@@ -50,6 +50,8 @@ import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tridas.io.formats.tucson.TucsonFormat;
 
 
@@ -279,10 +281,9 @@ public class OpenRecent {
 			SeriesDescriptor desc = (SeriesDescriptor) o;
 			
 			switch(desc.getLoaderType()) {
-			case CWTE: {
+			case TELLERVO_WSI: {
 				TellervoWSILoader element = new TellervoWSILoader(desc.getIdentifier());
-				
-				
+				element.setLoadProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
 				
 				((SampleOpener)opener).performOpen(element.load());
 				break;
