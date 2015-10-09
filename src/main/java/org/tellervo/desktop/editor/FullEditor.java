@@ -724,7 +724,12 @@ public class FullEditor extends AbstractEditor {
 		
 		JMenuItem zoomMap = new JMenuItem(((FullEditorActions)actions).mapZoomAction);
 		popupMenu.add(zoomMap);
-
+		
+		JMenuItem graphSeries = new JMenuItem(((FullEditorActions)actions).graphCurrentSeriesAction);
+		popupMenu.add(graphSeries);
+		
+		JMenuItem graphComponentSeries = new JMenuItem(((FullEditorActions)actions).graphComponentSeriesAction);
+		popupMenu.add(graphComponentSeries);
 	
 		
 		this.getLstSamples().addMouseListener(new MouseAdapter() {
