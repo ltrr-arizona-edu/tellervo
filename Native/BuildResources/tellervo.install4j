@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.0.1" transformSequenceNumber="5">
-  <directoryPresets config="../../Documentation/tellervo-manual.pdf" />
+  <directoryPresets config="../../target/classes/LinBuild/tellervo.desktop" />
   <application name="Tellervo" distributionSourceDir="" applicationId="3241-8043-2524-6669" mediaDir="../../target/binaries/desktop/${compiler:sys.version}/${compiler:platformtype}" mediaFilePattern="tellervo-${compiler:sys.version}-${compiler:sys.platform}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="false" shrinkRuntime="true" shortName="Tellervo" publisher="University of Arizona" publisherWeb="http://www.tellervo.org" version="1.2.1-SNAPSHOT" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="add89b377a765064" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
@@ -25,6 +25,7 @@
       <fileset name="Linux64Native" id="29" customizedId="" />
       <fileset name="OSXNative" id="31" customizedId="" />
       <fileset name="Manual" id="63" customizedId="" />
+      <fileset name="LinuxLinks" id="514" customizedId="" />
     </filesets>
     <roots>
       <root id="24" fileset="23" location="" />
@@ -34,6 +35,7 @@
       <root id="32" fileset="31" location="" />
       <root id="231" fileset="31" location="/Library/Java/Extensions" />
       <root id="64" fileset="63" location="" />
+      <root id="515" fileset="514" location="" />
     </roots>
     <mountPoints>
       <mountPoint id="40" root="" location="" mode="755" />
@@ -43,6 +45,7 @@
       <mountPoint id="44" root="30" location="" mode="755" />
       <mountPoint id="232" root="231" location="" mode="755" />
       <mountPoint id="67" root="64" location="" mode="755" />
+      <mountPoint id="519" root="515" location="" mode="755" />
     </mountPoints>
     <entries>
       <dirEntry mountPoint="40" file="../../target/dependency" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="lib" excludeSuffixes="" dirMode="755" overrideDirMode="false">
@@ -55,6 +58,8 @@
       <fileEntry mountPoint="44" file="../Libraries/linux-amd64/librxtxSerial.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="232" file="../Libraries/macosx-universal/librxtxSerial.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="67" file="../../Documentation/tellervo-manual.pdf" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="519" file="../../target/classes/LinBuild/tellervo.desktop" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="519" file="../../src/main/resources/Icons/512x512/tellervo-application.png" overwriteMode="4" shared="false" fileMode="655" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="false" overrideUninstallMode="false" />
     </entries>
     <components>
       <component name="Tellervo Desktop" id="58" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="false" downloadable="false" hidden="false">
@@ -95,6 +100,7 @@
         <description>Required to access your measuring platform hardware.  Only suitable for a Linux distribution running a 32-bit version of Java.</description>
         <include all="false">
           <entry location=".i4j_fileset_27" fileType="regular" />
+          <entry location=".i4j_fileset_450" fileType="regular" />
         </include>
         <dependencies />
       </component>
@@ -102,6 +108,7 @@
         <description>Required to access your measuring platform hardware. Only suitable for a 64-bit Linux distribution running a 64-bit version of Java. If you are running a 32-bit version of Java you must use the 32-bit drivers regardless of what type of Linux distribution you are running.</description>
         <include all="false">
           <entry location=".i4j_fileset_29" fileType="regular" />
+          <entry location=".i4j_fileset_450" fileType="regular" />
         </include>
         <dependencies />
       </component>
@@ -120,10 +127,62 @@
         </include>
         <dependencies />
       </component>
+      <component name="Tellervo Desktop for Linux" id="462" customizedId="" displayDescription="false" hideHelpButton="false" selected="true" changeable="true" downloadable="false" hidden="false">
+        <description />
+        <include all="false">
+          <entry location=".i4j_fileset_" fileType="regular" />
+          <entry location=".i4j_fileset_27" fileType="regular" />
+          <entry location=".i4j_fileset_450" fileType="regular" />
+        </include>
+        <dependencies>
+          <component id="58" />
+        </dependencies>
+      </component>
     </components>
   </files>
   <launchers>
     <launcher name="Tellervo" id="22" customizedId="" external="false" excludeFromMenu="false" unixMode="755" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="">
+      <executable name="tellervo" type="1" iconSet="true" iconFile="" executableDir="." redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="false" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="true" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
+        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
+      </executable>
+      <splashScreen show="false" width="0" height="0" bitmapFile="" windowsNative="false" textOverlay="false">
+        <text>
+          <statusLine x="20" y="20" text="" fontSize="8" fontColor="0,0,0" bold="false" />
+          <versionLine x="20" y="40" text="version ${compiler:sys.version}" fontSize="8" fontColor="0,0,0" bold="false" />
+        </text>
+      </splashScreen>
+      <java mainClass="org.tellervo.desktop.gui.Startup" vmParameters="" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+        <classPath>
+          <archive location="tellervo-${compiler:sys.version}.jar" failOnError="false" />
+        </classPath>
+        <nativeLibraryDirectories>
+          <directory name="." />
+          <directory name="/Library/Java/Extensions" />
+        </nativeLibraryDirectories>
+      </java>
+      <includedFiles />
+      <unextractableFiles />
+      <vmOptionsFile mode="template" overwriteMode="0" fileMode="644">
+        <content />
+      </vmOptionsFile>
+      <customScript mode="1" file="">
+        <content />
+      </customScript>
+      <infoPlist mode="1" file="">
+        <content />
+      </infoPlist>
+      <iconImageFiles>
+        <file path="../../src/main/resources/Icons/16x16/tellervo-application.png" />
+        <file path="../../src/main/resources/Icons/22x22/tellervo-application.png" />
+        <file path="../../src/main/resources/Icons/32x32/tellervo-application.png" />
+        <file path="../../src/main/resources/Icons/48x48/tellervo-application.png" />
+        <file path="../../src/main/resources/Icons/64x64/tellervo-application.png" />
+        <file path="../../src/main/resources/Icons/128x128/tellervo-application.png" />
+        <file path="../../src/main/resources/Icons/256x256/tellervo-application.png" />
+        <file path="../../src/main/resources/Icons/512x512/tellervo-application.png" />
+      </iconImageFiles>
+    </launcher>
+    <launcher name="Copy of Tellervo" id="593" customizedId="" external="false" excludeFromMenu="true" unixMode="755" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="">
       <executable name="tellervo" type="1" iconSet="true" iconFile="" executableDir="." redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="false" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="true" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -320,19 +379,6 @@
             </actions>
             <formComponents />
           </screen>
-          <screen name="" id="6" customizedId="" beanClass="com.install4j.runtime.beans.screens.ComponentsScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
-            <serializedBean>
-              <java class="java.beans.XMLDecoder">
-                <object class="com.install4j.runtime.beans.screens.ComponentsScreen" />
-              </java>
-            </serializedBean>
-            <condition />
-            <validation />
-            <preActivation />
-            <postActivation />
-            <actions />
-            <formComponents />
-          </screen>
           <screen name="" id="7" customizedId="" beanClass="com.install4j.runtime.beans.screens.StandardProgramGroupScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
             <serializedBean>
               <java class="java.beans.XMLDecoder">
@@ -349,6 +395,58 @@
             <postActivation />
             <actions />
             <formComponents />
+          </screen>
+          <screen name="" id="437" customizedId="" beanClass="com.install4j.runtime.beans.screens.AdditionalConfirmationsScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="false" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
+            <serializedBean>
+              <java class="java.beans.XMLDecoder">
+                <object class="com.install4j.runtime.beans.screens.AdditionalConfirmationsScreen" />
+              </java>
+            </serializedBean>
+            <condition />
+            <validation />
+            <preActivation />
+            <postActivation />
+            <actions />
+            <formComponents>
+              <formComponent name="Create a quick launch icon" id="438" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
+                      <void property="checkboxText">
+                        <string>${i18n:CreateQuickLaunchIcon}</string>
+                      </void>
+                      <void property="initiallySelected">
+                        <boolean>true</boolean>
+                      </void>
+                      <void property="variableName">
+                        <string>createQuicklaunchIconAction</string>
+                      </void>
+                    </object>
+                  </java>
+                </serializedBean>
+                <initScript />
+                <visibilityScript>Util.isWindows()</visibilityScript>
+              </formComponent>
+              <formComponent name="Add a desktop link" id="440" customizedId="" beanClass="com.install4j.runtime.beans.formcomponents.CheckboxComponent" enabled="true" commentSet="false" comment="" insetTop="" insetLeft="" insetBottom="" insetRight="" resetInitOnPrevious="false">
+                <serializedBean>
+                  <java class="java.beans.XMLDecoder">
+                    <object class="com.install4j.runtime.beans.formcomponents.CheckboxComponent">
+                      <void property="checkboxText">
+                        <string>${i18n:CreateDesktopIcon}</string>
+                      </void>
+                      <void property="initiallySelected">
+                        <boolean>true</boolean>
+                      </void>
+                      <void property="variableName">
+                        <string>createDesktopLinkAction</string>
+                      </void>
+                    </object>
+                  </java>
+                </serializedBean>
+                <initScript />
+                <visibilityScript />
+              </formComponent>
+            </formComponents>
           </screen>
           <screen name="" id="8" customizedId="" beanClass="com.install4j.runtime.beans.screens.InstallationScreen" enabled="true" commentSet="false" comment="" actionElevationType="inherit" rollbackBarrier="true" backButton="2" finishScreen="false" wizardIndexChangeType="unchanged" wizardIndexKey="">
             <serializedBean>
@@ -570,13 +668,16 @@
   </installerGui>
   <mediaSets>
     <unixInstaller name="Unix Installer" id="81" customizedId="" mediaFileName="" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="">
-      <excludedLaunchers />
+      <excludedLaunchers>
+        <launcher id="593" />
+      </excludedLaunchers>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
         <entry location=".i4j_fileset_23" fileType="regular" />
         <entry location=".i4j_fileset_25" fileType="regular" />
         <entry location=".i4j_fileset_31" fileType="regular" />
+        <entry location=".i4j_fileset_450" fileType="regular" />
       </exclude>
       <variables>
         <variable name="platformtype" value="Unix" description="" category="" />
@@ -596,15 +697,16 @@
         <content />
       </installerScript>
     </unixInstaller>
-    <linuxDeb name="Linux Deb Archive" id="88" customizedId="" mediaFileName="" installDir="/opt/${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bzip="false" description="Application for measuring, managing and curating dendrochronology samples" dependencies="default-jre:i386 | openjdk-7-jre:i386 | openjdk-8-jre:i386, libjogl-java" maintainerEmail="Peter Brewer &lt;p.brewer@ltrr.arizona.edu&gt;" architectureSet="false" architecture="">
-      <excludedLaunchers />
+    <linuxDeb name="Linux Deb Archive" id="88" customizedId="" mediaFileName="" installDir="/opt/tellervo" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bzip="false" description="Application for measuring, managing and curating dendrochronology samples" dependencies="default-jre:i386 | openjdk-7-jre:i386 | openjdk-8-jre:i386, libjogl-java" maintainerEmail="Peter Brewer &lt;p.brewer@ltrr.arizona.edu&gt;" architectureSet="false" architecture="">
+      <excludedLaunchers>
+        <launcher id="22" />
+      </excludedLaunchers>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
         <entry location=".i4j_fileset_23" fileType="regular" />
         <entry location=".i4j_fileset_25" fileType="regular" />
         <entry location=".i4j_fileset_31" fileType="regular" />
-        <entry location=".i4j_fileset_155" fileType="regular" />
       </exclude>
       <variables>
         <variable name="platformtype" value="Linux" description="" category="" />
@@ -616,21 +718,27 @@
       <preInstallScript mode="1" file="">
         <content />
       </preInstallScript>
-      <postInstallScript mode="1" file="">
-        <content />
+      <postInstallScript mode="3" file="">
+        <content>ln -s /opt/tellervo/tellervo.desktop /usr/share/applications
+ln -s /opt/tellervo/tellervo-application.png /usr/share/pixmaps</content>
       </postInstallScript>
       <preUninstallScript mode="1" file="">
         <content />
       </preUninstallScript>
-      <postUninstallScript mode="1" file="">
-        <content />
+      <postUninstallScript mode="3" file="">
+        <content>rm /usr/share/applications/tellervo.desktop
+rm /usr/share/pixmaps/tellervo-application.png</content>
       </postUninstallScript>
     </linuxDeb>
     <windows name="Windows" id="93" customizedId="" mediaFileName="tellervo-${compiler:sys.version}-${compiler:sys.platform}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="windows-x86-1.7.0_80" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="true" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
-      <excludedLaunchers />
+      <excludedLaunchers>
+        <launcher id="471" />
+      </excludedLaunchers>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
-      <exclude />
+      <exclude>
+        <entry location=".i4j_fileset_450" fileType="regular" />
+      </exclude>
       <variables>
         <variable name="platformtype" value="Windows" description="" category="" />
       </variables>
@@ -644,6 +752,7 @@
         <component id="60" />
         <component id="82" />
         <component id="83" />
+        <component id="462" />
       </excludedComponents>
       <includedDownloadableComponents />
     </windows>
@@ -655,7 +764,7 @@
         <entry location=".i4j_fileset_25" fileType="regular" />
         <entry location=".i4j_fileset_27" fileType="regular" />
         <entry location=".i4j_fileset_29" fileType="regular" />
-        <entry location=".i4j_fileset_155" fileType="regular" />
+        <entry location=".i4j_fileset_450" fileType="regular" />
       </exclude>
       <variables>
         <variable name="platformtype" value="MacOSX" description="" category="" />
@@ -675,11 +784,8 @@
       <topLevelFiles />
     </macos>
   </mediaSets>
-  <buildIds buildAll="false">
-    <mediaSet refId="81" />
+  <buildIds buildAll="true">
     <mediaSet refId="88" />
-    <mediaSet refId="93" />
-    <mediaSet refId="171" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>
