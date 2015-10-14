@@ -155,6 +155,9 @@ public class ReconcileDataView extends SeriesDataMatrix implements SampleListene
 	    
 	   newSample.fireDisplayUnitsChanged();
 	   reference.fireDisplayUnitsChanged();
+	   
+	   this.splitPaneTableAndGraph.setDividerLocation(99999);
+	   this.splitPaneTableAndRemarks.setDividerLocation(99999);
 	}
 	
 	

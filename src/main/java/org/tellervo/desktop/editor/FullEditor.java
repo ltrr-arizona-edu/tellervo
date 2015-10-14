@@ -424,7 +424,12 @@ public class FullEditor extends AbstractEditor {
 				}
 				
 				
-				dataView = new SeriesDataMatrix(sample, this);
+				try {
+					dataView = new SeriesDataMatrix(sample, this);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
 				dataView.setPlotAgent(plotAgent);
 				
 				dataPanel.removeAll();

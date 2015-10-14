@@ -115,16 +115,16 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	protected TableModel myModel;
 		
 	protected ModifiableTableCellRenderer myCellRenderer;
-	private JSplitPane splitPaneTableAndRemarks;
+	protected JSplitPane splitPaneTableAndRemarks;
 	private JPanel panelLeft;
 	private JPanel panelRight;
 	private RemarkPanel remarkPanel;
-	private AbstractEditor e;
+	private final AbstractEditor ed;
 	private EditorMeasurePanel measurePanel;
 	private JPanel measurePanelHolder;
 	private GrapherPanel graphPanel;
 	private List<Graph> graphSamples;
-	private JSplitPane splitPaneTableAndGraph;
+	protected JSplitPane splitPaneTableAndGraph;
 	
 
 	
@@ -176,11 +176,11 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 			stopEditing(true);
 	}
 		
-	public void init(Sample s, AbstractEditor e)
+	public void init(Sample s)
 	{
 		mySample = s;
 		mySample.addSampleListener(this);
-		this.e = e;
+		
 		
 		// create table
 		myModel = new UnitAwareDecadalModel(mySample);
@@ -191,11 +191,11 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		//gInfo.setHundredUnitHeight(5);
 	}
 	
-	public SeriesDataMatrix(Sample s, AbstractEditor e) {
-		init(s, e);
+	public SeriesDataMatrix(Sample s, AbstractEditor editor) {
+		this.ed = editor;
 		
-		final AbstractEditor glue = e;
-		
+		init(s);
+			
 
 		DefaultTableCellRenderer rightRenderer = new DefaultTableCellRenderer();
 		rightRenderer.setHorizontalAlignment(DefaultTableCellRenderer.RIGHT);
@@ -253,7 +253,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 				
 				if ((ev.getClickCount()==2) && (!ev.isConsumed()))
 				{
-					if(glue!=null)
+					if(ed!=null)
 					{
 						if(myTable.columnAtPoint(ev.getPoint())==0)
 						{
@@ -319,7 +319,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		remarkPanel.setMinimumSize(new Dimension(280,280));
 		panelRight.add(remarkPanel);
 		
-		if(e instanceof LiteEditor)
+		if(ed instanceof LiteEditor)
 		{
 			panelRight.setVisible(false);
 		}
@@ -355,7 +355,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	 */
 	private void showRedateDialog()
 	{
-		if(e!=null)	new RedateDialog(mySample, e).setVisible(true);
+		if(ed!=null) new RedateDialog(mySample, ed).setVisible(true);
 	}
 	
 	/**
@@ -404,7 +404,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 				}
 				catch (Exception ioe) {
 					
-					Alert.error(e, I18n.getText("error"), 
+					Alert.error(ed, I18n.getText("error"), 
 							I18n.getText("error.initExtComms")+".\n"+
 							I18n.getText("error.possWrongComPort"));
 					
@@ -422,7 +422,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 				enableEditing(false);
 			
 				// add the measure panel...
-				measurePanel = new EditorMeasurePanel(e, device);
+				measurePanel = new EditorMeasurePanel(ed, device);
 				this.measurePanelHolder.add(measurePanel, BorderLayout.CENTER);
 								
 				// Make sure the size is sensible
@@ -1157,34 +1157,45 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 				
 		// create a graph panel; put it in a scroll panel
-		graphPanel = new GrapherPanel(graphSamples, null, e.gInfo) {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public Dimension getPreferredScrollableViewportSize() {
-				// -10s are for insets set below in the emptyBorder
-				int screenWidth = super.getPreferredScrollableViewportSize().width - (otherPanelDim.width + extraWidth);
-				int graphWidth = getGraphPixelWidth();
-				return new Dimension((graphWidth < screenWidth) ? graphWidth : screenWidth, otherPanelDim.height);
-			}
-		};
-
-		JScrollPane scroller = new JScrollPane(graphPanel,
-				ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
-				ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		
-		// make the default viewport background the same color as the graph
-		scroller.getViewport().setBackground(e.gInfo.getBackgroundColor());
-		
-		GraphActions actions = new GraphActions(graphPanel, null, new GraphController(graphPanel, scroller));
-		GraphToolbar toolbar = new GraphToolbar(actions);
-		
-		JPanel panel = new JPanel();
-		panel.setLayout(new BorderLayout());
-		panel.add(scroller, BorderLayout.CENTER);
-		panel.add(toolbar, BorderLayout.NORTH);
+		try{
+			graphPanel = new GrapherPanel(graphSamples, null, ed.gInfo) {
+				private static final long serialVersionUID = 1L;
+	
+				@Override
+				public Dimension getPreferredScrollableViewportSize() {
+					// -10s are for insets set below in the emptyBorder
+					int screenWidth = super.getPreferredScrollableViewportSize().width - (otherPanelDim.width + extraWidth);
+					int graphWidth = getGraphPixelWidth();
+					return new Dimension((graphWidth < screenWidth) ? graphWidth : screenWidth, otherPanelDim.height);
+				}
+			};
+			
+			JScrollPane scroller = new JScrollPane(graphPanel,
+					ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
+					ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+			
+	
+			
+			// make the default viewport background the same color as the graph
+			scroller.getViewport().setBackground(ed.gInfo.getBackgroundColor());
+			
+			GraphActions actions = new GraphActions(graphPanel, null, new GraphController(graphPanel, scroller));
+			GraphToolbar toolbar = new GraphToolbar(actions);
+			
+			JPanel panel = new JPanel();
+			panel.setLayout(new BorderLayout());
+			panel.add(scroller, BorderLayout.CENTER);
+			panel.add(toolbar, BorderLayout.NORTH);
 		
 		return panel;
+		
+		} catch (Exception e)
+		{
+			log.debug("Failed to create graph panel");
+			e.printStackTrace();
+		}
+
+		return new JPanel();
 	}
 
 	public void setPlotAgent(PlotAgent plotAgent) {

@@ -438,7 +438,12 @@ public class LiteEditor extends AbstractEditor implements SaveableDocument{
 					dataView.saveGraphDividerLocation();
 				}
 				
-				dataView = new SeriesDataMatrix(sample, this);
+				try {
+					dataView = new SeriesDataMatrix(sample, this);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				dataPanel.removeAll();
 				dataPanel.add(dataView, BorderLayout.CENTER);
 
