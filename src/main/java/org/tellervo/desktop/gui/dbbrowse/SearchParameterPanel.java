@@ -34,7 +34,7 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 	private final static String CHOOSE_ITEM = "Choose one...";
 
 	/** A sorted array of our search parameters */
-	private static SearchParameterNameEx[] paramsArray;
+	private ArrayList<SearchParameterNameEx> paramsList;
 	
 	/** A list of parameter prefixes, for sorting */
 	private static String paramPrefixes[] = {
@@ -72,9 +72,9 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 		
 		// If the parameters list hasn't been created,
 		// lazily do so
-		if(paramsArray == null) {
+		if(paramsList == null) {
 			
-			ArrayList<SearchParameterNameEx> paramsList = new ArrayList<SearchParameterNameEx>();
+			paramsList = new ArrayList<SearchParameterNameEx>();
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.ANYPARENTOBJECTCODE));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.OBJECTDESCRIPTION));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.OBJECTTITLE));
@@ -105,9 +105,10 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESFIRSTYEAR));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESVALUECOUNT));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESDATINGTYPE));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESCREATED));
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESLASTMODIFIED));
 
-
-			paramsArray = paramsList.toArray(new SearchParameterNameEx[paramsList.size()]);
+			Collections.sort(paramsList, new SearchParameterComparator());
 
 		}
 		
@@ -268,15 +269,12 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 	 */
 	private void setupContent() {
 		// set up the search parameter combo, default to "Choose..."
-		
-		ArrayList<SearchParameterNameEx> paramsArrayList = new ArrayList(Arrays.asList(paramsArray));
-		
-		Collections.sort(paramsArrayList);
-		ArrayListModel<SearchParameterNameEx> model = new ArrayListModel<SearchParameterNameEx>(paramsArrayList);
+			
+		ArrayListModel<SearchParameterNameEx> model = new ArrayListModel<SearchParameterNameEx>(paramsList);
 
 		cboSearchField.setModel(model);
 		cboSearchField.setSelectedItem(null);
-		AutoCompleteComboDocument.enable(cboSearchField);
+		//AutoCompleteComboDocument.enable(cboSearchField);
 		lastSearchParameter = null;
 		
 		// set up the search operator combo, default to '='
@@ -377,4 +375,7 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 	public void removeSearchParameterPropertyChangeListener(PropertyChangeListener listener) {
 		properties.removePropertyChangeListener(listener);
 	}
+	
+	
+	
 }

@@ -270,6 +270,8 @@
 			<xs:enumeration value="seriescount"/>
 			<xs:enumeration value="seriescode"/>
 			<xs:enumeration value="dependentseriesid"/>
+			<xs:enumeration value="seriescreated"/>
+			<xs:enumeration value="serieslastmodified"/>
 			
 			<!-- BOX ATTRIBUTES -->
 			<xs:enumeration value="boxid"/>

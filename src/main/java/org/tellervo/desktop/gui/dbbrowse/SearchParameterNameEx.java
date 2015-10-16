@@ -45,7 +45,10 @@ public class SearchParameterNameEx implements Comparable<SearchParameterNameEx>{
 		    (name.equals(SearchParameterName.ELEMENTWIDTH)) ||
 		    (name.equals(SearchParameterName.ELEMENTDEPTH)) ||
 		    (name.equals(SearchParameterName.SERIESFIRSTYEAR)) ||
-		    (name.equals(SearchParameterName.SERIESVALUECOUNT)) 
+		    (name.equals(SearchParameterName.SERIESCREATED)) ||
+		    (name.equals(SearchParameterName.SERIESLASTMODIFIED)) ||
+		    (name.equals(SearchParameterName.SERIESVALUECOUNT))
+		    
 		   )
 			return Integer.class;
 		
