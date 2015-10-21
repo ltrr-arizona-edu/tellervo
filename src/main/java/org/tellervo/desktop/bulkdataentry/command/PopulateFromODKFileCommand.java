@@ -246,8 +246,9 @@ public class PopulateFromODKFileCommand implements ICommand {
 			newrow.setProperty(SingleObjectModel.TYPE, DictionaryUtil.getControlledVocForName("Forest", "objectTypeDictionary"));
 
 		}
-		String comments = "Imported from ODK file: '"+ parser.getFile().getName()+"'. ";
-		if(parser.getFieldValueAsString("tridas_object_comments", "Comments")!=null) comments += parser.getFieldValueAsString("tridas_object_comments", "Comments");
+		String comments = "";
+		if(parser.getFieldValueAsString("tridas_object_comments", "Comments")!=null) comments += parser.getFieldValueAsString("tridas_object_comments", "Comments")+"; ";
+		comments += "Imported from ODK file: '"+ parser.getFile().getName()+"'. ";
 		newrow.setProperty(SingleObjectModel.COMMENTS, comments);
 		String description = parser.getFieldValueAsString("tridas_object_description");
 		if(parser.getFieldValueAsString("StandType")!=null) description += " "+parser.getFieldValueAsString("StandType");
