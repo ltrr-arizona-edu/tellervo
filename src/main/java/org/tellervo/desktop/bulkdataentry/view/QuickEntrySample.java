@@ -147,7 +147,7 @@ public class QuickEntrySample extends JDialog implements ActionListener, Propert
 		}
 		else if (event.getActionCommand().equals("Cancel"))
 		{
-			task.done();
+			if(task!=null) task.done();
 			this.dispose();
 		}
 	}
