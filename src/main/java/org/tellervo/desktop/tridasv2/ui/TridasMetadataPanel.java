@@ -671,8 +671,8 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 			
 			// on failure, just return
 			if(!dialog.isSuccessful()) {
-				JOptionPane.showMessageDialog(this, I18n.getText("error.savingChanges") + "\r\n" +
-						I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
+				JOptionPane.showMessageDialog(this, I18n.getText("error.savingChanges") + System.lineSeparator() +
+						dialog.getFailException().getLocalizedMessage(),
 						I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 				return;
 			}

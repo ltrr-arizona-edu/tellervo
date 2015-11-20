@@ -21,7 +21,12 @@
 package org.tellervo.desktop.tridasv2.ui;
 
 import java.awt.Color;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
+import jogamp.opengl.awt.Java2D;
+
+import org.tridas.schema.Date;
 import org.tridas.schema.TridasDating;
 
 public class TridasDatingCellRenderer extends DefaultCellRendererEx {
@@ -42,7 +47,23 @@ public class TridasDatingCellRenderer extends DefaultCellRendererEx {
 			
 			return dating.isSetType() ? dating.getType().value() : "Not present";
 		}
+		else if(value instanceof Date) {
+			Date date = (Date) value;
+			
+			Calendar calendar = date.getValue().toGregorianCalendar();
+			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+			formatter.setTimeZone(calendar.getTimeZone());
+			String dateString = formatter.format(calendar.getTime());
+			
+			return dateString;
+		}
+		else if(value instanceof java.util.Date) {
+			java.util.Date date = (java.util.Date) value;
+			
+			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+			return formatter.format(date);
 		
+		}
 		
 		
 		return super.convertToString(value);

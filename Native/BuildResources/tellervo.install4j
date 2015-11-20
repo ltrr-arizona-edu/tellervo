@@ -706,6 +706,7 @@
       <exclude>
         <entry location=".i4j_fileset_23" fileType="regular" />
         <entry location=".i4j_fileset_25" fileType="regular" />
+        <entry location=".i4j_fileset_29" fileType="regular" />
         <entry location=".i4j_fileset_31" fileType="regular" />
       </exclude>
       <variables>
@@ -784,7 +785,7 @@ rm /usr/share/pixmaps/tellervo-application.png</content>
       <topLevelFiles />
     </macos>
   </mediaSets>
-  <buildIds buildAll="true">
+  <buildIds buildAll="false">
     <mediaSet refId="88" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />

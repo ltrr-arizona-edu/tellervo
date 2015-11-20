@@ -50,17 +50,21 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
+import org.tellervo.desktop.tridasv2.ui.TridasDatingCellRenderer;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIBoxDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
+import org.tridas.schema.Date;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.gui.combo.MVCJComboBox;
 import com.dmurph.mvc.model.HashModel;
+import com.michaelbaranov.microba.calendar.DatePicker;
+import com.michaelbaranov.microba.calendar.DatePickerCellEditor;
 
 
 
@@ -177,9 +181,16 @@ public class SampleView  extends AbstractBulkImportView{
 		});
 		
 		obj.setRenderer(new TridasObjectExRenderer());
+	
 		
 		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(obj));
 		argTable.setDefaultRenderer(TridasObject.class, new TridasObjectExRenderer());
+		
+		DatePicker datePicker = new DatePicker();
+		datePicker.setFocusable(false);
+		argTable.setDefaultEditor(Date.class, new DateEditor(datePicker));
+		argTable.setDefaultRenderer(Date.class, new TridasDatingCellRenderer());
+
 	}
 
 	@Override

@@ -133,6 +133,8 @@ public class BasicDatePickerUI extends DatePickerUI implements
 		field.setFocusLostBehavior(peer.getFocusLostBehavior());
 		field.setEditable(peer.isFieldEditable());
 		field.setToolTipText(peer.getToolTipText());
+		field.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+		
 		// button
 		button = new JButton();
 		button.setFocusable(false);
@@ -190,7 +192,7 @@ public class BasicDatePickerUI extends DatePickerUI implements
 			button.setText("...");
 			button.setIcon(null);
 		} else {
-			field.setBorder(new JTextField().getBorder());
+			field.setBorder(BorderFactory.createEmptyBorder());
 			button.setText("");
 			button.setIcon(new ImageIcon(Resource.class
 					.getResource("picker-16.png")));

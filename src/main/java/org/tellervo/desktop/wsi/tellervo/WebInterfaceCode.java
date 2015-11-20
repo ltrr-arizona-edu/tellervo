@@ -29,6 +29,7 @@ package org.tellervo.desktop.wsi.tellervo;
 public enum WebInterfaceCode {
 	UNKNOWN(-1),
 	
+	GENERIC_SQL(002),
 	AUTHENTICATION_FAILED(101),
 	LOGIN_REQUIRED(102),
 	PERMISSION_DENIED(103),

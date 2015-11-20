@@ -283,7 +283,17 @@ public class TellervoResourceAccessDialog extends JDialog implements ResourceEve
 		return success;
 	}
 	
+	/**
+	 * Returns a sanitised user-friendly exception.  For raw database exception see getRawException()
+	 * 
+	 * @return
+	 */
 	public Exception getFailException() {
+		
+		return FriendlyExceptionTranslator.translate(failException);
+	}
+	
+	public Exception getRawException() {
 		return failException;
 	}
 	
