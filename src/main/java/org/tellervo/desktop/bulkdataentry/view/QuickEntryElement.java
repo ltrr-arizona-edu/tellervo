@@ -221,7 +221,8 @@ public class QuickEntryElement extends JDialog implements ActionListener, Proper
 	            
 	    		Integer firstElementCode = (Integer) spnFirstElementCode.getValue();
 	    		Integer numberOfElements = (Integer) spnNumberOfElements.getValue();
-	    			    		
+	    			    	
+	    		int j=1;
 	    		for(int i=firstElementCode; i<(firstElementCode+numberOfElements); i++)
 	    		{
 	    			 IBulkImportSingleRowModel element = model.createRowInstance();
@@ -233,9 +234,10 @@ public class QuickEntryElement extends JDialog implements ActionListener, Proper
 	    			model.getRows().add(element);
     				
 
-    				Double prg = (double) (((double)i/(double)numberOfElements)*100);
+    				Double prg = (double) (((double)j/(double)numberOfElements)*100);
     				
     				setProgress(prg.intValue());
+    				j++;
 	    		}
 	            
 	       
