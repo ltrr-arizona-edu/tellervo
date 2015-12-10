@@ -24,13 +24,18 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.I18n;
+import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.NormalTridasUnit;
 
 
 /**
@@ -224,10 +229,57 @@ public class TwoColumn implements Filetype {
         
         boolean hasCount = s.hasCount();
 
-        for (int i=0; i<s.getRingWidthData().size(); i++) {
-            w.write(y + "\t" + s.getRingWidthData().get(i));
+        List<Number> data = s.getRingWidthData();
+        
+        NormalTridasUnit displayUnits;
+		try{
+			String strunit = App.prefs.getPref(PrefKey.DISPLAY_UNITS, NormalTridasUnit.MICROMETRES.name().toString());
+			displayUnits = TridasUtils.getUnitFromName(strunit);
+		} catch (Exception e)
+		{
+			displayUnits = NormalTridasUnit.MICROMETRES;
+		}
+		
+		
+        
+        for (int i=0; i<data.size(); i++) {
+            
+        	Number val = data.get(i);
+        	
+        	if (displayUnits.equals(NormalTridasUnit.MILLIMETRES))
+			{
+				val = Math.round(val.doubleValue() / 1000);
+			}
+			else if (displayUnits.equals(NormalTridasUnit.TENTH_MM))
+			{
+				val = Math.round(val.doubleValue() / 100);
+			}
+			else if (displayUnits.equals(NormalTridasUnit.TWENTIETH_MM))
+			{
+				val = Math.round(val.doubleValue() / 50);
+			}
+			else if (displayUnits.equals(NormalTridasUnit.FIFTIETH_MM))
+			{
+				val = Math.round(val.doubleValue() / 20);
+			}
+			else if (displayUnits.equals(NormalTridasUnit.HUNDREDTH_MM))
+			{
+				val = Math.round(val.doubleValue() / 10);
+			}
+			else if (displayUnits.equals(NormalTridasUnit.MICROMETRES))
+			{
+				// do nothing as microns is the internal default units
+			}
+			else
+			{
+				System.out.println("Unsupported display units. Ignoring and defaulting to microns");
+			}
+        	w.write(y + "\t" + val);
+            
+            
+            
             if (hasCount && incCount)
-                w.write("\t" + s.getCount().get(i));
+                w.write("\t" + data.get(i));
             w.newLine();
 
             y = y.add(+1);

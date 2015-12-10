@@ -16,6 +16,7 @@ import javax.swing.JTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.editor.CopyDialog;
 import org.tellervo.desktop.editor.DecadalModel;
@@ -23,6 +24,7 @@ import org.tellervo.desktop.editor.TableCoords;
 import org.tellervo.desktop.editor.UnitAwareDecadalModel;
 import org.tellervo.desktop.io.TwoColumn;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.PureStringWriter;
@@ -62,7 +64,11 @@ public class EditPasteAction extends AbstractAction {
 		
 		ArrayList<Integer> values = getValuesFromClipboard();
 		
-		if(values==null || values.size()==0) return;
+		if(values==null || values.size()==0) {
+			
+			Alert.message(App.mainWindow, "Paste failed", "Paste failed.  Check the data you are pasting is a column list of integers");
+			return;
+		}
 		
 		
 		for(Integer value : values)
@@ -74,6 +80,7 @@ public class EditPasteAction extends AbstractAction {
 			else
 			{
 				log.error("Failed");
+				Alert.message(App.mainWindow, "Paste failed", "Paste failed.  Check the data you are pasting is a column list of integers");
 				return;
 			}
 			
