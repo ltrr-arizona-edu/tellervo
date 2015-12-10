@@ -147,7 +147,7 @@ public class DecadalKeyListener extends KeyAdapter {
 
 		
 		// just ignore any modifiers that aren't shift		
-		if(e.isControlDown() || e.isAltDown()) { e.consume(); return;}
+		if(e.isControlDown() || e.isAltDown()) { return;}
 				
 		switch (e.getKeyCode()) {
 		case KeyEvent.VK_ESCAPE:

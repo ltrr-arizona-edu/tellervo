@@ -13,6 +13,7 @@ import org.tellervo.desktop.editor.CopyDialog;
 import org.tellervo.desktop.io.TwoColumn;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
+import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.PureStringWriter;
 import org.tellervo.desktop.util.TextClipboard;
 
@@ -24,8 +25,8 @@ public class EditCopyAction extends AbstractAction {
 	public EditCopyAction(AbstractEditor editor) {
         super("Copy", Builder.getIcon("editcopy.png", 22));
 		putValue(SHORT_DESCRIPTION, "Copy");
-        //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.new")); 
-        //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.new"));
+        putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.edit.copy")); 
+        putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.edit.copy"));
 
 		this.editor = editor;
 		
@@ -34,10 +35,15 @@ public class EditCopyAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		
+		doCopy();
+		
+	}
+	
+	public void doCopy()
+	{
 		CopyDialog d = new CopyDialog(editor, editor.getSample().getRange());
 		if(d.isOk())
 			TextClipboard.copy(asTwoColumn(d.getChosenRange(), editor.getSample()));
-		
 	}
 
 	
@@ -56,7 +62,7 @@ public class EditCopyAction extends AbstractAction {
 			int estimatedLength = 10 * tmpSample.getRingWidthData().size();
 			PureStringWriter w = new PureStringWriter(estimatedLength);
 			BufferedWriter b = new BufferedWriter(w);
-			new TwoColumn().save(tmpSample, b);
+			new TwoColumn().save(tmpSample, b, false);
 			b.close();
 			return w.toString();
 		} catch (IOException ioe) {

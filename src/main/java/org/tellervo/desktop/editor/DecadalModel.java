@@ -596,4 +596,24 @@ public abstract class DecadalModel extends AbstractTableModel {
 	public Double getUnitMultiplier() {
 		return unitMultiplier;
 	}
+	
+	public TableCoords getCoordsOfNextCell(int row, int col)
+	{
+		int newcol;
+		int newrow;
+		
+		if(col<=9)
+		{
+			newcol = col+1;
+			newrow = row;
+		}
+		else
+		{
+			newcol = 1;
+			newrow = row+1;
+		}
+		
+		return new TableCoords(newrow,newcol);
+		
+	}
 }

@@ -44,6 +44,7 @@ import org.tellervo.desktop.gui.menus.actions.EditMeasureEWLWWidthsModeAction;
 import org.tellervo.desktop.gui.menus.actions.EditMeasureModeAction;
 import org.tellervo.desktop.gui.menus.actions.EditMeasureRingWidthsModeAction;
 import org.tellervo.desktop.gui.menus.actions.EditMeasureToggleAction;
+import org.tellervo.desktop.gui.menus.actions.EditPasteAction;
 import org.tellervo.desktop.gui.menus.actions.EditPreferencesAction;
 import org.tellervo.desktop.gui.menus.actions.EditSelectAllAction;
 import org.tellervo.desktop.gui.menus.actions.FileBulkDataEntryAction;
@@ -116,6 +117,7 @@ public abstract class AbstractEditorActions{
 	public Action editMeasureEWLWWidthsModeAction;
 	public Action editInitGridAction;
 	public Action editCopyAction;
+	public Action editPasteAction;
 	public Action editSelectAllAction;
 	public Action editInsertYearPushForwardsAction;
 	public Action editInsertYearPushBackwardsAction;
@@ -208,6 +210,7 @@ public abstract class AbstractEditorActions{
 
 		fileExitAction = new FileExitAction(editor);
 		editCopyAction = new EditCopyAction(editor);
+		editPasteAction = new EditPasteAction(editor);
 		editSelectAllAction = new EditSelectAllAction(editor);
 		editInsertYearPushForwardsAction = new EditInsertYearPushForwardsAction(editor);
 		editInsertYearPushBackwardsAction = new EditInsertYearPushBackwardsAction(editor);
@@ -297,11 +300,13 @@ public abstract class AbstractEditorActions{
 	protected abstract void setMenusForNetworkStatus();
 	
 	protected abstract void setMenusForSample();
+	
 	private void setSharedMenusForSample()
 	{
 		this.fileSaveAction.setEnabled(this.currentSample!=null);
 	
 		this.editCopyAction.setEnabled(this.currentSample!=null);
+		this.editPasteAction.setEnabled(this.currentSample!=null);
 		this.editDeleteAction.setEnabled(this.currentSample!=null);
 		this.editInitGridAction.setEnabled(this.currentSample!=null);
 		this.editInsertMissingRingPushBackwardsAction.setEnabled(this.currentSample!=null);

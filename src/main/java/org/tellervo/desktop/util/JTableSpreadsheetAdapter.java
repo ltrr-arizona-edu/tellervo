@@ -231,7 +231,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
         int startCol=(mainTable.getSelectedColumns())[0];
         try
         {
-        	log.debug("Clipboard contents: "+system.getName());
+           log.debug("Clipboard contents: "+system.getName());
            String trstring= (String)(system.getContents(this).getTransferData(DataFlavor.stringFlavor));
            System.out.println("String is:"+trstring);
            StringTokenizer st1=new StringTokenizer(trstring,"\n");

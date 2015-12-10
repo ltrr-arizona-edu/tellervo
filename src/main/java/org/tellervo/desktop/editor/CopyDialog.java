@@ -5,12 +5,15 @@ package org.tellervo.desktop.editor;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.util.Center;
+
+import net.miginfocom.swing.MigLayout;
 
 
 
@@ -22,9 +25,12 @@ public class CopyDialog extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	boolean cancelled = true;
-	private JTextField start, end;
+	private JTextField txtStartRange, txtEndRange;
 	private Range range;
 	private Range completedRange;
+	private JLabel lblCopyFrom;
+	private JLabel lblTo;
+	private JCheckBox chkAllYears;
 	
 	public Range getChosenRange() {
 		return completedRange;
@@ -40,23 +46,42 @@ public class CopyDialog extends JDialog {
 		range = sampleRange;
 		setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 		
-		setLayout(new BorderLayout());
+		getContentPane().setLayout(new BorderLayout());
 		
-		start = new JTextField(range.getStart().toString());
-		end = new JTextField(range.getEnd().toString());
+		txtStartRange = new JTextField(range.getStart().toString());
+		txtStartRange.setEnabled(false);
 		JLabel label;
 		
-		JPanel center = new JPanel(new GridLayout(2, 2));
-		label = new JLabel("Start year");
-		center.add(label);
-		center.add(start);
-		label = new JLabel("End year");
-		center.add(label);
-		center.add(end);
+		JPanel center = new JPanel();
+		center.setLayout(new MigLayout("", "[77px,right][grow][][grow]", "[][19px]"));
 		
-		center.setBorder(BorderFactory.createTitledBorder("Copy range"));
+		chkAllYears = new JCheckBox("All years");
+		chkAllYears.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				setGui();
+				
+			}
+
+			
+		});
+		chkAllYears.setSelected(true);
+		center.add(chkAllYears, "cell 1 0 3 1");
+		lblCopyFrom = new JLabel("From:");
+		lblCopyFrom.setEnabled(false);
+		center.add(lblCopyFrom, "cell 0 1,alignx right,growy");
+		center.add(txtStartRange, "cell 1 1,grow");
+		lblTo = new JLabel("to");
+		lblTo.setEnabled(false);
+		center.add(lblTo, "cell 2 1,grow");
+		txtEndRange = new JTextField(range.getEnd().toString());
+		txtEndRange.setEnabled(false);
+		center.add(txtEndRange, "cell 3 1,grow");
 		
-		add(center, BorderLayout.CENTER);
+		center.setBorder(BorderFactory.createTitledBorder("Copy measurements"));
+		
+		getContentPane().add(center, BorderLayout.CENTER);
 				
 		JPanel south = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
@@ -66,7 +91,7 @@ public class CopyDialog extends JDialog {
 				Year ybeg, yend;
 				
 				try {
-					ybeg = new Year(Integer.parseInt(start.getText()));
+					ybeg = new Year(Integer.parseInt(txtStartRange.getText()));
 				} catch (NumberFormatException nfe) {
 					Alert.error("Can't copy", "Invalid start range is not a number!");
 					return;
@@ -78,7 +103,7 @@ public class CopyDialog extends JDialog {
 				}
 				
 				try {
-					yend = new Year(Integer.parseInt(end.getText()));
+					yend = new Year(Integer.parseInt(txtEndRange.getText()));
 				} catch (NumberFormatException nfe) {
 					Alert.error("Can't copy", "Invalid end of range is not a number!");
 					return;
@@ -108,10 +133,19 @@ public class CopyDialog extends JDialog {
 		});
 		south.add(cancel);		
 		
-		add(south, BorderLayout.SOUTH);
+		getContentPane().add(south, BorderLayout.SOUTH);
 		
 		pack();
 		Center.center(this, parent);
 		setVisible(true);
 	}
+	
+	private void setGui()
+	{
+		lblCopyFrom.setEnabled(!chkAllYears.isSelected());
+		lblTo.setEnabled(!chkAllYears.isSelected());
+		txtStartRange.setEnabled(!chkAllYears.isSelected());
+		txtEndRange.setEnabled(!chkAllYears.isSelected());
+	}
+
 }

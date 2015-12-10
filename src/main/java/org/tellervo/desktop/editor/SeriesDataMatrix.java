@@ -112,7 +112,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	private EditorStatusBar statusBar;
 	public JTable myTable;
 
-	protected TableModel myModel;
+	protected UnitAwareDecadalModel myModel;
 		
 	protected ModifiableTableCellRenderer myCellRenderer;
 	protected JSplitPane splitPaneTableAndRemarks;
@@ -229,6 +229,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 		// Setup table
 		myTable = new JTable(myModel); 
+			
 		((DefaultTableCellRenderer)myTable.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(JLabel.RIGHT);
 		myTable.setGridColor(new Color(240, 240, 240)); 
 		myTable.addMouseListener(new MouseListener() {
@@ -347,6 +348,8 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		splitPaneTableAndGraph.setDividerLocation(1.0d);
 		splitPaneTableAndGraph.setOneTouchExpandable(true);
 		
+		
+		new SeriesDataMatrixSpreadsheetAdapter(this, ed);
 	}
 	
 
@@ -452,6 +455,12 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	protected JPopupMenu createPopupMenu(int row, int col) {
 		
 		JPopupMenu popup = new JPopupMenu();
+		
+		JMenuItem miCopy = new JMenuItem(ed.actions.editCopyAction);
+		popup.add(miCopy);
+		
+		JMenuItem miPaste = new JMenuItem(ed.actions.editPasteAction);
+		popup.add(miPaste);
 		
 		JMenuItem redate = new JMenuItem("Redate series");
 		redate.setIcon(Builder.getIcon("redate.png", 22));

@@ -152,6 +152,9 @@ public class FullEditorMenuBar extends EditorMenuBar{
 
 		JMenuItem miCopy = new JMenuItem(actions.editCopyAction);
 		mnEdit.add(miCopy);
+		
+		JMenuItem miPaste = new JMenuItem(actions.editPasteAction);
+		mnEdit.add(miPaste);
 
 		mnEdit.addSeparator();
 

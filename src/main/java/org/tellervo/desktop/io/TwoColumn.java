@@ -218,18 +218,26 @@ public class TwoColumn implements Filetype {
 	}
     }
     
-    public void save(Sample s, BufferedWriter w) throws IOException {
+    public void save(Sample s, BufferedWriter w, boolean incCount) throws IOException {
         Year y = s.getRange().getStart();
+        
+        
         boolean hasCount = s.hasCount();
 
         for (int i=0; i<s.getRingWidthData().size(); i++) {
             w.write(y + "\t" + s.getRingWidthData().get(i));
-            if (hasCount)
+            if (hasCount && incCount)
                 w.write("\t" + s.getCount().get(i));
             w.newLine();
 
             y = y.add(+1);
         }
+    }
+    
+    public void save(Sample s, BufferedWriter w) throws IOException {
+    
+    	save(s,w,true);
+    
     }
 
 	public Boolean isPackedFileCapable() {

@@ -72,11 +72,11 @@ public class PopulateEditorDialog extends JDialog implements ActionListener{
 		
 		setTitle(I18n.getText("menus.edit.populateditor"));
 		setModal(true);
-		setBounds(100, 100, 364, 162);
+		setBounds(100, 100, 364, 269);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(new MigLayout("", "[][74.00,left][][67.00][grow]", "[][][][grow,fill]"));
+		contentPanel.setLayout(new MigLayout("", "[right][74.00,left][][67.00][grow]", "[][][][grow,fill]"));
 		{
 			JLabel lblFirstYear = new JLabel("Years:");
 			contentPanel.add(lblFirstYear, "cell 0 0,alignx right");
