@@ -38,6 +38,7 @@ import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
 import org.tridas.util.TridasObjectEx;
 
@@ -69,10 +70,10 @@ public class ImportSelectedElementsCommand implements ICommand {
 		HashSet<String> requiredMessages = new HashSet<String>();
 		ArrayList<IBulkImportSingleRowModel> incompleteModels = new ArrayList<IBulkImportSingleRowModel>();
 		
-		HashSet<String> titles = new HashSet<String>();
 		HashSet<String> definedProps = new HashSet<String>();
 		for(IBulkImportSingleRowModel som : selected){
 			
+
 			definedProps.clear();
 			for(String s : SingleElementModel.TABLE_PROPERTIES){
 				if(som.getProperty(s) != null){
@@ -103,20 +104,12 @@ public class ImportSelectedElementsCommand implements ICommand {
 			if(!definedProps.contains(SingleElementModel.TITLE)){
 				requiredMessages.add("Element must have a title");
 				incomplete = true;
-			}else{
-				String title = (String) som.getProperty(SingleElementModel.TITLE);
-				if(titles.contains(title)){
-					requiredMessages.add("Elements cannot have duplicate titles '"+title+"'.");
-					incomplete = true;
-				}else{
-					titles.add(title);
-				}
 			}
 			
 			// lat/long
 			if(definedProps.contains(SingleElementModel.LATITUDE) || definedProps.contains(SingleElementModel.LONGITUDE)){
 				if(!definedProps.contains(SingleElementModel.LATITUDE) || !definedProps.contains(SingleElementModel.LONGITUDE)){
-					requiredMessages.add("Element cannot have either a latitude or a longitude.  Both or none must be provided");
+					requiredMessages.add("If coordinates are specified then both latitude and longitude are required");
 					incomplete = true;
 				}else{
 					String attempt = som.getProperty(SingleElementModel.LATITUDE).toString().trim();
@@ -136,6 +129,37 @@ public class ImportSelectedElementsCommand implements ICommand {
 				}
 			}
 			
+			if(definedProps.contains(SingleElementModel.HEIGHT) || 
+					definedProps.contains(SingleElementModel.WIDTH) || 
+					definedProps.contains(SingleElementModel.DEPTH) || 
+					definedProps.contains(SingleElementModel.DIAMETER))
+			{
+				if (!definedProps.contains(SingleElementModel.UNIT))
+				{
+					requiredMessages.add("Units must be specified when dimensions are included");
+					incomplete = true;
+				}
+				
+				if ((definedProps.contains(SingleElementModel.HEIGHT) 
+						&& definedProps.contains(SingleElementModel.DIAMETER) 
+						&& !definedProps.contains(SingleElementModel.WIDTH) 
+						&& !definedProps.contains(SingleElementModel.DEPTH)))
+				{
+					// h+diam but not width or depth
+				}
+				else if ((definedProps.contains(SingleElementModel.HEIGHT) 
+						&& definedProps.contains(SingleElementModel.WIDTH) 
+						&& definedProps.contains(SingleElementModel.DEPTH) 
+						&& !definedProps.contains(SingleElementModel.DIAMETER)))
+				{
+					// h+w+d but not diam
+				}
+				else
+				{
+					requiredMessages.add("When dimensions are included they must be: height/width/depth or height/diameter.");
+					incomplete = true;
+				}
+			}
 			
 			if(incomplete){
 				incompleteModels.add(som);
@@ -146,13 +170,16 @@ public class ImportSelectedElementsCommand implements ICommand {
 			StringBuilder message = new StringBuilder();
 			message.append("Please correct the following errors:\n");
 			message.append(StringUtils.join(requiredMessages.toArray(), "\n"));
-			JOptionPane.showConfirmDialog(model.getMainView(), message.toString(), "Importing Errors", JOptionPane.OK_OPTION);
+			JOptionPane.showMessageDialog(model.getMainView(), message.toString(), "Importing Errors", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		
 		// now we actually create the models
-		int i=0;
-		for(IBulkImportSingleRowModel srm : selected){
+		int i=-1;
+		boolean hideErrorMessage=false;
+		for(IBulkImportSingleRowModel srm : selected)
+		{
+			i++;
 			SingleElementModel som = (SingleElementModel) srm;
 			TridasElement origElement = new TridasElement();
 			
@@ -180,10 +207,52 @@ public class ImportSelectedElementsCommand implements ICommand {
 			dialog.setVisible(true);
 			
 			if(!dialog.isSuccessful()) { 
-				JOptionPane.showMessageDialog(BulkImportModel.getInstance().getMainView(), I18n.getText("error.savingChanges") + "\r\n" +
-						I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
-						I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
-				continue;
+				
+				if(hideErrorMessage)
+				{
+					continue;
+				}
+				else if(i<selected.size()-1)
+				{
+					// More records remain
+					Object[] options = {"Yes",
+							"Yes, but hide further messages",
+		                    "No"};
+					int result = JOptionPane.showOptionDialog(BulkImportModel.getInstance().getMainView(), //parent
+							I18n.getText("error.savingChanges") + ":" +System.lineSeparator()+ // message
+							dialog.getFailException().getLocalizedMessage() + System.lineSeparator()+ System.lineSeparator()+
+							"Would you like to continue importing the remaining records?",
+							I18n.getText("error"), // title 
+							JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.ERROR_MESSAGE,
+							null,
+							options,
+							options[0]);
+					
+					if(result==JOptionPane.NO_OPTION)
+					{
+						hideErrorMessage=true;
+						continue;
+					}
+					else if ( result==JOptionPane.YES_OPTION)
+					{
+						continue;
+					}
+					else
+					{
+						break;
+					}
+				}
+				else
+				{
+					JOptionPane.showMessageDialog(BulkImportModel.getInstance().getMainView(), //parent
+							I18n.getText("error.savingChanges")+":" +System.lineSeparator()+ // message
+							dialog.getFailException().getLocalizedMessage(),
+							I18n.getText("error"), // title 
+							JOptionPane.ERROR_MESSAGE); //option
+					
+					break;
+				}
 			}
 			som.populateFromTridasElement(resource.getAssociatedResult());
 			som.setDirty(false);
@@ -207,11 +276,17 @@ public class ImportSelectedElementsCommand implements ICommand {
 			else{
 				model.getElementModel().getImportedList().add(resource.getAssociatedResult());
 			}
+			
 		}
-		i++;
+		
 //		
 //		// finally, update the combo boxes in the table to the new options
 //		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(emodel.getImportedDynamicComboBoxKey(), emodel.getImportedListStrings());
 //		event.dispatch();
+		
+		tmodel.fireTableDataChanged();
 	}
+	
+	
+	
 }

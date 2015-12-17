@@ -114,7 +114,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			// lat/long
 			if(definedProps.contains(SingleObjectModel.LATITUDE) || definedProps.contains(SingleObjectModel.LONGITUDE)){
 				if(!definedProps.contains(SingleObjectModel.LATITUDE) || !definedProps.contains(SingleObjectModel.LONGITUDE)){
-					requiredMessages.add("Object cannot have either a latitude or a longitude.  Both or none must be provided");
+					requiredMessages.add("If coordinates are specified then both latitude and longitude are required");
 					incomplete = true;
 				}
 			}
@@ -129,7 +129,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			StringBuilder message = new StringBuilder();
 			message.append("Please correct the following errors:\n");
 			message.append(StringUtils.join(requiredMessages.toArray(), "\n"));
-			JOptionPane.showConfirmDialog(model.getMainView(), message.toString());
+			JOptionPane.showMessageDialog(model.getMainView(), message.toString());
 			return;
 		}
 		

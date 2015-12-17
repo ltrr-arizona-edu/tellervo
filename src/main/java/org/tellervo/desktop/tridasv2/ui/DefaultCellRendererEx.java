@@ -40,17 +40,17 @@ public class DefaultCellRendererEx
 
 	private ObjectRenderer objectRenderer = new DefaultObjectRenderer();
 
-	private Color oddBackgroundColor = Color.WHITE;
-	private Color evenBackgroundColor = Color.GRAY;
+	//private Color oddBackgroundColor = Color.WHITE;
+	//private Color evenBackgroundColor = Color.WHITE;
   private boolean showOddAndEvenRows = true;
 	
-	public void setOddBackgroundColor(Color c) {
+	/*public void setOddBackgroundColor(Color c) {
 	  oddBackgroundColor = c;
 	}
 	
 	public void setEvenBackgroundColor(Color c) {
 	  evenBackgroundColor = c;
-	}
+	}*/
 	
 	public void setShowOddAndEvenRows(boolean b) {
 	  showOddAndEvenRows = b;
@@ -89,13 +89,13 @@ public class DefaultCellRendererEx
 			row,
 			column);
 
-		if (showOddAndEvenRows && !isSelected) {
+		/*if (showOddAndEvenRows && !isSelected) {
 		  if (row % 2 == 0) {
 		    setBackground(oddBackgroundColor);
 		  } else {
 		    setBackground(evenBackgroundColor);
 		  }
-		}
+		}*/
 		
     setValue(value);
     

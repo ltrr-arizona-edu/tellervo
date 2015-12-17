@@ -55,8 +55,8 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		super();
 		
 		TridasYearDateTimeCellRenderer myRenderer = new TridasYearDateTimeCellRenderer(false);
-		myRenderer.setOddBackgroundColor(Color.WHITE);
-		myRenderer.setEvenBackgroundColor(Color.LIGHT_GRAY);
+		//myRenderer.setOddBackgroundColor(Color.WHITE);
+		//myRenderer.setEvenBackgroundColor(Color.LIGHT_GRAY);
 		
 		super.registerRenderer(Date.class, myRenderer);
 		super.registerRenderer(DateTime.class, myRenderer);

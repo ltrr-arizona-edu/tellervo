@@ -272,224 +272,160 @@ public class JTableSpreadsheetAdapter implements ActionListener
 					
 					Class clazz = tablemodel.getColumnClass(startCol+j);
 					
-					if(clazz.equals(WSIObjectTypeDictionary.class))
+					if(value==null || value.toLowerCase().equals("null") || value.equals(" ") || value.equals(""))
 					{
-						if(value!=null && value.toLowerCase()!="null")
-						{
-							List<ControlledVoc> types = Dictionary.getMutableDictionary("objectTypeDictionary");
-							Boolean match = false;
-							for(ControlledVoc cvoc : types)
-							{
-								if(cvoc.getNormal().equals(value)) {
-					                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
-									tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
-									match = true;
-								}
-							}
-							if(match==false) {
-								System.out.println("Error in WSIObjectTypeDictionary");
-								errorsEncountered = true;
-							}
-						}
-						else
-						{
-							tablemodel.setValueAt(null,rowIndex,startCol+j);
-						}
+						log.debug("Value was '"+value+"' so setting cell to null");
 						
+						tablemodel.setValueAt(null,rowIndex,startCol+j);
+					}
+					else if(clazz.equals(WSIObjectTypeDictionary.class))
+					{
+						List<ControlledVoc> types = Dictionary.getMutableDictionary("objectTypeDictionary");
+						Boolean match = false;
+						for(ControlledVoc cvoc : types)
+						{
+							if(cvoc.getNormal().equals(value)) {
+				                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
+								tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
+								match = true;
+							}
+						}
+						if(match==false) {
+							System.out.println("Error in WSIObjectTypeDictionary");
+							errorsEncountered = true;
+						}
+											
 					}
 					else if(clazz.equals(WSIElementTypeDictionary.class))
 					{
-						if(value!=null && value.toLowerCase()!="null")
+						List<ControlledVoc> types = Dictionary.getMutableDictionary("elementTypeDictionary");
+						Boolean match = false;
+						for(ControlledVoc cvoc : types)
 						{
-							List<ControlledVoc> types = Dictionary.getMutableDictionary("elementTypeDictionary");
-							Boolean match = false;
-							for(ControlledVoc cvoc : types)
-							{
-								if(cvoc.getNormal().equals(value)) {
-					                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
-									tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
-									match = true;
-								}
-							}
-							if(match==false) {
-								System.out.println("Error in WSIElementTypeDictionary");
-								errorsEncountered = true;
+							if(cvoc.getNormal().equals(value)) {
+				                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
+								tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
+								match = true;
 							}
 						}
-						else
-						{
-							tablemodel.setValueAt(null,rowIndex,startCol+j);
-						}
-						
+						if(match==false) {
+							System.out.println("Error in WSIElementTypeDictionary");
+							errorsEncountered = true;
+						}						
 					}
 					else if(clazz.equals(WSISampleTypeDictionary.class))
 					{
-						if(value!=null && value.toLowerCase()!="null")
+						List<ControlledVoc> types = Dictionary.getMutableDictionary("sampleTypeDictionary");
+						Boolean match = false;
+						for(ControlledVoc cvoc : types)
 						{
-							List<ControlledVoc> types = Dictionary.getMutableDictionary("sampleTypeDictionary");
-							Boolean match = false;
-							for(ControlledVoc cvoc : types)
-							{
-								if(cvoc.getNormal().equals(value)) {
-					                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
-									tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
-									match = true;
-								}
-							}
-							if(match==false) {
-								System.out.println("Error in WSISampleTypeDictionary");
-								errorsEncountered = true;
+							if(cvoc.getNormal().equals(value)) {
+				                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
+								tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
+								match = true;
 							}
 						}
-						else
-						{
-							tablemodel.setValueAt(null,rowIndex,startCol+j);
-						}
-						
+						if(match==false) {
+							System.out.println("Error in WSISampleTypeDictionary");
+							errorsEncountered = true;
+						}						
 					}
 					else if(clazz.equals(WSIBoxDictionary.class))
 					{
-						if(value!=null && value.toLowerCase()!="null")
+						List<ControlledVoc> types = Dictionary.getMutableDictionary("boxDictionary");
+						Boolean match = false;
+						for(ControlledVoc cvoc : types)
 						{
-							List<ControlledVoc> types = Dictionary.getMutableDictionary("boxDictionary");
-							Boolean match = false;
-							for(ControlledVoc cvoc : types)
-							{
-								if(cvoc.getNormal().equals(value)) {
-					                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
-									tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
-									match = true;
-								}
-							}
-							if(match==false) {
-								System.out.println("Error in WSIBoxDictionary");
-								errorsEncountered = true;
+							if(cvoc.getNormal().equals(value)) {
+				                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
+								tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
+								match = true;
 							}
 						}
-						else
-						{
-							tablemodel.setValueAt(null,rowIndex,startCol+j);
-						}
-						
+						if(match==false) {
+							System.out.println("Error in WSIBoxDictionary");
+							errorsEncountered = true;
+						}						
 					}
 					else if(clazz.equals(WSITaxonDictionary.class))
 					{
-						if(value!=null && value.toLowerCase()!="null")
+						List<ControlledVoc> types = Dictionary.getMutableDictionary("taxonDictionary");
+						Boolean match = false;
+						for(ControlledVoc cvoc : types)
 						{
-							List<ControlledVoc> types = Dictionary.getMutableDictionary("taxonDictionary");
-							Boolean match = false;
-							for(ControlledVoc cvoc : types)
-							{
-								if(cvoc.getNormal().equals(value)) {
-					                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
-									tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
-									match = true;
-								}
-							}
-							if(match==false) {
-								System.out.println("Error in WSITaxonDictionary");
-								errorsEncountered = true;
+							if(cvoc.getNormal().equals(value)) {
+				                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
+								tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
+								match = true;
 							}
 						}
-						else
-						{
-							//tablemodel.setValueAt(null,rowIndex,startCol+j);
-						}
-						
+						if(match==false) {
+							System.out.println("Error in WSITaxonDictionary");
+							errorsEncountered = true;
+						}						
 					}
 					else if(clazz.equals(TridasShape.class))
 					{
-						if(value!=null && value.toLowerCase()!="null")
+						NormalTridasShape[] types = NormalTridasShape.values();
+						Boolean match = false;
+						for(NormalTridasShape item : types)
 						{
-							NormalTridasShape[] types = NormalTridasShape.values();
-							Boolean match = false;
-							for(NormalTridasShape item : types)
-							{
-								if(item.value().equals(value)) {
-					                 
-									TridasShape shape = new TridasShape();
-									shape.setNormalTridas(item);
-									tablemodel.setValueAt(shape,rowIndex,startCol+j);
-									match = true;
-								}
-							}
-							if(match==false) {
-								System.out.println("Error in TridasShape");
-								errorsEncountered = true;
+							if(item.value().equals(value)) {
+				                 
+								TridasShape shape = new TridasShape();
+								shape.setNormalTridas(item);
+								tablemodel.setValueAt(shape,rowIndex,startCol+j);
+								match = true;
 							}
 						}
-						else
-						{
-							tablemodel.setValueAt(null,rowIndex,startCol+j);
-						}
-						
+						if(match==false) {
+							System.out.println("Error in TridasShape");
+							errorsEncountered = true;
+						}						
 					}
 					else if(clazz.equals(TridasUnit.class))
 					{
-						if(value!=null && value.toLowerCase()!="null")
+						NormalTridasUnit[] types = NormalTridasUnit.values();
+						Boolean match = false;
+						for(NormalTridasUnit item : types)
 						{
-							NormalTridasUnit[] types = NormalTridasUnit.values();
-							Boolean match = false;
-							for(NormalTridasUnit item : types)
-							{
-								if(item.value().equals(value)) {
-					                 
-									TridasUnit unit = new TridasUnit();
-									unit.setNormalTridas(item);
-									tablemodel.setValueAt(unit,rowIndex,startCol+j);
-									match = true;
-								}
-							}
-							if(match==false) {
-								System.out.println("Error in TridasShape");
-								errorsEncountered = true;
+							if(item.value().equals(value)) {
+				                 
+								TridasUnit unit = new TridasUnit();
+								unit.setNormalTridas(item);
+								tablemodel.setValueAt(unit,rowIndex,startCol+j);
+								match = true;
 							}
 						}
-						else
-						{
-							tablemodel.setValueAt(null,rowIndex,startCol+j);
-						}
-						
+						if(match==false) {
+							System.out.println("Error in TridasShape");
+							errorsEncountered = true;
+						}						
 					}
 					
 					else if (clazz.equals(TridasObject.class))
 					{
-						if(value!=null && value.toLowerCase()!="null")
+						List<TridasObjectEx> types = App.tridasObjects.getMutableObjectList();
+						Boolean match = false;
+						for(TridasObjectEx obj : types)
 						{
-							List<TridasObjectEx> types = App.tridasObjects.getMutableObjectList();
-							Boolean match = false;
-							for(TridasObjectEx obj : types)
-							{
-								if(obj.getLabCode().equals(value)) {
-					     
-									tablemodel.setValueAt(obj,rowIndex,startCol+j);
-									match = true;
-								}
-							}
-							if(match==false) {
-								System.out.println("Error in TridasObject");
-								errorsEncountered = true;
+							if(obj.getLabCode().equals(value)) {
+				     
+								tablemodel.setValueAt(obj,rowIndex,startCol+j);
+								match = true;
 							}
 						}
-						else
-						{
-							tablemodel.setValueAt(null,rowIndex,startCol+j);
+						if(match==false) {
+							System.out.println("Error in TridasObject");
+							errorsEncountered = true;
 						}
 					}
 					else if (clazz.equals(TridasElement.class))
 					{
-						
-						if(value!=null && value.toLowerCase()!="null")
-						{
-							TridasElement tempElement = new TridasElement();
-							tempElement.setTitle(value);
-			
-							tablemodel.setValueAt(tempElement,rowIndex,startCol+j);
-						}
-						else
-						{
-							tablemodel.setValueAt(null,rowIndex,startCol+j);
-						}
+						TridasElement tempElement = new TridasElement();
+						tempElement.setTitle(value);
+		
+						tablemodel.setValueAt(tempElement,rowIndex,startCol+j);
 					}
 					else if (clazz.equals(GPXWaypoint.class))
 					{
@@ -513,36 +449,33 @@ public class JTableSpreadsheetAdapter implements ActionListener
 					}
 					else if (clazz.equals(Double.class))
 					{
-						if(value!=null && !value.toLowerCase().equals("null"))
+						try{
+							log.debug("Parsing '"+value.toString()+"' to double");
+							double dbl = Double.parseDouble(value.toString());
+							log.debug("Value = "+dbl);
+							
+							tablemodel.setValueAt(dbl, rowIndex,startCol+j);
+						} catch (NumberFormatException e)
 						{
-							try{
-								tablemodel.setValueAt(Double.parseDouble(value),rowIndex,startCol+j);
-							} catch (NumberFormatException e)
-							{
-								System.out.println("Error in Double");
-								errorsEncountered = true;
-							}
-						}
-						else
-						{
-							tablemodel.setValueAt(null,rowIndex,startCol+j);
+							System.out.println("Error in Double");
+							errorsEncountered = true;
 						}
 					}
 					else if (clazz.equals(BigDecimal.class))
 					{
-						if(value!=null && !value.toLowerCase().equals("null"))
+						try{
+							log.debug("Parsing '"+value.toString()+"' to double");
+							double dbl = Double.parseDouble(value.toString());
+							log.debug("Double value = "+dbl);
+							BigDecimal bd = BigDecimal.valueOf(dbl);
+							log.debug("Parsing '"+dbl+"' to BigDecimal");
+							log.debug("BigDecimal value = "+bd);
+															
+							tablemodel.setValueAt(bd,rowIndex,startCol+j);
+						} catch (NumberFormatException e)
 						{
-							try{
-								tablemodel.setValueAt(new BigDecimal(Double.parseDouble(value)),rowIndex,startCol+j);
-							} catch (NumberFormatException e)
-							{
-								System.out.println("Error in Double");
-								errorsEncountered = true;
-							}
-						}
-						else
-						{
-							tablemodel.setValueAt(null,rowIndex,startCol+j);
+							System.out.println("Error in Double");
+							errorsEncountered = true;
 						}
 					}
 					else
@@ -563,7 +496,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							}
 						}
 					}
-	                 System.out.println("Putting "+ value+" at row="+rowIndex+"column="+startCol+j);
+	                 log.debug("Putting "+ value+" at row="+rowIndex+"column="+startCol+j);
+				}
+				else 
+				{
+					Alert.error("Too much data", "You attempted to paste more data into the table than there were cells. The remaining data has been discarded.");
+					break;
 				}
              }
           }

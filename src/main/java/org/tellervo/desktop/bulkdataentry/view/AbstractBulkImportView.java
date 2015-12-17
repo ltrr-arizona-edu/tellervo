@@ -404,8 +404,14 @@ public abstract class AbstractBulkImportView extends JPanel{
 				
 				log.debug("2. Table row count = " +table.getRowCount());
 				
-				table.setRowSelectionInterval(originalRowCount, originalRowCount);
-				table.setColumnSelectionInterval(0, 0);
+				try{
+					table.setRowSelectionInterval(originalRowCount, originalRowCount);
+					table.setColumnSelectionInterval(0, 0);
+				} catch (IllegalArgumentException ex)
+				{
+					log.error(ex.getLocalizedMessage());
+				}
+				
 				adapter.doPaste();	
 			}
 			

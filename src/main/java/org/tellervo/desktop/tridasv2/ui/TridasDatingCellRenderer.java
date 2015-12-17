@@ -34,7 +34,7 @@ public class TridasDatingCellRenderer extends DefaultCellRendererEx {
 
 	public TridasDatingCellRenderer()
 	{
-		super.setOddBackgroundColor(Color.WHITE);
+		//super.setOddBackgroundColor(Color.WHITE);
 		
 	}
 	
