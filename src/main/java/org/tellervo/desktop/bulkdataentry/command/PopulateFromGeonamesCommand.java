@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromGeonamesEvent;
 import org.tellervo.desktop.bulkdataentry.model.AbstractBulkImportTableModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
+import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
@@ -51,9 +52,9 @@ public class PopulateFromGeonamesCommand implements ICommand {
 	}
 	
 
-	private void populateElement(PopulateFromGeonamesEvent event)
+	/*private void populateElement(PopulateFromGeonamesEvent event)
 	{
-	/*	TridasEntityPickerDialog pickDialog = new TridasEntityPickerDialog();
+		TridasEntityPickerDialog pickDialog = new TridasEntityPickerDialog();
 		
 		TridasObject o = (TridasObject) pickDialog.pickSpecificEntity(null, "Pick Object", TridasObject.class);
 		
@@ -129,10 +130,201 @@ public class PopulateFromGeonamesCommand implements ICommand {
 			}
 		}
 		
-		*/
+		
+	}*/
+	
+	private void populateElement(PopulateFromGeonamesEvent event)
+	{
+		populateFromGeonames(event);
 	}
 	
 	private void populateObjects(PopulateFromGeonamesEvent event)
+	{
+		populateFromGeonames(event);
+	}
+	
+	
+	private void populateFromGeonames(PopulateFromGeonamesEvent event)
+	{
+				
+		MVCArrayList<IBulkImportSingleRowModel> rows = event.model.getRows();
+			
+		Double total = (double) rows.size();
+		ProgressPopup storedProgressDialog = null;
+		
+		try {
+			
+			ProgressPopupModel dialogModel = new ProgressPopupModel();
+			dialogModel.setCancelString(I18n.getText("io.convert.cancel"));
+			
+			final ProgressPopup progressDialog = new ProgressPopup(null, true, dialogModel);
+			storedProgressDialog = progressDialog;
+			// i have to do this in a different thread
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					progressDialog.setVisible(true);
+				}
+			});
+			while(!progressDialog.isVisible()){
+				Thread.sleep(100);
+			}
+		
+			int i =0;
+			for(IBulkImportSingleRowModel row :rows)
+			{
+				if(dialogModel.isCanceled()){
+					break;
+				}
+				
+				Double latitude = null;
+				Double longitude= null;
+				String country= null;
+				String city= null;
+				String countryProp = null;
+				String cityProp = null;
+				if (event.model instanceof ObjectModel)
+				{
+					latitude = (Double) row.getProperty(SingleObjectModel.LATITUDE);
+					longitude = (Double) row.getProperty(SingleObjectModel.LONGITUDE);
+					country = (String) row.getProperty(SingleObjectModel.COUNTRY);
+					city = (String) row.getProperty(SingleObjectModel.CITY_TOWN);
+					countryProp = SingleObjectModel.COUNTRY;
+					cityProp = SingleObjectModel.CITY_TOWN;
+				}
+				else if (event.model instanceof ElementModel)
+				{
+					latitude = (Double) row.getProperty(SingleElementModel.LATITUDE);
+					longitude = (Double) row.getProperty(SingleElementModel.LONGITUDE);
+					country = (String) row.getProperty(SingleElementModel.COUNTRY);
+					city = (String) row.getProperty(SingleElementModel.CITY_TOWN);
+					countryProp = SingleElementModel.COUNTRY;
+					cityProp = SingleElementModel.CITY_TOWN;
+				}
+
+				if(latitude!=null && longitude!=null)
+				{
+					
+					TridasLocation location = new TridasLocation();
+					location.setLocationGeometry(SpatialUtils.getWGS84LocationGeometry(latitude, longitude));
+										
+					TridasAddress address = GeonamesUtil.getAddressForLocation(location);
+
+					if(address!=null) 
+					{
+					
+						if(address.isSetCountry() && country==null )
+						{
+							log.debug("Setting country to :"+address.getCountry());
+							row.setProperty(countryProp, address.getCountry());
+						}
+						
+						if(address.isSetCityOrTown() && city==null )
+						{
+							log.debug("Setting city to :"+address.getCityOrTown());
+							row.setProperty(cityProp, address.getCityOrTown());
+						}	
+					}
+				}
+				
+
+				
+				i++;
+				
+				
+				Double percprog = (i / total)*100;
+				dialogModel.setPercent(percprog.intValue());
+			}
+		} catch (Exception ex) {
+			log.error("Exception thrown while converting", ex);
+			throw new RuntimeException(ex);
+		} finally {
+			
+			try{
+				storedProgressDialog.dispose();
+				
+			} catch (Exception e)
+			{
+				log.debug("Exception caught while disposing of progress dialog");
+			}
+			
+			if (storedProgressDialog != null) {
+				storedProgressDialog.setVisible(false);
+			}
+			
+			AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
+			otm.fireTableDataChanged();
+		}
+		
+		
+		try {
+			for(IBulkImportSingleRowModel row :rows)
+			{
+				Double latitude = null;
+				Double longitude= null;
+				String country= null;
+				String city= null;
+				String countryProp = null;
+				String cityProp = null;
+				if (event.model instanceof ObjectModel)
+				{
+					latitude = (Double) row.getProperty(SingleObjectModel.LATITUDE);
+					longitude = (Double) row.getProperty(SingleObjectModel.LONGITUDE);
+					country = (String) row.getProperty(SingleObjectModel.COUNTRY);
+					city = (String) row.getProperty(SingleObjectModel.CITY_TOWN);
+					countryProp = SingleObjectModel.COUNTRY;
+					cityProp = SingleObjectModel.CITY_TOWN;
+				}
+				else if (event.model instanceof ElementModel)
+				{
+					latitude = (Double) row.getProperty(SingleElementModel.LATITUDE);
+					longitude = (Double) row.getProperty(SingleElementModel.LONGITUDE);
+					country = (String) row.getProperty(SingleElementModel.COUNTRY);
+					city = (String) row.getProperty(SingleElementModel.CITY_TOWN);
+					countryProp = SingleElementModel.COUNTRY;
+					cityProp = SingleElementModel.CITY_TOWN;
+				}
+								
+				if(latitude!=null && longitude!=null)
+				{
+					
+					TridasLocation location = new TridasLocation();
+					location.setLocationGeometry(SpatialUtils.getWGS84LocationGeometry(latitude, longitude));
+										
+					TridasAddress address = GeonamesUtil.getAddressForLocation(location);
+
+					if(address==null) continue;
+					
+					if(address.isSetCountry() && country==null )
+					{
+						log.debug("Setting country to :"+address.getCountry());
+						row.setProperty(countryProp, address.getCountry());
+					}
+					
+					if(address.isSetCityOrTown() && city==null )
+					{
+						log.debug("Setting city to :"+address.getCityOrTown());
+						row.setProperty(cityProp, address.getCityOrTown());
+					}	
+				}
+				
+				AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
+				otm.fireTableDataChanged();
+			}
+		
+
+	
+		} catch (Exception e) {
+			log.error("Exception thrown while populating table", e);
+			throw new RuntimeException(e);
+		} finally {
+			
+		}
+	}
+	
+	
+	
+	/*private void populateObjects(PopulateFromGeonamesEvent event)
 	{
 
 		MVCArrayList<SingleObjectModel> rows = event.model.getRows();
@@ -272,6 +464,7 @@ public class PopulateFromGeonamesCommand implements ICommand {
 			
 		}
 	}
+	*/
 	
 	
 	private void recurseObjects(ProgressPopupModel dialogModel, 

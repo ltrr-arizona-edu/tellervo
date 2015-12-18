@@ -57,6 +57,13 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		return columns;
 	}
 	
+	public void addRow()
+	{
+		IBulkImportSingleRowModel newrow = model.createRowInstance();
+		model.getRows().add(newrow);
+		
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void setModel(IBulkImportSectionModel model) {
 		if(this.model != null){

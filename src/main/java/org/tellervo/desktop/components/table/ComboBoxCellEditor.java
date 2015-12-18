@@ -23,8 +23,12 @@ import javax.swing.SwingUtilities;
 public class ComboBoxCellEditor extends DefaultCellEditor {
 	private static final long serialVersionUID = 1L;
 
+	
 	public ComboBoxCellEditor(final JComboBox comboBox) {
 		super(comboBox);
+		
+		this.setClickCountToStart(2);
+		
 		comboBox.removeActionListener(delegate);
 		delegate = new EditorDelegate() {
 			private static final long serialVersionUID = 1L;

@@ -78,7 +78,9 @@ public abstract class AbstractBulkImportView extends JPanel{
 	protected JButton copyRow;
 	protected JButton populateFromDB;
 	protected JButton populateFromGeonames;
-
+	protected JButton btnCopy;
+	protected JButton btnPaste;
+	protected JButton btnPasteAppend;
 	
 	protected JPopupMenu tablePopupMenu;
 	private JMenuItem addrow;
@@ -104,6 +106,18 @@ public abstract class AbstractBulkImportView extends JPanel{
 		//table.setCellSelectionEnabled(true);
 		table.setShowGrid(true);
 		table.setGridColor(Color.GRAY);
+		
+		btnCopy = new JButton();
+		btnCopy.setIcon(Builder.getIcon("editcopy.png", 22));
+		btnCopy.setToolTipText("Copy selection");
+		btnPaste = new JButton();
+		btnPaste.setIcon(Builder.getIcon("editpaste.png", 22));
+		btnPaste.setToolTipText("Paste");
+		btnPasteAppend = new JButton();
+		btnPasteAppend.setIcon(Builder.getIcon("editpasteappend.png", 22));
+		btnPasteAppend.setToolTipText("Paste append to new rows");
+
+		
 		addRow = new JButton();
 		copyRow = new JButton();
 		showHideColumns = new JButton();
@@ -121,7 +135,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		setLayout(new BorderLayout());
 		
 	
-		add(setupHeaderElements(addRow, removeSelected, copyRow, showHideColumns, populateFromDB, populateFromGeonames), "North");
+		add(setupHeaderElements(btnCopy, btnPaste, btnPasteAppend, addRow, removeSelected, copyRow, showHideColumns, populateFromDB, populateFromGeonames), "North");
 		//add(setupToolbar(showHideColumns, selectAll, selectNone), "West");
 
 		JScrollPane panel = new JScrollPane(table);
@@ -165,6 +179,24 @@ public abstract class AbstractBulkImportView extends JPanel{
 		addRow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent argE) {
 				addRowPressed();
+			}
+		});
+		
+		btnCopy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent argE) {
+				copyPressed();
+			}
+		});
+		
+		btnPaste.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent argE) {
+				pastePressed();
+			}
+		});
+		
+		btnPasteAppend.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent argE) {
+				pasteAppendPressed();
 			}
 		});
 		
@@ -384,7 +416,10 @@ public abstract class AbstractBulkImportView extends JPanel{
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				log.debug("1. Table row count = " +table.getRowCount());
+				
+				adapter.doPasteAppend();
+				
+			/*	log.debug("1. Table row count = " +table.getRowCount());
 				Integer originalRowCount = table.getRowCount();
 				Integer rowCountToPaste = adapter.getRowCountFromClipboard();
 				
@@ -402,7 +437,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 				    //log.debug("Waiting... row count: "+table.getRowCount());
 				}*/
 				
-				log.debug("2. Table row count = " +table.getRowCount());
+				/*log.debug("2. Table row count = " +table.getRowCount());
 				
 				try{
 					table.setRowSelectionInterval(originalRowCount, originalRowCount);
@@ -412,7 +447,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 					log.error(ex.getLocalizedMessage());
 				}
 				
-				adapter.doPaste();	
+				adapter.doPaste();	*/
 			}
 			
 		});
@@ -430,14 +465,17 @@ public abstract class AbstractBulkImportView extends JPanel{
 		tablePopupMenu.setLightWeightPopupEnabled(false);
 	}
 	
-	protected JToolBar setupHeaderElements(JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
+	protected JToolBar setupHeaderElements(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
+			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
 		
 		 JToolBar toolbar = new JToolBar();
 		 
+		 toolbar.add(argCopyButton);
+		 toolbar.add(argPasteButton);
+		 toolbar.add(argPasteAppendButton);
+		 toolbar.add(argCopyRowButton);
 		 toolbar.add(argAddRowButton);
 		 toolbar.add(argDeleteRowButton);
-		 toolbar.add(argCopyButton);
 		 toolbar.add(argShowHideColumnButton);
 		 toolbar.add(argPopulateFromDB);
 		 toolbar.add(argPopulateFromGeonames);
@@ -486,6 +524,21 @@ public abstract class AbstractBulkImportView extends JPanel{
 	
 	protected abstract void populateFromGeonames();
 	
+	
+	protected void copyPressed(){
+		adapter.doCopy();
+	}
+	
+	protected void pastePressed()
+	{
+		adapter.doPaste();
+	}
+			
+	protected void pasteAppendPressed(){
+		adapter.doPasteAppend();
+	}
+		
+	
 	protected void addRowPressed(){
 		AddRowEvent event = new AddRowEvent(model);
 		event.dispatch();
@@ -533,8 +586,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 		populateFromDB.setToolTipText("Populate table from database");
 		populateFromDB.setIcon(Builder.getIcon("database.png", 22));
 		
-		populateFromGeonames.setToolTipText("Populate from Geonames");
-		populateFromGeonames.setIcon(Builder.getIcon("database.png", 22));
+		populateFromGeonames.setToolTipText("Populate country and town from Geonames");
+		populateFromGeonames.setIcon(Builder.getIcon("georef.png", 22));
 		
 		importSelected.setText(I18n.getText("bulkimport.importselected"));
 		

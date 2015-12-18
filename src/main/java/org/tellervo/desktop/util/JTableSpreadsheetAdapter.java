@@ -2,12 +2,14 @@ package org.tellervo.desktop.util;
 
 import java.awt.*;
 import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.model.AbstractBulkImportTableModel;
+import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkdataentry.view.AbstractBulkImportView;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
@@ -61,7 +63,6 @@ public class JTableSpreadsheetAdapter implements ActionListener
       // Identifying the copy KeyStroke user can modify this
       // to copy on some other Key combination.
       KeyStroke paste = KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK,false);
-      KeyStroke pasteappend = KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK+ActionEvent.SHIFT_MASK,false);
       // Identifying the Paste KeyStroke user can modify this
       //to copy on some other Key combination.
 		mainTable.registerKeyboardAction(this,"Copy",copy,JComponent.WHEN_FOCUSED);
@@ -192,11 +193,14 @@ public class JTableSpreadsheetAdapter implements ActionListener
 			
 			Integer lineCount = lines.length;
 			
-			String firstColName = mainTable.getColumnName(mainTable.getSelectedColumns()[0]);
 			
-			if(lines[0].startsWith(firstColName))
+			if(mainTable.getSelectedColumns().length>0)
 			{
-				lineCount--;
+				String firstColName = mainTable.getColumnName(mainTable.getSelectedColumns()[0]);
+				if(lines[0].startsWith(firstColName))
+				{
+					lineCount--;
+				}
 			}
 			
 			for(String line : lines)
@@ -226,9 +230,26 @@ public class JTableSpreadsheetAdapter implements ActionListener
 	{
 		Boolean errorsEncountered = false;
 		
-
+		
         int startRow=(mainTable.getSelectedRows())[0];
         int startCol=(mainTable.getSelectedColumns())[0];
+        
+        // Make sure we skip the first two columns.
+        if(startCol<2) startCol=2;
+        
+        
+        // Check to see if we need to add rows
+        int rowsavail = mainTable.getRowCount()-startRow;
+        log.debug("Rows available to paste into = "+rowsavail);
+        if( rowsavail < getRowCountFromClipboard())
+        {
+        	// We do, so add them.
+        	int rowsneeded = getRowCountFromClipboard() - rowsavail;
+        	log.debug("Rows needed = "+rowsneeded);
+        	addNRows(rowsneeded);
+        }
+        
+        
         try
         {
            log.debug("Clipboard contents: "+system.getName());
@@ -521,7 +542,26 @@ public class JTableSpreadsheetAdapter implements ActionListener
 
 	public void doPasteAppend()
 	{
+		int previousRowCount = mainTable.getRowCount();
+		int rows= getRowCountFromClipboard();
 		
+		addNRows(rows);
+		
+		mainTable.setRowSelectionInterval(previousRowCount, previousRowCount);
+		mainTable.setColumnSelectionInterval(2, 2);		
+		doPaste();
+		
+		
+	}
+	
+	private void addNRows(int rows)
+	{
+		AbstractBulkImportTableModel tablemodel = ((AbstractBulkImportTableModel)mainTable.getModel());
+
+		for(int i=0; i<rows; i++)
+		{
+			tablemodel.addRow();
+		}
 	}
 	
 	/**
