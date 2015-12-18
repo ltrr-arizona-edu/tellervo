@@ -51,6 +51,7 @@ import org.tellervo.desktop.components.table.StringCellEditor;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
+import org.tellervo.desktop.tridasv2.ui.BooleanCellRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
 import org.tellervo.desktop.ui.Builder;
@@ -75,6 +76,7 @@ public class ObjectView extends AbstractBulkImportView{
 	
 	public ObjectView(ObjectModel argModel){
 		super(argModel);
+		table.getColumnModel().getColumn(1).setCellRenderer(new BooleanCellRenderer(true));
 	}
 	
 	/**
@@ -90,6 +92,8 @@ public class ObjectView extends AbstractBulkImportView{
 				
 		argTable.setDefaultEditor(NormalTridasLocationType.class, new ComboBoxCellEditor(new LocationTypeComboBox()));
 		argTable.setDefaultRenderer(NormalTridasLocationType.class, new LocationTypeRenderer());
+		
+		
 		
 		
 		ObjectModel model = BulkImportModel.getInstance().getObjectModel();

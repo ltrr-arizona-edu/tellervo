@@ -61,7 +61,8 @@ public class BulkDataEntryWindow extends JFrame {
 		populateLocale();
 		pack();
 		this.setMinimumSize(new Dimension(640,480));
-		this.setLocationRelativeTo(null);
+		setExtendedState(this.getExtendedState()|JFrame.MAXIMIZED_BOTH );
+		
 	}
 	
 	public void initComponents() {

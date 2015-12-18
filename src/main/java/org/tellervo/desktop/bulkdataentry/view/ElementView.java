@@ -57,6 +57,7 @@ import org.tellervo.desktop.components.table.TridasUnitComboBox;
 import org.tellervo.desktop.components.table.TridasUnitRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
+import org.tellervo.desktop.tridasv2.ui.BooleanCellRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
 import org.tellervo.desktop.ui.Builder;
@@ -85,6 +86,8 @@ public class ElementView extends AbstractBulkImportView{
 
 	public ElementView(ElementModel argModel){
 		super(argModel);
+		table.getColumnModel().getColumn(1).setCellRenderer(new BooleanCellRenderer(true));
+
 	}
 
 	/**

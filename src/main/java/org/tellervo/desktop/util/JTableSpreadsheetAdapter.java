@@ -50,6 +50,9 @@ public class JTableSpreadsheetAdapter implements ActionListener
    private StringSelection stsel;
    private JTable mainTable ;
    
+   private List<ControlledVoc> taxonDictionary = Dictionary.getMutableDictionary("taxonDictionary");
+   
+   
    
    /**
     * The Excel Adapter is constructed with a
@@ -59,14 +62,20 @@ public class JTableSpreadsheetAdapter implements ActionListener
    public JTableSpreadsheetAdapter(JTable myJTable)
    {
       mainTable = myJTable;
+      myJTable.getTableHeader().setReorderingAllowed(false);
       KeyStroke copy = KeyStroke.getKeyStroke(KeyEvent.VK_C,ActionEvent.CTRL_MASK,false);
       // Identifying the copy KeyStroke user can modify this
       // to copy on some other Key combination.
       KeyStroke paste = KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK,false);
       // Identifying the Paste KeyStroke user can modify this
       //to copy on some other Key combination.
-		mainTable.registerKeyboardAction(this,"Copy",copy,JComponent.WHEN_FOCUSED);
-		mainTable.registerKeyboardAction(this,"Paste",paste,JComponent.WHEN_FOCUSED);
+      
+      KeyStroke pasteAppend = KeyStroke.getKeyStroke(KeyEvent.VK_V,ActionEvent.CTRL_MASK+ActionEvent.SHIFT_MASK,false);
+      
+      myJTable.registerKeyboardAction(this,"Copy",copy,JComponent.WHEN_FOCUSED);
+      myJTable.registerKeyboardAction(this,"Paste",paste,JComponent.WHEN_FOCUSED);
+      myJTable.registerKeyboardAction(this,"PasteAppend",pasteAppend,JComponent.WHEN_FOCUSED);
+
       system = Toolkit.getDefaultToolkit().getSystemClipboard();
    }
    
@@ -92,10 +101,18 @@ public class JTableSpreadsheetAdapter implements ActionListener
         StringBuffer sbf=new StringBuffer();
         // Check to ensure we have selected only a contiguous block of
         // cells
-        int numcols=mainTable.getSelectedColumnCount();
         int numrows=mainTable.getSelectedRowCount();
         int[] rowsselected=mainTable.getSelectedRows();
-        int[] colsselected=mainTable.getSelectedColumns();
+        
+        // Remove first two columns
+        ArrayList<Integer> colsselected = new ArrayList();
+        for(int c : mainTable.getSelectedColumns())
+        {
+        	if(c<=1) continue;
+        	colsselected.add(c);
+        }
+        int numcols=colsselected.size();
+
         
         log.debug("selected rows: ");
         for(int i : rowsselected)
@@ -108,7 +125,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
         	log.debug("    - "+i);
         }
         
-        if (!((numrows-1==rowsselected[rowsselected.length-1]-rowsselected[0] &&
+        /*if (!((numrows-1==rowsselected[rowsselected.length-1]-rowsselected[0] &&
                numrows==rowsselected.length) &&
                (numcols-1==colsselected[colsselected.length-1]-colsselected[0] &&
                numcols==colsselected.length)))
@@ -117,15 +134,20 @@ public class JTableSpreadsheetAdapter implements ActionListener
                                          "Invalid Copy Selection",
                                          JOptionPane.ERROR_MESSAGE);
            return;
-        }
+        }*/
         
         
         // First add column headers
-        for(int j=0;j<numcols;j++)
+        int colsdone=0;
+        for(int j : colsselected)
         {
+        	colsdone++;
+        	
+        	if(j<=1) continue;
+        	
     		sbf.append(mainTable.getColumnName(j));
-    	
-    		if (j<numcols-1) sbf.append("\t");
+    		
+    		if (colsdone<colsselected.size()) sbf.append("\t");
         }
         sbf.append("\n");
         
@@ -135,7 +157,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
            for (int j=0;j<numcols;j++)
            {
         	   
-        	Object value = mainTable.getValueAt(rowsselected[i],colsselected[j]);
+        	Object value = mainTable.getValueAt(rowsselected[i],colsselected.get(j));
         	
         	if (value instanceof TridasShape)
         	{
@@ -269,7 +291,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
                
                  if(firstRun)
                  {
-                	 String colname = mainTable.getColumnName(j);
+                	 String colname = mainTable.getColumnName(startCol);
                 	 if(value.equals(colname))
                 	 {
                 		 // Clipboard has header line which needs to be skipped
@@ -370,9 +392,9 @@ public class JTableSpreadsheetAdapter implements ActionListener
 					}
 					else if(clazz.equals(WSITaxonDictionary.class))
 					{
-						List<ControlledVoc> types = Dictionary.getMutableDictionary("taxonDictionary");
+						
 						Boolean match = false;
-						for(ControlledVoc cvoc : types)
+						for(ControlledVoc cvoc : taxonDictionary)
 						{
 							if(cvoc.getNormal().equals(value)) {
 				                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
@@ -382,6 +404,8 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						}
 						if(match==false) {
 							System.out.println("Error in WSITaxonDictionary");
+							log.debug("Cannont find entry for '"+value+"'");
+							log.debug("Number of taxa in dictionary = "+taxonDictionary.size());
 							errorsEncountered = true;
 						}						
 					}
@@ -522,7 +546,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 				else 
 				{
 					Alert.error("Too much data", "You attempted to paste more data into the table than there were cells. The remaining data has been discarded.");
-					break;
+					return;
 				}
              }
           }
@@ -539,6 +563,10 @@ public class JTableSpreadsheetAdapter implements ActionListener
         
         
 	}
+	
+	
+	
+	
 
 	public void doPasteAppend()
 	{
@@ -586,7 +614,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
       }
       if (e.getActionCommand().compareTo("PasteAppend")==0)
       {
-    	  doPaste();
+    	  doPasteAppend();
       }
    }
 }

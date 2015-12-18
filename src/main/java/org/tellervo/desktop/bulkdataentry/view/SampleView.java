@@ -48,6 +48,7 @@ import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.components.table.WSIBoxRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.tridasv2.ui.BooleanCellRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
 import org.tellervo.desktop.tridasv2.ui.TridasDatingCellRenderer;
@@ -85,6 +86,8 @@ public class SampleView  extends AbstractBulkImportView{
 	public SampleView(SampleModel argModel, ElementModel elementModel) {
 		super(argModel);
 		this.elementModel = elementModel;
+		table.getColumnModel().getColumn(1).setCellRenderer(new BooleanCellRenderer(true));
+
 	}
 
 	/**
