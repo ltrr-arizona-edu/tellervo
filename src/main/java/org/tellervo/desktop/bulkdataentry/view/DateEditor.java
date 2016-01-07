@@ -120,9 +120,12 @@ public class DateEditor extends DefaultCellEditor {
 		setClickCountToStart(2);
 	}
 
-	private Date javaDateToSchemaDate(java.util.Date dataFromGUI)
+	public static Date javaDateToSchemaDate(java.util.Date dataFromGUI)
 	{
-		if(dataFromGUI==null) return null;
+		if(dataFromGUI==null) {
+			log.debug("Date provided to javaDateToSchemaDate was null");
+			return null;
+		}
 		
 		GregorianCalendar c = new GregorianCalendar();		
 		c.setTime(dataFromGUI);
@@ -135,9 +138,12 @@ public class DateEditor extends DefaultCellEditor {
 		return d;
 	}
 
-	private java.util.Date schemaDateToJavaDate(Date date)
+	public static java.util.Date schemaDateToJavaDate(Date date)
 	{
-		if(date==null) return null;
+		if(date==null){
+			log.debug("Date provided to schemaDateToJavaDate was null");
+			return null;
+		}
 		return date.getValue().toGregorianCalendar().getTime();
 		
 	}

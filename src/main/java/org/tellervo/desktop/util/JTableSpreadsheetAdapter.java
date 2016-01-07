@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.model.AbstractBulkImportTableModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkdataentry.view.AbstractBulkImportView;
+import org.tellervo.desktop.bulkdataentry.view.DateEditor;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
@@ -20,6 +21,7 @@ import org.tellervo.schema.WSIElementTypeDictionary;
 import org.tellervo.schema.WSIObjectTypeDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
 import org.tellervo.schema.WSITaxonDictionary;
+import org.tridas.schema.Certainty;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.TridasElement;
@@ -30,6 +32,8 @@ import org.tridas.schema.NormalTridasUnit;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.MVCArrayList;
+import com.joestelmach.natty.DateGroup;
+import com.joestelmach.natty.Parser;
 
 import java.awt.datatransfer.*;
 import java.io.IOException;
@@ -503,6 +507,44 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						} catch (NumberFormatException e)
 						{
 							System.out.println("Error in Double");
+							errorsEncountered = true;
+						}
+					}else if (clazz.equals(org.tridas.schema.Date.class))
+					{
+						try{
+							log.debug("Parsing '"+value.toString()+"' to org.tridas.schema.Date");
+							
+							Parser parser = new Parser();
+							List<DateGroup> groups = parser.parse(value);
+							
+							log.debug("Natty found "+groups.size() + " groups");
+							
+							org.tridas.schema.Date schemadate = null;
+							if(groups.size()==1)
+							{
+								log.debug("Natty found "+groups.get(0).getDates().size() + " dates");
+
+								Date dt = null;
+								if(groups.get(0).getDates().size()>0)
+								{
+									dt = groups.get(0).getDates().get(0);
+									schemadate = DateEditor.javaDateToSchemaDate(dt);
+								}
+								if(groups.get(0).getDates().size()>1)
+								{
+									schemadate.setCertainty(Certainty.APPROXIMATELY);
+								}
+							}
+							else
+							{
+								errorsEncountered = true;
+							}
+							
+															
+							tablemodel.setValueAt(schemadate,rowIndex,startCol+j);
+						} catch (Exception e)
+						{
+							System.out.println("Error in date");
 							errorsEncountered = true;
 						}
 					}
