@@ -143,7 +143,7 @@ public class DateEditor extends DefaultCellEditor {
 		if(date==null){
 			log.debug("Date provided to schemaDateToJavaDate was null");
 			return null;
-		}
+		}	
 		return date.getValue().toGregorianCalendar().getTime();
 		
 	}

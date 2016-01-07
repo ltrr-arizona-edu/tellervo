@@ -29,6 +29,7 @@ import java.util.Comparator;
 
 import javax.swing.JButton;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
@@ -42,6 +43,7 @@ import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.components.table.DynamicJComboBox;
 import org.tellervo.desktop.components.table.DynamicKeySelectionManager;
+import org.tellervo.desktop.components.table.NattyDateEditor;
 import org.tellervo.desktop.components.table.StringCellEditor;
 import org.tellervo.desktop.components.table.TridasElementRenderer;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
@@ -191,7 +193,9 @@ public class SampleView  extends AbstractBulkImportView{
 		
 		DatePicker datePicker = new DatePicker();
 		datePicker.setFocusable(false);
-		argTable.setDefaultEditor(Date.class, new DateEditor(datePicker));
+		//argTable.setDefaultEditor(Date.class, new DateEditor(datePicker));
+		argTable.setDefaultEditor(Date.class, new NattyDateEditor(new JTextField()));
+
 		argTable.setDefaultRenderer(Date.class, new TridasDatingCellRenderer());
 
 	}

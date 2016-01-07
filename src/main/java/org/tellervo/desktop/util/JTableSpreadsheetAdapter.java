@@ -21,6 +21,7 @@ import org.tellervo.schema.WSIElementTypeDictionary;
 import org.tellervo.schema.WSIObjectTypeDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
 import org.tellervo.schema.WSITaxonDictionary;
+import org.tridas.io.util.DateUtils;
 import org.tridas.schema.Certainty;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasShape;
@@ -38,6 +39,7 @@ import com.joestelmach.natty.Parser;
 import java.awt.datatransfer.*;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 /**
@@ -192,6 +194,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
         		{
         			sbf.append(cvoc.getNormal());
         		}
+        	}
+        	else if (value instanceof org.tridas.schema.Date)
+        	{
+        		org.tridas.schema.Date dt = (org.tridas.schema.Date) value;
+        		String strdt = DateUtils.getFormattedDate(dt, new SimpleDateFormat("YYYY-MM-dd"));
+        		sbf.append(strdt);
         	}
            	else
         	{
@@ -534,12 +542,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 								{
 									schemadate.setCertainty(Certainty.APPROXIMATELY);
 								}
-							}
-							else
-							{
-								errorsEncountered = true;
-							}
-							
+							}	
 															
 							tablemodel.setValueAt(schemadate,rowIndex,startCol+j);
 						} catch (Exception e)

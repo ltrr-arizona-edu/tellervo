@@ -51,7 +51,7 @@ public class TridasDatingCellRenderer extends DefaultCellRendererEx {
 			Date date = (Date) value;
 			
 			Calendar calendar = date.getValue().toGregorianCalendar();
-			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+			SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
 			formatter.setTimeZone(calendar.getTimeZone());
 			String dateString = formatter.format(calendar.getTime());
 			
@@ -60,7 +60,7 @@ public class TridasDatingCellRenderer extends DefaultCellRendererEx {
 		else if(value instanceof java.util.Date) {
 			java.util.Date date = (java.util.Date) value;
 			
-			SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+			SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
 			return formatter.format(date);
 		
 		}
