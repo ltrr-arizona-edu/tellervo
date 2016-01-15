@@ -22,19 +22,28 @@ package org.tellervo.desktop.bulkdataentry.command;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JFileChooser;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
+import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
@@ -42,6 +51,7 @@ import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.view.ODKParserLogViewer;
+import org.tellervo.desktop.bulkdataentry.view.odkwizard.ODKImportWizard;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.odk.ODKParser;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
@@ -58,6 +68,8 @@ import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+
+import au.com.bytecode.opencsv.CSVWriter;
 
 import com.dmurph.mvc.IllegalThreadException;
 import com.dmurph.mvc.IncorrectThreadException;
@@ -95,8 +107,228 @@ public class PopulateFromODKFileCommand implements ICommand {
 		}
 	}
 	
+	public void execute(MVCEvent argEvent) {
+
+		try {
+			MVC.splitOff(); // so other mvc events can execute
+		} catch (IllegalThreadException e) {
+			// this means that the thread that called splitOff() was not an MVC thread, and the next event's won't be blocked anyways.
+			e.printStackTrace();
+		} catch (IncorrectThreadException e) {
+			// this means that this MVC thread is not the main thread, it was already splitOff() previously
+			e.printStackTrace();
+		}
+		
+		PopulateFromODKFileEvent event = (PopulateFromODKFileEvent) argEvent;
+		ArrayList<ODKParser> filesProcessed = new ArrayList<ODKParser>();
+		ArrayList<ODKParser> filesFailed = new ArrayList<ODKParser>();
+		
+		ODKImportWizard wizard = new ODKImportWizard(BulkImportModel.getInstance().getMainView());
+		String instanceFolder = wizard.getODKInstancesFolder();
+		
+		File folder = new File(instanceFolder);
+		if(!folder.exists()) {
+		
+			log.error("Instances folder does not exist");
+			return;
+		}
+
+		
+		// Compile a hash set of all media files in folders
+		File file = null;
+		File[] mediaFileArr = null;
+		if(wizard.isIncludeMediaFilesSelected())
+		{
+			HashSet<File> mediaFiles = new HashSet<File>();
+
+			// Array of file extensions to consider as media files
+			String[] mediaExtensions = {"jpg", "mpg", "snd"};
+			for(String ext : mediaExtensions)
+			{
+				SuffixFileFilter filter = new SuffixFileFilter("."+ext);
+				Iterator<File> it = FileUtils.iterateFiles(folder, filter, TrueFileFilter.INSTANCE);
+				while(it.hasNext())
+				{
+					file = it.next();
+					mediaFiles.add(file);
+				}
+			}
+			
+			
+			// Copy files to new folder
+			mediaFileArr = mediaFiles.toArray(new File[mediaFiles.size()]);
+			String copyToFolder = wizard.getCopyToLocation();
+			for(int i=0; i<mediaFileArr.length; i++)
+			{
+				file = mediaFileArr[i];
+				
+				File target = new File(copyToFolder+file.getName());
+				try {
+					FileUtils.copyFile(file, target, true);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				mediaFileArr[i] = target;
+			}
+		}
+		
+		SuffixFileFilter fileFilter = new SuffixFileFilter(".xml");
+		Iterator<File> iterator = FileUtils.iterateFiles(folder, fileFilter, TrueFileFilter.INSTANCE);
+		while(iterator.hasNext())
+		{
+			file = iterator.next();
+			filesFound++;
+
+			try {
+
+				if(event.model instanceof ObjectModel)
+				{
+					ODKParser parser = new ODKParser(file, TridasObject.class);
+					filesProcessed.add(parser);
+
+					if(!parser.isValidODKFile()) {
+						filesFailed.add(parser);
+						continue;
+					}
+
+					ObjectModel model = (ObjectModel) event.model;
+					addObjectToTableFromParser(parser, model, wizard, mediaFileArr);
+
+				}
+				else if (event.model instanceof ElementModel)
+				{
+					ODKParser parser = new ODKParser(file, TridasElement.class);
+					filesProcessed.add(parser);
+					
+					if(!parser.isValidODKFile()) {
+						filesFailed.add(parser);
+						continue;
+					}
+
+					ElementModel model = (ElementModel) event.model;
+					addElementFromParser(parser, model, wizard);
+				}
+				else if (event.model instanceof SampleModel)
+				{
+					ODKParser parser = new ODKParser(file, TridasSample.class);
+					filesProcessed.add(parser);
+					
+					if(!parser.isValidODKFile()) {
+						filesFailed.add(parser);
+						continue;
+					}
+
+					SampleModel model = (SampleModel) event.model;
+					addSampleFromParser(parser, model, wizard);
+				}
+
+			} catch (FileNotFoundException e) {
+				otherErrors+="<p color=\"red\">Error loading file:</p>\n"+ ODKParser.formatFileNameForReport(file);
+				otherErrors+="<br/>  - File not found<br/><br/>";
+			} catch (IOException e) {
+				otherErrors+="<p color=\"red\">Error loading file:</p>\n"+ ODKParser.formatFileNameForReport(file);
+				otherErrors+="<br/>  - IOException - "+e.getLocalizedMessage()+"<br/><br/>";
+			}  catch (Exception e) {
+				otherErrors+="<p color=\"red\">Error loading file:</p>\n"+ ODKParser.formatFileNameForReport(file);
+				otherErrors+="<br/>  - Exception - "+e.getLocalizedMessage()+"<br/><br/>";				
+			}    
+
+		}
+		
+		StringBuilder log = new StringBuilder();
+		
+		log.append("<html>\n");
+		for(ODKParser parser : filesFailed)
+		{
+			log.append("<p color=\"red\">Error loading file:</p>\n"+ ODKParser.formatFileNameForReport(parser.getFile()));
+			log.append("<br/>  - "+parser.getParseErrorMessage()+"<br/><br/>");
+		}
+		
+		for(ODKParser parser : filesProcessed)
+		{		
+			if(filesFailed.contains(parser)) continue;
+			if(parser.getParseErrorMessage()=="") continue;
+			
+			log.append("<p color=\"orange\">Warning loading file:</p>\n"+ ODKParser.formatFileNameForReport(parser.getFile()));
+			log.append("<br/>  - "+parser.getParseErrorMessage()+"<br/><br/>");
+		}
+		
+		
+		if(wizard.isCreateCSVFileSelected())
+		{
+			try {
+				createCSVFile(filesProcessed, wizard.getCSVFilename());
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		log.append(otherErrors);
+		
+		log.append("</html>");
+		
+		ODKParserLogViewer logDialog = new ODKParserLogViewer(BulkImportModel.getInstance().getMainView());
+		logDialog.setLog(log.toString());
+		logDialog.setFileCount(filesFound, filesLoadedSuccessfully);
+		logDialog.setVisible(true);
+
+	}		
+
+		
+	private void createCSVFile(ArrayList<ODKParser> parsers, String csvfilename ) throws IOException
+	{
+		File file = new File(csvfilename);
+		file.createNewFile();
+		if(!file.canWrite()) throw new IOException("Cannot write to file: "+file.getAbsolutePath());
+		
+		HashSet<String> fieldNames = new HashSet<String>();
+		for(ODKParser parser: parsers)
+		{
+			HashMap<String, String> fields = parser.getAllFields();
+		    Iterator it = fields.entrySet().iterator();
+		    while (it.hasNext()) {
+		        Map.Entry pair = (Map.Entry)it.next();
+		        fieldNames.add((String) pair.getKey());
+		    }
+		}
+		
+		String[] fieldNamesArr =fieldNames.toArray(new String[fieldNames.size()]);
+		
+		
+		String[][] table = new String[parsers.size()][fieldNames.size()];
+		
+
+		for(int r=0; r<parsers.size(); r++)
+		{
+			ODKParser parser = parsers.get(r);
+			
+			for(int c=0; c<fieldNamesArr.length; c++)
+			{	
+				table[r][c] = parser.getFieldValueAsString(fieldNamesArr[c]);
+			}
+		}
+			
+		CSVWriter writer = new CSVWriter(new FileWriter(csvfilename), '\t');
+		
+
+
+		String[] header = fieldNames.toArray(new String[fieldNames.size()]);
+		
+		writer.writeNext(header);
+		for(int r=0; r<table.length; r++)
+		{
+			writer.writeNext(table[r]);
+		}
+		
+		writer.close();
+
+
+		
+	}
 	
-	@Override
+	/*@Override
 	public void execute(MVCEvent argEvent) {
 
 		try {
@@ -222,9 +454,9 @@ public class PopulateFromODKFileCommand implements ICommand {
 
 
 
-	}
+	}*/
 	
-	private void addObjectFromParser(ODKParser parser, ObjectModel model)
+	private void addObjectToTableFromParser(ODKParser parser, ObjectModel model, ODKImportWizard wizard, File[] mediaFileArr)
 	{
 		SingleObjectModel newrow = (SingleObjectModel) model.createRowInstance();
 
@@ -233,8 +465,8 @@ public class PopulateFromODKFileCommand implements ICommand {
 		if(objcode!=null) obj = getTridasObjectByCode(objcode);
 		if(obj!=null) newrow.setProperty(SingleObjectModel.PARENT_OBJECT, obj);
 		
-
-		newrow.setProperty(SingleObjectModel.OBJECT_CODE, parser.getFieldValueAsString("tridas_object_code", "PlotSubplotID"));
+		String objectcode = parser.getFieldValueAsString("tridas_object_code", "PlotSubplotID");
+		newrow.setProperty(SingleObjectModel.OBJECT_CODE, objectcode);
 		newrow.setProperty(SingleObjectModel.TITLE, parser.getFieldValueAsString("tridas_object_title", "PlotSubplotID"));
 
 		
@@ -269,6 +501,41 @@ public class PopulateFromODKFileCommand implements ICommand {
 		
 
 		// Still to handle
+		String filephoto = parser.getFieldValueAsString("tridas_object_file_photo");
+		
+		File f = getFileFromList(mediaFileArr, filephoto);
+		
+		if(f!=null)
+		{
+			// Rename file if requested
+			if(wizard.isRenameMediaFilesSelected())
+			{			
+				try {
+					Path path = renameFile(f, objectcode+"."+FilenameUtils.getExtension(f.getName()));
+					f = path.toFile();
+					
+										
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+
+			String finalloc = wizard.getFinalLocation();
+			if(!finalloc.endsWith("/")) finalloc = finalloc+"/";
+			String fullurl = finalloc+f.getName();
+			
+			comments += "Media file: "+fullurl;
+			newrow.setProperty(SingleObjectModel.COMMENTS, comments);
+		
+		}
+		else
+		{
+			log.warn("Media file '"+filephoto +"' not found. Ignoring.");
+		}
+		
+
+		
 		//tridas_object_file_photo
 		//tridas_object_file_sound
 		//tridas_object_file_video
@@ -276,8 +543,89 @@ public class PopulateFromODKFileCommand implements ICommand {
 		model.getRows().add(newrow);
 		filesLoadedSuccessfully++;
 	}
+	
+	/**
+	 * Search for a file in the File[] based on the filename ignoring the path
+	 * 
+	 * @param mediaFileArr
+	 * @param filename
+	 * @return
+	 */
+	private File getFileFromList(File[] mediaFileArr, String filename)
+	{
+		for(File f :mediaFileArr)
+		{
+			if(f.getName().equals(filename))
+			{
+				return f;
+			}
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * Rename a file, ensuring the new file is unique.  If a file with the suggested new name already exists then an index is added to the end of the filename.
+	 * 
+	 * @param fileToRename
+	 * @param newname
+	 * @return
+	 * @throws IOException
+	 */
+	private Path renameFile(File fileToRename, String newname) throws IOException
+	{
+		File newFile = getUniqueFilename(new File(fileToRename.getParent(), newname));
+		
+		
+		return Files.move(fileToRename.toPath(), newFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
+		
+	}
+	
+	/**
+	 * Ensures a filename is unique by adding an index on the end if the file already exists
+	 * 
+	 * @param file
+	 * @return
+	 */
+	private File getUniqueFilename(File file)
+	{
+		if(file.exists())
+		{
+			file = getUniqueFilename(file, 1);
+		}
 
-	private void addElementFromParser(ODKParser parser, ElementModel model)
+		return file;
+		
+	}
+	
+	/**
+	 * Ensures a filename is unique by adding an index on the end if the file already exists
+	 * 
+	 * @param file
+	 * @param i
+	 * @return
+	 */
+	private File getUniqueFilename(File file, int i)
+	{
+		String index = "("+i+").";
+		File originalfile = file;
+		String filename = file.getAbsolutePath();
+		file = new File(FilenameUtils.getPrefix(filename)+
+				FilenameUtils.getPath(filename)+
+				FilenameUtils.removeExtension(file.getName())+
+				index+
+				FilenameUtils.getExtension(filename));
+		
+		if(file.exists())
+		{
+			return getUniqueFilename(originalfile, i+1);
+		}
+		
+		return file;
+		
+	}
+
+	private void addElementFromParser(ODKParser parser, ElementModel model, ODKImportWizard wizard)
 	{
 		SingleElementModel newrow = (SingleElementModel) model.createRowInstance();
 
@@ -344,7 +692,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 	}
 
 
-	private void addSampleFromParser(ODKParser parser, SampleModel model)
+	private void addSampleFromParser(ODKParser parser, SampleModel model, ODKImportWizard wizard)
 	{
 		Boolean loadedSuccessfully = false;
 		

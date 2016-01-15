@@ -1,4 +1,4 @@
-package org.tellervo.desktop.setupwizard;
+package org.tellervo.desktop.gui.widgets;
 
 import java.awt.Color;
 import java.util.ArrayList;

@@ -2,6 +2,7 @@ package org.tellervo.desktop.setupwizard;
 
 import java.awt.Color;
 
+import org.tellervo.desktop.gui.widgets.AbstractWizardPanel;
 import org.tellervo.desktop.prefs.panels.HardwarePrefsPanel;
 
 import net.miginfocom.swing.MigLayout;

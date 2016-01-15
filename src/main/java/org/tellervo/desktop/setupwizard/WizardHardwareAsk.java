@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 
+import org.tellervo.desktop.gui.widgets.AbstractWizardPanel;
+
 import net.miginfocom.swing.MigLayout;
 
 public class WizardHardwareAsk extends AbstractWizardPanel implements ActionListener{

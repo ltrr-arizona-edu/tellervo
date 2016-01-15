@@ -7,6 +7,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gui.widgets.AbstractWizardPanel;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 

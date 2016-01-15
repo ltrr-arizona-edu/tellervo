@@ -8,6 +8,7 @@ import java.net.URISyntaxException;
 
 import javax.swing.JButton;
 
+import org.tellervo.desktop.gui.widgets.AbstractWizardPanel;
 import org.tellervo.desktop.ui.Builder;
 
 public class WizardFinish extends AbstractWizardPanel {

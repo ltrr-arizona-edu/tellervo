@@ -1,5 +1,7 @@
 package org.tellervo.desktop.setupwizard;
 
+import org.tellervo.desktop.gui.widgets.AbstractWizardPanel;
+
 
 public class WizardWelcome extends AbstractWizardPanel {
 

@@ -7,10 +7,9 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -26,12 +25,12 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
-import com.michaelbaranov.microba.calendar.CalendarPane;
 
 public class ODKParser {
 
@@ -41,9 +40,12 @@ public class ODKParser {
 	private File file;
 	private static final Logger log = LoggerFactory.getLogger(ODKParser.class);
 
+	
+	
 	public ODKParser(File f, Class<? extends ITridas> clazz) throws FileNotFoundException, IOException, Exception
 	{
 		file = f;
+
 		
 		try {
 
@@ -388,5 +390,37 @@ public class ODKParser {
 	{	
 		return "<b>"+file.getAbsoluteFile()+"</b>";	
 	}
+	
+	public HashMap<String, String> getAllFields()
+	{
+		HashMap<String, String> map = new HashMap<String, String>();
+
+	    NodeList nodeList = doc.getElementsByTagName("*");
+	    for (int i = 0; i < nodeList.getLength(); i++) {
+	        Node node = nodeList.item(i);
+	        if (node.getNodeType() == Node.ELEMENT_NODE) {
+	        	
+	        	try{
+		        	String name = node.getNodeName();
+		        	if(name.equals("meta") || name.equals("instanceName") || name.equals("data")) continue;
+		        	String value = node.getFirstChild().getNodeValue();
+		        	
+		        	
+		        	
+		        	//if(name.startsWith("tridas_")) name = name.substring(7);
+		        	//if(name.startsWith("tellervo.user.")) name = name.substring(14);
+		        	
+		        	map.put(name, value);
+	        	} catch (Exception e)
+	        	{
+	        		
+	        	}
+	        }
+	    }
+	    
+	    return map;
+	}
+	
+
 	
 }

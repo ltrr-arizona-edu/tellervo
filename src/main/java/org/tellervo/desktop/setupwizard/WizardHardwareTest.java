@@ -2,8 +2,11 @@ package org.tellervo.desktop.setupwizard;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.tellervo.desktop.gui.widgets.AbstractWizardPanel;
 import org.tellervo.desktop.hardware.PlatformTestPanel;
+
 import java.awt.Color;
+
 import javax.swing.border.LineBorder;
 
 public class WizardHardwareTest extends AbstractWizardPanel {

@@ -184,6 +184,7 @@ public class Prefs extends AbstractSubsystem {
 				
 		FOLDER_DATA("tellervo.dir.data"),
 		FOLDER_LAST_READ("tellervo.dir.lastimport"),
+		FOLDER_ODK_LAST_READ("tellervo.dir.odk.lastread"),
 		FOLDER_LAST_SAVE("tellervo.dir.lastsave"),
 		FOLDER_LAST_GPS("tellervo.dir.lastgps"),
 		
@@ -226,7 +227,14 @@ public class Prefs extends AbstractSubsystem {
 		MAP_SCALEBAR_ENABLED("tellervo.map.scalebar"), 
 		MAP_UTMGRATICULE_ENABLED("tellervo.map.utmgraticule"), 
 		MAP_WORLDMAP_ENABLED("tellervo.map.worldmap"), 
-		MAP_STEREOMODE_ENABLED("tellervo.map.stereomode"),	
+		MAP_STEREOMODE_ENABLED("tellervo.map.stereomode"),
+		
+		ODK_COPY_TO("tellervo.odk.copyto"), 
+		ODK_FINAL_PREFIX("tellervo.odk.finalprefix"),
+		ODK_IMPORT_MEDIA("tellervo.odk.importmedia"),
+		ODK_RENAME_MEDIA("tellervo.odk.renamemedia"), 
+		ODK_CSV_FILENAME("tellervo.odk.csvoutput"), 
+		ODK_CREATE_CSV("tellervo.odk.createcsv"),
 		
 		;
 		
