@@ -59,7 +59,7 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 	public static final String COMMENTS = "Comments";
 	public static final String TYPE = "Type";
 	public static final String DESCRIPTION = "Description";
-	//public static final String FILES = "Files";
+	public static final String FILES = "File references";
 	public static final String TAXON = "Taxon";
 	public static final String SHAPE = "Shape";
 	public static final String HEIGHT = "Height";
@@ -91,7 +91,7 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 	
 
 	public static final String[] TABLE_PROPERTIES = {
-		OBJECT, TITLE, TYPE, TAXON, COMMENTS, DESCRIPTION, LATITUDE, LONGITUDE,WAYPOINT, AUTHENTICITY,
+		OBJECT, TITLE, TYPE, TAXON, COMMENTS, DESCRIPTION, FILES, LATITUDE, LONGITUDE,WAYPOINT, AUTHENTICITY,
 		SHAPE, HEIGHT, WIDTH, DEPTH, DIAMETER, UNIT, 
 		LOCATION_PRECISION, LOCATION_COMMENT, LOCATION_TYPE,
 		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, 
@@ -131,13 +131,16 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		
 		argElement.setType((ControlledVoc) getProperty(TYPE));
 		argElement.setDescription((String) getProperty(DESCRIPTION));
+		argElement.setFiles((TridasFileList) getProperty(FILES));
+
 		argElement.setTaxon((ControlledVoc) getProperty(TAXON));
 		argElement.setShape((TridasShape) getProperty(SHAPE));
 		argElement.setMarks((String) getProperty(MARKS));
 		argElement.setAltitude((Double) getProperty(ALTITUDE));
 		argElement.setAuthenticity((String) getProperty(AUTHENTICITY));
 		argElement.setProcessing((String) getProperty(PROCESSING));
-
+		
+		
 		TridasDimensions d = new TridasDimensions();
 
 		d.setWidth((BigDecimal)getProperty(WIDTH));
@@ -255,6 +258,8 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		setProperty(COMMENTS, argElement.getComments());
 		setProperty(TYPE, argElement.getType());
 		setProperty(DESCRIPTION, argElement.getDescription());
+		setProperty(FILES, new TridasFileList(argElement.getFiles()));
+
 		setProperty(AUTHENTICITY, argElement.getAuthenticity());
 		setProperty(TAXON, argElement.getTaxon());
 		setProperty(SHAPE, argElement.getShape());

@@ -707,6 +707,10 @@ class objectParameters extends objectEntity implements IParams
 				{
 					$this->addFile($child->getAttribute("xlink:href"));
 				}
+				else
+				{
+					trigger_error("901"."Error getting href", E_USER_ERROR);
+				}
 				break;
 
     		    	case "tridas:type": 				

@@ -24,27 +24,29 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 
 	private static final long serialVersionUID = 1L;
 	private JTextField txtCopyTo;
-	private JTextField txtFinalPrefix;
+	private JTextField txtFinalFolder;
 	private JCheckBox chkImportMedia;
 	private JCheckBox chkRenameFiles;
 	private JLabel lblCopyFilesTo;
 	private JLabel lblFinalLocation;
 	private JButton btnBrowse;
+	private JLabel lblFilenamePrefix;
+	private JTextField txtFilenamePrefix;
 
 	/**
 	 * Create the panel.
 	 */
 	public WizardMediaFiles() {
 		super("Step 2 - Media files", 
-				"If you created media files (photos, videos and/or sound files) you need to define how they should be handled. "
-				+ "Media files are not stored directly within the Tellervo database, instead the files should be stored in an accessible location "
-				+ "(e.g a shared file server or webserver) and links to the files stored instead.  You therefore need to specify where the files should be "
-				+ "copied to (e.g. a folder on your computer) but also the final location where these files will be accessed by Tellervo (e.g. a "
-				+ "web accessible URL).  Note that if you specify a final location as a local folder on your computer then other Tellervo users will not "
-				+ "be able to follow the links. The filename given to the media files by ODK Collect are random so you also have the option of renaming "
-				+ "them using the samples codes you specified while collecting.");
-		setLayout(new MigLayout("", "[][grow][]", "[23px][][][]"));
-		
+				"If you created media files (photos, videos and/or sound files) you need to define how they should be handled by the importer. "
+				+ "Media files are not stored directly within the Tellervo database, instead links are stored so you should eventually "
+				+ "store the files in an accessible location (e.g. a shared file server or webserver).  The Tellervo importer consolidates the media "
+				+ "files by copying them into a single folder ready for you to deploy of your file server.  You have the option of renaming the "
+				+ "files to match the sample codes you specified while collecting and you can also add a prefix to the filename.  Once the importer "
+				+ "has finished you need to remember to copy the media files from the local folder to the final folder you specified below."
+);
+		setLayout(new MigLayout("", "[][grow][]", "[23px][][][][]"));
+
 		chkImportMedia = new JCheckBox("Include media files in import?");
 		chkImportMedia.setBackground(Color.WHITE);
 		chkImportMedia.setSelected(true);
@@ -88,14 +90,21 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 		lblFinalLocation = new JLabel("FInal location:");
 		add(lblFinalLocation, "cell 0 2,alignx trailing");
 		
-		txtFinalPrefix = new JTextField();
-		add(txtFinalPrefix, "cell 1 2,growx");
-		txtFinalPrefix.setColumns(10);
+		txtFinalFolder = new JTextField();
+		add(txtFinalFolder, "cell 1 2,growx");
+		txtFinalFolder.setColumns(10);
 		
 		chkRenameFiles = new JCheckBox("Rename media files to match Tellervo codes?");
 		chkRenameFiles.setSelected(true);
 		chkRenameFiles.setBackground(Color.WHITE);
 		add(chkRenameFiles, "cell 1 3 2 1");
+		
+		lblFilenamePrefix = new JLabel("Filename prefix:");
+		add(lblFilenamePrefix, "cell 0 4,alignx trailing");
+		
+		txtFilenamePrefix = new JTextField();
+		add(txtFilenamePrefix, "cell 1 4,growx");
+		txtFilenamePrefix.setColumns(10);
 		
 		
 		
@@ -109,11 +118,11 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 		txtCopyTo.setEnabled(chkImportMedia.isSelected());
 
 		lblCopyFilesTo.setEnabled(chkImportMedia.isSelected());
-		txtFinalPrefix.setEnabled(chkImportMedia.isSelected());
+		txtFinalFolder.setEnabled(chkImportMedia.isSelected());
 		btnBrowse.setEnabled(chkImportMedia.isSelected());
 		
 		lblFinalLocation.setEnabled(chkImportMedia.isSelected());
-		txtFinalPrefix.setEnabled(chkImportMedia.isSelected());
+		txtFinalFolder.setEnabled(chkImportMedia.isSelected());
 		chkRenameFiles.setEnabled(chkImportMedia.isSelected());
 		
 		
@@ -136,13 +145,13 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 	
 	public String getFinalLocation()
 	{
-		return this.txtFinalPrefix.getText();
+		return this.txtFinalFolder.getText();
 	}
 	
 	private void linkPrefs()
 	{
 		new TextComponentWrapper(txtCopyTo, PrefKey.ODK_COPY_TO, null);
-		new TextComponentWrapper(txtFinalPrefix, PrefKey.ODK_FINAL_PREFIX, null);
+		new TextComponentWrapper(txtFinalFolder, PrefKey.ODK_FINAL_PREFIX, null);
 		new CheckBoxWrapper(chkImportMedia, PrefKey.ODK_IMPORT_MEDIA, true);
 		new CheckBoxWrapper(chkRenameFiles, PrefKey.ODK_RENAME_MEDIA, true);
 	}

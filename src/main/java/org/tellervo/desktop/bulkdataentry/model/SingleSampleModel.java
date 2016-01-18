@@ -50,7 +50,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	public static final String COMMENTS = "Comments";
 	public static final String TYPE = "Type";
 	public static final String DESCRIPTION = "Description";
-	//public static final String FILES = "Files";
+	public static final String FILES = "File references";
 	public static final String SAMPLING_DATE = "Sampling Date";
 	public static final String POSITION = "Position";
 	public static final String STATE = "State";
@@ -69,7 +69,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	
 
 	public static final String[] TABLE_PROPERTIES = {
-		OBJECT, ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION,
+		OBJECT, ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION, FILES,
 		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, EXTERNAL_ID, IMPORTED
 	};
 	
@@ -166,6 +166,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		argSample.setComments((String)getProperty(COMMENTS));
 		argSample.setType((ControlledVoc)getProperty(TYPE));
 		argSample.setDescription((String)getProperty(DESCRIPTION));
+		argSample.setFiles((TridasFileList) getProperty(FILES));
 		argSample.setSamplingDate((Date) getProperty(SAMPLING_DATE));
 		argSample.setPosition((String)getProperty(POSITION));
 		argSample.setState((String)getProperty(STATE));
@@ -211,6 +212,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		setProperty(COMMENTS, argSample.getComments());
 		setProperty(TYPE, argSample.getType());
 		setProperty(DESCRIPTION, argSample.getDescription());
+		setProperty(FILES, argSample.getFiles());
 		setProperty(SAMPLING_DATE, argSample.getSamplingDate());
 		setProperty(POSITION, argSample.getPosition());
 		setProperty(STATE, argSample.getState());

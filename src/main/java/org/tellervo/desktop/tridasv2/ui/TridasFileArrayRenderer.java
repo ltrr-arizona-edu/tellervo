@@ -25,6 +25,7 @@ package org.tellervo.desktop.tridasv2.ui;
 
 import java.util.List;
 
+import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tridas.schema.TridasFile;
 
 /**
@@ -47,7 +48,10 @@ public class TridasFileArrayRenderer extends DefaultCellRendererEx {
 		
 		if(!(value instanceof List)) return null;
 		
-		List<TridasFile> files  = (List<TridasFile>) value;
+		List<TridasFile> files=null;
+
+		files  = (List<TridasFile>) value;
+		
 		
 		
 		

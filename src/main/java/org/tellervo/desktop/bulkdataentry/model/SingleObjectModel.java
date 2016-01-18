@@ -33,6 +33,7 @@ import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasAddress;
+import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasLocation;
@@ -72,17 +73,17 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	public static final String OWNER = "Owner";
 	public static final String CREATOR = "Creator";
 	public static final String VEGETATION_TYPE = "Vegetation type";
+	public static final String FILES = "File references";
+	
 	
 	// Not implemented yet
-	//public static final String LOCATION_TYPE = "Location type";
-	//public static final String FILES = "File references";
 	//public static final String COVERAGE_TEMPORAL = "Time period";
 	//public static final String COVERAGE_TEMPORAL_FOUNDATION = "Time period foundation";
 	
 	
 	public static final String[] TABLE_PROPERTIES = {
 		PARENT_OBJECT, OBJECT_CODE, TITLE, TYPE, DESCRIPTION, COMMENTS, LATITUDE, LONGITUDE, WAYPOINT, LOCATION_PRECISION, LOCATION_TYPE, LOCATION_COMMENT,
-		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, POSTCODE, COUNTRY,  OWNER, CREATOR, VEGETATION_TYPE
+		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, POSTCODE, COUNTRY,  OWNER, CREATOR, VEGETATION_TYPE, FILES,
 	};
 	
 	public SingleObjectModel(){
@@ -141,6 +142,8 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		if(!found){
 			setProperty(VEGETATION_TYPE, null);
 		}
+		
+		setProperty(FILES, new TridasFileList(argObject.getFiles()));
 		
 		setProperty(TITLE, argObject.getTitle());
 		setProperty(COMMENTS, argObject.getComments());
@@ -258,7 +261,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		argObject.setDescription((String) getProperty(DESCRIPTION));
 		argObject.setOwner((String) getProperty(OWNER));
 		argObject.setCreator((String) getProperty(CREATOR));
-		
+		argObject.setFiles((TridasFileList) getProperty(FILES));
 		
 		Object latitude = getProperty(LATITUDE);
 		Object longitude = getProperty(LONGITUDE);

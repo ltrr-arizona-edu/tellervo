@@ -72,6 +72,8 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 			return WSIBoxDictionary.class;
 		}else if(argColumn.equals(SingleSampleModel.OBJECT)){
 			return TridasObject.class;
+		}else if (argColumn.equals(SingleSampleModel.FILES)){
+			return TridasFileList.class;
 		}
 		return null;
 	}

@@ -30,6 +30,7 @@ import java.util.Comparator;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -41,6 +42,7 @@ import org.tellervo.desktop.bulkdataentry.control.PopulateFromGeonamesEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
+import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.components.table.DynamicJComboBox;
@@ -48,12 +50,14 @@ import org.tellervo.desktop.components.table.DynamicKeySelectionManager;
 import org.tellervo.desktop.components.table.LocationTypeComboBox;
 import org.tellervo.desktop.components.table.LocationTypeRenderer;
 import org.tellervo.desktop.components.table.StringCellEditor;
+import org.tellervo.desktop.components.table.TridasFileListEditor;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
 import org.tellervo.desktop.tridasv2.ui.BooleanCellRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
+import org.tellervo.desktop.tridasv2.ui.TridasFileArrayRenderer;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.schema.WSIObjectTypeDictionary;
@@ -93,6 +97,8 @@ public class ObjectView extends AbstractBulkImportView{
 		argTable.setDefaultEditor(NormalTridasLocationType.class, new ComboBoxCellEditor(new LocationTypeComboBox()));
 		argTable.setDefaultRenderer(NormalTridasLocationType.class, new LocationTypeRenderer());
 		
+		argTable.setDefaultEditor(TridasFileList.class, new TridasFileListEditor(new JTextField()));
+		argTable.setDefaultRenderer(TridasFileList.class, new TridasFileArrayRenderer());
 		
 		
 		

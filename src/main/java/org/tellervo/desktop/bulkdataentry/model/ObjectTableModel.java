@@ -23,6 +23,8 @@
  */
 package org.tellervo.desktop.bulkdataentry.model;
 
+import java.util.List;
+
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
 import org.tellervo.schema.WSIObjectTypeDictionary;
 import org.tridas.schema.NormalTridasLocationType;
@@ -63,6 +65,9 @@ public class ObjectTableModel extends AbstractBulkImportTableModel {
 			return GPXWaypoint.class;
 		}else if(argColumn.equals(SingleObjectModel.PARENT_OBJECT)){
 			return TridasObject.class;
+		}
+		else if (argColumn.equals(SingleObjectModel.FILES)){
+			return TridasFileList.class;
 		}
 		return null;
 	}

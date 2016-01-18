@@ -219,11 +219,13 @@ class request
         global $domain;
         global $tellervoNS;
         global $tridasNS;
+        global $xlinkNS;
         global $firebug;
 
         $xpath = new DOMXPath($this->xmlRequestDom);
        	$xpath->registerNamespace('tvo', $tellervoNS);
        	$xpath->registerNamespace('tridas', $tridasNS);
+       	$xpath->registerNamespace('xlink', $xlinkNS);
         
        	$firebug->log($this->crudMode, "CRUD Mode");
        	
@@ -241,6 +243,7 @@ class request
         		if($item->nodeType != XML_ELEMENT_NODE) continue;  
 					$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', $tellervoNS);
 					$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:tridas', $tridasNS);
+					$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', $xlinkNS);
         		
                     $firebug->log($item, "XML item");
 	            $parentID = NULL;
@@ -268,6 +271,7 @@ class request
 					
 					$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', $tellervoNS);
 					$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:tridas', $tridasNS);
+					$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', $xlinkNS);
 					
 				    $firebug->log($item, "XML item");	
 				    
@@ -398,6 +402,7 @@ class request
             {
             	$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', $tellervoNS);
             	$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:tridas', $tridasNS);
+		$item->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', $xlinkNS);
             	             	
             	switch($item->tagName)
             	{
@@ -458,6 +463,7 @@ class request
 
                         $authTag->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', $tellervoNS);
                         $authTag->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:tridas', $tridasNS);
+			$authTag->setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', $xlinkNS);
 
                         $myParamObj = new authenticationParameters($this->xmlRequestDom->saveXML($authTag));
                         array_push($this->paramObjectsArray, $myParamObj);  

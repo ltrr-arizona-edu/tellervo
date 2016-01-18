@@ -86,6 +86,9 @@ public class ElementTableModel extends AbstractBulkImportTableModel {
 		}else if(argColumn.equals(SingleElementModel.WAYPOINT)){
 			return GPXWaypoint.class;
 		}
+		else if (argColumn.equals(SingleElementModel.FILES)){
+			return TridasFileList.class;
+		}
 		return null;
 	}
 	
