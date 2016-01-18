@@ -57,6 +57,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	public static final String COMMENTS = "Comments";
 	public static final String TYPE = "Type";
 	public static final String DESCRIPTION = "Description";
+	public static final String FILES = "File references";
 	public static final String LATITUDE = "Latitude";
 	public static final String LONGITUDE = "Longitude";
 	public static final String WAYPOINT = "Waypoint";
@@ -73,7 +74,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	public static final String OWNER = "Owner";
 	public static final String CREATOR = "Creator";
 	public static final String VEGETATION_TYPE = "Vegetation type";
-	public static final String FILES = "File references";
+	
 	
 	
 	// Not implemented yet
@@ -82,8 +83,8 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	
 	
 	public static final String[] TABLE_PROPERTIES = {
-		PARENT_OBJECT, OBJECT_CODE, TITLE, TYPE, DESCRIPTION, COMMENTS, LATITUDE, LONGITUDE, WAYPOINT, LOCATION_PRECISION, LOCATION_TYPE, LOCATION_COMMENT,
-		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, POSTCODE, COUNTRY,  OWNER, CREATOR, VEGETATION_TYPE, FILES,
+		PARENT_OBJECT, OBJECT_CODE, TITLE, TYPE, DESCRIPTION, FILES, COMMENTS, LATITUDE, LONGITUDE, WAYPOINT, LOCATION_PRECISION, LOCATION_TYPE, LOCATION_COMMENT,
+		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, POSTCODE, COUNTRY,  OWNER, CREATOR, VEGETATION_TYPE,
 	};
 	
 	public SingleObjectModel(){

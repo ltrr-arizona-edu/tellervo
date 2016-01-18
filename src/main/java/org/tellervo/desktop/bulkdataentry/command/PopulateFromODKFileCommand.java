@@ -50,6 +50,7 @@ import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
+import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.bulkdataentry.view.ODKParserLogViewer;
 import org.tellervo.desktop.bulkdataentry.view.odkwizard.ODKImportWizard;
 import org.tellervo.desktop.core.App;
@@ -63,6 +64,7 @@ import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
@@ -525,8 +527,12 @@ public class PopulateFromODKFileCommand implements ICommand {
 			if(!finalloc.endsWith("/")) finalloc = finalloc+"/";
 			String fullurl = finalloc+f.getName();
 			
-			comments += "Media file: "+fullurl;
-			newrow.setProperty(SingleObjectModel.COMMENTS, comments);
+			TridasFileList tfl = new TridasFileList();
+			TridasFile tf = new TridasFile();
+			tf.setHref(fullurl);
+			tfl.add(tf);
+			
+			newrow.setProperty(SingleObjectModel.FILES, tfl);
 		
 		}
 		else

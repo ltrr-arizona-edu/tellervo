@@ -45,9 +45,11 @@ public class FullEditor extends AbstractEditor {
 	private JPanel metadataHolder;
 	private JPanel componentHolder;
 	private JPanel dependentHolder;
+	private JPanel referencesHolder;
 	private JPanel mapHolder;
 	public WWJPanel wwMapPanel;
 	private TridasMetadataPanel metaView;
+	private ReferencedFilePanel refFilePanel;
 	
 	
 	/**
@@ -147,11 +149,15 @@ public class FullEditor extends AbstractEditor {
 		dependentHolder = new JPanel();
 		dependentHolder.setLayout(new BorderLayout());
 		
+		referencesHolder = new JPanel();
+		referencesHolder.setLayout(new BorderLayout());
+		
 		mapHolder = new JPanel();
 		mapHolder.setLayout(new BorderLayout());		
 		tabbedPane.addTab("Metadata", Builder.getIcon("database.png", 16), metadataHolder, null);
-		tabbedPane.addTab("ComponentsViewer", Builder.getIcon("history.png", 16), componentHolder, null);
-		tabbedPane.addTab("DependentsViewer", Builder.getIcon("dependent.png", 16), dependentHolder, null);
+		tabbedPane.addTab("Components Viewer", Builder.getIcon("history.png", 16), componentHolder, null);
+		tabbedPane.addTab("Dependents Viewer", Builder.getIcon("dependent.png", 16), dependentHolder, null);
+		tabbedPane.addTab("Referenced File Viewer", Builder.getIcon("link.png", 16), referencesHolder, null);
 		
 		// Important hack to ensure resizing of whole GUI works correctly.  Without this gui grows but doesn't shrink!
 		mapHolder.setMinimumSize(new Dimension(0, 0));
@@ -445,8 +451,7 @@ public class FullEditor extends AbstractEditor {
 					metadataHolder.removeAll();
 					metaView = new TridasMetadataPanel(sample);
 					metadataHolder.add(metaView, BorderLayout.CENTER);
-					
-					
+										
 					// Components tab
 					ComponentViewerOld componentsPanel;	
 					componentHolder.setVisible(sample.getSampleType().isDerived());
@@ -467,6 +472,11 @@ public class FullEditor extends AbstractEditor {
 					DependentsViewer dependentsPanel = new DependentsViewer(sample);
 					dependentHolder.add(dependentsPanel, BorderLayout.CENTER);
 
+					// References tab
+					referencesHolder.removeAll();
+					refFilePanel = new ReferencedFilePanel(sample);
+					referencesHolder.add(refFilePanel, BorderLayout.CENTER);
+					
 					// Highlight map pin
 					if(OpenGLTestCapabilities.isOpenGLCapable()) wwMapPanel.highlightMarkerForSample(getSample());
 					

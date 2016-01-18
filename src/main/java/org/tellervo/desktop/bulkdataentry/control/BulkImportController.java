@@ -126,6 +126,8 @@ public class BulkImportController extends FrontController {
 		//MVC.showEventMonitor();
 	}
 	
+	
+	
 	private void populateObjectDefaults(ColumnChooserModel ccmodel){
 		
 		
@@ -137,8 +139,10 @@ public class BulkImportController extends FrontController {
 		ccmodel.add(SingleObjectModel.TYPE);
 		ccmodel.add(SingleObjectModel.COMMENTS);
 		ccmodel.add(SingleObjectModel.DESCRIPTION);
+		ccmodel.add(SingleObjectModel.FILES);
 		ccmodel.add(SingleObjectModel.LATITUDE);
 		ccmodel.add(SingleObjectModel.LONGITUDE);
+		ccmodel.add(SingleObjectModel.LOCATION_TYPE);
 		ccmodel.add(SingleObjectModel.LOCATION_PRECISION);
 		ccmodel.add(SingleObjectModel.LOCATION_COMMENT);
 		//ccmodel.add(SingleObjectModel.WAYPOINT);
@@ -160,7 +164,7 @@ public class BulkImportController extends FrontController {
 		ccmodel.add(SingleElementModel.TAXON);
 		ccmodel.add(SingleElementModel.COMMENTS);
 		ccmodel.add(SingleElementModel.DESCRIPTION);
-		//ccmodel.add(SingleElementModel.FILES);
+		ccmodel.add(SingleElementModel.FILES);
 		ccmodel.add(SingleElementModel.SHAPE);
 		ccmodel.add(SingleElementModel.HEIGHT);
 		ccmodel.add(SingleElementModel.WIDTH);
@@ -173,6 +177,7 @@ public class BulkImportController extends FrontController {
 		ccmodel.add(SingleElementModel.LONGITUDE);
 		ccmodel.add(SingleElementModel.LOCATION_PRECISION);
 		ccmodel.add(SingleElementModel.LOCATION_COMMENT);
+		ccmodel.add(SingleElementModel.LOCATION_TYPE);
 		ccmodel.add(SingleElementModel.ADDRESSLINE1);
 		ccmodel.add(SingleElementModel.ADDRESSLINE2);
 		ccmodel.add(SingleElementModel.CITY_TOWN);
@@ -197,7 +202,7 @@ public class BulkImportController extends FrontController {
 		ccmodel.add(SingleSampleModel.BOX);
 		ccmodel.add(SingleSampleModel.COMMENTS);
 		ccmodel.add(SingleSampleModel.DESCRIPTION);
-		//ccmodel.add(SingleSampleModel.FILES);
+		ccmodel.add(SingleSampleModel.FILES);
 		ccmodel.add(SingleSampleModel.SAMPLING_DATE);
 		ccmodel.add(SingleSampleModel.POSITION);
 		ccmodel.add(SingleSampleModel.STATE);
