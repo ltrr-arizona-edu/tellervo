@@ -387,12 +387,20 @@ public class TridasFileListPanel extends JPanel implements ActionListener{
 	{
 		Desktop desktop = Desktop.getDesktop();
 		
+		log.debug("Attempting to open URI : "+uri.toString());
+		log.debug("Scheme is : "+uri.getScheme());
+		
 		try{
 			// Handle different schemes here
 			if(uri.getScheme().equals("urn"))
 			{
 				URI uri2 = URI.create("http://wm-urn.org/"+uri.toString());
 				desktop.browse(uri2);
+			}
+			else if(uri.getScheme().equals("file"))
+			{
+				File f = new File(uri);
+				desktop.open(f);
 			}
 			else
 			{

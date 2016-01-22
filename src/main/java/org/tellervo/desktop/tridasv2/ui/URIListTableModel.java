@@ -1,6 +1,5 @@
 package org.tellervo.desktop.tridasv2.ui;
 
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 
@@ -9,7 +8,6 @@ import javax.swing.table.AbstractTableModel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.editor.SeriesDataMatrix;
 import org.tellervo.desktop.ui.Builder;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
@@ -29,7 +27,7 @@ public class URIListTableModel extends AbstractTableModel {
 	private final Icon webIcon;
 	private final Icon urnIcon;
 	private final Icon zipIcon;
-	
+	private boolean incEntityLevel = false;
 	
 	public URIListTableModel()
 	{
@@ -43,6 +41,10 @@ public class URIListTableModel extends AbstractTableModel {
 		zipIcon = Builder.getIcon("zip.png", 16);
 	}
 	
+	public void setIncEntityLevel(boolean b)
+	{
+		incEntityLevel = b;
+	}
 	
 	@Override
 	public int getColumnCount() {
@@ -119,11 +121,20 @@ public class URIListTableModel extends AbstractTableModel {
 		}
 		else 
 		{
+			String text = "";
+			
 			if(scheme.equals("file"))
 			{
-				return uri.getPath();
+				text = uri.getPath();
 			}
-			return uri.toString();
+			text = uri.toString();
+			
+			if(incEntityLevel)
+			{
+				text = text + " ["+" " +"]";
+			}
+			
+			return text;
 		}	
 		
 	}

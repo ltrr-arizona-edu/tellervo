@@ -54,6 +54,8 @@ public class ReferencedFilePanel extends JPanel {
 	private JButton btnOpen;
 	private ImagePreviewPanel panelPreview ;
 	private JSplitPane splitPane;
+	private JPanel panel;
+	private JLabel lblFilesAssociatedWith;
 	
 	
 	public ReferencedFilePanel()
@@ -112,14 +114,19 @@ public class ReferencedFilePanel extends JPanel {
 		setLayout(new MigLayout("", "[grow]", "[grow,fill][]"));
 		
 		splitPane = new JSplitPane();
+		splitPane.setResizeWeight(1.0);
 		add(splitPane, "cell 0 0,grow");
 		
 		panelPreview= new ImagePreviewPanel();
 		splitPane.setRightComponent(panelPreview);
 		panelPreview.setBorder(new TitledBorder(UIManager.getBorder("SplitPane.border"), "Preview", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		
+		panel = new JPanel();
+		splitPane.setLeftComponent(panel);
+		panel.setLayout(new BorderLayout(0, 0));
+		
 		JPanel panelList = new JPanel();
-		splitPane.setLeftComponent(panelList);
+		panel.add(panelList, BorderLayout.CENTER);
 		panelList.setLayout(new BorderLayout(0, 0));
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -205,9 +212,12 @@ public class ReferencedFilePanel extends JPanel {
 		tblFileList.setFont(new Font("Dialog", Font.PLAIN, 12));
 		tblFileList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 		
+		lblFilesAssociatedWith = new JLabel("Files associated with this series:");
+		panel.add(lblFilesAssociatedWith, BorderLayout.NORTH);
 		
 		
-		btnOpen = new JButton("View");
+		
+		btnOpen = new JButton("Open selected file");
 		btnOpen.addActionListener(new ActionListener(){
 
 			@Override
@@ -227,7 +237,7 @@ public class ReferencedFilePanel extends JPanel {
 			
 		});
 		btnOpen.setIcon(Builder.getIcon("document_preview.png", 16));
-		add(btnOpen, "cell 0 1");
+		add(btnOpen, "flowx,cell 0 1");
 	}
 	
 	private void previewURI()
