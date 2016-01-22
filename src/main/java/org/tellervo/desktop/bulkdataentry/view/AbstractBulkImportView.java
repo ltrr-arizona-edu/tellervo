@@ -32,6 +32,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Comparator;
 
 import javax.swing.AbstractButton;
 import javax.swing.Box;
@@ -42,6 +43,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.table.TableRowSorter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +55,7 @@ import org.tellervo.desktop.bulkdataentry.control.DisplayColumnChooserEvent;
 import org.tellervo.desktop.bulkdataentry.control.RemoveSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportTableModel;
+import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.JTableRowHeader;
@@ -146,6 +149,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setRowSelectionAllowed(true);
 		table.setCellSelectionEnabled(true);
+
+		
 		//table.setColumnSelectionAllowed(true);
 		
 		// Enable copynpaste
@@ -167,6 +172,18 @@ public abstract class AbstractBulkImportView extends JPanel{
 	
 	private void linkModel() {
 		table.setModel(model.getTableModel());
+		
+		TableRowSorter sorter = new TableRowSorter();
+		table.setRowSorter(sorter);
+		sorter.setModel(table.getModel());
+		
+		NumberThenStringComparator comparator = new NumberThenStringComparator();
+		
+		for(int c=0; c<model.getTableModel().getColumnCount(); c++)
+		{
+			sorter.setComparator(c, comparator);
+		}
+		
 	}
 	
 	protected void addListeners() {
@@ -593,4 +610,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		
 		
 	}
+	
+
+	
 }
