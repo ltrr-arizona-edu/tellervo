@@ -105,6 +105,7 @@ public class ElementTableModel extends AbstractBulkImportTableModel {
 			GPXWaypoint wp = (GPXWaypoint) argAValue;
 			argModel.setProperty(SingleElementModel.LATITUDE, wp.getLatitude());
 			argModel.setProperty(SingleElementModel.LONGITUDE, wp.getLongitude());
+			argModel.setProperty(SingleElementModel.ALTITUDE, wp.getElevation());
 		}
 		// If it's lat/long data, remove the waypoint
 		if(argColumn.equals(SingleElementModel.LATITUDE) || argColumn.equals(SingleElementModel.LONGITUDE)){
