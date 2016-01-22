@@ -47,26 +47,7 @@ public class NumberThenStringComparator implements Comparator<Object> {
 			if (isSecondNumeric) {
 				return 1; // numbers always smaller than letters
 			} else {
-				isFirstNumeric = o1.split("[^0-9]")[0].matches("\\d+");
-				isSecondNumeric = o2.split("[^0-9]")[0].matches("\\d+");
-
-				if (isFirstNumeric) {
-					if (isSecondNumeric) {
-						int intCompare = Integer.valueOf(o1.split("[^0-9]")[0]).compareTo(Integer.valueOf(o2.split("[^0-9]")[0]));
-						if (intCompare == 0) {
-							return o1.compareToIgnoreCase(o2);
-						}
-						return intCompare;
-					} else {
-						return -1; // numbers always smaller than letters
-					}
-				} else {
-					if (isSecondNumeric) {
-						return 1; // numbers always smaller than letters
-					} else {
-						return o1.compareToIgnoreCase(o2);
-					}
-				}
+				return o1.compareToIgnoreCase(o2);
 			}
 		}
 	}

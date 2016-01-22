@@ -230,7 +230,8 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 				field = gf;
 			}
 			else if(gf.getName().equals("tellervo.externalID")){
-				setProperty(EXTERNAL_ID, field.getValue());
+				
+				setProperty(EXTERNAL_ID, gf.getValue());
 			}
 		}
 			

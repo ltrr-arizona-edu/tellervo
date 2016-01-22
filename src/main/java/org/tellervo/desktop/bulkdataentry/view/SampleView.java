@@ -39,6 +39,7 @@ import org.tellervo.desktop.bulkdataentry.control.PrintSampleBarcodesEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
+import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.components.table.DynamicJComboBox;
@@ -46,6 +47,7 @@ import org.tellervo.desktop.components.table.DynamicKeySelectionManager;
 import org.tellervo.desktop.components.table.NattyDateEditor;
 import org.tellervo.desktop.components.table.StringCellEditor;
 import org.tellervo.desktop.components.table.TridasElementRenderer;
+import org.tellervo.desktop.components.table.TridasFileListEditor;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.components.table.WSIBoxRenderer;
 import org.tellervo.desktop.core.App;
@@ -53,6 +55,7 @@ import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
 import org.tellervo.desktop.tridasv2.ui.BooleanCellRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
+import org.tellervo.desktop.tridasv2.ui.TridasFileArrayRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
 import org.tellervo.desktop.tridasv2.ui.TridasDatingCellRenderer;
 import org.tellervo.desktop.ui.Builder;
@@ -105,6 +108,8 @@ public class SampleView  extends AbstractBulkImportView{
 		argTable.setDefaultEditor(WSISampleTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("sampleTypeDictionary")));
 		argTable.setDefaultRenderer(WSISampleTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
+		argTable.setDefaultEditor(TridasFileList.class, new TridasFileListEditor(new JTextField()));
+		argTable.setDefaultRenderer(TridasFileList.class, new TridasFileArrayRenderer());
 
 		/*MVCJComboBox<TridasElement> cboElement = new MVCJComboBox<TridasElement>(null, new Comparator<TridasElement>(){
 			public int compare(TridasElement argO1, TridasElement argO2) {
