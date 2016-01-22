@@ -27,6 +27,7 @@ import java.text.NumberFormat;
 import java.util.List;
 
 import org.tridas.schema.TridasLocationGeometry;
+import org.tridas.spatial.GMLPointSRSHandler;
 
 /**
  * @author Lucas Madar
@@ -48,20 +49,17 @@ public class LocationGeometryRenderer extends DefaultCellRendererEx {
 			if(!geo.getPoint().isSetPos() || !geo.getPoint().getPos().isSetValues())
 				return null;
 			
-			List<Double> values = geo.getPoint().getPos().getValues();
+			GMLPointSRSHandler tph = new GMLPointSRSHandler(geo.getPoint());
 			
-			// invalid size, expecting long, lat pair
-			if(values.size() != 2)
-				return null;
+			if(tph.getWGS84LatCoord()==null || tph.getWGS84LongCoord()==null) return null;
 			
 			NumberFormat format = NumberFormat.getInstance();
-			
 			// same as in LocationGeometryUI!
 			format.setMinimumFractionDigits(3);
 			format.setMaximumFractionDigits(5);
-			
+
 			// lat long
-			return format.format(values.get(1)) + " " + format.format(values.get(0));
+			return "Lat: "+format.format(tph.getWGS84LatCoord()) + " Lon: " + format.format(tph.getWGS84LongCoord());
 		}
 		
 		return super.convertToString(value);

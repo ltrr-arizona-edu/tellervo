@@ -50,6 +50,7 @@ import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.components.table.WSIBoxRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
 import org.tellervo.desktop.tridasv2.ui.BooleanCellRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
@@ -105,7 +106,7 @@ public class SampleView  extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSISampleTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		
 
-		MVCJComboBox<TridasElement> cboElement = new MVCJComboBox<TridasElement>(null, new Comparator<TridasElement>(){
+		/*MVCJComboBox<TridasElement> cboElement = new MVCJComboBox<TridasElement>(null, new Comparator<TridasElement>(){
 			public int compare(TridasElement argO1, TridasElement argO2) {
 				if(argO1 == null){
 					return -1;
@@ -115,7 +116,9 @@ public class SampleView  extends AbstractBulkImportView{
 				}
 				return argO1.getTitle().compareToIgnoreCase(argO2.getTitle());
 			}
-		});
+		});*/
+		Comparator comparator = new NumberThenStringComparator();
+		MVCJComboBox<TridasElement> cboElement = new MVCJComboBox<TridasElement>(null, comparator);
 		cboElement.setRenderer(new TridasElementRenderer());
 		cboElement.setKeySelectionManager(new DynamicKeySelectionManager() {
 			@Override
