@@ -199,11 +199,10 @@ public class SampleView  extends AbstractBulkImportView{
 		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(obj));
 		argTable.setDefaultRenderer(TridasObject.class, new TridasObjectExRenderer());
 		
-		DatePicker datePicker = new DatePicker();
-		datePicker.setFocusable(false);
+		//DatePicker datePicker = new DatePicker();
+		//datePicker.setFocusable(false);
 		//argTable.setDefaultEditor(Date.class, new DateEditor(datePicker));
 		argTable.setDefaultEditor(Date.class, new NattyDateEditor(new JTextField()));
-
 		argTable.setDefaultRenderer(Date.class, new TridasDatingCellRenderer());
 
 	}
