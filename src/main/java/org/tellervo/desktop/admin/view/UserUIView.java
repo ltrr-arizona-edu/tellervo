@@ -30,10 +30,12 @@ import java.util.ArrayList;
 import javax.swing.GroupLayout;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.LayoutStyle;
 import javax.swing.table.TableRowSorter;
 
 import net.miginfocom.swing.MigLayout;
+
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 import javax.swing.border.TitledBorder;
@@ -51,6 +53,8 @@ import org.tellervo.schema.WSISecurityGroup;
 import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+
+import javax.swing.JTextField;
 
 /*
  * UserUI.java
@@ -129,7 +133,7 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
         btnDoIt.setText("Apply");
         
         btnDoIt.setActionCommand("doit");
-        getContentPane().setLayout(new MigLayout("hidemode 3", "[81px][140px,grow][107px,grow][73px]", "[19px][19px][][100px,grow][0px:n,shrink 0][0px:n,shrink 0][25px]"));
+        getContentPane().setLayout(new MigLayout("hidemode 3", "[81px][140px,grow][107px,grow][73px]", "[19px][19px][][100px,grow][0px:n,shrink 0][0px:n,shrink 0][][25px]"));
         txtFirstname = new javax.swing.JTextField();
         getContentPane().add(txtFirstname, "cell 1 0,growx");
         
@@ -201,18 +205,60 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
                 getContentPane().add(lblPassword2, "hidemode 2,cell 0 5,alignx right,aligny center");
         txtPassword2 = new javax.swing.JPasswordField();
         getContentPane().add(txtPassword2, "cell 1 5 3 1,growx");
+        
+        btnSetOdkAccess = new JButton("Set ODK Access Password");
+        btnSetOdkAccess.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+				JPanel panel = new JPanel();
+				JLabel label = new JLabel("Enter a password:");
+				JPasswordField pass = new JPasswordField(30);
+				panel.add(label);
+				panel.add(pass);
+				String[] options = new String[]{"OK", "Cancel"};
+				int option = JOptionPane.showOptionDialog(btnSetOdkAccess, panel, "ODK Access Password",
+				                         JOptionPane.NO_OPTION, JOptionPane.PLAIN_MESSAGE,
+				                         null, options, options[0]);
+				if(option == 0) // pressing OK button
+				{
+				    String password = new String(pass.getPassword());
+				    txtODKPassword.setText(password);
+				}
+				
+			}
+        	
+        });
+        getContentPane().add(btnSetOdkAccess, "flowx,cell 1 6 2 1");
         txtId = new javax.swing.JTextField();
         
                 txtId.setEditable(false);
-                getContentPane().add(txtId, "cell 0 6,growx,aligny top");
-        getContentPane().add(btnDoIt, "flowx,cell 2 6 2 1,alignx right,aligny top");
+                getContentPane().add(txtId, "cell 0 7,growx,aligny top");
+        
+        txtODKPassword = new javax.swing.JPasswordField();
+        txtODKPassword.setVisible(false);
+        getContentPane().add(txtODKPassword, "cell 1 7,growx");;
+        getContentPane().add(btnDoIt, "flowx,cell 2 7 2 1,alignx right,aligny top");
         getContentPane().add(lblUser, "cell 0 1,alignx right,aligny center");
         getContentPane().add(lblName, "cell 0 0,alignx right,aligny center");
         
         btnClose = new JButton("Close");
         btnClose.setActionCommand("close");
         btnClose.addActionListener(this);
-        getContentPane().add(btnClose, "cell 2 6");
+        getContentPane().add(btnClose, "cell 2 7 2 1");
+        
+        btnRemoveOdkAccess = new JButton("Remove ODK Access");
+        btnRemoveOdkAccess.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				txtODKPassword.setText("DELETE");
+				
+			}
+        	
+        });
+        getContentPane().add(btnRemoveOdkAccess, "cell 1 6 3 1");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -236,6 +282,9 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
     private JLabel lblIcon;
     private JLabel lblMemberOf;
     private JButton btnClose;
+    private JTextField txtODKPassword;
+    private JButton btnSetOdkAccess;
+    private JButton btnRemoveOdkAccess;
     // End of variables declaration//GEN-END:variables
  
 	private void setupGUI()
@@ -265,6 +314,7 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 	    	if(user.isSetId()) 		  txtId.setText(user.getId());
 	    	if(user.isSetUsername())  txtUsername.setText(user.getUsername());
 	    	if(user.isSetIsActive())  chkEnabled.setSelected(user.isIsActive());
+
     	}
     	
         // Populate groups list
@@ -304,7 +354,8 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 		user.setFirstName(txtFirstname.getText());
 		user.setLastName(txtLastname.getText());
 		user.setUsername(txtUsername.getText());
-		user.setIsActive(this.chkEnabled.isSelected());
+		user.setIsActive(chkEnabled.isSelected());
+		if(!txtODKPassword.getText().isEmpty()) user.setOdkPassword(txtODKPassword.getText());
 		
 		ArrayList<WSISecurityGroup> newMemList = this.groupsModel.getNewGroupMembership();
 		for(WSISecurityGroup g:newMemList){

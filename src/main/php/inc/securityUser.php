@@ -69,6 +69,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
                 $this->setFirstName($row['firstname']);
                 $this->setLastName($row['lastname']);
                 $this->setPassword($row['password'], "hash");
+                $this->setODKPassword($row['odkpassword']);
                 $this->setIsActive(dbHelper::formatBool($row['isactive']));
             }
         }
@@ -123,6 +124,8 @@ class securityUser extends securityUserEntity implements IDBAccessor
         if ($paramsClass->getUsername()!=null)     		$this->setUsername($paramsClass->getUsername());
         if ($paramsClass->getFirstName()!=null)    		$this->setFirstName($paramsClass->getFirstName());
         if ($paramsClass->getLastName()!=null)     		$this->setLastName($paramsClass->getLastName());
+        if ($paramsClass->getODKPassword()!=null)     		$this->setODKPassword($paramsClass->getODKPassword());
+	if ($paramsClass->getODKPassword()=="DELETE")		$this->setODKPassword(NULL);
         if ($paramsClass->getHashedPassword()!=null)    $this->setPassword($paramsClass->getHashedPassword(), "hash");
 
         if (($paramsClass->getIsActive()==TRUE) || ($paramsClass->getIsActive()==FALSE))   		
@@ -227,6 +230,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
             $xml.= "username=\"".dbHelper::escapeXMLChars($this->username)."\" ";
             $xml.= "firstName=\"".dbHelper::escapeXMLChars($this->firstName)."\" ";
             $xml.= "lastName=\"".dbHelper::escapeXMLChars($this->lastName)."\" ";
+	    //if(isset($this->odkPassword) $xml.= "odkPassword=\"".dbHelper::escapeXMLChars("xxxxx")."\" ";
             $xml.= "isActive=\"".dbHelper::formatBool($this->isActive, 'english')."\" ";
             
 
@@ -326,12 +330,13 @@ class securityUser extends securityUserEntity implements IDBAccessor
                     $this->setID(uuid::getUUID(), 0);
                     
 		    // New record
-                    $sql = "insert into tblsecurityuser (securityuserid, username, password, firstName, lastName, isactive) values (";
+                    $sql = "insert into tblsecurityuser (securityuserid, username, password, firstName, lastName, odkpassword isactive) values (";
                     $sql.= "'".pg_escape_string($this->id)."', ";
                     $sql.= "'".pg_escape_string($this->username)."', ";
                     $sql.= "'".pg_escape_string($this->password)."', ";
                     $sql.= "'".pg_escape_string($this->firstName)."', ";
                     $sql.= "'".pg_escape_string($this->lastName)."', ";
+                    $sql.= "'".pg_escape_string($this->odkPassword)."', ";
                     $sql.= dbhelper::formatBool($this->isActive,'pg');
                     $sql.= " )";
                     $sql2 = "select * from tblsecurityuser where securityuserid='".$this->id."'";
@@ -344,6 +349,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
                     $sql.= "password = '".pg_escape_string($this->password)."', ";
                     $sql.= "firstName = '".pg_escape_string($this->firstName)."', ";
                     $sql.= "lastName = '".pg_escape_string($this->lastName)."', ";
+                    $sql.= "odkpassword = '".pg_escape_string($this->odkPassword)."', ";
                     $sql.= "isactive = ".dbhelper::formatBool($this->isActive, 'pg');
                     $sql.= " where securityuserid = '".$this->id."'";
                 }

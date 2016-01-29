@@ -512,6 +512,57 @@ class permissionParameters extends permissionEntity implements IParams
     }
 }
 
+class odkFormDefinitionParameters extends odkFormDefinitionEntity implements IParams
+{
+ 
+	var $xmlRequestDom = NULL;
+	var $mergeWithID = NULL;
+
+	function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
+	{
+		global $firebug;
+		//$firebug->log($xmlrequest, "XML request received by odkFormDefinitionParameters");
+		 
+		parent::__construct();
+
+		$this->xmlRequestDom = new DomDocument();
+		$this->xmlRequestDom->loadXML($xmlrequest);
+
+		// Extract parameters from the XML request
+		$this->setParamsFromXMLRequest();
+	}
+
+	function innerXML($node) 
+	{ 
+		$doc = $node->ownerDocument; 
+		$frag = $doc->createDocumentFragment(); 
+		foreach ($node->childNodes as $child) 
+		{ 
+			$frag->appendChild($child->cloneNode(TRUE)); 
+		} 
+		return $doc->saveXML($frag); 
+	}
+
+	function setParamsFromXMLRequest()
+	{
+		
+		global $tellervoNS;
+		global $tridasNS;
+		global $firebug;
+
+		
+		
+		$this->setName($this->xmlRequestDom->documentElement->getAttribute("name"));
+		$this->setOwnerID($this->xmlRequestDom->documentElement->getAttribute("ownerid"));
+		$this->setID($this->xmlRequestDom->documentElement->getAttribute("id"));
+		$this->setDefinition($this->innerXML($this->xmlRequestDom->documentElement));
+
+
+
+	}
+
+}
+
 class tagParameters extends tagEntity implements IParams
 {
  
@@ -1882,6 +1933,7 @@ class securityUserParameters extends securityUserEntity implements IParams
 		   		if($child->hasAttribute("lastName")) $this->setLastname($child->getAttribute("lastName"));
 		   		if($child->hasAttribute("isActive")) $this->setIsActive(dbhelper::formatBool($child->getAttribute("isActive"),"php"));
 		   		if($child->hasAttribute("hashOfPassword")) $this->setPassword($child->getAttribute("hashOfPassword"), "hash");
+		   		if($child->hasAttribute("odkPassword")) $this->setODKPassword($child->getAttribute("odkPassword"));
 				if($child->hasAttribute("memberOf")){
 					$groups = explode(" ", trim($child->getAttribute("memberOf")));
 					$this->groupArray  = $groups;

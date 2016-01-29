@@ -84,18 +84,17 @@ class geometry
 		   $coords = explode(" ", $doc->getElementsByTagName("pos")->item(0)->nodeValue, 2);
 		     
 		   
-           // Calculate geometry value and store
-           if($tag->hasAttribute("srsName") && $tag->getAttribute("srsName") && $tag->getAttribute("srsName")!="urn:ogc:def:crs:EPSG::4326")
-           {
-                // When reading geom with full urn for srsName the coordinates are lat lon
-                $this->setPointGeometryFromLatLong($coords[0], $coords[1]); 
-           }
-           else
-           {
-           		// When reading geom with short style srsName the coordinates are lon lat
-                $this->setPointGeometryFromLatLong($coords[1], $coords[0]);
-           }
-   
+		   // Calculate geometry value and store
+		   if($tag->hasAttribute("srsName") && $tag->getAttribute("srsName") && $tag->getAttribute("srsName")!="urn:ogc:def:crs:EPSG::4326")
+		   { 
+		        // When reading geom with full urn  for srsName we need to switch the coordinates
+		   	$this->setPointGeometryFromLatLong($coords[1], $coords[0]);	
+		   }
+		   else
+		   {
+		   	$this->setPointGeometryFromLatLong($coords[0], $coords[1]);	
+		   }
+		   return true;	   
         }
   
 	}

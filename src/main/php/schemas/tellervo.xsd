@@ -47,6 +47,8 @@
 			<xs:enumeration value="curation"/>
 			<xs:enumeration value="loan"/>
 			<xs:enumeration value="tag"/>
+			<xs:enumeration value="odkformdefinition"/>
+			<xs:enumeration value="odkforminstance"/>
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -270,6 +272,8 @@
 			<xs:enumeration value="seriescount"/>
 			<xs:enumeration value="seriescode"/>
 			<xs:enumeration value="dependentseriesid"/>
+			<xs:enumeration value="seriescreated"/>
+			<xs:enumeration value="serieslastmodified"/>
 			
 			<!-- BOX ATTRIBUTES -->
 			<xs:enumeration value="boxid"/>
@@ -451,6 +455,8 @@
 					<xs:element ref="curation" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="loan" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="odkformdefinition" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="odkforminstance" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:annotation>
@@ -514,6 +520,7 @@
 									<xs:simpleType>
 										<xs:restriction base="xs:string">
 											<xs:enumeration value="seconds"/>
+											<xs:enumeration value="ms"/>	
 										</xs:restriction>
 									</xs:simpleType>
 								</xs:attribute>
@@ -584,6 +591,8 @@
 				<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="odkformdefinition" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="odkforminstance" minOccurs="0" maxOccurs="unbounded"/>
 				
 
                 <xs:element ref="objectTypeDictionary" minOccurs="0" maxOccurs="1"/>
@@ -994,6 +1003,7 @@
 			<xs:attribute name="isActive" type="xs:boolean" use="optional" />
 			<xs:attribute name="memberOf" type="idList" use="optional" />
 			<xs:attribute name="hashOfPassword" type="xs:string" use="optional"/>
+			<xs:attribute name="odkPassword" type="xs:string" use="optional" />
 		</xs:complexType>
 	</xs:element>	
 	
@@ -1054,6 +1064,8 @@
 	<xs:element name="tag" >
 		<xs:complexType>
 			<xs:sequence>
+				<!-- IGNORE THIS ELEMENT! It's only here to satisfy JAXB for the inheritance of WSITag  -->
+				<xs:element ref="tridas:identifier" minOccurs="0"/>
 				<xs:element name="assignedTo" minOccurs="0" maxOccurs="1" >
 					<xs:complexType>
 						<xs:sequence>
@@ -1071,6 +1083,40 @@
 			<xs:attribute name="value" type="xs:string" use="required"/>
 		</xs:complexType>	
 	</xs:element>
+	
+		<!--
+		%%%%%%%%%%%%%%
+		% ODK Definition
+		%%%%%%%%%%%%%% -->
+	
+	<xs:element name="odkformdefinition" >
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any processContents="skip"/>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="optional"/>
+			<xs:attribute name="name" type="xs:string" use="optional"/>
+			<xs:attribute name="ispublic" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+
+	</xs:element>
+	
+		
+	
+		<!--
+		%%%%%%%%%%%%%%
+		% ODK Instance
+		%%%%%%%%%%%%%% -->
+	
+	<xs:element name="odkforminstance" >
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any processContents="skip"/>
+			</xs:sequence>
+		</xs:complexType>
+
+	</xs:element>
+	
 	
 	
 	<!--

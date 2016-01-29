@@ -364,6 +364,12 @@ class request
                             $myParamObj = new tagParameters($newxml);
                            
                             break;                            
+                        
+			case 'odkformdefinition':
+                            $newxml = "<odkformdefinition id=\"".$item->getAttribute('id')."\"></odkformdefinition>";
+                            $myParamObj = new odkFormDefinitionParameters($newxml);
+                           
+                            break;                            
                             
 	                	default:
 	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);
@@ -444,6 +450,9 @@ class request
             			break;
               		case "tag":
             			$myParamObj = new tagParameters($this->xmlRequestDom->saveXML($item));
+            			break;            			
+              		case "odkformdefinition":
+            			$myParamObj = new odkFormDefinitionParameters($this->xmlRequestDom->saveXML($item));
             			break;            			
             		default:
             			trigger_error("901"."Unknown entity tag &lt;".$item->tagName."&gt; when trying to ".$this->crudMode." a record", E_USER_ERROR);

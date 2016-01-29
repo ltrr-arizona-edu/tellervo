@@ -451,15 +451,14 @@ class dbEntity
  
     function getDomain()
     {
-        global $domain;
-
-        if($this->identifierDomain=='localhost' || $this->identifierDomain=='' || $this->identifierDomain==null)
-        {
-                return $domain;
-        }
-        return $this->identifierDomain;
+	global $domain;
+	
+	if($this->identifierDomain=='localhost' || $this->identifierDomain=='' || $this->identifierDomain==null)
+	{	
+		return $domain;
+	}
+	return $this->identifierDomain;
     }
-
     
     /**
      * Returns the internal XML reference string for this entity
@@ -2631,6 +2630,7 @@ class securityUserEntity extends dbEntity
     protected $firstName = NULL;
     protected $lastName = NULL;
     protected $password = NULL;
+    protected $odkPassword = NULL;
     protected $isActive = NULL;
     public    $groupArray = array();
     
@@ -2692,6 +2692,13 @@ class securityUserEntity extends dbEntity
 
         return true;
     }
+
+
+    function setODKPassword($thePassword)
+    {
+
+	$this->odkPassword=$thePassword;
+    }
     
     function setIsActive($theIsActive)
     {
@@ -2717,6 +2724,11 @@ class securityUserEntity extends dbEntity
     function getLastname()
     {
         return $this->lastName;
+    }
+    
+    function getODKPassword()
+    {
+        return $this->odkPassword;
     }
     
     function getHashedPassword()
@@ -3358,6 +3370,52 @@ class tagEntity extends dbEntity
 	{
 		return $ownerid!=NULL;
 	}
+}
+
+class odkFormDefinitionEntity extends dbEntity
+{
+	public $name = NULL;
+	protected $ownerid = NULL;
+	protected $definition = NULL;
+
+	
+	function __construct()
+	{
+		parent::__construct();
+
+	}
+	
+	function setName($txt)
+	{
+		$this->name = $txt;
+	}
+	
+	function setOwnerID($id)
+	{
+		$this->ownerid = $id;
+	}
+	
+	function setDefinition($txt)
+	{
+		$this->definition = $txt;
+	}
+
+	function getOwnerID()
+	{
+		return $this->ownerid;
+	}
+	
+	
+	function getName()
+	{
+		return $this->name;
+	}
+	
+	function getDefinition()
+	{
+		return $this->definition;
+	}
+	
 }
 
 
