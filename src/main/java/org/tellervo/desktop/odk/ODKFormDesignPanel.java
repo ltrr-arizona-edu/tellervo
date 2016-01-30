@@ -3,7 +3,6 @@ package org.tellervo.desktop.odk;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,11 +10,9 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InvalidClassException;
@@ -50,7 +47,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -67,10 +65,15 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ExtensionFileFilter;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.resources.WSIOdkFormDefinitionResource;
+import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSIOdkFormDefinition;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+import org.xml.sax.SAXException;
 
 import com.jidesoft.swing.CheckBoxList;
 import com.jidesoft.swing.SearchableUtils;
@@ -518,7 +521,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		JButton btnSave = new JButton("Generate ODK Form");
 		btnSave.setActionCommand("Save");
 		btnSave.addActionListener(this);
-		panel.setLayout(new MigLayout("", "[][][grow][][73px]", "[25px]"));
+		panel.setLayout(new MigLayout("", "[][][grow][][][73px]", "[25px]"));
 		
 		JButton btnLoadFormDef = new JButton("Load Form Design");
 		panel.add(btnLoadFormDef, "cell 0 0,alignx left,aligny top");
@@ -563,12 +566,24 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			}
 			
 		});
-		panel.add(btnSave, "cell 3 0,alignx left,aligny top");
+		
+		JButton btnUploadForm = new JButton("Upload Form");
+		btnUploadForm.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				uploadForm();
+				
+			}
+			
+		});
+		panel.add(btnUploadForm, "cell 3 0");
+		panel.add(btnSave, "cell 4 0,alignx left,aligny top");
 		
 		JButton btnCancel = new JButton("Close");
 		btnCancel.setActionCommand("Cancel");
 		btnCancel.addActionListener(this);
-		panel.add(btnCancel, "cell 4 0,alignx left,aligny top");
+		panel.add(btnCancel, "cell 5 0,alignx left,aligny top");
 		
 		// Make sure all mandatory fields are selected
 		this.addAllFields();
@@ -576,6 +591,48 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		setChoiceGUIVisible(false);
 
 
+	}
+	
+	private void uploadForm()
+	{
+		String contents = ODKFormGenerator.generate(txtFormName.getText(), (ArrayList<ODKFieldInterface>) this.selectedFieldsModel.getAllFields(), null);
+		
+
+		WSIOdkFormDefinition odkform = new WSIOdkFormDefinition();
+		
+		odkform.setName(txtFormName.getText());
+		
+
+		
+		org.w3c.dom.Element formdef = null;
+		try {
+			formdef = DocumentBuilderFactory
+				    .newInstance()
+				    .newDocumentBuilder()
+				    .parse(new ByteArrayInputStream(contents.getBytes()))
+				    .getDocumentElement();
+		} catch (SAXException | IOException | ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		odkform.setAny(formdef);
+			
+		// Create resource
+		WSIOdkFormDefinitionResource resource = new WSIOdkFormDefinitionResource(odkform, TellervoRequestType.CREATE);
+
+		// set up a dialog...
+		TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(this.parent, resource);
+
+		resource.query();
+		dialog.setVisible(true);
+		if(!dialog.isSuccessful()) 
+		{ 
+			Alert.error("Error", dialog.getFailException().getMessage());
+			return;
+		}
+		
+		
 	}
 	
 	private void loadFormDefinition() throws ClassNotFoundException, IOException

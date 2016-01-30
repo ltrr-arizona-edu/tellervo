@@ -25,16 +25,16 @@ package org.tellervo.desktop.wsi.tellervo;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.EntityType;
+import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSICuration;
 import org.tellervo.schema.WSIEntity;
 import org.tellervo.schema.WSILoan;
+import org.tellervo.schema.WSIOdkFormDefinition;
 import org.tellervo.schema.WSIRequest;
 import org.tellervo.schema.WSITag;
 import org.tridas.interfaces.ICoreTridas;
-import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -135,6 +135,14 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 				readDeleteOrMergeEntity.setId(((WSITag) entity).getId());
 
 			}
+			else if(entity instanceof WSIOdkFormDefinition)
+			{
+				if(((WSIOdkFormDefinition) entity).isSetId()==false)
+					throw new IllegalArgumentException("Delete called with no identifier");
+
+				readDeleteOrMergeEntity.setId(((WSIOdkFormDefinition) entity).getId());
+
+			}
 			else
 			{
 				TridasIdentifier identifier = entity.getIdentifier();
@@ -163,7 +171,8 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 				    || entity instanceof WSIBox 
 				    || entity instanceof WSILoan 
 				    || entity instanceof WSICuration 
-				    || entity instanceof WSITag))
+				    || entity instanceof WSITag
+				    || entity instanceof WSIOdkFormDefinition))
 				throw new IllegalArgumentException("CREATE called with ParentObjectID == null!");
 		}
 	}
@@ -263,6 +272,8 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 			request.getCurations().add((WSICuration) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof WSITag)
 			request.getTags().add((WSITag) createOrUpdateEntity);
+		else if(createOrUpdateEntity instanceof WSIOdkFormDefinition)
+			request.getOdkFormDefinitions().add((WSIOdkFormDefinition) createOrUpdateEntity);
 		else 
 			throw new IllegalArgumentException("Unknown/invalid entity type for update/create: " + 
 					createOrUpdateEntity.toString());

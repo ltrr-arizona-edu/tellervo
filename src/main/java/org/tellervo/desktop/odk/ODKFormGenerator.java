@@ -26,7 +26,7 @@ public class ODKFormGenerator {
 
 	private static final Logger log = LoggerFactory.getLogger(ODKFormGenerator.class);
 
-	public static void generate(File outfile, String formNameFull, ArrayList<ODKFieldInterface> mainFields, ArrayList<ODKFieldInterface> secondaryFields)
+	public static String generate(String formNameFull, ArrayList<ODKFieldInterface> mainFields, ArrayList<ODKFieldInterface> secondaryFields)
 	{
 		StringBuilder data = new StringBuilder();
 		
@@ -40,18 +40,14 @@ public class ODKFormGenerator {
 		// Sanity checks
 		if(mainFields==null ) {
 			log.error("Need fields to generate an ODK form!");
-			return;
+			return null;
 		}
 		if(secondaryFields==null ) secondaryFields = new ArrayList<ODKFieldInterface>();
-		if(outfile==null) 
-		{
-			log.error("Need output file to generate an ODK form!");
-			return;
-		}
+
 		if(formNameFull==null) 
 		{
 			log.error("Need form name to generate an ODK form!");
-			return;
+			return null;
 		}
 		String formName = StringUtils.escapeForXML(formNameFull.replace(" ", "_"));
 
@@ -72,7 +68,7 @@ public class ODKFormGenerator {
 		if(objectFieldCount>0 && (elementFieldCount>0 || sampleFieldCount>0 || radiusFieldCount>0))
 		{
 			log.error("Can't mix object fields with fields from elements, samples and/or radii");
-			return;
+			return null;
 		}
 				
 		// Basic form header
@@ -168,8 +164,22 @@ public class ODKFormGenerator {
 		data.append("</h:body>");
 		data.append("</h:html>");
 		
+		return data.toString();
+	}
+	
+	
+	public static void generate(File outfile, String formNameFull, ArrayList<ODKFieldInterface> mainFields, ArrayList<ODKFieldInterface> secondaryFields)
+	{
+		if(outfile==null) 
+		{
+			log.error("Need output file to generate an ODK form!");
+			return;
+		}
+		
+		String data = generate(formNameFull, mainFields, secondaryFields);
+		
 		try {
-			FileUtils.writeStringToFile(outfile, data.toString());
+			FileUtils.writeStringToFile(outfile, data);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

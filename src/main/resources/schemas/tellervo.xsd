@@ -47,8 +47,8 @@
 			<xs:enumeration value="curation"/>
 			<xs:enumeration value="loan"/>
 			<xs:enumeration value="tag"/>
-			<xs:enumeration value="odkformdefinition"/>
-			<xs:enumeration value="odkforminstance"/>
+			<xs:enumeration value="odkFormDefinition"/>
+			<xs:enumeration value="odkFormInstance"/>
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -455,8 +455,8 @@
 					<xs:element ref="curation" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="loan" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
-					<xs:element ref="odkformdefinition" minOccurs="0" maxOccurs="unbounded"/>
-					<xs:element ref="odkforminstance" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="odkFormDefinition" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="odkFormInstance" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:sequence>
 				<xs:sequence>
 					<xs:annotation>
@@ -591,8 +591,8 @@
 				<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="odkformdefinition" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="odkforminstance" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="odkFormDefinition" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="odkFormInstance" minOccurs="0" maxOccurs="unbounded"/>
 				
 
                 <xs:element ref="objectTypeDictionary" minOccurs="0" maxOccurs="1"/>
@@ -1089,7 +1089,7 @@
 		% ODK Definition
 		%%%%%%%%%%%%%% -->
 	
-	<xs:element name="odkformdefinition" >
+	<xs:element name="odkFormDefinition" >
 		<xs:complexType>
 			<xs:sequence>
 				<xs:any processContents="skip"/>
@@ -1108,7 +1108,7 @@
 		% ODK Instance
 		%%%%%%%%%%%%%% -->
 	
-	<xs:element name="odkforminstance" >
+	<xs:element name="odkFormInstance" >
 		<xs:complexType>
 			<xs:sequence>
 				<xs:any processContents="skip"/>
