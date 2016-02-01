@@ -125,8 +125,19 @@ public class PopulateFromODKFileCommand implements ICommand {
 		ArrayList<ODKParser> filesProcessed = new ArrayList<ODKParser>();
 		ArrayList<ODKParser> filesFailed = new ArrayList<ODKParser>();
 		
+		
 		ODKImportWizard wizard = new ODKImportWizard(BulkImportModel.getInstance().getMainView());
-		String instanceFolder = wizard.getODKInstancesFolder();
+		
+		
+		String instanceFolder;
+		if(wizard.isRemoteAccessSelected())
+		{
+			instanceFolder = getRemoteODKFiles();
+		}
+		else
+		{
+			instanceFolder = wizard.getODKInstancesFolder();
+		}
 		
 		File folder = new File(instanceFolder);
 		if(!folder.exists()) {
@@ -278,6 +289,21 @@ public class PopulateFromODKFileCommand implements ICommand {
 
 	}		
 
+	private String getRemoteODKFiles()
+	{
+		Path tempFolder = null;
+		try {
+			tempFolder = Files.createTempDirectory("odkdownload", null);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+		return tempFolder.toAbsolutePath().toString();
+	}
 		
 	private void createCSVFile(ArrayList<ODKParser> parsers, String csvfilename ) throws IOException
 	{

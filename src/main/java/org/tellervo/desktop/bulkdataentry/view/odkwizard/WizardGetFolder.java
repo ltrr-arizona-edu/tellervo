@@ -3,6 +3,7 @@ package org.tellervo.desktop.bulkdataentry.view.odkwizard;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
@@ -14,33 +15,52 @@ import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
 
 import net.miginfocom.swing.MigLayout;
 
+import javax.swing.JRadioButton;
+import javax.swing.JPanel;
+
+import java.awt.Color;
 
 
 
-public class WizardGetFolder extends AbstractWizardPanel {
+
+public class WizardGetFolder extends AbstractWizardPanel implements ActionListener {
 
 
 	private static final long serialVersionUID = 1L;
 	private JTextField txtFolder;
+	private JRadioButton radLocal;
+	private JRadioButton radDownload;
+	private JButton btnBrowse;
 
 	/**
 	 * Create the panel.
 	 */
 	public WizardGetFolder() {
 		super("Step 1 - Import data from...", 
-				"The first step is to define where your ODK form instances are located.  The ODK Collect app on your device stores "
-				+ "them in the 'odk/instances/ folder in the base of your device's disk.  You may be able to mount your device's disk "
-				+ "as a mass storage device via a USB cable, or mount your device's SD-card via a card reader.  Alternatively you may choose "
-				+ "to copy this folder across to your computer using an app on your device such as Dropbox, ES File Explorer, PushBullet to name "
-				+ "a few.  Through whatever means you choose, ultimately you need to provide Tellervo with the location of the folder containing "
-				+ "your ODK data instances.");
-		setLayout(new MigLayout("", "[grow]", "[]"));
+				"The first step is to define where your ODK form instances are located.  ODK form instances can be accessed from your "
+				+ "hard disk or from your Tellervo server if you have uploaded them there.");
+		setLayout(new MigLayout("", "[grow]", "[][][][grow]"));
+		
+		radDownload = new JRadioButton("Download from server");
+		radDownload.setSelected(true);
+		radDownload.setBackground(Color.WHITE);
+		radDownload.addActionListener(this);
+		radDownload.setActionCommand("RadioChange");
+		add(radDownload, "cell 0 0");
+		
+		radLocal = new JRadioButton("Files in local folder");
+		radLocal.setBackground(Color.WHITE);
+		radLocal.addActionListener(this);
+		radLocal.setActionCommand("RadioChange");
+		add(radLocal, "cell 0 1");
 		
 		txtFolder = new JTextField();
-		add(txtFolder, "flowx,cell 0 0,growx");
+		txtFolder.setEnabled(false);
+		add(txtFolder, "flowx,cell 0 2,growx");
 		
 		
-		JButton btnBrowse = new JButton("Browse");
+		btnBrowse = new JButton("Browse");
+		btnBrowse.setEnabled(false);
 		btnBrowse.addActionListener(new ActionListener(){
 
 			@Override
@@ -55,20 +75,51 @@ public class WizardGetFolder extends AbstractWizardPanel {
 			
 		});
 
-		add(btnBrowse, "cell 0 0");
+		add(btnBrowse, "cell 0 2");
 		
 		linkPrefs();
+		updateGUI();
 	}
 
+	/**
+	 * Returns true is we're getting data from the server, or false if ODK files are stored locally
+	 * 
+	 * @return
+	 */
+	public boolean isRemoteAccessSelected()
+	{
+		return radDownload.isSelected();
+	}
+	
 	public String getODKInstancesFolder()
 	{
 		return this.txtFolder.getText();
 	}
 	
+	private void updateGUI()
+	{
+		txtFolder.setEnabled(radLocal.isSelected());
+		btnBrowse.setEnabled(radLocal.isSelected());
+		
+	}
+	
 	private void linkPrefs()
 	{
+		ButtonGroup bg = new ButtonGroup();
+		bg.add(radDownload);
+		bg.add(radLocal);
+		
 		new TextComponentWrapper(txtFolder, PrefKey.FOLDER_ODK_LAST_READ, null);
 
 	}
-	
+
+	@Override
+	public void actionPerformed(ActionEvent evt) {
+		
+		if(evt.getActionCommand().equals("RadioChange"))
+		{
+			updateGUI();
+		}
+	}
+
 }

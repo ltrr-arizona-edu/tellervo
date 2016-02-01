@@ -57,6 +57,16 @@ public class ODKImportWizard extends AbstractWizardDialog {
 	}
 	
 	/**
+	 * Returns true is we're getting data from the server, or false if ODK files are stored locally
+	 * 
+	 * @return
+	 */
+	public boolean isRemoteAccessSelected()
+	{
+		return this.page2.isRemoteAccessSelected();
+	}
+	
+	/**
 	 * Whether a CSV export should be created or not.
 	 * 
 	 * @return
