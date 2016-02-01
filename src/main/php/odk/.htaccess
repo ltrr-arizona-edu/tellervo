@@ -1,0 +1,4 @@
+RewriteEngine On
+RewriteRule ^([a-z]+)/([a-z\-]+)$ /$1/$2.php [L]
+#RewriteCond %{REQUEST_FILENAME} !-f
+#RewriteRule ^([^\.]+)$ $1.php [NC,L]

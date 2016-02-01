@@ -17,6 +17,7 @@ ALTER FUNCTION "update_odkformdef-versionincrement"()
 CREATE TABLE tblodkdefinition
 (
   odkdefinitionid uuid NOT NULL DEFAULT uuid_generate_v1mc(),
+  createdtimestamp timestamp with time zone NOT NULL DEFAULT now(),
   name character varying NOT NULL,
   definition character varying NOT NULL,
   ownerid uuid NOT NULL,
@@ -41,3 +42,21 @@ CREATE TRIGGER "trigger_updateodkformversion-increment"
   FOR EACH ROW
   EXECUTE PROCEDURE "update_odkformdef-versionincrement"();
 
+  
+CREATE TABLE tblodkinstance
+(
+  odkinstanceid uuid NOT NULL DEFAULT uuid_generate_v1mc(),
+  createdtimestamp timestamp with time zone NOT NULL DEFAULT now(),
+  ownerid uuid NOT NULL,
+  name character varying NOT NULL,
+  instance character varying NOT NULL,
+  files character varying[],
+  deviceid character varying NOT NULL,
+  CONSTRAINT pkey_odkinstance PRIMARY KEY (odkinstanceid),
+    CONSTRAINT "fkey_odkinstance-securityuser" FOREIGN KEY (ownerid)
+      REFERENCES tblsecurityuser (securityuserid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+WITH (
+  OIDS=FALSE
+);

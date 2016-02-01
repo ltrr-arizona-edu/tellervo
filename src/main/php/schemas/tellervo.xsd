@@ -1113,6 +1113,8 @@
 			<xs:sequence>
 				<xs:any processContents="skip"/>
 			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" use="optional"/>
+			<xs:attribute name="name" type="xs:string" use="optional"/>
 		</xs:complexType>
 
 	</xs:element>
