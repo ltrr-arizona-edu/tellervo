@@ -37,6 +37,9 @@ import java.util.Comparator;
 import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -138,8 +141,10 @@ public abstract class AbstractBulkImportView extends JPanel{
 		setLayout(new BorderLayout());
 		
 	
-		add(setupHeaderElements(btnCopy, btnPaste, btnPasteAppend, addRow, removeSelected, copyRow, showHideColumns, populateFromDB, populateFromGeonames), "North");
+		add(setupToolbar(btnCopy, btnPaste, btnPasteAppend, addRow, removeSelected, copyRow, showHideColumns, populateFromDB, populateFromGeonames), "North");
+		
 		//add(setupToolbar(showHideColumns, selectAll, selectNone), "West");
+
 
 		JScrollPane panel = new JScrollPane(table);
 		panel.getViewport().setBackground(Color.WHITE);	
@@ -482,7 +487,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		tablePopupMenu.setLightWeightPopupEnabled(false);
 	}
 	
-	protected JToolBar setupHeaderElements(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
+	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
 			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
 		
 		 JToolBar toolbar = new JToolBar();
@@ -508,7 +513,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		
 		return box;*/
 	}
-	
+		
 	protected Box setupFooterElements(JButton argSelectAll, JButton argSelectNone, JButton argImport){
 		Box box = Box.createHorizontalBox();
 		//box.add(argSelectAll);

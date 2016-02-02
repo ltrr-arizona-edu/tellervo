@@ -136,12 +136,16 @@ public class ODKParser {
 	
 	public String getFieldValueAsString(String field)
 	{
-		
+		if(doc.getElementsByTagName(field).getLength()==0) 
+		{
+			log.info("Field '"+field+"' not found in ODK file");
+			return null;
+		}
 		try{
 			return doc.getElementsByTagName(field).item(0).getTextContent();
 		} catch (Exception e)
 		{
-			System.out.println("Error getting tag text");
+			log.warn("Error getting tag text for field: "+field);
 			return null;
 		}
 		
@@ -161,6 +165,12 @@ public class ODKParser {
 	public Integer getFieldValueAsInteger(String field)
 	{
 		
+		if(doc.getElementsByTagName(field).getLength()==0) 
+		{
+			log.info("Field '"+field+"' not found in ODK file");
+			return null;
+		}
+		
 		NodeList nList = doc.getElementsByTagName(field);
 		 
 		if(nList.getLength()==0) return null;
@@ -170,7 +180,7 @@ public class ODKParser {
 			return intval;
 		} catch (Exception e)
 		{
-			System.out.println("Error getting number from tag");
+			log.warn("Error getting number from tag field: "+field);
 			return null;
 		}
 		
@@ -178,6 +188,12 @@ public class ODKParser {
 	
 	public Double getFieldValueAsDouble(String field)
 	{
+		
+		if(doc.getElementsByTagName(field).getLength()==0) 
+		{
+			log.info("Field '"+field+"' not found in ODK file");
+			return null;
+		}
 		
 		NodeList nList = doc.getElementsByTagName(field);
 		 
@@ -188,7 +204,7 @@ public class ODKParser {
 			return dblval;
 		} catch (Exception e)
 		{
-			System.out.println("Error getting number from tag");
+			log.warn("Error getting number from tag field: "+field);
 			return null;
 		}
 		
@@ -196,14 +212,20 @@ public class ODKParser {
 	
 	public String getFieldValueAsStringFromNodeList(String field, NodeList nList)
 	{
-				 
+			
+		if(doc.getElementsByTagName(field).getLength()==0) 
+		{
+			log.info("Field '"+field+"' not found in ODK file");
+			return null;
+		}
+		
 		if(nList.getLength()==0) return null;
 	
 		try{
 			return nList.item(0).getNodeValue();
 		} catch (Exception e)
 		{
-			System.out.println("Error getting tag text");
+			log.warn("Error getting tag text from field: "+field);
 			return null;
 		}
 		

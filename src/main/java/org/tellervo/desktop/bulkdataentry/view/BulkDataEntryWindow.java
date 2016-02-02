@@ -38,6 +38,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 
 import net.miginfocom.swing.MigLayout;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
 
 
 /**
@@ -53,6 +55,11 @@ public class BulkDataEntryWindow extends JFrame {
 	private SampleView samples;
 	private JPanel panelTabs;
 	private JPanel panelInfo;
+	private JMenuBar menuBar;
+	private JMenu mnFile;
+	private JMenu mnEdit;
+	private JMenu mnTools;
+	private JMenu mnView;
 	
 	public BulkDataEntryWindow() {
 		initComponents();
@@ -62,7 +69,7 @@ public class BulkDataEntryWindow extends JFrame {
 		pack();
 		this.setMinimumSize(new Dimension(640,480));
 		setExtendedState(this.getExtendedState()|JFrame.MAXIMIZED_BOTH );
-		
+				
 	}
 	
 	public void initComponents() {

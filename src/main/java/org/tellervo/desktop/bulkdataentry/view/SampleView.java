@@ -208,7 +208,7 @@ public class SampleView  extends AbstractBulkImportView{
 	}
 
 	@Override
-	protected JToolBar setupHeaderElements(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
+	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
 			JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
 	
 		 JToolBar toolbar = new JToolBar();

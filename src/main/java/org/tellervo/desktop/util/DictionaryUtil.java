@@ -23,7 +23,23 @@ public class DictionaryUtil {
 				return voc;
 		}
 		
+		for(ControlledVoc voc : vocab) {
+			if(name.replace("_", " ").equalsIgnoreCase(voc.getNormal().replace("_", " ")))
+				return voc;
+		}
+		
 		return null;
 	}
 	
+	public static ControlledVoc getControlledVocForID(String id, String dictionaryName) {
+		List<?> dictionary = Dictionary.getDictionary(dictionaryName);
+		List<ControlledVoc> vocab = ListUtil.subListOfType(dictionary, ControlledVoc.class);
+		
+		for(ControlledVoc voc : vocab) {
+			if(id.equalsIgnoreCase(voc.getNormalId()))
+				return voc;
+		}
+		
+		return null;
+	}
 }

@@ -9,6 +9,7 @@ import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tellervo.desktop.tridasv2.ui.support.TridasDictionaryEntityProperty;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasObject;
 
 import edu.emory.mathcs.backport.java.util.Collections;
@@ -17,18 +18,14 @@ public class ODKTridasObjectType extends AbstractODKChoiceField {
 
 	public ODKTridasObjectType()
 	{
-		super(ODKDataType.SELECT_ONE, "tridas_object_type", "Object type", Documentation.getDocumentation("object.type"), null);
+		super(ODKDataType.SELECT_ONE, "tridas_object_type", "Object type", Documentation.getDocumentation("Object type"), null);
 		
-		List<ControlledVoc> types = Dictionary.getMutableDictionary("objectTypeDictionary");
-		
+		List<ControlledVoc> dictItems = Dictionary.getMutableDictionary("objectTypeDictionary");	
 		ArrayList<Object> objects = new ArrayList<Object>();
-		for(ControlledVoc type: types)
+		for(ControlledVoc item : dictItems)
 		{
-			objects.add(type);
+			objects.add(item);
 		}
-		
-		Collections.sort(objects, new TridasDictionaryEntityProperty.ControlledVocComparator());
-
 		this.setPossibleChoices(SelectableChoice.makeObjectsSelectable(objects));
 	}
 	
@@ -43,3 +40,4 @@ public class ODKTridasObjectType extends AbstractODKChoiceField {
 	}
 
 }
+

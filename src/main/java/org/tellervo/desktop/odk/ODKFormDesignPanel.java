@@ -78,6 +78,7 @@ import org.xml.sax.SAXException;
 
 import com.jidesoft.swing.CheckBoxList;
 import com.jidesoft.swing.SearchableUtils;
+
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JSeparator;
@@ -1062,7 +1063,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		{
 			fieldNameChanged();
 		}
-		else if(evt.getActionCommand().equals("Save"))
+		else if(evt.getActionCommand().equals("SaveODKFormFile"))
 		{
 			doSave();
 			
@@ -1088,6 +1089,28 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		else if (evt.getActionCommand().equals("UploadForm"))
 		{
 			uploadForm();
+		}
+		else if (evt.getActionCommand().equals("Save Form Design"))
+		{
+			try {
+				saveFormDefinition();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		else if (evt.getActionCommand().equals("Load Form Design"))
+		{
+			try {
+				loadFormDefinition();
+			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 		else if (evt.getActionCommand().equals("FormTypeChanged"))
 		{

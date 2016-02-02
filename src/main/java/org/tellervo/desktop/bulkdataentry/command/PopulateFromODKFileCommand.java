@@ -148,25 +148,32 @@ public class PopulateFromODKFileCommand implements ICommand {
 		PopulateFromODKFileEvent event = (PopulateFromODKFileEvent) argEvent;
 		ArrayList<ODKParser> filesProcessed = new ArrayList<ODKParser>();
 		ArrayList<ODKParser> filesFailed = new ArrayList<ODKParser>();
+		Path instanceFolder = null;
 		
-		
+		// Launch the ODK wizard to collect parameters from user
 		ODKImportWizard wizard = new ODKImportWizard(BulkImportModel.getInstance().getMainView());
-		
-		
-		String instanceFolder = null;
+				
 		if(wizard.isRemoteAccessSelected())
 		{
-			URI uri;
+			// Doing remote server download of ODK files
 			try {
+				
+				// Request a zip file of ODK files from the server ensuring the temp file is deleted on exit
+				URI uri;
 				uri = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/fetchInstances");
 				String file = getRemoteODKFiles(uri);
+				new File(file).deleteOnExit();
 				
+				// Unzip to a temporary folder, again ensuring it is deleted on exit 
+				instanceFolder = Files.createTempDirectory("odk-unzip");
+				instanceFolder.toFile().deleteOnExit();
 				ZipFile zipFile = new ZipFile(file);
 			    try {
 			      Enumeration<? extends ZipEntry> entries = zipFile.entries();
 			      while (entries.hasMoreElements()) {
 			        ZipEntry entry = entries.nextElement();
-			        File entryDestination = new File("/tmp/zipout",  entry.getName());
+			        File entryDestination = new File(instanceFolder.toFile(),  entry.getName());
+			        entryDestination.deleteOnExit();
 			        if (entry.isDirectory()) {
 			            entryDestination.mkdirs();
 			        } else {
@@ -181,10 +188,6 @@ public class PopulateFromODKFileCommand implements ICommand {
 			    } finally {
 			      zipFile.close();
 			    }
-				
-			    instanceFolder = "/tmp/zipout";
-				
-
 			} catch (URISyntaxException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -195,10 +198,13 @@ public class PopulateFromODKFileCommand implements ICommand {
 		}
 		else
 		{
-			instanceFolder = wizard.getODKInstancesFolder();
+			// Accessing ODK files from local folder
+			instanceFolder = new File(wizard.getODKInstancesFolder()).toPath();
 		}
 		
-		File folder = new File(instanceFolder);
+		
+		// Check the instance folder specified exists
+		File folder = instanceFolder.toFile();
 		if(!folder.exists()) {
 		
 			log.error("Instances folder does not exist");
@@ -206,7 +212,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 		}
 
 		
-		// Compile a hash set of all media files in folders
+		// Compile a hash set of all media files in the instance folder and subfolders
 		File file = null;
 		File[] mediaFileArr = null;
 		if(wizard.isIncludeMediaFilesSelected())
@@ -214,7 +220,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 			HashSet<File> mediaFiles = new HashSet<File>();
 
 			// Array of file extensions to consider as media files
-			String[] mediaExtensions = {"jpg", "mpg", "snd"};
+			String[] mediaExtensions = {"jpg", "mpg", "snd", "mp4", "m4a"};
 			for(String ext : mediaExtensions)
 			{
 				SuffixFileFilter filter = new SuffixFileFilter("."+ext);
@@ -226,8 +232,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 				}
 			}
 			
-			
-			// Copy files to new folder
+			// Copy files to consolidate to a new folder 
 			mediaFileArr = mediaFiles.toArray(new File[mediaFiles.size()]);
 			String copyToFolder = wizard.getCopyToLocation();
 			for(int i=0; i<mediaFileArr.length; i++)
@@ -308,25 +313,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 
 		}
 		
-		StringBuilder log = new StringBuilder();
-		
-		log.append("<html>\n");
-		for(ODKParser parser : filesFailed)
-		{
-			log.append("<p color=\"red\">Error loading file:</p>\n"+ ODKParser.formatFileNameForReport(parser.getFile()));
-			log.append("<br/>  - "+parser.getParseErrorMessage()+"<br/><br/>");
-		}
-		
-		for(ODKParser parser : filesProcessed)
-		{		
-			if(filesFailed.contains(parser)) continue;
-			if(parser.getParseErrorMessage()=="") continue;
-			
-			log.append("<p color=\"orange\">Warning loading file:</p>\n"+ ODKParser.formatFileNameForReport(parser.getFile()));
-			log.append("<br/>  - "+parser.getParseErrorMessage()+"<br/><br/>");
-		}
-		
-		
+		// Create a CSV file of metadata if the user requested it
 		if(wizard.isCreateCSVFileSelected())
 		{
 			try {
@@ -337,14 +324,31 @@ public class PopulateFromODKFileCommand implements ICommand {
 			}
 		}
 		
+		
+		// Compile logs to display to user
+		StringBuilder log = new StringBuilder();
+		log.append("<html>\n");
+		for(ODKParser parser : filesFailed)
+		{
+			log.append("<p color=\"red\">Error loading file:</p>\n"+ ODKParser.formatFileNameForReport(parser.getFile()));
+			log.append("<br/>  - "+parser.getParseErrorMessage()+"<br/><br/>");
+		}
+		for(ODKParser parser : filesProcessed)
+		{		
+			if(filesFailed.contains(parser)) continue;
+			if(parser.getParseErrorMessage()=="") continue;
+			
+			log.append("<p color=\"orange\">Warning loading file:</p>\n"+ ODKParser.formatFileNameForReport(parser.getFile()));
+			log.append("<br/>  - "+parser.getParseErrorMessage()+"<br/><br/>");
+		}
 		log.append(otherErrors);
-		
 		log.append("</html>");
-		
 		ODKParserLogViewer logDialog = new ODKParserLogViewer(BulkImportModel.getInstance().getMainView());
 		logDialog.setLog(log.toString());
 		logDialog.setFileCount(filesFound, filesLoadedSuccessfully);
-		logDialog.setVisible(true);
+		
+		// Display log if there were any errors
+		if(filesFound!=filesLoadedSuccessfully) logDialog.setVisible(true);
 
 	}		
 		
@@ -355,7 +359,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 		HttpGet httpget = new HttpGet(url);
 		Document outDocument = null;
 		HttpResponse response;
-		String filePath = "/tmp/temp.zip";
+		File filePath = File.createTempFile("odk-", ".zip"); 
 		
 		try {
 
@@ -391,7 +395,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 			        try {
 						bis = new BufferedInputStream(entity.getContent());
 						
-						bos = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+						bos = new BufferedOutputStream(new FileOutputStream(filePath));
 						int inByte;
 						while((inByte = bis.read()) != -1) bos.write(inByte);
 			        } finally {
@@ -433,7 +437,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 		
 		}
 		
-		return filePath;
+		return filePath.getAbsolutePath();
 	}
 	
 	private void createCSVFile(ArrayList<ODKParser> parsers, String csvfilename ) throws IOException
@@ -639,7 +643,9 @@ public class PopulateFromODKFileCommand implements ICommand {
 		}
 		String comments = "";
 		if(parser.getFieldValueAsString("tridas_object_comments", "Comments")!=null) comments += parser.getFieldValueAsString("tridas_object_comments", "Comments")+"; ";
-		comments += "Imported from ODK file: '"+ parser.getFile().getName()+"'. ";
+		
+		if(!wizard.isRemoteAccessSelected()) comments += "Imported from ODK file: '"+ parser.getFile().getName()+"'. ";
+		
 		newrow.setProperty(SingleObjectModel.COMMENTS, comments);
 		String description = parser.getFieldValueAsString("tridas_object_description");
 		if(parser.getFieldValueAsString("StandType")!=null) description += " "+parser.getFieldValueAsString("StandType");
@@ -658,53 +664,64 @@ public class PopulateFromODKFileCommand implements ICommand {
 		newrow.setProperty(SingleObjectModel.COUNTRY, parser.getFieldValueAsString("tridas_object_address_country"));
 		newrow.setProperty(SingleObjectModel.VEGETATION_TYPE, parser.getFieldValueAsString("tridas_object_vegetation_type", "VegetationType"));
 		
-
-		// Still to handle
-		String filephoto = parser.getFieldValueAsString("tridas_object_file_photo");
-		
-		File f = getFileFromList(mediaFileArr, filephoto);
-		
-		if(f!=null)
+		// Handle media files...
+		ArrayList<String> fieldnames = new ArrayList<String>();
+		fieldnames.add("tridas_object_file_photo");
+		fieldnames.add("tridas_object_file_video");
+		fieldnames.add("tridas_object_file_sound");
+		TridasFileList filesList = this.getMediaFileList(parser, fieldnames, mediaFileArr, wizard, objectcode);
+		if(filesList!=null && filesList.size()>0)
 		{
-			// Rename file if requested
-			if(wizard.isRenameMediaFilesSelected())
-			{			
-				try {
-					Path path = renameFile(f, objectcode+"."+FilenameUtils.getExtension(f.getName()));
-					f = path.toFile();
-					
-										
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-			String finalloc = wizard.getFinalLocation();
-			if(!finalloc.endsWith("/")) finalloc = finalloc+"/";
-			String fullurl = finalloc+f.getName();
-			
-			TridasFileList tfl = new TridasFileList();
-			TridasFile tf = new TridasFile();
-			tf.setHref(fullurl);
-			tfl.add(tf);
-			
-			newrow.setProperty(SingleObjectModel.FILES, tfl);
-		
+			newrow.setProperty(SingleObjectModel.FILES, filesList);
 		}
-		else
-		{
-			log.warn("Media file '"+filephoto +"' not found. Ignoring.");
-		}
-		
 
-		
-		//tridas_object_file_photo
-		//tridas_object_file_sound
-		//tridas_object_file_video
 		
 		model.getRows().add(newrow);
 		filesLoadedSuccessfully++;
+	}
+	
+	
+	private TridasFileList getMediaFileList(ODKParser parser, ArrayList<String>fieldnames, File[] mediaFileArr, ODKImportWizard wizard, String codeprefix)
+	{
+		TridasFileList filesList = new TridasFileList();
+
+		for(String fieldname : fieldnames)
+		{
+			
+			String mediafile = parser.getFieldValueAsString(fieldname);
+			File f = getFileFromList(mediaFileArr, mediafile);
+			if(f!=null)
+			{
+				// Rename file if requested
+				if(wizard.isRenameMediaFilesSelected())
+				{			
+					try {
+						Path path = renameFile(f, codeprefix+"."+FilenameUtils.getExtension(f.getName()));
+						f = path.toFile();
+						
+											
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+	
+				String finalloc = wizard.getFinalLocation();
+				if(!finalloc.endsWith("/")) finalloc = finalloc+"/";
+				String fullurl = finalloc+f.getName();
+				
+				
+				TridasFile tf = new TridasFile();
+				tf.setHref(fullurl);
+				filesList.add(tf);
+			}
+			else
+			{
+				log.warn("Media file '"+mediafile +"' not found. Ignoring.");
+			}
+		}
+		
+		return filesList;
 	}
 	
 	/**

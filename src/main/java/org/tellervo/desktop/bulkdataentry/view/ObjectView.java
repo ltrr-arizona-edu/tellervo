@@ -187,7 +187,7 @@ public class ObjectView extends AbstractBulkImportView{
 		return box;
 	}*/
 	
-	protected JToolBar setupHeaderElements(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
+	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
 				JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
 		/*Box box = Box.createHorizontalBox();
 		box.add(argAddRowButton);

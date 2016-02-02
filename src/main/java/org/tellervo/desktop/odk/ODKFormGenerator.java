@@ -17,6 +17,7 @@ import org.tridas.io.util.StringUtils;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.NormalTridasShape;
+import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -293,15 +294,19 @@ public class ODKFormGenerator {
 				String value = choice.toString();
 				if(choice.getItem() instanceof ControlledVoc)
 				{
-					value = ((ControlledVoc)choice.getItem()).getNormalId();
+					value = ((ControlledVoc)choice.getItem()).getNormal();
 				}
 				else if (choice.getItem() instanceof NormalTridasShape)
 				{
-					value = ((NormalTridasShape)choice.getItem()).toString();
+					value = ((NormalTridasShape)choice.getItem()).toString().toLowerCase().replace("_", " ");
 				}
 				else if (choice.getItem() instanceof NormalTridasLocationType)
 				{
-					value = ((NormalTridasLocationType)choice.getItem()).toString();
+					value = ((NormalTridasLocationType)choice.getItem()).toString().toLowerCase().replace("_", " ");
+				}
+				else if (choice.getItem() instanceof NormalTridasUnit)
+				{
+					value = ((NormalTridasUnit)choice.getItem()).toString().toLowerCase().replace("_", " ");
 				}
 				
 				data.append("<item>");
