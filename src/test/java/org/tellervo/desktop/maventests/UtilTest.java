@@ -41,22 +41,38 @@
 package org.tellervo.desktop.maventests;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import junit.framework.TestCase;
 
-import org.tellervo.desktop.nativeloader.NativeUtils;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.nativeloader.RxTxNativeLoader;
-import org.tellervo.desktop.util.GeonamesUtil;
 import org.tellervo.desktop.util.StringUtils;
-import org.tridas.schema.TridasLocation;
-import org.tridas.schema.TridasLocationGeometry;
-import org.tridas.spatial.SpatialUtils;
 
 public class UtilTest extends TestCase {
     public UtilTest(String name) {
         super(name);
     }
 
+    
+  /*  public void testGetHTTPTest(){
+    
+    	App.init();
+    	
+    	try {
+    		URI url = new URI("https://tellervo.ltrr.arizona.edu/adp/odk/fetchInstances");
+			
+			String tempfile = org.tellervo.desktop.bulkdataentry.command.PopulateFromODKFileCommand.doRequest(url);
+			System.out.println(tempfile);
+			
+		} catch (IOException | URISyntaxException e) {
+			fail();
+		}
+    	
+    	
+    }*/
+    
     //
     // testing StringUtils.java
     //
