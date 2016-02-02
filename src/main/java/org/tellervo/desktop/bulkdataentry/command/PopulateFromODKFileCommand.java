@@ -20,26 +20,45 @@
  ******************************************************************************/
 package org.tellervo.desktop.bulkdataentry.command;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.swing.JFileChooser;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.impl.client.AbstractHttpClient;
+import org.apache.http.impl.client.ContentEncodingHttpClient;
+import org.jdom.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
@@ -54,12 +73,17 @@ import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.bulkdataentry.view.ODKParserLogViewer;
 import org.tellervo.desktop.bulkdataentry.view.odkwizard.ODKImportWizard;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.odk.ODKParser;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 import org.tellervo.desktop.odk.fields.ODKFields;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.util.BugReport;
 import org.tellervo.desktop.util.DictionaryUtil;
+import org.tellervo.desktop.versioning.Build;
+import org.tellervo.desktop.wsi.WebJaxbAccessor;
 import org.tellervo.desktop.wsi.tellervo.TridasElementTemporaryCacher;
+import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
 import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasShape;
@@ -129,10 +153,45 @@ public class PopulateFromODKFileCommand implements ICommand {
 		ODKImportWizard wizard = new ODKImportWizard(BulkImportModel.getInstance().getMainView());
 		
 		
-		String instanceFolder;
+		String instanceFolder = null;
 		if(wizard.isRemoteAccessSelected())
 		{
-			instanceFolder = getRemoteODKFiles();
+			URI uri;
+			try {
+				uri = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/fetchInstances");
+				String file = getRemoteODKFiles(uri);
+				
+				ZipFile zipFile = new ZipFile(file);
+			    try {
+			      Enumeration<? extends ZipEntry> entries = zipFile.entries();
+			      while (entries.hasMoreElements()) {
+			        ZipEntry entry = entries.nextElement();
+			        File entryDestination = new File("/tmp/zipout",  entry.getName());
+			        if (entry.isDirectory()) {
+			            entryDestination.mkdirs();
+			        } else {
+			            entryDestination.getParentFile().mkdirs();
+			            InputStream in = zipFile.getInputStream(entry);
+			            OutputStream out = new FileOutputStream(entryDestination);
+			            IOUtils.copy(in, out);
+			            IOUtils.closeQuietly(in);
+			            out.close();
+			        }
+			      }
+			    } finally {
+			      zipFile.close();
+			    }
+				
+			    instanceFolder = "/tmp/zipout";
+				
+
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		else
 		{
@@ -288,23 +347,95 @@ public class PopulateFromODKFileCommand implements ICommand {
 		logDialog.setVisible(true);
 
 	}		
-
-	private String getRemoteODKFiles()
-	{
-		Path tempFolder = null;
+		
+	
+	public static String getRemoteODKFiles(URI url) throws IOException {
+		HttpClient client = new ContentEncodingHttpClient();
+		HttpUriRequest req;
+		HttpGet httpget = new HttpGet(url);
+		Document outDocument = null;
+		HttpResponse response;
+		String filePath = "/tmp/temp.zip";
+		
 		try {
-			tempFolder = Files.createTempDirectory("odkdownload", null);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			req = new HttpGet(url);
+		
+			// load cookies
+			((AbstractHttpClient) client).setCookieStore(WSCookieStoreHandler.getCookieStore().toCookieStore());
+			
+			String clientModuleVersion = "1.0";
+			req.setHeader("User-Agent", "Tellervo WSI " + Build.getUTF8Version() + 
+					" (" + clientModuleVersion  + "; ts " + Build.getCompleteVersionNumber() +")");
+			
+			
+			if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_USE_STRICT_SECURITY, false))
+			{
+				// Using strict security so don't allow self signed certificates for SSL
+			}
+			else
+			{
+				// Not using strict security so allow self signed certificates for SSL
+				if(url.getScheme().equals("https")) 
+				WebJaxbAccessor.setSelfSignableHTTPSScheme(client);
+			}
+			
+			
+			response = client.execute(httpget);
+
+			HttpEntity entity = response.getEntity();
+			    if (entity != null) {	      
+			    	
+			    	BufferedInputStream bis = null;
+			    	BufferedOutputStream bos = null;
+			        try {
+						bis = new BufferedInputStream(entity.getContent());
+						
+						bos = new BufferedOutputStream(new FileOutputStream(new File(filePath)));
+						int inByte;
+						while((inByte = bis.read()) != -1) bos.write(inByte);
+			        } finally {
+			            bis.close();
+			            bos.close();
+			        }
+			    }
+			
+			
+			
+			
+		} catch (UnknownHostException e)
+		{
+			throw new IOException("The URL of the server you have specified is unknown");
 		}
 		
+		catch (HttpResponseException hre) {
+			
+			if(hre.getStatusCode()==404)
+			{
+				throw new IOException("The URL of the server you have specified is unknown");
+			}
+			
+			
+			BugReport bugs = new BugReport(hre);
+			
+			bugs.addDocument("sent.xml", outDocument);
+			
+			new BugDialog(bugs);
+
+			throw new IOException("The server returned a protocol error " + hre.getStatusCode() + 
+					": " + hre.getLocalizedMessage());
+		} catch (IllegalStateException ex)
+		{
+			throw new IOException("Webservice URL must be a full URL qualified with a communications protocol.\n" +
+				"Tellervo currently supports http:// and https://.");	
+		}
+		finally {
 		
+		}
 		
-		
-		return tempFolder.toAbsolutePath().toString();
+		return filePath;
 	}
-		
+	
 	private void createCSVFile(ArrayList<ODKParser> parsers, String csvfilename ) throws IOException
 	{
 		File file = new File(csvfilename);
