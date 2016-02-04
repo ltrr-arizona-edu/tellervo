@@ -347,8 +347,8 @@ public class PopulateFromODKFileCommand implements ICommand {
 		logDialog.setLog(log.toString());
 		logDialog.setFileCount(filesFound, filesLoadedSuccessfully);
 		
-		// Display log if there were any errors
-		if(filesFound!=filesLoadedSuccessfully) logDialog.setVisible(true);
+		// Display log if there were any errors or if no files were found
+		if(filesFound!=filesLoadedSuccessfully || filesFound==0) logDialog.setVisible(true);
 
 	}		
 		

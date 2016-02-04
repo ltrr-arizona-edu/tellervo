@@ -3,6 +3,7 @@ package org.tellervo.desktop.bulkdataentry.view.odkwizard;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -78,7 +79,7 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 
 				JFileChooser fc = new JFileChooser(App.prefs.getPref(PrefKey.ODK_COPY_TO, null));
 				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int returnVal = fc.showOpenDialog(null);
+				int returnVal = fc.showOpenDialog(App.mainWindow);
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) txtCopyTo.setText(fc.getSelectedFile().getAbsolutePath());			
 			}
@@ -87,7 +88,7 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 		
 		add(btnBrowse, "cell 2 1");
 		
-		lblFinalLocation = new JLabel("FInal location:");
+		lblFinalLocation = new JLabel("Final location:");
 		add(lblFinalLocation, "cell 0 2,alignx trailing");
 		
 		txtFinalFolder = new JTextField();
@@ -140,7 +141,7 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 	
 	public String getCopyToLocation()
 	{
-		return this.txtCopyTo.getText();
+		return this.txtCopyTo.getText()+File.pathSeparator;
 	}
 	
 	public String getFinalLocation()

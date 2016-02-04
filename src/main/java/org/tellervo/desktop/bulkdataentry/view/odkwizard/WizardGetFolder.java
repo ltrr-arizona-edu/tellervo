@@ -19,6 +19,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JPanel;
 
 import java.awt.Color;
+import java.io.File;
 
 
 
@@ -67,8 +68,9 @@ public class WizardGetFolder extends AbstractWizardPanel implements ActionListen
 			public void actionPerformed(ActionEvent e) {
 				
 				JFileChooser fc = new JFileChooser(App.prefs.getPref(PrefKey.FOLDER_ODK_LAST_READ, null));
+				
 				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int returnVal = fc.showOpenDialog(null);
+				int returnVal = fc.showOpenDialog(App.mainWindow);
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) txtFolder.setText(fc.getSelectedFile().getAbsolutePath());				
 			}
