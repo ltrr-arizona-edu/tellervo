@@ -1810,7 +1810,7 @@ class boxParameters extends boxEntity implements IParams
 		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
 		   	case "tvo:trackingLocation":	$this->setTrackingLocation($child->nodeValue); break;
 		   	case "tvo:curationLocation":	$this->setCurationLocation($child->nodeValue); break;
-		   	case "tvo:comments":			$this->setComments($child->nodeValue); break;
+		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;
 		   	case "tridas:createdTimestamp"     : break;
 		   	case "tridas:lastModifiedTimestamp": break;
 		   	case "tvo:sampleCount"			: break;
