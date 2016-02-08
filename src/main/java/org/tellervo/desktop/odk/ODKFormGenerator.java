@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.odk.fields.AbstractODKChoiceField;
@@ -50,7 +51,7 @@ public class ODKFormGenerator {
 			log.error("Need form name to generate an ODK form!");
 			return null;
 		}
-		String formName = StringUtils.escapeForXML(formNameFull.replace(" ", "_"));
+		String formName = StringEscapeUtils.escapeXml(formNameFull.replace(" ", "_"));
 
 		for(ODKFieldInterface field : mainFields)
 		{
@@ -311,7 +312,7 @@ public class ODKFormGenerator {
 				
 				data.append("<item>");
 				data.append("<label ref=\"jr:itext('/data/"+grpCd+field.getFieldCode()+":option"+i+"')\"/>");
-				data.append("<value>"+value+"</value>");
+				data.append("<value>"+StringEscapeUtils.escapeXml(value)+"</value>");
 				data.append("</item>");
 				i++;
 			}
@@ -351,12 +352,12 @@ public class ODKFormGenerator {
 	{
 		StringBuilder data = new StringBuilder();
 
-		data.append("<"+field.getFieldCode()+">");
+		data.append("<"+StringEscapeUtils.escapeXml(field.getFieldCode())+">");
 		
 		// Include default value when appropriate
 		if(field.getDefaultValue()!=null )
 		{
-			data.append(StringUtils.escapeForXML(field.getDefaultValue().toString()));
+			data.append(StringEscapeUtils.escapeXml(field.getDefaultValue().toString()));
 		}
 				
 		data.append("</"+field.getFieldCode()+">");
@@ -379,12 +380,12 @@ public class ODKFormGenerator {
 		}
 		
 		// The field 
-		data.append("<text id=\"/data/"+grpCd+field.getFieldCode()+":label\">");
-		data.append("<value>"+StringUtils.escapeForXML(field.getFieldName())+"</value>");
+		data.append("<text id=\"/data/"+StringEscapeUtils.escapeXml(grpCd+field.getFieldCode())+":label\">");
+		data.append("<value>"+StringEscapeUtils.escapeXml(field.getFieldName())+"</value>");
 		data.append("</text>");
 		
 		// The hint text
-		data.append("<text id=\"/data/"+grpCd+field.getFieldCode()+":hint\">");
+		data.append("<text id=\"/data/"+StringEscapeUtils.escapeXml(grpCd+field.getFieldCode())+":hint\">");
 		
 		// The description
 		if(field.getFieldDescription()==null)
@@ -393,7 +394,7 @@ public class ODKFormGenerator {
 		}
 		else
 		{
-			data.append("<value>"+StringUtils.escapeForXML(field.getFieldDescription())+"</value>");
+			data.append("<value>"+StringEscapeUtils.escapeXml(field.getFieldDescription())+"</value>");
 		}
 		data.append("</text>");
 		
@@ -405,8 +406,8 @@ public class ODKFormGenerator {
 			int i =0;
 			for(SelectableChoice choice: choicefield.getSelectedChoices())
 			{			 
-				data.append("<text id=\"/data/"+grpCd+field.getFieldCode()+":option"+i+"\">");
-				data.append("<value>"+StringUtils.escapeForXML(choice.toString())+"</value>");
+				data.append("<text id=\"/data/"+StringEscapeUtils.escapeXml(grpCd+field.getFieldCode())+":option"+i+"\">");
+				data.append("<value>"+StringEscapeUtils.escapeXml(choice.toString())+"</value>");
 				data.append("</text>");
 				i++;
 			}

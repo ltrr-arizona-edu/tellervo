@@ -116,6 +116,11 @@ public class ODKImportWizard extends AbstractWizardDialog {
 		return page3.getFinalLocation();
 	}
 	
+	public String getFilenamePrefix()
+	{
+		return page3.getFilenamePrefix();
+	}
+	
 	/**
 	 * Get the filename for the CSV export file to be created 
 	 * 

@@ -50,6 +50,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -347,8 +348,8 @@ public class PopulateFromODKFileCommand implements ICommand {
 		logDialog.setLog(log.toString());
 		logDialog.setFileCount(filesFound, filesLoadedSuccessfully);
 		
-		// Display log if there were any errors
-		if(filesFound!=filesLoadedSuccessfully) logDialog.setVisible(true);
+		// Display log if there were any errors or if no files were found
+		if(filesFound!=filesLoadedSuccessfully || filesFound==0) logDialog.setVisible(true);
 
 	}		
 		
@@ -386,24 +387,35 @@ public class PopulateFromODKFileCommand implements ICommand {
 			
 			
 			response = client.execute(httpget);
-
-			HttpEntity entity = response.getEntity();
-			    if (entity != null) {	      
-			    	
-			    	BufferedInputStream bis = null;
-			    	BufferedOutputStream bos = null;
-			        try {
-						bis = new BufferedInputStream(entity.getContent());
-						
-						bos = new BufferedOutputStream(new FileOutputStream(filePath));
-						int inByte;
-						while((inByte = bis.read()) != -1) bos.write(inByte);
-			        } finally {
-			            bis.close();
-			            bos.close();
-			        }
-			    }
+			Header[] headers = response.getAllHeaders();
 			
+			log.debug("-----HEADERS-----");
+			for(Header header : headers)
+			{
+				log.debug(header.getName()+ " : "+header.getValue());
+			}
+			log.debug("-----END-----");
+			
+			HttpEntity entity = response.getEntity();
+			log.debug("File download size: "+entity.getContentLength());
+			
+		    if (entity != null) {	      
+		    	
+		    	BufferedInputStream bis = null;
+		    	BufferedOutputStream bos = null;
+		        try {
+					bis = new BufferedInputStream(entity.getContent());
+					
+					bos = new BufferedOutputStream(new FileOutputStream(filePath));
+					int inByte;
+					while((inByte = bis.read()) != -1) bos.write(inByte);
+		        } finally {
+		        	
+		            bis.close();
+		            bos.close();
+		        }
+		    }
+			log.debug("File download size: "+entity.getContentLength());
 			
 			
 			
@@ -696,7 +708,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 				if(wizard.isRenameMediaFilesSelected())
 				{			
 					try {
-						Path path = renameFile(f, codeprefix+"."+FilenameUtils.getExtension(f.getName()));
+						Path path = renameFile(f, wizard.getFilenamePrefix()+codeprefix+"."+FilenameUtils.getExtension(f.getName()));
 						f = path.toFile();
 						
 											
@@ -755,7 +767,8 @@ public class PopulateFromODKFileCommand implements ICommand {
 	private Path renameFile(File fileToRename, String newname) throws IOException
 	{
 		File newFile = getUniqueFilename(new File(fileToRename.getParent(), newname));
-		
+		log.debug("Renaming file from '"+fileToRename.toString()+"' to '"+newFile+"'");
+
 		
 		return Files.move(fileToRename.toPath(), newFile.toPath(), StandardCopyOption.ATOMIC_MOVE);
 		

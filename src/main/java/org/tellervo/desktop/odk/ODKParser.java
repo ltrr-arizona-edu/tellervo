@@ -84,14 +84,14 @@ public class ODKParser {
 				log.debug("---"+doc.getElementsByTagName("tridas_object_code").item(0).getTextContent());
 			}*/
 			
-			if(getFieldValueAsString("TreeNO")!=null  || getFieldValueAsString("tridas_element_code")!=null)
+			if(getFieldValueAsString("TreeNO")!=null  || getFieldValueAsString("tridas_element_title")!=null)
 			{
 				errorMessage = "File contains tree info so is being ignored";
 				failedParse = true;
 				return;
 			}
 			
-			if(getFieldValueAsString("SampleID")!=null|| getFieldValueAsString("tridas_sample_code")!=null)
+			if(getFieldValueAsString("SampleID")!=null|| getFieldValueAsString("tridas_sample_title")!=null)
 			{
 				errorMessage = "File contains sample info so is being ignored";
 				failedParse = true;
@@ -100,7 +100,7 @@ public class ODKParser {
 		}
 		else if (clazz.equals(TridasElement.class))
 		{
-			if(getFieldValueAsString("TreeNO")==null && getFieldValueAsString("tridas_element_code")==null)
+			if(getFieldValueAsString("TreeNO")==null && getFieldValueAsString("tridas_element_title")==null)
 			{
 				errorMessage = "No element code field";
 				failedParse = true;
@@ -110,7 +110,7 @@ public class ODKParser {
 		}
 		else if (clazz.equals(TridasSample.class))
 		{
-			if(getFieldValueAsString("SampleID")==null && getFieldValueAsString("tridas_sample_code")==null)
+			if(getFieldValueAsString("SampleID")==null && getFieldValueAsString("tridas_sample_title")==null)
 			{
 				errorMessage = "No sample code field";
 				failedParse = true;

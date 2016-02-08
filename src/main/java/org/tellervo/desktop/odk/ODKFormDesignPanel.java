@@ -584,8 +584,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	private void uploadForm()
 	{
 		String contents = ODKFormGenerator.generate(txtFormName.getText(), (ArrayList<ODKFieldInterface>) this.selectedFieldsModel.getAllFields(), null);
+		log.debug("Form contents");
+		log.debug(contents);
 		
-
 		WSIOdkFormDefinition odkform = new WSIOdkFormDefinition();
 		
 		odkform.setName(txtFormName.getText());
@@ -600,8 +601,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 				    .parse(new ByteArrayInputStream(contents.getBytes()))
 				    .getDocumentElement();
 		} catch (SAXException | IOException | ParserConfigurationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error("Error creating ODK form definition.");
 		}
 		
 		odkform.setAny(formdef);
