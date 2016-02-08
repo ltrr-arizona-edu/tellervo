@@ -3,6 +3,7 @@ package org.tellervo.desktop.gui.widgets;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public abstract class AbstractWizardPanel extends JPanel {
@@ -12,6 +13,7 @@ public abstract class AbstractWizardPanel extends JPanel {
 	private String instructions;
 	private ArrayList<Class<?extends AbstractWizardPanel>> disablePageClassArray = new ArrayList<Class<?extends AbstractWizardPanel>>();
 	private ArrayList<Class<?extends AbstractWizardPanel>> enablePageClassArray= new ArrayList<Class<?extends AbstractWizardPanel>>();
+	private JFrame parent;
 	
 	public AbstractWizardPanel(String title, String instructions)
 	{
