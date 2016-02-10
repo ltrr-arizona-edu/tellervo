@@ -46,6 +46,7 @@ import java.net.URISyntaxException;
 
 import junit.framework.TestCase;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.nativeloader.RxTxNativeLoader;
 import org.tellervo.desktop.util.StringUtils;
@@ -72,6 +73,12 @@ public class UtilTest extends TestCase {
     	
     	
     }*/
+    
+    public void testEscape(){
+    	
+    	String str = "<hello>Some & text </hello";
+    	System.out.println(StringEscapeUtils.escapeHtml(str));
+    }
     
     //
     // testing StringUtils.java

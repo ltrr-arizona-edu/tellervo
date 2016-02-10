@@ -366,7 +366,7 @@ class request
                             break;                            
                         
 			case 'odkformdefinition':
-                            $newxml = "<odkformdefinition id=\"".$item->getAttribute('id')."\"></odkformdefinition>";
+                            $newxml = "<odkFormDefinition id=\"".$item->getAttribute('id')."\"></odkFormDefinition>";
                             $myParamObj = new odkFormDefinitionParameters($newxml);
                            
                             break;                            
@@ -451,7 +451,7 @@ class request
               		case "tag":
             			$myParamObj = new tagParameters($this->xmlRequestDom->saveXML($item));
             			break;            			
-              		case "odkformdefinition":
+              		case "odkFormDefinition":
             			$myParamObj = new odkFormDefinitionParameters($this->xmlRequestDom->saveXML($item));
             			break;            			
             		default:

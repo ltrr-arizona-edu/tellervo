@@ -1,4 +1,5 @@
 <?php
+file_put_contents('/tmp/headers.txt', "\n\n Submission.php called \n", FILE_APPEND);
 include('inc/odkauth.php');
 include('inc/odkhelper.php');
 require_once('../inc/dbhelper.php');
@@ -20,7 +21,7 @@ else
 	die();
 }
 
-$deviceid = $_GET['deviceID'] or printError("Device ID is missing", "400 Bad request");
+$deviceid = $_GET['deviceID'] or printError("Device ID is missing", "400 Device id is missing");
 $filearray = array();
 
 $resp=201;
@@ -39,25 +40,86 @@ elseif( $_SERVER['REQUEST_METHOD']==="POST")
 	$name = $_FILES['xml_submission_file']['name'];
 	//file_put_contents('/tmp/headers.txt', "Temp name : ".$tmpname."\n", FILE_APPEND);
 	//file_put_contents('/tmp/headers.txt', "Name : ".$name."\n", FILE_APPEND);
+	libxml_use_internal_errors(true);
+	//if(!$file_exists($tmpname))  printError("XML file not found");
+	$xml=simplexml_load_file($tmpname);
+	if($xml === false) {
+		$errormsgs= "";
+		foreach(libxml_get_errors() as $error){
+			$errormsgs.="\t".$error->message;
+		}
+		file_put_contents('/tmp/headers.txt', "XML parse errors: ".$errormsgs."\n", FILE_APPEND);
+		printError("Unable to parse ODK XML file.\n".$errormsgs, "400 XML error");
+	}
+	$instanceName = $xml->meta->instanceName or printError("Unable to parse ODK XML file", "400 XML parse failed");
 
-	$xml=simplexml_load_file($tmpname) or printError("Unable to parse ODK XML file", "400 Bad request");
-	$instanceName = $xml->meta->instanceName or printError("Unable to parse ODK XML file", "400 Bad request");
-
-  	//file_put_contents('/tmp/headers.txt', "Instance name: ".$instanceName."\n", FILE_APPEND);
+  	file_put_contents('/tmp/headers.txt', "\n\nInstance name: ".$instanceName."\n", FILE_APPEND);
+  	file_put_contents('/tmp/headers.txt', "\n".$xml->asXML()."\n", FILE_APPEND);
 	
 	
 	foreach( $_FILES as $file)
 	{
 		if(endsWith($file['name'], "xml")) continue;
+
+		switch($file['error'])
+		{
+			case UPLOAD_ERR_OK:
+				// Upload fine
+				break;
+
+			case UPLOAD_ERR_INI_SIZE:
+		                printError("The uploaded file exceeds the upload_max_filesize directive in php.ini", "413 Media file too large");
+				break; 
+			case UPLOAD_ERR_FORM_SIZE:
+				$message = "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form";
+		                printError($message, "413 Media file too large");
+				break; 
+			case UPLOAD_ERR_PARTIAL:
+				$message = "The uploaded file was only partially uploaded";
+		                printError($message, "400 Media file upload failure");
+				break; 
+			case UPLOAD_ERR_NO_FILE:
+				$message = "No file was uploaded";
+		                printError($message, "400 Media file upload failure");
+				break; 
+			case UPLOAD_ERR_NO_TMP_DIR:
+				$message = "Missing a temporary folder";
+		                printError($message, "500".$message);
+				break; 
+			case UPLOAD_ERR_CANT_WRITE:
+				$message = "Failed to write file to disk";
+		                printError($message, "500".$message);
+				break; 
+			case UPLOAD_ERR_EXTENSION:
+				$message = "File upload stopped by extension";
+		                printError($message, "500".$message);
+				break; 
+			default:
+				$message = "Unknown upload error";
+		                printError($message, "500".$message);
+				break;
+				
+		}
+
+		
+
+		$arraycontents = print_r($file, true);
+  		file_put_contents('/tmp/headers.txt', $arraycontents."\n", FILE_APPEND);
+
+			
   		//file_put_contents('/tmp/headers.txt', "Copying file: ".$file['name']." to temp folder\n", FILE_APPEND);
 		//move_uploaded_file( $file['tmp_name'], $mediastorefolder.$file['name']) or printError("Failed to copy media file", "400 Bad request");
 		$currentname = $file['tmp_name'];
 		$storedname = $mediaStoreFolder.$odkauth->getUserID()."/".$file['name']; 
-		if (file_exists($storedname))
+		file_put_contents('/tmp/headers.txt', "Current filename : ".$currentname."\n", FILE_APPEND);
+		file_put_contents('/tmp/headers.txt', "Stored filename : ".$storedname."\n", FILE_APPEND);
+
+		// Fail if media file already exists
+		/*if (file_exists($storedname))
 		{
-			printError("Failed to copy media file", "500 Media file storage error");
-		}
-		move_uploaded_file($currentname, $storedname) or printError("Failed to copy media file", "500 Media file storage error");
+			printError("Failed to copy media file", "500 Media file already exists");
+		}*/
+		move_uploaded_file($currentname, $storedname) or printError("Failed to copy media file", "500 Media file copy fail");
 		$filearray[] = $storedname;
 
 	}

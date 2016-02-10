@@ -27,7 +27,7 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
 
     function __construct()
     {
-        $groupXMLTag = "odkformdefinition";
+        $groupXMLTag = "odkFormDefinition";
     	parent::__construct($groupXMLTag);
     }
 
@@ -211,7 +211,7 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
                 $xml.="<odkFormDefinition ";
 				$xml.="id=\"".$this->getID()."\" ";
 				$xml.="name=\"".$this->getName()."\" >\n";
-				$xml.=$this->getDefinition();
+		if($format=='standard' || $format=='comprehensive') $xml.=$this->getDefinition();
 				
                 $xml.="</odkFormDefinition>\n";
                              
@@ -336,7 +336,16 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
     
         global $dbconn;
     	global $firebug;
-	$sql = "DELETE FROM tblodkdefinition WHERE odkdefinition='".$this->getID()."'";
+    	global $auth;
+
+	if($this->getID()=='all')
+	{
+		$sql = "DELETE FROM tblodkdefinition WHERE ownerid='".$auth->getUserID()."'";
+	}
+	else
+	{
+		$sql = "DELETE FROM tblodkdefinition WHERE odkdefinitionid='".$this->getID()."' AND ownerid='".$auth->getUserID()."'";
+	}
 	      	
 	      	$firebug->log($sql, "odk form delete SQL");
 	      	

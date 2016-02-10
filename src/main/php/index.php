@@ -44,6 +44,7 @@ require_once("inc/dictionaries.php");
 require_once("inc/search.php");
 require_once("inc/tag.php");
 require_once("inc/statistics.php");
+require_once("inc/odkformdefinition.php");
 
 
 $xmldata 		= NULL;
@@ -126,6 +127,7 @@ if($myMetaHeader->status != "Error")
             case "curationParameters":			$myObject = new curation(); break;
             case "tagParameters":			$myObject = new tag(); break;
             case "statisticsParameters":			$myObject = new statistics(); break;
+            case "odkFormDefinitionParameters":			$myObject = new odkFormDefinition(); break;
 
             default:
             	trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
@@ -219,6 +221,10 @@ if($myMetaHeader->status != "Error")
                 case "tag":
                 	$myID = null;
                 	$objectType="tag";
+                	break;                	
+                case "odkFormDefinition":
+                	$myID = null;
+                	$objectType="odkFormDefinition";
                 	break;                	
                 default:
                 	$firebug->log($objectType, "Unknown object type");

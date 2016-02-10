@@ -144,6 +144,7 @@ function getFile($zipfile)
 	    ob_clean();
 	    flush();
 	    readfile($zipfile);
+            unlink($zipfile);
 	    exit;
     }
     else

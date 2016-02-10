@@ -19,6 +19,8 @@ header('HTTP/1.1 200 OK');
 header('X-OpenRosa-Version: 1.0');
 header('Date: '.date("r"));
 header('Content-Type: text/xml');
+header("Cache-Control: no-cache, must-revalidate"); // HTTP/1.1
+header("Expires: Sat, 26 Jul 1997 05:00:00 GMT"); // Date in the past
 
 
 echo "<?xml version='1.0' encoding='UTF-8' ?>

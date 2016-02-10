@@ -3,17 +3,21 @@ package org.tellervo.desktop.odk;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.swing.AbstractListModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
+
 
 public class ODKFieldListModel extends AbstractListModel<ODKFieldInterface> implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	ArrayList<ODKFieldInterface> fields;
-	//private static final Logger log = LoggerFactory.getLogger(ODKFieldListModel.class);
+	private static final Logger log = LoggerFactory.getLogger(ODKFieldListModel.class);
 
 	public ODKFieldListModel()
 	{
@@ -112,6 +116,21 @@ public class ODKFieldListModel extends AbstractListModel<ODKFieldInterface> impl
 	public Collection<ODKFieldInterface> getAllFields()
 	{
 		return fields;
+	}
+	
+	public void swapEntries(int i, int j)
+	{
+		log.debug("Swapping entries: "+i+" and "+j);
+		
+		log.debug("List before swap: ");
+		log.debug(fields.toString());
+		
+		Collections.swap(this.fields, i, j);
+		
+		log.debug("List after swap: ");
+		log.debug(fields.toString());
+		fireContentsChanged(this, i, j);
+
 	}
 
 }

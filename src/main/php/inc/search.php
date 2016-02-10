@@ -270,6 +270,16 @@ class search Implements IDBAccessor
                 	continue;
                 } */           
             }
+            elseif($this->returnObject=="odkFormDefinition") 
+            {
+                $myReturnObject = new odkFormDefinition();
+                /*$hasPermission = $myAuth->getPermission("read", "tag", $row['tagid']);
+                if($hasPermission===FALSE) {
+                	array_push($this->deniedRecArray, $row['tagid']); 
+                	$firebug->log($row['radiusid'], "Permission denied on tagid");	 
+                	continue;
+                } */           
+            }
             elseif($this->returnObject=="vmeasurement")
             {
 		        /**
@@ -536,6 +546,12 @@ class search Implements IDBAccessor
         case "vmeasurement":
             return "vmeasurement";
             break;     			
+	case "odkFormDefinition":
+	    return "odkdefinition";
+	    break;
+	case "odkFormInstance":
+	    return "odkinstance";
+	    break;
         default:
             return false;
         }
@@ -586,6 +602,12 @@ class search Implements IDBAccessor
         case "tag":
 	        return "tbltag";
 		break;
+        case "odkFormDefinition":
+	        return "tblodkdefinition";
+		break;
+        case "odkFormInstance":
+	        return "tblodkinstance";
+		break;
         default:
         	echo "unable to determine table name.  Fatal error.";
             die();
@@ -622,6 +644,11 @@ class search Implements IDBAccessor
               
         $firebug->log($this->getLowestRelationshipLevel($tables), "Lowest Relationship Level");
         $firebug->log($this->getHighestRelationshipLevel($tables), "Highest Relationship Level");
+
+	if($this->includeODKFormDefinition($tables))
+	{
+		return $fromSQL .= "tblodkdefinition";
+	}
         
         if( (($this->getLowestRelationshipLevel($tables)<=5) && ($this->getHighestRelationshipLevel($tables)>=5)) || ($this->returnObject == 'object'))  
         {
@@ -812,7 +839,15 @@ class search Implements IDBAccessor
     		return true;
     	}
     }
-    
+   
+    private function includeODKFormDefinition($tables)
+    {
+    	if ((in_array('tblodkdefinition', $tables)) || ($this->returnObject == 'odkFormDefinition'))
+    	{
+    		return true;
+    	}
+
+    } 
     
     /**
      * Whether or not the Box table should be included

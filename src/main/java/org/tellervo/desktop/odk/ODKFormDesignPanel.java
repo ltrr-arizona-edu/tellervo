@@ -15,7 +15,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -30,14 +29,18 @@ import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
 import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.UIManager;
@@ -48,6 +51,8 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -79,10 +84,6 @@ import org.xml.sax.SAXException;
 import com.jidesoft.swing.CheckBoxList;
 import com.jidesoft.swing.SearchableUtils;
 
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JSeparator;
-
 
 
 public class ODKFormDesignPanel extends JPanel implements ActionListener, Serializable{
@@ -95,6 +96,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	private JList lstSelectedFields;
 	private ODKFieldListModel availableFieldsModel;
 	private ODKFieldListModel selectedFieldsModel;
+	private DefaultTreeModel selectedFieldsTreeModel;
+	private JTree tree;
+	private DefaultMutableTreeNode treeRoot;
 	private static final Logger log = LoggerFactory.getLogger(ODKFormDesignPanel.class);
 	private JComboBox cboDefault;
     private CheckBoxList cbxlstChoices;
@@ -191,7 +195,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		JPanel panelFieldPicker = new JPanel();
 		panelMain.add(panelFieldPicker, "cell 0 3 2 1,grow");
-		panelFieldPicker.setLayout(new MigLayout("", "[300px,grow,fill][70px:70px:70px][300px,grow,fill]", "[][grow,center][]"));
+		panelFieldPicker.setLayout(new MigLayout("", "[300px,grow,fill][70px:70px:70px][300px,grow,fill][grow][]", "[][grow,center][]"));
 		
 		JLabel lblAvailableFields = new JLabel("Available fields:");
 		panelFieldPicker.add(lblAvailableFields, "cell 0 0");
@@ -295,7 +299,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		panelAddRemove.add(btnRemoveAll, "cell 0 3");
 		
 		scrollPaneSelected = new JScrollPane();
-		panelFieldPicker.add(scrollPaneSelected, "cell 2 1,grow");
+		panelFieldPicker.add(scrollPaneSelected, "flowx,cell 2 1,grow");
 		
 		lstSelectedFields = new JList();
 		lstSelectedFields.setCellRenderer(new ODKFieldRenderer());
@@ -387,6 +391,32 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			}
 			
 		});
+		
+		JScrollPane scrollPane_1 = new JScrollPane();
+		panelFieldPicker.add(scrollPane_1, "cell 3 1,grow");
+		
+		treeRoot = new DefaultMutableTreeNode();
+		selectedFieldsTreeModel = new DefaultTreeModel(treeRoot);
+		tree = new JTree(selectedFieldsTreeModel);
+		
+		scrollPane_1.setViewportView(tree);
+		tree.setRootVisible(false);
+		
+		JPanel panel_3 = new JPanel();
+		panelFieldPicker.add(panel_3, "cell 4 1,grow");
+		panel_3.setLayout(new MigLayout("", "[53px]", "[25px][]"));
+		
+		JButton btnUp = new JButton("");
+		btnUp.setIcon(Builder.getIcon("1uparrow.png", 22));
+		btnUp.setActionCommand("MoveUp");
+		btnUp.addActionListener(this);
+		panel_3.add(btnUp, "cell 0 0,alignx left,aligny top");
+		
+		JButton btnDown = new JButton("");
+		btnDown.setIcon(Builder.getIcon("1downarrow.png", 22));
+		btnDown.setActionCommand("MoveDown");
+		btnDown.addActionListener(this);
+		panel_3.add(btnDown, "cell 0 1,alignx left,aligny top");
 		panelFieldPicker.add(btnAddUserDefined, "cell 2 2,alignx right");
 		
 		JScrollPane fieldOptionsScrollPane = new JScrollPane();
@@ -986,7 +1016,18 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		ArrayList<ODKFieldInterface> fields =  (ArrayList<ODKFieldInterface>) availableFieldsModel.getAllFields();
 		if(fields==null || fields.size()==0) return;
 		selectedFieldsModel.addAllFields(fields);
+		
+		
+		for(ODKFieldInterface field : fields)
+		{
+			log.debug("Adding field "+field.getFieldName()+" to tree");
+			DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(field); 
+			selectedFieldsTreeModel.insertNodeInto(newChild, treeRoot, treeRoot.getChildCount());
+		}
+		
+		this.selectedFieldsTreeModel.reload();
 		availableFieldsModel.removeFields(fields);
+		
 	}
 	
 	private void fieldNameChanged()
@@ -1030,6 +1071,10 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		if(field==null) return;
 		selectedFieldsModel.addField(field);
 		availableFieldsModel.removeField(field);
+
+		DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(field); 
+		selectedFieldsTreeModel.insertNodeInto(newChild, treeRoot, treeRoot.getChildCount());		
+		this.selectedFieldsTreeModel.reload();		
 	}
 	
 	private void removeOneField()
@@ -1037,7 +1082,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		AbstractODKField field =  (AbstractODKField) lstSelectedFields.getSelectedValue();
 		if(field==null) return;
 		if(field.isFieldRequired()) return;
-		availableFieldsModel.addField(field);
+		availableFieldsModel.addField(field);		
 		selectedFieldsModel.removeField(field);
 	}
 	
@@ -1066,7 +1111,14 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		else if(evt.getActionCommand().equals("SaveODKFormFile"))
 		{
 			doSave();
-			
+		}
+		else if(evt.getActionCommand().equals("MoveUp"))
+		{
+			moveUp();
+		}
+		else if(evt.getActionCommand().equals("MoveDown"))
+		{
+			moveDown();
 		}
 		else if(evt.getActionCommand().equals("Cancel"))
 		{
@@ -1379,7 +1431,30 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		
 	}
+	
+	private void moveUp()
+	{
+		
+		int i = this.lstSelectedFields.getSelectedIndex();
+		int j = i-1;
+		
+		log.debug("Moving current field up");
+		
+		
+		this.selectedFieldsModel.swapEntries(i, j);
+		lstSelectedFields.setSelectedIndex(j);
+	}
+	
+	private void moveDown()
+	{
+		int i = this.lstSelectedFields.getSelectedIndex();
+		int j = i+1;
+		
+		log.debug("Moving current field down");
 
+		this.selectedFieldsModel.swapEntries(i, j);
+		lstSelectedFields.setSelectedIndex(j);
+	}
 }
 
 
