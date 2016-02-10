@@ -27,11 +27,15 @@ public class ODKFieldListModel extends AbstractListModel<ODKFieldInterface> impl
 	public ODKFieldListModel(ArrayList<ODKFieldInterface> fields)
 	{
 		this.fields = fields;
+		Collections.sort(this.fields);
+
 	}
 	
 	public void addField(ODKFieldInterface field)
 	{
 		fields.add(field);
+		
+		Collections.sort(this.fields);
 		this.fireIntervalAdded(this, 0, fields.size()-1);
 	}
 	
@@ -40,6 +44,7 @@ public class ODKFieldListModel extends AbstractListModel<ODKFieldInterface> impl
 		if(fields==null || fields.size()==0) return;
 		
 		this.fields.addAll(fields);
+		Collections.sort(this.fields);
 		this.fireIntervalAdded(this, 0, fields.size()-1);
 
 	}
@@ -63,7 +68,8 @@ public class ODKFieldListModel extends AbstractListModel<ODKFieldInterface> impl
 		}
 		//log.debug("Removed field at index "+index+ " the size of list is now "+getSize());
 
-	
+		Collections.sort(this.fields);
+
 	}
 	
 	public void removeField(int index)
@@ -79,7 +85,8 @@ public class ODKFieldListModel extends AbstractListModel<ODKFieldInterface> impl
 		
 		//log.debug("Removed field at index "+index+ " the size of list is now "+getSize());
 		
-		
+		Collections.sort(this.fields);
+
 	}
 	
 	public void removeFields(Collection<ODKFieldInterface> fields)
@@ -94,6 +101,7 @@ public class ODKFieldListModel extends AbstractListModel<ODKFieldInterface> impl
 			this.fireIntervalRemoved(this, 0, fields.size()-1);
 		}
 		//log.debug("Removed a bunch of fields, the size of list is now "+getSize());
+		Collections.sort(this.fields);
 
 	}
 	
@@ -129,6 +137,9 @@ public class ODKFieldListModel extends AbstractListModel<ODKFieldInterface> impl
 		
 		log.debug("List after swap: ");
 		log.debug(fields.toString());
+		
+		Collections.sort(this.fields);
+
 		fireContentsChanged(this, i, j);
 
 	}

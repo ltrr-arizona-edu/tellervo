@@ -28,7 +28,8 @@ public class ODKFormGenerator {
 
 	private static final Logger log = LoggerFactory.getLogger(ODKFormGenerator.class);
 
-	public static String generate(String formNameFull, ArrayList<ODKFieldInterface> mainFields, ArrayList<ODKFieldInterface> secondaryFields)
+	
+	public static String generate(String formNameFull, ODKTreeModel treeModel)
 	{
 		StringBuilder data = new StringBuilder();
 		

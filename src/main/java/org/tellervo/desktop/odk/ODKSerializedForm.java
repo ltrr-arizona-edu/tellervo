@@ -6,22 +6,22 @@ public class ODKSerializedForm implements Serializable {
 
 
 	private static final long serialVersionUID = 3516194818372083752L;
-	private ODKFieldListModel listModel;
+	private ODKTreeModel treeModel;
 	private String formTitle;
 	
 	
-	public ODKSerializedForm(ODKFieldListModel listModel, String formTitle)
+	public ODKSerializedForm(ODKTreeModel model, String formTitle)
 	{
-		this.setListModel(listModel);
+		this.setTreeModel(model);
 		this.setFormTitle(formTitle);
 	}
 
-	public ODKFieldListModel getListModel() {
-		return listModel;
+	public ODKTreeModel getTreeModel() {
+		return treeModel;
 	}
 
-	private void setListModel(ODKFieldListModel listModel) {
-		this.listModel = listModel;
+	private void setTreeModel(ODKTreeModel treeModel) {
+		this.treeModel = treeModel;
 	}
 
 	public String getFormTitle() {

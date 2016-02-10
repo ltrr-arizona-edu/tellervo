@@ -12,14 +12,12 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Enumeration;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -28,12 +26,12 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -52,13 +50,14 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import net.miginfocom.swing.MigLayout;
 
 import org.codehaus.plexus.util.FileUtils;
+import org.jdesktop.swingx.JXList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
@@ -79,10 +78,11 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
-import org.xml.sax.SAXException;
 
 import com.jidesoft.swing.CheckBoxList;
 import com.jidesoft.swing.SearchableUtils;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 
 
@@ -92,13 +92,11 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	private JTextField txtFieldName;
 	private JCheckBox chkRequired;
 	private JTextArea txtDescription;
-	private JList lstAvailableFields;
-	private JList lstSelectedFields;
+	private JXList lstAvailableFields;
 	private ODKFieldListModel availableFieldsModel;
-	private ODKFieldListModel selectedFieldsModel;
-	private DefaultTreeModel selectedFieldsTreeModel;
+	//private ODKFieldListModel selectedFieldsModel;
+	private ODKTreeModel selectedFieldsTreeModel;
 	private JTree tree;
-	private DefaultMutableTreeNode treeRoot;
 	private static final Logger log = LoggerFactory.getLogger(ODKFormDesignPanel.class);
 	private JComboBox cboDefault;
     private CheckBoxList cbxlstChoices;
@@ -125,8 +123,14 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	 * Create the panel.
 	 */
 	public ODKFormDesignPanel(JDialog theparent) {
-		setLayout(new BorderLayout(0, 0));
 		this.parent = theparent;
+
+		initGUI();
+	}
+	
+	private void initGUI()
+	{
+		setLayout(new BorderLayout(0, 0));
 		
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -195,7 +199,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		JPanel panelFieldPicker = new JPanel();
 		panelMain.add(panelFieldPicker, "cell 0 3 2 1,grow");
-		panelFieldPicker.setLayout(new MigLayout("", "[300px,grow,fill][70px:70px:70px][300px,grow,fill][grow][]", "[][grow,center][]"));
+		panelFieldPicker.setLayout(new MigLayout("", "[300px,grow,fill][70px:70px:70px][300px,grow,fill][]", "[][grow,center][]"));
 		
 		JLabel lblAvailableFields = new JLabel("Available fields:");
 		panelFieldPicker.add(lblAvailableFields, "cell 0 0");
@@ -206,9 +210,10 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		scrollPaneAvailable = new JScrollPane();
 		panelFieldPicker.add(scrollPaneAvailable, "cell 0 1,grow");
 		
-		lstAvailableFields = new JList();
+		lstAvailableFields = new JXList();
 		lstAvailableFields.setCellRenderer(new ODKFieldRenderer());
 		lstAvailableFields.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		lstAvailableFields.setAutoCreateRowSorter(true);
 		availableFieldsModel = new ODKFieldListModel(ODKFields.getFields(TridasObject.class));
 		lstAvailableFields.setModel(availableFieldsModel);
 
@@ -239,8 +244,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 					if(evt.getClickCount()>1)
 					{
 						addOneField();
-						lstSelectedFields.setSelectedIndex(lstSelectedFields.getModel().getSize()-1);
-						selectedField = (AbstractODKField) lstSelectedFields.getSelectedValue();
+						//lstSelectedFields.setSelectedIndex(lstSelectedFields.getModel().getSize()-1);
+						//selectedField = (AbstractODKField) lstSelectedFields.getSelectedValue();
 						setDetailsPanel();
 						JScrollBar vertical = scrollPaneSelected.getVerticalScrollBar();
 						vertical.setValue( vertical.getMaximum() );
@@ -300,73 +305,36 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		scrollPaneSelected = new JScrollPane();
 		panelFieldPicker.add(scrollPaneSelected, "flowx,cell 2 1,grow");
+		tree = new JTree();
+		scrollPaneSelected.setViewportView(tree);
+		tree.setCellRenderer(new ODKTreeCellRenderer());
+		tree.setRootVisible(false);
 		
-		lstSelectedFields = new JList();
-		lstSelectedFields.setCellRenderer(new ODKFieldRenderer());
-		lstSelectedFields.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		selectedFieldsModel = new ODKFieldListModel();
-		lstSelectedFields.setModel(selectedFieldsModel);
+		JPopupMenu menu = new JPopupMenu();
+		JMenuItem miGroupFields = new JMenuItem("Group/Ungroup");
+		miGroupFields.setActionCommand("GroupUngroup");
+		miGroupFields.addActionListener(this);
 		
-		lstSelectedFields.addListSelectionListener(new ListSelectionListener(){
-
-			@Override
-			public void valueChanged(ListSelectionEvent evt) {
-
-				if(evt.getValueIsAdjusting()) return;
-				
-				log.debug("Selected fields list item selected");
-
-				selectedField = (AbstractODKField) lstSelectedFields.getSelectedValue();
-				setDetailsPanel();
-
-			}
-			
-		});
+		JMenuItem miRemoveField = new JMenuItem("Remove");
+		miRemoveField.setActionCommand("RemoveOne");
+		miRemoveField.addActionListener(this);
 		
-		lstSelectedFields.addMouseListener(new MouseListener(){
-
-			@Override
-			public void mouseClicked(MouseEvent evt) {
-				
-				if(evt.isPopupTrigger())
-				{
-					
-				}
-				else
-				{
-					if(evt.getClickCount()>1)
-					{
-						removeOneField();
-						lstAvailableFields.setSelectedIndex(lstAvailableFields.getModel().getSize()-1);
-						selectedField = (AbstractODKField) lstAvailableFields.getSelectedValue();
-						setDetailsPanel();
-						JScrollBar vertical = scrollPaneAvailable.getVerticalScrollBar();
-						vertical.setValue( vertical.getMaximum() );
-					}
-					else
-					{
-						selectedField = (AbstractODKField) lstSelectedFields.getSelectedValue();
-						setDetailsPanel();
-					}
-				}
-				
-			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) { }
-
-			@Override
-			public void mouseExited(MouseEvent arg0) { }
-
-			@Override
-			public void mousePressed(MouseEvent arg0) { }
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) { }
-			
-		});
+		JMenuItem miRemoveAllField = new JMenuItem("Remove all fields");
+		miRemoveAllField.setActionCommand("RemoveAll");
+		miRemoveAllField.addActionListener(this);
 		
-		scrollPaneSelected.setViewportView(lstSelectedFields);
+		JMenuItem miRename = new JMenuItem("Rename");
+		miRename.setActionCommand("Rename");
+		miRename.addActionListener(this);
+		
+		
+		menu.add(miGroupFields);
+		menu.add(miRemoveField);
+		menu.add(miRemoveAllField);
+		menu.add(miRename);
+
+		
+		tree.setComponentPopupMenu(menu);
 		
 		JButton btnAddUserDefined = new JButton("Add user defined field");
 		btnAddUserDefined.addActionListener(new ActionListener(){
@@ -381,7 +349,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 				
 				if(dialog.success)
 				{
-					selectedFieldsModel.addField(dialog.getField());
+					selectedFieldsTreeModel.addNodeToRoot(dialog.getField());
 				}
 				else
 				{
@@ -392,18 +360,12 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			
 		});
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
-		panelFieldPicker.add(scrollPane_1, "cell 3 1,grow");
-		
-		treeRoot = new DefaultMutableTreeNode();
-		selectedFieldsTreeModel = new DefaultTreeModel(treeRoot);
-		tree = new JTree(selectedFieldsTreeModel);
-		
-		scrollPane_1.setViewportView(tree);
-		tree.setRootVisible(false);
+		DefaultMutableTreeNode treeRoot = new DefaultMutableTreeNode();
+		selectedFieldsTreeModel = new ODKTreeModel(treeRoot, TridasObject.class);
+		selectedFieldsTreeModel.addTreeModelListener(new ODKTreeModelListener(tree));
 		
 		JPanel panel_3 = new JPanel();
-		panelFieldPicker.add(panel_3, "cell 4 1,grow");
+		panelFieldPicker.add(panel_3, "cell 3 1,grow");
 		panel_3.setLayout(new MigLayout("", "[53px]", "[25px][]"));
 		
 		JButton btnUp = new JButton("");
@@ -608,12 +570,15 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		this.removeAllNonMandatoryFields();
 		setChoiceGUIVisible(false);
 
-
+		this.formTypeChanged();
+		
 	}
+	
 	
 	private void uploadForm()
 	{
-		String contents = ODKFormGenerator.generate(txtFormName.getText(), (ArrayList<ODKFieldInterface>) this.selectedFieldsModel.getAllFields(), null);
+		
+		String contents = ODKFormGenerator.generate(txtFormName.getText(), selectedFieldsTreeModel);
 		log.debug("Form contents");
 		log.debug(contents);
 		
@@ -630,7 +595,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 				    .newDocumentBuilder()
 				    .parse(new ByteArrayInputStream(contents.getBytes()))
 				    .getDocumentElement();
-		} catch (SAXException | IOException | ParserConfigurationException e) {
+		} catch (Exception e) {
 			log.error("Error creating ODK form definition.");
 		}
 		
@@ -657,7 +622,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	{
 		 
 		
-		String lastVisitedFolder = App.prefs.getPref(PrefKey.FOLDER_LAST_SAVE, null);
+	/*	String lastVisitedFolder = App.prefs.getPref(PrefKey.FOLDER_LAST_SAVE, null);
 
 		final JFileChooser fc = new JFileChooser(lastVisitedFolder);
 
@@ -688,16 +653,14 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		try{
 		if (obj instanceof ODKSerializedForm)
 		{
-			ODKFieldListModel list = ((ODKSerializedForm) obj).getListModel();
+			ODKTreeModel model = ((ODKSerializedForm) obj).getTreeModel();
 			String formTitle = ((ODKSerializedForm) obj).getFormTitle();
 			
 			if(formTitle!=null) txtFormName.setText(formTitle);
-			if(list.getSize()==0) return;
-			
-			if(list.getElementAt(0).getTridasClass().equals(TridasObject.class)) {
+						
+			if(model.getClassType().equals(TridasObject.class)) {
 				cboFormType.setSelectedIndex(0);
 				availableFieldsModel = new ODKFieldListModel(ODKFields.getFields(TridasObject.class));
-
 			}
 			else
 			{
@@ -708,12 +671,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 				availableFieldsModel = new ODKFieldListModel(fields);
 			}
 						
-			selectedFieldsModel = (ODKFieldListModel) list;
-			lstSelectedFields.setModel(selectedFieldsModel);
-					
-			
-			
-			
+			selectedFieldsTreeModel = (ODKTreeModel) model;
+			tree.setModel(selectedFieldsTreeModel);
+								
 			CopyOnWriteArrayList<ODKFieldInterface> newavail = new CopyOnWriteArrayList<ODKFieldInterface>();
 			for(ODKFieldInterface field : availableFieldsModel.getAllFields())
 			{
@@ -742,7 +702,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		} finally{
 			obj_in.close();	
 		}
-
+*/
 	}
 	
 	public boolean saveFormDefinition() throws IOException
@@ -764,7 +724,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 				ObjectOutputStream (f_out);
 		
 			// Write object out to disk
-			obj_out.writeObject ( new ODKSerializedForm(selectedFieldsModel, txtFormName.getText()) );
+			obj_out.writeObject ( new ODKSerializedForm(selectedFieldsTreeModel, txtFormName.getText()) );
 		
 			obj_out.close();
 			
@@ -808,7 +768,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		selectedField.setIsFieldHidden(this.chkHideField.isSelected());
 		
-		this.lstSelectedFields.repaint();
+		this.tree.repaint();
 		this.lstAvailableFields.repaint();
 	}
 	
@@ -1014,19 +974,24 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	private void addAllFields()
 	{
 		ArrayList<ODKFieldInterface> fields =  (ArrayList<ODKFieldInterface>) availableFieldsModel.getAllFields();
-		if(fields==null || fields.size()==0) return;
-		selectedFieldsModel.addAllFields(fields);
+		if(fields==null || fields.size()==0) return;	
 		
+		
+		Collections.reverse(fields);
 		
 		for(ODKFieldInterface field : fields)
 		{
 			log.debug("Adding field "+field.getFieldName()+" to tree");
-			DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(field); 
-			selectedFieldsTreeModel.insertNodeInto(newChild, treeRoot, treeRoot.getChildCount());
+			//selectedFieldsTreeModel.addNodeToRoot(field);
+			
+			DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(field);
+			selectedFieldsTreeModel.insertNodeInto(newChild, (MutableTreeNode) selectedFieldsTreeModel.getRoot(), 0);
 		}
 		
 		this.selectedFieldsTreeModel.reload();
 		availableFieldsModel.removeFields(fields);
+		
+		expandTree();
 		
 	}
 	
@@ -1035,20 +1000,24 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		if(selectedField==null) return;
 		selectedField.setName(this.txtFieldName.getText());
 		
-		for(ODKFieldInterface field : this.selectedFieldsModel.getAllFields())
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)tree.getLastSelectedPathComponent(); 
+		
+		//TODO
+		/*for(ODKFieldInterface field : this.selectedFieldsModel.getAllFields())
 		{
 			if(selectedField.getFieldCode().equals(field.getFieldCode()))
 			{
 				field.setName(this.txtFieldName.getText());
 				this.lstSelectedFields.repaint();
 			}
-		}
+		}*/
+		
 		
 	}
 		
 	private void removeAllNonMandatoryFields()
 	{
-		ArrayList<ODKFieldInterface> fields =  (ArrayList<ODKFieldInterface>) selectedFieldsModel.getAllFields();
+		/*ArrayList<ODKFieldInterface> fields =  (ArrayList<ODKFieldInterface>) selectedFieldsModel.getAllFields();
 		ArrayList<ODKFieldInterface> fields2 =  new ArrayList<ODKFieldInterface>();
 
 		if(fields==null || fields.size()==0) return;
@@ -1062,28 +1031,99 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		}
 		
 		availableFieldsModel.addAllFields(fields2);
-		selectedFieldsModel.removeFields(fields2);
+		selectedFieldsModel.removeFields(fields2);*/
+		
+		recurseRemoveNonMandatoryNodes((DefaultMutableTreeNode) this.selectedFieldsTreeModel.getRoot());
+			
+		
+	}
+	
+	private void recurseRemoveNonMandatoryNodes(DefaultMutableTreeNode node)
+	{
+		log.debug("The node '"+node.toString()+"' has "+node.getChildCount()+" children");
+		
+		Enumeration en = node.depthFirstEnumeration();
+		
+		while(en.hasMoreElements())
+		{
+			DefaultMutableTreeNode childnode = (DefaultMutableTreeNode) en.nextElement();
+					
+			if(childnode.getUserObject() instanceof ODKFieldInterface)
+			{
+				ODKFieldInterface obj = (ODKFieldInterface) childnode.getUserObject();
+				if(obj.isFieldRequired()) {
+					log.debug(obj.getFieldName() + " is mandatory so leaving in tree");
+					continue;
+				}
+				else
+				{
+					log.debug(obj.getFieldName() + " is optional so deleting from tree");
+					
+					try{
+						ODKFieldInterface field = (ODKFieldInterface) childnode.getUserObject();
+						availableFieldsModel.addField(field);
+					} catch (Exception e)
+					{
+						
+					}
+					this.selectedFieldsTreeModel.removeNodeFromParent(childnode);
+					recurseRemoveNonMandatoryNodes(node);
+				}
+			}
+			else if (childnode instanceof ODKBranchNode && childnode.getParent()!=null)
+			{				
+				if(((ODKBranchNode)childnode).isDeletable()) this.selectedFieldsTreeModel.removeNodeFromParent(childnode);
+			}
+			else{
+				log.debug("Object is not ODKFieldInterface");
+			}
+		}
 	}
 	
 	private void addOneField()
 	{
 		AbstractODKField field =  (AbstractODKField) lstAvailableFields.getSelectedValue();
 		if(field==null) return;
-		selectedFieldsModel.addField(field);
 		availableFieldsModel.removeField(field);
 
-		DefaultMutableTreeNode newChild = new DefaultMutableTreeNode(field); 
-		selectedFieldsTreeModel.insertNodeInto(newChild, treeRoot, treeRoot.getChildCount());		
+		selectedFieldsTreeModel.addNodeToRoot(field);		
 		this.selectedFieldsTreeModel.reload();		
+		expandTree();
 	}
 	
 	private void removeOneField()
 	{
-		AbstractODKField field =  (AbstractODKField) lstSelectedFields.getSelectedValue();
-		if(field==null) return;
-		if(field.isFieldRequired()) return;
-		availableFieldsModel.addField(field);		
-		selectedFieldsModel.removeField(field);
+		AbstractODKField field;
+		
+        TreePath currentSelection = tree.getSelectionPath();
+        if (currentSelection != null) {
+            DefaultMutableTreeNode currentNode = (DefaultMutableTreeNode)
+                         (currentSelection.getLastPathComponent());
+            MutableTreeNode parent = (MutableTreeNode)(currentNode.getParent());
+            if (parent != null) {
+            	
+            	if(currentNode.getUserObject() instanceof ODKFieldInterface)
+            	{
+            		field = (AbstractODKField)currentNode.getUserObject();
+            		
+            		if(!field.isFieldRequired())
+            		{           			
+                        this.selectedFieldsTreeModel.removeNodeFromParent(currentNode);
+            			availableFieldsModel.addField(field);		
+                    }
+            	}
+            	else if (currentNode instanceof ODKBranchNode)
+            	{
+            		if(currentNode.getChildCount()>0)
+    				{
+    					recurseRemoveNonMandatoryNodes(currentNode);
+    				}
+    				
+    				this.selectedFieldsTreeModel.removeNodeFromParent(currentNode);
+              	}
+            }
+        } 
+		
 	}
 	
 	@Override
@@ -1120,6 +1160,10 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		{
 			moveDown();
 		}
+		else if(evt.getActionCommand().equals("Rename"))
+		{
+			renameField();
+		}
 		else if(evt.getActionCommand().equals("Cancel"))
 		{
 			parent.setVisible(false);
@@ -1132,6 +1176,10 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		{
 			cbxlstChoices.selectNone();
 
+		}
+		else if (evt.getActionCommand().equals("GroupUngroup"))
+		{
+			groupUngroupFields();
 		}
 		else if (evt.getActionCommand().equals("DefaultChosen"))
 		{
@@ -1167,30 +1215,44 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		else if (evt.getActionCommand().equals("FormTypeChanged"))
 		{
 
-			if(this.cboFormType.getSelectedIndex()==0)
-			{
-				log.debug("Setting gui for object form creation");
-				availableFieldsModel = new ODKFieldListModel(ODKFields.getFields(TridasObject.class));
-				selectedFieldsModel = new ODKFieldListModel();
-				this.lstAvailableFields.setModel(availableFieldsModel);
-				this.lstSelectedFields.setModel(selectedFieldsModel);
-				this.addAllFields();
-				this.removeAllNonMandatoryFields();
-			}
-			else
-			{
-				log.debug("Setting gui for element form creation");
-				ArrayList<ODKFieldInterface> fields = ODKFields.getFields(TridasElement.class);
-				fields.addAll(ODKFields.getFields(TridasSample.class));
-				fields.addAll(ODKFields.getFields(TridasRadius.class));
-				availableFieldsModel = new ODKFieldListModel(fields);
-				selectedFieldsModel = new ODKFieldListModel();
-				this.lstAvailableFields.setModel(availableFieldsModel);
-				this.lstSelectedFields.setModel(selectedFieldsModel);
+			formTypeChanged();
+		}
+	}
+	
+	private void formTypeChanged()
+	{
+		if(this.cboFormType.getSelectedIndex()==0)
+		{
+			log.debug("Setting gui for object form creation");
+			
+			((DefaultMutableTreeNode)this.selectedFieldsTreeModel.getRoot()).removeAllChildren();
+			this.selectedFieldsTreeModel = new ODKTreeModel(new DefaultMutableTreeNode(), TridasObject.class);
+			tree.setModel(selectedFieldsTreeModel);
+			selectedFieldsTreeModel.addTreeModelListener(new ODKTreeModelListener(tree));
 
-				this.addAllFields();
-				this.removeAllNonMandatoryFields();
-			}
+			
+			availableFieldsModel = new ODKFieldListModel(ODKFields.getFields(TridasObject.class));
+			this.lstAvailableFields.setModel(availableFieldsModel);
+			this.addAllFields();
+			this.removeAllNonMandatoryFields();
+		}
+		else
+		{
+			log.debug("Setting gui for element form creation");
+			((DefaultMutableTreeNode)this.selectedFieldsTreeModel.getRoot()).removeAllChildren();
+			this.selectedFieldsTreeModel = new ODKTreeModel(new DefaultMutableTreeNode(), TridasSample.class);
+			tree.setModel(selectedFieldsTreeModel);
+			selectedFieldsTreeModel.addTreeModelListener(new ODKTreeModelListener(tree));
+
+			
+			ArrayList<ODKFieldInterface> fields = ODKFields.getFields(TridasElement.class);
+			fields.addAll(ODKFields.getFields(TridasSample.class));
+			fields.addAll(ODKFields.getFields(TridasRadius.class));
+			availableFieldsModel = new ODKFieldListModel(fields);
+			this.lstAvailableFields.setModel(availableFieldsModel);
+
+			this.addAllFields();
+			this.removeAllNonMandatoryFields();
 		}
 	}
 	
@@ -1210,14 +1272,16 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
     		if(this.cboFormType.getSelectedIndex()==0)
     		{
     			// Generate Objects form
-    			ODKFormGenerator.generate(file, txtFormName.getText(), (ArrayList<ODKFieldInterface>) this.selectedFieldsModel.getAllFields(), null);
+    			// TODO
+    			//ODKFormGenerator.generate(file, txtFormName.getText(), (ArrayList<ODKFieldInterface>) this.selectedFieldsModel.getAllFields(), null);
     		}
     		else
     		{
     			// Generate Elements/Samples form			
     			ArrayList<ODKFieldInterface> mainFields = new ArrayList<ODKFieldInterface>();
     			ArrayList<ODKFieldInterface> secondaryFields = new ArrayList<ODKFieldInterface>();
-    			for(ODKFieldInterface field : this.selectedFieldsModel.getAllFields())
+    			//TODO
+    			/*for(ODKFieldInterface field : this.selectedFieldsModel.getAllFields())
     			{
     				if(field.getTridasClass().equals(TridasElement.class))
     				{
@@ -1231,7 +1295,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
     				}
 
     			}
-    			ODKFormGenerator.generate(file, txtFormName.getText(), mainFields, secondaryFields);
+    			ODKFormGenerator.generate(file, txtFormName.getText(), mainFields, secondaryFields);*/
 
     		}
     	}
@@ -1434,26 +1498,60 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	
 	private void moveUp()
 	{
-		
-		int i = this.lstSelectedFields.getSelectedIndex();
-		int j = i-1;
-		
-		log.debug("Moving current field up");
-		
-		
-		this.selectedFieldsModel.swapEntries(i, j);
-		lstSelectedFields.setSelectedIndex(j);
+		this.selectedFieldsTreeModel.moveFieldUp((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
+		this.expandTree();
 	}
 	
 	private void moveDown()
 	{
-		int i = this.lstSelectedFields.getSelectedIndex();
-		int j = i+1;
-		
-		log.debug("Moving current field down");
+		this.selectedFieldsTreeModel.moveFieldDown((DefaultMutableTreeNode) tree.getLastSelectedPathComponent());
+		this.expandTree();
 
-		this.selectedFieldsModel.swapEntries(i, j);
-		lstSelectedFields.setSelectedIndex(j);
+	}
+	
+	private void expandTree(){
+
+		for (int i = 0; i < tree.getRowCount(); i++) {
+		    tree.expandRow(i);
+		}
+	}
+	
+	private void groupUngroupFields()
+	{
+		
+		// Group
+		TreePath[] selectionpaths = tree.getSelectionPaths();
+
+		String groupname = JOptionPane.showInputDialog(this,
+                "Name for group:\n",
+                "Group",
+                JOptionPane.PLAIN_MESSAGE);
+		
+		if(groupname==null) return;
+		
+		ODKBranchNode groupNode = new ODKBranchNode(true, groupname, TridasObject.class);
+		DefaultMutableTreeNode root = (DefaultMutableTreeNode) selectedFieldsTreeModel.getRoot();
+		this.selectedFieldsTreeModel.insertNodeInto(groupNode, root, root.getChildCount());
+		
+		
+				
+		for(TreePath path : selectionpaths)
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();		
+			selectedFieldsTreeModel.removeNodeFromParent(node);
+			selectedFieldsTreeModel.insertNodeInto(node, groupNode, groupNode.getChildCount());
+		}
+		
+	}
+	
+	private void renameField()
+	{
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+		Object obj = node.getUserObject();
+		if(obj instanceof String)
+		{
+			obj = "gggg";
+		}
 	}
 }
 

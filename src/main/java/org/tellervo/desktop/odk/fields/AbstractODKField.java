@@ -92,5 +92,10 @@ public abstract class AbstractODKField implements ODKFieldInterface, Serializabl
 		this.isFieldHidden=b;
 	}
 
-	
+	@Override
+	public int compareTo(Object o) {
+		ODKFieldInterface ob = (ODKFieldInterface) o;
+		
+		return this.getFieldName().compareTo(ob.getFieldName());
+	}
 }

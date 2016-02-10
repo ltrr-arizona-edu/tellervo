@@ -1,9 +1,8 @@
 package org.tellervo.desktop.odk.fields;
 
-import org.tellervo.desktop.odk.SelectableChoice;
 import org.tridas.interfaces.ITridas;
 
-public interface ODKFieldInterface {
+public interface ODKFieldInterface extends Comparable{
 
 	public String toString();
 	
