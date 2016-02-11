@@ -1,10 +1,8 @@
 package org.tellervo.desktop.odk;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 
-public class ODKFieldNode extends DefaultMutableTreeNode {
+public class ODKFieldNode extends AbstractODKTreeNode {
 
 	private static final long serialVersionUID = 1L;
 	private boolean isMoveable;

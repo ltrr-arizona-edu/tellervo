@@ -1,21 +1,24 @@
 package org.tellervo.desktop.odk;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
 
 import org.tridas.interfaces.ITridas;
 
-public class ODKBranchNode extends DefaultMutableTreeNode {
+public class ODKBranchNode extends AbstractODKTreeNode {
 
 	private static final long serialVersionUID = 1L;
 	private final boolean canDelete;
+	private final boolean repeats;
+
 	private final Class<? extends ITridas> childClassType;
 	
-	public ODKBranchNode(boolean canDelete, String name, Class<? extends ITridas> childClassType)
+	
+	public ODKBranchNode(boolean canDelete, boolean isRepeatable, String name, Class<? extends ITridas> childClassType)
 	{
 		this.canDelete = canDelete;
 		this.childClassType = childClassType;
 		this.allowsChildren=true;
+		this.repeats = isRepeatable;
 		
 		this.setUserObject(name);
 	}
@@ -24,6 +27,11 @@ public class ODKBranchNode extends DefaultMutableTreeNode {
 	{
 		
 		return canDelete;
+	}
+	
+	public boolean isRepeatable()
+	{
+		return repeats;
 	}
 	
 	@Override

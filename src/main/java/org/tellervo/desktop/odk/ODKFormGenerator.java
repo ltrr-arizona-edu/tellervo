@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import javax.swing.tree.DefaultMutableTreeNode;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
@@ -31,21 +33,7 @@ public class ODKFormGenerator {
 	
 	public static String generate(String formNameFull, ODKTreeModel treeModel)
 	{
-		StringBuilder data = new StringBuilder();
-		
-		Integer objectFieldCount = 0;
-		Integer elementFieldCount = 0;
-		Integer sampleFieldCount = 0;
-		Integer radiusFieldCount = 0;
-		String groupCode = "group_sample";
-		String groupName = "Samples";
-		
-		// Sanity checks
-		if(mainFields==null ) {
-			log.error("Need fields to generate an ODK form!");
-			return null;
-		}
-		if(secondaryFields==null ) secondaryFields = new ArrayList<ODKFieldInterface>();
+		StringBuilder data = new StringBuilder();		
 
 		if(formNameFull==null) 
 		{
@@ -53,26 +41,6 @@ public class ODKFormGenerator {
 			return null;
 		}
 		String formName = StringEscapeUtils.escapeXml(formNameFull.replace(" ", "_"));
-
-		for(ODKFieldInterface field : mainFields)
-		{
-			if(field.getTridasClass().equals(TridasObject.class)) objectFieldCount++;
-			if(field.getTridasClass().equals(TridasElement.class)) elementFieldCount++;
-			if(field.getTridasClass().equals(TridasSample.class)) sampleFieldCount++;
-			if(field.getTridasClass().equals(TridasRadius.class)) radiusFieldCount++;
-		}
-		for(ODKFieldInterface field : secondaryFields)
-		{
-			if(field.getTridasClass().equals(TridasObject.class)) objectFieldCount++;
-			if(field.getTridasClass().equals(TridasElement.class)) elementFieldCount++;
-			if(field.getTridasClass().equals(TridasSample.class)) sampleFieldCount++;
-			if(field.getTridasClass().equals(TridasRadius.class)) radiusFieldCount++;
-		}
-		if(objectFieldCount>0 && (elementFieldCount>0 || sampleFieldCount>0 || radiusFieldCount>0))
-		{
-			log.error("Can't mix object fields with fields from elements, samples and/or radii");
-			return null;
-		}
 				
 		// Basic form header
 		data.append("<h:html xmlns=\"http://www.w3.org/2002/xforms\" xmlns:h=\"http://www.w3.org/1999/xhtml\" xmlns:ev=\"http://www.w3.org/2001/xml-events\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:jr=\"http://openrosa.org/javarosa\">");
@@ -88,21 +56,43 @@ public class ODKFormGenerator {
 		//data.append("<instanceID/>");
 		data.append("<instanceName/>");
 		data.append("</meta>");
-		for(ODKFieldInterface field : mainFields)
+		
+		DefaultMutableTreeNode root = treeModel.getRootAsDMTN();
+		
+		log.debug("Root of tree has "+root.getChildCount()+ " children");
+		
+		for(int i=0; i<root.getChildCount(); i++)
 		{
-			data.append(getFieldDefinitionCode(field));
-		}
-		if(secondaryFields.size()>0)
-		{
-			data.append("<"+groupCode+">");
-			for(ODKFieldInterface field : secondaryFields)
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getChildAt(i);
+			if(node instanceof ODKFieldNode)
 			{
+				log.debug("ODKFieldNode child of root");
+				ODKFieldInterface field = (ODKFieldInterface) node.getUserObject();
 				data.append(getFieldDefinitionCode(field));
 			}
-			data.append("</"+groupCode+">");
-
-		}
-		
+			else if (node instanceof ODKBranchNode)
+			{
+				log.debug("ODKBranchNode child of root");
+				String groupName = (String) node.getUserObject();
+				String groupCode = "group_"+StringEscapeUtils.escapeXml(groupName.replace(" ", "_").toLowerCase());
+				
+				data.append("<"+groupCode+">");
+				for(int j=0; j<node.getChildCount(); j++)
+				{
+					DefaultMutableTreeNode node2 = (DefaultMutableTreeNode) node.getChildAt(j);
+					if(node2 instanceof ODKFieldNode)
+					{
+						ODKFieldInterface field = (ODKFieldInterface) node2.getUserObject();
+						data.append(getFieldDefinitionCode(field));
+					}
+				}
+				data.append("</"+groupCode+">");
+			}
+			else
+			{
+				log.debug("Unknown child of root");
+			}
+		}		
 		data.append("</data>");
 		data.append("</instance>");
 
@@ -110,59 +100,119 @@ public class ODKFormGenerator {
 		// Translation information ready for when we go global!
 		data.append("<itext>");
 		data.append("<translation lang=\"eng\">");
-		for(ODKFieldInterface field : mainFields)
+		for(int i=0; i<root.getChildCount(); i++)
 		{
-			data.append(getTranslationCode(field, null));		
-		}   
-		if(secondaryFields.size()>0)
-		{
-			for(ODKFieldInterface field : secondaryFields)
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getChildAt(i);
+			if(node instanceof ODKFieldNode)
 			{
-				data.append(getTranslationCode(field, groupCode));		
-			} 		
-			data.append("<text id=\"/data/"+groupCode+":label\">");
-	        data.append("<value>"+groupName+"</value>");
-	        data.append("</text>");
-		}
+				data.append("<!-- translation for node -->");
+				
+				ODKFieldInterface field = (ODKFieldInterface) node.getUserObject();
+				data.append(getTranslationCode(field, null));		
+			}
+			else if (node instanceof ODKBranchNode)
+			{
+				String groupName = (String) node.getUserObject();
+				String groupCode = "group_"+StringEscapeUtils.escapeXml(groupName.replace(" ", "_").toLowerCase());
+				
+				data.append("<!-- TRANSLATION FOR GROUP "+groupName+" -->");
+				data.append("<text id=\"/data/"+groupCode+":label\">");
+		        data.append("<value>"+groupName+"</value>");
+		        data.append("</text>");
+		        
+				for(int j=0; j<node.getChildCount(); j++)
+				{
+					DefaultMutableTreeNode node2 = (DefaultMutableTreeNode) node.getChildAt(j);
+					if(node2 instanceof ODKFieldNode)
+					{
+						ODKFieldInterface field = (ODKFieldInterface) node2.getUserObject();
+						data.append(getTranslationCode(field, groupCode));		
+					}
+					
+				}
+			}
+		}		
 		data.append("</translation>");
 		data.append("</itext>");
 		
-		// Data binding code
-		String instancename = "concat(/data/tridas_object_code"; 
-		if(elementFieldCount>0) instancename += ", '-', /data/tridas_element_title";
-		//if(sampleFieldCount>0) instancename += ", '-', /data/tridas_sample_title";
+		
+		// Data binding code	
+		String objectGroupCode = getGroupNameForField(treeModel, "tridas_object_code");
+		if(objectGroupCode!=null) objectGroupCode=objectGroupCode+"/";
+		String instancename = "concat(/data/"+objectGroupCode+"tridas_object_code"; 
+		if(treeModel.getClassType().equals(TridasSample.class)) {
+			String elementGroupCode = getGroupNameForField(treeModel, "tridas_element_title");
+			if(elementGroupCode!=null) elementGroupCode=elementGroupCode+"/";
+			instancename += ", '-', /data/"+elementGroupCode+"tridas_element_title";
+		}
 		data.append("<bind nodeset=\"/data/meta/instanceName\" type=\"string\" readonly=\"true()\" calculate=\""+instancename+")\"/>");
 
-		for(ODKFieldInterface field : mainFields)
+		for(int i=0; i<root.getChildCount(); i++)
 		{
-			data.append(getDataBindingCode(field, null));
-		}
-		for(ODKFieldInterface field : secondaryFields)
-		{
-			data.append(getDataBindingCode(field, groupCode));
-		}
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getChildAt(i);
+			if(node instanceof ODKFieldNode)
+			{
+				ODKFieldInterface field = (ODKFieldInterface) node.getUserObject();
+				data.append(getDataBindingCode(field, null));		
+			}
+			else if (node instanceof ODKBranchNode)
+			{				
+				for(int j=0; j<node.getChildCount(); j++)
+				{
+					DefaultMutableTreeNode node2 = (DefaultMutableTreeNode) node.getChildAt(j);
+					if(node2 instanceof ODKFieldNode)
+					{
+						ODKFieldInterface field = (ODKFieldInterface) node2.getUserObject();
+						data.append(getDataBindingCode(field, null));
+					}
+				}
+			}
+		}	
+		
 		data.append("</model>");
 		data.append("</h:head>");
-		
 		data.append("<h:body>");
 
 		// The actual fields to display to the user
-		for(ODKFieldInterface field : mainFields)
+		for(int i=0; i<root.getChildCount(); i++)
 		{
-			data.append(getFieldGUICode(field, null));
-		}
-		if(secondaryFields.size()>0)
-		{
-			data.append("<group>");
-		    data.append("<label ref=\"jr:itext('/data/"+groupCode+":label')\"/>");
-		    data.append("<repeat nodeset=\"/data/"+groupCode+"\">");
-			for(ODKFieldInterface field : secondaryFields)
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getChildAt(i);
+			if(node instanceof ODKFieldNode)
 			{
-				data.append(getFieldGUICode(field, groupCode));
+				ODKFieldInterface field = (ODKFieldInterface) node.getUserObject();
+				data.append(getFieldGUICode(field, null));
 			}
-			data.append("</repeat>");
-			data.append("</group>");
-		}
+			else if (node instanceof ODKBranchNode)
+			{
+				String groupName = (String) node.getUserObject();
+				String groupCode = "group_"+StringEscapeUtils.escapeXml(groupName.replace(" ", "_").toLowerCase());
+				
+				
+			   
+			    if(((ODKBranchNode) node).isRepeatable()) {
+			    	data.append("<group>");
+				    data.append("<label ref=\"jr:itext('/data/"+groupCode+":label')\"/>");
+			    	data.append("<repeat nodeset=\"/data/"+groupCode+"\">");
+			    }
+			    else
+			    {
+			    	data.append("<group appearance=\"field-list\">");
+				    data.append("<label ref=\"jr:itext('/data/"+groupCode+":label')\"/>");
+			    }
+				
+				for(int j=0; j<node.getChildCount(); j++)
+				{
+					DefaultMutableTreeNode node2 = (DefaultMutableTreeNode) node.getChildAt(j);
+					if(node2 instanceof ODKFieldNode)
+					{
+						ODKFieldInterface field = (ODKFieldInterface) node2.getUserObject();
+						data.append(getFieldGUICode(field, groupCode));
+					}
+				}
+				if(((ODKBranchNode) node).isRepeatable()) data.append("</repeat>");
+				data.append("</group>");
+			}
+		}	
 
 		data.append("</h:body>");
 		data.append("</h:html>");
@@ -171,7 +221,7 @@ public class ODKFormGenerator {
 	}
 	
 	
-	public static void generate(File outfile, String formNameFull, ArrayList<ODKFieldInterface> mainFields, ArrayList<ODKFieldInterface> secondaryFields)
+	public static void generate(File outfile, String formNameFull, ODKTreeModel treeModel)
 	{
 		if(outfile==null) 
 		{
@@ -179,7 +229,7 @@ public class ODKFormGenerator {
 			return;
 		}
 		
-		String data = generate(formNameFull, mainFields, secondaryFields);
+		String data = generate(formNameFull,treeModel);
 		
 		try {
 			FileUtils.writeStringToFile(outfile, data);
@@ -349,6 +399,12 @@ public class ODKFormGenerator {
 
 	}
 	
+	/**
+	 * Definition of field to be used in Head>model>instance
+	 * 
+	 * @param field
+	 * @return
+	 */
 	private static String getFieldDefinitionCode(ODKFieldInterface field)
 	{
 		StringBuilder data = new StringBuilder();
@@ -427,6 +483,49 @@ public class ODKFormGenerator {
 		{
 			return "false";
 		}
+	}
+	
+	/**
+	 * Gets the name of a group a field is in.  If the field is not in a group, or not present, then null is returned
+	 * 
+	 * @param fieldname
+	 * @return
+	 */
+	private static String getGroupNameForField(ODKTreeModel treeModel, String fieldname)
+	{
+		DefaultMutableTreeNode root = treeModel.getRootAsDMTN();
+
+		
+		for(int i=0; i<root.getChildCount(); i++)
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getChildAt(i);
+			if(node instanceof ODKFieldNode)
+			{
+				ODKFieldInterface field = (ODKFieldInterface) node.getUserObject();
+				if(field.getFieldCode().equals(fieldname)) return null;
+			}
+			else if (node instanceof ODKBranchNode)
+			{
+				String groupName = (String) node.getUserObject();
+				String groupCode = "group_"+StringEscapeUtils.escapeXml(groupName.replace(" ", "_").toLowerCase());
+				
+				for(int j=0; j<node.getChildCount(); j++)
+				{
+					DefaultMutableTreeNode node2 = (DefaultMutableTreeNode) node.getChildAt(j);
+					if(node2 instanceof ODKFieldNode)
+					{
+						ODKFieldInterface field = (ODKFieldInterface) node2.getUserObject();
+						if(field.getFieldCode().equals(fieldname)) return groupCode;
+					}
+				}
+			}
+			else
+			{
+				log.debug("Unknown child of root");
+			}
+		}	
+		
+		return null;
 	}
 	
 }
