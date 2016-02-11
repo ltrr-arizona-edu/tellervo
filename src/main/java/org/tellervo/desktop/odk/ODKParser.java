@@ -40,9 +40,10 @@ public class ODKParser {
 	private File file;
 	private static final Logger log = LoggerFactory.getLogger(ODKParser.class);
 
+	public enum ODKFileType {OBJECTS, ELEMENTS_AND_SAMPLES};
 	
 	
-	public ODKParser(File f, Class<? extends ITridas> clazz) throws FileNotFoundException, IOException, Exception
+	public ODKParser(File f) throws FileNotFoundException, IOException, Exception
 	{
 		file = f;
 
@@ -69,11 +70,19 @@ public class ODKParser {
 			return;
 		}
 		
+		
+		if(getFieldValueAsString("tridas_object_code")==null)
+		{
+			errorMessage = "No object code field";
+			failedParse = true;
+			return;
+		} 
+		
 		//
 		
-		if(clazz.equals(TridasObject.class))
+		/*if(clazz.equals(TridasObject.class))
 		{
-			/*if(getFieldValueAsString("tridas_object_code")==null)
+			if(getFieldValueAsString("tridas_object_code")==null)
 			{
 				errorMessage = "No object code field";
 				failedParse = true;
@@ -82,7 +91,7 @@ public class ODKParser {
 			else
 			{
 				log.debug("---"+doc.getElementsByTagName("tridas_object_code").item(0).getTextContent());
-			}*/
+			}
 			
 			if(getFieldValueAsString("TreeNO")!=null  || getFieldValueAsString("tridas_element_title")!=null)
 			{
@@ -121,6 +130,31 @@ public class ODKParser {
 		{
 			throw new Exception("ODK parser only supports TRiDaS objects, elements and samples");
 		}
+		*/
+		
+	}
+	
+	
+	/**
+	 * Determine if file contains information about an object, or elements & samples
+	 * @return
+	 */
+	public ODKFileType getFileType()
+	{
+		
+		if(getFieldValueAsString("tridas_object_code")!=null)
+		{
+			if(getFieldValueAsString("SampleID")!=null || getFieldValueAsString("tridas_sample_title")!=null)
+			{
+				return ODKFileType.ELEMENTS_AND_SAMPLES;
+			}
+			else
+			{
+				return ODKFileType.OBJECTS;
+			}
+		}	
+		
+		return null;
 		
 		
 	}
@@ -138,7 +172,7 @@ public class ODKParser {
 	{
 		if(doc.getElementsByTagName(field).getLength()==0) 
 		{
-			log.info("Field '"+field+"' not found in ODK file");
+			//log.info("Field '"+field+"' not found in ODK file");
 			return null;
 		}
 		try{
@@ -167,7 +201,7 @@ public class ODKParser {
 		
 		if(doc.getElementsByTagName(field).getLength()==0) 
 		{
-			log.info("Field '"+field+"' not found in ODK file");
+			//log.info("Field '"+field+"' not found in ODK file");
 			return null;
 		}
 		
@@ -191,7 +225,7 @@ public class ODKParser {
 		
 		if(doc.getElementsByTagName(field).getLength()==0) 
 		{
-			log.info("Field '"+field+"' not found in ODK file");
+			//log.info("Field '"+field+"' not found in ODK file");
 			return null;
 		}
 		
@@ -215,7 +249,7 @@ public class ODKParser {
 			
 		if(doc.getElementsByTagName(field).getLength()==0) 
 		{
-			log.info("Field '"+field+"' not found in ODK file");
+			//log.info("Field '"+field+"' not found in ODK file");
 			return null;
 		}
 		

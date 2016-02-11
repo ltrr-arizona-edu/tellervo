@@ -20,20 +20,27 @@
  ******************************************************************************/
 package org.tellervo.desktop.bulkdataentry.control;
 
+import org.tellervo.desktop.bulkdataentry.model.ElementModel;
+import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
+import org.tellervo.desktop.bulkdataentry.model.SampleModel;
+
 import com.dmurph.mvc.MVCEvent;
-import com.dmurph.mvc.model.HashModel;
 
 
 public class PopulateFromODKFileEvent extends MVCEvent{
 
 	private static final long serialVersionUID = 1L;
 	
-	public final HashModel model;
+	public final ObjectModel objectModel;
+	public final ElementModel elementModel;
+	public final SampleModel sampleModel;
 	
-	public PopulateFromODKFileEvent(HashModel model) {
+	public PopulateFromODKFileEvent(ObjectModel objectModel, ElementModel elementModel, SampleModel sampleModel) {
 		super(BulkImportController.POPULATE_FROM_ODK_FILE);
 		
-		this.model = model;
+		this.objectModel = objectModel;
+		this.elementModel = elementModel;
+		this.sampleModel = sampleModel;
 		
 	}
 

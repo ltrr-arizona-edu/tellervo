@@ -121,6 +121,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
     private JScrollPane scrollPaneAvailable;
     private JScrollPane scrollPaneSelected;
     private JLabel lblCodename;
+    private JCheckBox chkMakePublic;
     
     
 	/**
@@ -212,28 +213,28 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		JPanel panelMain = new JPanel();
 		splitPane.setLeftComponent(panelMain);
-		panelMain.setLayout(new MigLayout("", "[][grow,fill]", "[][][][][grow]"));
+		panelMain.setLayout(new MigLayout("", "[][grow,fill]", "[][68.00][]"));
 		
 		JLabel lblFormName = new JLabel("Form name:");
-		panelMain.add(lblFormName, "cell 0 2,alignx trailing");
+		panelMain.add(lblFormName, "cell 0 0,alignx trailing");
 		
 		txtFormName = new JTextField();
 		txtFormName.setText("My form name");
-		panelMain.add(txtFormName, "cell 1 2,growx");
+		panelMain.add(txtFormName, "flowx,cell 1 0,growx");
 		txtFormName.setColumns(10);
 		
 		JLabel lblFormType = new JLabel("Build form for:");
-		panelMain.add(lblFormType, "cell 0 3");
+		panelMain.add(lblFormType, "cell 0 1");
 		
 		cboFormType = new JComboBox();
 		cboFormType.setModel(new DefaultComboBoxModel(new String[] {"Objects", "Elements and samples"}));
 		cboFormType.setActionCommand("FormTypeChanged");
 		cboFormType.addActionListener(this);
-		panelMain.add(cboFormType, "cell 1 3");
+		panelMain.add(cboFormType, "flowx,cell 1 1");
 		
 		JPanel panelFieldPicker = new JPanel();
-		panelMain.add(panelFieldPicker, "cell 0 4 2 1,grow");
-		panelFieldPicker.setLayout(new MigLayout("", "[300px,grow,fill][70px:70px:70px][300px,grow,fill][]", "[][grow,center][]"));
+		panelMain.add(panelFieldPicker, "cell 0 2 2 1,grow");
+		panelFieldPicker.setLayout(new MigLayout("", "[300px,grow,fill][][300px,grow,fill][]", "[][grow,top][]"));
 		
 		JLabel lblAvailableFields = new JLabel("Available fields:");
 		panelFieldPicker.add(lblAvailableFields, "cell 0 0");
@@ -256,16 +257,17 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		JPanel panelAddRemove = new JPanel();
 		panelFieldPicker.add(panelAddRemove, "cell 1 1,growx,aligny center");
-		panelAddRemove.setLayout(new MigLayout("", "[fill]", "[25px][][][]"));
+		panelAddRemove.setLayout(new MigLayout("fill, debug, insets 0", "[fill]", "[25px][][][]"));
 		
 		JButton btnAddAll = new JButton("");
-		btnAddAll.setIcon(Builder.getIcon("2rightarrow.png", 22));
+		btnAddAll.setMargin(new java.awt.Insets(1, 2, 1, 2));
+		btnAddAll.setIcon(Builder.getIcon("2rightarrow.png", 16));
 		btnAddAll.setActionCommand("AddAll");
 		btnAddAll.addActionListener(this);
 		panelAddRemove.add(btnAddAll, "cell 0 0,growx,aligny top");
 		
 		JButton btnAddOne = new JButton("");
-		btnAddOne.setIcon(Builder.getIcon("1rightarrow.png", 22));
+		btnAddOne.setIcon(Builder.getIcon("1rightarrow.png", 16));
 		btnAddOne.setActionCommand("AddOne");
 		btnAddOne.addActionListener(this);
 		panelAddRemove.add(btnAddOne, "cell 0 1");
@@ -273,13 +275,13 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		JButton btnRemoveOne = new JButton("");
 		btnRemoveOne.setActionCommand("RemoveOne");
 		btnRemoveOne.addActionListener(this);
-		btnRemoveOne.setIcon(Builder.getIcon("1leftarrow.png", 22));
+		btnRemoveOne.setIcon(Builder.getIcon("1leftarrow.png", 16));
 		panelAddRemove.add(btnRemoveOne, "cell 0 2");
 		
 		JButton btnRemoveAll = new JButton("");
 		btnRemoveAll.setActionCommand("RemoveAll");
 		btnRemoveAll.addActionListener(this);
-		btnRemoveAll.setIcon(Builder.getIcon("2leftarrow.png", 22));
+		btnRemoveAll.setIcon(Builder.getIcon("2leftarrow.png", 16));
 		panelAddRemove.add(btnRemoveAll, "cell 0 3");
 		
 		scrollPaneSelected = new JScrollPane();
@@ -324,19 +326,22 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		JPanel panel_3 = new JPanel();
 		panelFieldPicker.add(panel_3, "cell 3 1,grow");
-		panel_3.setLayout(new MigLayout("", "[53px]", "[25px][]"));
+		panel_3.setLayout(new MigLayout("fill, insets 0", "[]", "[top][top][grow]"));
 		
 		JButton btnUp = new JButton("");
-		btnUp.setIcon(Builder.getIcon("1uparrow.png", 22));
+		btnUp.setIcon(Builder.getIcon("1uparrow.png", 16));
 		btnUp.setActionCommand("MoveUp");
 		btnUp.addActionListener(this);
 		panel_3.add(btnUp, "cell 0 0,alignx left,aligny top");
 		
 		JButton btnDown = new JButton("");
-		btnDown.setIcon(Builder.getIcon("1downarrow.png", 22));
+		btnDown.setIcon(Builder.getIcon("1downarrow.png", 16));
 		btnDown.setActionCommand("MoveDown");
 		btnDown.addActionListener(this);
 		panel_3.add(btnDown, "cell 0 1,alignx left,aligny top");
+		
+		chkMakePublic = new JCheckBox("Make available to other database users");
+		panelMain.add(chkMakePublic, "cell 1 1,growx");
 		
 		JScrollPane fieldOptionsScrollPane = new JScrollPane();
 		fieldOptionsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -369,7 +374,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		
 		
-		panelFieldOptions.add(txtFieldName, "cell 2 1,growx");
+		panelFieldOptions.add(txtFieldName, "cell 2 1 2 1,growx");
 		txtFieldName.setColumns(10);
 		
 		chkRequired = new JCheckBox("Required");
@@ -385,7 +390,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		panelFieldOptions.add(scrollPane, "cell 2 4,grow");
+		panelFieldOptions.add(scrollPane, "cell 2 4 2 1,grow");
 		
 		txtDescription = new JTextArea();
 		scrollPane.setViewportView(txtDescription);
@@ -398,7 +403,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		defModel = new DefaultComboBoxModel();
 		
 		JPanel panel_1 = new JPanel();
-		panelFieldOptions.add(panel_1, "cell 2 5,grow");
+		panelFieldOptions.add(panel_1, "cell 2 5 2 1,grow");
 		panel_1.setLayout(new MigLayout("hidemode 3, insets 0", "[grow,fill]", "[center][center]"));
 		
 		txtDefault = new JTextField();
@@ -746,27 +751,19 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			}
 
 			@Override
-			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
+			public void mousePressed(MouseEvent e) {				
 			}
 
 			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
+			public void mouseReleased(MouseEvent e) {				
 			}
 
 			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
+			public void mouseEntered(MouseEvent e) {				
 			}
 
 			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
+			public void mouseExited(MouseEvent e) {				
 			}
 			
 		});
@@ -1096,26 +1093,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	}
 		
 	private void removeAllNonMandatoryFields()
-	{
-		/*ArrayList<ODKFieldInterface> fields =  (ArrayList<ODKFieldInterface>) selectedFieldsModel.getAllFields();
-		ArrayList<ODKFieldInterface> fields2 =  new ArrayList<ODKFieldInterface>();
-
-		if(fields==null || fields.size()==0) return;
-		
-		for(ODKFieldInterface field : fields)
-		{
-			if(!field.isFieldRequired())
-			{
-				fields2.add(field);
-			}
-		}
-		
-		availableFieldsModel.addAllFields(fields2);
-		selectedFieldsModel.removeFields(fields2);*/
-		
-		recurseRemoveNonMandatoryNodes((DefaultMutableTreeNode) this.selectedFieldsTreeModel.getRoot());
-			
-		
+	{		
+		recurseRemoveNonMandatoryNodes((DefaultMutableTreeNode) this.selectedFieldsTreeModel.getRoot());	
 	}
 	
 	private void recurseRemoveNonMandatoryNodes(DefaultMutableTreeNode node)
@@ -1226,7 +1205,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 	}
 	
-	@Override
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getActionCommand().equals("AddOne"))
 		{
@@ -1298,7 +1276,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			try {
 				saveFormDefinition();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -1307,17 +1284,14 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			try {
 				loadFormDefinition();
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
 		}
 		else if (evt.getActionCommand().equals("FormTypeChanged"))
 		{
-
 			formTypeChanged();
 		}
 	}
@@ -1490,94 +1464,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		dialog.setTitle("ODK Form Builder");
 		dialog.getContentPane().setLayout(new BorderLayout());
 		dialog.getContentPane().add(panel, BorderLayout.CENTER);
-		
-		/*dialog.addWindowListener(new WindowListener(){
-
-			@Override
-			public void windowActivated(WindowEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowClosed(WindowEvent arg0) {
-				
-			}
-
-			@Override
-			public void windowClosing(WindowEvent evt) {
-				handleClose();
-
-			}
-
-			@Override
-			public void windowDeactivated(WindowEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowDeiconified(WindowEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowIconified(WindowEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void windowOpened(WindowEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
 			
-			private void handleClose()
-			{
-				//Custom button text
-				Object[] options = {"Yes",
-				                    "No",
-				                    "Cancel"};
-				int n = JOptionPane.showOptionDialog(dialog,
-				    "Would you like to save this form as a Tellervo form definition file?\n"
-				    + "You will need this if you'd like to modify this form without having\n"
-				    + "to start from scratch.  Note you cannot modify the ODK XML file in\n"
-				    + "Tellervo.",
-				    "Save form definition",
-				    JOptionPane.YES_NO_CANCEL_OPTION,
-				    JOptionPane.QUESTION_MESSAGE,
-				    null,
-				    options,
-				    options[0]);
-				
-				if(n == JOptionPane.CANCEL_OPTION)
-				{
-					return;
-				}
-				else if (n==JOptionPane.YES_OPTION)
-				{
-					boolean result;
-					try {
-						result = panel.saveFormDefinition();
-					} catch (IOException e) {
-						Alert.error("Error saving", "Error saving form definition");
-						return;
-					}
-					
-					if(!result) return;
-				}
-				else if (n==JOptionPane.NO_OPTION)
-				{
-					
-				}
-				
-				dialog.dispose();
-			}
-			
-		});*/
-		
 		dialog.pack();
 		dialog.setModal(true);
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -1679,6 +1566,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		}
 		
 	}
+
 }
 
 

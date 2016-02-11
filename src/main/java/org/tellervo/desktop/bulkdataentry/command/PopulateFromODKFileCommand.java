@@ -76,6 +76,7 @@ import org.tellervo.desktop.bulkdataentry.view.odkwizard.ODKImportWizard;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.odk.ODKParser;
+import org.tellervo.desktop.odk.ODKParser.ODKFileType;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 import org.tellervo.desktop.odk.fields.ODKFields;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -260,45 +261,36 @@ public class PopulateFromODKFileCommand implements ICommand {
 
 			try {
 
-				if(event.model instanceof ObjectModel)
+				ODKParser parser = new ODKParser(file);
+				filesProcessed.add(parser);
+				
+				
+				if(!parser.isValidODKFile()) {
+					filesFailed.add(parser);
+					continue;
+				}
+				else if(parser.getFileType()==null)
 				{
-					ODKParser parser = new ODKParser(file, TridasObject.class);
-					filesProcessed.add(parser);
-
-					if(!parser.isValidODKFile()) {
-						filesFailed.add(parser);
-						continue;
-					}
-
-					ObjectModel model = (ObjectModel) event.model;
+					filesFailed.add(parser);
+					continue;
+				}
+				else if (parser.getFileType()==ODKFileType.OBJECTS)
+				{
+					ObjectModel model = event.objectModel;
 					addObjectToTableFromParser(parser, model, wizard, mediaFileArr);
-
 				}
-				else if (event.model instanceof ElementModel)
+				else if (parser.getFileType()==ODKFileType.ELEMENTS_AND_SAMPLES)
 				{
-					ODKParser parser = new ODKParser(file, TridasElement.class);
-					filesProcessed.add(parser);
+					ElementModel emodel = event.elementModel;
+					addElementFromParser(parser, emodel, wizard);
 					
-					if(!parser.isValidODKFile()) {
-						filesFailed.add(parser);
-						continue;
-					}
-
-					ElementModel model = (ElementModel) event.model;
-					addElementFromParser(parser, model, wizard);
+					SampleModel smodel = event.sampleModel;
+					addSampleFromParser(parser, smodel, wizard);
 				}
-				else if (event.model instanceof SampleModel)
+				else
 				{
-					ODKParser parser = new ODKParser(file, TridasSample.class);
-					filesProcessed.add(parser);
-					
-					if(!parser.isValidODKFile()) {
-						filesFailed.add(parser);
-						continue;
-					}
-
-					SampleModel model = (SampleModel) event.model;
-					addSampleFromParser(parser, model, wizard);
+					filesFailed.add(parser);
+					continue;
 				}
 
 			} catch (FileNotFoundException e) {

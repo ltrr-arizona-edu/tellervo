@@ -44,6 +44,8 @@ import org.tellervo.desktop.bulkdataentry.control.PopulateFromGeonamesEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
+import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
+import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
@@ -240,8 +242,10 @@ public class ElementView extends AbstractBulkImportView{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				HashModel model = BulkImportModel.getInstance().getElementModel();
-				PopulateFromODKFileEvent event = new PopulateFromODKFileEvent(model);
+				ObjectModel omodel = BulkImportModel.getInstance().getObjectModel();
+				ElementModel emodel = BulkImportModel.getInstance().getElementModel();
+				SampleModel smodel = BulkImportModel.getInstance().getSampleModel();
+				PopulateFromODKFileEvent event = new PopulateFromODKFileEvent(omodel, emodel, smodel);
 				event.dispatch();
 			}
 			

@@ -138,11 +138,23 @@ public class ODKFormGenerator {
 		
 		// Data binding code	
 		String objectGroupCode = getGroupNameForField(treeModel, "tridas_object_code");
-		if(objectGroupCode!=null) objectGroupCode=objectGroupCode+"/";
+		if(objectGroupCode!=null) {
+			objectGroupCode=objectGroupCode+"/";
+		}
+		else
+		{
+			objectGroupCode = "";
+		}
 		String instancename = "concat(/data/"+objectGroupCode+"tridas_object_code"; 
 		if(treeModel.getClassType().equals(TridasSample.class)) {
 			String elementGroupCode = getGroupNameForField(treeModel, "tridas_element_title");
-			if(elementGroupCode!=null) elementGroupCode=elementGroupCode+"/";
+			if(elementGroupCode!=null) {
+				elementGroupCode=elementGroupCode+"/";
+			}
+			else
+			{
+				elementGroupCode = "";
+			}
 			instancename += ", '-', /data/"+elementGroupCode+"tridas_element_title";
 		}
 		data.append("<bind nodeset=\"/data/meta/instanceName\" type=\"string\" readonly=\"true()\" calculate=\""+instancename+")\"/>");
