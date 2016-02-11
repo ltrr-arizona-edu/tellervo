@@ -280,7 +280,8 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 	{
 		String name = this.txtName.getText().toLowerCase();
 		name = StringEscapeUtils.escapeXml(name.replaceAll(" ", "_"));
-		return "tellervo.user."+name;
+		
+		return "tellervo.user."+this.getFieldType().toString().toLowerCase()+"."+name;
 	}
 	
 	public String getFieldName()

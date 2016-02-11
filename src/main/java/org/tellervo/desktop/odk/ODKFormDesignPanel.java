@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -74,6 +75,7 @@ import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.WSIOdkFormDefinitionResource;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIOdkFormDefinition;
+import org.tridas.io.gui.view.JToolbarButton;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -83,6 +85,8 @@ import com.jidesoft.swing.CheckBoxList;
 import com.jidesoft.swing.SearchableUtils;
 
 import edu.emory.mathcs.backport.java.util.Collections;
+
+import javax.swing.JToolBar;
 
 
 
@@ -109,7 +113,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
     private JLabel lblOptionsToInclude;
     private JButton btnAll;
     private JButton btnNone;
-    private JButton btnAddUserDefined;
     private JLabel lblDefaultValue;
     private JComboBox cboFormType;
     private JCheckBox chkHideField;
@@ -131,22 +134,24 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	
 	private void initGUI()
 	{
-		setLayout(new BorderLayout(0, 0));
+		setLayout(new MigLayout("", "[833px,grow]", "[22.00px][fill][525px,grow][44px]"));
 		
 		
 		JMenuBar menuBar = new JMenuBar();
-		this.add(menuBar, BorderLayout.NORTH);
+		this.add(menuBar, "cell 0 0,growx,aligny top");
 		
 		JMenu mnFile = new JMenu("File");
 		menuBar.add(mnFile);
 		
 		JMenuItem miLoadFormDesign = new JMenuItem("Load Tellervo form design");
+		miLoadFormDesign.setIcon(Builder.getIcon("fileopen.png", 22));
 		miLoadFormDesign.setActionCommand("Load Form Design");
 		miLoadFormDesign.addActionListener(this);
 		mnFile.add(miLoadFormDesign);
 		
 		JMenuItem miSaveFormDesign = new JMenuItem("Save Tellervo form design");
 		miSaveFormDesign.setActionCommand("Save Form Design");
+		miSaveFormDesign.setIcon(Builder.getIcon("filesave.png", 22));
 		miSaveFormDesign.addActionListener(this);
 		mnFile.add(miSaveFormDesign);
 		
@@ -155,11 +160,13 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		JMenuItem mntmSaveAsOdk = new JMenuItem("Save as ODK XML file");
 		mntmSaveAsOdk.setActionCommand("SaveODKFormFile");
+		mntmSaveAsOdk.setIcon(Builder.getIcon("odk-logo.png", 22));
 		mntmSaveAsOdk.addActionListener(this);
 		mnFile.add(mntmSaveAsOdk);
 		
 		JMenuItem mntmUploadOdkForm = new JMenuItem("Upload ODK form to server");
 		mntmUploadOdkForm.setActionCommand("UploadForm");
+		mntmUploadOdkForm.setIcon(Builder.getIcon("uploadtoserver.png", 22));
 		mntmUploadOdkForm.addActionListener(this);
 		mnFile.add(mntmUploadOdkForm);
 		
@@ -168,38 +175,64 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		JMenuItem mntmClose = new JMenuItem("Close");
 		mntmClose.setActionCommand("Cancel");
+		mntmClose.setIcon(Builder.getIcon("button_cancel.png", 22));
 		mntmClose.addActionListener(this);
 		mnFile.add(mntmClose);
+		
+		JToolBar toolBar = new JToolBar();
+		toolBar.setFloatable(false);
+		toolBar.setRollover(true);
+		add(toolBar, "flowx,cell 0 1,growx");
+		
+		JToolbarButton btnUpload = new JToolbarButton("UploadForm", (ImageIcon) Builder.getIcon("uploadtoserver.png", 22));
+		btnUpload.setToolTipText("Upload form to Tellervo server");
+		btnUpload.addActionListener(this);
+		toolBar.add(btnUpload);
+		
+		JToolbarButton btnAddUserDefined = new JToolbarButton("AddUserDefinedField", (ImageIcon) Builder.getIcon("add_user.png", 22));
+		btnAddUserDefined.setToolTipText("Add user defined field");
+		btnAddUserDefined.addActionListener(this);
+		toolBar.add(btnAddUserDefined);
+		
+		JToolbarButton btnGroup = new JToolbarButton("Group",  (ImageIcon) Builder.getIcon("group.png", 22));
+		btnGroup.setToolTipText("Group selected fields");
+		btnGroup.addActionListener(this);
+		toolBar.add(btnGroup);
+		
+		JToolbarButton btnRename = new JToolbarButton("Rename", (ImageIcon) Builder.getIcon("rename.png", 22));
+		btnRename.setToolTipText("Rename selected group or field");
+		btnRename.addActionListener(this);
+		toolBar.add(btnRename);
 		
 		
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		splitPane.setOneTouchExpandable(true);
-		add(splitPane);
+		add(splitPane, "cell 0 2,grow");
 		
 		JPanel panelMain = new JPanel();
 		splitPane.setLeftComponent(panelMain);
-		panelMain.setLayout(new MigLayout("", "[][grow,fill]", "[][][][grow]"));
+		panelMain.setLayout(new MigLayout("", "[][grow,fill]", "[][][][][grow]"));
 		
 		JLabel lblFormName = new JLabel("Form name:");
-		panelMain.add(lblFormName, "cell 0 1,alignx trailing");
+		panelMain.add(lblFormName, "cell 0 2,alignx trailing");
 		
 		txtFormName = new JTextField();
 		txtFormName.setText("My form name");
-		panelMain.add(txtFormName, "cell 1 1,growx");
+		panelMain.add(txtFormName, "cell 1 2,growx");
 		txtFormName.setColumns(10);
 		
 		JLabel lblFormType = new JLabel("Build form for:");
-		panelMain.add(lblFormType, "cell 0 2");
+		panelMain.add(lblFormType, "cell 0 3");
 		
 		cboFormType = new JComboBox();
 		cboFormType.setModel(new DefaultComboBoxModel(new String[] {"Objects", "Elements and samples"}));
 		cboFormType.setActionCommand("FormTypeChanged");
 		cboFormType.addActionListener(this);
-		panelMain.add(cboFormType, "cell 1 2");
+		panelMain.add(cboFormType, "cell 1 3");
 		
 		JPanel panelFieldPicker = new JPanel();
-		panelMain.add(panelFieldPicker, "cell 0 3 2 1,grow");
+		panelMain.add(panelFieldPicker, "cell 0 4 2 1,grow");
 		panelFieldPicker.setLayout(new MigLayout("", "[300px,grow,fill][70px:70px:70px][300px,grow,fill][]", "[][grow,center][]"));
 		
 		JLabel lblAvailableFields = new JLabel("Available fields:");
@@ -257,8 +290,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		tree.setRootVisible(false);
 		
 		JPopupMenu menu = new JPopupMenu();
-		JMenuItem miGroupFields = new JMenuItem("Group/Ungroup");
-		miGroupFields.setActionCommand("GroupUngroup");
+		JMenuItem miGroupFields = new JMenuItem("Group fields");
+		miGroupFields.setIcon(Builder.getIcon("group.png", 22));
+		miGroupFields.setActionCommand("Group");
 		miGroupFields.addActionListener(this);
 		
 		JMenuItem miRemoveField = new JMenuItem("Remove");
@@ -270,6 +304,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		miRemoveAllField.addActionListener(this);
 		
 		JMenuItem miRename = new JMenuItem("Rename");
+		miRename.setIcon(Builder.getIcon("rename.png", 22));
 		miRename.setActionCommand("Rename");
 		miRename.addActionListener(this);
 		
@@ -281,8 +316,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 
 		
 		tree.setComponentPopupMenu(menu);
-		
-		btnAddUserDefined = new JButton("Add user defined field");
 		
 		
 		DefaultMutableTreeNode treeRoot = new DefaultMutableTreeNode();
@@ -304,7 +337,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		btnDown.setActionCommand("MoveDown");
 		btnDown.addActionListener(this);
 		panel_3.add(btnDown, "cell 0 1,alignx left,aligny top");
-		panelFieldPicker.add(btnAddUserDefined, "cell 2 2,alignx right");
 		
 		JScrollPane fieldOptionsScrollPane = new JScrollPane();
 		fieldOptionsScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -408,16 +440,18 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		panelFieldOptions.add(btnNone, "cell 3 6");
 		
 		JPanel panel = new JPanel();
-		add(panel, BorderLayout.SOUTH);
+		add(panel, "cell 0 3,growx,aligny top");
 		panel.setLayout(new MigLayout("", "[][][grow][][73px]", "[25px]"));
 		
 		JButton btnUploadForm = new JButton("Upload Form");
 		btnUploadForm.setActionCommand("UploadForm");
+		btnUploadForm.setIcon(Builder.getIcon("uploadtoserver.png", 22));
 		btnUploadForm.addActionListener(this);
 		panel.add(btnUploadForm, "cell 3 0");
 		
 		JButton btnCancel = new JButton("Close");
 		btnCancel.setActionCommand("Cancel");
+		btnCancel.setIcon(Builder.getIcon("button_cancel.png", 22));
 		btnCancel.addActionListener(this);
 		panel.add(btnCancel, "cell 4 0,alignx left,aligny top");
 		
@@ -675,30 +709,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			}
 			
 		});
-		
-		btnAddUserDefined.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent evt) {
 				
-				boolean isObjectField = cboFormType.getSelectedIndex()==0;
-				
-				ODKUserDefinedFieldDialog dialog = new ODKUserDefinedFieldDialog(isObjectField, parent);
-				dialog.setVisible(true);
-				
-				if(dialog.success)
-				{
-					selectedFieldsTreeModel.addFieldAsNodeToRoot(dialog.getField());
-				}
-				else
-				{
-					return;
-				}
-				
-			}
-			
-		});
-		
 		lstAvailableFields.addListSelectionListener(new ListSelectionListener(){
 
 			@Override
@@ -1183,12 +1194,32 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
             	}
             	else if (currentNode instanceof ODKBranchNode)
             	{
-            		if(currentNode.getChildCount()>0)
-    				{
-    					recurseRemoveNonMandatoryNodes(currentNode);
-    				}
-    				
-    				this.selectedFieldsTreeModel.removeNodeFromParent(currentNode);
+            		if(!((ODKBranchNode) currentNode).isDeletable()) {
+            			Alert.error("Error", "This group is not deleteable");
+            			return;
+            		}
+            		
+            		ArrayList<ODKFieldNode> childnodes = new ArrayList<ODKFieldNode>();
+            		
+            		for(int i=0; i<currentNode.getChildCount(); i++)
+            		{
+            			childnodes.add((ODKFieldNode) currentNode.getChildAt(i));
+            		}
+            		
+            		for(ODKFieldNode node : childnodes)
+            		{
+            			ODKFieldInterface f = (ODKFieldInterface) node.getUserObject();
+            			if(f.isFieldRequired())
+            			{
+            				selectedFieldsTreeModel.addNodeToRoot(node);
+            			}
+            			else 
+            			{
+            				availableFieldsModel.addField(f);
+            			}
+            		}
+
+            		this.selectedFieldsTreeModel.removeNodeFromParent(currentNode);
               	}
             }
         } 
@@ -1244,11 +1275,14 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		else if(evt.getActionCommand().equals("SelectNoChoices"))
 		{
 			cbxlstChoices.selectNone();
-
 		}
-		else if (evt.getActionCommand().equals("GroupUngroup"))
+		else if (evt.getActionCommand().equals("AddUserDefinedField"))
 		{
-			groupUngroupFields();
+			addUserDefinedField();
+		}
+		else if (evt.getActionCommand().equals("Group"))
+		{
+			groupFields();
 		}
 		else if (evt.getActionCommand().equals("DefaultChosen"))
 		{
@@ -1343,6 +1377,23 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
     	}
     	
     }
+	
+	private void addUserDefinedField()
+	{
+		boolean isObjectField = cboFormType.getSelectedIndex()==0;
+		
+		ODKUserDefinedFieldDialog dialog = new ODKUserDefinedFieldDialog(isObjectField, parent);
+		dialog.setVisible(true);
+		
+		if(dialog.success)
+		{
+			selectedFieldsTreeModel.addFieldAsNodeToRoot(dialog.getField());
+		}
+		else
+		{
+			return;
+		}
+	}
 	
 	
 	/**
@@ -1558,11 +1609,22 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		}
 	}
 	
-	private void groupUngroupFields()
+	private void groupFields()
 	{
 		
 		// Group
 		TreePath[] selectionpaths = tree.getSelectionPaths();
+		
+		for(TreePath path : selectionpaths)
+		{
+			AbstractODKTreeNode node = (AbstractODKTreeNode) path.getLastPathComponent();		
+			if(node instanceof ODKBranchNode || node.getParent() instanceof ODKBranchNode ) 
+			{
+				Alert.error("Group Error", "Field groups cannot be nested");
+				return;
+			}
+		}
+		
 
 		String groupname = JOptionPane.showInputDialog(this,
                 "Name for group:\n",
@@ -1588,12 +1650,34 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	
 	private void renameField()
 	{
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-		Object obj = node.getUserObject();
-		if(obj instanceof String)
+		AbstractODKTreeNode node = (AbstractODKTreeNode) tree.getLastSelectedPathComponent();
+		
+		if(node instanceof ODKBranchNode)
 		{
-			obj = "gggg";
+			String groupname = JOptionPane.showInputDialog(this,
+	                "Name for group:\n",
+	                "Group",
+	                JOptionPane.PLAIN_MESSAGE);
+			
+			if(groupname==null || groupname.length()==0) return;
+			
+			node.setUserObject(new String(groupname));
 		}
+		else if (node instanceof ODKFieldNode)
+		{
+			String fieldname = JOptionPane.showInputDialog(this,
+	                "New name for field:\n",
+	                "Rename field",
+	                JOptionPane.PLAIN_MESSAGE);
+			
+			if(fieldname==null || fieldname.length()==0) return;
+			
+			ODKFieldInterface obj = (ODKFieldInterface) node.getUserObject();
+			obj.setName(fieldname);
+			selectedField = obj;
+			setDetailsPanel();
+		}
+		
 	}
 }
 
