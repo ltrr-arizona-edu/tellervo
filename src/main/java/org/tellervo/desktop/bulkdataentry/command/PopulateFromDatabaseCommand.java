@@ -15,6 +15,7 @@ import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
+import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.components.popup.ProgressPopup;
 import org.tellervo.desktop.components.popup.ProgressPopupModel;
 import org.tellervo.desktop.core.App;
@@ -284,6 +285,7 @@ public class PopulateFromDatabaseCommand implements ICommand {
 		
 		if(parentObject!=null)
 		{
+			TridasObjectOrPlaceholder toph = new TridasObjectOrPlaceholder(parentObject);
 			newrow.setProperty(SingleObjectModel.PARENT_OBJECT, parentObject);
 		}
 		

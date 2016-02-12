@@ -222,7 +222,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		if(argObject.isSetLocation() &&
 				argObject.getLocation().isSetLocationPrecision())
 		{
-			setProperty(LOCATION_PRECISION, argObject.getLocation().getLocationPrecision());
+			setProperty(LOCATION_PRECISION, Double.valueOf(argObject.getLocation().getLocationPrecision()));
 		}
 		
 		if(argObject.isSetLocation() &&
@@ -290,7 +290,8 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 			
 			TridasLocation loc = new TridasLocation();
 			
-			loc.setLocationPrecision((String) locprecision);
+			Double dbl = (Double) locprecision;
+			loc.setLocationPrecision(String.valueOf(dbl));
 			loc.setLocationComment((String) loccomment);
 			
 			if(latitude != null && longitude != null)

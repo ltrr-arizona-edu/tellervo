@@ -23,6 +23,7 @@
  */
 package org.tellervo.desktop.bulkdataentry.view;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Comparator;
@@ -47,6 +48,7 @@ import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
+import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.components.table.DynamicJComboBox;
@@ -77,6 +79,7 @@ import org.tridas.schema.TridasUnit;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.HashModel;
+import com.dmurph.mvc.model.MVCArrayList;
 
 
 /**
@@ -116,7 +119,7 @@ public class ElementView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(WSITaxonDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 		argTable.setDefaultEditor(NormalTridasLocationType.class, new ComboBoxCellEditor(new LocationTypeComboBox()));
 		argTable.setDefaultRenderer(NormalTridasLocationType.class, new LocationTypeRenderer());
-		DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(),
+		/*DynamicJComboBox<TridasObjectEx> box = new DynamicJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(),
 				new Comparator<TridasObjectEx>() {
 			public int compare(TridasObjectEx argO1, TridasObjectEx argO2) {
 				if(argO1 == null){
@@ -139,9 +142,45 @@ public class ElementView extends AbstractBulkImportView{
 			}
 		});
 
+		box.setRenderer(new TridasObjectExRenderer());*/
+		
+		MVCArrayList<TridasObjectEx> objlist = App.tridasObjects.getMutableObjectList();
+		MVCArrayList<TridasObjectOrPlaceholder> toph = new MVCArrayList<TridasObjectOrPlaceholder>();
+		for(TridasObjectEx o : objlist)
+		{
+			toph.add(new TridasObjectOrPlaceholder(o));
+		}
+		
+		DynamicJComboBox<TridasObjectOrPlaceholder> box = new DynamicJComboBox<TridasObjectOrPlaceholder>(toph,
+				new Comparator<TridasObjectOrPlaceholder>() {
+			public int compare(TridasObjectOrPlaceholder argO1, TridasObjectOrPlaceholder argO2) {
+				if(argO1 == null){
+					return -1;
+				}
+				if(argO2 == null){
+					return 1;
+				}
+				return argO1.getCode().compareToIgnoreCase(argO2.getCode());
+			}
+		});
+		box.setKeySelectionManager(new DynamicKeySelectionManager() {
+			@Override
+			public String convertToString(Object argO) {
+				if(argO == null){
+					return "";
+				}
+				TridasObjectOrPlaceholder o = (TridasObjectOrPlaceholder) argO;
+				return o.getCode();
+			}
+		});
+
 		box.setRenderer(new TridasObjectExRenderer());
 
+
 		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(box));
+		box.setEditable(true);	
+		argTable.setDefaultEditor(TridasObjectOrPlaceholder.class, new ComboBoxCellEditor(box));
+
 		argTable.setDefaultRenderer(TridasObject.class, new DefaultTableCellRenderer(){
 			/**
 			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
@@ -154,6 +193,43 @@ public class ElementView extends AbstractBulkImportView{
 				}
 				TridasObjectEx object = (TridasObjectEx) argValue;
 				super.setValue(object.getLabCode());
+			}
+		});
+		
+		argTable.setDefaultRenderer(TridasObjectOrPlaceholder.class, new DefaultTableCellRenderer(){
+			/**
+			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
+			 */
+			@Override
+			protected void setValue(Object argValue) {
+				if(argValue == null){
+					super.setValue(argValue);
+					return;
+				}
+				
+				TridasObjectOrPlaceholder object = null;
+				if(argValue instanceof TridasObjectOrPlaceholder)
+				{
+					object = (TridasObjectOrPlaceholder) argValue;
+				}
+				else if (argValue instanceof TridasObjectEx)
+				{
+					object = new TridasObjectOrPlaceholder((TridasObjectEx)argValue);;
+				}
+				else if (argValue instanceof String)
+				{
+					object = new TridasObjectOrPlaceholder((String)argValue);
+				}
+
+				super.setValue(object.getCode());
+				if(object.getTridasObject()==null) {
+					super.setForeground(Color.GRAY);
+				}
+				else
+				{
+					super.setForeground(Color.BLACK);
+				}
+
 			}
 		});
 

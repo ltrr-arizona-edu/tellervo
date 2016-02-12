@@ -341,6 +341,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		panel_3.add(btnDown, "cell 0 1,alignx left,aligny top");
 		
 		chkMakePublic = new JCheckBox("Make available to other database users");
+		chkMakePublic.setEnabled(false);
 		panelMain.add(chkMakePublic, "cell 1 1,growx");
 		
 		JScrollPane fieldOptionsScrollPane = new JScrollPane();

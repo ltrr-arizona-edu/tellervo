@@ -54,7 +54,7 @@ public class ElementTableModel extends AbstractBulkImportTableModel {
 		}else if(argColumn.equals(SingleElementModel.IMPORTED)){
 			return Boolean.class;
 		}else if(argColumn.equals(SingleElementModel.OBJECT)){
-			return TridasObject.class;
+			return TridasObjectOrPlaceholder.class;
 		}else if(argColumn.equals(SingleElementModel.DEPTH)){
 			return BigDecimal.class;
 		}else if(argColumn.equals(SingleElementModel.WIDTH)){

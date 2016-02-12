@@ -1,5 +1,6 @@
 package org.tellervo.desktop.bulkdataentry.view.odkwizard;
 
+import java.awt.event.ActionEvent;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
@@ -17,7 +18,8 @@ public class ODKImportWizard extends AbstractWizardDialog {
 	private WizardMediaFiles page3;
 	private WizardCreateCSV page4;
 	private WizardFinish page5;
-
+	private boolean cancelled = false;
+	
 	public ODKImportWizard(JFrame parent) {
 		
 		super("ODK Import Wizard", Builder.getImageAsIcon("odk-sidebar.png"));
@@ -131,6 +133,23 @@ public class ODKImportWizard extends AbstractWizardDialog {
 		return page4.getCSVFilename();
 	}
 	
+	@Override
+	public void actionPerformed(ActionEvent evt) {
+		if (evt.getActionCommand().equals("next")) {
+			showNextPage();
+		} else if (evt.getActionCommand().equals("previous")) {
+			showPreviousPage();
+		} else if (evt.getActionCommand().equals("close")) {
+			this.cancelled = true;
+			cleanup();
+			
+		}
 
+	}
+	
+	public boolean wasCancelled()
+	{
+		return this.cancelled;
+	}
 
 }

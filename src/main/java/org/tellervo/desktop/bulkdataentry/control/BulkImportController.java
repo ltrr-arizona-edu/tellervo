@@ -31,7 +31,7 @@ import org.tellervo.desktop.bulkdataentry.command.ImportSelectedObjectsCommand;
 import org.tellervo.desktop.bulkdataentry.command.ImportSelectedSamplesCommand;
 import org.tellervo.desktop.bulkdataentry.command.PopulateFromDatabaseCommand;
 import org.tellervo.desktop.bulkdataentry.command.PopulateFromGeonamesCommand;
-import org.tellervo.desktop.bulkdataentry.command.PopulateFromODKFileCommand;
+import org.tellervo.desktop.bulkdataentry.command.PopulateFromODKCommand;
 import org.tellervo.desktop.bulkdataentry.command.PrintBarcodesCommand;
 import org.tellervo.desktop.bulkdataentry.command.RemoveSelectedCommand;
 import org.tellervo.desktop.bulkdataentry.command.ShowColumnWindowCommand;
@@ -91,7 +91,7 @@ public class BulkImportController extends FrontController {
 		registerCommand(PRINT_SAMPLE_BARCODES, PrintBarcodesCommand.class);
 		registerCommand(POPULATE_FROM_DATABASE, PopulateFromDatabaseCommand.class);
 		registerCommand(POPULATE_FROM_GEONAMES, PopulateFromGeonamesCommand.class);
-		registerCommand(POPULATE_FROM_ODK_FILE, PopulateFromODKFileCommand.class);
+		registerCommand(POPULATE_FROM_ODK_FILE, PopulateFromODKCommand.class);
 
 	}
 	

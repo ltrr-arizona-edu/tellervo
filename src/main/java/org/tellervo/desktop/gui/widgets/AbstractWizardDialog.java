@@ -214,7 +214,7 @@ public class AbstractWizardDialog extends JDialog implements ActionListener {
 		btnPrevious.setEnabled(!currPageIndex.equals(0));
 	}
 
-	private void cleanup() {
+	protected void cleanup() {
 		for (AbstractWizardPanel page : pages) {
 			page.finish();
 		}
@@ -225,7 +225,7 @@ public class AbstractWizardDialog extends JDialog implements ActionListener {
 	/**
 	 * Show this next page in the wizard
 	 */
-	private void showNextPage() {
+	protected void showNextPage() {
 		if (currPageIndex.equals(pages.size() - 1)) {
 			// Last page so dispose
 
@@ -260,7 +260,7 @@ public class AbstractWizardDialog extends JDialog implements ActionListener {
 	/**
 	 * Show the previous page in the wizard
 	 */
-	private void showPreviousPage() {
+	protected void showPreviousPage() {
 		showPage(currPageIndex - 1, Direction.BACKWARD);
 
 	}

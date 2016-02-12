@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -446,6 +447,7 @@ public class ODKParser {
 	{	
 		return "<b>"+file.getAbsoluteFile()+"</b>";	
 	}
+
 	
 	public HashMap<String, String> getAllFields()
 	{
@@ -475,6 +477,46 @@ public class ODKParser {
 	    }
 	    
 	    return map;
+	}
+	
+	public ArrayList<String> getMediaFileFields()
+	{
+		ArrayList<String> mediaFileList = new ArrayList<String>();
+
+		NodeList nodeList = doc.getElementsByTagName("*");
+		for (int i = 0; i < nodeList.getLength(); i++) {
+			Node node = nodeList.item(i);
+			if (node.getNodeType() == Node.ELEMENT_NODE) {
+
+				try {
+					String name = node.getNodeName();
+					if (name.equals("meta") || name.equals("instanceName")
+							|| name.equals("data"))
+						continue;
+					String value = node.getFirstChild().getNodeValue();
+
+					if (name.startsWith("tellervo.user.image")
+							|| name.startsWith("tellervo.user.video")
+							|| name.startsWith("tellervo.user.audio")
+							|| name.startsWith("tridas_object_file_photo")
+							|| name.startsWith("tridas_object_file_sound")
+							|| name.startsWith("tridas_object_file_video")
+							|| name.startsWith("tridas_element_file_photo")
+							|| name.startsWith("tridas_element_file_sound")
+							|| name.startsWith("tridas_element_file_video")
+							|| name.startsWith("tridas_sample_file_photo")
+							|| name.startsWith("tridas_sample_file_sound")
+							|| name.startsWith("tridas_sample_file_video")) {
+						mediaFileList.add(value);
+					}
+				} catch (Exception e) {
+
+				}
+			}
+		}
+
+		return mediaFileList;
+		    
 	}
 	
 

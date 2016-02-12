@@ -71,6 +71,8 @@ import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
+import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
+import org.tellervo.desktop.bulkdataentry.view.ODKFileDownloadProgress;
 import org.tellervo.desktop.bulkdataentry.view.ODKParserLogViewer;
 import org.tellervo.desktop.bulkdataentry.view.odkwizard.ODKImportWizard;
 import org.tellervo.desktop.core.App;
@@ -106,13 +108,13 @@ import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
 
-public class PopulateFromODKFileCommand implements ICommand {
+public class PopulateFromODKCommand implements ICommand {
 	
 	TridasElementTemporaryCacher cache = new TridasElementTemporaryCacher();
 	String otherErrors = "";
 	Integer filesLoadedSuccessfully = 0;
 	Integer filesFound = 0;
-	private static final Logger log = LoggerFactory.getLogger(PopulateFromODKFileCommand.class);
+	private static final Logger log = LoggerFactory.getLogger(PopulateFromODKCommand.class);
 
 	private static void debugODKCodes()
 	{
@@ -155,6 +157,8 @@ public class PopulateFromODKFileCommand implements ICommand {
 		// Launch the ODK wizard to collect parameters from user
 		ODKImportWizard wizard = new ODKImportWizard(BulkImportModel.getInstance().getMainView());
 				
+		if(wizard.wasCancelled()) return;
+		
 		if(wizard.isRemoteAccessSelected())
 		{
 			// Doing remote server download of ODK files
@@ -347,7 +351,14 @@ public class PopulateFromODKFileCommand implements ICommand {
 		
 	
 	public static String getRemoteODKFiles(URI url) throws IOException {
-		HttpClient client = new ContentEncodingHttpClient();
+		
+		ODKFileDownloadProgress dialog = new ODKFileDownloadProgress(App.mainWindow, url);
+		
+		dialog.setVisible(true);
+		
+		return dialog.getFile().getAbsolutePath();
+		
+		/*HttpClient client = new ContentEncodingHttpClient();
 		HttpUriRequest req;
 		HttpGet httpget = new HttpGet(url);
 		Document outDocument = null;
@@ -441,7 +452,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 		
 		}
 		
-		return filePath.getAbsolutePath();
+		return filePath.getAbsolutePath();*/
 	}
 	
 	private void createCSVFile(ArrayList<ODKParser> parsers, String csvfilename ) throws IOException
@@ -628,9 +639,22 @@ public class PopulateFromODKFileCommand implements ICommand {
 		SingleObjectModel newrow = (SingleObjectModel) model.createRowInstance();
 
 		String objcode = parser.getFieldValueAsString("tridas_parent_object_code");
-		TridasObjectEx obj = null;
-		if(objcode!=null) obj = getTridasObjectByCode(objcode);
-		if(obj!=null) newrow.setProperty(SingleObjectModel.PARENT_OBJECT, obj);
+		
+		if(objcode!=null) 
+		{
+			TridasObjectEx obj = getTridasObjectByCode(objcode);
+			TridasObjectOrPlaceholder toph;
+			if(obj!=null)
+			{
+				toph = new TridasObjectOrPlaceholder(obj);
+				newrow.setProperty(SingleObjectModel.PARENT_OBJECT, toph);
+			}
+			else
+			{
+				toph = new TridasObjectOrPlaceholder(objcode);
+				newrow.setProperty(SingleObjectModel.PARENT_OBJECT, toph);
+			}
+		}
 		
 		String objectcode = parser.getFieldValueAsString("tridas_object_code", "PlotSubplotID");
 		newrow.setProperty(SingleObjectModel.OBJECT_CODE, objectcode);
@@ -689,10 +713,14 @@ public class PopulateFromODKFileCommand implements ICommand {
 	{
 		TridasFileList filesList = new TridasFileList();
 
-		for(String fieldname : fieldnames)
+		ArrayList<String> mediaFilenames = parser.getMediaFileFields();
+		
+		
+		for(String mediafile : mediaFilenames)
 		{
 			
-			String mediafile = parser.getFieldValueAsString(fieldname);
+			if(mediafile==null) continue;
+			
 			File f = getFileFromList(mediaFileArr, mediafile);
 			if(f!=null)
 			{
@@ -722,6 +750,7 @@ public class PopulateFromODKFileCommand implements ICommand {
 			else
 			{
 				log.warn("Media file '"+mediafile +"' not found. Ignoring.");
+				log.warn("Media file list: "+mediaFileArr);
 			}
 		}
 		
@@ -816,7 +845,17 @@ public class PopulateFromODKFileCommand implements ICommand {
 
 		String objcode = parser.getFieldValueAsString("tridas_object_code", "PlotSubplotID").toString();
 		TridasObjectEx obj = getTridasObjectByCode(objcode);
-		newrow.setProperty(SingleElementModel.OBJECT, obj);
+		
+		TridasObjectOrPlaceholder object;
+		if(obj!=null)
+		{
+			object = new TridasObjectOrPlaceholder(obj);
+		}
+		else
+		{
+			object = new TridasObjectOrPlaceholder(objcode);
+		}
+		newrow.setProperty(SingleElementModel.OBJECT, object);
 		
 		NormalTridasShape shape = null;
 		try{
@@ -842,9 +881,6 @@ public class PopulateFromODKFileCommand implements ICommand {
 			log.debug("Failed to get element type from ODK");
 		}
 		newrow.setProperty(SingleElementModel.DESCRIPTION, parser.getFieldValueAsString("tridas_element_description"));
-		
-		
-		
 		newrow.setProperty(SingleElementModel.TAXON, ITRDBTaxonConverter.getControlledVocFromString(parser.getFieldValueAsString("tridas_element_taxon", "Species")));
 		newrow.setProperty(SingleElementModel.AUTHENTICITY, parser.getFieldValueAsString("tridas_element_authenticity"));
 		newrow.setProperty(SingleElementModel.LATITUDE, parser.getLatitude("tridas_element_location", "TreeLocation"));

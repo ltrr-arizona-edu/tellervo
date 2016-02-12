@@ -64,7 +64,7 @@ public class ObjectTableModel extends AbstractBulkImportTableModel {
 		}else if(argColumn.equals(SingleObjectModel.WAYPOINT)){
 			return GPXWaypoint.class;
 		}else if(argColumn.equals(SingleObjectModel.PARENT_OBJECT)){
-			return TridasObject.class;
+			return TridasObjectOrPlaceholder.class;
 		}
 		else if (argColumn.equals(SingleObjectModel.FILES)){
 			return TridasFileList.class;

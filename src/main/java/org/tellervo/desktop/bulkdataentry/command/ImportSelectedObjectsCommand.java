@@ -31,17 +31,21 @@ import org.apache.commons.lang.StringUtils;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectTableModel;
+import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
+import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.core.App;
-import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tellervo.schema.TellervoRequestType;
+import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
+import com.dmurph.mvc.model.MVCArrayList;
 
 
 /**
@@ -99,6 +103,18 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				}
 			}
 			
+			if(definedProps.contains(SingleObjectModel.PARENT_OBJECT)){
+				if(this.fixTempObjectCode(som))
+				{
+					// fixed
+				}
+				else
+				{
+					requiredMessages.add("Cannot import as parent object has not been created yet");
+					incomplete = true;
+				}
+			}
+			
 			// type
 			if(!definedProps.contains(SingleObjectModel.TYPE)){
 				requiredMessages.add("Object must contain type.");
@@ -145,8 +161,8 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			
 			som.populateTridasObject(origObject);
 
-			TridasObjectEx parentObject = (TridasObjectEx) som.getProperty(SingleObjectModel.PARENT_OBJECT);
-			
+			TridasObject parentObject = ((TridasObjectOrPlaceholder) som.getProperty(SingleObjectModel.PARENT_OBJECT)).getTridasObject();
+
 			EntityResource<TridasObjectEx> resource;
 			if(origObject.getIdentifier() != null){
 				resource = new EntityResource<TridasObjectEx>(origObject, TellervoRequestType.UPDATE, TridasObjectEx.class);
@@ -205,5 +221,54 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		
 		// FIXME this should be removed once other lists listen for changes in the object list
 		App.updateTridasObjectList();
+	}
+	
+	/**
+	 * Check for temporary object code and convert to proper object.  If object has not been created yet, return false.
+	 * 
+	 * @param som
+	 * @return
+	 */
+	private boolean fixTempObjectCode(IBulkImportSingleRowModel som)
+	{
+	
+		Object rowitem = (Object) som.getProperty(SingleObjectModel.PARENT_OBJECT);
+		
+		if(rowitem instanceof TridasObjectOrPlaceholder)
+		{
+			if(((TridasObjectOrPlaceholder) rowitem).getTridasObject()!=null) return true;
+			
+			MVCArrayList<TridasObjectEx> objlist = App.tridasObjects.getMutableObjectList();
+
+			for(TridasObjectEx o : objlist)
+			{
+				if(o.getLabCode().equals(((TridasObjectOrPlaceholder) rowitem).getCode())) 
+				{
+					som.setProperty(SingleObjectModel.PARENT_OBJECT, new TridasObjectOrPlaceholder(o));
+					return true;
+				}
+			}
+					
+		}
+		else if (rowitem instanceof String)
+		{
+			MVCArrayList<TridasObjectEx> objlist = App.tridasObjects.getMutableObjectList();
+
+			for(TridasObjectEx o : objlist)
+			{
+				if(o.getLabCode().equals(rowitem)) 
+				{
+					som.setProperty(SingleObjectModel.PARENT_OBJECT, new TridasObjectOrPlaceholder(o));
+					return true;
+				}
+			}
+		}
+		else if (rowitem instanceof TridasObjectEx)
+		{
+			return true;
+		}
+		
+		
+		return false;
 	}
 }

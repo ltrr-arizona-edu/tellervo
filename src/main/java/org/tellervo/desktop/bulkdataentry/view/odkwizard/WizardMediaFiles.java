@@ -141,7 +141,7 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 	
 	public String getCopyToLocation()
 	{
-		return this.txtCopyTo.getText()+File.pathSeparator;
+		return this.txtCopyTo.getText()+File.separator;
 	}
 	
 	public String getFinalLocation()

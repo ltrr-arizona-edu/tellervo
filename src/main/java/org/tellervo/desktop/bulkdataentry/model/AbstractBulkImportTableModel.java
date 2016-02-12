@@ -104,6 +104,8 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 	 */
 	public void removeSelected( ArrayList<IBulkImportSingleRowModel> argRemovedObjects) {
 		recreateSelectedLock = true;
+		
+		boolean alreadyWarned =false;
 		try{
 			Iterator<IBulkImportSingleRowModel> it = selected.keySet().iterator();
 			while(it.hasNext()){
@@ -111,15 +113,19 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 				if(! selected.get(som)){
 					continue; // if it's not selected
 				}
-				if(som.getImported() != null){
+				
+				// Surely this isn't necessary? Commenting out for now.
+				/*if(som.getImported() != null && alreadyWarned==false){
 					int response = JOptionPane.showConfirmDialog(BulkImportModel.getInstance().getMainView(),
 							"The object you are removing has been imported.  If any elements reference this object" +
 							" as a parent, then they will no longer be able to be imported.  Still remove?", "Warning",
 							JOptionPane.OK_CANCEL_OPTION);
 					if( response != JOptionPane.OK_OPTION){
-						continue;
+						return;
 					}
-				}
+					alreadyWarned=true;
+				}*/
+				
 				// careful, as changing the models list causes recreateSelected to be called, so we want to make sure
 				// that we remove from the selected list first.
 				it.remove();
