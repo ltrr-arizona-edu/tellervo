@@ -9,8 +9,6 @@ import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
-import org.tellervo.schema.TellervoRequestFormat;
-import org.tridas.io.defaults.values.BooleanDefaultValue;
 import org.tridas.schema.TridasElement;
 
 public class TridasElementTemporaryCacher {

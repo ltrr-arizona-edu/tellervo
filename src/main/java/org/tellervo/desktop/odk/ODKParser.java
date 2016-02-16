@@ -26,6 +26,7 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -177,7 +178,14 @@ public class ODKParser {
 			return null;
 		}
 		try{
-			return doc.getElementsByTagName(field).item(0).getTextContent();
+			String contents = doc.getElementsByTagName(field).item(0).getTextContent();
+			if(contents==null || contents.length()==0) {
+				return null;
+			}
+			else
+			{
+				return contents;
+			}
 		} catch (Exception e)
 		{
 			log.warn("Error getting tag text for field: "+field);
@@ -185,18 +193,7 @@ public class ODKParser {
 		}
 		
 	}
-	
-	public String getFieldValueAsString(String field1, String field2)
-	{
-		String one = getFieldValueAsString(field1);
-		String two = getFieldValueAsString(field2);
-
-		if(one!=null) return one;
-		if(two!=null) return two;
-		return null;
 		
-	}
-	
 	public Integer getFieldValueAsInteger(String field)
 	{
 		
@@ -211,13 +208,17 @@ public class ODKParser {
 		if(nList.getLength()==0) return null;
 	
 		try{
-			Integer intval = Integer.parseInt(nList.item(0).getNodeValue());
-			return intval;
+			if(nList.item(0).getNodeValue()!=null)
+			{
+				Integer intval = Integer.parseInt(nList.item(0).getNodeValue());
+				return intval;
+			}
 		} catch (Exception e)
 		{
-			log.warn("Error getting number from tag field: "+field);
+			log.warn("Error getting number from tag field: "+field+". The value was "+nList.item(0).getNodeValue());
 			return null;
 		}
+		return null;
 		
 	}
 	
@@ -254,15 +255,32 @@ public class ODKParser {
 			return null;
 		}
 		
-		if(nList.getLength()==0) return null;
-	
+		
+		
 		try{
-			return nList.item(0).getNodeValue();
+		    for (int i=0; i < nList.getLength(); i++) {
+		        Node subnode = nList.item(i);
+		        		        
+		        if (subnode.getNodeType() == Node.ELEMENT_NODE) {
+		        	Element eElement = (Element) subnode; 
+		        	
+		        	if(subnode.getNodeName().equals(field))
+		        	{
+		        		String val = eElement.getTextContent();
+		        		if(val!=null) return val;
+		        	}
+		        	
+		        }
+		    }
+			
+			
 		} catch (Exception e)
 		{
 			log.warn("Error getting tag text from field: "+field);
 			return null;
 		}
+		
+		return null;
 		
 	}
 	
@@ -391,7 +409,11 @@ public class ODKParser {
 		
 			Date dob=null;
 			DateFormat df=new SimpleDateFormat("yyyy-MM-dd");
-			dob = df.parse( getFieldValueAsString("end").substring(0, 10));
+			String enddate = getFieldValueAsString("end");
+			if(enddate==null) return null;
+			if(enddate.length()<10) return null;
+			
+			dob = df.parse( enddate.substring(0, 10));
 			 
 			
 			GregorianCalendar gcal = new GregorianCalendar();
@@ -409,12 +431,10 @@ public class ODKParser {
 			date.setCertainty(Certainty.EXACT);
 			
 			return date;
-		}  catch (IllegalArgumentException e)
+		}  catch (Exception e)
 		{
 			log.debug("Error parsing date");
-		} catch (ParseException e) {
-			log.debug("Error parsing date");
-		}
+		} 
 		
 		return null;
 	}

@@ -70,6 +70,7 @@ import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
+import org.tellervo.desktop.bulkdataentry.model.TridasElementOrPlaceholder;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.bulkdataentry.view.ODKFileDownloadProgress;
@@ -166,13 +167,16 @@ public class PopulateFromODKCommand implements ICommand {
 				
 				// Request a zip file of ODK files from the server ensuring the temp file is deleted on exit
 				URI uri;
-				uri = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/fetchInstances");
+				uri = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/fetchInstances.php");
 				String file = getRemoteODKFiles(uri);
 				new File(file).deleteOnExit();
 				
 				// Unzip to a temporary folder, again ensuring it is deleted on exit 
 				instanceFolder = Files.createTempDirectory("odk-unzip");
 				instanceFolder.toFile().deleteOnExit();
+				
+				log.debug("Attempting to open zip file: '"+file+"'");
+				
 				ZipFile zipFile = new ZipFile(file);
 			    try {
 			      Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -656,9 +660,9 @@ public class PopulateFromODKCommand implements ICommand {
 			}
 		}
 		
-		String objectcode = parser.getFieldValueAsString("tridas_object_code", "PlotSubplotID");
+		String objectcode = parser.getFieldValueAsString("tridas_object_code");
 		newrow.setProperty(SingleObjectModel.OBJECT_CODE, objectcode);
-		newrow.setProperty(SingleObjectModel.TITLE, parser.getFieldValueAsString("tridas_object_title", "PlotSubplotID"));
+		newrow.setProperty(SingleObjectModel.TITLE, parser.getFieldValueAsString("tridas_object_title"));
 
 		
 		try{
@@ -670,9 +674,9 @@ public class PopulateFromODKCommand implements ICommand {
 
 		}
 		String comments = "";
-		if(parser.getFieldValueAsString("tridas_object_comments", "Comments")!=null) comments += parser.getFieldValueAsString("tridas_object_comments", "Comments")+"; ";
+		if(parser.getFieldValueAsString("tridas_object_comments")!=null) comments += parser.getFieldValueAsString("tridas_object_comments")+"; ";
 		
-		if(!wizard.isRemoteAccessSelected()) comments += "Imported from ODK file: '"+ parser.getFile().getName()+"'. ";
+		//if(!wizard.isRemoteAccessSelected()) comments += "Imported from ODK file: '"+ parser.getFile().getName()+"'. ";
 		
 		newrow.setProperty(SingleObjectModel.COMMENTS, comments);
 		String description = parser.getFieldValueAsString("tridas_object_description");
@@ -690,7 +694,7 @@ public class PopulateFromODKCommand implements ICommand {
 		newrow.setProperty(SingleObjectModel.STATE_PROVINCE_REGION, parser.getFieldValueAsString("tridas_object_address_stateorprovince"));
 		newrow.setProperty(SingleObjectModel.POSTCODE, parser.getFieldValueAsString("tridas_object_address_postalcode"));
 		newrow.setProperty(SingleObjectModel.COUNTRY, parser.getFieldValueAsString("tridas_object_address_country"));
-		newrow.setProperty(SingleObjectModel.VEGETATION_TYPE, parser.getFieldValueAsString("tridas_object_vegetation_type", "VegetationType"));
+		newrow.setProperty(SingleObjectModel.VEGETATION_TYPE, parser.getFieldValueAsString("tridas_object_vegetation_type"));
 		
 		// Handle media files...
 		ArrayList<String> fieldnames = new ArrayList<String>();
@@ -843,7 +847,7 @@ public class PopulateFromODKCommand implements ICommand {
 	{
 		SingleElementModel newrow = (SingleElementModel) model.createRowInstance();
 
-		String objcode = parser.getFieldValueAsString("tridas_object_code", "PlotSubplotID").toString();
+		String objcode = parser.getFieldValueAsString("tridas_object_code").toString();
 		TridasObjectEx obj = getTridasObjectByCode(objcode);
 		
 		TridasObjectOrPlaceholder object;
@@ -872,8 +876,8 @@ public class PopulateFromODKCommand implements ICommand {
 		}
 
 		
-		newrow.setProperty(SingleElementModel.TITLE, parser.getFieldValueAsString("tridas_element_title", "TreeNO"));
-		newrow.setProperty(SingleElementModel.COMMENTS, parser.getFieldValueAsString("tridas_element_comments", "Comments"));
+		newrow.setProperty(SingleElementModel.TITLE, parser.getFieldValueAsString("tridas_element_title"));
+		newrow.setProperty(SingleElementModel.COMMENTS, parser.getFieldValueAsString("tridas_element_comments"));
 		try{
 			newrow.setProperty(SingleElementModel.TYPE, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_element_type"), "elementTypeDictionary"));
 		} catch (Exception e)
@@ -881,7 +885,7 @@ public class PopulateFromODKCommand implements ICommand {
 			log.debug("Failed to get element type from ODK");
 		}
 		newrow.setProperty(SingleElementModel.DESCRIPTION, parser.getFieldValueAsString("tridas_element_description"));
-		newrow.setProperty(SingleElementModel.TAXON, ITRDBTaxonConverter.getControlledVocFromString(parser.getFieldValueAsString("tridas_element_taxon", "Species")));
+		newrow.setProperty(SingleElementModel.TAXON, ITRDBTaxonConverter.getControlledVocFromString(parser.getFieldValueAsString("tridas_element_taxon")));
 		newrow.setProperty(SingleElementModel.AUTHENTICITY, parser.getFieldValueAsString("tridas_element_authenticity"));
 		newrow.setProperty(SingleElementModel.LATITUDE, parser.getLatitude("tridas_element_location", "TreeLocation"));
 		newrow.setProperty(SingleElementModel.LONGITUDE, parser.getLongitude("tridas_element_location", "TreeLocation"));
@@ -917,7 +921,7 @@ public class PopulateFromODKCommand implements ICommand {
 	{
 		Boolean loadedSuccessfully = false;
 		
-		NodeList nList = parser.getNodeListByName("group_sample");
+		NodeList nList = parser.getNodeListByName("group_sample_fields");
 
 		if(nList==null || nList.getLength()==0) {
 			nList = parser.getNodeListByName("SamplesRepeat");
@@ -931,16 +935,41 @@ public class PopulateFromODKCommand implements ICommand {
 		{
 			Node node = nList.item(i);
 			SingleSampleModel newrow = (SingleSampleModel) model.createRowInstance();
-
-			String objcode = parser.getFieldValueAsString("tridas_object_code", "PlotSubplotID").toString();
-			TridasObjectEx obj = getTridasObjectByCode(objcode);
-			newrow.setProperty(SingleSampleModel.OBJECT, obj);
 								
-			TridasElement element = parser.getChrisTridasElement(cache, "tridas_object_code", "tridas_element_title", "PlotSubplotID", "TreeNO");
-			if(element==null) continue;
+			String objcode = parser.getFieldValueAsString("tridas_object_code").toString();
+			TridasObjectEx obj = getTridasObjectByCode(objcode);
 			
-			newrow.setProperty(SingleSampleModel.ELEMENT, element);
-			newrow.setProperty(SingleSampleModel.TITLE, parser.getFieldValueAsStringFromNodeList("tridas_sample_title", node.getChildNodes()));
+			TridasObjectOrPlaceholder object;
+			if(obj!=null)
+			{
+				object = new TridasObjectOrPlaceholder(obj);
+			}
+			else
+			{
+				object = new TridasObjectOrPlaceholder(objcode);
+			}
+			newrow.setProperty(SingleSampleModel.OBJECT, object);
+					
+			String elmcode = parser.getFieldValueAsString("tridas_element_title").toString();
+			if(object.getTridasObject()!=null)
+			{
+				TridasElement element = parser.getTridasElement(cache, "tridas_object_code", "tridas_element_title");
+				if(element==null){
+					newrow.setProperty(SingleSampleModel.ELEMENT, new TridasElementOrPlaceholder(elmcode));	
+				}
+				else
+				{
+					newrow.setProperty(SingleSampleModel.ELEMENT, new TridasElementOrPlaceholder(element));	
+				}
+			}
+			else
+			{
+				newrow.setProperty(SingleSampleModel.ELEMENT, new TridasElementOrPlaceholder(elmcode));	
+			}
+			
+			String samplecode = parser.getFieldValueAsStringFromNodeList("tridas_sample_title", node.getChildNodes());
+			log.debug("Sample code is: "+samplecode);
+			newrow.setProperty(SingleSampleModel.TITLE, samplecode);
 			newrow.setProperty(SingleSampleModel.TYPE, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_sample_type"), "sampleTypeDictionary"));
 			newrow.setProperty(SingleSampleModel.COMMENTS, parser.getFieldValueAsStringFromNodeList("tridas_sample_comments", node.getChildNodes()));
 			newrow.setProperty(SingleSampleModel.DESCRIPTION, parser.getFieldValueAsStringFromNodeList("tridas_sample_description", node.getChildNodes()));
@@ -951,15 +980,19 @@ public class PopulateFromODKCommand implements ICommand {
 
 			String knots = parser.getFieldValueAsStringFromNodeList("tridas_sample_knots", node.getChildNodes());
 			Boolean kb = null;
-			if(knots.equals("Yes"))
+			if(knots!=null)
 			{
-				kb = true;
+				if(knots.equals("Yes"))
+				{
+					kb = true;
+				}
+				else
+				{
+					kb = false;
+				}
 			}
-			else
-			{
-				kb = false;
-			}
-			if(kb!=null) newrow.setProperty(SingleSampleModel.KNOTS, kb);
+			
+			newrow.setProperty(SingleSampleModel.KNOTS, kb);
 
 			// STILL TO HANDLE
 			//tridas_sample_file_photo

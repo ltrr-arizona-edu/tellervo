@@ -187,8 +187,6 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 			
 			if(argAValue instanceof TridasElementOrPlaceholder)
 			{
-
-				
 				TridasElementOrPlaceholder teop = (TridasElementOrPlaceholder) argAValue;
 				
 				if(teop.getTridasElement()!=null)
