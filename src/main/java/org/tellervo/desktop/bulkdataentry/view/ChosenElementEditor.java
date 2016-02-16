@@ -41,9 +41,11 @@ import javax.swing.table.TableCellRenderer;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
+import org.tellervo.desktop.bulkdataentry.model.TridasElementOrPlaceholder;
 import org.tridas.schema.TridasElement;
 
 import com.dmurph.mvc.gui.combo.MVCJComboBox;
+import com.dmurph.mvc.model.MVCArrayList;
 
 
 /**
@@ -55,7 +57,7 @@ public class ChosenElementEditor extends DefaultCellEditor {
 
 	private static final long serialVersionUID = 1L;
 
-	public ChosenElementEditor(final MVCJComboBox<TridasElement> comboBox) {
+	public ChosenElementEditor(final MVCJComboBox<TridasElementOrPlaceholder> comboBox) {
 		super(comboBox);
 		comboBox.removeActionListener(delegate);
 		delegate = new EditorDelegate() {
@@ -171,13 +173,21 @@ public class ChosenElementEditor extends DefaultCellEditor {
         }
         
         // finally, populate the box from the corresponding row in the model list
-		MVCJComboBox<TridasElement> comboBox = (MVCJComboBox<TridasElement>) super.editorComponent;
+		MVCJComboBox<TridasElementOrPlaceholder> comboBox = (MVCJComboBox<TridasElementOrPlaceholder>) super.editorComponent;
 
 		SampleModel model = BulkImportModel.getInstance().getSampleModel();
 		SingleSampleModel ssm = model.getRows().get(row);
         
-		if(ssm.getPossibleElements() != comboBox.getData()){
-			comboBox.setData(ssm.getPossibleElements());
+		MVCArrayList<TridasElementOrPlaceholder> possibleTeops = new MVCArrayList<TridasElementOrPlaceholder>();
+		
+		for(TridasElement elem : ssm.getPossibleElements())
+		{
+			TridasElementOrPlaceholder teop = new TridasElementOrPlaceholder(elem);
+			possibleTeops.add(teop);
+		}
+	
+		if(possibleTeops != comboBox.getData()){
+			comboBox.setData(possibleTeops);
 		}
         
         return editorComponent;

@@ -34,6 +34,7 @@ import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleTableModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleRadiusModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
+import org.tellervo.desktop.bulkdataentry.model.TridasElementOrPlaceholder;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.ui.Alert;
@@ -91,12 +92,21 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			}
 			boolean incomplete = false;
 			
-			// object 
+			// element 
 			if(!definedProps.contains(SingleSampleModel.ELEMENT)){
 				requiredMessages.add("Cannot import without a parent element.");
 				incomplete = true;
 			}
-			
+			else
+			{
+				TridasElementOrPlaceholder teop = (TridasElementOrPlaceholder) som.getProperty(SingleSampleModel.ELEMENT);
+				if(teop.getTridasElement()==null)
+				{
+					requiredMessages.add("Cannot import as parent element has not been created yet");
+					incomplete = true;
+				}
+			}
+		
 			// type
 			if(!definedProps.contains(SingleSampleModel.TYPE)){
 				requiredMessages.add("Sample must contain a type.");
@@ -142,14 +152,14 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			}
 			
 			som.populateToTridasSample(origSample);
-			TridasElement parentObject = (TridasElement) som.getProperty(SingleSampleModel.ELEMENT);
+			TridasElement parentElement = ((TridasElementOrPlaceholder) som.getProperty(SingleSampleModel.ELEMENT)).getTridasElement();
 			
 			// sample first
 			EntityResource<TridasSample> sampleResource;
 			if(origSample.getIdentifier() != null){
 				sampleResource = new EntityResource<TridasSample>(origSample, TellervoRequestType.UPDATE, TridasSample.class);
 			}else{
-				sampleResource = new EntityResource<TridasSample>(origSample, parentObject, TridasSample.class);
+				sampleResource = new EntityResource<TridasSample>(origSample, parentElement, TridasSample.class);
 			}
 			sampleResource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
 

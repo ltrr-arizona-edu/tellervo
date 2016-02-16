@@ -32,6 +32,7 @@ import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.WSIBoxDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
@@ -39,6 +40,9 @@ import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tridas.schema.Date;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
+import org.tridas.util.TridasObjectEx;
+
+import com.dmurph.mvc.model.MVCArrayList;
 
 
 /**
@@ -67,11 +71,11 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 		}else if(argColumn.equals(SingleRadiusModel.AZIMUTH)){
 			return BigDecimal.class;
 		}else if(argColumn.equals(SingleSampleModel.ELEMENT)){
-			return TridasElement.class;
+			return TridasElementOrPlaceholder.class;
 		}else if(argColumn.equals(SingleSampleModel.BOX)){
 			return WSIBoxDictionary.class;
 		}else if(argColumn.equals(SingleSampleModel.OBJECT)){
-			return TridasObject.class;
+			return TridasObjectOrPlaceholder.class;
 		}else if (argColumn.equals(SingleSampleModel.FILES)){
 			return TridasFileList.class;
 		}
@@ -87,91 +91,156 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 		
 		// FIXME this all should be in a command!!!
 		if(argColumn.equals(SingleSampleModel.OBJECT))
-		{
-			argModel.setProperty(argColumn, argAValue);
+		{		
 			
-			if(argAValue != null){
-				final TridasObject o = (TridasObject) argAValue;
-				final SingleSampleModel ssm = (SingleSampleModel) argModel;
-				ssm.getPossibleElements().clear();
-				
-				Thread t = new Thread(new Runnable() {
-					
-					@Override
-					public void run() {
-						SearchParameters param = new SearchParameters(SearchReturnObject.ELEMENT);
-				    	param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, o.getIdentifier().getValue().toString());
-
-				    	EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
-						resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
-						
-						TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(BulkImportModel.getInstance().getMainView(), resource);
-						resource.query();	
-						dialog.setVisible(true);
-						
-						if(!dialog.isSuccessful()) 
-						{ 
-							System.out.println("Error getting elements");
-							return;
-						}
-						
-						List<TridasElement> elList = resource.getAssociatedResult();
-						ssm.getPossibleElements().addAll(elList);
-					}
-				}, "Elements Fetch Thread");
-				
-				t.start();
+			final SingleSampleModel ssm = (SingleSampleModel) argModel;
+			ssm.getPossibleElements().clear();
+			
+			if(argAValue==null)
+			{
+				argModel.setProperty(argColumn, argAValue);
+				return;
 			}
+			
+			if (argAValue instanceof String)
+			{
+				// Not a proper object only a code
+				
+				TridasObjectOrPlaceholder toph = new TridasObjectOrPlaceholder((String) argAValue);
+				
+				MVCArrayList<TridasObjectEx> objectList = App.tridasObjects.getMutableObjectList();
+				for(TridasObjectEx obj: objectList)
+				{
+					if(obj.getLabCode().equals(argAValue))
+					{
+						toph = new TridasObjectOrPlaceholder(obj);
+						break;
+					}
+				}
+
+				argAValue = toph;
+			}
+						
+			if(argAValue instanceof TridasObjectOrPlaceholder)
+			{					
+				TridasObjectOrPlaceholder toph = (TridasObjectOrPlaceholder) argAValue;
+				
+				if(toph.getTridasObject()!=null)
+				{
+					argModel.setProperty(argColumn, argAValue);
+					final TridasObject o = toph.getTridasObject();
+					
+					Thread t = new Thread(new Runnable() {
+						
+						@Override
+						public void run() {
+							SearchParameters param = new SearchParameters(SearchReturnObject.ELEMENT);
+					    	param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, o.getIdentifier().getValue().toString());
+	
+					    	EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
+							resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
+							
+							TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(BulkImportModel.getInstance().getMainView(), resource);
+							resource.query();	
+							dialog.setVisible(true);
+							
+							if(!dialog.isSuccessful()) 
+							{ 
+								System.out.println("Error getting elements");
+								return;
+							}
+							
+							List<TridasElement> elList = resource.getAssociatedResult();
+							ssm.getPossibleElements().addAll(elList);
+						}
+					}, "Elements Fetch Thread");
+					
+					t.start();
+				}
+				else	
+				{
+					argModel.setProperty(argColumn, argAValue);
+				}
+			}
+
 			return;
 		}
 		
 		else if (argColumn.equals(SingleSampleModel.ELEMENT))
 		{
-			if(argAValue instanceof TridasElement)
+			final SingleSampleModel ssm = (SingleSampleModel) argModel;
+			final String col = argColumn;
+			String val2 = null;
+			
+			if(argAValue==null)
 			{
+				argModel.setProperty(argColumn, argAValue);
+				return;
+			}
+			
+			if(argAValue instanceof String)
+			{
+				TridasElementOrPlaceholder teop = new TridasElementOrPlaceholder((String) argAValue);
+				argAValue = teop;
 				
-				if(!((TridasElement)argAValue).isSetIdentifier())
+			}
+			
+			if(argAValue instanceof TridasElementOrPlaceholder)
+			{
+
+				
+				TridasElementOrPlaceholder teop = (TridasElementOrPlaceholder) argAValue;
+				
+				if(teop.getTridasElement()!=null)
 				{
-					final SingleSampleModel ssm = (SingleSampleModel) argModel;
-					final String col = argColumn;
-					final String val = ((TridasElement) argAValue).getTitle();
-					Thread t = new Thread(new Runnable() {
-						
-						@Override
-						public void run() {
-							
-							
-							
-							int i=0;
-							while(!ssm.isElementListReady())
-							{
-								try {
-									Thread.sleep(10);
-									i++;	
-									if(i>500) return;
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-									return;
-								}
-	
-							}
-							
-							// Possible element list is populated so try and find item in list
-							for(TridasElement el : ssm.getPossibleElements())
-							{
-								if(el.getTitle().equals(val))
-								{
-									ssm.setProperty(col, el);
-								}
-							}
-							return;
-						}
-					}, "Element populate thread");
-					
-					t.start();
-				
+					if(!((TridasElement)teop.getTridasElement()).isSetIdentifier())
+					{
+						val2 = ((TridasElement) argAValue).getTitle();
+					}
 				}
+				else
+				{
+					val2 = teop.getCode();
+				}
+				
+				final String val = val2;
+
+
+				Thread t = new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						
+						int i=0;
+						while(!ssm.isElementListReady())
+						{
+							try {
+								Thread.sleep(10);
+								i++;	
+								if(i>500) return;
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+								return;
+							}
+
+						}
+						
+						// Possible element list is populated so try and find item in list
+						for(TridasElement el : ssm.getPossibleElements())
+						{
+							if(el.getTitle().equals(val))
+							{
+								ssm.setProperty(col, el);
+							}
+						}
+						return;
+					}
+				}, "Element populate thread");
+				
+				t.start();
+				
+				
 				
 			}
 		}

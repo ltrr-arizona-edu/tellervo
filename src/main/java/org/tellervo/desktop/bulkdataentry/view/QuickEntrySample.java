@@ -27,10 +27,12 @@ import org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
+import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasObject;
 
 public class QuickEntrySample extends JDialog implements ActionListener, PropertyChangeListener {
 
@@ -177,6 +179,7 @@ public class QuickEntrySample extends JDialog implements ActionListener, Propert
     			for(int i=0; i<((Integer)spnSampleNumber.getValue()); i++)
     			{
     				IBulkImportSingleRowModel sample = sampleModel.createRowInstance();
+    				//sample.setProperty(SingleSampleModel.OBJECT, new TridasObjectOrPlaceholder((TridasObject) elementRow.getProperty(SingleElementModel.OBJECT)));
     				sample.setProperty(SingleSampleModel.OBJECT, elementRow.getProperty(SingleElementModel.OBJECT));
     				sample.setProperty(SingleSampleModel.ELEMENT, element);
     				sample.setProperty(SingleSampleModel.TYPE, cboSampleType.getSelectedItem());

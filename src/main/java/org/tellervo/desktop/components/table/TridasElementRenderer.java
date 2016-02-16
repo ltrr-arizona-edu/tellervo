@@ -3,6 +3,7 @@
  */
 package org.tellervo.desktop.components.table;
 
+import org.tellervo.desktop.bulkdataentry.model.TridasElementOrPlaceholder;
 import org.tellervo.desktop.tridasv2.ui.DefaultCellRendererEx;
 import org.tridas.schema.TridasElement;
 
@@ -22,10 +23,28 @@ public class TridasElementRenderer extends DefaultCellRendererEx {
 	 */
 	@Override
 	protected String convertToString(Object argValue) {
-		TridasElement e = (TridasElement) argValue;
-		if(argValue == null){
+		
+		
+		if(argValue instanceof TridasElement)
+		{
+			TridasElement e = (TridasElement) argValue;
+			return e.getTitle();
+		}
+		else if (argValue instanceof TridasElementOrPlaceholder)
+		{
+			TridasElementOrPlaceholder teop = (TridasElementOrPlaceholder) argValue;
+			if (teop.getTridasElement()==null)
+			{
+				return teop.getCode();
+			}
+			else
+			{
+				return teop.getTridasElement().getTitle();
+			}
+		}
+		else
+		{
 			return "";
 		}
-		return e.getTitle();
 	}
 }
