@@ -83,6 +83,7 @@ import org.tellervo.desktop.odk.ODKParser.ODKFileType;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 import org.tellervo.desktop.odk.fields.ODKFields;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.util.BugReport;
 import org.tellervo.desktop.util.DictionaryUtil;
 import org.tellervo.desktop.versioning.Build;
@@ -169,6 +170,12 @@ public class PopulateFromODKCommand implements ICommand {
 				URI uri;
 				uri = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/fetchInstances.php");
 				String file = getRemoteODKFiles(uri);
+				
+				if(file==null) {
+					// Download was cancelled
+					return;
+				}
+				
 				new File(file).deleteOnExit();
 				
 				// Unzip to a temporary folder, again ensuring it is deleted on exit 
@@ -349,7 +356,24 @@ public class PopulateFromODKCommand implements ICommand {
 		logDialog.setFileCount(filesFound, filesLoadedSuccessfully);
 		
 		// Display log if there were any errors or if no files were found
-		if(filesFound!=filesLoadedSuccessfully || filesFound==0) logDialog.setVisible(true);
+		if(filesFound>filesLoadedSuccessfully ) 
+		{
+			logDialog.setVisible(true);
+		}
+		else if (filesFound==0 && wizard.isRemoteAccessSelected())
+		{
+			Alert.error(BulkImportModel.getInstance().getMainView(), "Not found", "No ODK data files were found on the server.  Please ensure you've used the 'send finalized form' option in ODK Collect and try again");
+			return;
+		}
+		else if (filesFound==0)
+		{
+			Alert.error(BulkImportModel.getInstance().getMainView(), "Not found", "No ODK data files were found in the specified folder.  Please check and try again.");
+			return;
+		}
+		else if(wizard.isIncludeMediaFilesSelected())
+		{
+			Alert.message(BulkImportModel.getInstance().getMainView(), "Download Complete", "The ODK download is complete.  As requested, your media files have been temporarily copied to the local folder '"+wizard.getCopyToLocation()+"'.  Please remember to move them to their final location");
+		}
 
 	}		
 		
@@ -358,105 +382,13 @@ public class PopulateFromODKCommand implements ICommand {
 		
 		ODKFileDownloadProgress dialog = new ODKFileDownloadProgress(App.mainWindow, url);
 		
-		dialog.setVisible(true);
-		
+		if(dialog.getFile()==null)
+		{
+			log.error("Download failed");
+			return null;
+		}
 		return dialog.getFile().getAbsolutePath();
 		
-		/*HttpClient client = new ContentEncodingHttpClient();
-		HttpUriRequest req;
-		HttpGet httpget = new HttpGet(url);
-		Document outDocument = null;
-		HttpResponse response;
-		File filePath = File.createTempFile("odk-", ".zip"); 
-		
-		try {
-
-			req = new HttpGet(url);
-		
-			// load cookies
-			((AbstractHttpClient) client).setCookieStore(WSCookieStoreHandler.getCookieStore().toCookieStore());
-			
-			String clientModuleVersion = "1.0";
-			req.setHeader("User-Agent", "Tellervo WSI " + Build.getUTF8Version() + 
-					" (" + clientModuleVersion  + "; ts " + Build.getCompleteVersionNumber() +")");
-			
-			
-			if(App.prefs.getBooleanPref(PrefKey.WEBSERVICE_USE_STRICT_SECURITY, false))
-			{
-				// Using strict security so don't allow self signed certificates for SSL
-			}
-			else
-			{
-				// Not using strict security so allow self signed certificates for SSL
-				if(url.getScheme().equals("https")) 
-				WebJaxbAccessor.setSelfSignableHTTPSScheme(client);
-			}
-			
-			
-			response = client.execute(httpget);
-			Header[] headers = response.getAllHeaders();
-			
-			log.debug("-----HEADERS-----");
-			for(Header header : headers)
-			{
-				log.debug(header.getName()+ " : "+header.getValue());
-			}
-			log.debug("-----END-----");
-			
-			HttpEntity entity = response.getEntity();
-			log.debug("File download size: "+entity.getContentLength());
-			
-		    if (entity != null) {	      
-		    	
-		    	BufferedInputStream bis = null;
-		    	BufferedOutputStream bos = null;
-		        try {
-					bis = new BufferedInputStream(entity.getContent());
-					
-					bos = new BufferedOutputStream(new FileOutputStream(filePath));
-					int inByte;
-					while((inByte = bis.read()) != -1) bos.write(inByte);
-		        } finally {
-		        	
-		            bis.close();
-		            bos.close();
-		        }
-		    }
-			log.debug("File download size: "+entity.getContentLength());
-			
-			
-			
-		} catch (UnknownHostException e)
-		{
-			throw new IOException("The URL of the server you have specified is unknown");
-		}
-		
-		catch (HttpResponseException hre) {
-			
-			if(hre.getStatusCode()==404)
-			{
-				throw new IOException("The URL of the server you have specified is unknown");
-			}
-			
-			
-			BugReport bugs = new BugReport(hre);
-			
-			bugs.addDocument("sent.xml", outDocument);
-			
-			new BugDialog(bugs);
-
-			throw new IOException("The server returned a protocol error " + hre.getStatusCode() + 
-					": " + hre.getLocalizedMessage());
-		} catch (IllegalStateException ex)
-		{
-			throw new IOException("Webservice URL must be a full URL qualified with a communications protocol.\n" +
-				"Tellervo currently supports http:// and https://.");	
-		}
-		finally {
-		
-		}
-		
-		return filePath.getAbsolutePath();*/
 	}
 	
 	private void createCSVFile(ArrayList<ODKParser> parsers, String csvfilename ) throws IOException
@@ -918,9 +850,7 @@ public class PopulateFromODKCommand implements ICommand {
 
 
 	private void addSampleFromParser(ODKParser parser, SampleModel model, ODKImportWizard wizard)
-	{
-		Boolean loadedSuccessfully = false;
-		
+	{		
 		NodeList nList = parser.getNodeListByName("group_sample_fields");
 
 		if(nList==null || nList.getLength()==0) {
@@ -1000,14 +930,9 @@ public class PopulateFromODKCommand implements ICommand {
 
 
 			model.getRows().add(newrow);
-			loadedSuccessfully = true;
 
 		}
-		
-		if(loadedSuccessfully)
-		{
-			filesLoadedSuccessfully++;
-		}
+
 	}
 
 	/**

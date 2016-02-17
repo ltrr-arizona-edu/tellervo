@@ -36,6 +36,7 @@ import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
+import org.tellervo.desktop.bulkdataentry.control.DeleteODKDefinitionsEvent;
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
@@ -82,6 +83,7 @@ public class ObjectView extends AbstractBulkImportView{
 	
 	private JButton browseGPX;
 	private JButton browseODK;
+	private JButton deleteODKDefinitions;
 	
 	public ObjectView(ObjectModel argModel){
 		super(argModel);
@@ -264,7 +266,7 @@ public class ObjectView extends AbstractBulkImportView{
 		 toolbar.add(argPopulateFromGeonames);
 		
 			browseODK = new JButton("");
-			browseODK.setIcon(Builder.getIcon("odk.png", 22));
+			browseODK.setIcon(Builder.getIcon("odk-logo.png", 22));
 			browseODK.setToolTipText("Browse for ODK file");
 			toolbar.add(browseODK);
 		 
@@ -274,7 +276,14 @@ public class ObjectView extends AbstractBulkImportView{
 		browseGPX.setIcon(Builder.getIcon("satellite.png", 22));
 		browseGPX.setToolTipText(I18n.getText("bulkimport.browseGPXFile"));
 		toolbar.add(browseGPX);
+		
+		deleteODKDefinitions = new JButton("Delete ODK Definitions");
+		toolbar.add(deleteODKDefinitions);
+		
+		
+		
 		toolbar.add(argShowHideColumnButton);
+			
 		return toolbar;
 	
 	}
@@ -308,6 +317,17 @@ public class ObjectView extends AbstractBulkImportView{
 				PopulateFromODKFileEvent event = new PopulateFromODKFileEvent(omodel, emodel, smodel);
 				event.dispatch();
 			}
+		});
+		
+		deleteODKDefinitions.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DeleteODKDefinitionsEvent event = new DeleteODKDefinitionsEvent();
+				event.dispatch();
+				
+			}
+			
 		});
 	}
 

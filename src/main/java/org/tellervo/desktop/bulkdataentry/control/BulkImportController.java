@@ -23,6 +23,7 @@ package org.tellervo.desktop.bulkdataentry.control;
 import org.tellervo.desktop.bulkdataentry.command.AddRowCommand;
 import org.tellervo.desktop.bulkdataentry.command.CopyRowCommand;
 import org.tellervo.desktop.bulkdataentry.command.CopySelectedRowsCommand;
+import org.tellervo.desktop.bulkdataentry.command.DeleteODKFormDefinitionsCommand;
 import org.tellervo.desktop.bulkdataentry.command.DeleteRowCommand;
 import org.tellervo.desktop.bulkdataentry.command.GPXBrowseCommand;
 import org.tellervo.desktop.bulkdataentry.command.HideColumnWindowCommand;
@@ -73,6 +74,9 @@ public class BulkImportController extends FrontController {
 	public static final String BROWSE_GPX_FILE = "BULK_IMPORT_BROWSE_GPX_FILE";
 	public static final String PRINT_SAMPLE_BARCODES = "BULK_IMPORT_PRINT_BARCODES";
 	public static final String POPULATE_FROM_ODK_FILE = "BULK_IMPORT_POPULATE_FROM_ODK_FILE";
+	public static final String DELETE_ODK_DEFINITIONS = "BULK_IMPORT_DELETE_ODK_DEFINITIONS";
+	public static final String DELETE_ODK_INSTANCES = "BULK_IMPORT_DELETE_ODK_INSTANCES";
+	
 
 	
 	public BulkImportController(){
@@ -92,6 +96,8 @@ public class BulkImportController extends FrontController {
 		registerCommand(POPULATE_FROM_DATABASE, PopulateFromDatabaseCommand.class);
 		registerCommand(POPULATE_FROM_GEONAMES, PopulateFromGeonamesCommand.class);
 		registerCommand(POPULATE_FROM_ODK_FILE, PopulateFromODKCommand.class);
+		registerCommand(DELETE_ODK_DEFINITIONS, DeleteODKFormDefinitionsCommand.class);
+		
 
 	}
 	

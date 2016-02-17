@@ -283,7 +283,7 @@ public class ElementView extends AbstractBulkImportView{
 		toolbar.add(browseGPX);
 		
 		browseODK = new JButton("");
-		browseODK.setIcon(Builder.getIcon("odk.png", 22));
+		browseODK.setIcon(Builder.getIcon("odk-logo.png", 22));
 		browseODK.setToolTipText("ODK Import");
 		toolbar.add(browseODK);
 		

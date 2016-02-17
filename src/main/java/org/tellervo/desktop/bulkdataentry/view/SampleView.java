@@ -366,7 +366,7 @@ public class SampleView  extends AbstractBulkImportView{
 		 toolbar.add(quickFill);
 		 
 			browseODK = new JButton("");
-			browseODK.setIcon(Builder.getIcon("odk.png", 22));
+			browseODK.setIcon(Builder.getIcon("odk-logo.png", 22));
 			browseODK.setToolTipText("Browse for ODK file");
 			toolbar.add(browseODK);
 		 

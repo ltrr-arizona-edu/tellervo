@@ -98,7 +98,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	private JTextArea txtDescription;
 	private JXList lstAvailableFields;
 	private ODKFieldListModel availableFieldsModel;
-	//private ODKFieldListModel selectedFieldsModel;
 	private ODKTreeModel selectedFieldsTreeModel;
 	private JTree tree;
 	private static final Logger log = LoggerFactory.getLogger(ODKFormDesignPanel.class);
@@ -513,6 +512,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			Alert.error("Error", dialog.getFailException().getMessage());
 			return;
 		}
+		
+		
+		Alert.message(parent, "Uploaded", "Form uploaded successfully.  You can now access your form using ODK Collect on your mobile device.");
 		
 		
 	}
