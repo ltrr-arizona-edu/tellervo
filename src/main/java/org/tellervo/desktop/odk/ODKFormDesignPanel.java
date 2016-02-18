@@ -39,6 +39,7 @@ import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.ListSelectionModel;
 import javax.swing.ScrollPaneConstants;
@@ -61,6 +62,7 @@ import org.codehaus.plexus.util.FileUtils;
 import org.jdesktop.swingx.JXList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.bulkdataentry.control.DeleteODKDefinitionsEvent;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.odk.fields.AbstractODKChoiceField;
 import org.tellervo.desktop.odk.fields.AbstractODKField;
@@ -85,8 +87,7 @@ import com.jidesoft.swing.CheckBoxList;
 import com.jidesoft.swing.SearchableUtils;
 
 import edu.emory.mathcs.backport.java.util.Collections;
-
-import javax.swing.JToolBar;
+import java.awt.GridLayout;
 
 
 
@@ -179,6 +180,16 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		mntmClose.addActionListener(this);
 		mnFile.add(mntmClose);
 		
+		JMenu mnEdit = new JMenu("Edit");
+		menuBar.add(mnEdit);
+		
+		JMenuItem mntmDeleteForms = new JMenuItem("Delete ODK form designs from server");
+		mntmDeleteForms.setActionCommand("DeleteFormDefinitions");
+		mntmDeleteForms.setIcon(Builder.getIcon("odk-delete.png", 22));
+		mntmDeleteForms.addActionListener(this);
+		mnEdit.add(mntmDeleteForms);
+		
+		
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		toolBar.setRollover(true);
@@ -204,6 +215,10 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		btnRename.addActionListener(this);
 		toolBar.add(btnRename);
 		
+		JToolbarButton btnDeleteDefinitions = new JToolbarButton("DeleteFormDefinitions", (ImageIcon) Builder.getIcon("odk-delete.png", 22));
+		btnDeleteDefinitions.setToolTipText("Delete ODK form designs from server");
+		btnDeleteDefinitions.addActionListener(this);
+		toolBar.add(btnDeleteDefinitions);
 		
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
@@ -255,33 +270,32 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		scrollPaneAvailable.setViewportView(lstAvailableFields);
 		
 		JPanel panelAddRemove = new JPanel();
-		panelFieldPicker.add(panelAddRemove, "cell 1 1,growx,aligny center");
-		panelAddRemove.setLayout(new MigLayout("fill, debug, insets 0", "[fill]", "[25px][][][]"));
+		panelFieldPicker.add(panelAddRemove, "cell 1 1,alignx center,growy");
 		
 		JButton btnAddAll = new JButton("");
-		btnAddAll.setMargin(new java.awt.Insets(1, 2, 1, 2));
 		btnAddAll.setIcon(Builder.getIcon("2rightarrow.png", 16));
 		btnAddAll.setActionCommand("AddAll");
 		btnAddAll.addActionListener(this);
-		panelAddRemove.add(btnAddAll, "cell 0 0,growx,aligny top");
+		panelAddRemove.setLayout(new MigLayout("insets 0, gap rel 0", "[44px]", "[grow][28px][28px][28px][28px][grow]"));
+		panelAddRemove.add(btnAddAll, "cell 0 1,grow");
 		
 		JButton btnAddOne = new JButton("");
 		btnAddOne.setIcon(Builder.getIcon("1rightarrow.png", 16));
 		btnAddOne.setActionCommand("AddOne");
 		btnAddOne.addActionListener(this);
-		panelAddRemove.add(btnAddOne, "cell 0 1");
+		panelAddRemove.add(btnAddOne, "cell 0 2,grow");
 		
 		JButton btnRemoveOne = new JButton("");
 		btnRemoveOne.setActionCommand("RemoveOne");
 		btnRemoveOne.addActionListener(this);
 		btnRemoveOne.setIcon(Builder.getIcon("1leftarrow.png", 16));
-		panelAddRemove.add(btnRemoveOne, "cell 0 2");
+		panelAddRemove.add(btnRemoveOne, "cell 0 3,grow");
 		
 		JButton btnRemoveAll = new JButton("");
 		btnRemoveAll.setActionCommand("RemoveAll");
 		btnRemoveAll.addActionListener(this);
 		btnRemoveAll.setIcon(Builder.getIcon("2leftarrow.png", 16));
-		panelAddRemove.add(btnRemoveAll, "cell 0 3");
+		panelAddRemove.add(btnRemoveAll, "cell 0 4,grow");
 		
 		scrollPaneSelected = new JScrollPane();
 		panelFieldPicker.add(scrollPaneSelected, "flowx,cell 2 1,grow");
@@ -325,7 +339,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		JPanel panel_3 = new JPanel();
 		panelFieldPicker.add(panel_3, "cell 3 1,grow");
-		panel_3.setLayout(new MigLayout("fill, insets 0", "[]", "[top][top][grow]"));
+		panel_3.setLayout(new MigLayout("insets 0, gap rel 0", "[]", "[top][top][grow]"));
 		
 		JButton btnUp = new JButton("");
 		btnUp.setIcon(Builder.getIcon("1uparrow.png", 16));
@@ -1297,6 +1311,17 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		{
 			formTypeChanged();
 		}
+		else if (evt.getActionCommand().equals("DeleteFormDefinitions"))
+		{
+			deleteFormDefinitions();
+		}
+	}
+	
+	private void deleteFormDefinitions()
+	{
+		DeleteODKDefinitionsEvent event = new DeleteODKDefinitionsEvent();
+		event.dispatch();
+		
 	}
 	
 	private void formTypeChanged()
@@ -1569,7 +1594,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		}
 		
 	}
-
 }
 
 

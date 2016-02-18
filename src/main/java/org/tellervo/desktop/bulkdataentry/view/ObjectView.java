@@ -37,6 +37,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.bulkdataentry.control.DeleteODKDefinitionsEvent;
+import org.tellervo.desktop.bulkdataentry.control.DeleteODKInstancesEvent;
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
@@ -83,7 +84,6 @@ public class ObjectView extends AbstractBulkImportView{
 	
 	private JButton browseGPX;
 	private JButton browseODK;
-	private JButton deleteODKDefinitions;
 	
 	public ObjectView(ObjectModel argModel){
 		super(argModel);
@@ -242,7 +242,7 @@ public class ObjectView extends AbstractBulkImportView{
 	}*/
 	
 	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
-				JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
+				JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances){
 		/*Box box = Box.createHorizontalBox();
 		box.add(argAddRowButton);
 		box.add(argDeleteRowButton);
@@ -264,6 +264,7 @@ public class ObjectView extends AbstractBulkImportView{
 		 toolbar.add(argCopyRow);
 		 toolbar.add(argPopulateFromDB);
 		 toolbar.add(argPopulateFromGeonames);
+		 toolbar.add(argDeleteODKInstances);
 		
 			browseODK = new JButton("");
 			browseODK.setIcon(Builder.getIcon("odk-logo.png", 22));
@@ -276,11 +277,11 @@ public class ObjectView extends AbstractBulkImportView{
 		browseGPX.setIcon(Builder.getIcon("satellite.png", 22));
 		browseGPX.setToolTipText(I18n.getText("bulkimport.browseGPXFile"));
 		toolbar.add(browseGPX);
-		
-		deleteODKDefinitions = new JButton("Delete ODK Definitions");
-		toolbar.add(deleteODKDefinitions);
-		
-		
+				
+		btnDeleteODKInstances = new JButton("");
+		btnDeleteODKInstances.setIcon(Builder.getIcon("odk-delete.png", 22));
+		btnDeleteODKInstances.setToolTipText("Delete ODK form data from server");
+		toolbar.add(btnDeleteODKInstances);
 		
 		toolbar.add(argShowHideColumnButton);
 			
@@ -318,17 +319,7 @@ public class ObjectView extends AbstractBulkImportView{
 				event.dispatch();
 			}
 		});
-		
-		deleteODKDefinitions.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				DeleteODKDefinitionsEvent event = new DeleteODKDefinitionsEvent();
-				event.dispatch();
 				
-			}
-			
-		});
 	}
 
 	@Override

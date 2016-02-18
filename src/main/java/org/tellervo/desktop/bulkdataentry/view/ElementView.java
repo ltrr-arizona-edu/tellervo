@@ -38,6 +38,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.bulkdataentry.control.ColumnChooserController;
 import org.tellervo.desktop.bulkdataentry.control.ColumnsModifiedEvent;
+import org.tellervo.desktop.bulkdataentry.control.DeleteODKInstancesEvent;
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
@@ -254,7 +255,7 @@ public class ElementView extends AbstractBulkImportView{
 
 	@Override
 	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
+			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances){
 
 
 		JToolBar toolbar = new JToolBar();
@@ -268,6 +269,7 @@ public class ElementView extends AbstractBulkImportView{
 		toolbar.add(argCopyRowButton);
 		toolbar.add(argPopulateFromDB);
 		toolbar.add(argPopulateFromGeonames);
+		 toolbar.add(argDeleteODKInstances);
 
 		quickFill = new JButton();
 		quickFill.setIcon(Builder.getIcon("quickfill.png", 22));
@@ -313,7 +315,7 @@ public class ElementView extends AbstractBulkImportView{
 
 			}
 		});
-
+		
 		browseODK.addActionListener(new ActionListener() {
 
 			@Override

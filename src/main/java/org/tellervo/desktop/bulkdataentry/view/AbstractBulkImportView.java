@@ -53,6 +53,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.AddRowEvent;
 import org.tellervo.desktop.bulkdataentry.control.CopyRowEvent;
 import org.tellervo.desktop.bulkdataentry.control.CopySelectedRowsEvent;
+import org.tellervo.desktop.bulkdataentry.control.DeleteODKInstancesEvent;
 import org.tellervo.desktop.bulkdataentry.control.DeleteRowEvent;
 import org.tellervo.desktop.bulkdataentry.control.DisplayColumnChooserEvent;
 import org.tellervo.desktop.bulkdataentry.control.RemoveSelectedEvent;
@@ -87,7 +88,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 	protected JButton btnCopy;
 	protected JButton btnPaste;
 	protected JButton btnPasteAppend;
-	
+	protected JButton btnDeleteODKInstances;
+
 	protected JPopupMenu tablePopupMenu;
 	private JMenuItem addrow;
 	private JMenuItem duplicateRow;
@@ -123,6 +125,9 @@ public abstract class AbstractBulkImportView extends JPanel{
 		btnPasteAppend.setIcon(Builder.getIcon("editpasteappend.png", 22));
 		btnPasteAppend.setToolTipText("Paste append to new rows");
 
+		btnDeleteODKInstances = new JButton("");
+		btnDeleteODKInstances.setIcon(Builder.getIcon("odk-delete.png", 22));
+		btnDeleteODKInstances.setToolTipText("Delete ODK form data from server");
 		
 		addRow = new JButton();
 		copyRow = new JButton();
@@ -141,7 +146,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		setLayout(new BorderLayout());
 		
 	
-		add(setupToolbar(btnCopy, btnPaste, btnPasteAppend, addRow, removeSelected, copyRow, showHideColumns, populateFromDB, populateFromGeonames), "North");
+		add(setupToolbar(btnCopy, btnPaste, btnPasteAppend, addRow, removeSelected, copyRow, showHideColumns, populateFromDB, populateFromGeonames, btnDeleteODKInstances), "North");
 		
 		//add(setupToolbar(showHideColumns, selectAll, selectNone), "West");
 
@@ -269,6 +274,17 @@ public abstract class AbstractBulkImportView extends JPanel{
 				populateFromGeonames();
 				
 			}
+		});
+		
+		btnDeleteODKInstances.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				DeleteODKInstancesEvent event = new DeleteODKInstancesEvent();
+				event.dispatch();
+				
+			}
+			
 		});
 		
 		table.addMouseListener(new MouseListener(){
@@ -488,7 +504,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 	}
 	
 	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
+			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances){
 		
 		 JToolBar toolbar = new JToolBar();
 		 
@@ -501,6 +517,9 @@ public abstract class AbstractBulkImportView extends JPanel{
 		 toolbar.add(argShowHideColumnButton);
 		 toolbar.add(argPopulateFromDB);
 		 toolbar.add(argPopulateFromGeonames);
+		 toolbar.add(argDeleteODKInstances);
+
+		 
 		 
 		 return toolbar;
 		/*

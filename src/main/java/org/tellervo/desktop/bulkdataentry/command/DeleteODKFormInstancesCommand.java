@@ -40,8 +40,8 @@ import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 
-public class DeleteODKFormDefinitionsCommand implements ICommand {
-	private static final Logger log = LoggerFactory.getLogger(DeleteODKFormDefinitionsCommand.class);
+public class DeleteODKFormInstancesCommand implements ICommand {
+	private static final Logger log = LoggerFactory.getLogger(DeleteODKFormInstancesCommand.class);
 
 	@Override
 	public void execute(MVCEvent argEvent) {
@@ -56,14 +56,14 @@ public class DeleteODKFormDefinitionsCommand implements ICommand {
 		}
 		
 		int r = JOptionPane.showConfirmDialog(BulkImportModel.getInstance().getMainView(), 
-				"Are you sure you want to delete all your ODK form definitions from the server?",
+				"Are you sure you want to delete all your ODK form data from the server?\nAll files that have not already been imported into the Tellervo database\nwill be lost.",
 				"Are you sure", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 		if(r!=JOptionPane.YES_OPTION) return;
 		
 
 		URI url;
 		try {
-			url = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/deleteFormDefinitions.php");
+			url = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/deleteFormInstances.php");
 
 			HttpClient client = new ContentEncodingHttpClient();
 			HttpUriRequest req;

@@ -48,13 +48,13 @@ elseif( $_SERVER['REQUEST_METHOD']==="POST")
 		foreach(libxml_get_errors() as $error){
 			$errormsgs.="\t".$error->message;
 		}
-		file_put_contents('/tmp/headers.txt', "XML parse errors: ".$errormsgs."\n", FILE_APPEND);
+	//	file_put_contents('/tmp/headers.txt', "XML parse errors: ".$errormsgs."\n", FILE_APPEND);
 		printError("Unable to parse ODK XML file.\n".$errormsgs, "400 XML error");
 	}
 	$instanceName = $xml->meta->instanceName or printError("Unable to parse ODK XML file", "400 XML parse failed");
 
-  	file_put_contents('/tmp/headers.txt', "\n\nInstance name: ".$instanceName."\n", FILE_APPEND);
-  	file_put_contents('/tmp/headers.txt', "\n".$xml->asXML()."\n", FILE_APPEND);
+  	//file_put_contents('/tmp/headers.txt', "\n\nInstance name: ".$instanceName."\n", FILE_APPEND);
+  	//file_put_contents('/tmp/headers.txt', "\n".$xml->asXML()."\n", FILE_APPEND);
 	
 	
 	foreach( $_FILES as $file)
@@ -104,15 +104,15 @@ elseif( $_SERVER['REQUEST_METHOD']==="POST")
 		
 
 		$arraycontents = print_r($file, true);
-  		file_put_contents('/tmp/headers.txt', $arraycontents."\n", FILE_APPEND);
+  		//file_put_contents('/tmp/headers.txt', $arraycontents."\n", FILE_APPEND);
 
 			
   		//file_put_contents('/tmp/headers.txt', "Copying file: ".$file['name']." to temp folder\n", FILE_APPEND);
 		//move_uploaded_file( $file['tmp_name'], $mediastorefolder.$file['name']) or printError("Failed to copy media file", "400 Bad request");
 		$currentname = $file['tmp_name'];
 		$storedname = $mediaStoreFolder.$odkauth->getUserID()."/".$file['name']; 
-		file_put_contents('/tmp/headers.txt', "Current filename : ".$currentname."\n", FILE_APPEND);
-		file_put_contents('/tmp/headers.txt', "Stored filename : ".$storedname."\n", FILE_APPEND);
+		//file_put_contents('/tmp/headers.txt', "Current filename : ".$currentname."\n", FILE_APPEND);
+		//file_put_contents('/tmp/headers.txt', "Stored filename : ".$storedname."\n", FILE_APPEND);
 
 		// Fail if media file already exists
 		/*if (file_exists($storedname))

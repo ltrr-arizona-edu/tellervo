@@ -346,7 +346,7 @@ public class SampleView  extends AbstractBulkImportView{
 
 	@Override
 	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames){
+			JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances){
 	
 		 JToolBar toolbar = new JToolBar();
 		 
@@ -359,6 +359,8 @@ public class SampleView  extends AbstractBulkImportView{
 		 toolbar.add(argAddRowButton);
 		 toolbar.add(argDeleteRowButton);
 		 toolbar.add(argCopyRow);
+		 toolbar.add(argDeleteODKInstances);
+
 		 
 		 quickFill = new JButton();
 		 quickFill.setIcon(Builder.getIcon("quickfill.png", 22));

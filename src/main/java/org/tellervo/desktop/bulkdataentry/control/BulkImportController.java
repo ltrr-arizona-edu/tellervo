@@ -24,6 +24,7 @@ import org.tellervo.desktop.bulkdataentry.command.AddRowCommand;
 import org.tellervo.desktop.bulkdataentry.command.CopyRowCommand;
 import org.tellervo.desktop.bulkdataentry.command.CopySelectedRowsCommand;
 import org.tellervo.desktop.bulkdataentry.command.DeleteODKFormDefinitionsCommand;
+import org.tellervo.desktop.bulkdataentry.command.DeleteODKFormInstancesCommand;
 import org.tellervo.desktop.bulkdataentry.command.DeleteRowCommand;
 import org.tellervo.desktop.bulkdataentry.command.GPXBrowseCommand;
 import org.tellervo.desktop.bulkdataentry.command.HideColumnWindowCommand;
@@ -97,7 +98,8 @@ public class BulkImportController extends FrontController {
 		registerCommand(POPULATE_FROM_GEONAMES, PopulateFromGeonamesCommand.class);
 		registerCommand(POPULATE_FROM_ODK_FILE, PopulateFromODKCommand.class);
 		registerCommand(DELETE_ODK_DEFINITIONS, DeleteODKFormDefinitionsCommand.class);
-		
+		registerCommand(DELETE_ODK_INSTANCES, DeleteODKFormInstancesCommand.class);
+
 
 	}
 	
