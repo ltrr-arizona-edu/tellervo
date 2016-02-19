@@ -185,7 +185,7 @@ public class ExportCommand implements ICommand {
 		}
 		
 		INamingConvention naming = event.naming;
-		if(naming instanceof NumericalNamingConvention)
+		/*if(naming instanceof NumericalNamingConvention)
 		{
 			if(labCodeList.size() != projList.size()){
 				log.warn("Lab code list isn't the same size as project list");
@@ -193,7 +193,7 @@ public class ExportCommand implements ICommand {
 						"Using hierarchical naming convention instead.");
 				naming = new HierarchicalNamingConvention();
 			}
-		}
+		}*/
 		
 		ConvertModel cmodel = new ConvertModel(event.model.getNodes());
 		cmodel.setTridasProjects(projList.toArray(new TridasProject[0]));

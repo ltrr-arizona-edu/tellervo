@@ -555,6 +555,7 @@ class odkFormDefinitionParameters extends odkFormDefinitionEntity implements IPa
 		$this->setName($this->xmlRequestDom->documentElement->getAttribute("name"));
 		$this->setOwnerID($this->xmlRequestDom->documentElement->getAttribute("ownerid"));
 		$this->setID($this->xmlRequestDom->documentElement->getAttribute("id"));
+		$this->setIsPublic($this->xmlRequestDom->documentElement->getAttribute("ispublic"));
 		$this->setDefinition($this->innerXML($this->xmlRequestDom->documentElement));
 
 

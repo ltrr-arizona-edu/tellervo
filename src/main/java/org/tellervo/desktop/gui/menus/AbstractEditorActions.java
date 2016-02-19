@@ -107,7 +107,7 @@ public abstract class AbstractEditorActions{
 	public Action fileNewAction;
 	public Action fileOpenMultiAction;
 	public Action fileBulkDataEntryAction;
-	public Action fileDesignODKFormAction;
+	
 	public Action fileExitAction;
 
 	// Editor menu actions
@@ -204,7 +204,6 @@ public abstract class AbstractEditorActions{
 		fileExportDataAction = new FileExportDataAction(editor);
 		//fileExportMapAction = new FileExportMapAction(editor);
 		fileBulkDataEntryAction = new FileBulkDataEntryAction(BulkImportController.DISPLAY_BULK_IMPORT);
-		fileDesignODKFormAction = new FileDesignODKFormAction(editor);
 		fileSaveAction = new FileSaveAction(editor);
 
 

@@ -38,6 +38,8 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	private JMenuItem miExportData;
 	private JMenuItem miBulkDataEntry;
 	private JMenuItem miDesignODKForm;
+	private JMenuItem miDeleteODKDefinitions;
+	private JMenuItem miDeleteODKInstances;
 
 	private Window parent;
 
@@ -106,8 +108,17 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		miBulkDataEntry = new JMenuItem(actions.fileBulkDataEntryAction);
 		mnFile.add(miBulkDataEntry);
 
+		JMenu mnODK = new JMenu("Field data collection");
+		mnODK.setIcon(Builder.getIcon("odk-logo.png", 22));
+		mnFile.add(mnODK);
+		
 		miDesignODKForm = new JMenuItem(actions.fileDesignODKFormAction);
-		mnFile.add(miDesignODKForm);
+		mnODK.add(miDesignODKForm);
+		mnODK.addSeparator();
+		miDeleteODKDefinitions = new JMenuItem(actions.fileDeleteODKDefinitionsAction);
+		mnODK.add(miDeleteODKDefinitions);
+		miDeleteODKInstances = new JMenuItem(actions.fileDeleteODKInstancesAction);
+		mnODK.add(miDeleteODKInstances);
 		
 		mnFile.addSeparator();
 

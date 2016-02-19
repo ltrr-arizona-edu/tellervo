@@ -26,6 +26,8 @@
 			<xs:enumeration value="curation"/>
 			<xs:enumeration value="loan"/>
 			<xs:enumeration value="tag"/>
+			<xs:enumeration value="odkFormDefinition"/>
+			<xs:enumeration value="odkFormInstance"/>
 		</xs:restriction>
 	</xs:simpleType>
 	

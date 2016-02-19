@@ -4,6 +4,9 @@ import javax.swing.Action;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.gui.menus.actions.FileDeleteODKDefinitionsAction;
+import org.tellervo.desktop.gui.menus.actions.FileDeleteODKInstancesAction;
+import org.tellervo.desktop.gui.menus.actions.FileDesignODKFormAction;
 import org.tellervo.desktop.gui.menus.actions.FileExportMapAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogoffAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogonAction;
@@ -44,6 +47,10 @@ public class FullEditorActions extends AbstractEditorActions {
 	public Action filePrintAction;
 	public Action fileLogoffAction;
 	public Action fileLogonAction;
+	public Action fileDesignODKFormAction;
+	public Action fileDeleteODKDefinitionsAction;
+	public Action fileDeleteODKInstancesAction;
+	
 	
 	public Action graphCreateFileHistoryPlotAction;
 	
@@ -91,6 +98,10 @@ public class FullEditorActions extends AbstractEditorActions {
 		filePrintAction = new FilePrintAction(editor);
 		fileLogoffAction = new FileLogoffAction();
 		fileLogonAction = new FileLogonAction();
+		fileDesignODKFormAction = new FileDesignODKFormAction(editor);
+		fileDeleteODKDefinitionsAction = new FileDeleteODKDefinitionsAction();
+		fileDeleteODKInstancesAction = new FileDeleteODKInstancesAction();
+
 		
 		graphCreateFileHistoryPlotAction = new GraphCreateFileHistoryPlotAction(editor);
 		

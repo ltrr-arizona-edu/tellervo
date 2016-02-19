@@ -276,6 +276,14 @@ public class ElementListTableModel extends AbstractTableModel {
 	
     public Class<?> getColumnClass(int c) {
     	// reconciled is true/false
+    	if(c== 9 || c==5)
+    	{
+    		return Integer.class;
+    	}
+    	if(c==7 || c==8)
+    	{
+    		return SafeIntYear.class;
+    	}
     	if(c == 10){
     		return Boolean.class;
     	}

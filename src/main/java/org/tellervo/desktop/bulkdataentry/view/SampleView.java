@@ -79,26 +79,23 @@ import com.dmurph.mvc.model.MVCArrayList;
 import com.michaelbaranov.microba.calendar.DatePicker;
 import com.michaelbaranov.microba.calendar.DatePickerCellEditor;
 
-
-
 /**
  * @author Daniel
  *
  */
 @SuppressWarnings("serial")
-public class SampleView  extends AbstractBulkImportView{
+public class SampleView extends AbstractBulkImportView {
 
 	private JButton printBarcodes;
 	private JButton quickFill;
-	private JButton browseODK;
 
 	private ElementModel elementModel;
 
-	
 	public SampleView(SampleModel argModel, ElementModel elementModel) {
 		super(argModel);
 		this.elementModel = elementModel;
-		table.getColumnModel().getColumn(1).setCellRenderer(new BooleanCellRenderer(true));
+		table.getColumnModel().getColumn(1)
+				.setCellRenderer(new BooleanCellRenderer(true));
 
 	}
 
@@ -108,169 +105,166 @@ public class SampleView  extends AbstractBulkImportView{
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void setupTableCells(JTable argTable) {
-		
+
 		argTable.setDefaultEditor(String.class, new StringCellEditor());
 
-		argTable.setDefaultEditor(WSISampleTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("sampleTypeDictionary")));
-		argTable.setDefaultRenderer(WSISampleTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
-		
-		argTable.setDefaultEditor(TridasFileList.class, new TridasFileListEditor(new JTextField()));
-		argTable.setDefaultRenderer(TridasFileList.class, new TridasFileArrayRenderer());
+		argTable.setDefaultEditor(WSISampleTypeDictionary.class,
+				new ComboBoxCellEditor(new ControlledVocDictionaryComboBox(
+						"sampleTypeDictionary")));
+		argTable.setDefaultRenderer(WSISampleTypeDictionary.class,
+				new ControlledVocRenderer(Behavior.NORMAL_ONLY));
 
-		/*MVCJComboBox<TridasElement> cboElement = new MVCJComboBox<TridasElement>(null, new Comparator<TridasElement>(){
-			public int compare(TridasElement argO1, TridasElement argO2) {
-				if(argO1 == null){
-					return -1;
-				}
-				if(argO2 == null){
-					return 1;
-				}
-				return argO1.getTitle().compareToIgnoreCase(argO2.getTitle());
-			}
-		});*/
+		argTable.setDefaultEditor(TridasFileList.class,
+				new TridasFileListEditor(new JTextField()));
+		argTable.setDefaultRenderer(TridasFileList.class,
+				new TridasFileArrayRenderer());
+
+		/*
+		 * MVCJComboBox<TridasElement> cboElement = new
+		 * MVCJComboBox<TridasElement>(null, new Comparator<TridasElement>(){
+		 * public int compare(TridasElement argO1, TridasElement argO2) {
+		 * if(argO1 == null){ return -1; } if(argO2 == null){ return 1; } return
+		 * argO1.getTitle().compareToIgnoreCase(argO2.getTitle()); } });
+		 */
 		Comparator comparator = new NumberThenStringComparator();
-		MVCJComboBox<TridasElementOrPlaceholder> cboElement = new MVCJComboBox<TridasElementOrPlaceholder>(null, comparator);
+		MVCJComboBox<TridasElementOrPlaceholder> cboElement = new MVCJComboBox<TridasElementOrPlaceholder>(
+				null, comparator);
 		cboElement.setRenderer(new TridasElementRenderer());
 		cboElement.setKeySelectionManager(new DynamicKeySelectionManager() {
 			@Override
 			public String convertToString(Object argO) {
-				if(argO == null){
+				if (argO == null) {
 					return "";
 				}
-				return ((TridasElement)argO).getTitle();
+				return ((TridasElement) argO).getTitle();
 			}
 		});
 		cboElement.setEditable(true);
-		
+
 		// specific editor for this, options have to be unique per column
-		argTable.setDefaultEditor(TridasElementOrPlaceholder.class, new ChosenElementEditor(cboElement));
-		argTable.setDefaultRenderer(TridasElement.class, new TridasElementRenderer());
-		
-		argTable.setDefaultRenderer(TridasElementOrPlaceholder.class, new DefaultTableCellRenderer(){
-			/**
-			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
-			 */
-			@Override
-			protected void setValue(Object argValue) {
-				if(argValue == null){
-					super.setValue(argValue);
-					return;
-				}
-				
-				TridasElementOrPlaceholder element = null;
-				if(argValue instanceof TridasElementOrPlaceholder)
-				{
-					element = (TridasElementOrPlaceholder) argValue;
-				}
-				else if (argValue instanceof TridasElement)
-				{
-					element = new TridasElementOrPlaceholder((TridasElement)argValue);;
-				}
-				else if (argValue instanceof String)
-				{
-					element = new TridasElementOrPlaceholder((String)argValue);
-				}
+		argTable.setDefaultEditor(TridasElementOrPlaceholder.class,
+				new ChosenElementEditor(cboElement));
+		argTable.setDefaultRenderer(TridasElement.class,
+				new TridasElementRenderer());
 
-				super.setValue(element.getCode());
-				if(element.getTridasElement()==null) {
-					super.setForeground(Color.GRAY);
-				}
-				else
-				{
-					super.setForeground(Color.BLACK);
-				}
+		argTable.setDefaultRenderer(TridasElementOrPlaceholder.class,
+				new DefaultTableCellRenderer() {
+					/**
+					 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
+					 */
+					@Override
+					protected void setValue(Object argValue) {
+						if (argValue == null) {
+							super.setValue(argValue);
+							return;
+						}
 
-			}
-		});
-		
-		
-		
-		
-		DynamicJComboBox<WSIBox> cboBox = new DynamicJComboBox<WSIBox>(Dictionary.getMutableDictionary("boxDictionary"), 
-			new Comparator<WSIBox>() {
-			/**
-			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-			 */
-			@Override
-			public int compare(WSIBox argO1, WSIBox argO2) {
-				if(argO1 == null){
-					return -1;
-				}
-				if(argO2 == null){
-					return 1;
-				}
-				return argO1.getTitle().compareToIgnoreCase(argO2.getTitle());
-			}
-		});
+						TridasElementOrPlaceholder element = null;
+						if (argValue instanceof TridasElementOrPlaceholder) {
+							element = (TridasElementOrPlaceholder) argValue;
+						} else if (argValue instanceof TridasElement) {
+							element = new TridasElementOrPlaceholder(
+									(TridasElement) argValue);
+							;
+						} else if (argValue instanceof String) {
+							element = new TridasElementOrPlaceholder(
+									(String) argValue);
+						}
+
+						super.setValue(element.getCode());
+						if (element.getTridasElement() == null) {
+							super.setForeground(Color.GRAY);
+						} else {
+							super.setForeground(Color.BLACK);
+						}
+
+					}
+				});
+
+		DynamicJComboBox<WSIBox> cboBox = new DynamicJComboBox<WSIBox>(
+				Dictionary.getMutableDictionary("boxDictionary"),
+				new Comparator<WSIBox>() {
+					/**
+					 * @see java.util.Comparator#compare(java.lang.Object,
+					 *      java.lang.Object)
+					 */
+					@Override
+					public int compare(WSIBox argO1, WSIBox argO2) {
+						if (argO1 == null) {
+							return -1;
+						}
+						if (argO2 == null) {
+							return 1;
+						}
+						return argO1.getTitle().compareToIgnoreCase(
+								argO2.getTitle());
+					}
+				});
 		cboBox.setRenderer(new WSIBoxRenderer());
 		cboBox.setKeySelectionManager(new DynamicKeySelectionManager() {
-			
+
 			@Override
 			public String convertToString(Object argO) {
-				if(argO == null){
+				if (argO == null) {
 					return "";
 				}
-				return ((WSIBox)argO).getTitle();
+				return ((WSIBox) argO).getTitle();
 			}
 		});
-		
-		argTable.setDefaultEditor(WSIBoxDictionary.class, new ComboBoxCellEditor(cboBox));
-		argTable.setDefaultRenderer(WSIBoxDictionary.class, new WSIBoxRenderer());
-		
-		
-		/*MVCJComboBox<TridasObjectEx> obj = new MVCJComboBox<TridasObjectEx>(App.tridasObjects.getMutableObjectList(),
-				new Comparator<TridasObjectEx>() {
-			public int compare(TridasObjectEx argO1, TridasObjectEx argO2) {
-				if(argO1 == null){
-					return -1;
-				}
-				if(argO2 == null){
-					return 1;
-				}
-				return argO1.getLabCode().compareToIgnoreCase(argO2.getLabCode());
-			}
-		});
-		obj.setKeySelectionManager(new DynamicKeySelectionManager() {
-			@Override
-			public String convertToString(Object argO) {
-				if(argO == null){
-					return "";
-				}
-				TridasObjectEx o = (TridasObjectEx) argO;
-				return o.getLabCode();
-			}
-		});
-		
-		obj.setRenderer(new TridasObjectExRenderer());
-	
-		
-		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(obj));
-		argTable.setDefaultRenderer(TridasObject.class, new TridasObjectExRenderer());*/
-		
-		
-		MVCArrayList<TridasObjectEx> objlist = App.tridasObjects.getMutableObjectList();
+
+		argTable.setDefaultEditor(WSIBoxDictionary.class,
+				new ComboBoxCellEditor(cboBox));
+		argTable.setDefaultRenderer(WSIBoxDictionary.class,
+				new WSIBoxRenderer());
+
+		/*
+		 * MVCJComboBox<TridasObjectEx> obj = new
+		 * MVCJComboBox<TridasObjectEx>(App
+		 * .tridasObjects.getMutableObjectList(), new
+		 * Comparator<TridasObjectEx>() { public int compare(TridasObjectEx
+		 * argO1, TridasObjectEx argO2) { if(argO1 == null){ return -1; }
+		 * if(argO2 == null){ return 1; } return
+		 * argO1.getLabCode().compareToIgnoreCase(argO2.getLabCode()); } });
+		 * obj.setKeySelectionManager(new DynamicKeySelectionManager() {
+		 * 
+		 * @Override public String convertToString(Object argO) { if(argO ==
+		 * null){ return ""; } TridasObjectEx o = (TridasObjectEx) argO; return
+		 * o.getLabCode(); } });
+		 * 
+		 * obj.setRenderer(new TridasObjectExRenderer());
+		 * 
+		 * 
+		 * argTable.setDefaultEditor(TridasObject.class, new
+		 * ComboBoxCellEditor(obj));
+		 * argTable.setDefaultRenderer(TridasObject.class, new
+		 * TridasObjectExRenderer());
+		 */
+
+		MVCArrayList<TridasObjectEx> objlist = App.tridasObjects
+				.getMutableObjectList();
 		MVCArrayList<TridasObjectOrPlaceholder> toph = new MVCArrayList<TridasObjectOrPlaceholder>();
-		for(TridasObjectEx o : objlist)
-		{
+		for (TridasObjectEx o : objlist) {
 			toph.add(new TridasObjectOrPlaceholder(o));
 		}
-		
-		DynamicJComboBox<TridasObjectOrPlaceholder> cboObject = new DynamicJComboBox<TridasObjectOrPlaceholder>(toph,
-				new Comparator<TridasObjectOrPlaceholder>() {
-			public int compare(TridasObjectOrPlaceholder argO1, TridasObjectOrPlaceholder argO2) {
-				if(argO1 == null){
-					return -1;
-				}
-				if(argO2 == null){
-					return 1;
-				}
-				return argO1.getCode().compareToIgnoreCase(argO2.getCode());
-			}
-		});
+
+		DynamicJComboBox<TridasObjectOrPlaceholder> cboObject = new DynamicJComboBox<TridasObjectOrPlaceholder>(
+				toph, new Comparator<TridasObjectOrPlaceholder>() {
+					public int compare(TridasObjectOrPlaceholder argO1,
+							TridasObjectOrPlaceholder argO2) {
+						if (argO1 == null) {
+							return -1;
+						}
+						if (argO2 == null) {
+							return 1;
+						}
+						return argO1.getCode().compareToIgnoreCase(
+								argO2.getCode());
+					}
+				});
 		cboObject.setKeySelectionManager(new DynamicKeySelectionManager() {
 			@Override
 			public String convertToString(Object argO) {
-				if(argO == null){
+				if (argO == null) {
 					return "";
 				}
 				TridasObjectOrPlaceholder o = (TridasObjectOrPlaceholder) argO;
@@ -279,170 +273,157 @@ public class SampleView  extends AbstractBulkImportView{
 		});
 
 		cboObject.setRenderer(new TridasObjectExRenderer());
-		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(cboObject));
-		cboObject.setEditable(true);	
-		argTable.setDefaultEditor(TridasObjectOrPlaceholder.class, new ComboBoxCellEditor(cboObject));
+		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(
+				cboObject));
+		cboObject.setEditable(true);
+		argTable.setDefaultEditor(TridasObjectOrPlaceholder.class,
+				new ComboBoxCellEditor(cboObject));
 
-		argTable.setDefaultRenderer(TridasObject.class, new DefaultTableCellRenderer(){
-			/**
-			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
-			 */
-			@Override
-			protected void setValue(Object argValue) {
-				if(argValue == null){
-					super.setValue(argValue);
-					return;
-				}
-				TridasObjectEx object = (TridasObjectEx) argValue;
-				super.setValue(object.getLabCode());
-			}
-		});
-		
-		argTable.setDefaultRenderer(TridasObjectOrPlaceholder.class, new DefaultTableCellRenderer(){
-			/**
-			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
-			 */
-			@Override
-			protected void setValue(Object argValue) {
-				if(argValue == null){
-					super.setValue(argValue);
-					return;
-				}
-				
-				TridasObjectOrPlaceholder object = null;
-				if(argValue instanceof TridasObjectOrPlaceholder)
-				{
-					object = (TridasObjectOrPlaceholder) argValue;
-				}
-				else if (argValue instanceof TridasObjectEx)
-				{
-					object = new TridasObjectOrPlaceholder((TridasObjectEx)argValue);;
-				}
-				else if (argValue instanceof String)
-				{
-					object = new TridasObjectOrPlaceholder((String)argValue);
-				}
+		argTable.setDefaultRenderer(TridasObject.class,
+				new DefaultTableCellRenderer() {
+					/**
+					 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
+					 */
+					@Override
+					protected void setValue(Object argValue) {
+						if (argValue == null) {
+							super.setValue(argValue);
+							return;
+						}
+						TridasObjectEx object = (TridasObjectEx) argValue;
+						super.setValue(object.getLabCode());
+					}
+				});
 
-				super.setValue(object.getCode());
-				if(object.getTridasObject()==null) {
-					super.setForeground(Color.GRAY);
-				}
-				else
-				{
-					super.setForeground(Color.BLACK);
-				}
+		argTable.setDefaultRenderer(TridasObjectOrPlaceholder.class,
+				new DefaultTableCellRenderer() {
+					/**
+					 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
+					 */
+					@Override
+					protected void setValue(Object argValue) {
+						if (argValue == null) {
+							super.setValue(argValue);
+							return;
+						}
 
-			}
-		});
-		
-		
-		//DatePicker datePicker = new DatePicker();
-		//datePicker.setFocusable(false);
-		//argTable.setDefaultEditor(Date.class, new DateEditor(datePicker));
-		argTable.setDefaultEditor(Date.class, new NattyDateEditor(new JTextField()));
+						TridasObjectOrPlaceholder object = null;
+						if (argValue instanceof TridasObjectOrPlaceholder) {
+							object = (TridasObjectOrPlaceholder) argValue;
+						} else if (argValue instanceof TridasObjectEx) {
+							object = new TridasObjectOrPlaceholder(
+									(TridasObjectEx) argValue);
+							;
+						} else if (argValue instanceof String) {
+							object = new TridasObjectOrPlaceholder(
+									(String) argValue);
+						}
+
+						super.setValue(object.getCode());
+						if (object.getTridasObject() == null) {
+							super.setForeground(Color.GRAY);
+						} else {
+							super.setForeground(Color.BLACK);
+						}
+
+					}
+				});
+
+		// DatePicker datePicker = new DatePicker();
+		// datePicker.setFocusable(false);
+		// argTable.setDefaultEditor(Date.class, new DateEditor(datePicker));
+		argTable.setDefaultEditor(Date.class, new NattyDateEditor(
+				new JTextField()));
 		argTable.setDefaultRenderer(Date.class, new TridasDatingCellRenderer());
 
 	}
 
 	@Override
-	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances){
-	
-		 JToolBar toolbar = new JToolBar();
-		 
-		 
-		 toolbar.add(argCopyButton);
-		 toolbar.add(argPasteButton);
-		 toolbar.add(argPasteAppendButton);
-		 toolbar.add(selectAll);
-		 toolbar.add(selectNone);
-		 toolbar.add(argAddRowButton);
-		 toolbar.add(argDeleteRowButton);
-		 toolbar.add(argCopyRow);
-		 toolbar.add(argDeleteODKInstances);
+	protected JToolBar setupToolbar(JButton argCopyButton,
+			JButton argPasteButton, JButton argPasteAppendButton,
+			JButton argAddRowButton, JButton argDeleteRowButton,
+			JButton argCopyRow, JButton argShowHideColumnButton,
+			JButton argPopulateFromDB, JButton argPopulateFromGeonames,
+			JButton argDeleteODKInstances, JButton argODKImport) {
 
-		 
-		 quickFill = new JButton();
-		 quickFill.setIcon(Builder.getIcon("quickfill.png", 22));
-		 quickFill.setToolTipText("Open sample quick fill dialog");
-		 toolbar.add(quickFill);
-		 
-			browseODK = new JButton("");
-			browseODK.setIcon(Builder.getIcon("odk-logo.png", 22));
-			browseODK.setToolTipText("Browse for ODK file");
-			toolbar.add(browseODK);
-		 
-			printBarcodes = new JButton();
-			printBarcodes.setIcon(Builder.getIcon("barcode.png", 22));
-			printBarcodes.setToolTipText(I18n.getText("bulkimport.printBarcodes"));
-			toolbar.add(printBarcodes);
-		 toolbar.add(argShowHideColumnButton);
-		
-		
+		JToolBar toolbar = new JToolBar();
 
-		
+		toolbar.add(argCopyButton);
+		toolbar.add(argPasteButton);
+		toolbar.add(argPasteAppendButton);
+		toolbar.add(selectAll);
+		toolbar.add(selectNone);
+		toolbar.add(argAddRowButton);
+		toolbar.add(argDeleteRowButton);
+		toolbar.add(argCopyRow);
+
+		toolbar.add(argODKImport);
+		toolbar.add(argDeleteODKInstances);
+
+		quickFill = new JButton();
+		quickFill.setIcon(Builder.getIcon("quickfill.png", 22));
+		quickFill.setToolTipText("Open sample quick fill dialog");
+		toolbar.add(quickFill);
+
+		printBarcodes = new JButton();
+		printBarcodes.setIcon(Builder.getIcon("barcode.png", 22));
+		printBarcodes.setToolTipText(I18n.getText("bulkimport.printBarcodes"));
+		toolbar.add(printBarcodes);
+		toolbar.add(argShowHideColumnButton);
+
 		return toolbar;
 	}
-	
+
 	@Override
 	protected void addListeners() {
 		super.addListeners();
-		
+
 		printBarcodes.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				SampleModel model = BulkImportModel.getInstance().getSampleModel();
-				PrintSampleBarcodesEvent event = new PrintSampleBarcodesEvent(model);
+				SampleModel model = BulkImportModel.getInstance()
+						.getSampleModel();
+				PrintSampleBarcodesEvent event = new PrintSampleBarcodesEvent(
+						model);
 				event.dispatch();
 			}
 		});
-		
-		
+
 		final SampleView glue = this;
-		quickFill.addActionListener(new ActionListener(){
+		quickFill.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				QuickEntrySample dialog = new QuickEntrySample(glue, model, elementModel);
+				QuickEntrySample dialog = new QuickEntrySample(glue, model,
+						elementModel);
 				dialog.setVisible(true);
-				
-			}
-		});
-		
-		browseODK.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				ObjectModel omodel = BulkImportModel.getInstance().getObjectModel();
-				ElementModel emodel = BulkImportModel.getInstance().getElementModel();
-				SampleModel smodel = BulkImportModel.getInstance().getSampleModel();
-				PopulateFromODKFileEvent event = new PopulateFromODKFileEvent(omodel, emodel, smodel);
-				event.dispatch();
 			}
 		});
+
 	}
-	
-	
+
 	/**
 	 * @see org.tellervo.desktop.bulkdataentry.view.AbstractBulkImportView#importSelectedPressed()
 	 */
 	@Override
 	protected void importSelectedPressed() {
-		ImportSelectedEvent event = new ImportSelectedEvent(BulkImportController.IMPORT_SELECTED_SAMPLES);
+		ImportSelectedEvent event = new ImportSelectedEvent(
+				BulkImportController.IMPORT_SELECTED_SAMPLES);
 		event.dispatch();
 	}
-	
+
 	@Override
 	protected void populateFromDatabase() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected void populateFromGeonames() {
 		// Not relevant
-		
+
 	}
-	
+
 }

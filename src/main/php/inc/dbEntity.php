@@ -3377,6 +3377,7 @@ class odkFormDefinitionEntity extends dbEntity
 	public $name = NULL;
 	protected $ownerid = NULL;
 	protected $definition = NULL;
+	protected $ispublic = false;
 
 	
 	function __construct()
@@ -3399,6 +3400,26 @@ class odkFormDefinitionEntity extends dbEntity
 	{
 		$this->definition = $txt;
 	}
+	
+	function setIsPublic($bool)
+	{
+
+                $bool = dbhelper::formatBool($bool);
+
+                if($bool===TRUE)
+                {
+                        $this->ispublic = TRUE;
+                        return TRUE;
+                }
+                else if ($bool===FALSE)
+                {
+                        $this->ispublic = FALSE;
+                        return FALSE;
+                }
+
+                return NULL;
+
+	}
 
 	function getOwnerID()
 	{
@@ -3414,6 +3435,11 @@ class odkFormDefinitionEntity extends dbEntity
 	function getDefinition()
 	{
 		return $this->definition;
+	}
+
+	function getIsPublic()
+	{
+		return $this->ispublic;
 	}
 	
 }

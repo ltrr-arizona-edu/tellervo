@@ -26,6 +26,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.border.EtchedBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
@@ -37,6 +39,12 @@ import org.tellervo.desktop.io.control.ExportEvent;
 import org.tellervo.desktop.io.control.SaveEvent;
 import org.tellervo.desktop.io.model.ExportModel;
 import org.tellervo.desktop.io.model.ConvertModel.WriterObject;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.prefs.wrappers.ActionWrapper;
+import org.tellervo.desktop.prefs.wrappers.ComboByIndexWrapper;
+import org.tellervo.desktop.prefs.wrappers.FormatWrapper;
+import org.tellervo.desktop.prefs.wrappers.ItemWrapper;
+import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tridas.io.TridasIO;
@@ -46,7 +54,6 @@ import org.tridas.io.naming.HierarchicalNamingConvention;
 import org.tridas.io.naming.INamingConvention;
 import org.tridas.io.naming.NumericalNamingConvention;
 import org.tridas.io.naming.UUIDNamingConvention;
-
 
 import com.dmurph.mvc.model.MVCArrayList;
 
@@ -121,7 +128,6 @@ public class ExportView extends JFrame {
 		JSplitPane splitPane = new JSplitPane();
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		panelMain.add(splitPane);
-		splitPane.setResizeWeight(0.5);
 		splitPane.setOneTouchExpandable(true);
 		
 		JPanel panelSummary = new JPanel();
@@ -161,12 +167,17 @@ public class ExportView extends JFrame {
 		panelBasic.add(lblFormat, "cell 0 0");
 		
 		format = new JComboBox(TridasIO.getSupportedWritingFormats());
+		new FormatWrapper(format, PrefKey.EXPORT_FORMAT, TridasIO.getSupportedReadingFormats()[0], TridasIO.getSupportedReadingFormats());
+		
 		panelBasic.add(format, "cell 1 0 2 1");
 		
 		JLabel lblOutputFolder = new JLabel(I18n.getText("io.convert.lblOutput"));
 		panelBasic.add(lblOutputFolder, "cell 0 1");
 		
 		destFolder = new JTextField();
+		new TextComponentWrapper(destFolder, PrefKey.EXPORT_FOLDER, "");
+		
+		
 		panelBasic.add(destFolder, "cell 1 1");
 		
 		btnBrowse = new JButton(I18n.getText("io.convert.btnBrowse"));
@@ -186,15 +197,20 @@ public class ExportView extends JFrame {
 		panelAdv.add(lblGrouping, "cell 0 1");
 		
 		groupings = new JComboBox(groupingNames);
-		groupings.setModel(new DefaultComboBoxModel(new String[] {"Single packed file if possible", "Separate files for each series"}));
+		String[] groups = new String[] {"Single packed file if possible", "Separate files for each series"};
+		groupings.setModel(new DefaultComboBoxModel());
 		panelAdv.add(groupings, "cell 1 1");
+		new ComboByIndexWrapper(groupings, PrefKey.EXPORT_GROUPING, 0, groups);
+
 		
 		JLabel lblNaming = new JLabel(I18n.getText("io.convert.lblNaming"));
 		panelAdv.add(lblNaming, "cell 0 2");
 		
 		naming = new JComboBox(namings);
-		naming.setModel(new DefaultComboBoxModel(new String[] {"Labcodes", "Hierarchical", "UUID", "Tellervo hierarchical", "Labcodes with variable"}));
-		naming.setSelectedIndex(0);
+		String[] namingConventions = new String[] {"Labcodes", "Hierarchical", "UUID", "Tellervo hierarchical", "Labcodes with variable"};
+		naming.setModel(new DefaultComboBoxModel(namingConventions));
+		new ComboByIndexWrapper(naming, PrefKey.EXPORT_NAMING_CONVENTION, 4, namingConventions);
+		
 		panelAdv.add(naming, "cell 1 2");
 		
 		JLabel lblEncoding = new JLabel(I18n.getText("io.convert.lblEncoding"));
@@ -255,6 +271,30 @@ public class ExportView extends JFrame {
 			}
 		});
 		
+		destFolder.getDocument().addDocumentListener(new DocumentListener(){
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				 checkOutputFolder();
+				
+			}
+
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				 checkOutputFolder();
+				
+			}
+
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				 checkOutputFolder();
+				
+			}
+
+		});
+		
+		
+		
 		Help.assignHelpPageToButton(btnHelp, "File_formats");
 		
 		btnBrowse.addActionListener(new ActionListener() {
@@ -278,17 +318,9 @@ public class ExportView extends JFrame {
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
 					File file = fc.getSelectedFile();
 					destFolder.setText(file.getAbsoluteFile().toString());
-					model.setExportDirectory(file.getAbsoluteFile().toString());
+					
 				}
 
-				
-				// If file/folder selected enable OK button
-				if (destFolder.getText() == null || destFolder.getText().equals("")) {
-					btnConvert.setEnabled(false);
-				}
-				else {
-					btnConvert.setEnabled(true);
-				}
 			}
 		});
 		
@@ -324,6 +356,23 @@ public class ExportView extends JFrame {
 				event.dispatch();
 			}
 		});
+	}
+	
+	private void checkOutputFolder()
+	{
+		boolean pathValid = false;
+		
+		if(destFolder.getText().length()>1)
+		{
+			pathValid = true;	
+		}
+		
+		btnConvert.setEnabled(pathValid);
+						
+		if(pathValid)
+		{
+			model.setExportDirectory(destFolder.getText());
+		}
 	}
 	
 	private void linkModel(){
@@ -364,6 +413,8 @@ public class ExportView extends JFrame {
 				}
 			}
 		});
+		
+		checkOutputFolder();
 	}
 	
 	private void expandToFiles() {

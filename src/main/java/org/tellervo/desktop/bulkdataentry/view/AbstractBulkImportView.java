@@ -56,9 +56,14 @@ import org.tellervo.desktop.bulkdataentry.control.CopySelectedRowsEvent;
 import org.tellervo.desktop.bulkdataentry.control.DeleteODKInstancesEvent;
 import org.tellervo.desktop.bulkdataentry.control.DeleteRowEvent;
 import org.tellervo.desktop.bulkdataentry.control.DisplayColumnChooserEvent;
+import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.control.RemoveSelectedEvent;
+import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
+import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportTableModel;
+import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
+import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -89,6 +94,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 	protected JButton btnPaste;
 	protected JButton btnPasteAppend;
 	protected JButton btnDeleteODKInstances;
+	protected JButton btnODKImport;
 
 	protected JPopupMenu tablePopupMenu;
 	private JMenuItem addrow;
@@ -138,6 +144,11 @@ public abstract class AbstractBulkImportView extends JPanel{
 		importSelected = new JButton();
 		populateFromDB = new JButton();
 		populateFromGeonames = new JButton();
+		btnODKImport = new JButton();
+		
+		btnODKImport.setIcon(Builder.getIcon("odk-logo.png", 22));
+		btnODKImport.setToolTipText("Import ODK data from server");
+		
 		importSelected.putClientProperty("JButton.buttonType", "bevel");
 		importSelected.setIcon(Builder.getIcon("importtodatabase.png", 22));
 		
@@ -146,7 +157,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		setLayout(new BorderLayout());
 		
 	
-		add(setupToolbar(btnCopy, btnPaste, btnPasteAppend, addRow, removeSelected, copyRow, showHideColumns, populateFromDB, populateFromGeonames, btnDeleteODKInstances), "North");
+		add(setupToolbar(btnCopy, btnPaste, btnPasteAppend, addRow, removeSelected, copyRow, showHideColumns, populateFromDB, populateFromGeonames, btnDeleteODKInstances, btnODKImport), "North");
 		
 		//add(setupToolbar(showHideColumns, selectAll, selectNone), "West");
 
@@ -281,6 +292,21 @@ public abstract class AbstractBulkImportView extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				DeleteODKInstancesEvent event = new DeleteODKInstancesEvent();
+				event.dispatch();
+				
+			}
+			
+		});
+		
+		btnODKImport.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				ObjectModel omodel = BulkImportModel.getInstance().getObjectModel();
+				ElementModel emodel = BulkImportModel.getInstance().getElementModel();
+				SampleModel smodel = BulkImportModel.getInstance().getSampleModel();
+				
+				PopulateFromODKFileEvent event = new PopulateFromODKFileEvent(omodel, emodel, smodel);
 				event.dispatch();
 				
 			}
@@ -504,7 +530,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 	}
 	
 	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances){
+			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances, JButton argODKImport){
 		
 		 JToolBar toolbar = new JToolBar();
 		 
@@ -514,10 +540,10 @@ public abstract class AbstractBulkImportView extends JPanel{
 		 toolbar.add(argCopyRowButton);
 		 toolbar.add(argAddRowButton);
 		 toolbar.add(argDeleteRowButton);
+		 toolbar.add(argDeleteODKInstances);
 		 toolbar.add(argShowHideColumnButton);
 		 toolbar.add(argPopulateFromDB);
 		 toolbar.add(argPopulateFromGeonames);
-		 toolbar.add(argDeleteODKInstances);
 
 		 
 		 

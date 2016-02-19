@@ -55,7 +55,7 @@ public class DeleteODKFormDefinitionsCommand implements ICommand {
 			e.printStackTrace();
 		}
 		
-		int r = JOptionPane.showConfirmDialog(BulkImportModel.getInstance().getMainView(), 
+		int r = JOptionPane.showConfirmDialog(App.mainWindow, 
 				"Are you sure you want to delete all your ODK form definitions from the server?",
 				"Are you sure", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 		if(r!=JOptionPane.YES_OPTION) return;

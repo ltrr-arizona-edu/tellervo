@@ -163,7 +163,10 @@ public class Prefs extends AbstractSubsystem {
 		INDEX_CUBIC_FACTOR("tellervo.index.cubicfactor"),
 		
 		EXPORT_FORMAT("tellervo.export.format"),
+		EXPORT_NAMING_CONVENTION ("tellervo.export.namingconvention"),
+		EXPORT_FOLDER("tellervo.export.folder"),
 		IMPORT_FORMAT("tellervo.import.format"),
+		EXPORT_GROUPING("tellervo.grouping"),
 		
 		/** URL for the Tellervo webservice */
 		WEBSERVICE_URL("tellervo.webservice.url"),
@@ -234,7 +237,7 @@ public class Prefs extends AbstractSubsystem {
 		ODK_IMPORT_MEDIA("tellervo.odk.importmedia"),
 		ODK_RENAME_MEDIA("tellervo.odk.renamemedia"), 
 		ODK_CSV_FILENAME("tellervo.odk.csvoutput"), 
-		ODK_CREATE_CSV("tellervo.odk.createcsv"),
+		ODK_CREATE_CSV("tellervo.odk.createcsv"),  
 		
 		;
 		

@@ -12,12 +12,15 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -87,6 +90,7 @@ import com.jidesoft.swing.CheckBoxList;
 import com.jidesoft.swing.SearchableUtils;
 
 import edu.emory.mathcs.backport.java.util.Collections;
+
 import java.awt.GridLayout;
 
 
@@ -354,7 +358,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		panel_3.add(btnDown, "cell 0 1,alignx left,aligny top");
 		
 		chkMakePublic = new JCheckBox("Make available to other database users");
-		chkMakePublic.setEnabled(false);
 		panelMain.add(chkMakePublic, "cell 1 1,growx");
 		
 		JScrollPane fieldOptionsScrollPane = new JScrollPane();
@@ -497,9 +500,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		WSIOdkFormDefinition odkform = new WSIOdkFormDefinition();
 		
 		odkform.setName(txtFormName.getText());
-		
-
-		
+		odkform.setIspublic(chkMakePublic.isSelected());
+				
 		org.w3c.dom.Element formdef = null;
 		try {
 			formdef = DocumentBuilderFactory
@@ -537,7 +539,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	{
 		 
 		
-	/*	String lastVisitedFolder = App.prefs.getPref(PrefKey.FOLDER_LAST_SAVE, null);
+		String lastVisitedFolder = App.prefs.getPref(PrefKey.FOLDER_LAST_SAVE, null);
 
 		final JFileChooser fc = new JFileChooser(lastVisitedFolder);
 
@@ -595,7 +597,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 				newavail.add(field);
 			}
 						
-			for(ODKFieldInterface selectedfield : selectedFieldsModel.getAllFields())
+			for(ODKFieldInterface selectedfield : selectedFieldsTreeModel.getFlatArrayOfFields())
 			{
 				for(ODKFieldInterface availablefield : newavail)
 				{
@@ -617,7 +619,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		} finally{
 			obj_in.close();	
 		}
-*/
+
 	}
 	
 	public boolean saveFormDefinition() throws IOException

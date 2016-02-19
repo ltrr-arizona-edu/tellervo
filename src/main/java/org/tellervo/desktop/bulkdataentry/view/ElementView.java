@@ -92,7 +92,6 @@ public class ElementView extends AbstractBulkImportView{
 
 	private JButton browseGPX;
 	private JButton quickFill;
-	private JButton browseODK;
 
 	public ElementView(ElementModel argModel){
 		super(argModel);
@@ -255,21 +254,30 @@ public class ElementView extends AbstractBulkImportView{
 
 	@Override
 	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances){
+			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances, JButton argODKImport){
 
 
 		JToolBar toolbar = new JToolBar();
-		 toolbar.add(argCopyButton);
-		 toolbar.add(argPasteButton);
-		 toolbar.add(argPasteAppendButton);
+		toolbar.add(argCopyButton);
+		toolbar.add(argPasteButton);
+		toolbar.add(argPasteAppendButton);
 		toolbar.add(selectAll);
 		toolbar.add(selectNone);
 		toolbar.add(argAddRowButton);
 		toolbar.add(argDeleteRowButton);
 		toolbar.add(argCopyRowButton);
+		
+		toolbar.add(argODKImport);
+	    toolbar.add(argDeleteODKInstances);
+
 		toolbar.add(argPopulateFromDB);
 		toolbar.add(argPopulateFromGeonames);
-		 toolbar.add(argDeleteODKInstances);
+
+		browseGPX = new JButton();
+		browseGPX.setIcon(Builder.getIcon("satellite.png", 22));
+		browseGPX.setToolTipText(I18n.getText("bulkimport.browseGPXFile"));
+		toolbar.add(browseGPX);
+
 
 		quickFill = new JButton();
 		quickFill.setIcon(Builder.getIcon("quickfill.png", 22));
@@ -277,18 +285,6 @@ public class ElementView extends AbstractBulkImportView{
 
 
 		toolbar.add(quickFill);
-
-
-		browseGPX = new JButton();
-		browseGPX.setIcon(Builder.getIcon("satellite.png", 22));
-		browseGPX.setToolTipText(I18n.getText("bulkimport.browseGPXFile"));
-		toolbar.add(browseGPX);
-		
-		browseODK = new JButton("");
-		browseODK.setIcon(Builder.getIcon("odk-logo.png", 22));
-		browseODK.setToolTipText("ODK Import");
-		toolbar.add(browseODK);
-		
 		
 		toolbar.add(argShowHideColumnButton);
 
@@ -315,22 +311,7 @@ public class ElementView extends AbstractBulkImportView{
 
 			}
 		});
-		
-		browseODK.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				ObjectModel omodel = BulkImportModel.getInstance().getObjectModel();
-				ElementModel emodel = BulkImportModel.getInstance().getElementModel();
-				SampleModel smodel = BulkImportModel.getInstance().getSampleModel();
-				PopulateFromODKFileEvent event = new PopulateFromODKFileEvent(omodel, emodel, smodel);
-				event.dispatch();
-			}
-			
-			
-			
-		});
-		
+				
 		final ElementView glue = this;
 		quickFill.addActionListener(new ActionListener(){
 

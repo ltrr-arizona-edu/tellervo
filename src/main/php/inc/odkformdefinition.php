@@ -41,6 +41,7 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
      	$this->setName($row['name']);
      	$this->setOwnerID($row['ownerid']);
      	$this->setDefinition($row['definition']);
+     	$this->setIsPublic($row['ispublic']);
      	
      	
         return true;
@@ -117,6 +118,7 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
      	$this->setName($paramsClass->getName());
      	$this->setDefinition($paramsClass->getDefinition());
 	$this->setOwnerID($paramsClass->getOwnerID());
+	$this->setIsPublic($paramsClass->getIsPublic());
 
 
     	$firebug->log($paramsClass, "params class");
@@ -210,8 +212,9 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
             {
                 $xml.="<odkFormDefinition ";
 				$xml.="id=\"".$this->getID()."\" ";
-				$xml.="name=\"".$this->getName()."\" >\n";
-		if($format=='standard' || $format=='comprehensive') $xml.=$this->getDefinition();
+				$xml.="name=\"".$this->getName()."\" ";
+				$xml.="ispublic=\"".dbHelper::formatBool($this->getIsPublic(), "english")."\" >\n";
+			$xml.=$this->getDefinition();
 				
                 $xml.="</odkFormDefinition>\n";
                              
@@ -251,10 +254,11 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
 	 
 	   if($this->getID()==NULL) $this->setID(uuid::getUUID(), $domain);  
 	
-	   $sql = "INSERT INTO tblodkdefinition (odkdefinitionid, name, ownerid, definition) values (";
+	   $sql = "INSERT INTO tblodkdefinition (odkdefinitionid, name, ownerid, ispublic, definition) values (";
 	   $sql.= dbHelper::tellervo_pg_escape_string($this->getID()). ", ";	
 	   $sql.= dbHelper::tellervo_pg_escape_string($this->getName()). ", ";	
            $sql.= dbHelper::tellervo_pg_escape_string($this->getOwnerID()).  ", ";     
+           $sql.= dbHelper::formatBool($this->getIsPublic(), 'pg').  ", ";     
 	   $sql.= dbHelper::tellervo_pg_escape_string($this->getDefinition()).  ", "; 
 	   $sql = substr($sql, 0, -2);
            $sql.=")";

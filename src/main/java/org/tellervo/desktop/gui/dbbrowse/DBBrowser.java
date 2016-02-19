@@ -565,7 +565,7 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
 		tblAvailMeas.setColumnControlVisible(true);
     	TableColumnModelExt colmodel = (TableColumnModelExt)tblAvailMeas.getColumnModel();
     	colmodel.getColumnExt(I18n.getText("hidden.MostRecentVersion")).setVisible(false);
-    	colmodel.getColumnExt(I18n.getText("dbbrowser.n")).setVisible(false);
+    	//colmodel.getColumnExt(I18n.getText("dbbrowser.n")).setVisible(false);
     	colmodel.getColumnExt(I18n.getText("dbbrowser.rec")).setVisible(false);
     	colmodel.getColumnExt(I18n.getText("dbbrowser.hash")).setVisible(false);
 		
@@ -784,6 +784,8 @@ public class DBBrowser extends DBBrowser_UI implements ElementListManager, Trida
     	ElementListTableModel.setupColumnWidths(table);
 		
 		table.setDefaultRenderer(Object.class, new ElementListCellRenderer(this, disableSelections));
+		table.setDefaultRenderer(Integer.class, new ElementListCellRenderer(this, disableSelections));
+
 		table.setDefaultRenderer(Boolean.class, new BooleanCellRenderer(this, disableSelections));
 		
 		// popup menu

@@ -58,6 +58,9 @@ public class ExportDialog extends JDialog {
 		setupGui(elements);
 	}
 	
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public ExportDialog(Sample s){
 		
 		ElementList elements = ElementList.singletonList(new Element((BaseSample) s));

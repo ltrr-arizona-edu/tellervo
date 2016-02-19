@@ -83,7 +83,6 @@ public class ObjectView extends AbstractBulkImportView{
 	private static final long serialVersionUID = 1L;
 	
 	private JButton browseGPX;
-	private JButton browseODK;
 	
 	public ObjectView(ObjectModel argModel){
 		super(argModel);
@@ -242,7 +241,7 @@ public class ObjectView extends AbstractBulkImportView{
 	}*/
 	
 	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
-				JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances){
+				JButton argCopyRow, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances, JButton argODKImport){
 		/*Box box = Box.createHorizontalBox();
 		box.add(argAddRowButton);
 		box.add(argDeleteRowButton);
@@ -262,14 +261,14 @@ public class ObjectView extends AbstractBulkImportView{
 		 toolbar.add(argAddRowButton);
 		 toolbar.add(argDeleteRowButton);
 		 toolbar.add(argCopyRow);
+  		 
+		 toolbar.add(argODKImport);
+		 toolbar.add(btnDeleteODKInstances);
+			
 		 toolbar.add(argPopulateFromDB);
 		 toolbar.add(argPopulateFromGeonames);
-		 toolbar.add(argDeleteODKInstances);
 		
-			browseODK = new JButton("");
-			browseODK.setIcon(Builder.getIcon("odk-logo.png", 22));
-			browseODK.setToolTipText("Browse for ODK file");
-			toolbar.add(browseODK);
+
 		 
 		 
 		 
@@ -277,11 +276,7 @@ public class ObjectView extends AbstractBulkImportView{
 		browseGPX.setIcon(Builder.getIcon("satellite.png", 22));
 		browseGPX.setToolTipText(I18n.getText("bulkimport.browseGPXFile"));
 		toolbar.add(browseGPX);
-				
-		btnDeleteODKInstances = new JButton("");
-		btnDeleteODKInstances.setIcon(Builder.getIcon("odk-delete.png", 22));
-		btnDeleteODKInstances.setToolTipText("Delete ODK form data from server");
-		toolbar.add(btnDeleteODKInstances);
+
 		
 		toolbar.add(argShowHideColumnButton);
 			
@@ -307,19 +302,7 @@ public class ObjectView extends AbstractBulkImportView{
 				//ev.dispatch();
 			}
 		});
-		
-		browseODK.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				ObjectModel omodel = BulkImportModel.getInstance().getObjectModel();
-				ElementModel emodel = BulkImportModel.getInstance().getElementModel();
-				SampleModel smodel = BulkImportModel.getInstance().getSampleModel();
-				PopulateFromODKFileEvent event = new PopulateFromODKFileEvent(omodel, emodel, smodel);
-				event.dispatch();
-			}
-		});
-				
+						
 	}
 
 	@Override
