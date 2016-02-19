@@ -382,10 +382,10 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
   }
 
   public static void updateTridasObjectList()
-  {
+  {	  
 	  tridasObjects = new TridasObjectList();
 
-	  if(appmodel.isLoggedIn())
+	  if(App.isLoggedIn())
 	  {
 		  tridasObjects.query();
 	  }

@@ -48,6 +48,8 @@ else
 	printError("Not logged in");
 }
 
+//file_put_contents('/tmp/headers.txt', "Getting form instances...\n", FILE_APPEND);
+
 $zipfile = createZipFile();
 
 getFile($zipfile);
@@ -73,7 +75,7 @@ function createZipFile()
 	
 
 
-    $sql = "SELECT * FROM tblodkinstance WHERE ownerid = (SELECT securityuserid from tblsecurityuser where securityuserid='".pg_escape_string($myAuth->getID())."' and isactive=true)";
+    $sql = "SELECT *, array_to_string(files, '><'::text) AS filearr FROM tblodkinstance WHERE ownerid = (SELECT securityuserid from tblsecurityuser where securityuserid='".pg_escape_string($myAuth->getID())."' and isactive=true)";
     
     $firebug->log($sql);
 
@@ -94,19 +96,29 @@ function createZipFile()
 		$firebug->log($row['instance'], "Code");
 	
 		$zip->addFromString($row['odkinstanceid'].".xml", $row['instance']);	
-		$fa = dbHelper::pgStrArrayToPHPArray($row['files']);
-		foreach($fa as $fileref)
+                //file_put_contents('/tmp/headers.txt', "File field from db ".$row['filearr']."\n", FILE_APPEND);
+		$fa = dbHelper::pgStrArrayToPHPArray($row['filearr']);
+		//$arrcontents = print_r($fa, true);
+
+                //file_put_contents('/tmp/headers.txt', "File array ".$fa."\n", FILE_APPEND);
+                //file_put_contents('/tmp/headers.txt', "File array contents ".$arrcontents."\n", FILE_APPEND);
+
+
+		foreach($fa as $mediafile)
 		{
-			$mediafile = substr($fileref, 1, -1);
+                	//file_put_contents('/tmp/headers.txt', "File ".$fileref."\n", FILE_APPEND);
+			//$mediafile = substr($fileref, 1, -1);
 			
 			if(file_exists($mediafile))
 			{
 				$firebug->log($mediafile, "Media file");
+                		//file_put_contents('/tmp/headers.txt', "File exists\n", FILE_APPEND);
 				$zip->addFile($mediafile, basename($mediafile));
 			}
 			else
 			{
 				$firebug->log($mediafile, "Media file DOES NOT EXIST!");
+                		//file_put_contents('/tmp/headers.txt', "File DOES NOT EXIST\n", FILE_APPEND);
 			}
 		}
 	}

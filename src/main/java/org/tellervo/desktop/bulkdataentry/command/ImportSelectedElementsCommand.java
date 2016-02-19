@@ -28,6 +28,9 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
+import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementTableModel;
@@ -55,7 +58,8 @@ import com.dmurph.mvc.model.MVCArrayList;
  */
 public class ImportSelectedElementsCommand implements ICommand {
 	
-	
+	private static final Logger log = LoggerFactory.getLogger(ImportSelectedElementsCommand.class);
+
 	
 	/**
 	 * @see com.dmurph.mvc.control.ICommand#execute(com.dmurph.mvc.MVCEvent)
@@ -186,7 +190,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 			StringBuilder message = new StringBuilder();
 			message.append("Please correct the following errors:\n");
 			message.append(StringUtils.join(requiredMessages.toArray(), "\n"));
-			JOptionPane.showMessageDialog(model.getMainView(), message.toString(), "Importing Errors", JOptionPane.ERROR_MESSAGE);
+			Alert.message(model.getMainView(), "Importing Errors", message.toString());
 			return;
 		}
 		
@@ -318,16 +322,16 @@ public class ImportSelectedElementsCommand implements ICommand {
 		{
 			if(((TridasObjectOrPlaceholder) rowitem).getTridasObject()!=null) return true;
 			
-			MVCArrayList<TridasObjectEx> objlist = App.tridasObjects.getMutableObjectList();
+			
 
-			for(TridasObjectEx o : objlist)
-			{
-				if(o.getLabCode().equals(((TridasObjectOrPlaceholder) rowitem).getCode())) 
-				{
+			String code = ((TridasObjectOrPlaceholder) rowitem).getCode();
+			TridasObjectEx o = App.tridasObjects.findObjectBySiteCode(code);
+			if(o!=null)	{
 					som.setProperty(SingleElementModel.OBJECT, new TridasObjectOrPlaceholder(o));
 					return true;
-				}
 			}
+			
+			log.error("Couldn't find object with code '"+code+"' in dictionary");
 					
 		}
 		else if (rowitem instanceof String)

@@ -817,7 +817,7 @@ public class PopulateFromODKCommand implements ICommand {
 			log.debug("Failed to get element type from ODK");
 		}
 		newrow.setProperty(SingleElementModel.DESCRIPTION, parser.getFieldValueAsString("tridas_element_description"));
-		newrow.setProperty(SingleElementModel.TAXON, ITRDBTaxonConverter.getControlledVocFromString(parser.getFieldValueAsString("tridas_element_taxon")));
+		newrow.setProperty(SingleElementModel.TAXON, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_element_taxon"), "taxonDictionary"));
 		newrow.setProperty(SingleElementModel.AUTHENTICITY, parser.getFieldValueAsString("tridas_element_authenticity"));
 		newrow.setProperty(SingleElementModel.LATITUDE, parser.getLatitude("tridas_element_location", "TreeLocation"));
 		newrow.setProperty(SingleElementModel.LONGITUDE, parser.getLongitude("tridas_element_location", "TreeLocation"));

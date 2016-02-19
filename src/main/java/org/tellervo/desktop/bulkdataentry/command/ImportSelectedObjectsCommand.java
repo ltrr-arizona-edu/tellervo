@@ -28,6 +28,8 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectTableModel;
@@ -35,6 +37,7 @@ import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.tridasv2.TridasObjectList;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
@@ -54,12 +57,16 @@ import com.dmurph.mvc.model.MVCArrayList;
  */
 public class ImportSelectedObjectsCommand implements ICommand {
 	
+	private static final Logger log = LoggerFactory.getLogger(ImportSelectedObjectsCommand.class);
+
+	
 	/**
 	 * @see com.dmurph.mvc.control.ICommand#execute(com.dmurph.mvc.MVCEvent)
 	 */
 	@Override
 	public void execute(MVCEvent argEvent) {
 		BulkImportModel model = BulkImportModel.getInstance();
+		
 		
 		ObjectTableModel tmodel = model.getObjectModel().getTableModel();
 		ArrayList<IBulkImportSingleRowModel> selected = new ArrayList<IBulkImportSingleRowModel>();
@@ -145,7 +152,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			StringBuilder message = new StringBuilder();
 			message.append("Please correct the following errors:\n");
 			message.append(StringUtils.join(requiredMessages.toArray(), "\n"));
-			JOptionPane.showMessageDialog(model.getMainView(), message.toString());
+			Alert.message(model.getMainView(), "Importing Errors", message.toString());
 			return;
 		}
 		
@@ -161,7 +168,13 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			
 			som.populateTridasObject(origObject);
 
-			TridasObject parentObject = ((TridasObjectOrPlaceholder) som.getProperty(SingleObjectModel.PARENT_OBJECT)).getTridasObject();
+			TridasObject parentObject = null;
+			try{
+				parentObject = ((TridasObjectOrPlaceholder) som.getProperty(SingleObjectModel.PARENT_OBJECT)).getTridasObject();
+			} catch (Exception e )
+			{
+				
+			}
 
 			EntityResource<TridasObjectEx> resource;
 			if(origObject.getIdentifier() != null){
@@ -220,7 +233,15 @@ public class ImportSelectedObjectsCommand implements ICommand {
 //		event.dispatch();
 		
 		// FIXME this should be removed once other lists listen for changes in the object list
-		App.updateTridasObjectList();
+		//App.updateTridasObjectList();
+
+		for(TridasObjectEx o : App.tridasObjects.getObjectList())
+		{
+			//log.debug(o.getLabCode());
+			if(o.getLabCode().equals("AAAA")) log.debug("<----------------------------- FOUND");
+		}
+		
+		log.debug("done");
 	}
 	
 	/**

@@ -1,5 +1,5 @@
 <?php
-file_put_contents('/tmp/headers.txt', "\n\n Submission.php called \n", FILE_APPEND);
+//nfile_put_contents('/tmp/headers.txt', "\n\n Submission.php called \n", FILE_APPEND);
 include('inc/odkauth.php');
 include('inc/odkhelper.php');
 require_once('../inc/dbhelper.php');
@@ -59,6 +59,10 @@ elseif( $_SERVER['REQUEST_METHOD']==="POST")
 	
 	foreach( $_FILES as $file)
 	{
+		$arraycontents = print_r($file, true);
+  		//file_put_contents('/tmp/headers.txt', $arraycontents."\n", FILE_APPEND);
+  		//file_put_contents('/tmp/headers.txt', "Copying file: ".$file['name']." to temp folder\n", FILE_APPEND);
+		
 		if(endsWith($file['name'], "xml")) continue;
 
 		switch($file['error'])
@@ -103,11 +107,6 @@ elseif( $_SERVER['REQUEST_METHOD']==="POST")
 
 		
 
-		$arraycontents = print_r($file, true);
-  		//file_put_contents('/tmp/headers.txt', $arraycontents."\n", FILE_APPEND);
-
-			
-  		//file_put_contents('/tmp/headers.txt', "Copying file: ".$file['name']." to temp folder\n", FILE_APPEND);
 		//move_uploaded_file( $file['tmp_name'], $mediastorefolder.$file['name']) or printError("Failed to copy media file", "400 Bad request");
 		$currentname = $file['tmp_name'];
 		$storedname = $mediaStoreFolder.$odkauth->getUserID()."/".$file['name']; 
@@ -115,12 +114,12 @@ elseif( $_SERVER['REQUEST_METHOD']==="POST")
 		//file_put_contents('/tmp/headers.txt', "Stored filename : ".$storedname."\n", FILE_APPEND);
 
 		// Fail if media file already exists
-		/*if (file_exists($storedname))
+		if (file_exists($storedname))
 		{
 			printError("Failed to copy media file", "500 Media file already exists");
-		}*/
+		}
 		move_uploaded_file($currentname, $storedname) or printError("Failed to copy media file", "500 Media file copy fail");
-		$filearray[] = $storedname;
+		array_push($filearray, $storedname);
 
 	}
 

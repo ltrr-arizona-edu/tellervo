@@ -26,6 +26,8 @@ package org.tellervo.desktop.bulkdataentry.view;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Comparator;
 
 import javax.swing.JButton;
@@ -92,7 +94,9 @@ public class ElementView extends AbstractBulkImportView{
 
 	private JButton browseGPX;
 	private JButton quickFill;
-
+    private MVCArrayList<TridasObjectEx> objlist;
+    
+    
 	public ElementView(ElementModel argModel){
 		super(argModel);
 		table.getColumnModel().getColumn(1).setCellRenderer(new BooleanCellRenderer(true));
@@ -103,7 +107,7 @@ public class ElementView extends AbstractBulkImportView{
 	 * @see org.tellervo.desktop.bulkdataentry.view.AbstractBulkImportView#setupTableCells(javax.swing.JTable)
 	 */
 	@Override
-	protected void setupTableCells(JTable argTable) {
+	protected void setupTableCells(final JTable argTable) {
 		argTable.setDefaultEditor(String.class, new StringCellEditor());
 		argTable.setDefaultEditor(WSIElementTypeDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("elementTypeDictionary")));
 		argTable.setDefaultRenderer(WSIElementTypeDictionary.class, new ControlledVocRenderer(Behavior.NORMAL_ONLY));
@@ -144,14 +148,50 @@ public class ElementView extends AbstractBulkImportView{
 
 		box.setRenderer(new TridasObjectExRenderer());*/
 		
-		MVCArrayList<TridasObjectEx> objlist = App.tridasObjects.getMutableObjectList();
+		objlist = App.tridasObjects.getMutableObjectList();
+		
+		objlist.addPropertyChangeListener(new PropertyChangeListener(){
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				updateObjectCombo(argTable);
+				
+			}
+			
+			
+		});
+		
+		updateObjectCombo(argTable);
+		
+		ElementModel model = BulkImportModel.getInstance().getElementModel();
+		DynamicJComboBox<GPXWaypoint> waypointBox = new DynamicJComboBox<GPXWaypoint>(model.getWaypointList(), new Comparator<GPXWaypoint>() {
+			/**
+			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public int compare(GPXWaypoint argO1, GPXWaypoint argO2) {
+				if(argO1 == null){
+					return -1;
+				}
+				if(argO2 == null){
+					return 1;
+				}
+				return argO1.compareTo(argO2);
+			}
+		});
+		argTable.setDefaultEditor(GPXWaypoint.class, new ComboBoxCellEditor(waypointBox));
+	}
+
+	
+	private void updateObjectCombo(JTable argTable)
+	{
 		MVCArrayList<TridasObjectOrPlaceholder> toph = new MVCArrayList<TridasObjectOrPlaceholder>();
 		for(TridasObjectEx o : objlist)
 		{
 			toph.add(new TridasObjectOrPlaceholder(o));
 		}
 		
-		DynamicJComboBox<TridasObjectOrPlaceholder> box = new DynamicJComboBox<TridasObjectOrPlaceholder>(toph,
+		DynamicJComboBox<TridasObjectOrPlaceholder> combobox = new DynamicJComboBox<TridasObjectOrPlaceholder>(toph,
 				new Comparator<TridasObjectOrPlaceholder>() {
 			public int compare(TridasObjectOrPlaceholder argO1, TridasObjectOrPlaceholder argO2) {
 				if(argO1 == null){
@@ -163,7 +203,7 @@ public class ElementView extends AbstractBulkImportView{
 				return argO1.getCode().compareToIgnoreCase(argO2.getCode());
 			}
 		});
-		box.setKeySelectionManager(new DynamicKeySelectionManager() {
+		combobox.setKeySelectionManager(new DynamicKeySelectionManager() {
 			@Override
 			public String convertToString(Object argO) {
 				if(argO == null){
@@ -174,13 +214,13 @@ public class ElementView extends AbstractBulkImportView{
 			}
 		});
 
-		box.setRenderer(new TridasObjectExRenderer());
+		combobox.setRenderer(new TridasObjectExRenderer());
 
 
-		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(box));
-		box.setEditable(true);	
-		argTable.setDefaultEditor(TridasObjectOrPlaceholder.class, new ComboBoxCellEditor(box));
-
+		argTable.setDefaultEditor(TridasObject.class, new ComboBoxCellEditor(combobox));
+		combobox.setEditable(true);	
+		argTable.setDefaultEditor(TridasObjectOrPlaceholder.class, new ComboBoxCellEditor(combobox));
+		
 		argTable.setDefaultRenderer(TridasObject.class, new DefaultTableCellRenderer(){
 			/**
 			 * @see javax.swing.table.DefaultTableCellRenderer#setValue(java.lang.Object)
@@ -232,26 +272,8 @@ public class ElementView extends AbstractBulkImportView{
 
 			}
 		});
-
-		ElementModel model = BulkImportModel.getInstance().getElementModel();
-		DynamicJComboBox<GPXWaypoint> waypointBox = new DynamicJComboBox<GPXWaypoint>(model.getWaypointList(), new Comparator<GPXWaypoint>() {
-			/**
-			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-			 */
-			@Override
-			public int compare(GPXWaypoint argO1, GPXWaypoint argO2) {
-				if(argO1 == null){
-					return -1;
-				}
-				if(argO2 == null){
-					return 1;
-				}
-				return argO1.compareTo(argO2);
-			}
-		});
-		argTable.setDefaultEditor(GPXWaypoint.class, new ComboBoxCellEditor(waypointBox));
 	}
-
+	
 	@Override
 	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
 			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances, JButton argODKImport){

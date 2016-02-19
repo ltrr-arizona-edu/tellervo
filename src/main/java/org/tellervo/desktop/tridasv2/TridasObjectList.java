@@ -66,6 +66,7 @@ public class TridasObjectList extends TellervoResource {
 		// load my cache and unload on a successful remote load
 		new TellervoResourceCacher(this, true).load();
 	}
+	
 
 	/* (non-Javadoc)
 	 * @see org.tellervo.desktop.wsi.tellervo.CorinaResource#populateRequest(org.tellervo.desktop.schema.WSIRequest)
@@ -217,7 +218,7 @@ public class TridasObjectList extends TellervoResource {
 	 * Retrieve an unmodifiable list of all tridas objects
 	 * @return a list
 	 */
-	public List<TridasObjectEx> getObjectList() {
+	public synchronized List<TridasObjectEx> getObjectList() {
 		synchronized(data) {
 			return Collections.unmodifiableList(data.allObjects);
 		}
@@ -249,6 +250,15 @@ public class TridasObjectList extends TellervoResource {
 	public void addTridasObject(TridasObjectEx argObject){
 		synchronized (data) {
 			data.allObjects.add(argObject);
+			
+			for(TridasObjectEx  o: data.allObjects)
+			{
+				if(o.getLabCode().equals(argObject.getLabCode()))
+				{
+					System.out.println("Found it!");
+				}
+			}
+			
 			data.bySiteCode.put(argObject.getLabCode(), argObject);
 		}
 	}
@@ -275,8 +285,11 @@ public class TridasObjectList extends TellervoResource {
 	 * One should not add/remove objects from this list, instead us {@link #addTridasObject(TridasObjectEx)}
 	 * @return
 	 */
-	public MVCArrayList<TridasObjectEx> getMutableObjectList(){
-		return data.allObjects;
+	public synchronized MVCArrayList<TridasObjectEx> getMutableObjectList(){
+		synchronized(data)
+		{
+			return data.allObjects;
+		}
 	}
 	
 	/**

@@ -136,7 +136,7 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			StringBuilder message = new StringBuilder();
 			message.append("Please correct the following errors:\n");
 			message.append(StringUtils.join(requiredMessages.toArray(), "\n"));
-			JOptionPane.showConfirmDialog(model.getMainView(), message.toString(), "Importing Errors", JOptionPane.OK_OPTION);
+			Alert.message(model.getMainView(), "Importing Errors", message.toString());
 			return;
 		}
 		

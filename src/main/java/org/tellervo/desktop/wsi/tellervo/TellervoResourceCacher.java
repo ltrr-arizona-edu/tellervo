@@ -21,6 +21,9 @@
 package org.tellervo.desktop.wsi.tellervo;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -40,7 +43,7 @@ public class TellervoResourceCacher extends ResourceCacher<WSIRootElement> {
 	protected File getCacheFile() {
 		return new File(App.prefs.getTellervoDir() + getResource().getResourceName() + ".xmlcache");
 	}
-
+	
 	@Override
 	protected JAXBContext getJAXBContext() throws JAXBException {
 		return TellervoWsiAccessor.getTellervoContext();
