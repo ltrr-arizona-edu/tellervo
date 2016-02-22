@@ -229,19 +229,12 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		}
 		
 		// finally, update the combo boxes in the table to the new options
-//		DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(model.getObjectModel().getImportedDynamicComboBoxKey(), model.getObjectModel().getImportedListStrings());
-//		event.dispatch();
+		//DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(model.getObjectModel().getImportedDynamicComboBoxKey(), model.getObjectModel().getImportedListStrings());
+		//event.dispatch();
 		
 		// FIXME this should be removed once other lists listen for changes in the object list
 		//App.updateTridasObjectList();
 
-		for(TridasObjectEx o : App.tridasObjects.getObjectList())
-		{
-			//log.debug(o.getLabCode());
-			if(o.getLabCode().equals("AAAA")) log.debug("<----------------------------- FOUND");
-		}
-		
-		log.debug("done");
 	}
 	
 	/**

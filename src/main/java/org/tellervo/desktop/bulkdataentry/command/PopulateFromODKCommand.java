@@ -267,6 +267,47 @@ public class PopulateFromODKCommand implements ICommand {
 			}
 		}
 		
+		SampleModel smodel = event.sampleModel;
+		ElementModel emodel = event.elementModel;
+		ObjectModel model = event.objectModel;
+		
+		try{	
+			if(smodel.getTableModel().getRowCount()==1 && 
+					smodel.getTableModel().getAllSingleRowModels().get(0).getProperty(SingleSampleModel.TITLE)==null)
+			{
+				// Empty table first
+				smodel.getTableModel().getAllSingleRowModels().clear();
+			}
+		}catch (Exception ex)
+		{
+			log.debug("Error deleting empty rows");
+		}
+			
+		try{
+			if(emodel.getTableModel().getRowCount()==1 && 
+					emodel.getTableModel().getAllSingleRowModels().get(0).getProperty(SingleElementModel.TITLE)==null)
+			{
+				// Empty table first
+				emodel.getTableModel().getAllSingleRowModels().clear();
+			}
+		} catch (Exception ex)
+		{
+			log.debug("Error deleting empty rows");
+		}
+		
+		try{
+			if(model.getTableModel().getRowCount()==1 && 
+					model.getTableModel().getAllSingleRowModels().get(0).getProperty(SingleObjectModel.OBJECT_CODE)==null)
+			{
+				// Empty table first
+				model.getTableModel().getAllSingleRowModels().clear();
+			}
+		} catch (Exception ex)
+		{
+			log.debug("Error deleting empty rows");
+		}
+		
+		
 		SuffixFileFilter fileFilter = new SuffixFileFilter(".xml");
 		Iterator<File> iterator = FileUtils.iterateFiles(folder, fileFilter, TrueFileFilter.INSTANCE);
 		while(iterator.hasNext())
@@ -278,8 +319,7 @@ public class PopulateFromODKCommand implements ICommand {
 
 				ODKParser parser = new ODKParser(file);
 				filesProcessed.add(parser);
-				
-				
+								
 				if(!parser.isValidODKFile()) {
 					filesFailed.add(parser);
 					continue;
@@ -291,15 +331,11 @@ public class PopulateFromODKCommand implements ICommand {
 				}
 				else if (parser.getFileType()==ODKFileType.OBJECTS)
 				{
-					ObjectModel model = event.objectModel;
 					addObjectToTableFromParser(parser, model, wizard, mediaFileArr);
 				}
 				else if (parser.getFileType()==ODKFileType.ELEMENTS_AND_SAMPLES)
 				{
-					ElementModel emodel = event.elementModel;
-					addElementFromParser(parser, emodel, wizard);
-					
-					SampleModel smodel = event.sampleModel;
+					addElementFromParser(parser, emodel, wizard);										
 					addSampleFromParser(parser, smodel, wizard);
 				}
 				else

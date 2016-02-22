@@ -23,31 +23,47 @@ package org.tellervo.desktop.bulkdataentry.command;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
+import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleTableModel;
+import org.tellervo.desktop.bulkdataentry.model.ElementTableModel;
+import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleRadiusModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasElementOrPlaceholder;
+import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
+import org.tellervo.desktop.core.App;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
+import com.dmurph.mvc.model.MVCArrayList;
 
 
 /**
@@ -56,7 +72,8 @@ import com.dmurph.mvc.control.ICommand;
  */
 public class ImportSelectedSamplesCommand implements ICommand {
 	
-	
+	private static final Logger log = LoggerFactory.getLogger(ImportSelectedSamplesCommand.class);
+
 	
 	/**
 	 * @see com.dmurph.mvc.control.ICommand#execute(com.dmurph.mvc.MVCEvent)
@@ -66,6 +83,12 @@ public class ImportSelectedSamplesCommand implements ICommand {
 		BulkImportModel model = BulkImportModel.getInstance();
 		SampleModel smodel = model.getSampleModel();
 		SampleTableModel tmodel = smodel.getTableModel();
+		
+		ElementModel emodel = model.getElementModel();
+		
+		MVCArrayList<TridasElement> elementlist = emodel.getImportedList();
+		ElementTableModel etablemodel = emodel.getTableModel();
+		
 		
 		ArrayList<IBulkImportSingleRowModel> selected = new ArrayList<IBulkImportSingleRowModel>();
 		tmodel.getSelected(selected);
@@ -92,19 +115,25 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			}
 			boolean incomplete = false;
 			
+			// object
+			if(!definedProps.contains(SingleSampleModel.OBJECT)){
+				requiredMessages.add("Cannot import without a parent object.");
+				incomplete = true;
+			}
+			
 			// element 
 			if(!definedProps.contains(SingleSampleModel.ELEMENT)){
 				requiredMessages.add("Cannot import without a parent element.");
 				incomplete = true;
 			}
+			else if (fixTempParentCodes(som, emodel))
+			{
+				// There was a temp code but it is fixed now
+			}
 			else
 			{
-				TridasElementOrPlaceholder teop = (TridasElementOrPlaceholder) som.getProperty(SingleSampleModel.ELEMENT);
-				if(teop.getTridasElement()==null)
-				{
-					requiredMessages.add("Cannot import as parent element has not been created yet");
-					incomplete = true;
-				}
+				requiredMessages.add("Cannot import as parent element has not been created yet");
+				incomplete = true;
 			}
 		
 			// type
@@ -237,4 +266,213 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			i++;
 		}
 	}
+	
+	
+	/**
+	 * Check for temporary element code and convert to proper element.  If element has not been created yet, return false.
+	 * 
+	 * @param som
+	 * @return
+	 */
+	private boolean fixTempParentCodes(IBulkImportSingleRowModel som, ElementModel emodel)
+	{
+		TridasObject parentObject = null;
+	
+		// First get parent object for sample 
+		Object objectField = (Object) som.getProperty(SingleSampleModel.OBJECT);
+		boolean objectSet = false;
+		if(objectField == null)
+		{
+			log.error("No parent object specified");
+			return false;
+		}
+		else if(objectField instanceof TridasObjectOrPlaceholder)
+		{
+			if(((TridasObjectOrPlaceholder) objectField).getTridasObject()!=null) 
+			{
+				parentObject = ((TridasObjectOrPlaceholder) objectField).getTridasObject();
+				som.setProperty(SingleSampleModel.OBJECT, objectField);
+				objectSet = true;
+			}
+			else
+			{		
+				String code = ((TridasObjectOrPlaceholder) objectField).getCode();
+				TridasObjectEx o = App.tridasObjects.findObjectBySiteCode(code);
+				if(o!=null)	{
+					
+					parentObject = o;
+					som.setProperty(SingleSampleModel.OBJECT, new TridasObjectOrPlaceholder(o));
+					objectSet = true;
+				}
+			}
+		}
+		else if (objectField instanceof String)
+		{
+			MVCArrayList<TridasObjectEx> objlist = App.tridasObjects.getMutableObjectList();
+
+			for(TridasObjectEx o : objlist)
+			{
+				if(o.getLabCode().equals(objectField)) 
+				{
+					parentObject = o;
+					som.setProperty(SingleSampleModel.OBJECT, new TridasObjectOrPlaceholder(o));
+					objectSet = true;
+				}
+			}
+		}
+		else if (objectField instanceof TridasObjectEx)
+		{
+			parentObject = (TridasObject) objectField;
+			objectSet = true;
+		}
+		
+		
+		if(objectSet==false)
+		{
+			log.error("Unable to find object");
+			return false;
+		}
+
+		
+		// At this point we have a valid object in the object field.  
+		// Now we need to try and get a valid Element 
+
+		Object elementField = (Object) som.getProperty(SingleSampleModel.ELEMENT);
+		String elementCode = null;
+		if(elementField == null)
+		{
+			log.error("No parent element set");
+			return false;
+		}
+		else if (elementField instanceof TridasElement)
+		{
+			// Element field is already a proper TridasElement so nothing to do!
+			return true;
+		}
+		else if(elementField instanceof TridasElementOrPlaceholder)
+		{
+			if(((TridasElementOrPlaceholder) elementField).getTridasElement()!=null) 
+			{
+				// Element field is already a proper TridasElement so nothing to do!
+				return true;
+			}
+			
+			// element field must be a placeholder code string
+			// Loop through rows of the Element Table to try and grab recently imported element
+			
+			elementCode = ((TridasElementOrPlaceholder) elementField).getCode();
+			for(SingleElementModel elemrow : emodel.getRows())
+			{
+				if(elemrow.getProperty(SingleElementModel.IMPORTED)==null)
+				{
+					// Row is not imported so skip
+					continue;
+				}
+
+				Object elementTitleField = elemrow.getProperty(SingleElementModel.TITLE);
+				
+				if(elementTitleField==null)
+				{
+					// title field is empty so
+					continue;
+				}
+				else if(elementTitleField.equals(elementCode))
+				{	
+					// This row from the element table has the same element code as our sample row
+					// Check the object is the same 
+					
+					Object elementObjectField = elemrow.getProperty(SingleElementModel.OBJECT);
+		
+					if(elementObjectField instanceof TridasObjectOrPlaceholder)
+					{
+						TridasObjectOrPlaceholder toop = (TridasObjectOrPlaceholder) elementObjectField;
+						if(toop.getTridasObject()!=null) {
+							// Good!
+						}
+						else
+						{
+							continue;
+						}
+					}
+					else if (elementObjectField instanceof TridasObject)
+					{	
+						// Good!
+					}
+					else 
+					{
+						continue;
+					}
+					
+					// This element must be the right one so go ahead and set it in the sample model
+					
+					TridasElement element = new TridasElement();
+					elemrow.populateToTridasElement(element);
+					
+					som.setProperty(SingleSampleModel.ELEMENT, new TridasElementOrPlaceholder(element));
+					return true;
+					
+				}
+			}						
+		}
+		else if (elementField instanceof String)
+		{
+			elementCode = (String) elementField;
+		}
+		
+		// This sample's parent element is not in the element table
+		// Try to search from the database in case the user is entering a new sample for an element
+		// that was imported some time ago.  We could do this from the start, but it is expensive
+		// as it makes lots of db calls.		
+		TridasElement e = searchForElement(parentObject, elementCode);
+		if(e==null)
+		{
+			log.error("Parent element was not found in database");
+			return false;
+		}
+		else
+		{
+			som.setProperty(SingleSampleModel.ELEMENT, new TridasElementOrPlaceholder(e));
+			return true;
+		}
+		
+	}
+	
+	private TridasElement searchForElement(TridasObject o, String elementCode)
+	{
+		if(o==null || elementCode == null) {
+			log.error("Can't seaerch for element if object of element code are null"); 
+			return null;
+		}
+		
+		// Find all elements for an object 
+    	SearchParameters param = new SearchParameters(SearchReturnObject.ELEMENT);
+    	param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, o.getIdentifier().getValue().toString());
+    	param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, elementCode);
+
+		EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
+		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
+		
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error searching database for element");
+			return null;
+		}
+		
+		List<TridasElement> elList = resource.getAssociatedResult();
+		
+		if(elList.size()==1)
+		{
+			return elList.get(0);
+		}
+		
+		log.error("Error searching database for element.  Got "+elList.size()+" elements when searching");
+
+		return null;		
+	}
+	
+
 }
