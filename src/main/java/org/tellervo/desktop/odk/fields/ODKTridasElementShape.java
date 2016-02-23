@@ -9,7 +9,10 @@ import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementShape extends AbstractODKChoiceField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	public ODKTridasElementShape()
 	{
 		super(ODKDataType.SELECT_ONE, "tridas_element_shape", "Shape of element", Documentation.getDocumentation("element.shape"), null);

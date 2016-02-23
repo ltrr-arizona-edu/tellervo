@@ -10,6 +10,7 @@ import org.tellervo.desktop.odk.SelectableChoice;
 
 public abstract class AbstractODKChoiceField extends AbstractODKField {
 
+	private static final long serialVersionUID = 1L;
 	private ArrayList<SelectableChoice> choices = new ArrayList<SelectableChoice>();
 	private static final Logger log = LoggerFactory.getLogger(AbstractODKChoiceField.class);
 

@@ -14,11 +14,15 @@ import org.tridas.schema.TridasElement;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 public class ODKTridasElementType extends AbstractODKChoiceField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	public ODKTridasElementType()
 	{
 		super(ODKDataType.SELECT_ONE, "tridas_element_type", "Element type", Documentation.getDocumentation("element.type"), null);
 		
+		@SuppressWarnings("unchecked")
 		List<ControlledVoc> types = Dictionary.getMutableDictionary("elementTypeDictionary");
 		
 		ArrayList<Object> objects = new ArrayList<Object>();

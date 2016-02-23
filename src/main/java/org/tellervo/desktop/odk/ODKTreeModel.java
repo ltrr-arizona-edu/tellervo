@@ -6,7 +6,6 @@ import java.util.Enumeration;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

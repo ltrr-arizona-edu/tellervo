@@ -4,7 +4,10 @@ import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasSample;
 
 public class ODKTridasSamplePhoto extends AbstractODKField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	public ODKTridasSamplePhoto()
 	{
 		super(ODKDataType.IMAGE, "tridas_sample_file_photo", "Photo(s) of sample", "Photos of the sample being studied", null);

@@ -6,6 +6,9 @@ import org.tridas.schema.TridasSample;
 
 public class ODKTridasSampleSamplingDate extends AbstractODKField {
 	
+	private static final long serialVersionUID = 1L;
+
+	
 	public ODKTridasSampleSamplingDate()
 	{
 		super(ODKDataType.STRING, "tridas_sample_samplingdate", "Sampling date", Documentation.getDocumentation("sample.samplingDate"), null);

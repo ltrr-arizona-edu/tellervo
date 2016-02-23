@@ -2,7 +2,7 @@ package org.tellervo.desktop.odk.fields;
 
 import org.tridas.interfaces.ITridas;
 
-public interface ODKFieldInterface extends Comparable{
+public interface ODKFieldInterface extends Comparable<ODKFieldInterface>{
 
 	public String toString();
 	

@@ -6,6 +6,8 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementBedrock extends AbstractODKField {
 	
+	private static final long serialVersionUID = 1L;
+
 	public ODKTridasElementBedrock()
 	{
 		super(ODKDataType.STRING, "tridas_element_soil_description", "Soil description", Documentation.getDocumentation("element.soil.description"), null);

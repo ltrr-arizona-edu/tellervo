@@ -6,6 +6,8 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementAuthenticity extends AbstractODKField {
 	
+	private static final long serialVersionUID = 1L;
+
 	public ODKTridasElementAuthenticity()
 	{
 		super(ODKDataType.STRING, "tridas_element_authenticity", "Authenticity", Documentation.getDocumentation("element.authenticity"), null);

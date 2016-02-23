@@ -6,6 +6,9 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementMarks extends AbstractODKField {
 	
+	private static final long serialVersionUID = 1L;
+
+		
 	public ODKTridasElementMarks()
 	{
 		super(ODKDataType.STRING, "tridas_element_marks", "Marks", Documentation.getDocumentation("element.marks"), null);

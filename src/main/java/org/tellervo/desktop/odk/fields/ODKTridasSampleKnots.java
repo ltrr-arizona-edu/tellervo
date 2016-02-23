@@ -8,7 +8,10 @@ import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasSample;
 
 public class ODKTridasSampleKnots extends AbstractODKChoiceField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	public ODKTridasSampleKnots()
 	{
 		super(ODKDataType.SELECT_ONE, "tridas_sample_knots", "Does sample have knots?", Documentation.getDocumentation("sample.knots"), null);

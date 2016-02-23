@@ -6,6 +6,9 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementSlopeAzimuth extends AbstractODKIntegerField {
 	
+	private static final long serialVersionUID = 1L;
+
+	
 	public ODKTridasElementSlopeAzimuth()
 	{
 		super("tridas_element_slope_azimuth", "Slope azimuth", Documentation.getDocumentation("element.slope.azimuth"), null);

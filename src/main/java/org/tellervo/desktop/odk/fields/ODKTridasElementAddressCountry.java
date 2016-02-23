@@ -5,6 +5,8 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementAddressCountry extends AbstractODKField {
 
+	private static final long serialVersionUID = 1L;
+
 	public ODKTridasElementAddressCountry()
 	{
 		super(ODKDataType.STRING, "tridas_element_address_country", "Country", "Country where this element is found", null);

@@ -6,6 +6,9 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementSoilDepth extends AbstractODKDecimalField {
 	
+	private static final long serialVersionUID = 1L;
+
+	
 	public ODKTridasElementSoilDepth()
 	{
 		super("tridas_element_soil_depth", "Soil depth", Documentation.getDocumentation("element.soil.depth"), null);

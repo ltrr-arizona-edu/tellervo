@@ -6,6 +6,9 @@ import org.tridas.schema.TridasSample;
 
 public class ODKTridasSampleExternalID extends AbstractODKField {
 	
+	private static final long serialVersionUID = 1L;
+
+	
 	public ODKTridasSampleExternalID()
 	{
 		super(ODKDataType.STRING, "tridas_sample_externalid", "External Sample ID", Documentation.getDocumentation("sample.externalId"), null);

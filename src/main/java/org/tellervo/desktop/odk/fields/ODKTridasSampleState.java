@@ -6,6 +6,9 @@ import org.tridas.schema.TridasSample;
 
 public class ODKTridasSampleState extends AbstractODKField {
 	
+	private static final long serialVersionUID = 1L;
+
+	
 	public ODKTridasSampleState()
 	{
 		super(ODKDataType.STRING, "tridas_sample_state", "Sample state", Documentation.getDocumentation("sample.state"), null);

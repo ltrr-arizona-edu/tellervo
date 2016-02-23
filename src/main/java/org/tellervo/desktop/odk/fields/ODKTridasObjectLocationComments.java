@@ -5,7 +5,10 @@ import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
 
 public class ODKTridasObjectLocationComments extends AbstractODKField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	public ODKTridasObjectLocationComments()
 	{
 		super(ODKDataType.STRING, "tridas_object_location_comments", "Location comments", Documentation.getDocumentation("object.location.comments"), null);

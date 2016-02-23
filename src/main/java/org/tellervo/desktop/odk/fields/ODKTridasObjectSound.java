@@ -4,7 +4,10 @@ import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
 
 public class ODKTridasObjectSound extends AbstractODKField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	public ODKTridasObjectSound()
 	{
 		super(ODKDataType.AUDIO, "tridas_object_file_sound", "Sound clip(s)", "Audio recording, typically a voice memo regarding the object", null);

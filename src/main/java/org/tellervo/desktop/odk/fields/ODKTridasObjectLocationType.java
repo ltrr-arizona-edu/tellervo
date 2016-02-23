@@ -9,7 +9,10 @@ import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasObject;
 
 public class ODKTridasObjectLocationType extends AbstractODKChoiceField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	public ODKTridasObjectLocationType()
 	{
 		super(ODKDataType.SELECT_ONE, "tridas_object_location_type", "Location type", Documentation.getDocumentation("object.location.type"), null);

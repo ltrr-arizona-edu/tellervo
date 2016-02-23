@@ -6,6 +6,9 @@ import org.tridas.schema.TridasRadius;
 
 public class ODKTridasRadiusAzimuth extends AbstractODKIntegerField {
 	
+	private static final long serialVersionUID = 1L;
+
+	
 	public ODKTridasRadiusAzimuth()
 	{
 		super("tridas_radius_azimuth", "Sampling azimuth", Documentation.getDocumentation("radius.azimuth")+" This is only relevant in this form if the sample is a core.", null);

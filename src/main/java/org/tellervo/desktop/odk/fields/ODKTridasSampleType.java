@@ -14,11 +14,15 @@ import org.tridas.schema.TridasSample;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 public class ODKTridasSampleType extends AbstractODKChoiceField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	public ODKTridasSampleType()
 	{
 		super(ODKDataType.SELECT_ONE, "tridas_sample_type", "Sample type", Documentation.getDocumentation("sample.type"), null);
 		
+		@SuppressWarnings("unchecked")
 		List<ControlledVoc> types = Dictionary.getMutableDictionary("sampleTypeDictionary");
 		
 		ArrayList<Object> objects = new ArrayList<Object>();

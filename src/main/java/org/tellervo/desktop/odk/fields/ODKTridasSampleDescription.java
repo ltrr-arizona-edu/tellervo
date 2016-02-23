@@ -5,7 +5,10 @@ import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasSample;
 
 public class ODKTridasSampleDescription extends AbstractODKField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	public ODKTridasSampleDescription()
 	{
 		super(ODKDataType.STRING, "tridas_sample_description", "Sample description", Documentation.getDocumentation("sample.description"), null);

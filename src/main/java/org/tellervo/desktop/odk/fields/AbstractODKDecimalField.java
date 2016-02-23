@@ -4,6 +4,7 @@ package org.tellervo.desktop.odk.fields;
 
 public abstract class AbstractODKDecimalField extends AbstractODKField {
 
+	private static final long serialVersionUID = 1L;
 	private Double minValue = Double.MIN_VALUE;
 	private Double maxValue = Double.MAX_VALUE;
 	

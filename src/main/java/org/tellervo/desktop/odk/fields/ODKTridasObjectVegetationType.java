@@ -5,7 +5,10 @@ import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
 
 public class ODKTridasObjectVegetationType extends AbstractODKField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	public ODKTridasObjectVegetationType()
 	{
 		super(ODKDataType.STRING, "tridas_object_vegetation_type", "Vegetation type", Documentation.getDocumentation("object.vegetationType"), null);

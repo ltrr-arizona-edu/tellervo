@@ -6,6 +6,9 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementSlopeAngle extends AbstractODKIntegerField {
 	
+	private static final long serialVersionUID = 1L;
+
+		
 	public ODKTridasElementSlopeAngle()
 	{
 		super("tridas_element_slope_angle", "Slope angle", Documentation.getDocumentation("element.slope.angle"), null);

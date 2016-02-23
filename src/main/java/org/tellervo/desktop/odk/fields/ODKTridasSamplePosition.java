@@ -6,6 +6,9 @@ import org.tridas.schema.TridasSample;
 
 public class ODKTridasSamplePosition extends AbstractODKField {
 	
+	private static final long serialVersionUID = 1L;
+
+	
 	public ODKTridasSamplePosition()
 	{
 		super(ODKDataType.STRING, "tridas_sample_position", "Sample position", Documentation.getDocumentation("sample.position"), null);

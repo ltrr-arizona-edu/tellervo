@@ -5,6 +5,9 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementLocation extends AbstractODKField {
 	
+	private static final long serialVersionUID = 1L;
+
+	
 	public ODKTridasElementLocation()
 	{
 		super(ODKDataType.LOCATION, "tridas_element_location", "Location", "Coordinates for this element", null);

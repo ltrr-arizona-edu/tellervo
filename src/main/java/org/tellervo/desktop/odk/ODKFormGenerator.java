@@ -2,7 +2,6 @@ package org.tellervo.desktop.odk;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.UUID;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -16,14 +15,10 @@ import org.tellervo.desktop.odk.fields.AbstractODKDecimalField;
 import org.tellervo.desktop.odk.fields.AbstractODKIntegerField;
 import org.tellervo.desktop.odk.fields.ODKDataType;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
-import org.tridas.io.util.StringUtils;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.NormalTridasUnit;
-import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasObject;
-import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
 public class ODKFormGenerator {

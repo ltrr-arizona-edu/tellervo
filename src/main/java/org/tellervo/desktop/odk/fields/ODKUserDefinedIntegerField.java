@@ -3,7 +3,10 @@ package org.tellervo.desktop.odk.fields;
 import org.tridas.interfaces.ITridas;
 
 public class ODKUserDefinedIntegerField extends AbstractODKIntegerField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	private Class<? extends ITridas> attachedTo;
 	
 	public ODKUserDefinedIntegerField(String fieldcode, String fieldname, String description,

@@ -28,13 +28,12 @@ public class ODKFieldListModel extends AbstractListModel<ODKFieldInterface> impl
 	{
 		this.fields = fields;
 		Collections.sort(this.fields);
-
+		this.fireIntervalAdded(this, 0, fields.size()-1);
 	}
 	
 	public void addField(ODKFieldInterface field)
 	{
 		fields.add(field);
-		
 		Collections.sort(this.fields);
 		this.fireIntervalAdded(this, 0, fields.size()-1);
 	}

@@ -5,6 +5,9 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementObjectCode extends ODKTridasObjectCode {
 	
+	private static final long serialVersionUID = 1L;
+
+		
 	@Override
 	public Boolean isFieldRequired() {
 		return true;

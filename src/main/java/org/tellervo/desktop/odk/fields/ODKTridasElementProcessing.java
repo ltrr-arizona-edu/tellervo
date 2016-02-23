@@ -6,6 +6,9 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementProcessing extends AbstractODKField {
 	
+	private static final long serialVersionUID = 1L;
+
+	
 	public ODKTridasElementProcessing()
 	{
 		super(ODKDataType.STRING, "tridas_element_processing", "Processing", Documentation.getDocumentation("element.processing"), null);

@@ -6,6 +6,9 @@ import org.tridas.schema.TridasObject;
 
 public class ODKTridasObjectCreator extends AbstractODKField {
 	
+	private static final long serialVersionUID = 1L;
+
+	
 	public ODKTridasObjectCreator()
 	{
 		super(ODKDataType.STRING, "tridas_object_creator", "Object creator", Documentation.getDocumentation("object.creator"), null);

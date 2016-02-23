@@ -6,6 +6,9 @@ import org.tridas.schema.TridasObject;
 
 public class ODKTridasObjectTitle extends AbstractODKField {
 	
+	private static final long serialVersionUID = 1L;
+
+	
 	public ODKTridasObjectTitle()
 	{
 		super(ODKDataType.STRING, "tridas_object_title", "Object title", Documentation.getDocumentation("object.title"), null);

@@ -6,6 +6,8 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementComments extends AbstractODKField {
 
+	private static final long serialVersionUID = 1L;
+
 	public ODKTridasElementComments()
 	{
 		super(ODKDataType.STRING, "tridas_element_comments", "Element comments", Documentation.getDocumentation("element.comments"), null);

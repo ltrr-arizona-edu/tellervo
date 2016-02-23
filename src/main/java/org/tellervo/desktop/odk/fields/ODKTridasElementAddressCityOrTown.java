@@ -5,6 +5,8 @@ import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementAddressCityOrTown extends AbstractODKField {
 
+	private static final long serialVersionUID = 1L;
+
 	public ODKTridasElementAddressCityOrTown()
 	{
 		super(ODKDataType.STRING, "tridas_element_address_cityortown", "City/town", "City or town", null);

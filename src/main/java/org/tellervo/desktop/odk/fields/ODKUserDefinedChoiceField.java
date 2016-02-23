@@ -7,7 +7,10 @@ import org.tellervo.desktop.odk.SelectableChoice;
 import org.tridas.interfaces.ITridas;
 
 public class ODKUserDefinedChoiceField extends AbstractODKChoiceField {
+	
+	private static final long serialVersionUID = 1L;
 
+	
 	private Class<? extends ITridas> attachedTo;
 	
 	public ODKUserDefinedChoiceField(String fieldcode, String fieldname, String description,
