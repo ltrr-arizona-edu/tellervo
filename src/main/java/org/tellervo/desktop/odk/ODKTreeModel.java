@@ -64,7 +64,14 @@ public class ODKTreeModel extends DefaultTreeModel {
 			
 		}
 		
-		super.insertNodeInto((MutableTreeNode)newChild, parent, index);
+		if(index<=parent.getChildCount()-1)
+		{
+			super.insertNodeInto((MutableTreeNode)newChild, parent, index);
+		}
+		else
+		{
+			super.insertNodeInto((MutableTreeNode)newChild, parent, parent.getChildCount());
+		}
 	}
 	
 	@Override
@@ -93,20 +100,41 @@ public class ODKTreeModel extends DefaultTreeModel {
 		insertNodeInto((AbstractODKTreeNode) newChild, rootnode, rootnode.getChildCount());
 	}
 	
-	public void moveFieldUp(AbstractODKTreeNode node)
+	public boolean moveFieldUp(AbstractODKTreeNode node)
 	{
 		DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
-		int index = parent.getIndex(node)-1;		
+		int index = parent.getIndex(node);	
+		if(index==0) return false;
 		this.removeNodeFromParent(node);
-		this.insertNodeInto(node, parent, index);
+		this.insertNodeInto(node, parent, index-1);
+		return true;
 	}
 
-	public void moveFieldDown(AbstractODKTreeNode node)
+	public boolean moveFieldDown(AbstractODKTreeNode node)
+	{		
+		DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+		int index = parent.getIndex(node);	
+		if(index>=parent.getChildCount()-1) return false;
+		this.removeNodeFromParent(node);
+		this.insertNodeInto(node, parent, index+1);
+		return true;
+
+	
+	}
+	
+	public void moveFieldTop(AbstractODKTreeNode node)
 	{
 		DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
-		int index = parent.getIndex(node)+1;		
 		this.removeNodeFromParent(node);
-		this.insertNodeInto(node, parent, index);
+		this.insertNodeInto(node, parent, 0);
+	
+	}
+	
+	public void moveFieldBottom(AbstractODKTreeNode node)
+	{
+		DefaultMutableTreeNode parent = (DefaultMutableTreeNode) node.getParent();
+		this.removeNodeFromParent(node);
+		this.insertNodeInto(node, parent, parent.getChildCount());
 	
 	}
 	

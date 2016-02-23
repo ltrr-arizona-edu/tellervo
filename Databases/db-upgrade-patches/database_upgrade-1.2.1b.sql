@@ -1,4 +1,4 @@
-# Patches for handling ODK Forms
+-- Patches for handling ODK Forms
 
 ALTER TABLE tblsecurityuser ADD COLUMN odkpassword varchar;
 

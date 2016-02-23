@@ -56,6 +56,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.xml.parsers.DocumentBuilderFactory;
 
@@ -341,21 +342,34 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		selectedFieldsTreeModel = new ODKTreeModel(treeRoot, TridasObject.class);
 		selectedFieldsTreeModel.addTreeModelListener(new ODKTreeModelListener(tree));
 		
-		JPanel panel_3 = new JPanel();
-		panelFieldPicker.add(panel_3, "cell 3 1,grow");
-		panel_3.setLayout(new MigLayout("insets 0, gap rel 0", "[]", "[top][top][grow]"));
+		JPanel panelMove = new JPanel();
+		panelFieldPicker.add(panelMove, "cell 3 1,grow");
+		panelMove.setLayout(new MigLayout("insets 0, gap rel 0", "[44px]", "[grow][28px][28px][28px][28px][grow]"));
 		
 		JButton btnUp = new JButton("");
 		btnUp.setIcon(Builder.getIcon("1uparrow.png", 16));
 		btnUp.setActionCommand("MoveUp");
 		btnUp.addActionListener(this);
-		panel_3.add(btnUp, "cell 0 0,alignx left,aligny top");
+		panelMove.add(btnUp, "cell 0 2,alignx left,aligny top");
+		
+		JButton btnTop = new JButton("");
+		btnTop.setIcon(Builder.getIcon("2uparrow.png", 16));
+		btnTop.setActionCommand("MoveTop");
+		btnTop.addActionListener(this);
+		panelMove.add(btnTop, "cell 0 1,alignx left,aligny top");
+		
 		
 		JButton btnDown = new JButton("");
 		btnDown.setIcon(Builder.getIcon("1downarrow.png", 16));
 		btnDown.setActionCommand("MoveDown");
 		btnDown.addActionListener(this);
-		panel_3.add(btnDown, "cell 0 1,alignx left,aligny top");
+		panelMove.add(btnDown, "cell 0 3,alignx left,aligny top");
+		
+		JButton btnBottom = new JButton("");
+		btnBottom.setIcon(Builder.getIcon("2downarrow.png", 16));
+		btnBottom.setActionCommand("MoveBottom");
+		btnBottom.addActionListener(this);
+		panelMove.add(btnBottom, "cell 0 4,alignx left,aligny top");
 		
 		chkMakePublic = new JCheckBox("Make available to other database users");
 		panelMain.add(chkMakePublic, "cell 1 1,growx");
@@ -1257,6 +1271,14 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		{
 			moveDown();
 		}
+		else if(evt.getActionCommand().equals("MoveTop"))
+		{
+			moveTop();
+		}
+		else if(evt.getActionCommand().equals("MoveBottom"))
+		{
+			moveBottom();
+		}
 		else if(evt.getActionCommand().equals("Rename"))
 		{
 			renameField();
@@ -1508,15 +1530,61 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	
 	private void moveUp()
 	{
-		this.selectedFieldsTreeModel.moveFieldUp((AbstractODKTreeNode) tree.getLastSelectedPathComponent());
+		AbstractODKTreeNode nodeToMove = (AbstractODKTreeNode) tree.getLastSelectedPathComponent();
+		boolean success = this.selectedFieldsTreeModel.moveFieldUp(nodeToMove);
+		
+		if(success)
+		{
+			selectAndExpandNode(nodeToMove);
+		}
+		
+		/*int[] selrows = this.tree.getSelectionRows();
+		boolean success = this.selectedFieldsTreeModel.moveFieldUp((AbstractODKTreeNode) tree.getLastSelectedPathComponent());
 		this.expandTree();
+		
+		if(success)
+		{	
+			if(selrows.length==1 && selrows[0]>0)
+			{
+				this.tree.setSelectionRow(selrows[0]-1);
+			}
+		}*/
 	}
 	
 	private void moveDown()
 	{
-		this.selectedFieldsTreeModel.moveFieldDown((AbstractODKTreeNode) tree.getLastSelectedPathComponent());
-		this.expandTree();
-
+		//int[] selrows = this.tree.getSelectionRows();	
+		AbstractODKTreeNode nodeToMove = (AbstractODKTreeNode) tree.getLastSelectedPathComponent();
+		boolean success = this.selectedFieldsTreeModel.moveFieldDown(nodeToMove);
+		
+		if(success)
+		{
+			selectAndExpandNode(nodeToMove);
+		}
+		
+		/*this.expandTree();
+		
+		if(success)
+		{	
+			if(selrows.length==1 && selrows[0]<tree.getRowCount())
+			{
+				this.tree.setSelectionRow(selrows[0]+1);
+			}
+		}*/
+	}
+	
+	private void moveTop()
+	{
+		AbstractODKTreeNode node = (AbstractODKTreeNode) tree.getLastSelectedPathComponent();
+		this.selectedFieldsTreeModel.moveFieldTop(node);
+		this.selectAndExpandNode(node);
+	}
+	
+	private void moveBottom()
+	{
+		AbstractODKTreeNode node = (AbstractODKTreeNode) tree.getLastSelectedPathComponent();
+		this.selectedFieldsTreeModel.moveFieldBottom(node);
+		this.selectAndExpandNode(node);
 	}
 	
 	private void expandTree(){
@@ -1531,6 +1599,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		// Group
 		TreePath[] selectionpaths = tree.getSelectionPaths();
+		int[] selrows = tree.getSelectionRows();
 		
 		for(TreePath path : selectionpaths)
 		{
@@ -1552,22 +1621,37 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		ODKBranchNode groupNode = new ODKBranchNode(true, false, groupname, TridasObject.class);
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode) selectedFieldsTreeModel.getRoot();
-		this.selectedFieldsTreeModel.insertNodeInto((AbstractODKTreeNode)groupNode, root, root.getChildCount());
+		this.selectedFieldsTreeModel.insertNodeInto((AbstractODKTreeNode)groupNode, root, selrows[0]);
 		
 		
-				
+		int i=0;	
 		for(TreePath path : selectionpaths)
 		{
-			AbstractODKTreeNode node = (AbstractODKTreeNode) path.getLastPathComponent();		
-			selectedFieldsTreeModel.removeNodeFromParent(node);
-			selectedFieldsTreeModel.insertNodeInto(node, groupNode, groupNode.getChildCount());
+			AbstractODKTreeNode node = (AbstractODKTreeNode) path.getLastPathComponent();	
+			if(node!=null)
+			{		
+				selectedFieldsTreeModel.removeNodeFromParent(node);
+				selectedFieldsTreeModel.insertNodeInto(node, groupNode, i);
+				i++;
+			}
 		}
+		
+		selectAndExpandNode(groupNode);
 		
 	}
 	
+	private void selectAndExpandNode(AbstractODKTreeNode node)
+	{
+		TreeNode[] groupNodePath = node.getPath();
+		TreePath tpath = new TreePath(groupNodePath);
+		tree.setSelectionPath(tpath);
+		tree.expandPath(tpath);
+		tree.scrollPathToVisible(tpath);
+	}
 	private void renameField()
 	{
 		AbstractODKTreeNode node = (AbstractODKTreeNode) tree.getLastSelectedPathComponent();
+		TreePath tpath = new TreePath(node.getPath());
 		
 		if(node instanceof ODKBranchNode)
 		{
@@ -1578,7 +1662,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			
 			if(groupname==null || groupname.length()==0) return;
 			
-			node.setUserObject(new String(groupname));
+			//node.setUserObject(new String(groupname));
+			this.selectedFieldsTreeModel.valueForPathChanged(tpath, new String(groupname));
+			
 		}
 		else if (node instanceof ODKFieldNode)
 		{
@@ -1591,9 +1677,16 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			
 			ODKFieldInterface obj = (ODKFieldInterface) node.getUserObject();
 			obj.setName(fieldname);
+			this.selectedFieldsTreeModel.valueForPathChanged(tpath, obj);
+
 			selectedField = obj;
 			setDetailsPanel();
 		}
+		
+		
+		
+		
+		
 		
 	}
 }
