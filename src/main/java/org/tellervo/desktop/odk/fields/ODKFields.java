@@ -35,6 +35,8 @@ public class ODKFields {
 		fieldsList.add(ODKTridasObjectAddressPostalCode.class);
 		fieldsList.add(ODKTridasObjectAddressCountry.class);
 		fieldsList.add(ODKTridasObjectVegetationType.class);
+		fieldsList.add(ODKTridasObjectOwner.class);
+		fieldsList.add(ODKTridasObjectCreator.class);
 
 		
 		// ELEMENT FIELDS
