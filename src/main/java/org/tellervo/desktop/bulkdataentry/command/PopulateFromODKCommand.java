@@ -92,11 +92,14 @@ import org.tellervo.desktop.wsi.tellervo.TridasElementTemporaryCacher;
 import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
 import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
+import org.tridas.schema.TridasShape;
 import org.tridas.util.TridasObjectEx;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -335,8 +338,8 @@ public class PopulateFromODKCommand implements ICommand {
 				}
 				else if (parser.getFileType()==ODKFileType.ELEMENTS_AND_SAMPLES)
 				{
-					addElementFromParser(parser, emodel, wizard);										
-					addSampleFromParser(parser, smodel, wizard);
+					addElementFromParser(parser, emodel, wizard, mediaFileArr);										
+					addSampleFromParser(parser, smodel, wizard, mediaFileArr);
 				}
 				else
 				{
@@ -653,7 +656,8 @@ public class PopulateFromODKCommand implements ICommand {
 		newrow.setProperty(SingleObjectModel.DESCRIPTION, description);
 		newrow.setProperty(SingleObjectModel.LATITUDE, parser.getLatitude("tridas_object_location", "Location"));
 		newrow.setProperty(SingleObjectModel.LONGITUDE, parser.getLongitude("tridas_object_location", "Location"));
-		newrow.setProperty(SingleObjectModel.LOCATION_TYPE, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_object_location_type"), "locationTypeDictionary"));
+		String loctype = parser.getFieldValueAsString("tridas_object_location_type");
+		newrow.setProperty(SingleObjectModel.LOCATION_TYPE, NormalTridasLocationType.fromValue(loctype));
 		newrow.setProperty(SingleObjectModel.LOCATION_PRECISION, parser.getError("tridas_object_location", "Location"));
 		newrow.setProperty(SingleObjectModel.LOCATION_COMMENT, parser.getFieldValueAsString("tridas_object_location_comments"));
 		newrow.setProperty(SingleObjectModel.ADDRESSLINE1, parser.getFieldValueAsString("tridas_object_address_line1"));
@@ -663,29 +667,46 @@ public class PopulateFromODKCommand implements ICommand {
 		newrow.setProperty(SingleObjectModel.POSTCODE, parser.getFieldValueAsString("tridas_object_address_postalcode"));
 		newrow.setProperty(SingleObjectModel.COUNTRY, parser.getFieldValueAsString("tridas_object_address_country"));
 		newrow.setProperty(SingleObjectModel.VEGETATION_TYPE, parser.getFieldValueAsString("tridas_object_vegetation_type"));
-		
-		// Handle media files...
-		ArrayList<String> fieldnames = new ArrayList<String>();
-		fieldnames.add("tridas_object_file_photo");
-		fieldnames.add("tridas_object_file_video");
-		fieldnames.add("tridas_object_file_sound");
-		TridasFileList filesList = this.getMediaFileList(parser, fieldnames, mediaFileArr, wizard, objectcode);
+		newrow.setProperty(SingleObjectModel.OWNER, parser.getFieldValueAsString("tridas_object_owner"));
+		newrow.setProperty(SingleObjectModel.CREATOR, parser.getFieldValueAsString("tridas_object_creator"));
+
+		// Handle media files..
+		TridasFileList filesList = this.getMediaFileList(parser, mediaFileArr, wizard, objectcode);
 		if(filesList!=null && filesList.size()>0)
 		{
 			newrow.setProperty(SingleObjectModel.FILES, filesList);
 		}
+		
+		
 
+
+		
 		
 		model.getRows().add(newrow);
 		filesLoadedSuccessfully++;
 	}
 	
+
+	private TridasFileList getMediaFileList(ODKParser parser, File[] mediaFileArr, ODKImportWizard wizard, String codeprefix)
+	{
+		return getMediaFileList(parser, null, mediaFileArr, wizard, codeprefix);
+	}
 	
-	private TridasFileList getMediaFileList(ODKParser parser, ArrayList<String>fieldnames, File[] mediaFileArr, ODKImportWizard wizard, String codeprefix)
+	/**
+	 * Get a list of media files 
+	 * 
+	 * @param parser
+	 * @param mediaFilenames
+	 * @param mediaFileArr
+	 * @param wizard
+	 * @param codeprefix
+	 * @return
+	 */
+	private TridasFileList getMediaFileList(ODKParser parser, ArrayList<String> mediaFilenames, File[] mediaFileArr, ODKImportWizard wizard, String codeprefix)
 	{
 		TridasFileList filesList = new TridasFileList();
 
-		ArrayList<String> mediaFilenames = parser.getMediaFileFields();
+		if(mediaFilenames==null) mediaFilenames = parser.getMediaFileFields();
 		
 		
 		for(String mediafile : mediaFilenames)
@@ -811,7 +832,7 @@ public class PopulateFromODKCommand implements ICommand {
 		
 	}
 
-	private void addElementFromParser(ODKParser parser, ElementModel model, ODKImportWizard wizard)
+	private void addElementFromParser(ODKParser parser, ElementModel model, ODKImportWizard wizard, File[] mediaFileArr)
 	{
 		SingleElementModel newrow = (SingleElementModel) model.createRowInstance();
 
@@ -828,22 +849,7 @@ public class PopulateFromODKCommand implements ICommand {
 			object = new TridasObjectOrPlaceholder(objcode);
 		}
 		newrow.setProperty(SingleElementModel.OBJECT, object);
-		
-		NormalTridasShape shape = null;
-		try{
-			String shapename = parser.getFieldValueAsString("tridas_element_shape").toString();
-			for(NormalTridasShape val : NormalTridasShape.values())
-			{
-				if(val.name().equals(shapename)) shape = val;
-				break;
-			}
-			if(shape!=null) newrow.setProperty(SingleElementModel.SHAPE, shape);
-		} catch (Exception e)
-		{
-			
-		}
 
-		
 		newrow.setProperty(SingleElementModel.TITLE, parser.getFieldValueAsString("tridas_element_title"));
 		newrow.setProperty(SingleElementModel.COMMENTS, parser.getFieldValueAsString("tridas_element_comments"));
 		try{
@@ -857,7 +863,8 @@ public class PopulateFromODKCommand implements ICommand {
 		newrow.setProperty(SingleElementModel.AUTHENTICITY, parser.getFieldValueAsString("tridas_element_authenticity"));
 		newrow.setProperty(SingleElementModel.LATITUDE, parser.getLatitude("tridas_element_location", "TreeLocation"));
 		newrow.setProperty(SingleElementModel.LONGITUDE, parser.getLongitude("tridas_element_location", "TreeLocation"));
-		newrow.setProperty(SingleElementModel.LOCATION_TYPE, DictionaryUtil.getControlledVocForName(parser.getFieldValueAsString("tridas_element_location_type"), "locationTypeDictionary"));
+		String loctype = parser.getFieldValueAsString("tridas_element_location_type");
+		newrow.setProperty(SingleElementModel.LOCATION_TYPE, NormalTridasLocationType.fromValue(loctype));
 		newrow.setProperty(SingleElementModel.LOCATION_PRECISION, parser.getError("tridas_element_location", "TreeLocation"));
 		newrow.setProperty(SingleElementModel.LOCATION_COMMENT, parser.getFieldValueAsString("tridas_element_location_comments"));
 		newrow.setProperty(SingleElementModel.ADDRESSLINE1, parser.getFieldValueAsString("tridas_element_address_line1"));
@@ -873,19 +880,34 @@ public class PopulateFromODKCommand implements ICommand {
 		newrow.setProperty(SingleElementModel.SLOPE_ANGLE, parser.getFieldValueAsInteger("tridas_element_slope_angle"));
 		newrow.setProperty(SingleElementModel.SLOPE_AZIMUTH, parser.getFieldValueAsInteger("tridas_element_slope_azimuth"));
 		newrow.setProperty(SingleElementModel.SOIL_DEPTH, parser.getFieldValueAsDouble("tridas_element_soil_depth"));
-		newrow.setProperty(SingleElementModel.ALTITUDE, parser.getElevation("tridas_element_location", "TreeLocation"));
+		newrow.setProperty(SingleElementModel.HEIGHT, parser.getFieldValueAsDouble("tridas_element_dimensions_height"));
+		newrow.setProperty(SingleElementModel.WIDTH, parser.getFieldValueAsDouble("tridas_element_dimensions_width"));
+		newrow.setProperty(SingleElementModel.DEPTH, parser.getFieldValueAsDouble("tridas_element_dimensions_depth"));
 
-		// Still to handle
-		//tridas_element_file_photo
-		//tridas_element_file_sound
-		//tridas_element_file_video
+		newrow.setProperty(SingleElementModel.ALTITUDE, parser.getElevation("tridas_element_location", "TreeLocation"));
+		NormalTridasShape shape = NormalTridasShape.fromValue(parser.getFieldValueAsString("tridas_element_shape"));
+		if(shape!=null)
+		{
+			TridasShape ts = new TridasShape();
+			ts.setNormalTridas(shape);
+			newrow.setProperty(SingleElementModel.SHAPE, ts);
+		}
+
+		// Handle media files...
+		String code = objcode+"-"+parser.getFieldValueAsString("tridas_element_title");
+		TridasFileList filesList = this.getMediaFileList(parser, mediaFileArr, wizard, code);
+		if(filesList!=null && filesList.size()>0)
+		{
+			newrow.setProperty(SingleElementModel.FILES, filesList);
+		}
+
 		
 		model.getRows().add(newrow);
 		filesLoadedSuccessfully++;
 	}
 
 
-	private void addSampleFromParser(ODKParser parser, SampleModel model, ODKImportWizard wizard)
+	private void addSampleFromParser(ODKParser parser, SampleModel model, ODKImportWizard wizard, File[] mediaFileArr)
 	{		
 		NodeList nList = parser.getNodeListByName("group_sample_fields");
 
@@ -960,13 +982,19 @@ public class PopulateFromODKCommand implements ICommand {
 			
 			newrow.setProperty(SingleSampleModel.KNOTS, kb);
 
-			// STILL TO HANDLE
-			//tridas_sample_file_photo
-			//?tridas_sample_samplingdate
-
-
+			// Handle media files...
+			String code = objcode+"-"+elmcode+"-"+parser.getFieldValueAsString("tridas_sample_title");
+			ArrayList<String> fieldnames = new ArrayList<String>();
+			fieldnames.add("tridas_sample_file_photo");
+			fieldnames.add("tridas_sample_file_video");
+			fieldnames.add("tridas_sample_file_sound");
+			TridasFileList filesList = this.getMediaFileList(parser, fieldnames, mediaFileArr, wizard, code);
+			if(filesList!=null && filesList.size()>0)
+			{
+				newrow.setProperty(SingleElementModel.FILES, filesList);
+			}
+			
 			model.getRows().add(newrow);
-
 		}
 
 	}

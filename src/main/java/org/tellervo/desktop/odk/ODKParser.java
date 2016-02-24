@@ -209,6 +209,11 @@ public class ODKParser {
 				Integer intval = Integer.parseInt(nList.item(0).getNodeValue());
 				return intval;
 			}
+			else if (nList.item(0).getFirstChild().getNodeValue()!=null)
+			{
+				Integer intval = Integer.parseInt(nList.item(0).getFirstChild().getNodeValue());
+				return intval;
+			}
 		} catch (Exception e)
 		{
 			log.warn("Error getting number from tag field: "+field+". The value was "+nList.item(0).getNodeValue());
@@ -520,9 +525,11 @@ public class ODKParser {
 							|| name.startsWith("tridas_element_file_photo")
 							|| name.startsWith("tridas_element_file_sound")
 							|| name.startsWith("tridas_element_file_video")
-							|| name.startsWith("tridas_sample_file_photo")
-							|| name.startsWith("tridas_sample_file_sound")
-							|| name.startsWith("tridas_sample_file_video")) {
+							//|| name.startsWith("tridas_sample_file_photo")
+							//|| name.startsWith("tridas_sample_file_sound")
+							//|| name.startsWith("tridas_sample_file_video")
+							) 
+					{
 						mediaFileList.add(value);
 					}
 				} catch (Exception e) {

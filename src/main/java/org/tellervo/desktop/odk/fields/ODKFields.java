@@ -23,7 +23,7 @@ public class ODKFields {
 		fieldsList.add(ODKTridasObjectComments.class);
 		fieldsList.add(ODKTridasObjectDescription.class);
 		fieldsList.add(ODKTridasObjectPhoto.class);
-		fieldsList.add(ODKTridasObjectSound.class);
+		//fieldsList.add(ODKTridasObjectSound.class);
 		fieldsList.add(ODKTridasObjectVideo.class);
 		fieldsList.add(ODKTridasObjectLocation.class);
 		fieldsList.add(ODKTridasObjectLocationType.class);
@@ -46,7 +46,7 @@ public class ODKFields {
 		fieldsList.add(ODKTridasElementType.class);
 		fieldsList.add(ODKTridasElementDescription.class);
 		fieldsList.add(ODKTridasElementPhoto.class);
-		fieldsList.add(ODKTridasElementSound.class);
+		//fieldsList.add(ODKTridasElementSound.class);
 		fieldsList.add(ODKTridasElementVideo.class);
 		fieldsList.add(ODKTridasElementTaxon.class);
 		fieldsList.add(ODKTridasElementShape.class);
