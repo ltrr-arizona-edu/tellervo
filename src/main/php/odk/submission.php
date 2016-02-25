@@ -142,7 +142,7 @@ function writeInstanceToDB($instanceName, $instance, $fileArray)
     $sql.=dbHelper::phpArrayToPGStrArray($fileArray); 
     $sql.=")";
   
-   file_put_contents('/tmp/headers.txt', "SQL : ".$sql."\n", FILE_APPEND);
+   //file_put_contents('/tmp/headers.txt', "SQL : ".$sql."\n", FILE_APPEND);
 
     if ($sql)
     {

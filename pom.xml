@@ -121,7 +121,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.build.timestamp.format>HH:mm dd-MMM-yyyy</maven.build.timestamp.format>
     	<timestamp>${maven.build.timestamp}</timestamp>
-    	<serverversion>1.2.0</serverversion>
+    	<serverversion>1.2.1</serverversion>
 	</properties>
 
 	<!--  Repository to deploy to.  When deploying make sure your .m2/settings.xml
@@ -305,7 +305,7 @@
 		<dependency>
 			<groupId>org.tridas</groupId>
 			<artifactId>tricycle</artifactId>
-			<version>0.3.0-SNAPSHOT</version>
+			<version>0.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
@@ -1327,5 +1327,5 @@
 		<url>https://sourceforge.net/p/tellervo/tickets/</url>
 		<system>Sourceforge.net</system>
 	</issueManagement>
-	<version>1.2.1-SNAPSHOT</version>
+	<version>1.2.1</version>
 </project>

@@ -167,7 +167,7 @@ public class ExportView extends JFrame {
 		panelBasic.add(lblFormat, "cell 0 0");
 		
 		format = new JComboBox(TridasIO.getSupportedWritingFormats());
-		new FormatWrapper(format, PrefKey.EXPORT_FORMAT, TridasIO.getSupportedReadingFormats()[0], TridasIO.getSupportedReadingFormats());
+		new FormatWrapper(format, PrefKey.EXPORT_FORMAT, TridasIO.getSupportedWritingFormats()[0], TridasIO.getSupportedWritingFormats());
 		
 		panelBasic.add(format, "cell 1 0 2 1");
 		
