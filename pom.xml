@@ -746,7 +746,7 @@
 			<plugin>
 				<artifactId>jdeb</artifactId>
 				<groupId>org.vafer</groupId>
-				<version>0.8</version>
+				<version>1.5</version>
 				<executions>
 				
 					<!-- Desktop Installer -->
@@ -819,6 +819,14 @@
 										<filemode>755</filemode>
 									</mapper>
 								</data>
+								<data>
+				                  <type>template</type>
+				                  <paths>
+				                    <path>/usr/share/tellervo-server/mediastore</path>
+				                    <user>www-data</user>
+				                    <group>www-data</group>
+				                  </paths>
+				                </data>
 								<data>
 									<src>${project.build.directory}/tellervo-pljava.jar</src>
 									<type>file</type>

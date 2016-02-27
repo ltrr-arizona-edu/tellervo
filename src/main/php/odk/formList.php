@@ -61,11 +61,11 @@ function getFormList($theUsername)
 		echo "    <hash>md5:".md5($row['definition'])."</hash>\n";
 		if($securehttp===TRUE)
 		{
-    			echo "    <downloadUrl>https://".$domain."odk/forms?id=".$row['odkdefinitionid']."</downloadUrl>\n";
+    			echo "    <downloadUrl>https://".$domain."/odk/forms?id=".$row['odkdefinitionid']."</downloadUrl>\n";
 		}
 		else
 		{
-    			echo "    <downloadUrl>http://".$domain."odk/forms?id=".$row['odkdefinitionid']."</downloadUrl>\n";
+    			echo "    <downloadUrl>http://".$domain."/odk/forms?id=".$row['odkdefinitionid']."</downloadUrl>\n";
 		}
 		echo "  </xform>\n";
 	}

@@ -39,6 +39,7 @@ echo "make your choice.\n\n";
 // This makes sure we have sudo access without further passwords required
 pingSudo();
 
+
 echo "\n\n";
 echo "Press [enter] to continue...";
 $response = fgets(STDIN); 

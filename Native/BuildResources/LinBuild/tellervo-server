@@ -105,6 +105,8 @@ if(isset($args["firstrun"]))
 	
 	echo $colors->getColoredString("\n\nStep 4 - Setting up the Tellervo database...\n\n", "light_purple");
 	requireRoot();
+	// Make sure media store is accessible to www-data
+	
 	createScriptsFromTemplates();
 	postgresSetup(true);
 	include($configfile);
@@ -176,6 +178,8 @@ if(isset($args["reconfigure"]) || isset($args["r"]))
 {
 	// Reconfigure server
 	requireRoot();
+	
+	exec("chown -R www-data:www-data /usr/share/tellervo-server/mediastore");
 	
 	// Confirm the user wants to scrub and start from scratch  
 	echo "\nIf you continue, your existing Tellervo configuration and database will be\n";
@@ -284,6 +288,8 @@ if (isset($args["configure"]) || isset($args["c"]))
 {
 	// Configure
 	requireRoot();
+	
+	exec("chown -R www-data:www-data /usr/share/tellervo-server/mediastore");
 	
 	// Check if the server is already configured
 	if( (file_exists($configfile)) && (file_exists($dbsetupfile)) )

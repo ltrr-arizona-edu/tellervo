@@ -330,7 +330,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
                     $this->setID(uuid::getUUID(), 0);
                     
 		    // New record
-                    $sql = "insert into tblsecurityuser (securityuserid, username, password, firstName, lastName, odkpassword isactive) values (";
+                    $sql = "insert into tblsecurityuser (securityuserid, username, password, firstName, lastName, odkpassword, isactive) values (";
                     $sql.= "'".pg_escape_string($this->id)."', ";
                     $sql.= "'".pg_escape_string($this->username)."', ";
                     $sql.= "'".pg_escape_string($this->password)."', ";

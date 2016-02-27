@@ -60,3 +60,5 @@ CREATE TABLE tblodkinstance
 WITH (
   OIDS=FALSE
 );
+
+UPDATE tblsupportedclient SET minversion='1.2.1' WHERE client='Tellervo WSI';
