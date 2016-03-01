@@ -40,22 +40,30 @@
 
 package org.tellervo.desktop.maventests;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
 import junit.framework.TestCase;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.nativeloader.RxTxNativeLoader;
 import org.tellervo.desktop.util.StringUtils;
+
 
 public class UtilTest extends TestCase {
     public UtilTest(String name) {
         super(name);
     }
 
+
+    public void testMyTest()
+    {
+    	String strReadBuffer = "01A+00036.26";
+    	
+    	String sign = strReadBuffer.substring(3, 4);
+        String value = strReadBuffer.substring(4, 12);
+        
+        System.out.println(sign);
+        System.out.println(value);
+    	
+    }
     
   /*  public void testGetHTTPTest(){
     
