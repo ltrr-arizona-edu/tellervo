@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (C) 2010 Lucas Madar and Peter Brewer
+ * Copyright (C) 2016 Peter Brewer
  * 
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,17 +26,10 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
-
-
-
 
 public class MitutoyoDMX1 extends GenericASCIIDevice {
 	protected final static Logger log = LoggerFactory.getLogger(MitutoyoDMX1.class);
@@ -58,7 +51,7 @@ public class MitutoyoDMX1 extends GenericASCIIDevice {
 		parity = PortParity.NONE;
 		flowControl = FlowControl.NONE;
 		lineFeed = LineFeed.CR;
-		unitMultiplier = UnitMultiplier.TIMES_1;
+		unitMultiplier = UnitMultiplier.TIMES_1000;
 		measureCumulatively = true;
 	}
 	
@@ -132,14 +125,13 @@ public class MitutoyoDMX1 extends GenericASCIIDevice {
 		return true;
 	}
 	
-	/**
-	 * Send zero command to Quadra-check QC10
-	 */
 	@Override
 	public void zeroMeasurement()
 	{
 		// Not supported
 		log.debug("Requesting device to zero is not supported");
+		//String cmd = "#3";
+		//sendRequest(cmd);
 	}
 	
 	@Override
@@ -251,9 +243,6 @@ public class MitutoyoDMX1 extends GenericASCIIDevice {
 		    		// Fire bad event as value is a negative number
 		    		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Negative value = "+intValue);
 		    	}
-			    							
-
-
 		}
 	}
 }

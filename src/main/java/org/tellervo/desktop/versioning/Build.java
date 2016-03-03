@@ -40,7 +40,7 @@ public class Build {
     public final static String AUTHOR = "Peter Brewer, Chris Dunham, Dan Girshovich, Aaron Hamid, Ken Harris, Drew Kalina, Pavithra Lakshminarayanan, Rocky Li, Lucas Madar, Daniel Murphy, Robert 'Mecki' Pohl, Paul Sheppard and Kit Sturgeon";
 
 	/** Most primitive server version supported by this client should be a three part string e.g 1.1.1 */
-	public static final String earliestServerVersionSupported = "1.2.0";
+	public static final String earliestServerVersionSupported = "1.2.1";
 	
 	// don't instantiate me
     private Build() {
