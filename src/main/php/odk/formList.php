@@ -57,7 +57,6 @@ function getFormList($theUsername)
 		echo $row['odkdefinitionid'];
 		echo "</formID>\n";
 		echo "    <name>".$row['name']."</name>\n";
-		echo "    <version>".$row['version']."</version>\n";
 		echo "    <hash>md5:".md5($row['definition'])."</hash>\n";
 		if($securehttp===TRUE)
 		{

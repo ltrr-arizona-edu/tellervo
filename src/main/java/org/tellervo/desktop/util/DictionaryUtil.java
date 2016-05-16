@@ -15,6 +15,9 @@ public class DictionaryUtil {
 	 * @return
 	 */
 	public static ControlledVoc getControlledVocForName(String name, String dictionaryName) {
+		
+		if(name==null || dictionaryName==null) return null;
+		
 		List<?> dictionary = Dictionary.getDictionary(dictionaryName);
 		List<ControlledVoc> vocab = ListUtil.subListOfType(dictionary, ControlledVoc.class);
 		

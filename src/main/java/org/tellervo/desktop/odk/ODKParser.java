@@ -440,22 +440,22 @@ public class ODKParser {
 		return null;
 	}
 	
-	public TridasElement getTridasElement(TridasElementTemporaryCacher cache, String objectCodeField, String elementCodeField)
+	public TridasElement getTridasElement(TridasElementTemporaryCacher cache, String objectCodeField, String elementCodeField, String sampleCode)
 	{
 
 		TridasElement element = cache.getTridasElement(getFieldValueAsString(objectCodeField).toString(), getFieldValueAsString(elementCodeField).toString());
 		if(element==null)
 		{
-			errorMessage+="The parent element to this sample ("+getFieldValueAsString(objectCodeField).toString()+"-"+getFieldValueAsString(elementCodeField).toString()+") does not exist in the database.  Skipping this sample.<br/>";
+			errorMessage+="The parent element to this sample does not exist in the database.  Object code = "+getFieldValueAsString(objectCodeField).toString()+", Element code = "+getFieldValueAsString(elementCodeField).toString()+", Sample code = "+sampleCode+".  Skipping this sample.<br/>";
 		}
 		
 		return element;
 	}
 	
-	public TridasElement getChrisTridasElement(TridasElementTemporaryCacher cache, String objectCodeField, String elementCodeField, String objectCodeField2, String elementCodeField2)
+	public TridasElement getChrisTridasElement(TridasElementTemporaryCacher cache, String objectCodeField, String elementCodeField, String objectCodeField2, String elementCodeField2, String samplecode)
 	{
-		TridasElement element1 = getTridasElement(cache, objectCodeField, elementCodeField);
-		TridasElement element2 = getTridasElement(cache, objectCodeField2, elementCodeField2);
+		TridasElement element1 = getTridasElement(cache, objectCodeField, elementCodeField, samplecode);
+		TridasElement element2 = getTridasElement(cache, objectCodeField2, elementCodeField2, samplecode);
 		
 		
 		if(element1!=null) return element1;

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
 import org.tellervo.desktop.bulkdataentry.model.AbstractBulkImportTableModel;
+import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
@@ -37,11 +38,14 @@ public class PopulateFromDatabaseCommand implements ICommand {
 	private static final Logger log = LoggerFactory.getLogger(PopulateFromDatabaseCommand.class);
 	private Integer counter = 0;
 	
+	private BulkImportModel model;
+	
 	@Override
 	public void execute(MVCEvent argEvent) {
 		
 		PopulateFromDatabaseEvent event = (PopulateFromDatabaseEvent) argEvent;
-
+		model = BulkImportModel.getInstance();
+		
 		if (event.model instanceof ObjectModel)
 		{
 			populateObjects(event);
@@ -275,7 +279,7 @@ public class PopulateFromDatabaseCommand implements ICommand {
 	
 	
 	private void recurseObjects(ProgressPopupModel dialogModel, 
-			PopulateFromDatabaseEvent event, TridasObject o, TridasObject parentObject, 
+			PopulateFromDatabaseEvent event, TridasObjectEx o, TridasObject parentObject, 
 			MVCArrayList<Object> rows, Double total)
 	{
 		log.debug("recurse called with count = "+counter);
@@ -289,10 +293,16 @@ public class PopulateFromDatabaseCommand implements ICommand {
 			newrow.setProperty(SingleObjectModel.PARENT_OBJECT, parentObject);
 		}
 		
-		try{AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
+		try{
+			AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
+			model.getObjectModel().getImportedList().add((TridasObjectEx) o);
+			otm.setSelected(newrow, false);
 		
-		otm.setSelected(newrow, false);
-		} catch (Exception e){}
+		} catch (Exception e){
+			
+			log.debug("Exception ");
+		}
+		
 		rows.add(newrow);
 		counter++;
 		
@@ -305,13 +315,15 @@ public class PopulateFromDatabaseCommand implements ICommand {
 		{
 			for(TridasObject o2 : o.getObjects())
 			{
+				TridasObjectEx o2ex = (TridasObjectEx) o2;
+				
 				if(parentObject==null)
 				{
-					recurseObjects(dialogModel, event, o2, o, rows, total);
+					recurseObjects(dialogModel, event, o2ex, o, rows, total);
 				}
 				else
 				{
-					recurseObjects(dialogModel, event, o2, o, rows, total);
+					recurseObjects(dialogModel, event, o2ex, o, rows, total);
 				}
 			}
 		}
