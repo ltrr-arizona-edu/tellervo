@@ -110,7 +110,7 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 		
 		
 		linkPrefs();
-
+		setEnableDisable();
 
 	}
 	
@@ -125,8 +125,8 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 		lblFinalLocation.setEnabled(chkImportMedia.isSelected());
 		txtFinalFolder.setEnabled(chkImportMedia.isSelected());
 		chkRenameFiles.setEnabled(chkImportMedia.isSelected());
-		
-		
+		txtFilenamePrefix.setEnabled(chkImportMedia.isSelected());
+		lblFilenamePrefix.setEnabled(chkImportMedia.isSelected());
 	}
 	
 	public boolean isIncludeMediaFilesSelected()

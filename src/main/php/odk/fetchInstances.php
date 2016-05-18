@@ -147,18 +147,18 @@ function getFile($zipfile)
     if(file_exists($zipfile))
     {
 	    $filesize = filesize($zipfile);
-	    header('Content-Description: File Transfer');
-	    header('Content-Disposition: attachment; filename='.basename($zipfile));
-	    header('Content-Transfer-Encoding: binary');
-	    header('Expires: 0');
-	    header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
-	    header('Pragma: public');
-    	    header('Content-Length: '.$filesize);
-	    header("Content-Range: 0-".($filesize-1)."/".$filesize);
+        header('Content-Description: File Transfer');
+        header('Content-Disposition: attachment; filename='.basename($zipfile));
+        header('Content-Transfer-Encoding: binary');
+        header('Expires: 0');
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Pragma: public');
+        header('Content-Length: '.$filesize);
+        header("Content-Range: 0-".($filesize-1)."/".$filesize);
 	    ob_clean();
 	    flush();
 	    readfile($zipfile);
-            unlink($zipfile);
+        unlink($zipfile);
 	    exit;
     }
     else

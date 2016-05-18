@@ -224,16 +224,31 @@ public class ODKFileDownloadProgress extends JDialog implements ActionListener {
 			this.label = label;
 			this.entity = entity;
 			longfileSize = entity.getContentLength();
-			jpb.setMaximum((int) (longfileSize/1000));
+			
+			if(longfileSize>0)
+			{
+				jpb.setMaximum((int) (longfileSize/1000));
+			} 
+			else
+			{
+				jpb.setIndeterminate(true);
+				jpb.setStringPainted(false);
+			}
 		}
 
 		@Override
 		protected void process(List<Integer> chunks) {
 			int i = chunks.get(chunks.size() - 1);
-			jpb.setValue(i); // The last value in this array is all we care
-								// about.
-			System.out.println(i);
-			label.setText("Downloading: " + i + " of "+(longfileSize/1000)+"kB");
+			
+			if(longfileSize>0)
+			{
+				label.setText("Downloading: " + i + " of "+(longfileSize/1000)+"kB");
+				jpb.setValue(i); // The last value in this array is all we care about.
+			}
+			else
+			{
+				label.setText("Downloading: " + i + "kB");
+			}
 
 		}
 
