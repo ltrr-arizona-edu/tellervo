@@ -653,8 +653,8 @@ public class PopulateFromODKCommand implements ICommand {
 		if(parser.getFieldValueAsString("StandType")!=null) description += " "+parser.getFieldValueAsString("StandType");
 
 		newrow.setProperty(SingleObjectModel.DESCRIPTION, description);
-		newrow.setProperty(SingleObjectModel.LATITUDE, parser.getLatitude("tridas_object_location", "Location"));
-		newrow.setProperty(SingleObjectModel.LONGITUDE, parser.getLongitude("tridas_object_location", "Location"));
+		newrow.setProperty(SingleObjectModel.LATITUDE, parser.getLatitude("tridas_object_location"));
+		newrow.setProperty(SingleObjectModel.LONGITUDE, parser.getLongitude("tridas_object_location"));
 	
 		try{
 			String loctype = parser.getFieldValueAsString("tridas_object_location_type");
@@ -874,8 +874,8 @@ public class PopulateFromODKCommand implements ICommand {
 			throw new Exception("Failed to extract taxon information from ODK file");
 		}
 		newrow.setProperty(SingleElementModel.AUTHENTICITY, parser.getFieldValueAsString("tridas_element_authenticity"));
-		newrow.setProperty(SingleElementModel.LATITUDE, parser.getLatitude("tridas_element_location", "TreeLocation"));
-		newrow.setProperty(SingleElementModel.LONGITUDE, parser.getLongitude("tridas_element_location", "TreeLocation"));
+		newrow.setProperty(SingleElementModel.LATITUDE, parser.getLatitude("tridas_element_location"));
+		newrow.setProperty(SingleElementModel.LONGITUDE, parser.getLongitude("tridas_element_location"));
 		String loctype = parser.getFieldValueAsString("tridas_element_location_type");
 		try{
 			newrow.setProperty(SingleElementModel.LOCATION_TYPE, NormalTridasLocationType.fromValue(loctype));
@@ -884,7 +884,7 @@ public class PopulateFromODKCommand implements ICommand {
 			log.debug("Failed to get element location type");
 
 		}
-		newrow.setProperty(SingleElementModel.LOCATION_PRECISION, parser.getError("tridas_element_location", "TreeLocation"));
+		newrow.setProperty(SingleElementModel.LOCATION_PRECISION, parser.getError("tridas_element_location"));
 		newrow.setProperty(SingleElementModel.LOCATION_COMMENT, parser.getFieldValueAsString("tridas_element_location_comments"));
 		newrow.setProperty(SingleElementModel.ADDRESSLINE1, parser.getFieldValueAsString("tridas_element_address_line1"));
 		newrow.setProperty(SingleElementModel.ADDRESSLINE2, parser.getFieldValueAsString("tridas_element_address_line2"));

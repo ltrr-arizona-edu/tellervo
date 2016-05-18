@@ -181,7 +181,8 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 			
 			TridasLocation loc = new TridasLocation();
 			
-			loc.setLocationPrecision((String) locprecision);
+			
+			loc.setLocationPrecision(locprecision.toString());
 			loc.setLocationComment((String) loccomment);
 			
 			if(latitude != null && longitude != null)

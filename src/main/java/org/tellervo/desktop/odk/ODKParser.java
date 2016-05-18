@@ -306,27 +306,7 @@ public class ODKParser {
 			return null;
 		}
 	}
-	
-	public Double getLatitude(String fieldname1, String fieldname2)
-	{
-		Double one = getLatitude(fieldname1);
-		Double two = getLatitude(fieldname2);
 		
-		if(one!=null) return one;
-		if(two!=null) return two;
-		return null;
-	}
-	
-	public Double getLongitude(String fieldname1, String fieldname2)
-	{
-		Double one = getLongitude(fieldname1);
-		Double two = getLongitude(fieldname2);
-		
-		if(one!=null) return one;
-		if(two!=null) return two;
-		return null;
-	}
-	
 	public Double getLongitude(String fieldname)
 	{
 		String[] parts = getSpaceDelimitedFieldParts(fieldname);
@@ -335,7 +315,7 @@ public class ODKParser {
 		if(parts.length>1) 
 		{
 			try{
-				return Double.parseDouble(parts[0]);
+				return Double.parseDouble(parts[1]);
 			} catch (NumberFormatException e) {}
 		}
 		return null;
