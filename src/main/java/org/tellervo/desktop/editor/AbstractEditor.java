@@ -164,6 +164,7 @@ public abstract class AbstractEditor extends JFrame implements PrefsListener, Sa
 		btnAdd.setAction(actions.addSeriesAction);	
 
 
+
 	}
 
 	private void initWorkspacePanel() {

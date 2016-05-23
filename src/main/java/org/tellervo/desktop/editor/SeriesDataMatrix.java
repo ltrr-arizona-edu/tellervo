@@ -27,12 +27,15 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -281,6 +284,59 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		
 		// key listener for table
 		myTable.addKeyListener(new DecadalKeyListener(myTable, mySample));
+		myTable.addKeyListener(new KeyListener(){
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				Action action;
+				
+				if(e.isControlDown() && e.isShiftDown())
+				{
+					switch (e.getKeyCode()) 
+					{
+					case KeyEvent.VK_INSERT:
+						log.info("Ctrl shift insert pressed");
+						action = ed.actions.editInsertYearPushBackwardsAction;
+						action.actionPerformed(null);					
+						return;
+					default:
+						return;
+					}
+				}
+				if(e.isControlDown()) { 
+					
+					switch (e.getKeyCode()) 
+					{
+					
+					case KeyEvent.VK_DELETE:
+						log.info("Ctrl delete pressed");
+						action = ed.actions.editDeleteAction;
+						action.actionPerformed(null);
+						return;
+					case KeyEvent.VK_INSERT:
+						log.info("Ctrl insert pressed");
+						action = ed.actions.editInsertYearPushForwardsAction;
+						action.actionPerformed(null);					
+						return;
+					default:
+						return;
+					}
+				
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				
+			}
+
+			@Override
+			public void keyTyped(KeyEvent e) {
+				
+			}
+			
+			
+		});
 		
 		myTable.setCellSelectionEnabled(true);
 		myTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
@@ -524,7 +580,6 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 				insertMissingRingBackwards();
 			}
 		});
-		insertMRBackwards.setEnabled(false);
 
 		JMenuItem delete = Builder.makeMenuItem("menus.edit.delete_year", true, "deleteyear.png");
 		delete.addActionListener(new ActionListener() {
@@ -693,8 +748,15 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		// Add remark if provided
 		if(remark!=null)
 		{
-			TridasValue value = mySample.getRingWidthValueForYear(yearToInsert);
-			remark.applyRemark(value);
+			if(pushForward){
+				TridasValue value = mySample.getRingWidthValueForYear(yearToInsert);
+				remark.applyRemark(value);
+			}
+			else
+			{
+				TridasValue value = mySample.getRingWidthValueForYear(yearToInsert.add(-1));
+				remark.applyRemark(value);
+			}
 		}	
 		
 		// select this cell again?  edit it

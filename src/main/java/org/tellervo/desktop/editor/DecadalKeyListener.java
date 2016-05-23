@@ -144,9 +144,7 @@ public class DecadalKeyListener extends KeyAdapter {
 		Year y, target = null;
 		Boolean eventHandled = false;
 		
-
 		
-		// just ignore any modifiers that aren't shift		
 		if(e.isControlDown() || e.isAltDown()) { return;}
 				
 		switch (e.getKeyCode()) {
