@@ -92,4 +92,37 @@ public class WSIQuery {
 		return sampleList;
 	}
 	
+	public static List<TridasObject> getSamplesOfObject(TridasObject o)
+	{
+		if(o==null) return null;
+		
+		if(!o.isSetIdentifier()) return null;
+		
+		// Find all samples for an element 
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
+    	param.addSearchConstraint(SearchParameterName.OBJECTDBID, SearchOperator.EQUALS, o.getIdentifier().getValue().toString());
+
+		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
+		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+		
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting samples");
+			return null;
+		}
+		
+		List<TridasObject> obList = resource.getAssociatedResult();
+		
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(obList, numSorter);
+		
+		return obList;
+	}
+	
 }
