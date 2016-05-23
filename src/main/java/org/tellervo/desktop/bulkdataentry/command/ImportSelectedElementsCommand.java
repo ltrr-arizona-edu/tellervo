@@ -209,7 +209,17 @@ public class ImportSelectedElementsCommand implements ICommand {
 			
 			som.populateToTridasElement(origElement);
 			
-			TridasObject parentObject = ((TridasObjectOrPlaceholder) som.getProperty(SingleElementModel.OBJECT)).getTridasObject();
+			Object o = som.getProperty(SingleElementModel.OBJECT);
+			TridasObject parentObject = null;
+			if(o instanceof TridasObjectOrPlaceholder)
+			{
+				parentObject = ((TridasObjectOrPlaceholder)o).getTridasObject();
+			}
+			else if (o instanceof TridasObject)
+			{
+				parentObject = (TridasObject) o;
+			}
+			
 			
 			EntityResource<TridasElement> resource;
 			
@@ -288,7 +298,8 @@ public class ImportSelectedElementsCommand implements ICommand {
 					}
 				}
 				if(found == null){
-					Alert.error("Error updating model", "Couldn't find the object in the model to update, please report bug.");
+					log.warn("Error updating model.  Couldn't find the object in the model to update so adding to imported list.");
+					model.getElementModel().getImportedList().add(resource.getAssociatedResult());
 				}else{
 					resource.getAssociatedResult().copyTo(found);
 				}

@@ -28,6 +28,9 @@ import java.math.BigDecimal;
 import net.opengis.gml.schema.PointType;
 import net.opengis.gml.schema.Pos;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.bulkdataentry.command.ImportSelectedElementsCommand;
 import org.tridas.io.formats.heidelberg.HeidelbergToTridasDefaults.DefaultFields;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
@@ -53,7 +56,8 @@ import com.dmurph.mvc.model.HashModel;
  */
 public class SingleElementModel extends HashModel implements IBulkImportSingleRowModel{
 	private static final long serialVersionUID = 1L;	
-	
+	private static final Logger log = LoggerFactory.getLogger(SingleElementModel.class);
+
 	public static final String OBJECT = "Object code";
 	public static final String TITLE = "Element code";
 	public static final String COMMENTS = "Comments";
@@ -178,12 +182,17 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 			loccomment != null ||
 			loctype != null
 			){
-			
+
 			TridasLocation loc = new TridasLocation();
-			
-			
-			loc.setLocationPrecision(locprecision.toString());
-			loc.setLocationComment((String) loccomment);
+
+			try{
+				loc.setLocationPrecision(locprecision.toString());
+			} catch (Exception e)
+			{
+				log.warn("Error setting location precision or comment");
+			}
+
+			loc.setLocationComment((String) loccomment);	
 			
 			if(latitude != null && longitude != null)
 			{
