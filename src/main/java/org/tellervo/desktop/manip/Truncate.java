@@ -21,6 +21,7 @@
 package org.tellervo.desktop.manip;
 
 
+import java.util.List;
 import java.util.Stack;
 
 import org.tellervo.desktop.Range;
@@ -69,9 +70,14 @@ public class Truncate {
 	int numCropStart = r.getStart().diff(s.getRange().getStart());
 	while (numCropStart-- > 0) {
 	    startData.push(s.getRingWidthData().remove(0));
-	    if (s.getCount() != null)
-		startCount.push(s.getCount().remove(0));
-	    if (s.hasWeiserjahre()) {
+	    if (s.getCount() != null && s.getCount().size()>0)
+	    {
+	    	List<Integer> counts = s.getCount();
+	    	int zero = 0;
+	    	Integer count = s.getCount().remove(zero);
+	    	startCount.push(count);
+	    }
+	    if (s.hasWeiserjahre() && s.getWJDecr().size()>0) {
 		startIncr.push(s.getWJIncr().remove(0));
 		startDecr.push(s.getWJDecr().remove(0));
 	    }

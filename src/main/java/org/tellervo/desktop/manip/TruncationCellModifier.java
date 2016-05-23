@@ -50,7 +50,7 @@ public class TruncationCellModifier extends AbstractTableCellModifier {
 		Year year = model.getYear(row, column);		
 		
 		if(!range.contains(year))
-			c.setBackground(Color.black);
+			c.setBackground(Color.GRAY);
 	}
 
 }

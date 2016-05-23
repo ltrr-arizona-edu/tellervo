@@ -336,14 +336,6 @@ public class Prefs extends AbstractSubsystem {
 		{
 			return false;
 		}
-
-		// Help out Cornelians by updating their WS URL
-		if(App.prefs.getPref(PrefKey.WEBSERVICE_URL, null).equals("https://dendro.cornell.edu/webservice.php"))
-		{
-			App.prefs.setPref(PrefKey.WEBSERVICE_URL, "https://dendro.cornell.edu/tellervo/");
-			log.info("Altered Webservice URL to new Tellervo URL");
-		}
-		
 		
 		return true;
 	}

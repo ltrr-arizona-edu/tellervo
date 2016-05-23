@@ -86,18 +86,32 @@ public final class TridasWidthValueWrapper {
 
 		@Override
 		public Integer get(int index) {
+			try{
 			TridasValue tridasValue = values.get(index);
-		
 			// if no count is present, count = 1
 			return tridasValue.isSetCount() ? tridasValue.getCount() : 1;
+			
+			
+			} catch (IndexOutOfBoundsException e)
+			{
+				log.warn("Out of bounds exception while getting count");
+				return 1;
+			}
+		
+
 		}
 
 		@Override
 		public Integer remove(int index) {
 			// we must 'remove' a value that doesn't exist...
 			if(index < 0 || index >= countIndex) 
-				throw new IndexOutOfBoundsException("Index " + index + 
+			{
+				//throw new IndexOutOfBoundsException("Index " + index + 
+					//	" not in count list (max " + countIndex + ")");
+				log.error("Index " + index + 
 						" not in count list (max " + countIndex + ")");
+				
+			}
 			
 			// basic sanity check, but not safe though!
 			if(!countsAreAllOne)
