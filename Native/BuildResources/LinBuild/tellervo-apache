@@ -1,7 +1,0 @@
-ServerName localhost 
-<Directory /var/www/tellervo/>
-                Options Indexes FollowSymLinks MultiViews
-                AllowOverride None
-                Order allow,deny
-                allow from all
-</Directory>                                                                                        

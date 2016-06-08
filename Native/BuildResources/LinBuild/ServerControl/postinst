@@ -62,9 +62,16 @@ if [ $1 = 'configure' ]; then
 	      ## Remaining steps required no matter what the previous version was
 	      ##
 	      
+	      if [ -e "/usr/lib/postgresql/9.5/lib/libpljava-so-1.6.0-SNAPSHOT.so" ]
+	        then
+	          echo "Installing PLJava binary" >> /var/log/tellervo-installation.log
+	      	  java -jar /usr/share/tellervo-server/pljava-pg9.5-amd64-Linux-gpp.jar
+	      fi
+	      
+	      
 	      if [ -e "/var/www/tellervo/config.php" ]
 	       then     
-	      
+
 		      echo "Running database upgrade scripts" >> /var/log/tellervo-installation.log
 		      /usr/bin/tellervo-server --upgrade-db
 		      

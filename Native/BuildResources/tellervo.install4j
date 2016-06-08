@@ -697,7 +697,7 @@
         <content />
       </installerScript>
     </unixInstaller>
-    <linuxDeb name="Linux Deb Archive" id="88" customizedId="" mediaFileName="" installDir="/opt/tellervo" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bzip="false" description="Application for measuring, managing and curating dendrochronology samples" dependencies="default-jre:i386 | openjdk-7-jre:i386 | openjdk-8-jre:i386, libjogl-java" maintainerEmail="Peter Brewer &lt;p.brewer@ltrr.arizona.edu&gt;" architectureSet="false" architecture="">
+    <linuxDeb name="Linux Deb Archive" id="88" customizedId="" mediaFileName="" installDir="/opt/tellervo" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bzip="false" description="Application for measuring, managing and curating dendrochronology samples" dependencies="default-jre:i386 | openjdk-7-jre:i386 | openjdk-8-jre:i386, libjogl-java | libjogl2-java" maintainerEmail="Peter Brewer &lt;p.brewer@ltrr.arizona.edu&gt;" architectureSet="false" architecture="">
       <excludedLaunchers>
         <launcher id="22" />
       </excludedLaunchers>

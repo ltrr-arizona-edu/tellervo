@@ -21,7 +21,7 @@ $permsfile        = $folderbase."set_database_permission.sql";
 $permstemplate    = $folderbase."set_database_permission.template";
 $logfile          = "/var/log/tellervo-installation.log";
 $configtemplate   = $folderbase."config.php.template";
-$dbtemplate       = $folderbase."tellervo_database_template.sql";
+$dbtemplate       = $folderbase."tellervo_database_template_1.3.sql";
 $credentialsFile  = $folderbase."server_credentials";
 $upgradeScripts   = $folderbase."db-upgrade-patches";
 $configfile       = $wsbase."config.php";
@@ -236,7 +236,7 @@ if(isset($args["stop"]))
 	echo "Stopping PostgreSQL...\n";
 	exec("/etc/init.d/postgresql stop");
 	echo "Stopping Apache...\n";
-	exec("/etc/init.d/apache2 stop");
+	exec("service apache2 stop");
 	echo "\n\n";
 	exit(0);
 }
@@ -246,7 +246,7 @@ if(isset($args["start"]))
 	echo "Starting PostgreSQL...\n";
 	exec("/etc/init.d/postgresql start");
 	echo "Starting Apache...\n";
-	exec("/etc/init.d/apache2 start");
+	exec("service apache2 start");
 	echo "\n";
 	exit(0);
 }
@@ -256,7 +256,7 @@ if(isset($args["restart"]))
 	echo "Restarting PostgreSQL...\n";
 	exec("/etc/init.d/postgresql restart");
 	echo "Restarting Apache...\n";
-	exec("/etc/init.d/apache2 restart");
+	exec("service apache2 restart");
 	echo "\n";
 	exit(0);
 }
@@ -964,7 +964,12 @@ function createScriptsFromTemplates()
  
  
   // Set the pg_hba location
-  if(file_exists("/etc/postgresql/9.3/main/pg_hba.conf"))
+  if (file_exists("/etc/postgresql/9.5/main/pg_hba.conf"))
+  {
+  	$pg_hba_file = "/etc/postgresql/9.5/main/pg_hba.conf";
+  	$pg_hba_file_orig = "/etc/postgresql/9.5/main/pg_hba.conf.bak";
+  }
+  else if(file_exists("/etc/postgresql/9.3/main/pg_hba.conf"))
   {
   	$pg_hba_file = "/etc/postgresql/9.3/main/pg_hba.conf";
   	$pg_hba_file_orig = "/etc/postgresql/9.3/main/pg_hba.conf.bak";
@@ -974,6 +979,7 @@ function createScriptsFromTemplates()
   	$pg_hba_file = "/etc/postgresql/9.1/main/pg_hba.conf";
   	$pg_hba_file_orig = "/etc/postgresql/9.1/main/pg_hba.conf.bak";
   }
+  
  
   echo "\n";
   // Back up pg_hba file if it hasn't been already 
@@ -989,7 +995,7 @@ function createScriptsFromTemplates()
  */
 function getIP()
 {
-  exec("ifconfig eth0 $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
+  exec("ifconfig $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
   return $response[0];
 }
 
@@ -1152,7 +1158,7 @@ function createDatabase()
     
     echo "\nCreating database.  This could take a while...\n";
     exec("su - postgres -c \"createdb tellervo 2>> ".$logfile."\"");
-    exec("su - postgres -c \"psql tellervo < $dbtemplate 2>> ".$logfile."\"");
+    exec("su - postgres -c \"pg_restore --dbname=tellervo $dbtemplate 2>> ".$logfile."\"");
     
     //runDBUpgrades();
     
@@ -1236,20 +1242,21 @@ function promptForPwd($isCreating=TRUE)
 function apacheSetup()
 {
   global $logfile;
-  /*echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
+  echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
   echo "    [Y]/n  ";
   $response = fgets(STDIN); 
 
   if(trim(strtolower($response))=='n')
   {
      return;
-  }*/
+  }
   
   echo "\nSetting up webservice...\n";
-  exec("ln /usr/share/tellervo-server/tellervo-apache /etc/apache2/sites-enabled/ 2>> $logfile", $response);
+  exec("a2ensite tellervo-apache.conf 2>> $logfile", $response);
+  exec("a2dissite 000-default.conf 2>> $logfile", $response);
   
   echo "\nRestarting webserver...\n";
-  exec("/etc/init.d/apache2 restart");
+  exec("service apache2 reload");
 
 }
 
@@ -1327,11 +1334,11 @@ function verifySetup($silent=false)
   // Compile webservice URL 
   if($securehttp===TRUE)
   {
-    $wsurl = "https://$ip/".basename($baseFolder)."/";
+    $wsurl = "https://$ip/";
   }
   else
   {
-    $wsurl = "http://$ip/".basename($baseFolder)."/";
+    $wsurl = "http://$ip/";
   }
 
   writeLogMsg("Webservice url: $wsurl");
