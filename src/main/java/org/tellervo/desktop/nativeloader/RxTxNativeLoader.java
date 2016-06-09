@@ -15,7 +15,6 @@ public class RxTxNativeLoader {
 		String os = System.getProperty("os.name");
 		String arch = System.getProperty("os.arch");
 		
-		log.debug("Attempting to load RXTX native library");
 		log.debug("OS = "+os);
 		log.debug("Architecture = "+arch);
 		
@@ -48,7 +47,9 @@ public class RxTxNativeLoader {
 		}
 		else if(os.startsWith("Linux"))
 		{
-			if(arch.equals("x86") || arch.equals("i386"))
+			log.debug("Linux RXTX dependencies should be handled by native package manager");
+			return;
+			/*if(arch.equals("x86") || arch.equals("i386"))
 			{
 				lib = "/Libraries/linux-i586/librxtxSerial.so";
 			}
@@ -59,7 +60,7 @@ public class RxTxNativeLoader {
 			else
 			{
 				throw new Exception(arch+" architecture is not supported");
-			}
+			}*/
 		}
 		else
 		{

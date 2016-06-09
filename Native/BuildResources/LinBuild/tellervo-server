@@ -54,7 +54,7 @@ if($_SERVER['USER']=='root')
  */
  
 $shortopts = "htrcnesv";
-$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "set-db-pwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info", "set-admin-pwd");
+$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "set-db-pwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info", "set-admin-pwd", "backup-db:", "restore-db:");
 $args = getopt($shortopts,$longopts);
 
 // Depending on command line arguments run different functions
@@ -80,7 +80,7 @@ if(isset($args["add-wms-name"]) && isset($args["add-wms-url"]) &&
 	
 	die();
 }
-if(isset($args["del-wms-name"]) && $args["del-wms-name"]!=null)
+else if(isset($args["del-wms-name"]) && $args["del-wms-name"]!=null)
 {
 	requireRoot();
 	include($configfile);
@@ -89,7 +89,26 @@ if(isset($args["del-wms-name"]) && $args["del-wms-name"]!=null)
 	delWMS($args["del-wms-name"]);
 	die();
 }
-if(isset($args["test"]) || isset($args["t"]))
+else if(isset($args["backup-db"]) && $args["backup-db"]!=null)
+{
+	requireRoot();
+	include($configfile);
+	include($dbsetupfile);
+	$dbfilename = $args["backup-db"];
+	backupDB($dbfilename);
+	die();
+}
+else if(isset($args["restore-db"]) && $args["restore-db"]!=null)
+{
+	requireRoot();
+	include($configfile);
+	include($dbsetupfile);
+	$dbfilename = $args["restore-db"];
+	restoreDB($dbfilename);
+	die();
+}
+
+else if(isset($args["test"]) || isset($args["t"]))
 {
 	// Test configuration
 	requireRoot();
@@ -98,7 +117,7 @@ if(isset($args["test"]) || isset($args["t"]))
 	verifySetup();
 	printComplete();
 }
-if(isset($args["firstrun"]))
+else if(isset($args["firstrun"]))
 {
 	// Configure server for first run
 	$colors = new Colors();
@@ -124,7 +143,7 @@ if(isset($args["firstrun"]))
 	exec("sudo $folderbase/firstrun");
 	exit(0);
 }
-if(isset($args["deploy"]))
+else if(isset($args["deploy"]))
 {
 	requireRoot();
 	
@@ -174,7 +193,7 @@ if(isset($args["deploy"]))
 	echo "--- BUT FIRST RUN ---\nhistory -c \n\n";
 	exit(0);
 }
-if(isset($args["reconfigure"]) || isset($args["r"]))
+else if(isset($args["reconfigure"]) || isset($args["r"]))
 {
 	// Reconfigure server
 	requireRoot();
@@ -216,7 +235,7 @@ if(isset($args["reconfigure"]) || isset($args["r"]))
 	printComplete();
 	exit(0);
 }
-if(isset($args["sysconfig"]) || isset($args["s"]))
+else if(isset($args["sysconfig"]) || isset($args["s"]))
 {
 	requireRoot();
 	include($configfile);
@@ -224,13 +243,13 @@ if(isset($args["sysconfig"]) || isset($args["s"]))
 	generateSystemsConfig();
 	exit(0);
 }
-if(isset($args["help"]) || isset($args["h"]))
+else if(isset($args["help"]) || isset($args["h"]))
 {
     // Show help documentation
   	showHelp();
   	exit(0);
 }
-if(isset($args["stop"]))
+else if(isset($args["stop"]))
 {
 	requireRoot();
 	echo "Stopping PostgreSQL...\n";
@@ -240,7 +259,7 @@ if(isset($args["stop"]))
 	echo "\n\n";
 	exit(0);
 }
-if(isset($args["start"]))
+else if(isset($args["start"]))
 {
 	requireRoot();
 	echo "Starting PostgreSQL...\n";
@@ -250,7 +269,7 @@ if(isset($args["start"]))
 	echo "\n";
 	exit(0);
 }
-if(isset($args["restart"]))
+else if(isset($args["restart"]))
 {
 	requireRoot();
 	echo "Restarting PostgreSQL...\n";
@@ -260,14 +279,14 @@ if(isset($args["restart"]))
 	echo "\n";
 	exit(0);
 }
-if(isset($args["set-db-pwd"]))
+else if(isset($args["set-db-pwd"]))
 {
 	requireRoot();
 	setDBUser();
 	echo "\n";
 	exit(0);
 }
-if(isset($args["emptylog"]) || isset($args["e"]))
+else if(isset($args["emptylog"]) || isset($args["e"]))
 {
 	requireRoot();
 	include($configfile);
@@ -276,7 +295,7 @@ if(isset($args["emptylog"]) || isset($args["e"]))
 	exit(0);
 	
 }
-if(isset($args["upgrade-db"]))
+else if(isset($args["upgrade-db"]))
 {
 	requireRoot();
 	include($configfile);
@@ -284,7 +303,7 @@ if(isset($args["upgrade-db"]))
 	runDBUpgrades();
 	exit(0);
 }
-if (isset($args["configure"]) || isset($args["c"]))
+else if (isset($args["configure"]) || isset($args["c"]))
 {
 	// Configure
 	requireRoot();
@@ -322,7 +341,7 @@ if (isset($args["configure"]) || isset($args["c"]))
 	printComplete();
 	exit(0);
 }
-if (isset($args["version"]) || isset($args["v"]))
+else if (isset($args["version"]) || isset($args["v"]))
 {
 	include($configfile);
 	include($dbsetupfile);
@@ -333,7 +352,7 @@ if (isset($args["version"]) || isset($args["v"]))
 	echo "\n";
 	exit(0);
 }
-if (isset($args["info"]))
+else if (isset($args["info"]))
 {
 	include($configfile);
 	include($dbsetupfile);
@@ -342,7 +361,7 @@ if (isset($args["info"]))
 	echo "\n";
 	exit(0);
 }
-if (isset($args["network"]) || isset($args["n"]))
+else if (isset($args["network"]) || isset($args["n"]))
 {
 	requireRoot();
 	
@@ -390,7 +409,7 @@ if (isset($args["network"]) || isset($args["n"]))
 		exit(1);
 	}
 }
-if (isset($args["set-admin-pwd"]))
+else if (isset($args["set-admin-pwd"]))
 {
 	requireRoot();
 	setAdminPwd();
@@ -398,12 +417,45 @@ if (isset($args["set-admin-pwd"]))
 	exit(0);
 }
 
+
 showHelp(true);
 exit(1);
 
 /**
  * END OF SCRIPT BODY
  */
+
+
+function backupDB($dbfilename)
+{
+	echo "Backing up database...\n";
+	$output = shell_exec("pg_dump -Fc -U tellervo ".$dbname." > ".$dbfilename);
+	if($output==NULL) return false;
+	
+	return true;
+}
+
+function restoreDB($dbfilename)
+{
+	if(!file_exists($dbfilename)) {
+		echo "Specified database backup file does not exist";
+		return false;
+	}
+	
+	echo "\nThis procedure will overwrite any existing Tellervo database.\nAre you sure you want to continue?\n";
+	echo "   (y/N): ";
+    $response = trim(fgets(STDIN));
+    if($response!="Y" && $response !="y")
+    {
+    	exit(0);
+    }        
+    
+    shell_exec("su - postgres dropdb tellervo");
+    shell_exec("pg_restore -C -d postgres ".$dbfilename);
+    runDBUpgrades(true);
+   	return;
+	
+}
 
 function setAdminPwd()
 {
@@ -555,6 +607,8 @@ function showHelp($forced=false)
   echo "      --add-wms-name  *Name of a web mapping server to add to database\n";
   echo "      --add-wms-url   *URL of a web mapping server to add to database\n";
   echo "      --del-wms-name  *Name of a web mapping server to delete from database\n";
+  echo "      --backup-db     *Backup database to the specified file\n";
+  echo "      --restore-db    *Restore database from specified file\n";
   echo "\n";
   echo "  * Root or sudo privileges are required to run these commands\n";
   echo "\n";
@@ -578,7 +632,7 @@ function writeLogMsg($message, $errType="INFO")
 /**
 * Run any applicable upgrade scripts
 */
-function runDBUpgrades()
+function runDBUpgrades($skipbackup=false)
 {	
 	global $upgradeScripts;
 	global $logfile;
@@ -591,8 +645,8 @@ function runDBUpgrades()
 
 	echo "Upgrading existing Tellervo database to latest version...\n";
 	
-	echo "Backing up database...\n";
-	shell_exec("pg_dump -Fc -U tellervo $dbname > /usr/share/tellervo-server/".$dbname."-".date('Ymd')."-preupgrade.backup");
+	// Backup db
+	if($skipbackup!=TRUE) backupDB("/usr/share/tellervo-server/".$dbname."-".date('Ymd')."-preupgrade.backup");
 	
 	writeLogMsg("*******************");
     writeLogMsg("Upgrading existing Tellervo database to latest version...");
