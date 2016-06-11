@@ -27,6 +27,7 @@ $upgradeScripts   = $folderbase."db-upgrade-patches";
 $configfile       = $wsbase."config.php";
 $dbsetupfile      = $wsbase."inc/dbsetup.php";
 $systemconfig     = $wsbase."systemconfig.php";
+$postgisfolder    = "/usr/share/postgresql/9.5/contrib/postgis-2.2/";
 
 
 // Global variables
@@ -105,6 +106,8 @@ else if(isset($args["restore-db"]) && $args["restore-db"]!=null)
 	include($dbsetupfile);
 	$dbfilename = $args["restore-db"];
 	restoreDB($dbfilename);
+	
+	echo "Database restore complete\n";
 	die();
 }
 
@@ -437,21 +440,62 @@ function backupDB($dbfilename)
 
 function restoreDB($dbfilename)
 {
+	global $postgisfolder;
+	global $dbconn;
+	global $logfile;
+	global $dbsetupfile;
+	
+	
 	if(!file_exists($dbfilename)) {
-		echo "Specified database backup file does not exist";
-		return false;
+		echo "Specified database backup file does not exist\n";
+		exit(0);
 	}
 	
 	echo "\nThis procedure will overwrite any existing Tellervo database.\nAre you sure you want to continue?\n";
 	echo "   (y/N): ";
-    $response = trim(fgets(STDIN));
-    if($response!="Y" && $response !="y")
-    {
-    	exit(0);
-    }        
+	$response = trim(fgets(STDIN));
+	if($response!="Y" && $response !="y")
+	{
+		exit(0);
+	}
+
+	
+	$postgisrestore = $postgisfolder."postgis_restore.pl";
+	$postgissql = $postgisfolder."postgis.sql";
+	$postgisspatialrefsys = $postgisfolder."spatial_ref_sys.sql";
+	$postgislegacy = $postgisfolder."legacy.sql";
+	
+	if(!file_exists($postgisfolder) || !file_exists($postgisrestore) || !file_exists($postgissql) 
+			|| !file_exists($postgisspatialrefsys) || !file_exists($postgislegacy)){
+		echo "Unable to find PostGIS upgrade files\n";
+		exit(0);
+	}
+
+	if(doesTellervoDBExist() === false)
+	{
+		// Tellervo database doesn't currently exist
+	}
+	else
+	{
+		// Tellervo database DOES exist
+		pg_close($dbconn);
+		echo"\nDeleting existing database...\n";
+		exec("su - postgres -c \"dropdb tellervo\"");	
+		include($dbsetupfile);
+	}
+	
+	
+	echo "\nCreating database.  This could take a while...\n";
+	exec("su - postgres -c \"createdb tellervo 2>> ".$logfile."\"");
+    exec("su - postgres -c \"psql -d tellervo -f ".$postgissql." 2>> ".$logfile."\"");
+    exec("su - postgres -c \"psql -d tellervo -f ".$postgisspatialrefsys." 2>> ".$logfile."\"");
+    exec("su - postgres -c \"psql -d tellervo -f ".$postgislegacy." 2>> ".$logfile."\"");
+    //exec("su - postgres -c \"psql -d tellervo -c \"SET pljava.libjvm_location to '/usr/lib/jvm/java-8-openjdk-amd64/server/libjvm.so'; create extension pljava; alter database tellervo set pljava.libjvm_location from current;\" 2>> ".$logfile."\"");
+    exec("su - postgres -c \"psql -d tellervo -f /usr/share/tellervo-server/db-templates/pljava-preupgrade.sql 2>> ".$logfile."\"");
+    shell_exec("su - postgres -c \"".$postgisrestore." ".$dbfilename." | psql tellervo 2>> ".$logfile."\"");
+    exec("su - postgres -c \"psql -d tellervo -f /usr/share/tellervo-server/db-templates/pljava-postupgrade.sql 2>> ".$logfile."\"");
     
-    shell_exec("su - postgres dropdb tellervo");
-    shell_exec("pg_restore -C -d postgres ".$dbfilename);
+      
     runDBUpgrades(true);
    	return;
 	
@@ -640,7 +684,7 @@ function runDBUpgrades($skipbackup=false)
     global $systemconfig;
 	global $dbsetupfile;
 	global $dbconn;
-	
+		
 	$scriptsRun = 0;
 
 	echo "Upgrading existing Tellervo database to latest version...\n";
@@ -1169,6 +1213,28 @@ function postgresSetup($quick=false)
    }
 }  
 
+
+function doesTellervoDBExist()
+{
+	
+	global $logfile;
+	global $dbtemplate;
+	global $dbconn;
+	 
+	$sql = "SELECT 1 AS result FROM pg_database where datname='tellervo'";
+	$cmd = "su - postgres -c \" psql -c \\\"$sql\\\" \"";
+	
+	exec($cmd, $resp);
+	
+	if(strpos($resp[2], "1") === false)
+	{
+		return false;
+	}
+	
+	return true;
+	
+}
+
 /**
  *  Create the Postgres Tellervo database 
  */
@@ -1177,13 +1243,8 @@ function createDatabase()
     global $logfile;
     global $dbtemplate;
     global $dbconn;
-   
-   $sql = "SELECT 1 AS result FROM pg_database where datname='tellervo'";
-   $cmd = "su - postgres -c \" psql -c \\\"$sql\\\" \"";
- 
-  	exec($cmd, $resp);
-  
-    if(strpos($resp[2], "1") === false)
+
+    if(doesTellervoDBExist() === false)
     {
         // Tellervo database doesn't currently exist
     }

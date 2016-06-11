@@ -64,7 +64,10 @@ if [ $1 = 'configure' ]; then
 	      
 	      if [ -e "/usr/lib/postgresql/9.5/lib/libpljava-so-1.6.0-SNAPSHOT.so" ]
 	        then
+	          echo "PLJava already installed... skipping" >> /var/log/tellervo-installation.log
+	        else
 	          echo "Installing PLJava binary" >> /var/log/tellervo-installation.log
+	          
 	      	  java -jar /usr/share/tellervo-server/pljava-pg9.5-amd64-Linux-gpp.jar
 	      fi
 	      
