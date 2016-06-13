@@ -503,8 +503,6 @@ function restoreDB($dbfilename)
 		exit(0);
 	}
 	
-	if($
-	
 	echo "\nThis procedure will overwrite any existing Tellervo database.\nAre you sure you want to continue?\n";
 	echo "   (y/N): ";
 	$response = trim(fgets(STDIN));
