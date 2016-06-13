@@ -10,36 +10,12 @@ if (!isset($argc))
 	exit(1);
 }
 
-// Static locations of various files 
-$wsbase           = "/var/www/tellervo/";
-$folderbase       = "/usr/share/tellervo-server/";
-
-
-$pg_hba_file      = "/etc/postgres/?";  // set later
-$pg_hba_file_orig = "/etc/postgres/?"; // set later
-$permsfile        = $folderbase."set_database_permission.sql";
-$permstemplate    = $folderbase."set_database_permission.template";
-$logfile          = "/var/log/tellervo-installation.log";
-$configtemplate   = $folderbase."config.php.template";
-$dbtemplate       = $folderbase."tellervo_database_template_1.3.sql";
-$credentialsFile  = $folderbase."server_credentials";
-$upgradeScripts   = $folderbase."db-upgrade-patches";
-$configfile       = $wsbase."config.php";
-$dbsetupfile      = $wsbase."inc/dbsetup.php";
-$systemconfig     = $wsbase."systemconfig.php";
-$postgisfolder    = "/usr/share/postgresql/9.5/contrib/postgis-2.2/";
-
-
-// Global variables
-$user = "tellervo";
-$pwd = "";
-$wsurl = "";
-$errorsFound = FALSE;
 
 // Set custom error handler to divert messages to log file
 set_error_handler("myErrorHandler");
 
-
+// Set up logging
+$logfile = "/var/log/tellervo-installation.log";
 if($_SERVER['USER']=='root')
 {
 	// Make sure log file exists and make sure it is read and writeable
@@ -50,13 +26,62 @@ if($_SERVER['USER']=='root')
 	exec("echo \"\n******* Running tellervo-server ********\n\" >> $logfile");
 }
 
+
 /**
  * Grab command line arguments either using long or short options
  */
- 
 $shortopts = "htrcnesv";
-$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "set-db-pwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info", "set-admin-pwd", "backup-db:", "restore-db:");
+$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "set-db-pwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info", "set-admin-pwd", "backup-db:", "restore-db:", "dbname:", "webfolder:");
 $args = getopt($shortopts,$longopts);
+
+
+// Grab database and web folder names if specified for a multiple database setup
+if(isset($args["dbname"]) && isset($args["dbname"]))
+{
+	$dbname = $args["dbname"];
+}
+else
+{
+	$dbname = "tellervo";
+}
+if(isset($args["webfolder"]) && isset($args["webfolder"]))
+{
+	$wsbase = $args["webfolder"];
+	if(substr($wsbase, -1)!="/") $wsbase = $wsbase."/";
+}
+else
+{
+	$wsbase = "/var/www/tellervo/";
+}
+
+// Output database and folder to logs
+exec("echo \"  - Database name = $dbname\n\" >> $logfile");
+exec("echo \"  - Apache folder = $wsbase\n\" >> $logfile");
+
+
+/*******************************************************************;
+ *  SET GLOBAL VARS
+ ******************************************************************/;
+$user 			  = "tellervo";
+$pwd 			  = "";
+$wsurl 			  = "";
+$errorsFound 	  = FALSE;
+$folderbase       = "/usr/share/tellervo-server/";
+$pg_hba_file      = "/etc/postgres/?";  // set later
+$pg_hba_file_orig = "/etc/postgres/?"; // set later
+$permsfile        = $folderbase."set_database_permission.sql";
+$permstemplate    = $folderbase."set_database_permission.template";
+$configtemplate   = $folderbase."config.php.template";
+$dbtemplate       = $folderbase."tellervo_database_template_1.3.sql";
+$credentialsFile  = $folderbase."server_credentials";
+$upgradeScripts   = $folderbase."db-upgrade-patches";
+$configfile       = $wsbase."config.php";
+$dbsetupfile      = $wsbase."inc/dbsetup.php";
+$systemconfig     = $wsbase."systemconfig.php";
+$postgisfolder    = "/usr/share/postgresql/9.5/contrib/postgis-2.2/";
+/*******************************************************************/;
+
+
 
 // Depending on command line arguments run different functions
 if(isset($args["add-wms-name"]) && isset($args["add-wms-url"]) &&
@@ -108,6 +133,8 @@ else if(isset($args["restore-db"]) && $args["restore-db"]!=null)
 	restoreDB($dbfilename);
 	
 	echo "Database restore complete\n";
+	verifySetup();
+	printComplete();
 	die();
 }
 
@@ -135,7 +162,7 @@ else if(isset($args["firstrun"]))
 	include($dbsetupfile);
 	generateSystemsConfig();
 	include($systemconfig);
-	runDBUpgrades();
+	runDBUpgrades(true);
 	generateSystemsConfig();
 	include($systemconfig);
 	echo $colors->getColoredString("\n\nStep 5 - Configuring the Apache webservice...\n\n", "light_purple");
@@ -215,15 +242,15 @@ else if(isset($args["reconfigure"]) || isset($args["r"]))
 	// Delete existing config files
 	if (file_exists("$folderbase/firstrun"))
 	{
-		exec("sudo rm $folderbase/firstrun");
+		exec("sudo rm -f $folderbase/firstrun");
 	}
 	if (file_exists("$wsbase/config.php"))
 	{
-		exec("sudo rm $wsbase/config.php");
+		exec("sudo rm -f $wsbase/config.php");
 	}
 	if (file_exists("$wsbase/systemconfig.php"))
 	{
-		exec("sudo rm $wsbase/systemconfig.php");
+		exec("sudo rm -f $wsbase/systemconfig.php");
 	}
 	
 	createScriptsFromTemplates();
@@ -232,7 +259,7 @@ else if(isset($args["reconfigure"]) || isset($args["r"]))
 	include($dbsetupfile);
 	generateSystemsConfig();
 	include($systemconfig);
-	runDBUpgrades();	
+	runDBUpgrades(true);	
 	apacheSetup();
 	verifySetup();
 	printComplete();
@@ -338,7 +365,7 @@ else if (isset($args["configure"]) || isset($args["c"]))
 	include($dbsetupfile);
 	generateSystemsConfig();
 	include($systemconfig);
-	runDBUpgrades();
+	runDBUpgrades(true);
 	apacheSetup();
 	verifySetup();
 	printComplete();
@@ -429,11 +456,22 @@ exit(1);
  */
 
 
+
 function backupDB($dbfilename)
 {
+	global $dbname;
+	
 	echo "Backing up database...\n";
-	$output = shell_exec("pg_dump -Fc -U tellervo ".$dbname." > ".$dbfilename);
-	if($output==NULL) return false;
+	exec("pg_dump -Fc -U ".$dbname." > ".$dbfilename, $output, $returnvar);
+	if($returnvar>=2)
+	{
+		echo "Backup failed";
+		exit($returnvar);
+	}
+	else
+	{
+		echo "Database successfully backed up to '".$dbfilename."'\n";
+	}
 	
 	return true;
 }
@@ -444,6 +482,8 @@ function restoreDB($dbfilename)
 	global $dbconn;
 	global $logfile;
 	global $dbsetupfile;
+	global $upgradeScripts;
+	global $dbname;
 	
 	
 	if(!file_exists($dbfilename)) {
@@ -480,20 +520,29 @@ function restoreDB($dbfilename)
 		// Tellervo database DOES exist
 		pg_close($dbconn);
 		echo"\nDeleting existing database...\n";
-		exec("su - postgres -c \"dropdb tellervo\"");	
+		exec("su - postgres -c \"dropdb ".$dbname."\"", $output, $returnvar);		
+		if($returnvar>=1) {
+			echo "\nUnable to restore database until existing database is removed.\n";
+			echo "Please ensure all database connections are closed, then try again.\n";
+			die();
+		}
+			
 		include($dbsetupfile);
 	}
 	
 	
-	echo "\nCreating database.  This could take a while...\n";
-	exec("su - postgres -c \"createdb tellervo 2>> ".$logfile."\"");
-    exec("su - postgres -c \"psql -d tellervo -f ".$postgissql." 2>> ".$logfile."\"");
-    exec("su - postgres -c \"psql -d tellervo -f ".$postgisspatialrefsys." 2>> ".$logfile."\"");
-    exec("su - postgres -c \"psql -d tellervo -f ".$postgislegacy." 2>> ".$logfile."\"");
-    //exec("su - postgres -c \"psql -d tellervo -c \"SET pljava.libjvm_location to '/usr/lib/jvm/java-8-openjdk-amd64/server/libjvm.so'; create extension pljava; alter database tellervo set pljava.libjvm_location from current;\" 2>> ".$logfile."\"");
-    exec("su - postgres -c \"psql -d tellervo -f /usr/share/tellervo-server/db-templates/pljava-preupgrade.sql 2>> ".$logfile."\"");
-    shell_exec("su - postgres -c \"".$postgisrestore." ".$dbfilename." | psql tellervo 2>> ".$logfile."\"");
-    exec("su - postgres -c \"psql -d tellervo -f /usr/share/tellervo-server/db-templates/pljava-postupgrade.sql 2>> ".$logfile."\"");
+	echo "\nCreating database...\n";
+	exec("su - postgres -c \"createdb ".$dbname." 2>> ".$logfile."\"");
+	echo "\nApplying PostGIS upgrade patches...\n";
+    exec("su - postgres -c \"psql -d ".$dbname." -f ".$postgissql." 2>> ".$logfile."\"");
+    exec("su - postgres -c \"psql -d ".$dbname." -f ".$postgisspatialrefsys." 2>> ".$logfile."\"");
+    exec("su - postgres -c \"psql -d ".$dbname." -f ".$postgislegacy." 2>> ".$logfile."\"");
+    echo "\nConfiguring PLJava extension.\n";
+    exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-pljava-1.3.0a.sql 2>> ".$logfile."\"");
+    echo "\nApplying PostGIS upgrade patches.  This could take some time on larger databases...\n";
+    shell_exec("su - postgres -c \"".$postgisrestore." ".$dbfilename." | psql ".$dbname." 2>> ".$logfile."\"");
+    echo "\nFinalising PLJava extension configuration...\n";
+    exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-pljava-1.3.0b.sql 2>> ".$logfile."\"");
     
       
     runDBUpgrades(true);
@@ -631,6 +680,7 @@ function showHelp($forced=false)
   echo "  tellervo-server --configure\n";
   echo "  tellervo-server --reconfigure\n";
   echo "  tellervo-server -c\n";
+  echo "  tellervo-server --configure --dbname mydb --webfolder /var/www/html\n";  
   echo "  tellervo-server --add-wms-name \"New Server\" --add-wms-url \"http://...\"\n";
   echo "  tellervo-server --del-wms-name \"Server to delete\"\n";
   echo "\nOptions:\n";
@@ -653,6 +703,8 @@ function showHelp($forced=false)
   echo "      --del-wms-name  *Name of a web mapping server to delete from database\n";
   echo "      --backup-db     *Backup database to the specified file\n";
   echo "      --restore-db    *Restore database from specified file\n";
+  echo "      --dbname         Specify nonstandard Postgresql database name\n";
+  echo "      --webfolder      Specify nonstandard Apache webfolder\n";
   echo "\n";
   echo "  * Root or sudo privileges are required to run these commands\n";
   echo "\n";
@@ -690,7 +742,15 @@ function runDBUpgrades($skipbackup=false)
 	echo "Upgrading existing Tellervo database to latest version...\n";
 	
 	// Backup db
-	if($skipbackup!=TRUE) backupDB("/usr/share/tellervo-server/".$dbname."-".date('Ymd')."-preupgrade.backup");
+	if($skipbackup!=TRUE) {
+		echo "\nWould you like to backup your database before upgrading?\n";
+		echo "   (Y/n): ";
+		$response = trim(fgets(STDIN));
+		if($response!="N" && $response !="n")
+		{
+			backupDB("/usr/share/tellervo-server/".$dbname."-".date('Ymd')."-preupgrade.backup");
+		}
+	}
 	
 	writeLogMsg("*******************");
     writeLogMsg("Upgrading existing Tellervo database to latest version...");
@@ -956,6 +1016,8 @@ function generateSystemsConfig()
     global $systemconfig;
 	global $dbsetupfile;
 	global $dbconn;
+	include($configfile);
+	include($dbsetupfile);
 	
 	echo "\nGenerating systems config file...\n";
 	
@@ -1037,7 +1099,10 @@ function createScriptsFromTemplates()
   global $database;
   global $pg_hba_file;
   global $pg_hba_file_orig;
+  global $wsbase;
 
+
+  if(!file_exists($wsbase)) mkdir($wsbase);
 
   exec("cp $permstemplate $permsfile >> $logfile" );
   exec("cp $configtemplate $configfile >> $logfile" );
@@ -1059,6 +1124,10 @@ function createScriptsFromTemplates()
  
   // Set timezone from system
   setConfigVariable("%%TIMEZONE%%", trim(file_get_contents('/etc/timezone'))); 
+ 
+  // Set web folder base 
+  setConfigVariable("%%WSBASE%%", $wsbase); 
+  
  
  
   // Set the pg_hba location
@@ -1131,6 +1200,7 @@ function postgresSetup($quick=false)
   global $pwd;
   global $dbtemplate;
   global $credentialsFile;
+  global $dbname;
 
   if($quick)
   {
@@ -1158,7 +1228,8 @@ function postgresSetup($quick=false)
      else
      {
        // Set db name in config file
-       setConfigVariable("%%DBNAME%%", trim($response, "\n\r"));   
+       setConfigVariable("%%DBNAME%%", trim($response, "\n\r"));  
+       $dbname = $response; 
       
        // Create a new user or get details of an existing one
        setDBUser();
@@ -1196,7 +1267,7 @@ function postgresSetup($quick=false)
                               false) ;
       $snr->doSearch();
       exec("su - postgres -c \"psql --file=/usr/share/tellervo-server/set_database_permission.sql 2>> ".$logfile."\"");
-      setConfigVariable("%%DBNAME%%", "tellervo");   
+      setConfigVariable("%%DBNAME%%", $dbname);   
       
       // Create the database and populate from the database template
       createDatabase();
@@ -1220,8 +1291,9 @@ function doesTellervoDBExist()
 	global $logfile;
 	global $dbtemplate;
 	global $dbconn;
+	global $dbname;
 	 
-	$sql = "SELECT 1 AS result FROM pg_database where datname='tellervo'";
+	$sql = "SELECT 1 AS result FROM pg_database where datname='".$dbname."'";
 	$cmd = "su - postgres -c \" psql -c \\\"$sql\\\" \"";
 	
 	exec($cmd, $resp);
@@ -1243,6 +1315,7 @@ function createDatabase()
     global $logfile;
     global $dbtemplate;
     global $dbconn;
+    global $dbname;
 
     if(doesTellervoDBExist() === false)
     {
@@ -1261,8 +1334,13 @@ function createDatabase()
               {
               		// Drop Database
               		pg_close($dbconn);
-              		echo"\nDeleting existing database...\n";
-              		exec("su - postgres -c \"dropdb tellervo\"");
+              		echo"\nDeleting existing database...\n";             		
+              		exec("su - postgres -c \"dropdb ".$dbname."\"", $output, $returnvar);		
+					if($returnvar>=1) {
+						echo "\nUnable to delete existing database.\n";
+						echo "Database creation failed.\n";
+						die();
+					}
     	      }
     	      else
     	      {
@@ -1272,8 +1350,8 @@ function createDatabase()
     }
     
     echo "\nCreating database.  This could take a while...\n";
-    exec("su - postgres -c \"createdb tellervo 2>> ".$logfile."\"");
-    exec("su - postgres -c \"pg_restore --dbname=tellervo $dbtemplate 2>> ".$logfile."\"");
+    exec("su - postgres -c \"createdb ".$dbname." 2>> ".$logfile."\"");
+    exec("su - postgres -c \"pg_restore --dbname=".$dbname." $dbtemplate 2>> ".$logfile."\"");
     
     //runDBUpgrades();
     
@@ -1707,7 +1785,7 @@ function printComplete($forceSuccess=null)
   {
         echo $colors->getColoredString("Errors occurred during configuration. Check the error log and try again.", "white", "red");
         echo "\n\n";
-        exit(1);
+        exit(2);
   } 	
   else if($errorsFound===FALSE)
   {

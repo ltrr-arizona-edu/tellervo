@@ -1,15 +1,15 @@
 <?php
 /**
  * *******************************************************************
- * PHP Corina Middleware
- * E-Mail: p.brewer@cornell.edu
- * Requirements : PHP >= 5.2
+ * PHP Tellervo Server
+ * E-Mail: p.brewer@ltrr.arizona.edu
+ * Requirements : PHP >= 7.0
  * 
  * Configuration values to be set by the Administrator of the server
  * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
- * @package CorinaWS
+ * @package TellervoWS
  * *******************************************************************
  */
 
@@ -62,7 +62,7 @@ $debugFlag = FALSE;
 $timingFlag = FALSE;
 
 // Base folder on the server where the webservice is stored
-$baseFolder = "/var/www/tellervo/";
+$baseFolder = "%%WSBASE%%";
 
 // Length of time a login is valid for in seconds. (1800 = 30mins)
 $timeout = 2700;

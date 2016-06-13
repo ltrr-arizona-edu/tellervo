@@ -1,7 +1,6 @@
 -- Patches for handling ODK Forms
 
-ALTER TABLE tblsecurityuser ADD COLUMN odkpassword varchar;
-
+ALTER TABLE tblsecurityuser ADD COLUMN odkpassword varchar; 
 
 CREATE OR REPLACE FUNCTION "update_odkformdef-versionincrement"()
   RETURNS trigger AS
@@ -14,7 +13,7 @@ END;$BODY$
 ALTER FUNCTION "update_odkformdef-versionincrement"()
   OWNER TO tellervo;
 
-CREATE TABLE tblodkdefinition
+CREATE TABLE IF NOT EXISTS tblodkdefinition
 (
   odkdefinitionid uuid NOT NULL DEFAULT uuid_generate_v1mc(),
   createdtimestamp timestamp with time zone NOT NULL DEFAULT now(),
@@ -36,14 +35,14 @@ WITH (
 
 -- DROP TRIGGER "trigger_updateodkformversion-increment" ON tblodkdefinition;
 
-CREATE TRIGGER "trigger_updateodkformversion-increment"
+CREATE TRIGGER IF NOT EXISTS "trigger_updateodkformversion-increment"
   BEFORE UPDATE
   ON tblodkdefinition
   FOR EACH ROW
   EXECUTE PROCEDURE "update_odkformdef-versionincrement"();
 
   
-CREATE TABLE tblodkinstance
+CREATE TABLE IF NOT EXISTS tblodkinstance
 (
   odkinstanceid uuid NOT NULL DEFAULT uuid_generate_v1mc(),
   createdtimestamp timestamp with time zone NOT NULL DEFAULT now(),

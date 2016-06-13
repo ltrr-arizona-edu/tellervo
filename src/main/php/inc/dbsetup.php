@@ -5,9 +5,6 @@
  * E-Mail: p.brewer@cornell.edu
  * Requirements : PHP >= 5.2
  * 
- * This file contains the interface and classes that store data 
- * representing the various data entities in the data model.
- * 
  * @author Peter Brewer
  * @license http://opensource.org/licenses/gpl-license.php GPL
  * @package TellervoWS
