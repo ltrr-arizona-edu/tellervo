@@ -130,6 +130,13 @@ else if(isset($args["restore-db"]) && $args["restore-db"]!=null)
 	include($configfile);
 	include($dbsetupfile);
 	$dbfilename = $args["restore-db"];
+	
+	// If filename doesn't include path, then add current folder
+	if(substr($dbfilename, 1)!="/")
+	{
+		$dbfilename = getcwd()."/".$dbfilename;
+	}
+	
 	restoreDB($dbfilename);
 	
 	echo "Database restore complete\n";
@@ -485,11 +492,18 @@ function restoreDB($dbfilename)
 	global $upgradeScripts;
 	global $dbname;
 	
-	
-	if(!file_exists($dbfilename)) {
+	if(!is_readable($dbfilename)) {
 		echo "Specified database backup file does not exist\n";
 		exit(0);
 	}
+	
+	if(!is_writeable($dbfilename)) {
+		echo "Database backup file is not in a writeable folder.\n";
+		echo "Try copying into '/tmp/' and try again.\n";
+		exit(0);
+	}
+	
+	if($
 	
 	echo "\nThis procedure will overwrite any existing Tellervo database.\nAre you sure you want to continue?\n";
 	echo "   (y/N): ";
@@ -680,7 +694,6 @@ function showHelp($forced=false)
   echo "  tellervo-server --configure\n";
   echo "  tellervo-server --reconfigure\n";
   echo "  tellervo-server -c\n";
-  echo "  tellervo-server --configure --dbname mydb --webfolder /var/www/html\n";  
   echo "  tellervo-server --add-wms-name \"New Server\" --add-wms-url \"http://...\"\n";
   echo "  tellervo-server --del-wms-name \"Server to delete\"\n";
   echo "\nOptions:\n";
@@ -703,8 +716,8 @@ function showHelp($forced=false)
   echo "      --del-wms-name  *Name of a web mapping server to delete from database\n";
   echo "      --backup-db     *Backup database to the specified file\n";
   echo "      --restore-db    *Restore database from specified file\n";
-  echo "      --dbname         Specify nonstandard Postgresql database name\n";
-  echo "      --webfolder      Specify nonstandard Apache webfolder\n";
+  echo "      --dbname         Specify nonstandard database name [experimental]\n";
+  echo "      --webfolder      Specify nonstandard Apache webfolder [experimental]\n";
   echo "\n";
   echo "  * Root or sudo privileges are required to run these commands\n";
   echo "\n";
