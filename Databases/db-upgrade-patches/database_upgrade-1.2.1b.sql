@@ -1,6 +1,25 @@
 -- Patches for handling ODK Forms
 
-ALTER TABLE tblsecurityuser ADD COLUMN odkpassword varchar; 
+
+-- ALTER TABLE tblsecurityuser ADD COLUMN odkpassword varchar; 
+CREATE FUNCTION addcol() RETURNS void
+AS $$
+BEGIN
+IF NOT EXISTS(
+	SELECT * FROM information_schema.COLUMNS
+	WHERE COLUMN_NAME='odkpassword' AND TABLE_NAME='tblsecurityuser' AND TABLE_SCHEMA='public'
+	)
+	THEN
+		ALTER TABLE tblsecurityuser ADD COLUMN odkpassword varchar;
+END IF;
+RETURN;
+END;
+$$ LANGUAGE plpgsql;
+SELECT addcol();
+DROP FUNCTION addcol();
+
+
+
 
 CREATE OR REPLACE FUNCTION "update_odkformdef-versionincrement"()
   RETURNS trigger AS
@@ -33,9 +52,9 @@ WITH (
 
 -- Trigger: trigger_updateodkformversion-increment on tblodkdefinition
 
--- DROP TRIGGER "trigger_updateodkformversion-increment" ON tblodkdefinition;
+DROP TRIGGER IF EXISTS "trigger_updateodkformversion-increment" ON tblodkdefinition;
 
-CREATE TRIGGER IF NOT EXISTS "trigger_updateodkformversion-increment"
+CREATE TRIGGER "trigger_updateodkformversion-increment"
   BEFORE UPDATE
   ON tblodkdefinition
   FOR EACH ROW
