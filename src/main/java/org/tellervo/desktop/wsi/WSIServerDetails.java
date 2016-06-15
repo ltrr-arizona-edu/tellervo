@@ -265,11 +265,16 @@ public class WSIServerDetails {
 				// Provide extra help to those failing to access a local server address
 				errMessage="There is no response from the server at this URL. Are you sure this is the correct address?\n\nPlease note that the URL you have specified is a local network address. You will need to be on the same network as the server to gain access.";
 			}
+			else if (e.getMessage().contains("hostname in certificate didn't match"))
+			{
+				errMessage="The security certificate for this server is for a different domain.  This could be an indication of a 'man-in-the-middle' attack.";
+			}
 			else
 			{
 				errMessage="There is no response from the server at this URL.\nAre you sure this is the correct address and that\nthe server is turned on and configured correctly?";
 			}
 			log.debug(errMessage);
+			log.debug("IOException "+e.getLocalizedMessage());
 			status = WSIServerStatus.URL_NOT_RESPONDING;
 			return false;
 		} catch (URISyntaxException e) {
@@ -413,7 +418,10 @@ public class WSIServerDetails {
 
 				Boolean success = VersionUtil.compareVersionNumbers(earliestMajor, earliestMinor, earliestRevision, majorversion, minorversion, revision);
 				
-				if(success) return true;
+				if(success) {
+					log.debug("Server is valid");
+					return true;
+				}
 				
 				setTooOldErrorMessage();
 				
@@ -429,6 +437,8 @@ public class WSIServerDetails {
 			
 		}
 		
+		log.debug("Server is NOT valid");
+		log.debug("Server status is "+status.toString());
 		return false;
 	
 	}

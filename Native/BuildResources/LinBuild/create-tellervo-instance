@@ -1,0 +1,95 @@
+#!/usr/bin/php
+<?php
+
+/**
+ * Check this script is being run from the command line
+ */
+if (!isset($argc))
+{
+	writeStdErr("This file should be called from the command line only.");
+	exit(1);
+}
+
+/**
+ * Grab command line arguments either using long or short options
+ */
+$shortopts = "dw";
+$longopts = array("dbname:", "webfolder:", "help");
+$args = getopt($shortopts,$longopts);
+
+
+if(isset($args['help']))
+{
+	 echo "\n";
+  
+  echo "\nUseage: create-tellervo-instance [<option> ...]\n";
+  echo "e.g:\n";
+  echo "  create-tellervo-instance --dbname tellervo --webfolder /var/www/my-new-server\n";
+  echo "  create-tellervo-instance --help\n";
+  echo "\nOptions:\n";
+  echo "  -h, --help           Show this help\n";
+  echo "  -d, --dbname         Name of database to create\n";
+  echo "  -w, --webfolder      Existing folder into which to install the webserver\n";
+  echo "\n";
+  echo "  Root or sudo privileges are required\n";
+  echo "\n";
+  die();
+}
+
+
+/**
+ * Check the user running this script is a superuser
+ */
+if($_SERVER['USER']!='root')
+{
+	echo "Root or sudo privileges are required to run this script.\n";
+	die();
+}
+
+
+if(isset($args["dbname"]) || isset($args["d"]))
+{
+	if(isset($args["d"]))
+	{
+		$dbname = $args["d"];
+	}
+	else
+	{
+		$dbname = $args["dbname"];
+	}
+}
+else
+{
+	echo "Missing dbname parameter.  Cannot continue.\n";
+	die();
+}
+
+if(isset($args["webfolder"]) || isset($args["w"]))
+{
+	if(isset($args["w"]))
+	{
+		$webfolder = $args["w"];
+	}
+	else
+	{
+		$webfolder = $args["webfolder"];
+	}
+}
+else
+{
+	echo "Missing webfolder parameter.  Cannot continue\n";
+	die();
+}
+
+exec ("ln -s /var/www/tellervo/inc ".$webfolder);
+exec ("ln -s /var/www/tellervo/css ".$webfolder);
+exec ("ln -s /var/www/tellervo/img ".$webfolder);
+exec ("ln -s /var/www/tellervo/jscript/ ".$webfolder);
+exec ("ln -s /var/www/tellervo/odk ".$webfolder);
+exec ("ln -s /var/www/tellervo/schemas ".$webfolder);
+exec ("ln -s /var/www/tellervo/scripts/ ".$webfolder);
+exec ("ln -s /var/www/tellervo/index.php ".$webfolder); 
+exec ("ln -s /var/www/tellervo/post.php ".$webfolder);
+passthru ("tellervo-server --configure --dbname ".$dbname." --webfolder ".$webfolder);
+
+

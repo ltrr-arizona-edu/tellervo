@@ -134,7 +134,7 @@ else if(isset($args["restore-db"]) && $args["restore-db"]!=null)
 	$dbfilename = $args["restore-db"];
 	
 	// If filename doesn't include path, then add current folder
-	if(substr($dbfilename, 1)!="/")
+	if(substr($dbfilename, 0)!="/")
 	{
 		$dbfilename = getcwd()."/".$dbfilename;
 	}
@@ -566,7 +566,9 @@ function restoreDB($dbfilename)
     echo "\nFinalising PLJava extension configuration...\n";
     exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-pljava-1.3.0b.sql 2>> ".$logfile."\"");
     
-      
+    echo "\nRegenerating systems config file\n";
+    generateSystemsConfig();
+	include($systemconfig);
     runDBUpgrades(true);
    	return;
 	
@@ -778,6 +780,10 @@ function runDBUpgrades($skipbackup=false)
     global $systemconfig;
 	global $dbsetupfile;
 	global $dbconn;
+		
+	require($configfile);
+	require($dbsetupfile);
+	require($systemconfig);
 		
 	$scriptsRun = 0;
 
@@ -1060,8 +1066,8 @@ function generateSystemsConfig()
     global $systemconfig;
 	global $dbsetupfile;
 	global $dbconn;
-	include($configfile);
-	include($dbsetupfile);
+	require($configfile);
+	require($dbsetupfile);
 	
 	echo "\nGenerating systems config file...\n";
 	
@@ -1086,7 +1092,10 @@ function generateSystemsConfig()
         } 
     }
     else
-    {    
+    {   
+    	global $conn_string; 
+    	echo "Failed to connect to PG\n";
+    	echo $conn_string."\n";
     	exit("Unable to connect to PostgreSQL database.\n\n");
     }
     

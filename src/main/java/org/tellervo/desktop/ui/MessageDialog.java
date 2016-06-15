@@ -175,7 +175,7 @@ public class MessageDialog extends JDialog {
 
 		int currWidth = this.getWidth();
 		int currHeight = 150;
-		log.debug("textArea height = "+textArea.getHeight());
+		//log.debug("textArea height = "+textArea.getHeight());
 		
 		if(textArea.getHeight()>450)
 		{
@@ -184,11 +184,11 @@ public class MessageDialog extends JDialog {
 		}
 		else if(textArea.getHeight()>20)
 		{
-			log.debug("Increasing size of window to remove scrollbars if possible");
+			//log.debug("Increasing size of window to remove scrollbars if possible");
 			currHeight = 150+ (textArea.getHeight()-20);
 		}
 		
-		log.debug("Setting dialog size to "+currWidth+", "+currHeight);
+		//log.debug("Setting dialog size to "+currWidth+", "+currHeight);
 		this.setPreferredSize(new Dimension(currWidth, currHeight));
 		pack();
 
