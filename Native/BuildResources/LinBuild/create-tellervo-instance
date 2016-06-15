@@ -81,6 +81,7 @@ else
 	die();
 }
 
+exec ("mkdir -p $webfolder");
 exec ("ln -s /var/www/tellervo/inc ".$webfolder);
 exec ("ln -s /var/www/tellervo/css ".$webfolder);
 exec ("ln -s /var/www/tellervo/img ".$webfolder);
