@@ -100,8 +100,7 @@ function createOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEn
 	global $gmlNS;
 	global $xlinkNS;
 
-	$outputStr ="";
-	$outputStr.="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+	$outputStr ="<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 	if ($metaHeader->status =="Error")
 	{
 		if($securehttp===TRUE)
