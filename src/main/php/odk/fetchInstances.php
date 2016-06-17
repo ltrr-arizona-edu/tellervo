@@ -45,7 +45,7 @@ if($myAuth->isLoggedIn===TRUE)
 else
 {
 	$firebug->log("Not logged in");
-	printError("Not logged in");
+	$myAuth->printAuthReq();
 }
 
 //file_put_contents('/tmp/headers.txt', "Getting form instances...\n", FILE_APPEND);
@@ -151,6 +151,7 @@ function getFile($zipfile)
         header('Content-Disposition: attachment; filename='.basename($zipfile));
         header('Content-Transfer-Encoding: binary');
         header('Expires: 0');
+        header('Content-Type: application/zip, application/octet-stream');
         header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
         header('Pragma: public');
         header('Content-Length: '.$filesize);

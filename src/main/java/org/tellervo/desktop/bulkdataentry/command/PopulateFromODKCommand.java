@@ -90,6 +90,7 @@ import org.tellervo.desktop.versioning.Build;
 import org.tellervo.desktop.wsi.WebJaxbAccessor;
 import org.tellervo.desktop.wsi.tellervo.TridasElementTemporaryCacher;
 import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
+import org.tridas.interfaces.ITridas;
 import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.ControlledVoc;
@@ -678,7 +679,7 @@ public class PopulateFromODKCommand implements ICommand {
 
 		// Handle media files..
 		try{
-			TridasFileList filesList = this.getMediaFileList(parser, mediaFileArr, wizard, objectcode);
+			TridasFileList filesList = this.getMediaFileList(TridasObject.class, parser, mediaFileArr, wizard, objectcode);
 			if(filesList!=null && filesList.size()>0)
 			{
 				newrow.setProperty(SingleObjectModel.FILES, filesList);
@@ -694,9 +695,9 @@ public class PopulateFromODKCommand implements ICommand {
 	}
 	
 
-	private TridasFileList getMediaFileList(ODKParser parser, File[] mediaFileArr, ODKImportWizard wizard, String codeprefix)
+	private TridasFileList getMediaFileList(Class<? extends ITridas> clazz, ODKParser parser, File[] mediaFileArr, ODKImportWizard wizard, String codeprefix)
 	{
-		return getMediaFileList(parser, null, mediaFileArr, wizard, codeprefix);
+		return getMediaFileList(null, clazz, parser, null, mediaFileArr, wizard, codeprefix);
 	}
 	
 	/**
@@ -709,17 +710,19 @@ public class PopulateFromODKCommand implements ICommand {
 	 * @param codeprefix
 	 * @return
 	 */
-	private TridasFileList getMediaFileList(ODKParser parser, ArrayList<String> mediaFilenames, File[] mediaFileArr, ODKImportWizard wizard, String codeprefix)
+	private TridasFileList getMediaFileList(String restrictfilename, Class<? extends ITridas> clazz, ODKParser parser, ArrayList<String> mediaFilenames, File[] mediaFileArr, ODKImportWizard wizard, String codeprefix)
 	{
 		TridasFileList filesList = new TridasFileList();
 
-		if(mediaFilenames==null) mediaFilenames = parser.getMediaFileFields();
+		if(mediaFilenames==null) mediaFilenames = parser.getMediaFileFields(clazz);
 		
 		
 		for(String mediafile : mediaFilenames)
 		{
 			
 			if(mediafile==null) continue;
+			
+			if(restrictfilename!=null && mediafile!=restrictfilename) continue;
 			
 			File f = getFileFromList(mediaFileArr, mediafile);
 			if(f!=null)
@@ -921,7 +924,7 @@ public class PopulateFromODKCommand implements ICommand {
 		// Handle media files...
 		String code = objcode+"-"+parser.getFieldValueAsString("tridas_element_title");
 		try{
-			TridasFileList filesList = this.getMediaFileList(parser, mediaFileArr, wizard, code);
+			TridasFileList filesList = this.getMediaFileList(TridasElement.class, parser, mediaFileArr, wizard, code);
 			if(filesList!=null && filesList.size()>0)
 			{
 				newrow.setProperty(SingleElementModel.FILES, filesList);
@@ -988,7 +991,7 @@ public class PopulateFromODKCommand implements ICommand {
 				}
 				else
 				{
-					throw new Exception ("Failed to get element information from ODF file");
+					throw new Exception ("Failed to get element information from ODK file");
 				}
 			}
 			else if (elmcode !=null)
@@ -997,7 +1000,7 @@ public class PopulateFromODKCommand implements ICommand {
 			}
 			else
 			{
-				throw new Exception ("Failed to get element information from ODF file");
+				throw new Exception ("Failed to get element information from ODK file");
 			}
 			
 
@@ -1041,22 +1044,25 @@ public class PopulateFromODKCommand implements ICommand {
 			}
 
 			// Handle media files...
+			String code = objcode+"-"+elmcode+"-"+samplecode;
 			try{
-				String code = objcode+"-"+elmcode+"-"+parser.getFieldValueAsString("tridas_sample_title");
-				ArrayList<String> fieldnames = new ArrayList<String>();
-				fieldnames.add("tridas_sample_file_photo");
-				fieldnames.add("tridas_sample_file_video");
-				fieldnames.add("tridas_sample_file_sound");
-				TridasFileList filesList = this.getMediaFileList(parser, fieldnames, mediaFileArr, wizard, code);
-				if(filesList!=null && filesList.size()>0)
+				String filename = parser.getFieldValueAsStringFromNodeList("tridas_sample_file_photo", node.getChildNodes());
+				if(filename==null)
 				{
-					newrow.setProperty(SingleElementModel.FILES, filesList);
+					
+				}
+				else
+				{
+					TridasFileList filesList = this.getMediaFileList(filename, TridasSample.class, parser, null, mediaFileArr, wizard, code);
+					if(filesList!=null && filesList.size()>0)
+					{
+						newrow.setProperty(SingleElementModel.FILES, filesList);
+					}
 				}
 			} catch (Exception e)
 			{
 				log.debug("Failed to get media files");
 			}
-			
 			
 			model.getRows().add(newrow);
 		}

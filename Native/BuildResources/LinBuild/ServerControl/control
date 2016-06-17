@@ -3,7 +3,7 @@ Version: ${serverversion}
 Section: misc
 Priority: optional
 Architecture: all
-Depends: apache2, postgresql-9.5, postgis, postgresql-contrib-9.5, postgresql-server-dev-9.5, php, libapache2-mod-php, php-pgsql, php7.0-xml, php-curl, php-common, expect, openjdk-8-jdk
+Depends: apache2, postgresql-9.5, postgis, postgresql-contrib-9.5, postgresql-server-dev-9.5, php, libapache2-mod-php, php-pgsql, php7.0-xml, php7.0-zip, php-curl, php-common, expect, openjdk-8-jdk
 Suggests: openssh-server, pgadmin3, tellervo
 Replaces: [[name]]-server (<<${serverversion})
 Maintainer: Peter Brewer <p.brewer@ltrr.arizona.edu>

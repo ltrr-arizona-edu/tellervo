@@ -117,6 +117,14 @@ if [ $1 = 'configure' ]; then
      		/usr/bin/tellervo-server --configure
       fi
       
+      
+      ##
+      ##  Ensure mod_rewrite is enable for ODK 
+      ##
+      a2enmod rewrite
+      service apache2 restart
+      
+      
 
 
  

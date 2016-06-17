@@ -265,14 +265,8 @@ public class ColumnChooserView extends JWindow{
 		      
 		      c.setForeground(Color.black);
 		      
-		      System.out.println("Background color: "+c.getBackground());
-		      
+		    
 		      c.setBackground(UIManager.getColor("ToolBar.dockingBackground"));
-
-		      System.out.println("Background color now: "+c.getBackground());
-		      
-		      
-		      
 		      return c;
 		   }
 		

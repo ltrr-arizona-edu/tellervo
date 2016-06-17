@@ -10,6 +10,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 
 import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -19,8 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.wsi.tellervo.TridasElementTemporaryCacher;
+import org.tridas.interfaces.ITridas;
 import org.tridas.schema.Certainty;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasSample;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -237,14 +241,22 @@ public class ODKParser {
 		if(nList.getLength()==0) return null;
 	
 		try{
-			Double dblval = Double.parseDouble(nList.item(0).getNodeValue());
-			return dblval;
+			if(nList.item(0).getNodeValue()!=null)
+			{
+				Double val = Double.parseDouble(nList.item(0).getNodeValue());
+				return val;
+			}
+			else if (nList.item(0).getFirstChild().getNodeValue()!=null)
+			{
+				Double val = Double.parseDouble(nList.item(0).getFirstChild().getNodeValue());
+				return val;
+			}
 		} catch (Exception e)
 		{
-			log.warn("Error getting number from tag field: "+field);
+			log.warn("Error getting number from tag field: "+field+". The value was "+nList.item(0).getNodeValue());
 			return null;
 		}
-		
+		return null;
 	}
 	
 	public String getFieldValueAsStringFromNodeList(String field, NodeList nList)
@@ -390,25 +402,21 @@ public class ODKParser {
 		
 			Date dob=null;
 			DateFormat df=new SimpleDateFormat("yyyy-MM-dd");
-			String enddate = getFieldValueAsString("end");
+			String enddate = getFieldValueAsString("tridas_sample_samplingdate");
 			if(enddate==null) return null;
 			if(enddate.length()<10) return null;
 			
 			dob = df.parse( enddate.substring(0, 10));
 			 
 			
-			GregorianCalendar gcal = new GregorianCalendar();
+			GregorianCalendar cal = new GregorianCalendar();
 
-			gcal.setTime(dob);
-			
-			XMLGregorianCalendar xmlGregCal = App.datatypeFactory.newXMLGregorianCalendarDate(
-					gcal.get(Calendar.YEAR),
-					gcal.get(Calendar.MONTH),
-					gcal.get(Calendar.DAY_OF_MONTH),
-					DatatypeConstants.FIELD_UNDEFINED);
+			cal.setTime(dob);		
+			XMLGregorianCalendar xmlDate2 = DatatypeFactory.newInstance().newXMLGregorianCalendar(cal);
+			xmlDate2.setTimezone(DatatypeConstants.FIELD_UNDEFINED);
 			
 			org.tridas.schema.Date date = new org.tridas.schema.Date();
-			date.setValue(xmlGregCal);
+			date.setValue(xmlDate2);
 			date.setCertainty(Certainty.EXACT);
 			
 			return date;
@@ -480,7 +488,7 @@ public class ODKParser {
 	    return map;
 	}
 	
-	public ArrayList<String> getMediaFileFields()
+	public ArrayList<String> getMediaFileFields(Class<? extends ITridas> clazz)
 	{
 		ArrayList<String> mediaFileList = new ArrayList<String>();
 
@@ -496,21 +504,29 @@ public class ODKParser {
 						continue;
 					String value = node.getFirstChild().getNodeValue();
 
-					if (name.startsWith("tellervo.user.image")
-							|| name.startsWith("tellervo.user.video")
-							|| name.startsWith("tellervo.user.audio")
-							|| name.startsWith("tridas_object_file_photo")
-							|| name.startsWith("tridas_object_file_sound")
-							|| name.startsWith("tridas_object_file_video")
-							|| name.startsWith("tridas_element_file_photo")
-							|| name.startsWith("tridas_element_file_sound")
-							|| name.startsWith("tridas_element_file_video")
-							//|| name.startsWith("tridas_sample_file_photo")
-							//|| name.startsWith("tridas_sample_file_sound")
-							//|| name.startsWith("tridas_sample_file_video")
-							) 
+					if(clazz == TridasObject.class || clazz == TridasElement.class)
 					{
-						mediaFileList.add(value);
+						if (name.startsWith("tellervo.user.image")
+								|| name.startsWith("tellervo.user.video")
+								|| name.startsWith("tellervo.user.audio")
+								|| name.startsWith("tridas_object_file_photo")
+								|| name.startsWith("tridas_object_file_sound")
+								|| name.startsWith("tridas_object_file_video")
+								|| name.startsWith("tridas_element_file_photo")
+								|| name.startsWith("tridas_element_file_sound")
+								|| name.startsWith("tridas_element_file_video"))
+						{
+							mediaFileList.add(value);
+						}
+					}
+					else if(clazz == TridasSample.class)
+					{
+						if (name.startsWith("tridas_sample_file_photo")
+								|| name.startsWith("tridas_sample_file_sound")
+								|| name.startsWith("tridas_sample_file_video"))
+						{
+							mediaFileList.add(value);
+						}
 					}
 				} catch (Exception e) {
 

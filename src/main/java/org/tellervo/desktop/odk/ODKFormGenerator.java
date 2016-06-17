@@ -167,10 +167,12 @@ public class ODKFormGenerator {
 				for(int j=0; j<node.getChildCount(); j++)
 				{
 					DefaultMutableTreeNode node2 = (DefaultMutableTreeNode) node.getChildAt(j);
+					String groupCode = "group_"+StringEscapeUtils.escapeXml(node.getUserObject().toString().replace(" ", "_").toLowerCase());
+
 					if(node2 instanceof ODKFieldNode)
 					{
 						ODKFieldInterface field = (ODKFieldInterface) node2.getUserObject();
-						data.append(getDataBindingCode(field, null));
+						data.append(getDataBindingCode(field, groupCode));
 					}
 				}
 			}
@@ -306,6 +308,20 @@ public class ODKFormGenerator {
 		{
 			data.append("<bind nodeset=\"/data/"+grpCd+field.getFieldCode()+"\" type=\"geopoint\" required=\""+boolAsText(field.isFieldRequired())+"()\"/>");
 		}
+		else if(field.getFieldType().equals(ODKDataType.DATE))
+		{
+			String defaultto = "";
+			if(field.getDefaultValue()=="today")
+			{
+				defaultto = "calculate=\"today()\"";
+			}
+			
+			data.append("<bind nodeset=\"/data/"+grpCd+field.getFieldCode()+"\" type=\"date\" "+defaultto+" required=\""+boolAsText(field.isFieldRequired())+"()\"/>");
+		}
+		else
+		{
+			log.debug("Unsupported data type");
+		}
 		return data.toString();
 	}
 	
@@ -397,6 +413,13 @@ public class ODKFormGenerator {
 			data.append("<hint ref=\"jr:itext('/data/"+grpCd+field.getFieldCode()+":hint')\"/>");
 		    data.append("</upload>");
 		}
+		else if (field.getFieldType().equals(ODKDataType.DATE))
+		{
+			data.append("<input ref=\"/data/"+grpCd+field.getFieldCode()+"\">");
+			data.append("<label ref=\"jr:itext('/data/"+grpCd+field.getFieldCode()+":label')\"/>");
+			data.append("<hint ref=\"jr:itext('/data/"+grpCd+field.getFieldCode()+":hint')\"/>");
+			data.append("</input>");			
+		}
 		else
 		{
 			log.error("The "+field.getFieldType()+" data type is not supported yet");
@@ -419,7 +442,7 @@ public class ODKFormGenerator {
 		data.append("<"+StringEscapeUtils.escapeXml(field.getFieldCode())+">");
 		
 		// Include default value when appropriate
-		if(field.getDefaultValue()!=null )
+		if(field.getDefaultValue()!=null && !field.getFieldType().equals(ODKDataType.DATE))
 		{
 			data.append(StringEscapeUtils.escapeXml(field.getDefaultValue().toString()));
 		}

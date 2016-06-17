@@ -1,4 +1,19 @@
+
+php_value memory_limit 30M
+php_value post_max_size 100M
+php_value upload_max_filesize 30M
+
+Options +FollowSymLinks
+Options -Multiviews
+
+
 RewriteEngine On
-RewriteRule ^([a-z]+)/([a-z\-]+)$ /$1/$2.php [L]
-#RewriteCond %{REQUEST_FILENAME} !-f
-#RewriteRule ^([^\.]+)$ $1.php [NC,L]
+RewriteRule    ^deleteFormDefinitions/?$    deleteFormDefinitions.php    [NC,L]
+RewriteRule    ^deleteFormInstances/?$      deleteFormInstances.php      [NC,L]
+RewriteRule    ^fetchInstances/?$           fetchInstances.php           [NC,L]
+RewriteRule    ^formList/?$                 formList.php                 [NC,L]
+RewriteRule    ^forms/?$                    forms.php                    [NC,L]
+RewriteRule    ^mediaFile/?$                mediaFile.php                [NC,L]
+RewriteRule    ^submission/?$               submission.php               [NC,L]
+
+

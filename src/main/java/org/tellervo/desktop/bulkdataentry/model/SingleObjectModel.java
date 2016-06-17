@@ -250,11 +250,14 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		genericField.setValue(getProperty(OBJECT_CODE)+"");
 		argObject.getGenericFields().add(genericField);
 		
-	/*	genericField = new TridasGenericField();
-		genericField.setName("tellervo.vegetationType");
-		genericField.setValue(getProperty(VEGETATION_TYPE)+"");
-		argObject.getGenericFields().add(genericField);
-		*/
+		if(getProperty(VEGETATION_TYPE)!=null)
+		{
+			genericField = new TridasGenericField();
+			genericField.setName("tellervo.vegetationType");
+			genericField.setValue((String)getProperty(VEGETATION_TYPE));
+			argObject.getGenericFields().add(genericField);
+		}
+		
 		argObject.setTitle((String)getProperty(TITLE));
 		argObject.setIdentifier((TridasIdentifier) getProperty(IMPORTED));
 		argObject.setComments((String)getProperty(COMMENTS));

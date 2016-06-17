@@ -58,13 +58,16 @@ function getFormList($theUsername)
 		echo "</formID>\n";
 		echo "    <name>".$row['name']."</name>\n";
 		echo "    <hash>md5:".md5($row['definition'])."</hash>\n";
+		
+		$folder = substr($_SERVER['REQUEST_URI'], 0, -12);
+		
 		if($securehttp===TRUE)
 		{
-    			echo "    <downloadUrl>https://".$domain."/odk/forms?id=".$row['odkdefinitionid']."</downloadUrl>\n";
+			echo "    <downloadUrl>https://".$_SERVER['HTTP_HOST'].$folder."odk/forms?id=".$row['odkdefinitionid']."</downloadUrl>\n";
 		}
 		else
 		{
-    			echo "    <downloadUrl>http://".$domain."/odk/forms?id=".$row['odkdefinitionid']."</downloadUrl>\n";
+			echo "    <downloadUrl>http://".$_SERVER['HTTP_HOST'].$folder."odk/forms?id=".$row['odkdefinitionid']."</downloadUrl>\n";
 		}
 		echo "  </xform>\n";
 	}

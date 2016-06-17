@@ -11,8 +11,8 @@ public class ODKTridasSampleSamplingDate extends AbstractODKField {
 	
 	public ODKTridasSampleSamplingDate()
 	{
-		super(ODKDataType.STRING, "tridas_sample_samplingdate", "Sampling date", Documentation.getDocumentation("sample.samplingDate"), null);
-		this.setDefaultValue("string(today())");
+		super(ODKDataType.DATE, "tridas_sample_samplingdate", "Sampling date", Documentation.getDocumentation("sample.samplingDate"), null);
+		this.setDefaultValue("today");
 		this.setIsFieldHidden(true);
 	}
 	

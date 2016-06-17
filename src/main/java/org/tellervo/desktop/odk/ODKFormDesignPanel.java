@@ -1035,6 +1035,24 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			lblDefaultValue.setVisible(false);
 			setChoiceGUIVisible(false);
 		}
+		else if(selectedField.getFieldType().equals(ODKDataType.DATE))
+		{
+			lblIcon.setIcon(Builder.getIcon("date.png", 64));
+			if(selectedField.getDefaultValue()!=null)
+			{
+				this.txtDefault.setText(selectedField.getDefaultValue().toString());
+			}
+			else
+			{
+				this.txtDefault.setText("");
+			}
+
+			cboDefault.setVisible(false);
+			txtDefault.setVisible(true);
+			lblDefaultValue.setVisible(true);
+
+			setChoiceGUIVisible(false);
+		}
 		else
 		{
 			log.error("Fields of data type "+selectedField.getFieldType()+" are not yet supported");
