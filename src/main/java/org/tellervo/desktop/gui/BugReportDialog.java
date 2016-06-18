@@ -151,16 +151,11 @@ public class BugReportDialog implements ActionListener {
 		}
 		else
 		{
-			int n = JOptionPane.showConfirmDialog(
-				    dialog,
-				    "If you don't provide your email address, we won't be able to help you\n" +
-				    "with your problem.  We may also need more information to understand\n" +
-				    "what has gone wrong.\n\n" +
-				    "Do you still want to submit the bug report anonymously?",
-				    "Submit anonymously?",
-				    JOptionPane.YES_NO_CANCEL_OPTION);
+			JOptionPane.showMessageDialog(dialog, 
+					"We need your email address as we may need more information to understand\n" +
+				    "what has gone wrong.");
 			
-			if(n != JOptionPane.YES_OPTION) return;
+			return;
 		}
 		
 		if(comments != null && comments.length() > 0)
