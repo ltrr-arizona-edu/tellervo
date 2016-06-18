@@ -34,10 +34,11 @@ if($myAuth->isLoggedIn===TRUE)
 }
 else
 {
-	$firebug->log("Not logged in");
-	$meta->requestLogin();
-	writeOutput($meta);
-	die();
+        // Not logged in
+        $seq = $myAuth->sequence();
+        $meta->requestLogin($myAuth->nonce($seq), $seq, 'Error');
+        writeOutput($myMetaHeader, " ");
+        die();
 }
 
 // ok, valid username & password

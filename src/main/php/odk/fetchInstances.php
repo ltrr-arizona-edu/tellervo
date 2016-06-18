@@ -1,42 +1,31 @@
 <?php
 
-
-//include('inc/odkauth.php');
 include('inc/odkhelper.php');
 require_once('../inc/dbhelper.php');
-
-        try{
-        require_once("../config.php");
-        require_once("../inc/dbsetup.php");
-        } catch (Exception $e)
-        {
-                trigger_error('704'.'Tellervo server configuration file missing.  Contact your systems administrator');
-        }
-
-        try{
-                require_once("../systemconfig.php");
-        } catch (Exception $e)
-        {
-                trigger_error('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_ERROR);
-        }
-
-
+require_once('../inc/output.php');
+require_once('../inc/meta.php');
 require_once("../inc/auth.php");
-        require_once('../inc/FirePHPCore/FirePHP.class.php');
-        $firebug = FirePHP::getInstance(true);
-
-
-
-//$odkauth = new ODKAuth();
-
+require_once('../inc/FirePHPCore/FirePHP.class.php');
 
 $myAuth         = new auth();
-
-
+$myMetaHeader   = new meta();
+$firebug = FirePHP::getInstance(true);
 $mediaStoreFolder = "/usr/share/tellervo-server/mediastore/";
+		
+try{
+require_once("../config.php");
+require_once("../inc/dbsetup.php");
+} catch (Exception $e)
+{
+	trigger_error('704'.'Tellervo server configuration file missing.  Contact your systems administrator');
+}
 
-
-
+try{
+	require_once("../systemconfig.php");
+} catch (Exception $e)
+{
+	trigger_error('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_ERROR);
+}
 
 if($myAuth->isLoggedIn===TRUE)
 {
@@ -44,8 +33,11 @@ if($myAuth->isLoggedIn===TRUE)
 }
 else
 {
-	$firebug->log("Not logged in");
-	$myAuth->printAuthReq();
+        // Not logged in
+        $seq = $myAuth->sequence();
+        $myMetaHeader->requestLogin($myAuth->nonce($seq), $seq, 'Error');
+        writeOutput($myMetaHeader, " ");
+        die();
 }
 
 //file_put_contents('/tmp/headers.txt', "Getting form instances...\n", FILE_APPEND);
