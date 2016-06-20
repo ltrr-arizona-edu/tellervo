@@ -20,12 +20,15 @@
 package org.tellervo.desktop.graph;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.AbstractAction;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.gui.hierarchy.AddRemoveWSITagDialog;
+import org.tellervo.desktop.gui.hierarchy.WSITagNameDialog;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Builder;
 
@@ -34,7 +37,7 @@ import org.tellervo.desktop.ui.Builder;
 @SuppressWarnings("serial")
 public class SamplePopupMenu extends JPopupMenu {
 
-    private JMenuItem titleItem, rangeItem, scaleItem;
+    private JMenuItem titleItem, rangeItem, scaleItem, tagSeries, addRemoveTag;
 
     public SamplePopupMenu(GrapherPanel gpanel) {
     	
@@ -69,6 +72,9 @@ public class SamplePopupMenu extends JPopupMenu {
             }
         });
         
+        
+        
+        
         // remove
         JMenuItem remove = new JMenuItem("Remove");
         remove.addActionListener(new AbstractAction(){
@@ -77,6 +83,8 @@ public class SamplePopupMenu extends JPopupMenu {
         		
         	}
         });
+        
+        
         
         // properties
         JMenuItem properties = new JMenuItem("Format series");
@@ -87,6 +95,29 @@ public class SamplePopupMenu extends JPopupMenu {
         	}
         });
         
+		// Tag series 
+		tagSeries = new JMenuItem("Tag this series");
+		tagSeries.setIcon(Builder.getIcon("tag.png", 16));
+		tagSeries.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				WSITagNameDialog.addTagToSeries(panel.getParent(), s.getSeries());				
+			}
+			
+		});
+		
+		// Add/remove tag 
+		addRemoveTag = new JMenuItem("Add/remove tag(s) from series");
+		addRemoveTag.setIcon(Builder.getIcon("tags.png", 16));
+		addRemoveTag.addActionListener(new ActionListener(){
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				AddRemoveWSITagDialog.showDialog(panel.getParent(), s.getSeries());
+			}
+		});
+        
+        
         remove.setEnabled(false);
         properties.setEnabled(false);
 
@@ -96,6 +127,10 @@ public class SamplePopupMenu extends JPopupMenu {
         add(open);
         add(plot);       
         add(remove);
+        addSeparator();
+        add(tagSeries);
+        add(addRemoveTag);
+        
         addSeparator(); 
         add(properties);
     }
