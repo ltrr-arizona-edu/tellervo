@@ -352,6 +352,9 @@ public class TruncateDialog extends JDialog {
 		// clear filename
 		s.removeMeta("filename");
 
+		s.getSeries().getInterpretation().setFirstYear(r.getStart().tridasYearValue());
+		
+		
 		// fire off some events
 		s.setModified();
 		s.fireSampleRedated();
