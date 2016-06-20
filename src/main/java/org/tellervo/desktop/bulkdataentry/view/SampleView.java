@@ -36,6 +36,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
+import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.control.PrintSampleBarcodesEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
@@ -359,6 +360,10 @@ public class SampleView extends AbstractBulkImportView {
 
 		toolbar.add(argODKImport);
 		toolbar.add(argDeleteODKInstances);
+		
+		
+		toolbar.add(argPopulateFromDB);
+
 
 		quickFill = new JButton();
 		quickFill.setIcon(Builder.getIcon("quickfill.png", 22));
@@ -416,7 +421,11 @@ public class SampleView extends AbstractBulkImportView {
 
 	@Override
 	protected void populateFromDatabase() {
-		// TODO Auto-generated method stub
+		SampleModel model = BulkImportModel.getInstance().getSampleModel();
+		PopulateFromDatabaseEvent event = new PopulateFromDatabaseEvent(model);
+
+		event.dispatch();
+
 
 	}
 

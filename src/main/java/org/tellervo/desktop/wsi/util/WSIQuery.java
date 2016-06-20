@@ -66,7 +66,7 @@ public class WSIQuery {
 		
 		// Find all samples for an element 
     	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
-    	param.addSearchConstraint(SearchParameterName.ELEMENTDBID, SearchOperator.EQUALS, el.getIdentifier().getValue().toString());
+    	param.addSearchConstraint(SearchParameterName.ELEMENTID, SearchOperator.EQUALS, el.getIdentifier().getValue().toString());
 
     	// we want an element return here, so we get a list of elements->samples when we use comprehensive
 		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
@@ -98,9 +98,9 @@ public class WSIQuery {
 		
 		if(!o.isSetIdentifier()) return null;
 		
-		// Find all samples for an element 
+		// Find all samples for an object 
     	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
-    	param.addSearchConstraint(SearchParameterName.OBJECTDBID, SearchOperator.EQUALS, o.getIdentifier().getValue().toString());
+    	param.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, o.getIdentifier().getValue().toString());
 
 		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
 		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);

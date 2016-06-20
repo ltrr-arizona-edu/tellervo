@@ -37,6 +37,8 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 	private Window parent;
 	private static final Logger log = LoggerFactory.getLogger(TridasEntityPickerPanel.class);
 	private ITridas entity;
+	private ArrayList<ITridas> entityList;
+	public boolean returnAsList;
 	private final Class<? extends ITridas> expectedClass;
 	private final EntitiesAccepted entitiesAccepted;
 	private JLabel lblWarning;
@@ -159,6 +161,11 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 	{		
 		return entity;
 	}
+	
+	public ArrayList<ITridas> getEntityList()
+	{
+		return this.entityList;
+	}
 		
 	private void showHidePanels()
 	{
@@ -218,7 +225,7 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 				setWarning("No records match");
 				return;
 			}
-			else if(entitylist.size()>1)
+			else if(entitylist.size()>1 && this.returnAsList==false)
 			{
 				setWarning("Ambiguous - multiple matches");
 				return;
@@ -226,6 +233,7 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 			
 			
 			entity = event.getEntity();
+			entityList = event.getEntityList();
 			
 			
 		} catch (Exception e) {
