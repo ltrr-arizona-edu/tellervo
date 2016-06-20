@@ -769,6 +769,14 @@ public class FullEditor extends AbstractEditor {
 		});
 		
 		
+		popupMenu.addSeparator();
+		
+		JMenuItem tagSeries = new JMenuItem(((FullEditorActions)actions).tagSeriesAction);
+		popupMenu.add(tagSeries);
+		
+		JMenuItem addRemoveTags = new JMenuItem(((FullEditorActions)actions).addRemoveTagAction);
+		popupMenu.add(addRemoveTags);
+		
 			
 	}
 

@@ -4,6 +4,7 @@ import javax.swing.Action;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.FullEditor;
+import org.tellervo.desktop.gui.menus.actions.AddRemoveTagAction;
 import org.tellervo.desktop.gui.menus.actions.FileDeleteODKDefinitionsAction;
 import org.tellervo.desktop.gui.menus.actions.FileDeleteODKInstancesAction;
 import org.tellervo.desktop.gui.menus.actions.FileDesignODKFormAction;
@@ -33,6 +34,7 @@ import org.tellervo.desktop.gui.menus.actions.MapUTMGraticuleLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapWMSLayerAction;
 import org.tellervo.desktop.gui.menus.actions.MapWorldMapLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapZoomToSampleAction;
+import org.tellervo.desktop.gui.menus.actions.TagSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateWorkspaceAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsIndexAction;
@@ -82,7 +84,8 @@ public class FullEditorActions extends AbstractEditorActions {
 	public Action mapKMLLayerAction;
 	public Action mapZoomAction;
 	public Action mapSpatialSearchAction;
-
+	public Action tagSeriesAction;
+	public Action addRemoveTagAction;
 	
 	
 	
@@ -101,7 +104,10 @@ public class FullEditorActions extends AbstractEditorActions {
 		fileDesignODKFormAction = new FileDesignODKFormAction(editor);
 		fileDeleteODKDefinitionsAction = new FileDeleteODKDefinitionsAction();
 		fileDeleteODKInstancesAction = new FileDeleteODKInstancesAction();
+		
 
+		tagSeriesAction = new TagSeriesAction((FullEditor) editor);
+		addRemoveTagAction = new AddRemoveTagAction((FullEditor) editor);
 		
 		graphCreateFileHistoryPlotAction = new GraphCreateFileHistoryPlotAction(editor);
 		
