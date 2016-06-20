@@ -46,10 +46,12 @@ class geometry
 
 		global $firebug;
 		global $gmlNS;
+		global $tridasNS;
+		
 				
 		// Wrap GML tags in root elements
 		$start = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>".
-				 "<tellervo xmlns=\"$gmlNS\">".
+				 "<tellervo xmlns=\"$gmlNS\" xmlns:tridas=\"$tridasNS\">".
     			 "<featureMember>\n";
     	$end =  "</featureMember></tellervo>"; 
         $doc = new DomDocument;
@@ -60,20 +62,20 @@ class geometry
         libxml_use_internal_errors(true);		
 		
         // Do various checks for unsupported GML data
-        $tags = $doc->getElementsByTagName("locationGeometry")->item(0)->childNodes;
+        $tags = $doc->getElementsByTagName("gml:locationGeometry")->item(0)->childNodes;
         foreach($tags as $tag)
         {
 		   if($tag->nodeType != XML_ELEMENT_NODE) continue;   
 			
-		   if(strtolower($tag->tagName)!="point")
+		   if(strtolower($tag->tagName)!="gml:point")
 		   {
 		   		trigger_error("104"."This webservice does not accept gml:".$tag->tagName.". Please resubmit your request with either no GML data or with gml:point data.", E_USER_ERROR);
 		   		return false;
 		   }
 		   
-		   if($tag->hasAttribute("srsName"))
+		   if($tag->hasAttribute("gml:srsName"))
 		   {
-		   		if(($tag->getAttribute("srsName")!="EPSG:4326") && ($tag->getAttribute("srsName")!="urn:ogc:def:crs:EPSG::4326"))
+		   		if(($tag->getAttribute("gml:srsName")!="EPSG:4326") && ($tag->getAttribute("gml:srsName")!="urn:ogc:def:crs:EPSG::4326"))
 		   		{
 		   			trigger_error("104"."This webservice currently only supports GML data supplied in the EPSG:4326 coordinate system", E_USER_ERROR);
 		   			return false;
@@ -81,11 +83,11 @@ class geometry
 		   }
 		   
 		   // Extract coordinates from point GML
-		   $coords = explode(" ", $doc->getElementsByTagName("pos")->item(0)->nodeValue, 2);
+		   $coords = explode(" ", $doc->getElementsByTagName("gml:pos")->item(0)->nodeValue, 2);
 		     
 		   
 		   // Calculate geometry value and store
-		   if($tag->hasAttribute("srsName") && $tag->getAttribute("srsName") && $tag->getAttribute("srsName")!="urn:ogc:def:crs:EPSG::4326")
+		   if($tag->hasAttribute("gml:srsName") && $tag->getAttribute("gml:srsName") && $tag->getAttribute("gml:srsName")!="urn:ogc:def:crs:EPSG::4326")
 		   { 
 		        // When reading geom with full urn  for srsName we need to switch the coordinates
 		   	$this->setPointGeometryFromLatLong($coords[1], $coords[0]);	
