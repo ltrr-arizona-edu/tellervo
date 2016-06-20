@@ -43,8 +43,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.admin.view.PermissionByEntityDialog;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gui.hierarchy.AddRemoveWSITagDialog;
 import org.tellervo.desktop.gui.hierarchy.TridasTree;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeCellRenderer;
+import org.tellervo.desktop.gui.hierarchy.WSITagNameDialog;
 import org.tellervo.desktop.gui.widgets.TellervoCodePanel.ObjectListMode;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.schema.EntityType;
@@ -54,6 +56,7 @@ import org.tellervo.desktop.util.PopupListener;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tridas.interfaces.ITridas;
+import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.util.TridasUtils.TreeDepth;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -186,6 +189,27 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 		        menuItem.setActionCommand("reassign");
 		  	}
 
+		  	
+	        if(clazz.equals(TridasMeasurementSeries.class) || clazz.equals(TridasDerivedSeries.class))
+	        {
+	        	// Agg tag options
+
+	    		// Tag series 
+	    		menuItem = new JMenuItem("Tag this series");
+	    		menuItem.setIcon(Builder.getIcon("tag.png", 16));
+	    		menuItem.setActionCommand("tagSeries");
+	    		menuItem.addActionListener(this);
+	    		popup.add(menuItem);	
+	    		
+	    		// Add/remove tag 
+	    		menuItem = new JMenuItem("Add/remove tag(s) from series");
+	    		menuItem.setIcon(Builder.getIcon("tags.png", 16));
+	    		menuItem.setActionCommand("addRemoveTag");
+	    		menuItem.addActionListener(this);
+	    		popup.add(menuItem);	
+	    		
+	    		popup.addSeparator();
+	        }
 	        
 	        // Merge
 	        menuItem = new JMenuItem("Merge with another record");
@@ -428,19 +452,23 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
+		// Get the currently selected node
+		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+		
+		
 		if(e.getActionCommand().equals("expand"))
 		{
 			// Request to expand the current node of tree
-			expandEntity((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent());
+			expandEntity(selectedNode);
 		}
 		else if (e.getActionCommand().equals("select"))
 		{
-			doSelectEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+			doSelectEntity(selectedNode);
 		}
 		else if (e.getActionCommand().equals("refresh"))
 		{
-			DefaultMutableTreeNode node = ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
-			this.refreshNode(node);
+			this.refreshNode(selectedNode);
 		}
 		else if (e.getActionCommand().equals("delete"))
 		{
@@ -455,8 +483,18 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 			
 			if(ret == JOptionPane.YES_OPTION)
 			{
-				deleteEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+				deleteEntity(selectedNode);
 			}			
+		}
+		else if (e.getActionCommand().equals("tagSeries"))
+		{
+			ITridasSeries series = (ITridasSeries)selectedNode.getUserObject();
+			WSITagNameDialog.addTagToSeries(null, series);
+		}
+		else if (e.getActionCommand().equals("addRemoveTag"))
+		{
+			ITridasSeries series = (ITridasSeries)selectedNode.getUserObject();
+			AddRemoveWSITagDialog.showDialog(null, series);
 		}
 		else if (e.getActionCommand().equals("reassign"))
 		{
@@ -475,7 +513,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 				return;
 			}	
 			
-			ITridas selected = (ITridas) ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent()).getUserObject();
+			ITridas selected = (ITridas) selectedNode.getUserObject();
 			Class<? extends ITridas> expectedClass = ITridas.class;
 			
 			if((selected.getClass().equals(TridasMeasurementSeries.class)) || 
@@ -506,7 +544,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
 
 			// Actually do the reassign
-			reassignEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent(), newParent);
+			reassignEntity(selectedNode, newParent);
 			
 			
 		}
@@ -536,9 +574,8 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 
 	        for(TreePath tp : selPaths)
 	        {
-	        	DefaultMutableTreeNode node = (DefaultMutableTreeNode) tp.getLastPathComponent();
-	        	nodeList.add(node);
-	        	tridasList.add((ITridas) node.getUserObject());
+	        	nodeList.add(selectedNode);
+	        	tridasList.add((ITridas) selectedNode.getUserObject());
 	        }
 			
 			ITridas selected = tridasList.get(0);
@@ -608,7 +645,7 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 				return;
 			}	
 			
-			ITridas selected = (ITridas) ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent()).getUserObject();
+			ITridas selected = (ITridas) selectedNode.getUserObject();
 			Class<? extends ITridas> expectedClass = selected.getClass();
 						
 			ITridas correctEntity = TridasEntityPickerDialog.pickEntity(parent, 
@@ -617,26 +654,24 @@ public class ManagementTreeViewPanel extends TridasTreeViewPanel implements KeyL
 					EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
 
 			// Actually do the merge
-			mergeEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent(), correctEntity);
+			mergeEntity(selectedNode, correctEntity);
 			
 			
 		}
 		
 		else if (e.getActionCommand().equals("permissions"))
 		{
-			ITridas selected = (ITridas) ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent()).getUserObject();
+			ITridas selected = (ITridas) selectedNode.getUserObject();
 
 			PermissionByEntityDialog.showDialog(selected);
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void reassignEntity(DefaultMutableTreeNode node, ITridas newParent)
 	{
 		reassignEntity(node, newParent, null, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void reassignEntity(DefaultMutableTreeNode node, ITridas newParent, Integer currentProgress, Integer totalProgress)
 	{	
 		ITridas entity = null;

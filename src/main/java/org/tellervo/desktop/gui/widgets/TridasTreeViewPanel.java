@@ -52,6 +52,7 @@ import org.tellervo.desktop.graph.GraphWindow;
 import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
+import org.tellervo.desktop.gui.hierarchy.AddRemoveWSITagDialog;
 import org.tellervo.desktop.gui.hierarchy.TridasTree;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeCellRenderer;
 import org.tellervo.desktop.gui.hierarchy.TridasTreeViewPanel_UI;
@@ -535,6 +536,25 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	        popupMenu.add(menuItem);
 	        popupMenu.addSeparator();
 
+        }
+        
+        if(clazz.equals(TridasMeasurementSeries.class) || clazz.equals(TridasDerivedSeries.class))
+        {
+        	// Agg tag options
+
+    		// Tag series 
+    		menuItem = new JMenuItem("Tag this series");
+    		menuItem.setIcon(Builder.getIcon("tag.png", 16));
+    		menuItem.setActionCommand("tagSeries");
+    		popupMenu.add(menuItem);	
+    		
+    		// Add/remove tag 
+    		menuItem = new JMenuItem("Add/remove tag(s) from series");
+    		menuItem.setIcon(Builder.getIcon("tags.png", 16));
+    		menuItem.setActionCommand("addRemoveTag");
+    		popupMenu.add(menuItem);	
+    		
+    		popupMenu.addSeparator();
         }
         
         // Refresh
@@ -1022,7 +1042,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 	}
 	
 	/**
-	 * Get a human friendly name for a class
+	 * Get a human friendly name for a class	
 	 * 
 	 * @param clazz
 	 * @return
@@ -1199,19 +1219,22 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+
+		// Get the currently selected node
+		DefaultMutableTreeNode selectedNode = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
+		
 		if(e.getActionCommand().equals("expand"))
 		{
 			// Request to expand the current node of tree
-			expandEntity((DefaultMutableTreeNode) tree.getSelectionPath().getLastPathComponent());
+			expandEntity(selectedNode);
 		}
 		else if (e.getActionCommand().equals("select"))
 		{
-			doSelectEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+			doSelectEntity(selectedNode);
 		}
 		else if (e.getActionCommand().equals("refresh"))
 		{
-			DefaultMutableTreeNode node = ((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
-			this.refreshNode(node);
+			refreshNode(selectedNode);
 		}
 		else if (e.getActionCommand().equals("delete"))
 		{
@@ -1226,8 +1249,18 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 			
 			if(ret == JOptionPane.YES_OPTION)
 			{
-				deleteEntity((DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent());
+				deleteEntity(selectedNode);
 			}			
+		}
+		else if (e.getActionCommand().equals("tagSeries"))
+		{
+			ITridasSeries series = (ITridasSeries)selectedNode.getUserObject();
+			WSITagNameDialog.addTagToSeries(null, series);
+		}
+		else if (e.getActionCommand().equals("addRemoveTag"))
+		{
+			ITridasSeries series = (ITridasSeries)selectedNode.getUserObject();
+			AddRemoveWSITagDialog.showDialog(null, series);
 		}
 		else if (e.getActionCommand().equals("openSeries"))
 		{
@@ -1245,19 +1278,17 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		}
 		else if (e.getActionCommand().equals("renameTag"))
 		{
-			DefaultMutableTreeNode selectedtag = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-			WSITag wsitag = (WSITag)selectedtag.getUserObject();
+			WSITag wsitag = (WSITag)selectedNode.getUserObject();
 			if(!wsitag.isSetOwnerid() && !App.isAdmin)
 			{
 				Alert.error("Permissions", "Only admin users can rename shared tags");
 				return;
 			}
-			renameTag(selectedtag);
+			renameTag(selectedNode);
 		}
 		else if (e.getActionCommand().equals("deleteTag"))
 		{
-			DefaultMutableTreeNode selectedtag = (DefaultMutableTreeNode)tree.getSelectionPath().getLastPathComponent();
-			WSITag wsitag = (WSITag)selectedtag.getUserObject();
+			WSITag wsitag = (WSITag)selectedNode.getUserObject();
 			if(!wsitag.isSetOwnerid() && !App.isAdmin)
 			{
 				Alert.error("Permissions", "Only admin users can delete shared tags");
@@ -1275,7 +1306,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 						
 						if(ret == JOptionPane.YES_OPTION)
 						{
-							deleteTag(selectedtag);
+							deleteTag(selectedNode);
 						}			
 			
 		}
