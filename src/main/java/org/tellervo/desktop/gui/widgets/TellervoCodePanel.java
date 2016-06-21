@@ -159,7 +159,7 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
 	 */
 	public void setFocus()
 	{
-		this.textField.requestFocus();
+		this.textField.requestFocusInWindow();
 	}
 
 	/**
@@ -396,7 +396,6 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
 		if(textField.getText().length()==24)
 		{
 			// A barcode was probably just scanned
-			SoundUtil.playSystemSound(SystemSound.BARCODE_SCAN);
 			String barcodeText = textField.getText();
 			textField.setText("");
 			
@@ -419,9 +418,12 @@ public class TellervoCodePanel extends JPanel implements KeyListener{
 			}
 			else
 			{
-				Alert.error("Error", "Invalid barcode type");
+				//Alert.error("Error", "Invalid barcode type");
 				return;
 			}
+			
+			SoundUtil.playSystemSound(SystemSound.BARCODE_SCAN);
+
 			
 			TridasIdentifier id = new TridasIdentifier();
 			id.setValue(barcode.uuid.toString());

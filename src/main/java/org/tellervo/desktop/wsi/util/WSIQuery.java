@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.admin.BoxCuration;
+import org.tellervo.desktop.curation.BoxCuration;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;

@@ -3,6 +3,7 @@ package org.tellervo.desktop.gui.widgets;
 import java.awt.Window;
 
 import javax.swing.JDialog;
+import javax.swing.SwingUtilities;
 
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.ui.Builder;
@@ -62,16 +63,14 @@ public class TridasEntityPickerDialog extends JDialog {
 		
 		JDialog dialog = new JDialog();
 		dialog.setTitle("Entity Picker");
-		TridasEntityPickerPanel panel = new TridasEntityPickerPanel(dialog, clazz, EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
+		final TridasEntityPickerPanel panel = new TridasEntityPickerPanel(dialog, clazz, EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
 		dialog.getContentPane().add(panel);
 		dialog.setIconImage(Builder.getApplicationIcon());
 
         dialog.setTitle(title);
-        dialog.setModal(true);
         dialog.setLocationRelativeTo(parent);
         dialog.pack();
-        
-        
+    	dialog.setModal(true);        
         dialog.setVisible(true); // blocks until user brings dialog down...
        	
 

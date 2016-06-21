@@ -17,7 +17,7 @@
  * Contributors:
  *     Peter Brewer
  ******************************************************************************/
-package org.tellervo.desktop.admin;
+package org.tellervo.desktop.curation;
 
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -42,8 +43,10 @@ import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.admin.SampleListTableModel;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.tridasv2.TridasComparator;
@@ -55,11 +58,15 @@ import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tellervo.desktop.util.labels.ui.TridasListCellRenderer;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 import org.tellervo.schema.EntityType;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIBox;
 import org.tridas.schema.TridasGenericField;
@@ -884,6 +891,46 @@ implements KeyListener, ActionListener, TableModelListener{
 	 *  LISTENERS
 	 */
 
+	private TridasSample getSampleByID(String id)
+	{
+		// Set return type to samples
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
+		
+    	// Set search parameters
+    	param.addSearchConstraint(SearchParameterName.SAMPLEID, SearchOperator.EQUALS, id);
+		
+    	// we want a sample returned here
+		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
+		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
+		
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting samples");
+			return null;
+		}
+		
+		List<TridasSample> sampList = resource.getAssociatedResult();
+		
+		// Check to see if any samples were found
+		if (sampList.size()==0) 
+		{
+			Alert.error("None found", "No samples were found");
+			return null;
+		}
+		else if (sampList.size()>1)
+		{
+			log.error("This should be impossible");
+			return null;
+		}
+		
+		return sampList.get(0);
+
+	}
+	
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -950,10 +997,13 @@ implements KeyListener, ActionListener, TableModelListener{
 			}*/
 
 
-			TridasSample returned = (TridasSample) TridasEntityPickerDialog.pickEntity(null, "Pick Sample", TridasSample.class, EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
+			TridasSample barcodesample = (TridasSample) TridasEntityPickerDialog.pickEntity(null, "Pick Sample", TridasSample.class, EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
 
-			if(returned==null) return;
+			if(barcodesample==null) return;
 
+			TridasSample returned = this.getSampleByID(barcodesample.getIdentifier().getValue());		
+			
+			
 			// Add sample to our box and save
 			if(!box.isSetSamples())
 			{

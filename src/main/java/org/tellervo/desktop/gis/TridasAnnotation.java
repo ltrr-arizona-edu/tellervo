@@ -11,7 +11,7 @@ import gov.nasa.worldwind.render.AnnotationNullLayout;
 import gov.nasa.worldwind.render.FrameFactory;
 import gov.nasa.worldwind.render.ScreenAnnotation;
 
-import org.tellervo.desktop.admin.BoxCuration;
+import org.tellervo.desktop.curation.BoxCuration;
 import org.tellervo.desktop.gis.TellervoAnnotation.BusyImage;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.interfaces.ITridas;

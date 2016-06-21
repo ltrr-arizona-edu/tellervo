@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import javax.swing.ButtonGroup;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -34,7 +35,7 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 	private JRadioButton radPickByCode;
 	private JRadioButton radPickByHierarchy;
 	private TridasEntityBrowsePanel browsePanel;
-	private Window parent;
+	private JDialog parent;
 	private static final Logger log = LoggerFactory.getLogger(TridasEntityPickerPanel.class);
 	private ITridas entity;
 	private ArrayList<ITridas> entityList;
@@ -43,6 +44,7 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 	private final EntitiesAccepted entitiesAccepted;
 	private JLabel lblWarning;
 	private JLabel lblIcon;
+	private boolean shutdownOnSelect = true;
 	
 	public static enum EntitiesAccepted {
 		SPECIFIED_ENTITY_ONLY,
@@ -51,10 +53,15 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 		ALL
 	}
 	
+	public void setShutdownOnSelect(Boolean b)
+	{
+		this.shutdownOnSelect = b;
+	}
+	
 	/**
 	 * Create the panel.
 	 */
-	public TridasEntityPickerPanel(Window parent, Class<? extends ITridas> clazz, EntitiesAccepted acceptabletype){
+	public TridasEntityPickerPanel(JDialog parent, Class<? extends ITridas> clazz, EntitiesAccepted acceptabletype){
 
 		this.parent = parent;
 		entitiesAccepted = acceptabletype;
@@ -77,6 +84,7 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 		radPickByCode.setSelected(true);
 		radPickByCode.setActionCommand("pickbycode");
 		radPickByCode.addActionListener(this);
+		radPickByCode.setFocusable(false);
 		group.add(radPickByCode);
 		
 		add(radPickByCode, "cell 1 1,aligny bottom");
@@ -84,6 +92,7 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 		radPickByHierarchy = new JRadioButton("Pick by hierarchy");
 		radPickByHierarchy.setActionCommand("pickbyhierarchy");
 		radPickByHierarchy.addActionListener(this);
+		radPickByHierarchy.setFocusable(false);
 		group.add(radPickByHierarchy);
 		add(radPickByHierarchy, "cell 1 2,aligny top");
 		
@@ -97,6 +106,8 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 
 		
 		showHidePanels();
+		
+		
 	}
 	
 	/**
@@ -173,12 +184,13 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 		{
 			codePanel.setVisible(true);
 			browsePanel.setVisible(false);
+			codePanel.setFocus();
 			
 		}
 		else
 		{
 			codePanel.setVisible(false);
-			browsePanel.setVisible(true);	
+			browsePanel.setVisible(true);
 		}
 		
 		parent.setMinimumSize(new Dimension(600,100));
@@ -316,7 +328,8 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 			if(checkEntityIsValid(entity))
 			{
 				fireTridasSelectListener(new TridasSelectEvent(this, TridasSelectEvent.ENTITY_SELECTED, entity));
-				parent.dispose();
+				
+				if(this.shutdownOnSelect) parent.setVisible(false);
 			}
 			else
 			{
@@ -363,4 +376,6 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 		
 		lblWarning.setText(text);
 	}
+	
+	
 }
