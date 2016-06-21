@@ -38,7 +38,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -53,6 +52,7 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.hardware.TestMeasurePanel.TestTimeoutTask;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -64,15 +64,12 @@ import org.tellervo.desktop.util.SoundUtil.SystemSound;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.NormalTridasUnit;
 
-import javax.swing.border.TitledBorder;
-import javax.swing.border.EtchedBorder;
-
 
 public abstract class MeasurePanel extends JPanel implements MeasurementReceiver, AWTEventListener{
 
 	private static final long serialVersionUID = 1L;
 	private final static Logger log = LoggerFactory.getLogger(MeasurePanel.class);
-	
+
 	protected JButton btnReset;
 	protected JButton btnRecord;
 	protected JButton btnQuit;
@@ -313,6 +310,7 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 		setLastPositionGuiVisible(dev.getMeasureCumulatively());
 		
 		this.setMessageText("Ready to measure...");	
+		
 	}
 	
 	protected void updateInfoText()
@@ -485,6 +483,11 @@ public abstract class MeasurePanel extends JPanel implements MeasurementReceiver
 	{
 		measureMessage = txt;
 		this.updateInfoText();
+	}
+	
+	public String getMessageText()
+	{
+		return measureMessage;
 	}
 	
 	protected Boolean checkNewValueIsValid(Integer value)

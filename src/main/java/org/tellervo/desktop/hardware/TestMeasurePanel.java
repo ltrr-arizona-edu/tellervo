@@ -51,7 +51,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 	private static final long serialVersionUID = 1L;
 	private final JTextPane txtText;
 	private final JTextPane txtLog;
-	private TimeoutTask task;
+	private TestTimeoutTask task;
 	private JTextArea txtInfoLabel;
 	
 	
@@ -113,7 +113,7 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		txtLog.setText(header);
 		
 		java.util.Timer timer = new java.util.Timer();
-		task = new TimeoutTask(this);
+		task = new TestTimeoutTask(this);
 		timer.scheduleAtFixedRate(task, 0, 1000);
 		
 
@@ -178,12 +178,12 @@ public class TestMeasurePanel extends MeasurePanel implements MeasurementReceive
 		try{ txtLog.setCaretPosition(txtLog.getText().length()-1); } catch (Exception e){ }
 	}
 	
-	class TimeoutTask extends java.util.TimerTask
+	class TestTimeoutTask extends java.util.TimerTask
 	{
 		private Integer countdown =11;
 		TestMeasurePanel parent;
 		
-		TimeoutTask(TestMeasurePanel parent)
+		TestTimeoutTask(TestMeasurePanel parent)
 		{
 			this.parent = parent;
 		}

@@ -9,9 +9,9 @@ import javax.swing.AbstractAction;
 
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
+import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 import org.tellervo.desktop.hardware.MeasurePanel;
 import org.tellervo.desktop.hardware.MeasurementReceiver;
-import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.SoundUtil;
 import org.tellervo.desktop.util.SoundUtil.SystemSound;
@@ -24,8 +24,9 @@ import org.tellervo.desktop.util.SoundUtil.SystemSound;
 public class EditorMeasurePanel extends MeasurePanel implements MeasurementReceiver {
 
 	private static final long serialVersionUID = 1L;
-	private AbstractEditor editor;
+	protected AbstractEditor editor;
 	private Integer cachedValue= null;
+	private TimeoutTask task;
 	
 	@SuppressWarnings("serial")
 	public EditorMeasurePanel(final AbstractEditor myeditor, final AbstractMeasuringDevice device) {
@@ -43,6 +44,7 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 
 	
 	public void receiverNewMeasurement(Integer value) {
+		
 		
 		if(!checkNewValueIsValid(value))
 		{
@@ -99,12 +101,62 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 
 	@Override
 	public void receiverRawData(DataDirection dir, String value) {
-		// IGNORE
+		
+		startCountdown();
 		
 	}
 
+	private void closeMeasuringPanel()
+	{
+		this.editor.stopMeasuring();		
+	}
 
+	
+	private void startCountdown()
+	{
+		if(task!=null) task.cancel();
+		
+		java.util.Timer timer = new java.util.Timer();
+		task = new TimeoutTask(this, 65);
+		timer.scheduleAtFixedRate(task, 0, 1000);
+	}
 
+	 class TimeoutTask extends java.util.TimerTask
+		{
+			private Integer countdown;
+			MeasurePanel parent;
+			
+			TimeoutTask(MeasurePanel parent, Integer timeoutlength)
+			{
+				this.countdown = timeoutlength;
+				this.parent = parent;
+			}
+			
+			@Override
+			public void run() {
+				if(countdown==1)
+				{
+					cancel();
+					closeMeasuringPanel();
+					return;
+				}
+				
+				countdown--;
+				
+				if(countdown<=60)
+				{
+					setMessageText("Measuring platform is idle.  Closing measuring panel in "+countdown+ " seconds");
+				}
+				else
+				{
+					if(getMessageText().startsWith("Measuring platform is idle"))
+					{
+						setMessageText("");
+					}
+				}
+			}
+			
+		}
 	
 
 
