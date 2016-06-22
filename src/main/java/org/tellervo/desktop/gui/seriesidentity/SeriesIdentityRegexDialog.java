@@ -20,6 +20,7 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -784,10 +785,13 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	        this.txtObjectPattern.setText(line);
 	        
 	    	line = br.readLine();
+	    	if(line!=null) this.cboElementField.setEnabled(true);
 	        this.cboElementField.setSelectedIndex(Integer.parseInt(line));
 	        line = br.readLine();
+	        if(line!=null) this.cboElementMethod.setEnabled(true);
 	        this.cboElementMethod.setSelectedIndex(Integer.parseInt(line));
 	        line = br.readLine();
+	        if(line!=null) this.txtElementPattern.setEnabled(true);
 	        this.txtElementPattern.setText(line);
 	        
 	    	line = br.readLine();
@@ -873,25 +877,40 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			return;
 		}
 		
+		if(thisFile.exists())
+		{
+			Object[] options = { "Overwrite", "No", "Cancel" };
+			int response = JOptionPane.showOptionDialog(this, "The file '" + thisFile.getName()
+					+ "' already exists.  Are you sure you want to overwrite?", "Confirm", JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.QUESTION_MESSAGE, null, // do not use a custom Icon
+					options, // the titles of buttons
+					options[0]); // default button title
+			
+			if (response != JOptionPane.YES_OPTION)
+			{
+				return;
+			}
+		}
+		
 
         try {
         	
 
 			writer = new BufferedWriter(new FileWriter(thisFile));
         	
-			String str = cboObjectField.getSelectedIndex() + System.lineSeparator() + cboObjectMethod.getSelectedIndex() + System.lineSeparator() + txtObjectPattern.getText();
+			String str = cboObjectField.getSelectedIndex() + System.lineSeparator() + cboObjectMethod.getSelectedIndex() + System.lineSeparator() + txtObjectPattern.getText() + System.lineSeparator();
 			writer.write(str);
 			
-			str = cboElementField.getSelectedIndex() + System.lineSeparator() + cboElementMethod.getSelectedIndex() + System.lineSeparator() + txtElementPattern.getText();
+			str = cboElementField.getSelectedIndex() + System.lineSeparator() + cboElementMethod.getSelectedIndex() + System.lineSeparator() + txtElementPattern.getText() + System.lineSeparator();
 			writer.write(str);
 			
-			str = cboSampleField.getSelectedIndex() + System.lineSeparator() + cboSampleMethod.getSelectedIndex() + System.lineSeparator() + txtSamplePattern.getText();
+			str = cboSampleField.getSelectedIndex() + System.lineSeparator() + cboSampleMethod.getSelectedIndex() + System.lineSeparator() + txtSamplePattern.getText() + System.lineSeparator();
 			writer.write(str);
 			
-			str = cboRadiusField.getSelectedIndex() + System.lineSeparator() + cboRadiusMethod.getSelectedIndex() + System.lineSeparator() + txtRadiusPattern.getText();
+			str = cboRadiusField.getSelectedIndex() + System.lineSeparator() + cboRadiusMethod.getSelectedIndex() + System.lineSeparator() + txtRadiusPattern.getText() + System.lineSeparator();
 			writer.write(str);
 			
-			str = cboSeriesField.getSelectedIndex() + System.lineSeparator() + cboSeriesMethod.getSelectedIndex() + System.lineSeparator() + txtSeriesPattern.getText();
+			str = cboSeriesField.getSelectedIndex() + System.lineSeparator() + cboSeriesMethod.getSelectedIndex() + System.lineSeparator() + txtSeriesPattern.getText() + System.lineSeparator();
 			writer.write(str);
 			
 		} catch (IOException e) {
