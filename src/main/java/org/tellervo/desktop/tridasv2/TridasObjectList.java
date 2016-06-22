@@ -322,6 +322,8 @@ public class TridasObjectList extends TellervoResource {
 
 			}
 			
+			Collections.sort(topLevelList, new SiteComparator(SiteComparator.Mode.ALPHABETICAL));
+			
 			// don't care if the user modifies this list, because we generated it
 			return topLevelList;
 		}

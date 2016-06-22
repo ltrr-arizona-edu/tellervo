@@ -41,14 +41,18 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.jdesktop.swingx.JXTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.admin.SampleListTableModel;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
-import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
+import org.tellervo.desktop.gui.widgets.TridasMultiEntityPickerDialog;
+import org.tellervo.desktop.tridasv2.GenericFieldUtils;
+import org.tellervo.desktop.tridasv2.LabCode;
+import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -61,7 +65,6 @@ import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
-import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 import org.tellervo.schema.EntityType;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
@@ -69,11 +72,13 @@ import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIBox;
+import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.model.MVCArrayList;
+import javax.swing.JButton;
 
 
 /**
@@ -188,6 +193,35 @@ implements KeyListener, ActionListener, TableModelListener{
 	}
 
 	/**
+	 * Remove the specified sample from this box
+	 * 
+	 * @param s
+	 * @return
+	 */
+	private boolean removeSampleFromBox(TridasSample s)
+	{
+		
+		GenericFieldUtils.setField(s, "tellervo.boxID", "null");
+		
+		// Create resource
+		EntityResource<TridasSample> resource = new EntityResource<TridasSample>(s, TellervoRequestType.UPDATE, TridasSample.class);
+
+		// set up a dialog...
+		TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(this, resource);
+
+		resource.query();
+		dialog.setVisible(true);
+		if(!dialog.isSuccessful()) 
+		{ 
+			Alert.error("Error", dialog.getFailException().getMessage());
+			return false;
+		}
+
+		return true;
+		
+	}
+	
+	/**
 	 * Save changes to the box info for a sample 
 	 * 
 	 * @param s
@@ -210,16 +244,25 @@ implements KeyListener, ActionListener, TableModelListener{
 				if(gf.getValue().equals(box.getIdentifier().getValue()))
 				{
 					// This sample already belongs in this box
-					JOptionPane.showConfirmDialog(null,
-							"This sample is already assigned to this box!",
-							"Information",
-							JOptionPane.OK_OPTION, 
-							JOptionPane.INFORMATION_MESSAGE);
 					return true;
 				}
 
-				int response =  JOptionPane.showConfirmDialog(null,
-						"This sample is already assigned to a box.\n"
+				LabCode labcode = new LabCode();
+				String str = s.getTitle();
+	        	if(GenericFieldUtils.findField(s, "tellervo.objectLabCode")!=null)
+	        	{
+	        		labcode.appendSiteCode(GenericFieldUtils.findField(s, "tellervo.objectLabCode").getValue());
+	            	if(GenericFieldUtils.findField(s, "tellervo.elementLabCode")!=null)
+	            	{
+	            		labcode.setElementCode(GenericFieldUtils.findField(s, "tellervo.elementLabCode").getValue());
+	                	labcode.setSampleCode(s.getTitle());
+	                	str = LabCodeFormatter.getRadiusPrefixFormatter().format(labcode);
+	                	
+	            	}
+	        	}
+	        	
+				int response =  JOptionPane.showConfirmDialog(this,
+						"The sample '"+str+"' is already assigned to a box.\n"
 								+"Do you want to reassign to box "+box.getTitle()+"?",
 								"Sample already assigned to box",
 								JOptionPane.YES_NO_CANCEL_OPTION, 
@@ -699,10 +742,8 @@ implements KeyListener, ActionListener, TableModelListener{
 		panelContents = new javax.swing.JPanel();
 		panelContents.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		jScrollPane2 = new javax.swing.JScrollPane();
-		tblBoxContents = new javax.swing.JTable();
-		btnAddSampleToBox = new javax.swing.JButton();
+		tblBoxContents = new JXTable();
 		lblSampleCount = new javax.swing.JLabel();
-		btnMarkMissing = new javax.swing.JButton();
 
 		txtLastUpdated.setEditable(false);
 		txtLastUpdated.setFocusable(false);
@@ -763,20 +804,33 @@ implements KeyListener, ActionListener, TableModelListener{
 			}
 		});
 		jScrollPane2.setViewportView(tblBoxContents);
-
-		btnAddSampleToBox.setText("Add sample to box");
-
+		tblBoxContents.setAutoCreateRowSorter(true);
 		lblSampleCount.setText("0 samples in box");
 
-		btnMarkMissing.setText("Mark unchecked as missing from box");
-		btnMarkMissing.setEnabled(false);
-
 		tabbedPaneBox.addTab("Contents", panelContents);
-		panelContents.setLayout(new MigLayout("", "[164px][49px][293px]", "[25px][256px,grow][15px]"));
-		panelContents.add(jScrollPane2, "cell 0 1 3 1,grow");
+		panelContents.setLayout(new MigLayout("", "[164px,grow,fill][]", "[256px,grow][][15px]"));
+		panelContents.add(jScrollPane2, "cell 0 0,grow");
+		
+		panel_1 = new JPanel();
+		panel_1.setBorder(null);
+		panelContents.add(panel_1, "cell 1 0,grow");
+		panel_1.setLayout(new MigLayout("", "[]", "[][]"));
+		btnAddSampleToBox = new javax.swing.JButton();
+		panel_1.add(btnAddSampleToBox, "cell 0 0");
+		btnAddSampleToBox.setToolTipText("Add sample(s) to box");
+		btnAddSampleToBox.setIcon(Builder.getIcon("edit_add.png", 16));
+		
+		btnRemove = new JButton("");
+		btnRemove.setIcon(Builder.getIcon("edit_remove.png", 16));
+		btnRemove.setActionCommand("RemoveSample");
+		btnRemove.addActionListener(this);
+		panel_1.add(btnRemove, "cell 0 1");
+		btnMarkMissing = new javax.swing.JButton();
+		
+				btnMarkMissing.setText("Mark unchecked as missing from box");
+				btnMarkMissing.setEnabled(false);
+				panelContents.add(btnMarkMissing, "cell 0 1,alignx left,aligny top");
 		panelContents.add(lblSampleCount, "cell 0 2,alignx left,aligny top");
-		panelContents.add(btnAddSampleToBox, "cell 0 0,alignx left,aligny top");
-		panelContents.add(btnMarkMissing, "cell 2 0,alignx left,aligny top");
 		getContentPane().add(btnApply, "cell 2 3,alignx right,aligny top");
 		getContentPane().add(btnOk, "cell 3 3,alignx left,aligny top");
 		getContentPane().add(lblSelectBox, "cell 0 1,alignx left,aligny center");
@@ -847,7 +901,7 @@ implements KeyListener, ActionListener, TableModelListener{
 	protected javax.swing.JPanel panelBoxDetails;
 	protected javax.swing.JPanel panelContents;
 	protected javax.swing.JTabbedPane tabbedPaneBox;
-	protected javax.swing.JTable tblBoxContents;
+	protected JXTable tblBoxContents;
 	protected javax.swing.JTextField txtBarcode;
 	protected javax.swing.JTextArea txtComments;
 	protected javax.swing.JTextField txtCurationLocation;
@@ -855,6 +909,8 @@ implements KeyListener, ActionListener, TableModelListener{
 	protected javax.swing.JTextField txtName;
 	protected javax.swing.JTextField txtTrackingLocation;
 	private JPanel panel;
+	private JPanel panel_1;
+	private JButton btnRemove;
 	// End of variables declaration//GEN-END:variables
 
 	/**
@@ -951,6 +1007,38 @@ implements KeyListener, ActionListener, TableModelListener{
 			this.btnAddSampleToBox.setEnabled(false);
 			updateBoxGui();
 		}
+		else if (e.getActionCommand().equals("RemoveSample"))
+		{
+			
+			int response = JOptionPane.showConfirmDialog(null,
+				"This option should only be used to permanently remove samples from a box\n"
+			  + "when they have been erroneously added.  Samples that are missing should\n"
+			  + "be marked as such.\n\n"
+						+"Are you sure you want to remove the selected sample(s)?",
+						"Remove samples confirmation",
+						JOptionPane.YES_NO_CANCEL_OPTION, 
+						JOptionPane.WARNING_MESSAGE);
+			
+			if(response != JOptionPane.YES_OPTION)
+			{
+				return;
+			}
+			
+			ArrayList<TridasSample> selectedSamples = new ArrayList<TridasSample>();
+			for (int i : this.tblBoxContents.getSelectedRows())
+			{
+				selectedSamples.add(sampleTableModel.getElementAt(i));
+			}
+			
+			for(TridasSample s : selectedSamples)
+			{
+				removeSampleFromBox(s);
+			}
+						
+			this.getComprehensiveWSIBox(box.getIdentifier().getValue());
+			updateBoxGui();
+			
+		}
 		else if (e.getSource().equals(btnOk))
 		{
 			if(btnApply.isEnabled())
@@ -977,43 +1065,22 @@ implements KeyListener, ActionListener, TableModelListener{
 		}
 		else if (e.getSource().equals(btnAddSampleToBox))
 		{
-			/*final JDialog dialog = new JDialog();
-			final ScanBarcodeUI barcodeUI = new ScanBarcodeUI(dialog);
 
-			dialog.setTitle(I18n.getText("barcode"));
-			dialog.setIconImage(Builder.getApplicationIcon());
-			dialog.setContentPane(barcodeUI);
-			dialog.setResizable(false);
-			dialog.pack();
-			dialog.setModal(true);
-			dialog.setLocationRelativeTo(null);
-			dialog.setVisible(true);
-			BarcodeDialogResult result = barcodeUI.getResult();
+			TridasMultiEntityPickerDialog dialog = new TridasMultiEntityPickerDialog(null, "Pick Sample", TridasSample.class);
+			ArrayList<ITridas> entities = dialog.getEntities();
 
-			// no success, so just ignore..
-			if(!result.success){
-				Alert.error("Not found", "Sample not found");
-				return;
-			}*/
-
-
-			TridasSample barcodesample = (TridasSample) TridasEntityPickerDialog.pickEntity(null, "Pick Sample", TridasSample.class, EntitiesAccepted.SPECIFIED_ENTITY_ONLY);
-
-			if(barcodesample==null) return;
-
-			TridasSample returned = this.getSampleByID(barcodesample.getIdentifier().getValue());		
-			
-			
 			// Add sample to our box and save
 			if(!box.isSetSamples())
 			{
 				box.setSamples(new ArrayList<TridasSample>());
 			}
 
-			log.debug("Adding sample "+returned.getTitle()+" to box");
-			box.getSamples().add(returned);
-
-			saveBoxDetailsForSample(returned);
+			for(ITridas returned : entities)
+			{
+				log.debug("Adding sample "+returned.getTitle()+" to box");
+				box.getSamples().add((TridasSample)returned);
+				saveBoxDetailsForSample((TridasSample)returned);
+			}
 
 			this.getComprehensiveWSIBox(box.getIdentifier().getValue());
 			updateBoxGui();
@@ -1021,10 +1088,10 @@ implements KeyListener, ActionListener, TableModelListener{
 		else if (e.getSource().equals(btnMarkMissing))
 		{
 			String comment = "";
-			if(this.sampleTableModel.getCheckedCount()==null) return;
-			if(this.sampleTableModel.getCheckedCount()<1) return;
+			if(this.sampleTableModel.getUncheckedCount()==null) return;
+			if(this.sampleTableModel.getUncheckedCount()<1) return;
 
-			if(this.sampleTableModel.getCheckedCount()>1)
+			if(this.sampleTableModel.getUncheckedCount()>1)
 			{
 				comment += "The following samples were";
 			}

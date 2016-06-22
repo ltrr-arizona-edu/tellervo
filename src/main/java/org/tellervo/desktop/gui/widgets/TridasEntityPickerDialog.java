@@ -3,7 +3,6 @@ package org.tellervo.desktop.gui.widgets;
 import java.awt.Window;
 
 import javax.swing.JDialog;
-import javax.swing.SwingUtilities;
 
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.ui.Builder;

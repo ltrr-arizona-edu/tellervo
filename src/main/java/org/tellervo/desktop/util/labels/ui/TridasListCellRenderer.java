@@ -27,6 +27,8 @@ import javax.swing.JList;
 
 import org.tellervo.schema.WSIBox;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
+import org.tellervo.desktop.tridasv2.LabCode;
+import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasMeasurementSeries;
@@ -61,9 +63,30 @@ public class TridasListCellRenderer extends DefaultListCellRenderer {
         
         if(value instanceof TridasSample){
         	TridasSample s = (TridasSample) value;
-        	TridasGenericField f = GenericFieldUtils.findField(s, "tellervo.internal.labcodeText");
+               
+        	LabCode labcode = new LabCode();
+        	boolean set = false;
+        	if(GenericFieldUtils.findField(s, "tellervo.objectLabCode")!=null)
+        	{
+        		labcode.appendSiteCode(GenericFieldUtils.findField(s, "tellervo.objectLabCode").getValue());
+            	if(GenericFieldUtils.findField(s, "tellervo.elementLabCode")!=null)
+            	{
+            		labcode.setElementCode(GenericFieldUtils.findField(s, "tellervo.elementLabCode").getValue());
+                	labcode.setSampleCode(s.getTitle());
+                	set=true;
                 	
-        	value = (f != null) ? f.getValue() : s.getTitle();
+            	}
+        	}
+
+        	if(set)
+        	{
+        		value = LabCodeFormatter.getRadiusPrefixFormatter().format(labcode);
+        	}
+        	else
+        	{
+	        	TridasGenericField f = GenericFieldUtils.findField(s, "tellervo.internal.labcodeText");
+	        	value = (f != null) ? f.getValue() : s.getTitle();
+        	}
         }
         
         if(value instanceof TridasElement){

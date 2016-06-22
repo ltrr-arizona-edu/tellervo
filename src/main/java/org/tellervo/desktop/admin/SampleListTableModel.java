@@ -90,6 +90,15 @@ public class SampleListTableModel extends AbstractTableModel {
 		setSamples(samples);
 	}    	
 	
+	public void removeSamples(List<TridasSample> samples)
+	{
+		if(samples==null) return;
+		
+		this.samples.removeAll(samples);
+		this.clearChecks();
+		fireTableDataChanged();
+	}
+	
 	public void setSamples(List<TridasSample> samples) {
 		this.samples = samples;
 		if(samples!=null)
@@ -267,6 +276,26 @@ public class SampleListTableModel extends AbstractTableModel {
     	
     	return count;
     }
+    
+    
+    public Integer getUncheckedCount()
+    {
+    	Integer count = 0;
+    	if(checkedList!=null)
+    	{
+    		for(Boolean chk : checkedList)
+    		{
+    			if(!chk) count++;
+    		}
+    	}
+    	else
+    	{
+    		return null;
+    	}
+    	
+    	return count;
+    }
+    
     
     /**
      * Get Array of TridasSamples that have not been checked

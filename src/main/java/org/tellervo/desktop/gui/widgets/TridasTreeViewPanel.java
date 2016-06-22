@@ -355,6 +355,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	if(objList!=null)
     	{
     		addObjectsToTree(tree, objList);
+    		addTagsToTree(tree);
     	}
     	else
     	{
@@ -364,10 +365,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	tree = new TridasTree(top);
     	searchable = new TreeSearchable(tree);
     	tree.setSearchable(searchable);
-    	
-    	tree.setSearchable(searchable);
-
-    	
+        	
     	tree.setCellRenderer(new TridasTreeCellRenderer());
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);        
         tree.setRootVisible(true);
@@ -721,7 +719,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     		objectList = App.tridasObjects.getObjectList();
     	}
     	log.debug("Finished getting object list from dictionary");
-    	
+    	   	
     	addObjectsToTree(thetree, objectList);
     }
     
@@ -738,7 +736,7 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     	
     	ITridas entityToAdd = (ITridas)nodeToAdd.getUserObject();
     	
-    	TridasComparator comparator = new TridasComparator(TridasComparator.Type.SENIOR_ENTITIES_THEN_TITLES, 
+    	TridasComparator comparator = new TridasComparator(TridasComparator.Type.SENIOR_ENTITIES_THEN_LAB_CODE_THEN_TITLES, 
 				TridasComparator.NullBehavior.NULLS_LAST, 
 				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
    

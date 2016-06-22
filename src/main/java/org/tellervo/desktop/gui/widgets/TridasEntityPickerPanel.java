@@ -35,7 +35,7 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 	private JRadioButton radPickByCode;
 	private JRadioButton radPickByHierarchy;
 	private TridasEntityBrowsePanel browsePanel;
-	private JDialog parent;
+	private Window parent;
 	private static final Logger log = LoggerFactory.getLogger(TridasEntityPickerPanel.class);
 	private ITridas entity;
 	private ArrayList<ITridas> entityList;
@@ -61,7 +61,7 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 	/**
 	 * Create the panel.
 	 */
-	public TridasEntityPickerPanel(JDialog parent, Class<? extends ITridas> clazz, EntitiesAccepted acceptabletype){
+	public TridasEntityPickerPanel(Window parent, Class<? extends ITridas> clazz, EntitiesAccepted acceptabletype){
 
 		this.parent = parent;
 		entitiesAccepted = acceptabletype;
@@ -241,6 +241,10 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 			{
 				setWarning("Ambiguous - multiple matches");
 				return;
+			}
+			else
+			{
+				setWarning(null);
 			}
 			
 			
