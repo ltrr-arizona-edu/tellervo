@@ -85,7 +85,7 @@ public class FullEditor extends AbstractEditor {
 	public void switchToMapTab()
 	{
 		try{
-			this.tabbedPane.setSelectedIndex(4);
+			this.tabbedPane.setSelectedIndex(5);
 		} catch (Exception e)
 		{
 			

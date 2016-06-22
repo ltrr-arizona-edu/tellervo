@@ -253,7 +253,7 @@ public class TellervoPointLayerPropertiesDialog extends JDialog implements Actio
 	{
 		
 		BasicMarkerAttributes attrib = new BasicMarkerAttributes(getMaterial(), getShapeName(), getMarkerOpacity());
-		int value = Integer.valueOf((String) spnSize.getValue());
+		int value = (Integer) spnSize.getValue();
 		attrib.setMarkerPixels(Double.valueOf(value));
 		
 		return attrib;
