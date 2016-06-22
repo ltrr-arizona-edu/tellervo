@@ -28,6 +28,7 @@ import javax.swing.event.DocumentListener;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.apache.commons.io.FilenameUtils;
 import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,9 @@ import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+
 import javax.swing.JPanel;
+
 import java.awt.Font;
 
 public class SeriesIdentityRegexDialog extends DescriptiveDialog implements ActionListener, DocumentListener{
@@ -856,6 +859,13 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			thisFile = fc.getSelectedFile();
 			// Remember this folder for next time
 			App.prefs.setPref(PrefKey.FOLDER_LAST_READ, thisFile.getPath());
+
+			String ext = FilenameUtils.getExtension(thisFile.getAbsolutePath());
+
+			if(ext=="")
+			{
+				thisFile = new File(thisFile.getAbsoluteFile()+".cfg");
+			}
 
 		}
 		
