@@ -107,6 +107,9 @@ public class SearchParameterPanel extends SearchParameterPanel_UI_2 {
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESDATINGTYPE));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESCREATED));
 			paramsList.add(new SearchParameterNameEx(SearchParameterName.SERIESLASTMODIFIED));
+			
+			paramsList.add(new SearchParameterNameEx(SearchParameterName.TAGTEXT));
+			//paramsList.add(new SearchParameterNameEx(SearchParameterName.TAGID));
 
 			Collections.sort(paramsList, new SearchParameterComparator());
 
