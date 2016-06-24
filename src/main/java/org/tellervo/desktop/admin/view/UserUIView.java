@@ -358,10 +358,11 @@ public class UserUIView extends javax.swing.JDialog implements ActionListener, M
 		if(!txtODKPassword.getText().isEmpty()) user.setOdkPassword(txtODKPassword.getText());
 		
 		ArrayList<WSISecurityGroup> newMemList = this.groupsModel.getNewGroupMembership();
+		
+		user.getMemberOves().clear();
 		for(WSISecurityGroup g:newMemList){
-			if(!user.getMemberOves().contains(g.getId())){
-				user.getMemberOves().add(g.getId());
-			}
+			user.getMemberOves().add(g.getId());
+
 		}
 		
 		if(isNewUser)

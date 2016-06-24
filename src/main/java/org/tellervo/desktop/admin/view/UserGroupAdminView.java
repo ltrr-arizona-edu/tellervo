@@ -28,6 +28,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -39,6 +41,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.table.TableRowSorter;
+import javax.swing.tree.DefaultTreeModel;
 
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.search.SearchFactory;
@@ -401,11 +404,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
         scrollPane = new JScrollPane();
         treeviewPanel.add(scrollPane, "cell 0 0 10 7,grow");
         
-        tree = buildTree();
-        
-        UserGroupTreeCellRenderer treeRenderer = new UserGroupTreeCellRenderer();
-        tree.setCellRenderer(treeRenderer);
-        scrollPane.setViewportView(tree);
+        setupTree();
         
         panelButtons = new JPanel();
         getContentPane().add(panelButtons, "cell 0 2,growx");
@@ -419,6 +418,9 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
 			public void actionPerformed(ActionEvent arg0) {
 				linkModel();
 				groupsModel.fireTableDataChanged();
+				tblGroups.repaint();
+				tblUsers.repaint();
+				tblMembers.repaint();
 				
 			}
         	
@@ -434,6 +436,14 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     }// </editor-fold>//GEN-END:initComponents
 
     
+	private void setupTree()
+	{
+        tree = buildTree();
+        UserGroupTreeCellRenderer treeRenderer = new UserGroupTreeCellRenderer();
+        tree.setCellRenderer(treeRenderer);
+        scrollPane.setViewportView(tree);
+	}
+	
     @SuppressWarnings("unchecked")
 	private void linkModel(){
     	
@@ -446,6 +456,9 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     	groupsModel = new SecurityGroupTableModelA();
         tblGroups.setModel(groupsModel);
         tblGroups.setRowSorter(new TableRowSorter<SecurityGroupTableModelA>(groupsModel));
+        
+        setupTree();
+        
          
     }
     
@@ -507,6 +520,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     	
     	for(String childId: group.getUserMembers()){
     		WSISecurityUser child = mainModel.getUserById(childId);
+    		if(!child.isIsActive()) continue;
     		UserGroupNode childNode = new UserGroupNode(new TransferableUser(child));
     		parent.add(childNode);
     	}
