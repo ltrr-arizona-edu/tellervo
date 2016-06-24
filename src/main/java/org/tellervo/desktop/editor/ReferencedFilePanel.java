@@ -279,6 +279,8 @@ public class ReferencedFilePanel extends JPanel implements SampleListener {
 		dialog.setVisible(true);
 		
 		if(!dialog.hasResults()) return;
+		
+		ArrayList<TridasFile> files = dialog.getFileList();
 
 		TridasObject obj = s.getMeta(Metadata.OBJECT, TridasObject.class);
 		TridasElement elm = s.getMeta(Metadata.ELEMENT, TridasElement.class);
@@ -305,38 +307,63 @@ public class ReferencedFilePanel extends JPanel implements SampleListener {
 				// Object
 				if(obj.isSetFiles())
 				{
-					fl = (ArrayList<TridasFile>) obj.getFiles();
+					obj.getFiles().addAll(files);
 				}				
-				
-				fl.addAll(dialog.getFileList());
+				else
+				{
+					obj.setFiles(files);
+				}
 				doSave(obj);
+
+				fl.addAll(files);
 			}
 			else if(str.equals(possibilities[1]))
 			{
 				// Element
 				if(elm.isSetFiles())
 				{
-					fl = (ArrayList<TridasFile>) elm.getFiles();
+					elm.getFiles().addAll(files);
 				}				
-				
-				fl.addAll(dialog.getFileList());
+				else
+				{
+					elm.setFiles(files);
+				}
 				doSave(elm);
+
+				fl.addAll(dialog.getFileList());
 			}
 			else if(str.equals(possibilities[2]))
 			{
 				// Sample
 				if(samp.isSetFiles())
 				{
-					fl = (ArrayList<TridasFile>) samp.getFiles();
+					samp.getFiles().addAll(files);
 				}				
-				
-				fl.addAll(dialog.getFileList());
+				else
+				{
+					samp.setFiles(files);
+				}
 				doSave(samp);
+
+				fl.addAll(dialog.getFileList());
 			}
 			else
 			{
 				log.error("Unsupported");
 				return;
+			}
+			
+			for(TridasFile file : fl)
+			{
+				try {
+					URI uri = new URI(file.getHref());
+					addToList(uri);
+					
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
 			
 			s.fireSampleMetadataChanged();

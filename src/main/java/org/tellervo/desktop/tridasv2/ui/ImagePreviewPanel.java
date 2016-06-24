@@ -2,6 +2,10 @@ package org.tellervo.desktop.tridasv2.ui;
 
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -12,7 +16,9 @@ import javax.swing.JPanel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.ui.Builder;
+
 import net.miginfocom.swing.MigLayout;
+
 import javax.swing.JLabel;
 
 
@@ -25,12 +31,36 @@ public class ImagePreviewPanel extends JPanel {
     private Image scaledImage;
     private int imageWidth = 0;
     private int imageHeight = 0;
+    private int border = 15;
     //private long paintCount = 0;
     
     //constructor
     public ImagePreviewPanel() {
         super();
         setLayout(new MigLayout("", "[10px,grow,center]", "[232.00px,grow,center]"));
+        this.addComponentListener(new ComponentListener(){
+
+			@Override
+			public void componentHidden(ComponentEvent arg0) {
+				scaleImage();
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent arg0) {
+				scaleImage();
+			}
+
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+				scaleImage();
+			}
+
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				scaleImage();
+			}
+    		
+    	});
     }
     
     public void clearImage()
@@ -39,6 +69,7 @@ public class ImagePreviewPanel extends JPanel {
     	scaledImage = null;
     	imageWidth =0;
     	imageHeight =0;
+    	
     }
     
     public void loadImage(String file) throws IOException {
@@ -50,10 +81,10 @@ public class ImagePreviewPanel extends JPanel {
         imageHeight = image.getHeight(this);
         setScaledImage();
     }
-    
+        
     public void loadPlaceholderImage() 
     {
-    	image = Builder.getIconAsImage("questionmark.png", 64);
+    	image = Builder.getIconAsImage("previewnotavailable.png", 128);
     	if(image==null) {
     		
     		log.error("Unable to load placeholder image");
@@ -83,34 +114,75 @@ public class ImagePreviewPanel extends JPanel {
     		return false;
     	}
     	
-    	if(f.length() > 3145728.0)
+    	if(f.length() > 9437184.0)
     	{
-    		// > 3mb
+    		// > 9mb
     		log.debug("Image too large to preview.");
     		loadPlaceholderImage();
     		return false;
     	}
-    	else
-    	{
-    		try{
-    			image = ImageIO.read(f);
-    		} catch (IOException ex)
-    		{
-        		loadPlaceholderImage();
-        		return false;
-
-    		}
-    	}
     	
+    	
+    	try{
+			image = ImageIO.read(f);
+		} catch (IOException ex)
+		{
+    		loadPlaceholderImage();
+    		return false;
+
+		}
+    	
+        try{
+        	imageWidth = image.getWidth(this);
+	        imageHeight = image.getHeight(this);
+	        
+	        if(imageWidth==-1)
+	        {
+	        	log.debug("Image width not yet known");
+	        }
+	        
+	        double maxdim = 600;
+	        if(imageWidth >maxdim || imageHeight>maxdim)
+	        {
+
+	        	log.debug("Large image - resampling");
+	        	double ratio = (double)imageWidth / (double)imageHeight;
+	        	
+	        	log.debug("Original width = "+imageWidth);
+	        	log.debug("Original height = "+imageHeight);
+	        	log.debug("Ratio = "+ratio);
+	        	
+	        	int w = (int) maxdim;
+	        	int h = (int) maxdim;
+	        	if(imageWidth>imageHeight)
+	        	{
+	        		log.debug("Image wider than tall");
+	        		w = (int) maxdim;
+	        		h = (int) (maxdim/ratio);
+	        	}
+	        	else
+	        	{
+	        		log.debug("Image taller than wide");
+	        		h = (int) maxdim;
+	        		w = (int) (maxdim*ratio);
+	        	}
+	        	
+	        	log.debug("Rescaling to "+w+" x "+h);
+        		log.debug("Replacing full size image with rescaled image");
+    			image = ImageIO.read(f).getScaledInstance(w, h, BufferedImage.SCALE_FAST);
+
+	        }
+        } catch (Exception e)
+        {}
+    	   	
     	if(image==null) {
-    		
     		loadPlaceholderImage();
     		return false;
     	}
     	
-        imageWidth = image.getWidth(this);
-        imageHeight = image.getHeight(this);
+
         setScaledImage();
+        scaleImage();
         return true;
     }
     
@@ -124,7 +196,28 @@ public class ImagePreviewPanel extends JPanel {
         super.paintComponent(g);
         if ( scaledImage != null ) {
             //System.out.println("ImagePanel paintComponent " + ++paintCount);
-            g.drawImage(scaledImage, 0, 0, this);
+        	
+        	int scaledWidth = scaledImage.getWidth(this);
+        	int scaledHeight = scaledImage.getHeight(this);
+        	
+        	Float pw = (float) (this.getWidth()-border-border);   //panel width
+            Float ph = (float) (this.getHeight()-border-border);  //panel height
+            
+            int x = border;
+            int y = border;
+            
+            if((pw.intValue()-scaledWidth)>0)
+            {
+            	x = (pw.intValue()-scaledWidth)/2;
+            }
+            if((ph.intValue()-scaledHeight)>0)
+            {
+            	y = (ph.intValue()-scaledHeight)/2;
+            }
+            
+            if(x<border) x = border;
+            if(y<border) y = border;
+            g.drawImage(scaledImage, x, y, this);
         }
     }
     
@@ -134,8 +227,8 @@ public class ImagePreviewPanel extends JPanel {
             //use floats so division below won't round
             float iw = imageWidth;
             float ih = imageHeight;
-            float pw = this.getWidth();   //panel width
-            float ph = this.getHeight();  //panel height
+            float pw = this.getWidth()-border-border;   //panel width
+            float ph = this.getHeight()-border-border;  //panel height
             
             
             if ( pw < iw || ph < ih ) {
@@ -172,5 +265,4 @@ public class ImagePreviewPanel extends JPanel {
             //System.out.println("iw = " + iw + ", ih = " + ih + ", pw = " + pw + ", ph = " + ph);
         }
     }
-    
 }
