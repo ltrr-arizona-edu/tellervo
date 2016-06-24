@@ -1754,19 +1754,23 @@ class sampleEntity extends dbEntity
 	{
 		$this->summaryElementCode=$code;
 	}
-
-    function setBoxID($id)
-    {
-        if($id==null || $id=='null' || $id=='')
-        {
-                $this->box = new Box();
-        }
-        else
-        {       
-                $this->box->setParamsFromDB($id);
-        }
-    }
 	
+
+	
+	function setBoxID($id)
+    {
+	global $firebug;
+
+	$firebug->log("Setting box id to $id");
+	if($id==null || $id=='null' || $id=='')
+	{
+		$this->box = new Box();
+	}
+	else
+	{	
+    		$this->box->setParamsFromDB($id);
+	}
+    }
     
     function setBoxFromName($name)
     {

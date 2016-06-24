@@ -383,8 +383,8 @@ class securityUser extends securityUserEntity implements IDBAccessor
                                 
                 if(count($this->groupArray)>0)
                 {
-            //        $sql = "delete from tblsecurityusermembership where securityuserid=".$this->id;
-             //       $result = pg_query($dbconn, $sql);
+                    $sql = "delete from tblsecurityusermembership where securityuserid='".$this->id."'";
+                    $result = pg_query($dbconn, $sql);
 
                     foreach($this->groupArray as $item)
                     {

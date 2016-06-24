@@ -15,6 +15,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -147,6 +149,20 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 	
 	
 	
+	public void updateUsersTable()
+	{
+		App.dictionary.query();
+		lookupUsersAndGroups();
+		userTableModel.setupContents(permsList, true);
+	}
+	
+	public void updateGroupsTable()
+	{
+		App.dictionary.query();
+		lookupUsersAndGroups();
+		groupTableModel.fireTableDataChanged();
+	}
+	
 	public void setEntity(ITridas entity)
 	{
 		theentity =entity;
@@ -154,6 +170,16 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 		
 		userTableModel = new UsersWithPermissionsTableModel(permsList);
 		groupTableModel = new GroupsWithPermissionsTableModel(permsList);
+		groupTableModel.addTableModelListener(new TableModelListener(){
+
+			@Override
+			public void tableChanged(TableModelEvent e) {
+				updateUsersTable();
+				
+			}
+			
+			
+		});
 		setLayout(new MigLayout("", "[][grow]", "[86px][28.00][328px,grow]"));
 		
 		lblPermissionsInfoFor = new JLabel("Permissions info for:");
@@ -214,9 +240,7 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				App.dictionary.query();
-				lookupUsersAndGroups();
-				groupTableModel.fireTableDataChanged();
+				updateGroupsTable();
 			}
 			
 		});
@@ -264,9 +288,7 @@ public class PermissionByEntityUI extends JPanel implements MouseListener{
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				
-				App.dictionary.query();
-				userTableModel.fireTableDataChanged();	
-				groupTableModel.fireTableDataChanged();
+				updateUsersTable();
 			}
 			
 		});

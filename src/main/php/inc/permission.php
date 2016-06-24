@@ -112,6 +112,7 @@ class permission extends permissionEntity implements IDBAccessor
 	{
     	   foreach($this->thisParamsClass->entityArray as $entity)
     	   {
+		$entitytype = $entity['type'];
 
 		if($entity['id']=='')
 		{
@@ -169,13 +170,13 @@ class permission extends permissionEntity implements IDBAccessor
 
     	global $dbconn;
         global $firebug;
-	global $entity;
-	$entitytype = $entity['type'];
+	//global $entity;
+	//$entitytype = $entity['type'];
 
-	if($entitytype=='measurement' || $entitytype=='measurementSeries' || $entitytype=='derivedSeries')
-	{
-		$entitytype='vmeasurement';
-	}
+	//if($entitytype=='measurement' || $entitytype=='measurementSeries' || $entitytype=='derivedSeries')
+	//{
+//		$entitytype='vmeasurement';
+	//}
 
 	$firebug->log("Starting permissions write to db");
 	$firebug->log($this->thisParamsClass, "Writing this params class to db");
@@ -183,8 +184,12 @@ class permission extends permissionEntity implements IDBAccessor
     	foreach($this->thisParamsClass->entityArray as $entity)
     	{
 		$firebug->log($entity, "Permissions being written for this entity");
+		//$entitytype = 'object';
+		$entitytype = $entity['type'];
+		
+		//$entity->
     		// Entity has to be of a certain type otherwise continue;
-    		if ($entitytype!='object' && $entitytype!='element' && $entitytype!='vmeasurement')
+    		if ($entitytype!='object' && $entitytype!='element' && $entitytype!='vmeasurement' && $entitytype!='default')
     		{
 			$firebug->log("Unsupported entity '".$entitytype."'for permissions. Ignoring");
     			continue;

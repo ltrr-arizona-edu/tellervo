@@ -60,7 +60,10 @@ class box extends boxEntity implements IDBAccessor
         global $dbconn;
         global $firebug;
         
-        if($theID==NULL) return FALSE;
+        if($theID==NULL) {
+		$firebug->log("Box is null");
+		return FALSE;
+	}
         
         $this->setID($theID);
         $sql = "SELECT * from vwtblbox WHERE boxid='".pg_escape_string($this->getID())."'";
@@ -74,7 +77,7 @@ class box extends boxEntity implements IDBAccessor
             	$firebug->log(__LINE__, "line no");
             	$firebug->log($sql, "sql is");
                 // No records match the id specified
-                trigger_error("903"."No records match the specified id", E_USER_ERROR);
+                trigger_error("903"."No records match the specified box id", E_USER_ERROR);
                 return FALSE;
             }
             else

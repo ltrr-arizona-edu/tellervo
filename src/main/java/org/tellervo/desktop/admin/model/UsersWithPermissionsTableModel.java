@@ -34,15 +34,15 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
     
     public UsersWithPermissionsTableModel(ArrayList<WSIPermission> list)
     {
-    	setup(list, true);
+    	setupContents(list, true);
     }
     
     public UsersWithPermissionsTableModel(ArrayList<WSIPermission> list, Boolean hideNoAccessUsers)
     {
-    	setup(list, hideNoAccessUsers);
+    	setupContents(list, hideNoAccessUsers);
     }
     
-    private void setup(ArrayList<WSIPermission> list, Boolean hideNoAccessUsers)
+    public void setupContents(ArrayList<WSIPermission> list, Boolean hideNoAccessUsers)
     {
     	userList = new ArrayList<WSIPermission>();
     	
@@ -89,6 +89,8 @@ public class UsersWithPermissionsTableModel extends AbstractTableModel {
     			userList.add(permclone);
     		}
     	}
+    	
+    	fireTableDataChanged();
     }
     
 	@Override

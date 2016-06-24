@@ -103,8 +103,7 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
 			$this->setErrorMessage("001", "Error connecting to database");
 			return FALSE;
 		}
-
-
+		$this->userMembersArray = array_unique($this->userMembersArray);
 
 		$this->groupMembersArray = array();
 
@@ -126,6 +125,7 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
 			$this->setErrorMessage("001", "Error connecting to database");
 			return FALSE;
 		}
+		$this->groupMembersArray = array_unique($this->groupMembersArray);
 
 
 

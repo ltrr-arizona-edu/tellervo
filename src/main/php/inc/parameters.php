@@ -1214,7 +1214,7 @@ class sampleParameters extends sampleEntity implements IParams
 		   		{	  
 		   			case "tellervo.boxID":
 		   				$firebug->log($value, "Setting boxid");
-		   				$this->setboxid($value);
+		   				$this->setBoxID($value);
 		   				break; 			
 		   			case "tellervo.externalID":
 		   				$this->setExternalID($value);
@@ -1809,13 +1809,13 @@ class boxParameters extends boxEntity implements IParams
 		   {
 		   	case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
 		   	case "tridas:title":				$this->setTitle($child->nodeValue); break;
-		   	case "trackingLocation":			$this->setTrackingLocation($child->nodeValue); break;
-		   	case "curationLocation":			$this->setCurationLocation($child->nodeValue); break;
-		   	case "tridas:comments":				$this->setComments($child->nodeValue); break;
+		   	case "trackingLocation":	$this->setTrackingLocation($child->nodeValue); break;
+		   	case "curationLocation":	$this->setCurationLocation($child->nodeValue); break;
+		   	case "tridas:comments":			$this->setComments($child->nodeValue); break;
 		   	case "tridas:createdTimestamp"     : break;
 		   	case "tridas:lastModifiedTimestamp": break;
-		   	case "sampleCount"				   : break;
-		   	case "tridas:sample"			   : break;	   				   		
+		   	case "sampleCount"			: break;
+		   	case "tridas:sample"			: break;	   				   		
 		   	default:
 		   		trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'box' entity of the XML request", E_USER_NOTICE);
 		   }

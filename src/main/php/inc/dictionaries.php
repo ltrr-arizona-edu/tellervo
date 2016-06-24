@@ -197,14 +197,14 @@ class dictionaries
                 		$myObj->setChildParamsFromDB();
                 		$xmldata.=$myObj->asXML("comprehensive");
                 	}
-  					else if ($item=='securityGroup')
-  					{
-  						$myObj->setChildParamsFromDB();
-  						$xmldata.=$myObj->asXML("comprehensive");
-  					}
+			else if ($item=='securityGroup')
+			{
+				$myObj->setChildParamsFromDB();
+				$xmldata.=$myObj->asXML("comprehensive");
+			}
                 	else
                 	{ 	   
-						//$firebug->log($myObj->asXML(), "XML for ".$item." with id ".$row['id']);
+				//$firebug->log($myObj->asXML(), "XML for ".$item." with id ".$row['id']);
                 		
 	                	if($success)
 	                	{
