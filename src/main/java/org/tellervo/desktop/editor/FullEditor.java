@@ -30,6 +30,7 @@ import org.tellervo.desktop.gui.widgets.TitlelessToggleButton;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.PrefsEvent;
 import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.tridasv2.ui.ComponentViewer;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewerOld;
 import org.tellervo.desktop.tridasv2.ui.DependentsViewer;
 import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel;
@@ -453,18 +454,24 @@ public class FullEditor extends AbstractEditor {
 					metadataHolder.add(metaView, BorderLayout.CENTER);
 										
 					// Components tab
-					ComponentViewerOld componentsPanel;	
+					ComponentViewer componentsPanel;	
 					componentHolder.setVisible(sample.getSampleType().isDerived());
 					componentHolder.removeAll();
-					if(sample.getSampleType().isDerived()){
-						componentsPanel = new ComponentViewerOld(sample);
-						this.componentHolder.add(componentsPanel, BorderLayout.CENTER);
-						this.tabbedPane.setEnabledAt(2, true);
-					}
-					else
+					try{
+						if(sample.getSampleType().isDerived()){
+							componentsPanel = new ComponentViewer(sample);
+							this.componentHolder.add(componentsPanel, BorderLayout.CENTER);
+							this.tabbedPane.setEnabledAt(2, true);
+						}
+						else
+						{
+							this.tabbedPane.setEnabledAt(2, false);
+						}
+					} catch (Exception e)
 					{
-						this.tabbedPane.setEnabledAt(2, false);
+						log.error("Error setting up component viewer");
 					}
+					
 					
 					
 					// Dependents tab

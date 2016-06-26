@@ -25,30 +25,32 @@ package org.tellervo.desktop.tridasv2.ui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Paint;
+import java.awt.Rectangle;
+import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
-
-import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
-import javax.swing.JRootPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
-import javax.swing.ListCellRenderer;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.ToolTipManager;
@@ -57,6 +59,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
+import net.miginfocom.swing.MigLayout;
+
+import org.apache.commons.collections15.Transformer;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.table.TableColumnModelExt;
 import org.tellervo.desktop.gui.dbbrowse.BooleanCellRenderer;
@@ -66,141 +71,36 @@ import org.tellervo.desktop.gui.dbbrowse.ElementListPopupMenu;
 import org.tellervo.desktop.gui.dbbrowse.ElementListTableModel;
 import org.tellervo.desktop.gui.dbbrowse.ElementListTableSorter;
 import org.tellervo.desktop.sample.CachedElement;
-import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.schema.TellervoRequestFormat;
-import org.tellervo.schema.TellervoRequestType;
-import org.tellervo.schema.EntityType;
+import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.PopupListener;
 import org.tellervo.desktop.wsi.ResourceEvent;
 import org.tellervo.desktop.wsi.ResourceEventListener;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesResource;
+import org.tellervo.schema.EntityType;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.TellervoRequestType;
 import org.tridas.schema.TridasIdentifier;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.Timer;
-
-import javax.swing.BorderFactory;
-import javax.swing.JApplet;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-
-import org.apache.commons.collections15.Factory;
-import org.apache.commons.collections15.functors.ConstantTransformer;
-
+import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
-import edu.uci.ics.jung.algorithms.layout.FRLayout2;
-import edu.uci.ics.jung.algorithms.layout.PolarPoint;
-import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
-import edu.uci.ics.jung.algorithms.layout.SpringLayout;
-import edu.uci.ics.jung.algorithms.layout.TreeLayout;
-import edu.uci.ics.jung.graph.DirectedGraph;
 import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
-import edu.uci.ics.jung.graph.Forest;
-import edu.uci.ics.jung.graph.DelegateForest;
-import edu.uci.ics.jung.graph.DelegateTree;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.ObservableGraph;
-import edu.uci.ics.jung.graph.Tree;
-import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
-import edu.uci.ics.jung.visualization.Layer;
-import edu.uci.ics.jung.visualization.VisualizationServer;
-import edu.uci.ics.jung.visualization.VisualizationViewer;
-import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
-import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
-import edu.uci.ics.jung.visualization.control.ScalingControl;
-import edu.uci.ics.jung.visualization.decorators.EdgeShape;
-import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import edu.uci.ics.jung.visualization.layout.LayoutTransition;
-import edu.uci.ics.jung.visualization.renderers.Renderer;
-import edu.uci.ics.jung.visualization.util.Animator;
-
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridLayout;
-import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.swing.BorderFactory;
-import javax.swing.JApplet;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-
-import org.apache.commons.collections15.Factory;
-import org.apache.commons.collections15.functors.ConstantTransformer;
-
-import edu.uci.ics.jung.algorithms.layout.PolarPoint;
-import edu.uci.ics.jung.algorithms.layout.RadialTreeLayout;
-import edu.uci.ics.jung.algorithms.layout.TreeLayout;
-import edu.uci.ics.jung.algorithms.layout.util.Relaxer;
-import edu.uci.ics.jung.graph.DirectedGraph;
-import edu.uci.ics.jung.graph.DirectedSparseMultigraph;
-import edu.uci.ics.jung.graph.Forest;
-import edu.uci.ics.jung.graph.DelegateForest;
-import edu.uci.ics.jung.graph.DelegateTree;
-import edu.uci.ics.jung.graph.Tree;
 import edu.uci.ics.jung.graph.event.GraphEvent;
 import edu.uci.ics.jung.graph.event.GraphEventListener;
 import edu.uci.ics.jung.graph.util.Graphs;
-import edu.uci.ics.jung.visualization.GraphZoomScrollPane;
-import edu.uci.ics.jung.visualization.Layer;
-import edu.uci.ics.jung.visualization.VisualizationServer;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.DefaultModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ModalGraphMouse;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
-import edu.uci.ics.jung.visualization.control.ModalGraphMouse.Mode;
-import edu.uci.ics.jung.visualization.decorators.EdgeShape;
 import edu.uci.ics.jung.visualization.decorators.ToStringLabeller;
-import edu.uci.ics.jung.visualization.layout.LayoutTransition;
-import edu.uci.ics.jung.visualization.util.Animator;
-
-import java.awt.Component;
-
-import net.miginfocom.swing.MigLayout;
+import edu.uci.ics.jung.visualization.renderers.Renderer;
 
 
 /**
@@ -239,6 +139,7 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 	private Graph<String,String> g = null;
     private VisualizationViewer<String,String> vv = null;
     private AbstractLayout<String,String> layout = null;
+    private JLabel lblViewAllThe;
 	
 	
 	public ComponentViewer(Sample sample) {
@@ -250,22 +151,19 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		
 		// default to this view...
 		btnTreeView.doClick();
+
 	}
 	
 	private void initComponents() {
-		JLabel label;
 		
 		setLayout(new BorderLayout());
 		
 		// create button panel
 		JPanel topPanel = new JPanel();
-		label = new JLabel("View as: ");
 		btnTreeView = new JRadioButton("Tree");
 		btnTreeView.putClientProperty("cv.cardName", TREEPANEL);
 		btnTableView = new JRadioButton("Table");
 		btnTableView.putClientProperty("cv.cardName", TABLEPANEL);
-		JRadioButton btnTree2View = new JRadioButton("Flow chart");
-		btnTree2View.putClientProperty("cv.cardName", TREE2PANEL);
 		
 		ActionListener btnListener = new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -277,21 +175,22 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		};
 		btnTableView.addActionListener(btnListener);
 		btnTreeView.addActionListener(btnListener);	
-		btnTree2View.addActionListener(btnListener);
 		
 		// connect buttons
 		ButtonGroup group = new ButtonGroup();
 		group.add(btnTreeView);
 		group.add(btnTableView);
+		topPanel.setLayout(new MigLayout("", "[64px][55px][62px][grow]", "[][23px]"));
+		
+		lblViewAllThe = new JLabel("<html>View all the component series that combine to create the current series. Series can be viewed as:");
+		topPanel.add(lblViewAllThe, "cell 0 0 4 1");
+		JRadioButton btnTree2View = new JRadioButton("Flow chart");
+		btnTree2View.putClientProperty("cv.cardName", TREE2PANEL);
+		btnTree2View.addActionListener(btnListener);
 		group.add(btnTree2View);
-		topPanel.setLayout(new MigLayout("", "[64px][55px][62px][63px][][]", "[23px]"));
-		
-		
-		// add it all to a panel
-		topPanel.add(label, "cell 0 0,alignx left,aligny center");
-		topPanel.add(btnTreeView, "cell 1 0,alignx left,aligny center");
-		topPanel.add(btnTableView, "cell 2 0,alignx left,aligny center");
-		topPanel.add(btnTree2View, "cell 3 0,alignx left,aligny center");
+		topPanel.add(btnTree2View, "cell 0 1,alignx left,aligny center");
+		topPanel.add(btnTreeView, "cell 1 1,alignx left,aligny center");
+		topPanel.add(btnTableView, "cell 2 1,alignx left,aligny center");
 		
 		
 		topPanel.setBorder(BorderFactory.createEmptyBorder(2, 8, 8, 8));
@@ -436,7 +335,7 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 
 		//recurseAddElementsToList(elements, displayElements, rootNode, sample, 0);
 		*/
-		Task task = new Task(sample);
+		PopulateComponentsTask task = new PopulateComponentsTask(sample);
 		task.execute();	
 		
 		
@@ -549,13 +448,16 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 				}});
 	        this.g = og;
 	        //create a graphdraw
-	        layout = new FRLayout2<String,String>(g);
-//	        ((FRLayout)layout).setMaxIterations(200);
+	        layout = new FRLayout<String,String>(g);
+	        //layout = new ISOMLayout<String, String>(g);
+	        //layout = new KKLayout<String, String>(g);
+	        //layout = new CircleLayout<String, String>(g);
 
-	        vv = new VisualizationViewer<String,String>(layout, new Dimension(600,600));
+	   
+	        vv = new VisualizationViewer<String,String>(layout, null);
 
 	        
-	        tree2Panel.putClientProperty("defeatSystemEventQueueCheck", Boolean.TRUE);
+	        //tree2Panel.putClientProperty("defeatSystemEventQueueCheck", Boolean.TRUE);
 
 	        tree2Panel.setLayout(new BorderLayout());
 	        tree2Panel.setBackground(java.awt.Color.lightGray);
@@ -567,8 +469,50 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 	        vv.setGraphMouse(graphMouse);
 
 	        vv.getRenderer().getVertexLabelRenderer().setPosition(Renderer.VertexLabel.Position.CNTR);
-	        //vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller<Number>());
-	        vv.setForeground(Color.white);
+	        vv.getRenderContext().setVertexLabelTransformer(new ToStringLabeller());
+	        vv.getRenderContext().setEdgeLabelTransformer(new ToStringLabeller());
+	        
+	        Transformer<String,Paint> vertexColor = new Transformer<String,Paint>() {
+	            public Paint transform(String i) {
+	            	
+	            	if(i.equals(ComponentTreeCellRenderer.getFullTitle(sample, false)))
+	            	{
+	            		return Color.ORANGE;
+	            	}
+	            	else
+	            	{
+	            		return Color.PINK;
+	            	}
+	            }
+	        };
+	        
+	        Transformer<String,Paint> edgeColor = new Transformer<String,Paint>() {
+	            public Paint transform(String i) {
+	                return Color.WHITE;
+	            }
+	        };
+	        
+			Transformer<String, Shape> vertexShape = new Transformer<String, Shape>() {
+				public Shape transform(String i) {
+	            	
+	            	if(i.equals(ComponentTreeCellRenderer.getFullTitle(sample, false)))
+	            	{
+	            		return new Rectangle(-150, -20, 300, 40);
+
+	            	}
+	            	else
+	            	{
+	            		return new Rectangle(-150, -10, 300, 20);
+	            	}
+				}
+			};
+
+	        vv.getRenderContext().setVertexFillPaintTransformer(vertexColor);
+	        vv.getRenderContext().setEdgeDrawPaintTransformer(edgeColor);
+	        vv.getRenderContext().setVertexShapeTransformer(vertexShape);;
+	        
+	        
+	        vv.setForeground(Color.BLACK);
 	        tree2Panel.add(vv, BorderLayout.CENTER);
 	        
 
@@ -604,17 +548,18 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 	        controls.add(scaleGrid);
 	        controls.add(modeBox);
 
-	        tree2Panel.add(controls, BorderLayout.SOUTH);
+	        tree2Panel.add(controls, BorderLayout.NORTH);
 
 	}
 	
-	class Task extends SwingWorker<Void, Void> {
+	class PopulateComponentsTask extends SwingWorker<Void, Void> {
 		
 		
 		private Sample sample;
 		private ElementList de = new ElementList();
+		private DefaultMutableTreeNode rootNode;
 		
-		public Task(Sample sample)
+		public PopulateComponentsTask(Sample sample)
 		{
 			this.sample = sample;
 		}
@@ -630,10 +575,10 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 				el = new ElementList();
 			
 			// create root node
-			DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode(new CachedElement(sample));
+			rootNode = new DefaultMutableTreeNode(new CachedElement(sample));
 			
 
-			recurseAddElementsToList(el, de, rootNode, sample, 0);
+			recurseAddElementsToList(el, rootNode, sample, 0);
 			
 			return null;		
 		}
@@ -644,17 +589,11 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 		@Override
 		public void done() {     
 			tableModel.setElements(de);
-			treeModel.setRoot(new DefaultMutableTreeNode(new CachedElement(sample)));
+			treeModel.setRoot(rootNode);
 		}
 		
 		
-		public ElementList getDisplayElements()
-		{
-			return de;
-		}
-		
-		
-		private void recurseAddElementsToList(ElementList elements, ElementList flat, 
+		private void recurseAddElementsToList(ElementList elements,
 				DefaultMutableTreeNode parent, Sample parentSample, int depth) {
 			for(Element e : elements) {
 				if(e instanceof CachedElement) {
@@ -667,7 +606,7 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 					}
 					
 					// add to list
-					flat.add(ce);
+					de.add(ce);
 					
 					// add to tree
 					DefaultMutableTreeNode node = new DefaultMutableTreeNode(ce);
@@ -681,28 +620,45 @@ public class ComponentViewer extends JPanel implements ResourceEventListener, El
 					try {
 						Sample s = ce.load();
 						
+				
 		            	layout.lock(true);
 		                //add a vertex
 		                String v1 = ComponentTreeCellRenderer.getFullTitle(s, false);
 
-		                Relaxer relaxer = vv.getModel().getRelaxer();
-		                relaxer.pause();
+		                //Relaxer relaxer = vv.getModel().getRelaxer();
+		                //relaxer.pause();
 		                g.addVertex(v1);
 		                System.err.println("added node " + v1);
 
 		                // wire it to some edges
-						g.addEdge(g.getEdgeCount()+"", 
+		                String verb  = "";
+		                try{
+			            	verb = parentSample.getSampleType().toString();
+			                if(verb.equals("Sum")) verb = "Summed";
+			                if(verb.equals("Index")) verb = "Indexed";
+			                if(verb.equals("Clean")) verb = "Cleaned";
+			                if(verb.equals("Redate")) verb = "Redated";
+			                if(verb.equals("Crossdate")) verb = "Crossdated";
+			                if(verb.equals("Truncate")) verb = "Truncated";
+		                } catch (NullPointerException ex)
+		                {
+		                
+		                }
+		                
+		                verb = verb + " ["+g.getEdgeCount()+"]";
+		                
+						g.addEdge(verb, 
 								ComponentTreeCellRenderer.getFullTitle(s, false),
 								ComponentTreeCellRenderer.getFullTitle(parentSample, false));
 
 		                layout.initialize();
-		                relaxer.resume();
+		                //relaxer.resume();
 		                layout.lock(false);
 
 						ElementList sampleElements = s.getElements();
 												
 						if(sampleElements != null)
-							recurseAddElementsToList(sampleElements, flat, node, s, depth + 1);
+							recurseAddElementsToList(sampleElements, node, s, depth + 1);
 					} catch (IOException ioe) {
 						// shouldn't happen
 					} 
