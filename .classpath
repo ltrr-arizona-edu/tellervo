@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry excluding="**/edu/cornell/dendro/cpgdb/*|**/edu/cornell/dendro/webservice/*" kind="src" output="target/classes" path="src/main/java">
 		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="Tellervo/Native/Libraries/linux-amd64"/>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
@@ -29,10 +30,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/tmp"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6">
-		<attributes>
-			<attribute name="maven.pomderived" value="true"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
