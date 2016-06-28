@@ -1,7 +1,6 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	
+
 	<!-- Metadata -->
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.tellervo</groupId>
@@ -43,7 +42,7 @@
 			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
 			<roles>
 				<role>Inactive developer</role>
-			</roles>				
+			</roles>
 		</developer>
 		<developer>
 			<name>Aaron Hamid</name>
@@ -58,13 +57,13 @@
 			<name>Ken Harris</name>
 			<roles>
 				<role>Inactive developer</role>
-			</roles>			
+			</roles>
 		</developer>
 		<developer>
 			<name>Drew Kalina</name>
 			<roles>
 				<role>Inactive developer</role>
-			</roles>			
+			</roles>
 		</developer>
 		<developer>
 			<name>Rocky Li</name>
@@ -73,7 +72,7 @@
 			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
 			<roles>
 				<role>Inactive developer</role>
-			</roles>			
+			</roles>
 		</developer>
 		<developer>
 			<name>Lucas Madar</name>
@@ -90,13 +89,13 @@
 			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
 			<roles>
 				<role>Inactive developer</role>
-			</roles>				
+			</roles>
 		</developer>
 		<developer>
 			<name>Robert 'Mecki' Pohl</name>
 			<roles>
 				<role>Inactive developer</role>
-			</roles>	
+			</roles>
 		</developer>
 		<developer>
 			<name>Kit Sturgeon</name>
@@ -104,7 +103,7 @@
 			<organization>The Epison Group</organization>
 			<roles>
 				<role>Consultant</role>
-			</roles>				
+			</roles>
 		</developer>
 		<developer>
 			<name>Pavithra Lakshminarayanan</name>
@@ -119,13 +118,13 @@
 	</scm>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.build.timestamp.format>HH:mm dd-MMM-yyyy</maven.build.timestamp.format>
-    	<timestamp>${maven.build.timestamp}</timestamp>
-    	<serverversion>1.3.0</serverversion>
+		<maven.build.timestamp.format>HH:mm dd-MMM-yyyy</maven.build.timestamp.format>
+		<timestamp>${maven.build.timestamp}</timestamp>
+		<serverversion>1.3.0</serverversion>
 	</properties>
 
-	<!--  Repository to deploy to.  When deploying make sure your .m2/settings.xml
-	 file contains the correct username and password for the repository server -->
+	<!-- Repository to deploy to. When deploying make sure your .m2/settings.xml 
+		file contains the correct username and password for the repository server -->
 	<distributionManagement>
 		<repository>
 			<id>tridas-releases</id>
@@ -137,27 +136,33 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-	<!-- Packages that this project depends upon-->
+	<!-- Packages that this project depends upon -->
 	<dependencies>
-		
+
 		<!-- Locally build WWJ package because the one in Maven central is knackered -->
 		<dependency>
 			<groupId>gov.nasa.worldwind</groupId>
-		  <artifactId>worldwindjava-tellervo</artifactId>
-		  <version>2.0.0</version>		
+			<artifactId>worldwindjava-tellervo</artifactId>
+			<version>2.0.0</version>
 		</dependency>
-   <dependency>
-     <groupId>org.jogamp.gluegen</groupId>
-     <artifactId>gluegen-rt-main</artifactId>
-     <version>2.1.5-01</version>
-   </dependency>
-   <dependency>
-     <groupId>org.jogamp.jogl</groupId>
-     <artifactId>jogl-all-main</artifactId>
-     <version>2.1.5-01</version>
-   </dependency>
-		
-				   
+		<dependency>
+			<groupId>org.jogamp.gluegen</groupId>
+			<artifactId>gluegen-rt-main</artifactId>
+			<version>2.1.5-01</version>
+		</dependency>
+		<dependency>
+			<groupId>org.jogamp.jogl</groupId>
+			<artifactId>jogl-all-main</artifactId>
+			<version>2.1.5-01</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.imagej</groupId>
+			<artifactId>ij</artifactId>
+			<version>1.51d</version>
+		</dependency>
+
+
 		<!-- PDF Creation library -->
 		<dependency>
 			<groupId>com.lowagie</groupId>
@@ -167,15 +172,10 @@
 			<scope>compile</scope>
 		</dependency>
 		<!-- Logger -->
-		<!-- Diverts System.out calls to logger can be removed
-		once code has been refactored to use proper logger calls -->
-		<!-- <dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.1</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>-->
+		<!-- Diverts System.out calls to logger can be removed once code has been 
+			refactored to use proper logger calls -->
+		<!-- <dependency> <groupId>org.slf4j</groupId> <artifactId>slf4j-log4j12</artifactId> 
+			<version>1.6.1</version> <type>jar</type> <scope>compile</scope> </dependency> -->
 		<dependency>
 			<groupId>org.jdom</groupId>
 			<artifactId>jdom</artifactId>
@@ -253,8 +253,8 @@
 			<groupId>org.rxtx</groupId>
 			<artifactId>rxtx</artifactId>
 			<version>2.2-20081207</version>
-		</dependency>            
-			
+		</dependency>
+
 		<dependency>
 			<groupId>org.netbeans.api</groupId>
 			<artifactId>org-netbeans-swing-outline</artifactId>
@@ -287,7 +287,7 @@
 			<scope>test</scope>
 		</dependency>
 
-		 
+
 		<dependency>
 			<groupId>de.micromata.jak</groupId>
 			<artifactId>JavaAPIforKml</artifactId>
@@ -367,62 +367,62 @@
 	</dependencies>
 
 	<build>
-	
+
 		<!-- Create launch scripts for Linux builds with correct version number -->
-	    <resources>
-			  <resource>
-		        <directory>src/main/resources</directory>
-		        <filtering>true</filtering>
-		        <excludes>
-		          <exclude>**/*.xml</exclude>
-		          <exclude>**/*.wav</exclude>
-		          <exclude>**/*.ttf</exclude>
-		          <exclude>**/*.dll</exclude>
-		          <exclude>**/*.so</exclude>
-		          <exclude>**/*.jar</exclude>
-		        </excludes>
-		      </resource>
-		      <resource>
-		  		<directory>Native/BuildResources/</directory>
-		  		<filtering>true</filtering>
-		  	  </resource>
-		      <resource>
-		        <directory>src/main/resources</directory>
-		        <filtering>false</filtering>
-		        <includes>
-		          <include>**/log4j.xml</include>
-		          <include>**/*.wav</include>
-		          <include>**/*.ttf</include>
-		          <include>**/*.dll</include>
-		          <include>**/*.so</include>
-		          <include>**/*.jar</include>
-		        </includes>
-		      </resource>
-		  
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+				<excludes>
+					<exclude>**/*.xml</exclude>
+					<exclude>**/*.wav</exclude>
+					<exclude>**/*.ttf</exclude>
+					<exclude>**/*.dll</exclude>
+					<exclude>**/*.so</exclude>
+					<exclude>**/*.jar</exclude>
+				</excludes>
+			</resource>
+			<resource>
+				<directory>Native/BuildResources/</directory>
+				<filtering>true</filtering>
+			</resource>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/log4j.xml</include>
+					<include>**/*.wav</include>
+					<include>**/*.ttf</include>
+					<include>**/*.dll</include>
+					<include>**/*.so</include>
+					<include>**/*.jar</include>
+				</includes>
+			</resource>
+
 		</resources>
 
 		<plugins>
-		
-		    <!-- Check the code is up-to-date and grab SVN version number -->
+
+			<!-- Check the code is up-to-date and grab SVN version number -->
 			<plugin>
-			  <groupId>org.codehaus.mojo</groupId>
-			  <artifactId>buildnumber-maven-plugin</artifactId>
-			  <version>1.1</version>
-			  <executions>
-			    <execution>
-			      <phase>validate</phase>
-			      <goals>
-			        <goal>create</goal>
-			      </goals>
-			    </execution>
-			  </executions>
-			  <configuration>
-			    <doCheck>false</doCheck>
-			    <doUpdate>false</doUpdate>
-			  </configuration>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.1</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<doCheck>false</doCheck>
+					<doUpdate>false</doUpdate>
+				</configuration>
 			</plugin>
-		
-		
+
+
 			<!-- JAXB -->
 			<plugin>
 				<groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -503,12 +503,12 @@
 				</dependencies>
 			</plugin>
 
-		  <!-- Include resources  -->
-	      <plugin>
-	        <groupId>org.apache.maven.plugins</groupId>
-	        <artifactId>maven-resources-plugin</artifactId>
-	        <version>2.5</version>
-	      </plugin> 
+			<!-- Include resources -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.5</version>
+			</plugin>
 
 			<!-- Reconfigure "clean" in Maven not to delete target directory -->
 			<plugin>
@@ -527,70 +527,60 @@
 							</excludes>
 						</fileset>
 						<fileset>
-				          <directory>src/main/generated</directory>
-				          <includes>
-				            <include>**/*.java</include>
-				          </includes>
-				          <excludes>
+							<directory>src/main/generated</directory>
+							<includes>
+								<include>**/*.java</include>
+							</includes>
+							<excludes>
 								<exclude>**/.svn</exclude>
 							</excludes>
-				          <followSymlinks>false</followSymlinks>
-				        </fileset>
+							<followSymlinks>false</followSymlinks>
+						</fileset>
 					</filesets>
 				</configuration>
 			</plugin>
 
-			 
-			<!-- <plugin>
-			  <groupId>org.apache.maven.plugins</groupId>
-			  <artifactId>maven-javadoc-plugin</artifactId>
-			  <version>2.7</version>
-			  <executions>
-			    <execution>
-			      <id>attach-javadocs</id>
-			      <goals>
-			        <goal>jar</goal>
-			      </goals>
-			    </execution>
-			  </executions>
-			</plugin>-->
-			
-			
+
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
+				<version>2.7</version> <executions> <execution> <id>attach-javadocs</id> 
+				<goals> <goal>jar</goal> </goals> </execution> </executions> </plugin> -->
+
+
 			<plugin>
-		      <groupId>org.apache.maven.plugins</groupId>
-		      <artifactId>maven-jar-plugin</artifactId>
-		      <version>2.4</version>
-		      <configuration>
-		        <archive>
-		          <manifest>
-		            <!-- <addDefaultImplementationEntries>true</addDefaultImplementationEntries>-->
-		             <addClasspath>true</addClasspath>
-        			 <classpathPrefix>lib/</classpathPrefix>
-         			 <mainClass>org.tellervo.desktop.gui.Startup</mainClass>
-		          </manifest>
-		            <manifestEntries>
-		              <Implementation-Build>${buildNumber}</Implementation-Build>
-		              <Implementation-Build-Timestamp>${maven.build.timestamp}</Implementation-Build-Timestamp>
-		              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                      <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
-		              
-		            </manifestEntries>
-		        </archive>
-		      </configuration>
-		    </plugin>
-						
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<archive>
+						<manifest>
+							<!-- <addDefaultImplementationEntries>true</addDefaultImplementationEntries> -->
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>lib/</classpathPrefix>
+							<mainClass>org.tellervo.desktop.gui.Startup</mainClass>
+						</manifest>
+						<manifestEntries>
+							<Implementation-Build>${buildNumber}</Implementation-Build>
+							<Implementation-Build-Timestamp>${maven.build.timestamp}</Implementation-Build-Timestamp>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+
+						</manifestEntries>
+					</archive>
+				</configuration>
+			</plugin>
+
 			<plugin>
-			  <groupId>org.apache.maven.plugins</groupId>
-			  <artifactId>maven-source-plugin</artifactId>
-			  <version>2.1.2</version>
-			  <executions>
-			    <execution>
-			      <id>attach-sources</id>
-			      <goals>
-			        <goal>jar</goal>
-			      </goals>
-			    </execution>
-			  </executions>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.1.2</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<!-- Compile application -->
@@ -606,201 +596,94 @@
 						<exclude>**/edu/cornell/dendro/cpgdb/*</exclude>
 						<exclude>**/edu/cornell/dendro/webservice/*</exclude>
 					</excludes>
-					<!-- <include>/native/Libraries</include>-->
+					<!-- <include>/native/Libraries</include> -->
 					<optimise>true</optimise>
 					<debug>true</debug>
 				</configuration>
 			</plugin>
 
 
-			<!--  Use shade to create a single jar containing all the dependencies -->
-			 <!-- <plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>1.3.3</version>
-				<executions>
-					<execution>
-						<id>clientjar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>org.tellervo.desktop.gui.Startup</mainClass>
-								</transformer>
-							</transformers>
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>META-INF/*.SF</exclude>
-										<exclude>META-INF/*.DSA</exclude>
-										<exclude>META-INF/*.RSA</exclude>
-									</excludes>
-								</filter>
-							</filters>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>-->
+			<!-- Use shade to create a single jar containing all the dependencies -->
+			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-shade-plugin</artifactId> 
+				<version>1.3.3</version> <executions> <execution> <id>clientjar</id> <phase>package</phase> 
+				<goals> <goal>shade</goal> </goals> <configuration> <transformers> <transformer 
+				implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer"> 
+				<mainClass>org.tellervo.desktop.gui.Startup</mainClass> </transformer> </transformers> 
+				<filters> <filter> <artifact>*:*</artifact> <excludes> <exclude>META-INF/*.SF</exclude> 
+				<exclude>META-INF/*.DSA</exclude> <exclude>META-INF/*.RSA</exclude> </excludes> 
+				</filter> </filters> </configuration> </execution> </executions> </plugin> -->
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<version>2.5.1</version>
 				<executions>
-				<execution>
-				            <id>copy-dependencies</id>
-				            <phase>package</phase>
-				            <goals>
-				              <goal>copy-dependencies</goal>
-				            </goals>
-				            <configuration>
-				              <!-- configure the plugin here -->
-				            </configuration>
-				          </execution>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+							<!-- configure the plugin here -->
+						</configuration>
+					</execution>
 				</executions>
 			</plugin>
 
-			
 
-			      
-			      
 
-			
-			
-			
-			<!-- Create a MacOSX native executable 
-			     n.b. on Linux and Windows this will create an *app.zip file
-			          on MacOSX it will also create a DMG file. Also note that
-			          on Linux and Windows computers the App will not include
-			          the Apple integration portions therefore they will have
-			          an ugly menu bar. -->
-			<!-- <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>osxappbundle-maven-plugin</artifactId>
-                <version>1.0-alpha-2</version>
-                <configuration>
-                    <mainClass>org.tellervo.desktop.gui.Startup</mainClass>
-                    <iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile>
-                    <jvmVersion>1.5+</jvmVersion>
-                    <bundleName>${project.name}</bundleName>
-                    <javaApplicationStub>Native/BuildResources/MacBuild/JavaApplicationStub</javaApplicationStub>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>bundle</goal>
-                        </goals>
-                    </execution>
-               </executions>
-           </plugin>
-           -->
-           
-            <!-- 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>osxappbundle-maven-plugin</artifactId>
-				<version>1.0-alpha-2</version>
-				<configuration>
-					 <additionalResources>
-						<fileSet>
-							<directory>src/main/resources/Licenses</directory>
-							<includes>
-								<include>license.txt</include>
-							</includes>
-						</fileSet>
-						<fileSet>
-							<directory>Documentation/</directory>
-							<includes>
-								<include>tellervo-manual.pdf</include>
-							</includes>
-						</fileSet>
-						<fileSet>
-							<directory>${project.build.directory}/classes/MacBuild</directory>
-							<includes>
-								<include>Tellervo Drivers.pkg</include>
-							</includes>
-						</fileSet>
-					</additionalResources>
-					<bundleName>Tellervo</bundleName>
-					<zipFile>${project.build.directory}/mac-app.zip</zipFile>
-					<mainClass>org.tellervo.desktop.gui.Startup</mainClass>
-					<jvmVersion>1.5+</jvmVersion>
-					<iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile>
-					<javaApplicationStub>${project.build.directory}/classes/MacBuild/JavaApplicationStub</javaApplicationStub>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>bundle</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>-->
-			
-			
-			<!--  Create a Linux Ubuntu debian native installer -->
+
+
+
+
+
+
+			<!-- Create a MacOSX native executable n.b. on Linux and Windows this 
+				will create an *app.zip file on MacOSX it will also create a DMG file. Also 
+				note that on Linux and Windows computers the App will not include the Apple 
+				integration portions therefore they will have an ugly menu bar. -->
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>osxappbundle-maven-plugin</artifactId> 
+				<version>1.0-alpha-2</version> <configuration> <mainClass>org.tellervo.desktop.gui.Startup</mainClass> 
+				<iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile> <jvmVersion>1.5+</jvmVersion> 
+				<bundleName>${project.name}</bundleName> <javaApplicationStub>Native/BuildResources/MacBuild/JavaApplicationStub</javaApplicationStub> 
+				</configuration> <executions> <execution> <phase>package</phase> <goals> 
+				<goal>bundle</goal> </goals> </execution> </executions> </plugin> -->
+
+			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>osxappbundle-maven-plugin</artifactId> 
+				<version>1.0-alpha-2</version> <configuration> <additionalResources> <fileSet> 
+				<directory>src/main/resources/Licenses</directory> <includes> <include>license.txt</include> 
+				</includes> </fileSet> <fileSet> <directory>Documentation/</directory> <includes> 
+				<include>tellervo-manual.pdf</include> </includes> </fileSet> <fileSet> <directory>${project.build.directory}/classes/MacBuild</directory> 
+				<includes> <include>Tellervo Drivers.pkg</include> </includes> </fileSet> 
+				</additionalResources> <bundleName>Tellervo</bundleName> <zipFile>${project.build.directory}/mac-app.zip</zipFile> 
+				<mainClass>org.tellervo.desktop.gui.Startup</mainClass> <jvmVersion>1.5+</jvmVersion> 
+				<iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile> <javaApplicationStub>${project.build.directory}/classes/MacBuild/JavaApplicationStub</javaApplicationStub> 
+				</configuration> <executions> <execution> <phase>package</phase> <goals> 
+				<goal>bundle</goal> </goals> </execution> </executions> </plugin> -->
+
+
+			<!-- Create a Linux Ubuntu debian native installer -->
 			<plugin>
 				<artifactId>jdeb</artifactId>
 				<groupId>org.vafer</groupId>
 				<version>1.5</version>
 				<executions>
-				
+
 					<!-- Desktop Installer -->
-					<!-- <execution>
-						<id>deb-desktop-build</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jdeb</goal>
-						</goals>
-						<configuration>
-							<deb>${project.build.directory}/binaries/desktop/${project.version}/Linux/${project.build.finalName}.deb</deb>
-							<controlDir>${project.build.directory}/classes/LinBuild/DesktopControl/</controlDir>
-							<dataSet>
-								<data>
-									<src>${project.build.directory}/${project.build.finalName}.jar</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/tellervo</prefix>
-									</mapper>
-								</data>							
-								<data>
-									<src>${project.build.directory}/classes/LinBuild/tellervo</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/bin/</prefix>
-										<filemode>755</filemode>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.build.directory}/classes/LinBuild/tellervo.desktop</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/applications/</prefix>
-										<filemode>755</filemode>
-									</mapper>
-								</data>
-								<data>
-									<src>src/main/resources/Icons/256x256/tellervo-application.png</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/pixmaps/</prefix>
-									</mapper>
-								</data>
-							</dataSet>
-						</configuration>
-					</execution>
-					 -->
-					
+					<!-- <execution> <id>deb-desktop-build</id> <phase>package</phase> <goals> 
+						<goal>jdeb</goal> </goals> <configuration> <deb>${project.build.directory}/binaries/desktop/${project.version}/Linux/${project.build.finalName}.deb</deb> 
+						<controlDir>${project.build.directory}/classes/LinBuild/DesktopControl/</controlDir> 
+						<dataSet> <data> <src>${project.build.directory}/${project.build.finalName}.jar</src> 
+						<type>file</type> <mapper> <type>perm</type> <prefix>/usr/share/tellervo</prefix> 
+						</mapper> </data> <data> <src>${project.build.directory}/classes/LinBuild/tellervo</src> 
+						<type>file</type> <mapper> <type>perm</type> <prefix>/usr/bin/</prefix> <filemode>755</filemode> 
+						</mapper> </data> <data> <src>${project.build.directory}/classes/LinBuild/tellervo.desktop</src> 
+						<type>file</type> <mapper> <type>perm</type> <prefix>/usr/share/applications/</prefix> 
+						<filemode>755</filemode> </mapper> </data> <data> <src>src/main/resources/Icons/256x256/tellervo-application.png</src> 
+						<type>file</type> <mapper> <type>perm</type> <prefix>/usr/share/pixmaps/</prefix> 
+						</mapper> </data> </dataSet> </configuration> </execution> -->
+
 					<!-- Server installer -->
 					<execution>
 						<id>deb-server-build</id>
@@ -808,7 +691,7 @@
 						<goals>
 							<goal>jdeb</goal>
 						</goals>
-						<configuration>	
+						<configuration>
 							<deb>${project.build.directory}/binaries/server/${serverversion}/Linux/tellervo-server-${serverversion}.deb</deb>
 							<controlDir>${project.build.directory}/classes/LinBuild/ServerControl/</controlDir>
 							<dataSet>
@@ -831,13 +714,13 @@
 									</mapper>
 								</data>
 								<data>
-				                  <type>template</type>
-				                  <paths>
-				                    <path>/usr/share/tellervo-server/mediastore</path>
-				                    <user>www-data</user>
-				                    <group>www-data</group>
-				                  </paths>
-				                </data>
+									<type>template</type>
+									<paths>
+										<path>/usr/share/tellervo-server/mediastore</path>
+										<user>www-data</user>
+										<group>www-data</group>
+									</paths>
+								</data>
 								<data>
 									<src>${project.build.directory}/tellervo-pljava.jar</src>
 									<type>file</type>
@@ -855,7 +738,7 @@
 										<prefix>/etc/apache2/sites-available/</prefix>
 										<filemode>755</filemode>
 									</mapper>
-								</data>				
+								</data>
 								<data>
 									<src>Native/BuildResources/LinBuild/pljava-pg9.5-amd64-Linux-gpp.jar</src>
 									<type>file</type>
@@ -864,7 +747,7 @@
 										<prefix>/usr/share/tellervo-server/</prefix>
 										<filemode>755</filemode>
 									</mapper>
-								</data>						
+								</data>
 								<data>
 									<src>Databases/db-upgrade-patches</src>
 									<type>directory</type>
@@ -911,16 +794,16 @@
 					</execution>
 				</executions>
 			</plugin>
-		
-			<!-- Nasty kludge fixes.  Tasks that Maven can 
-			not perform are	done by running Ant instead-->
+
+			<!-- Nasty kludge fixes. Tasks that Maven can not perform are done by 
+				running Ant instead -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
 				<executions>
-				  
-				
-					<!-- Delete the duplicate TRiDaS and GML 
-					classes produced by JAXB when creating the Tellervo classes. -->
+
+
+					<!-- Delete the duplicate TRiDaS and GML classes produced by JAXB when 
+						creating the Tellervo classes. -->
 					<execution>
 						<id>DeleteDuplicateJAXBClasses</id>
 						<phase>generate-sources</phase>
@@ -930,17 +813,17 @@
 							</task>
 							<tasks>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
-									classpathref="maven.plugin.classpath"/>
-								<delete dir="src/main/generated/net"/>
-								<delete dir="src/main/generated/org/tridas"/>
+									classpathref="maven.plugin.classpath" />
+								<delete dir="src/main/generated/net" />
+								<delete dir="src/main/generated/org/tridas" />
 							</tasks>
 						</configuration>
 						<goals>
 							<goal>run</goal>
 						</goals>
 					</execution>
-					
-									 <execution>
+
+					<execution>
 						<id>Install4J</id>
 						<phase>package</phase>
 						<configuration>
@@ -960,180 +843,126 @@
 							<goal>run</goal>
 						</goals>
 					</execution>
-					
-					<!-- Strip duplicate deps from MacOSX bundle, and add native libraries
-					     manual and license files.  Finally zip up and move into binaries folder -->	 
-					<!-- <execution>
-					  <id>AddLibsToMacOSXApp</id>
-					  <phase>package</phase>
-					  <configuration>
-					  	<tasks>
-						  <taskdef resource="net/sf/antcontrib/antcontrib.properties"
-							  classpathref="maven.plugin.classpath"/>	
-								  
-								  <trycatch>  
-								  <try>
-									  <echo> MKDIR ${project.build.directory}/binaries/desktop/${project.version}/MacOSX </echo>
-									  <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/MacOSX"/>
-									  
-									  <echo> Delete dependencies from JAR: ${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo</echo>
-									  <delete dir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo"/>
-									  				
-									  <echo>Copy JAR into the build folder</echo>
-									  <echo>File: ${project.build.directory}/${project.build.finalName}.jar... into ${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo/org/tellervo/tellervo/${project.version}/</echo>	
-									  <copy file="${project.build.directory}/${project.build.finalName}.jar"		
-									  		todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo/org/tellervo/tellervo/${project.version}/"/>		
-									  		
-									  <echo>Delete any previous OSX package</echo>
-									  <delete file="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" failonerror="false"/>		
-									  										  
-									  <echo>Create the app.zip file from our build folder.  555 filemode required for executing</echo>								  
-									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="false">
-									  	<zipfileset filemode="555" dir="${project.build.directory}/${project.build.finalName}" includes="Tellervo.app/**"/>
-									  </zip>
-									  
-									  <echo>Add license, manual and native package into the root of the zip</echo>
-									  <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" update="true">
-									  	     <fileset dir="Native/BuildResources/MacBuild/NativePackages/" includes="**/*.pkg"/>
-									  		 <fileset dir="${project.build.directory}/classes/Licenses/" includes="**/license.txt"/>
-									  		 <fileset dir="Documentation" includes="**/tellervo-manual.pdf"/>
-									  </zip>
-								  </try>
-								  <catch>
-									<echo>*********************************</echo>
-								    <echo> UNABLE TO COMPLETE THIS TASK    </echo>
-								 	<echo> Error building MacOSX pacakage  </echo>
-								 	<echo>*********************************</echo>
-								 	<sleep seconds="5"/>
-								  </catch>
-								  </trycatch>
-						  </tasks>	  
-					  </configuration>
-					  <goals>
-						  <goal>run</goal>
-					  </goals>					
-				  </execution>
-				  -->
-					
-					
+
+					<!-- Strip duplicate deps from MacOSX bundle, and add native libraries 
+						manual and license files. Finally zip up and move into binaries folder -->
+					<!-- <execution> <id>AddLibsToMacOSXApp</id> <phase>package</phase> 
+						<configuration> <tasks> <taskdef resource="net/sf/antcontrib/antcontrib.properties" 
+						classpathref="maven.plugin.classpath"/> <trycatch> <try> <echo> MKDIR ${project.build.directory}/binaries/desktop/${project.version}/MacOSX 
+						</echo> <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/MacOSX"/> 
+						<echo> Delete dependencies from JAR: ${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo</echo> 
+						<delete dir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo"/> 
+						<echo>Copy JAR into the build folder</echo> <echo>File: ${project.build.directory}/${project.build.finalName}.jar... 
+						into ${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo/org/tellervo/tellervo/${project.version}/</echo> 
+						<copy file="${project.build.directory}/${project.build.finalName}.jar" todir="${project.build.directory}/${project.build.finalName}/Tellervo.app/Contents/Resources/Java/repo/org/tellervo/tellervo/${project.version}/"/> 
+						<echo>Delete any previous OSX package</echo> <delete file="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" 
+						failonerror="false"/> <echo>Create the app.zip file from our build folder. 
+						555 filemode required for executing</echo> <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" 
+						update="false"> <zipfileset filemode="555" dir="${project.build.directory}/${project.build.finalName}" 
+						includes="Tellervo.app/**"/> </zip> <echo>Add license, manual and native 
+						package into the root of the zip</echo> <zip destfile="${project.build.directory}/binaries/desktop/${project.version}/MacOSX/${project.build.finalName}.zip" 
+						update="true"> <fileset dir="Native/BuildResources/MacBuild/NativePackages/" 
+						includes="**/*.pkg"/> <fileset dir="${project.build.directory}/classes/Licenses/" 
+						includes="**/license.txt"/> <fileset dir="Documentation" includes="**/tellervo-manual.pdf"/> 
+						</zip> </try> <catch> <echo>*********************************</echo> <echo> 
+						UNABLE TO COMPLETE THIS TASK </echo> <echo> Error building MacOSX pacakage 
+						</echo> <echo>*********************************</echo> <sleep seconds="5"/> 
+						</catch> </trycatch> </tasks> </configuration> <goals> <goal>run</goal> </goals> 
+						</execution> -->
+
+
 					<!-- Run Makensis to create the windows installers -->
-			 	   <!--  <execution>
-						<id>RunNSIS</id>
-						<phase>package</phase>
-						<configuration>
-							<tasks>
-								<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath"/>
-								<trycatch>
-							    <try>
-								      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Windows"/>
-								      
-								      <exec dir="${project.build.directory}/classes/WinBuild" executable="makensis">  
-								        <arg value="main.nsh"/>  
-								      </exec>  
-								      
-								      <copy file="${project.build.directory}/${project.build.finalName}-unsigned.exe" 
-								      tofile="${project.build.directory}/binaries/desktop/${project.version}/Windows/${project.build.finalName}-setup.exe" failonerror="false"/>
-								      
-								 </try>
-								 <catch>
-								    <echo>**********************************************</echo>
-								    <echo> UNABLE TO COMPLETE THIS TASK                 </echo>
-								 	<echo> makensis is not available on this computer   </echo>
-								 	<echo> Windows installer package will not be created</echo>
-								 	<echo>**********************************************</echo>
-								 	<sleep seconds="5"/>
-								 </catch>
-								 </trycatch>
-								 
-								<trycatch>
-							    <try>		
-								      <exec dir="${project.build.directory}" executable="osslsigncode">  
-								        <arg value="sign"/>  
-								        <arg value="-certs"/>  <arg value="/home/pbrewer/.ssh/cert.pem"/>
-								        <arg value="-key"/>    <arg value="/home/pbrewer/.ssh/key.pem"/>
-								        <arg value="-n"/>      <arg value="Tellervo"/>
-								        <arg value="-t"/>      <arg value="http://tsa.starfieldtech.com/"/>
-								        <arg value="-i"/>      <arg value="http://www.tellervo.org"/>
-								        <arg value="-in"/>     <arg value="${project.build.directory}/${project.build.finalName}-unsigned.exe"/>
-								        <arg value="-out"/>    <arg value="${project.build.directory}/binaries/desktop/${project.version}/Windows/${project.build.finalName}-setup.exe"/>
-								      </exec>  
-								 </try>
-								 <catch>
-								    <echo>**********************************************</echo>
-								    <echo> UNABLE TO SIGN Windows executable            </echo>
-								 	<echo>**********************************************</echo>
-								 	<sleep seconds="5"/>
-								 </catch>
-								 </trycatch>
-								 
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>					
-					</execution>
-					-->
-					
+					<!-- <execution> <id>RunNSIS</id> <phase>package</phase> <configuration> 
+						<tasks> <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.plugin.classpath"/> 
+						<trycatch> <try> <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Windows"/> 
+						<exec dir="${project.build.directory}/classes/WinBuild" executable="makensis"> 
+						<arg value="main.nsh"/> </exec> <copy file="${project.build.directory}/${project.build.finalName}-unsigned.exe" 
+						tofile="${project.build.directory}/binaries/desktop/${project.version}/Windows/${project.build.finalName}-setup.exe" 
+						failonerror="false"/> </try> <catch> <echo>**********************************************</echo> 
+						<echo> UNABLE TO COMPLETE THIS TASK </echo> <echo> makensis is not available 
+						on this computer </echo> <echo> Windows installer package will not be created</echo> 
+						<echo>**********************************************</echo> <sleep seconds="5"/> 
+						</catch> </trycatch> <trycatch> <try> <exec dir="${project.build.directory}" 
+						executable="osslsigncode"> <arg value="sign"/> <arg value="-certs"/> <arg 
+						value="/home/pbrewer/.ssh/cert.pem"/> <arg value="-key"/> <arg value="/home/pbrewer/.ssh/key.pem"/> 
+						<arg value="-n"/> <arg value="Tellervo"/> <arg value="-t"/> <arg value="http://tsa.starfieldtech.com/"/> 
+						<arg value="-i"/> <arg value="http://www.tellervo.org"/> <arg value="-in"/> 
+						<arg value="${project.build.directory}/${project.build.finalName}-unsigned.exe"/> 
+						<arg value="-out"/> <arg value="${project.build.directory}/binaries/desktop/${project.version}/Windows/${project.build.finalName}-setup.exe"/> 
+						</exec> </try> <catch> <echo>**********************************************</echo> 
+						<echo> UNABLE TO SIGN Windows executable </echo> <echo>**********************************************</echo> 
+						<sleep seconds="5"/> </catch> </trycatch> </tasks> </configuration> <goals> 
+						<goal>run</goal> </goals> </execution> -->
+
 					<execution>
 						<id>CopyJarFile</id>
 						<phase>package</phase>
 						<configuration>
 							<tasks>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
-									classpathref="maven.plugin.classpath"/>
-							      <mkdir dir="${project.build.directory}/binaries/desktop/${project.version}/Java"/>
-							      
-							      
-							    <trycatch>
-							    <try>		
-							    	  <!-- Try to sign the jar with the University of Arizona certificate -->					      
-								      <exec dir="${project.build.directory}" executable="jarsigner">  
-								        <arg value="-storetype"/>     <arg value="pkcs12"/>
-								        <arg value="-tsa"/>           <arg value="http://tsa.starfieldtech.com"/>
-								        <!-- <arg value="-keystore"/>      <arg value="/home/pbrewer/.ssh/incommon-certificate.p12"/>-->
-								        <arg value="-keystore"/>      <arg value="/home/pbrewer/.ssh/pwb_code_signing_2014.p12"/>
-								        <arg value="-storepass:file"/><arg value="/home/pbrewer/.ssh/key"/>
-								        <arg value="-keypass:file"/>  <arg value="/home/pbrewer/.ssh/key"/>
-								        <arg value="${project.build.directory}/${project.build.finalName}.jar"/>
-								                                      <arg value="the university of arizona's internet2 id"/>								        
-								      </exec>  
-								 </try>
-								 <catch>
-								    <echo>**********************************************</echo>
-								    <echo> UNABLE TO SIGN  executable jar            </echo>
-								 	<echo>**********************************************</echo>
-								 	<sleep seconds="5"/>
-								 </catch>
-								 </trycatch>
-								 
-							      <copy file="${project.build.directory}/${project.build.finalName}.jar" tofile="${project.build.directory}/binaries/desktop/${project.version}/Java/${project.build.finalName}.jar" failonerror="false"/>
+									classpathref="maven.plugin.classpath" />
+								<mkdir
+									dir="${project.build.directory}/binaries/desktop/${project.version}/Java" />
+
+
+								<trycatch>
+									<try>
+										<!-- Try to sign the jar with the University of Arizona certificate -->
+										<exec dir="${project.build.directory}" executable="jarsigner">
+											<arg value="-storetype" />
+											<arg value="pkcs12" />
+											<arg value="-tsa" />
+											<arg value="http://tsa.starfieldtech.com" />
+											<!-- <arg value="-keystore"/> <arg value="/home/pbrewer/.ssh/incommon-certificate.p12"/> -->
+											<arg value="-keystore" />
+											<arg value="/home/pbrewer/.ssh/pwb_code_signing_2014.p12" />
+											<arg value="-storepass:file" />
+											<arg value="/home/pbrewer/.ssh/key" />
+											<arg value="-keypass:file" />
+											<arg value="/home/pbrewer/.ssh/key" />
+											<arg
+												value="${project.build.directory}/${project.build.finalName}.jar" />
+											<arg value="the university of arizona's internet2 id" />
+										</exec>
+									</try>
+									<catch>
+										<echo>**********************************************</echo>
+										<echo> UNABLE TO SIGN executable jar            </echo>
+										<echo>**********************************************</echo>
+										<sleep seconds="5" />
+									</catch>
+								</trycatch>
+
+								<copy
+									file="${project.build.directory}/${project.build.finalName}.jar"
+									tofile="${project.build.directory}/binaries/desktop/${project.version}/Java/${project.build.finalName}.jar"
+									failonerror="false" />
 							</tasks>
 						</configuration>
 						<goals>
 							<goal>run</goal>
-						</goals>					
+						</goals>
 					</execution>
-					
-					
+
+
 					<execution>
 						<id>BuildPLJavaJar</id>
 						<phase>compile</phase>
 						<configuration>
 							<tasks>
 								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
-									classpathref="maven.plugin.classpath"/>							     
-							      
-							      <jar jarfile="${project.build.directory}/tellervo-pljava.jar"
-								       basedir="${project.build.directory}/classes"
-								       includes="org/tellervo/cpgdb/** org/tellervo/indexing/**"/>
-							      
+									classpathref="maven.plugin.classpath" />
+
+								<jar jarfile="${project.build.directory}/tellervo-pljava.jar"
+									basedir="${project.build.directory}/classes" includes="org/tellervo/cpgdb/** org/tellervo/indexing/**" />
+
 							</tasks>
 						</configuration>
 						<goals>
 							<goal>run</goal>
-						</goals>					
+						</goals>
 					</execution>
-					
+
 				</executions>
 				<dependencies>
 					<dependency>
@@ -1152,16 +981,16 @@
 						<artifactId>ant-nodeps</artifactId>
 						<version>1.6.5</version>
 					</dependency>
-			          <dependency>
-			            <groupId>ant</groupId>
-			            <artifactId>ant-jsch</artifactId>
-			            <version>1.6.5</version>
-			          </dependency>
-			          <dependency>
-			            <groupId>com.jcraft</groupId>
-			            <artifactId>jsch</artifactId>
-			            <version>0.1.42</version>
-			          </dependency>
+					<dependency>
+						<groupId>ant</groupId>
+						<artifactId>ant-jsch</artifactId>
+						<version>1.6.5</version>
+					</dependency>
+					<dependency>
+						<groupId>com.jcraft</groupId>
+						<artifactId>jsch</artifactId>
+						<version>0.1.42</version>
+					</dependency>
 				</dependencies>
 			</plugin>
 
@@ -1171,7 +1000,8 @@
 
 		<pluginManagement>
 			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
 				<plugin>
 					<groupId>org.eclipse.m2e</groupId>
 					<artifactId>lifecycle-mapping</artifactId>
@@ -1195,7 +1025,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute/>
+										<execute />
 									</action>
 								</pluginExecution>
 								<pluginExecution>
@@ -1214,22 +1044,22 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<execute/>
+										<execute />
 									</action>
 								</pluginExecution>
-								            <pluginExecution>
-					              <pluginExecutionFilter>
-					                <groupId>org.apache.maven.plugins</groupId>
-					                <artifactId>maven-dependency-plugin</artifactId>
-					                <versionRange>[2.0,)</versionRange>
-					                <goals>
-					                  <goal>copy-dependencies</goal>
-					                </goals>
-					              </pluginExecutionFilter>
-					              <action>
-					                <execute />
-					              </action>
-					            </pluginExecution>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>org.apache.maven.plugins</groupId>
+										<artifactId>maven-dependency-plugin</artifactId>
+										<versionRange>[2.0,)</versionRange>
+										<goals>
+											<goal>copy-dependencies</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute />
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
@@ -1239,41 +1069,15 @@
 	</build>
 
 	<repositories>
-<!-- 
-		<repository>
-		  <id>maven.iscpif.fr</id>
-		  <url>http://maven.iscpif.fr/snapshots</url>
-		</repository>
-		<repository>
-		  <id>thirdparty.maven.iscpif.fr</id>
-		  <url>http://maven.iscpif.fr/thirdparty/</url>
-		</repository>
-
-		<repository>
-			<id>repo1.maven.org</id>
-			<url>http://repo1.maven.org/maven2/</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-
-		<repository>
-			<id>maven2-repository.dev.java.net</id>
-			<name>Java.net Repository for Maven</name>
-			<url>http://download.java.net/maven/2/</url>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-				<checksumPolicy>fail</checksumPolicy>
-			</snapshots>
-		</repository>
-
-		<repository>
-			<id>geotk</id>
-			<name>Geotk</name>
-			<url>http://maven.geotoolkit.org/</url>
-		</repository>
--->
+		<!-- <repository> <id>maven.iscpif.fr</id> <url>http://maven.iscpif.fr/snapshots</url> 
+			</repository> <repository> <id>thirdparty.maven.iscpif.fr</id> <url>http://maven.iscpif.fr/thirdparty/</url> 
+			</repository> <repository> <id>repo1.maven.org</id> <url>http://repo1.maven.org/maven2/</url> 
+			<snapshots> <enabled>true</enabled> </snapshots> </repository> <repository> 
+			<id>maven2-repository.dev.java.net</id> <name>Java.net Repository for Maven</name> 
+			<url>http://download.java.net/maven/2/</url> <snapshots> <enabled>true</enabled> 
+			<updatePolicy>never</updatePolicy> <checksumPolicy>fail</checksumPolicy> 
+			</snapshots> </repository> <repository> <id>geotk</id> <name>Geotk</name> 
+			<url>http://maven.geotoolkit.org/</url> </repository> -->
 		<repository>
 			<id>tridas-releases</id>
 			<name>TRiDaS Maven Releases Repository</name>
@@ -1296,49 +1100,30 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<!-- 
-		    <repository>
-      <id>m2-copy</id>
-      <name>m2-copy</name>
-      <url>http://maven.tridas.org/repository/m2-copy/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-		
-		<repository>
-			<id>maven.geomajas.org</id>
-			<name>Geomajas repository for JPedal</name>
-			<url>http://maven.geomajas.org/</url>
-			<layout>default</layout>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>never</updatePolicy>
-				<checksumPolicy>fail</checksumPolicy>
-			</snapshots>
-		</repository>
--->
+		<!-- <repository> <id>m2-copy</id> <name>m2-copy</name> <url>http://maven.tridas.org/repository/m2-copy/</url> 
+			<releases> <enabled>true</enabled> </releases> <snapshots> <enabled>true</enabled> 
+			</snapshots> </repository> <repository> <id>maven.geomajas.org</id> <name>Geomajas 
+			repository for JPedal</name> <url>http://maven.geomajas.org/</url> <layout>default</layout> 
+			<snapshots> <enabled>true</enabled> <updatePolicy>never</updatePolicy> <checksumPolicy>fail</checksumPolicy> 
+			</snapshots> </repository> -->
 	</repositories>
 
-	
+
 
 	<pluginRepositories>
-		
+
 		<pluginRepository>
 			<id>tridas-releases</id>
 			<name>TRiDaS Maven Releases Repository</name>
 			<url>http://maven.tridas.org/repository/tridas-releases/</url>
 		</pluginRepository>
-		
+
 		<pluginRepository>
 			<id>tridas-snapshots</id>
 			<name>TRiDaS Maven Snapshots Repository</name>
 			<url>http://maven.tridas.org/repository/tridas-snapshots/</url>
 		</pluginRepository>
-		
+
 	</pluginRepositories>
 
 
