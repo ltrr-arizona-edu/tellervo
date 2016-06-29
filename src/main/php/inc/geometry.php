@@ -44,15 +44,13 @@ class geometry
 	function setGeometryFromGML($gml)
 	{
 
-		global $firebug;
-		global $gmlNS;
-		global $tridasNS;
+	global $firebug;
+	global $gmlNS;
+	global $tridasNS;
 				
-		// Wrap GML tags in root elements
-		$start = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>".
-				 "<tellervo xmlns=\"$gmlNS\" xmlns:tridas=\"$tridasNS\">".
-    			 "<featureMember>\n";
-    	$end =  "</featureMember></tellervo>"; 
+	// Wrap GML tags in root elements
+	$start = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<tellervo xmlns=\"$gmlNS\" xmlns:tridas=\"$tridasNS\">\n<featureMember>\n";
+	$end =  "</featureMember></tellervo>"; 
         $doc = new DomDocument;
 
 
@@ -88,7 +86,7 @@ class geometry
 		     
 		   
 		   // Calculate geometry value and store
-		   if($tag->hasAttribute("gml:srsName") && $tag->getAttribute("gml:srsName") && $tag->getAttribute("srsName")!="urn:ogc:def:crs:EPSG::4326")
+		   if($tag->hasAttribute("srsName") && $tag->getAttribute("srsName") && $tag->getAttribute("srsName")!="urn:ogc:def:crs:EPSG::4326")
 		   { 
 		        // When reading geom with full urn  for srsName we need to switch the coordinates
 		   	$this->setPointGeometryFromLatLong($coords[1], $coords[0]);	

@@ -270,7 +270,7 @@ class element extends elementEntity implements IDBAccessor
 	  
 	if (isset($paramsClass->taxon)){
 		$this->taxon->setOriginalTaxon($paramsClass->taxon->getOriginalTaxon());
-		$this->taxon->setParamsFromCoL($paramsClass->taxon->getCoLID(), $paramsClass->taxon->getLabel());
+		$this->taxon->setParamsFromCoL($paramsClass->taxon->getCoLID(), html_entity_decode($paramsClass->taxon->getLabel()));
 	}
         if ($paramsClass->parentID!=NULL)
         {
