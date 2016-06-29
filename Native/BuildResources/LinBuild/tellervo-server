@@ -916,6 +916,40 @@ function getTellervoDBVersion()
 	return "Unknown";
 }
 
+
+function runSQLCommand($sql)
+{
+	global $configfile;
+	global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;
+	global $logfile;
+	global $upgradeScripts;
+
+	$dbconnstatus = pg_connection_status($dbconn);
+	if ($dbconnstatus ===PGSQL_CONNECTION_OK)
+	{
+		$result = pg_query($dbconn, $sql);
+		if(pg_num_rows($result)>=1) return true;
+	}
+	else
+	{
+		die("Unable to connect to PostgreSQL database to run upgrade.\n\n");
+	}
+	
+	$result = pg_query($dbconn, $sql);
+	
+	if(!$result)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+	
+}
+
 /**
  * Run the SQL filename provided to upgrade the database
  *
@@ -934,6 +968,7 @@ function runSQLUpgradeFile($filename)
 	global $dbconn;
 	global $logfile;
 	global $upgradeScripts;
+	global $dbname;
 	$colors = new Colors();
 		
 	$sql = "SELECT * FROM tblupgradelog WHERE filename = '$filename'";
@@ -956,45 +991,95 @@ function runSQLUpgradeFile($filename)
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
-    	echoTruncatedString("    - Applying patch: $filename...");   	
-    	pg_query($dbconn, "BEGIN WORK"); 
-    	
-    	
-    	$result = pg_query($dbconn, $sql);
-    	
-    	if(!$result)
+    	if(strpos($filename, ".notransaction.")===FALSE)
     	{
-	    	echo $colors->getColoredString("FAILED", "red");
-    		echo "\n";
+    		echoTruncatedString("    - Applying patch: $filename...");
+    		    		
+    		// Running standard SQL patch in a transaction
+    		pg_query($dbconn, "BEGIN WORK");
+    	
+    	    	
+	    	$result = pg_query($dbconn, $sql);
+	    	
+	    	if(!$result)
+	    	{
+		    	echo $colors->getColoredString("FAILED", "red");
+	    		echo "\n";
+	
+	    		writeLogMsg("Error running upgrade script '".escapeshellcmd($filename)."'" );
 
-    		writeLogMsg("Error running upgrade script '".escapeshellcmd($filename)."'" );
-    		pg_query($dbconn, "ROLLBACK");
-    		 
-    		return false;
+    			// Only run in transaction if safe
+    			pg_query($dbconn, "ROLLBACK");
+
+	    		return false;
+	    	}
+	    	else
+	    	{
+	    		// Database patched successfully    	    		
+	    		// Now insert record into upgradelog
+	    		$sql = "INSERT into tblupgradelog (filename) VALUES ('$filename');";
+			    $result = pg_query($dbconn, $sql);
+			    
+			    if(!$result)
+		    	{
+		    	    echo $colors->getColoredString("WARNING", "yellow");
+	    			echo "\n\n";
+	
+		    		writeLogMsg("Unable to add patch name to upgradelog" );
+		    		//writeLogMsg(escapeshellcmd($error));
+		    		
+		    		if(strpos($filename, ".notransaction.")!==FALSE)
+		    		{
+		    			// Only run in transaction if safe
+		    			pg_query($dbconn, "ROLLBACK");
+		    		} 
+		    		return false;
+		    	}	
+	
+				// All is well so go ahead and commit the entire thing to the database
+	    		pg_query($dbconn, "COMMIT");
+		    	echo $colors->getColoredString("PASSED", "green");
+	    		echo "\n";   
+			    return true; 	
+	    	}
     	}
     	else
     	{
-    		// Database patched successfully    	    		
-    		// Now insert record into upgradelog
-    		$sql = "INSERT into tblupgradelog (filename) VALUES ('$filename');";
-		    $result = pg_query($dbconn, $sql);
-		    
-		    if(!$result)
-	    	{
-	    	    echo $colors->getColoredString("WARNING", "yellow");
-    			echo "\n\n";
-
-	    		writeLogMsg("Unable to add patch name to upgradelog" );
-	    		//writeLogMsg(escapeshellcmd($error));
-	    		pg_query($dbconn, "ROLLBACK"); 
-	    		return false;
-	    	}	
-
-			// All is well so go ahead and commit the entire thing to the database
-	    	pg_query($dbconn, "COMMIT");  
-	    	echo $colors->getColoredString("PASSED", "green");
-    		echo "\n";   
-		    return true; 	
+    		echoTruncatedString("    - Applying patch: $filename...");
+    		
+			// This file cannot be run in a transaction or multi-line command
+			// File needs to be run from command line instead
+    		 
+    		$cmd = "su - postgres -c \" psql $dbname -f ".$upgradeScripts."/".$filename." \"";
+    		exec($cmd, $resp, $return);
+    		
+    		if($return!=0)
+    		{
+    			echo $colors->getColoredString("FAILED", "red");
+    			echo "\n";
+    			writeLogMsg("Error running upgrade script '".escapeshellcmd($filename)."'" );
+    			return false;
+    		}
+    		else
+    		{
+    			// Database patched successfully
+    			// Now insert record into upgradelog
+    			$sql = "INSERT into tblupgradelog (filename) VALUES ('$filename');";
+    			$result = pg_query($dbconn, $sql);
+    			
+    			if(!$result)
+    			{
+    				echo $colors->getColoredString("WARNING", "yellow");
+    				echo "\n\n";
+    			
+    				writeLogMsg("Unable to add patch name to upgradelog" );
+    				return false;
+    			}
+    			
+    			echo $colors->getColoredString("PASSED", "green");
+    			echo "\n";
+    			return true;
+    		}
     	}
     }
     else
