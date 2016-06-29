@@ -134,7 +134,7 @@ else if(isset($args["restore-db"]) && $args["restore-db"]!=null)
 	$dbfilename = $args["restore-db"];
 	
 	// If filename doesn't include path, then add current folder
-	if(substr($dbfilename, 0)!="/")
+	if(substr($dbfilename, 0, 1)!="/")
 	{
 		$dbfilename = getcwd()."/".$dbfilename;
 	}
@@ -500,9 +500,10 @@ function restoreDB($dbfilename)
 	global $dbsetupfile;
 	global $upgradeScripts;
 	global $dbname;
+	global $systemconfig;
 	
 	if(!is_readable($dbfilename)) {
-		echo "Specified database backup file does not exist\n";
+		echo "Specified database backup file '$dbfilename' does not exist\n";
 		exit(0);
 	}
 	
@@ -548,8 +549,6 @@ function restoreDB($dbfilename)
 			echo "Please ensure all database connections are closed, then try again.\n";
 			die();
 		}
-			
-		include($dbsetupfile);
 	}
 	
 	
@@ -560,15 +559,25 @@ function restoreDB($dbfilename)
     exec("su - postgres -c \"psql -d ".$dbname." -f ".$postgisspatialrefsys." 2>> ".$logfile."\"");
     exec("su - postgres -c \"psql -d ".$dbname." -f ".$postgislegacy." 2>> ".$logfile."\"");
     echo "\nConfiguring PLJava extension.\n";
-    exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-pljava-1.3.0a.sql 2>> ".$logfile."\"");
+    exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-1.3.0e.notransaction.sql 2>> ".$logfile."\"");
     echo "\nApplying PostGIS upgrade patches.  This could take some time on larger databases...\n";
     shell_exec("su - postgres -c \"".$postgisrestore." ".$dbfilename." | psql ".$dbname." 2>> ".$logfile."\"");
     echo "\nFinalising PLJava extension configuration...\n";
-    exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-pljava-1.3.0b.sql 2>> ".$logfile."\"");
-    
+	
+	include($dbsetupfile);
     echo "\nRegenerating systems config file\n";
     generateSystemsConfig();
 	include($systemconfig);
+	
+	// Now insert record into upgradelog so patch that was already run won't be re-run
+	$sql = "INSERT into tblupgradelog (filename) VALUES ('database_upgrade-1.3.0e.notransaction.sql');";
+	$result = pg_query($dbconn, $sql);
+	if(!$result)
+	{
+		writeLogMsg("Unable to add patch name to upgradelog" );
+	}
+
+	// Run remaining upgrade patches
     runDBUpgrades(true);
    	return;
 	
@@ -917,39 +926,6 @@ function getTellervoDBVersion()
 }
 
 
-function runSQLCommand($sql)
-{
-	global $configfile;
-	global $systemconfig;
-	global $dbsetupfile;
-	global $dbconn;
-	global $logfile;
-	global $upgradeScripts;
-
-	$dbconnstatus = pg_connection_status($dbconn);
-	if ($dbconnstatus ===PGSQL_CONNECTION_OK)
-	{
-		$result = pg_query($dbconn, $sql);
-		if(pg_num_rows($result)>=1) return true;
-	}
-	else
-	{
-		die("Unable to connect to PostgreSQL database to run upgrade.\n\n");
-	}
-	
-	$result = pg_query($dbconn, $sql);
-	
-	if(!$result)
-	{
-		return false;
-	}
-	else
-	{
-		return true;
-	}
-	
-}
-
 /**
  * Run the SQL filename provided to upgrade the database
  *
@@ -1050,7 +1026,7 @@ function runSQLUpgradeFile($filename)
 			// This file cannot be run in a transaction or multi-line command
 			// File needs to be run from command line instead
     		 
-    		$cmd = "su - postgres -c \" psql $dbname -f ".$upgradeScripts."/".$filename." \"";
+    		$cmd = "su - postgres -c \" psql $dbname -f ".$upgradeScripts."/".$filename." 2>> ".$logfile."\"";
     		exec($cmd, $resp, $return);
     		
     		if($return!=0)
