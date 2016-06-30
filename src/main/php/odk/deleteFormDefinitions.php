@@ -1,4 +1,7 @@
 <?php
+
+require_once('../config.php');
+require_once("../inc/errors.php");
 require_once("../inc/auth.php");
 require_once("../inc/meta.php");
 
@@ -19,8 +22,6 @@ try{
 
 
 require_once("../inc/output.php");
-require_once('../inc/FirePHPCore/FirePHP.class.php');
-$firebug = FirePHP::getInstance(true);
 
 //$odkauth = new ODKAuth();
 $myAuth         = new auth();
@@ -55,7 +56,7 @@ function deleteFormList()
     global $myAuth;
     global $meta;
 
-    $sql = "delete from tblodkdefinition where ownerid = (SELECT securityuserid from tblsecurityuser where securityuserid='".pg_escape_string($myAuth->getID())."' and isactive=true)";
+    $sql = "DELETE FROM tblodkdefinition WHERE ownerid IN (SELECT securityuserid FROM tblsecurityuser WHERE securityuserid='".pg_escape_string($myAuth->getID())."' AND isactive=TRUE)";
 	$firebug->log($sql);
 
     $dbconnstatus = pg_connection_status($dbconn);
@@ -74,6 +75,13 @@ function deleteFormList()
 		die();
 	}
 	
+    }
+    else
+    {
+		$meta->setMessage("000", "DB connection error");
+		$xmldata = "<hello/>";
+    		writeOutput($meta, $xmldata);
+		die();
     }
 
 

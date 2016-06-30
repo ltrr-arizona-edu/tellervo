@@ -1,8 +1,8 @@
 <?php
 
 include('inc/odkauth.php');
+include('inc/odkhelper.php');
 $odkauth = new ODKAuth();
-
 
 if($odkauth->doAuthentication()===TRUE)
 {
