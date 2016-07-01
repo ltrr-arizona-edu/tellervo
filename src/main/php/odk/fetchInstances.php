@@ -1,15 +1,14 @@
 <?php
-
-include('inc/odkhelper.php');
-require_once('../inc/dbhelper.php');
+require_once('../config.php');
+require_once('inc/odkhelper.php');
+require_once('../inc/errors.php');
 require_once('../inc/output.php');
+require_once('../inc/dbhelper.php');
 require_once('../inc/meta.php');
 require_once("../inc/auth.php");
-require_once('../inc/FirePHPCore/FirePHP.class.php');
 
 $myAuth         = new auth();
 $myMetaHeader   = new meta();
-$firebug = FirePHP::getInstance(true);
 $mediaStoreFolder = "/usr/share/tellervo-server/mediastore/";
 		
 try{

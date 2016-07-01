@@ -122,6 +122,7 @@ if [ $1 = 'configure' ]; then
       ##  Ensure mod_rewrite is enable for ODK 
       ##
       a2enmod rewrite
+      service postgresql restart
       service apache2 restart
       
       
