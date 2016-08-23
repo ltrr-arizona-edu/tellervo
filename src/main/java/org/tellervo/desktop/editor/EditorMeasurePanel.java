@@ -8,10 +8,12 @@ import java.awt.event.ActionEvent;
 import javax.swing.AbstractAction;
 
 import org.tellervo.desktop.Year;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice.DataDirection;
 import org.tellervo.desktop.hardware.MeasurePanel;
 import org.tellervo.desktop.hardware.MeasurementReceiver;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.SoundUtil;
 import org.tellervo.desktop.util.SoundUtil.SystemSound;
@@ -117,7 +119,7 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 		if(task!=null) task.cancel();
 		
 		java.util.Timer timer = new java.util.Timer();
-		task = new TimeoutTask(this, 65);
+		task = new TimeoutTask(this, App.prefs.getIntPref(PrefKey.SERIAL_PORT_TIMEOUT_LENGTH, 300));
 		timer.scheduleAtFixedRate(task, 0, 1000);
 	}
 

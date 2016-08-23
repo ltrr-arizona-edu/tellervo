@@ -137,6 +137,7 @@ public class Prefs extends AbstractSubsystem {
 		SERIAL_MEASURE_CUMULATIVELY("tellervo.serial.measurecumulatively"),
 		SERIAL_MEASURE_IN_REVERSE("tellervo.serial.measurereverse"),
 		SERIAL_MULTIPLIER("tellervo.serial.multiplier"),
+		SERIAL_PORT_TIMEOUT_LENGTH("tellervo.serial.timeout"),
 		SERIAL_LIBRARY_PRESENT("tellervo.serial.librarypresent"),
 		MEASURE_BARK_TO_PITH("tellervo.measure.pithtobark"),
 		

@@ -40,7 +40,9 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import net.miginfocom.swing.MigLayout;
+
 import java.awt.FlowLayout;
+
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
 
@@ -62,15 +64,19 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.DoubleSpinnerWrapper;
 import org.tellervo.desktop.prefs.wrappers.FormatWrapper;
+import org.tellervo.desktop.prefs.wrappers.SpinnerWrapper;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ArrayListModel;
+
 import javax.swing.UIManager;
 import javax.swing.JTextArea;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.Font;
 import java.awt.BorderLayout;
+
 import javax.swing.border.LineBorder;
 
 @SuppressWarnings("serial")
@@ -109,6 +115,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	private JPanel panel_3;
 	private JLabel label;
 	private JTextArea txtWarning;
+	private JLabel lblTimeout;
+	private JSpinner spnTimeout;
+	private JLabel lblSecs;
+	private JPanel panel_2;
 
 	
 	
@@ -126,7 +136,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Measuring Platform", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panel, "cell 0 0,grow, hidemode 2");
-		panel.setLayout(new MigLayout("", "[75.00,grow][grow][][grow]", "[grow][][][][][][][]"));
+		panel.setLayout(new MigLayout("", "[75.00][grow][][grow]", "[grow][][][][][][][][]"));
 		
 		panelWarn = new JPanel();
 		panelWarn.setBorder(new LineBorder(new Color(221,221,225)));
@@ -152,12 +162,30 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		txtWarning.setBackground((Color) null);
 		panelWarn.add(txtWarning, "cell 1 0,growx,wmin 10");
 		
+		lblTimeout = new JLabel("Timeout:");
+		panel.add(lblTimeout, "cell 0 1,alignx right");
+		
+		panel_2 = new JPanel();
+		panel.add(panel_2, "cell 1 1 3 1,grow");
+		panel_2.setLayout(new MigLayout("fill, insets 0", "[grow]", "[]"));
+		
+		spnTimeout = new JSpinner();
+		panel_2.add(spnTimeout, "flowx,cell 0 0");
+		spnTimeout.setModel(new SpinnerNumberModel(300, 10, 9999, 1));
+		
+		new SpinnerWrapper(spnTimeout, 
+        		PrefKey.SERIAL_PORT_TIMEOUT_LENGTH,
+        		App.prefs.getIntPref(PrefKey.SERIAL_PORT_TIMEOUT_LENGTH, 300));
+		
+		lblSecs = new JLabel("secs");
+		panel_2.add(lblSecs, "cell 0 0");
+		
 		lblPlatformType = new JLabel("Type:");
-		panel.add(lblPlatformType, "cell 0 1,alignx trailing");	
+		panel.add(lblPlatformType, "cell 0 2,alignx trailing");	
 		
 		panel_1 = new JPanel();
-		panel.add(panel_1, "cell 1 1 3 1,grow");
-		panel_1.setLayout(new MigLayout("", "[32px][32.00px,grow][147px,fill]", "[25px]"));
+		panel.add(panel_1, "cell 1 2 3 1,grow");
+		panel_1.setLayout(new MigLayout("fill,  insets 0", "[32px][32.00px,grow][147px,fill]", "[25px]"));
 		panel_1.setOpaque(false);
 		cboPlatformType = new JComboBox();
 		panel_1.add(cboPlatformType, "cell 0 0,alignx left,aligny top");
@@ -187,9 +215,9 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     	});
 		
 		lblPort = new JLabel("Port:");
-		panel.add(lblPort, "cell 0 2,alignx trailing");
+		panel.add(lblPort, "cell 0 3,alignx trailing");
 		cboPort = new JComboBox();
-		panel.add(cboPort, "cell 1 2,alignx left");
+		panel.add(cboPort, "cell 1 3,alignx left");
 		
 		if (AbstractSerialMeasuringDevice.hasSerialCapability()) 
 		{
@@ -199,10 +227,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		
 		
 		lblDataBits = new JLabel("Data bits / Word length:");
-		panel.add(lblDataBits, "cell 2 2,alignx trailing");
+		panel.add(lblDataBits, "cell 2 3,alignx trailing");
 		cboDatabits = new JComboBox();
 		cboDatabits.setModel(new DefaultComboBoxModel(new String[] {}));
-		panel.add(cboDatabits, "cell 3 2,alignx left");
+		panel.add(cboDatabits, "cell 3 3,alignx left");
 		
 		new FormatWrapper(cboDatabits, 
 				PrefKey.SERIAL_DATABITS, 
@@ -210,10 +238,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 				DataBits.allValuesAsArray());
 		
 		lblBaud = new JLabel("Baud:");
-		panel.add(lblBaud, "cell 0 3,alignx trailing");
+		panel.add(lblBaud, "cell 0 4,alignx trailing");
 		cboBaud = new JComboBox();
 		cboBaud.setModel(new DefaultComboBoxModel(new String[] {}));
-		panel.add(cboBaud, "cell 1 3,alignx left");
+		panel.add(cboBaud, "cell 1 4,alignx left");
 		
 		new FormatWrapper(cboBaud, 
     			PrefKey.SERIAL_BAUD, 
@@ -222,10 +250,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 
 		
 		lblFlowControl = new JLabel("Handshaking / Flow control:");
-		panel.add(lblFlowControl, "cell 2 3,alignx trailing");
+		panel.add(lblFlowControl, "cell 2 4,alignx trailing");
 		cboFlowControl = new JComboBox();
 		cboFlowControl.setModel(new DefaultComboBoxModel(new String[] {}));
-		panel.add(cboFlowControl, "cell 3 3,alignx left");
+		panel.add(cboFlowControl, "cell 3 4,alignx left");
 		
 		new FormatWrapper(cboFlowControl, 
 				PrefKey.SERIAL_FLOWCONTROL, 
@@ -233,10 +261,10 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 				FlowControl.allValuesAsArray());
 		
 		lblParity = new JLabel("Parity:");
-		panel.add(lblParity, "cell 0 4,alignx trailing");
+		panel.add(lblParity, "cell 0 5,alignx trailing");
 		cboParity = new JComboBox();
 		cboParity.setModel(new DefaultComboBoxModel(new String[] {}));
-		panel.add(cboParity, "cell 1 4,alignx left");
+		panel.add(cboParity, "cell 1 5,alignx left");
 		
     	new FormatWrapper(cboParity, 
     			PrefKey.SERIAL_PARITY, 
@@ -244,7 +272,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
     			PortParity.allValuesAsArray());
     	
     	lblMultiply = new JLabel("Correction factor:");
-    	panel.add(lblMultiply, "cell 2 4,alignx right");
+    	panel.add(lblMultiply, "cell 2 5,alignx right");
     	
     	
         double min = -1000.00;  
@@ -267,13 +295,13 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
         		App.prefs.getDoublePref(PrefKey.SERIAL_MULTIPLIER, 1.00));
         
         
-    	panel.add(spnMultiply, "cell 3 4,alignx left");
+    	panel.add(spnMultiply, "cell 3 5,alignx left");
 		
     	lblStopBits = new JLabel("Stop bits:");
-    	panel.add(lblStopBits, "cell 0 5,alignx trailing");
+    	panel.add(lblStopBits, "cell 0 6,alignx trailing");
     	cboStopbits = new JComboBox();
     	cboStopbits.setModel(new DefaultComboBoxModel(new String[] {}));
-    	panel.add(cboStopbits, "cell 1 5,alignx left");	
+    	panel.add(cboStopbits, "cell 1 6,alignx left");	
     	
     	new FormatWrapper(cboStopbits, 
     			PrefKey.SERIAL_STOPBITS, 
@@ -302,16 +330,16 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		new CheckBoxWrapper(chkDisableBarcodes, PrefKey.BARCODES_DISABLED, false );
 		
 		lblMeasureCumulatively = new JLabel("Measure cumulatively:");
-		panel.add(lblMeasureCumulatively, "cell 2 5,alignx trailing");
+		panel.add(lblMeasureCumulatively, "cell 2 6,alignx trailing");
 		
 		chkMeasureCumulatively = new JCheckBox("");
-		panel.add(chkMeasureCumulatively, "cell 3 5");
+		panel.add(chkMeasureCumulatively, "cell 3 6");
 		new CheckBoxWrapper(chkMeasureCumulatively, PrefKey.SERIAL_MEASURE_CUMULATIVELY, false);
 		
 		lblLineFeed = new JLabel("Line feed:");
-		panel.add(lblLineFeed, "cell 0 6,alignx trailing");
+		panel.add(lblLineFeed, "cell 0 7,alignx trailing");
 		cboLineFeed = new JComboBox();
-		panel.add(cboLineFeed, "cell 1 6,alignx left");
+		panel.add(cboLineFeed, "cell 1 7,alignx left");
 		
 		new FormatWrapper(cboLineFeed, 
 				PrefKey.SERIAL_LINEFEED, 
@@ -319,15 +347,15 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 				LineFeed.allValuesAsArray());
 		
 		lblReverseMeasuring = new JLabel("Reverse measuring:");
-		panel.add(lblReverseMeasuring, "cell 2 6,alignx right");
+		panel.add(lblReverseMeasuring, "cell 2 7,alignx right");
 		
 		chkReverseMeasuring = new JCheckBox("");
-		panel.add(chkReverseMeasuring, "cell 3 6");
+		panel.add(chkReverseMeasuring, "cell 3 7");
 		new CheckBoxWrapper(chkReverseMeasuring, PrefKey.SERIAL_MEASURE_IN_REVERSE, false);
 		
 		
 		btnTestConnection = new JButton("Test connection");
-		panel.add(btnTestConnection, "cell 2 7 2 1,alignx right");
+		panel.add(btnTestConnection, "cell 2 8 2 1,alignx right");
 		btnTestConnection.setEnabled(false);
 		btnTestConnection.addActionListener(new ActionListener(){
 
@@ -613,4 +641,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	
 
 	
+	public JSpinner getSpnTimeout() {
+		return spnTimeout;
+	}
 }
