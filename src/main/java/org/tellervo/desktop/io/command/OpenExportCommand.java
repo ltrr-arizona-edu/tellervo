@@ -65,7 +65,8 @@ public class OpenExportCommand implements ICommand {
 				log.info("DBBrowser cancelled");
 			}
 		}else{
-			list = ElementList.singletonList(new Element((BaseSample) s)); // what am I doing here...
+			//list = ElementList.singletonList(new Element((BaseSample) s)); // what am I doing here...
+			list = new ElementList();
 		}
 		
 		if(samples!=null)
