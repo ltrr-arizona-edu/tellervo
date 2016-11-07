@@ -4,10 +4,10 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.tellervo.desktop.admin.SampleCuration;
 import org.tellervo.desktop.admin.SetPasswordUI;
 import org.tellervo.desktop.admin.view.PermissionByEntityDialog;
 import org.tellervo.desktop.curation.BoxCuration;
+import org.tellervo.desktop.curation.SampleCuration;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.ui.Builder;

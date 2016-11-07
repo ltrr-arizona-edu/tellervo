@@ -33,6 +33,7 @@ import java.util.Arrays;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -50,7 +51,6 @@ import org.tellervo.desktop.tridasv2.ui.support.NotPresent;
 import org.tellervo.desktop.ui.FilterableComboBoxModel;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.ControlledVoc;
-
 import org.tridas.util.TridasObjectEx;
 
 @SuppressWarnings("serial")
@@ -71,12 +71,15 @@ public class ComboBoxFilterable extends JComboBox {
 	boolean isPopupShowing;
 	boolean isComboPopupShowing;
 
+	public ComboBoxFilterable(){
+		super();
+	}
+	
 	public ComboBoxFilterable(Object[] data) {
 		super();
 			
-		model = new FilterableComboBoxModel(Arrays.asList(data));
+		populate(data);
 		
-		initialize();
 	}
 
 	public ComboBoxFilterable(FilterableComboBoxModel model) {
@@ -87,6 +90,12 @@ public class ComboBoxFilterable extends JComboBox {
 		initialize();
 	}
 	
+	public void populate(Object[] data)
+	{
+		model = new FilterableComboBoxModel(Arrays.asList(data));
+		initialize();
+	}
+		
 	private void initialize() {
 		setModel(model);
 		

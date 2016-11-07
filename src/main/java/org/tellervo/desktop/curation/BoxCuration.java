@@ -31,6 +31,7 @@ import java.util.Collections;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -47,6 +48,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.admin.SampleListTableModel;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.gui.widgets.AutoCompleteComboDocument;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.gui.widgets.TridasMultiEntityPickerDialog;
@@ -54,6 +56,7 @@ import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.TridasComparator;
+import org.tellervo.desktop.tridasv2.ui.ComboBoxFilterable;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
@@ -73,11 +76,13 @@ import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIBox;
 import org.tridas.interfaces.ITridas;
+import org.tridas.schema.NormalTridasDatingType;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.model.MVCArrayList;
+
 import javax.swing.JButton;
 
 
@@ -94,7 +99,7 @@ implements KeyListener, ActionListener, TableModelListener{
 	private boolean isNewRecord = false;
 	private WSIBox box = null;
 	private BoxCurationType type = BoxCurationType.BROWSE;
-	private ArrayListModel<WSIBox> boxModel;
+	//private ArrayListModel<WSIBox> boxModel;
 	private MVCArrayList<WSIBox> boxList;
 	protected SampleListTableModel sampleTableModel = new SampleListTableModel();
 
@@ -390,12 +395,43 @@ implements KeyListener, ActionListener, TableModelListener{
 				TridasComparator.NullBehavior.NULLS_LAST, 
 				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
 		Collections.sort(boxList, numSorter);
-		boxModel = new ArrayListModel<WSIBox>(boxList);
-		TridasListCellRenderer tlcr = new TridasListCellRenderer();
-		cboBox.setModel(boxModel);
-		cboBox.setRenderer(tlcr);
-		cboBox.setEditable(false);
+	
+		WSIBox[] arr = new WSIBox[boxList.size()];
+		
+		for (int i=0; i<boxList.size(); i++)
+		{
+			arr[i] = boxList.get(i);
+		}
+				
+		
+		
+		cboBox =  new ComboBoxFilterable(arr);
+		cboBox.addActionListener(new ActionListener(){
 
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				
+				try{
+				WSIBox bx = (WSIBox) cboBox.getSelectedItem();
+				getComprehensiveWSIBox(bx.getIdentifier().getValue());
+				updateBoxGui();
+				} catch (Exception e)
+				{
+					log.debug("Failed to get box to update gui");
+				}
+				
+			}
+			
+		});
+		getContentPane().add(cboBox, "cell 1 1,growx,aligny top");
+
+		//boxModel = new ArrayListModel<WSIBox>(boxList);
+		TridasListCellRenderer tlcr = new TridasListCellRenderer();
+		//cboBox.setModel(boxModel);
+		cboBox.setRenderer(tlcr);
+		
+		
+		
 
 		// Key Listeners
 		this.txtName.addKeyListener(this);
@@ -409,7 +445,7 @@ implements KeyListener, ActionListener, TableModelListener{
 		this.btnCreateNewBox.addActionListener(this);
 		this.btnApply.addActionListener(this);
 		this.btnOk.addActionListener(this);
-		this.cboBox.addActionListener(this);
+		//this.cboBox.addActionListener(this);
 		this.btnMarkMissing.addActionListener(this);
 
 		// Update the GUI
@@ -697,7 +733,7 @@ implements KeyListener, ActionListener, TableModelListener{
 	@SuppressWarnings("serial")
 	private void initComponents() {
 
-		cboBox = new javax.swing.JComboBox();
+		//cboBox = new ComboBoxFilterable();
 		lblScanOrSelect = new javax.swing.JLabel();
 		btnOk = new javax.swing.JButton();
 		btnApply = new javax.swing.JButton();
@@ -707,7 +743,7 @@ implements KeyListener, ActionListener, TableModelListener{
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-		cboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "abbb", "cbbbb", "ghhh", "jjjjj" }));
+		//cboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "abbb", "cbbbb", "ghhh", "jjjjj" }));
 
 		lblScanOrSelect.setText("Scan barcode:");
 
@@ -836,7 +872,7 @@ implements KeyListener, ActionListener, TableModelListener{
 		getContentPane().add(lblSelectBox, "cell 0 1,alignx left,aligny center");
 		getContentPane().add(lblScanOrSelect, "cell 0 0,alignx left,aligny center");
 		getContentPane().add(txtBarcode, "cell 1 0 3 1,growx,aligny top");
-		getContentPane().add(cboBox, "cell 1 1,growx,aligny top");
+		//getContentPane().add(cboBox, "cell 1 1,growx,aligny top");
 		getContentPane().add(btnCreateNewBox, "cell 2 1 2 1,alignx right,aligny top");
 
 
@@ -1057,7 +1093,7 @@ implements KeyListener, ActionListener, TableModelListener{
 		{
 			saveChanges();
 		}
-		else if (e.getSource().equals(cboBox))
+		else if (e.getActionCommand().equals("BoxSelected"))
 		{
 			WSIBox bx = (WSIBox) cboBox.getSelectedItem();
 			this.getComprehensiveWSIBox(bx.getIdentifier().getValue());

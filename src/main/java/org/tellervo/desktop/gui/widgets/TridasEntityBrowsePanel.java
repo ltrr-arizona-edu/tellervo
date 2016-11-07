@@ -24,6 +24,8 @@ import org.tellervo.desktop.gui.TridasSelectEvent.TridasSelectType;
 import org.tellervo.desktop.gui.dbbrowse.TridasObjectRenderer;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.tridasv2.TridasComparator;
+import org.tellervo.desktop.tridasv2.ui.ComboBoxFilterable;
+import org.tellervo.desktop.ui.FilterableComboBoxModel;
 import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.labels.ui.TridasListCellRenderer;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
@@ -49,7 +51,7 @@ import java.awt.Font;
 public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 
 	private static final long serialVersionUID = 1L;
-	private JComboBox cboObject;
+	private ComboBoxFilterable cboObject;
 	private JComboBox cboElement;
 	private JComboBox cboSample;
 	private JComboBox cboRadius;
@@ -60,7 +62,7 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 	JLabel lblRadius;
 	JLabel lblSeries;
 	
-	protected ArrayListModel<TridasObject> objModel = new ArrayListModel<TridasObject>();
+	protected FilterableComboBoxModel objModel = new FilterableComboBoxModel();
 	protected ArrayListModel<TridasElement> elModel = new ArrayListModel<TridasElement>();
 	protected ArrayListModel<TridasSample> sampModel = new ArrayListModel<TridasSample>();
 	protected ArrayListModel<TridasRadius> radModel = new ArrayListModel<TridasRadius>();
@@ -114,7 +116,7 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 		lblPrefix = new JLabel(App.getLabCodePrefix());
 		add(lblPrefix, "cell 0 0,alignx trailing");
 		
-		cboObject = new JComboBox();
+		cboObject = new ComboBoxFilterable();
 		add(cboObject, "cell 1 0,growx");
 		
         // Set models 
@@ -305,7 +307,9 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
     	rend.setMaximumTitleLength(30);
     	rend.setHideTitles(true);
     	cboObject.setRenderer(rend);
-    	objModel = new ArrayListModel<TridasObject>(App.tridasObjects.getObjectList());
+    	objModel = new FilterableComboBoxModel();
+    	objModel.addElements(App.tridasObjects.getObjectList());
+
     	cboObject.setModel(objModel);
     	cboObject.setSelectedItem(null);
     	enableCombos(TridasObject.class);
