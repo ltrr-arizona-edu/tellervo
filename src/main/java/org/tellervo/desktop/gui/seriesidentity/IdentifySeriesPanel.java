@@ -30,6 +30,7 @@ import org.jdesktop.swingx.JXTable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.sample.Sample;
@@ -44,6 +45,7 @@ import org.tridas.io.exceptions.InvalidDendroFileException;
 import org.tridas.io.formats.corina.CorinaToTridasDefaults;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.io.util.UnitUtils;
+import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -58,6 +60,8 @@ import org.tridas.schema.TridasValues;
 import org.tellervo.desktop.gui.seriesidentity.SeriesIdentityRegexDialog;
 import org.tellervo.desktop.gui.seriesidentity.SeriesIdentityRegexDialog.MethodOptions;
 import org.tellervo.desktop.gui.widgets.DescriptiveDialog;
+
+import com.dmurph.mvc.model.MVCArrayList;
 
 import javax.swing.JLabel;
 
@@ -81,7 +85,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	protected SeriesIdentityTableModel model;
 	private JCheckBox chckbxOpenSeriesIn;
 	private JCheckBox chkIncludeSubobjects;
-
+	private DefaultEntityParametersDialog defaultEntitiesDialog = new DefaultEntityParametersDialog(containerFrame);
 	
 	public IdentifySeriesPanel()
 	{
@@ -220,27 +224,34 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		
 		JPanel panel_1 = new JPanel();
 		panelButton.add(panel_1, "cell 1 1 2 2,alignx right,growy");
-		panel_1.setLayout(new MigLayout("", "[116px,fill]", "[22px][][]"));
+		panel_1.setLayout(new MigLayout("", "[116px,fill]", "[22px][][][]"));
 		
 		JButton btnSearchDB = new JButton("Search Database");
 		btnSearchDB.setFont(new Font("Dialog", Font.BOLD, 9));
 		panel_1.add(btnSearchDB, "cell 0 0,alignx left,aligny top");
 		btnSearchDB.setActionCommand("SearchDB");
 		
-		JButton btnDefineByPattern = new JButton("Define by pattern");
+		JButton btnDefineByPattern = new JButton("Define names by pattern");
 		btnDefineByPattern.setFont(new Font("Dialog", Font.BOLD, 9));
 		panel_1.add(btnDefineByPattern, "cell 0 1,alignx left,aligny top");
 		btnDefineByPattern.setActionCommand("DefineByPattern");
 		
-		JButton btnGenerateMissing = new JButton("Generate missing");
+		JButton btnGenerateMissing = new JButton("Generate missing entities");
 		btnGenerateMissing.setActionCommand("GenerateMissing");
 		btnGenerateMissing.addActionListener(this);
+		
+		JButton btnSetDefaults = new JButton("Set default parameters");
+		btnSetDefaults.setActionCommand("SetDefaults");
+		btnSetDefaults.addActionListener(this);
+		btnSetDefaults.setFont(new Font("Dialog", Font.BOLD, 9));
+		panel_1.add(btnSetDefaults, "cell 0 2");
+		
 		btnGenerateMissing.setFont(new Font("Dialog", Font.BOLD, 9));
-		panel_1.add(btnGenerateMissing, "cell 0 2");
+		panel_1.add(btnGenerateMissing, "flowy,cell 0 3");
 		btnDefineByPattern.addActionListener(this);
 		btnSearchDB.addActionListener(this);
 		
-		chkIncludeSubobjects = new JCheckBox("Include sub-object ");
+		chkIncludeSubobjects = new JCheckBox("Include sub-objects in import");
 		chkIncludeSubobjects.addActionListener(this);
 		chkIncludeSubobjects.setActionCommand("IncludeExcludeSubObjects");
 		panelButton.add(chkIncludeSubobjects, "cell 0 3");
@@ -527,7 +538,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	private void openEditor()
 	{
 		FullEditor editor = FullEditor.getInstance();	
-		editor.addSamples(model.getAllSamples());
+		editor.addSamples(model.getAllSamples(this.chkIncludeSubobjects.isSelected()));
 		
 	}
 	
@@ -615,7 +626,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			
 			if(n == JOptionPane.OK_OPTION)
 			{
-				model.generateMissingEntities(this.chkIncludeSubobjects.isSelected());
+				model.generateMissingEntities(this.chkIncludeSubobjects.isSelected(), defaultEntitiesDialog);
 			}
 			else if (n== JOptionPane.CANCEL_OPTION)
 			{
@@ -657,9 +668,28 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		}
 		else if (evt.getActionCommand().equals("IncludeExcludeSubObjects"))
 		{
-
 			table.getColumnExt("SubObjectColumn").setVisible(this.chkIncludeSubobjects.isSelected());
+		}
+		else if (evt.getActionCommand().equals("SetDefaults"))
+		{
 			
+			/*MVCArrayList<ControlledVoc> objectdic = Dictionary.getMutableDictionary("objectTypeDictionary");
+			for(ControlledVoc item : objectdic)
+			{
+				if(item.getNormal().equals("Site"))
+				{
+					defaultEntitiesDialog.setDefaultValues(item);
+				}
+			}*/
+			
+			defaultEntitiesDialog.setVisible(true);
+			
+			if(defaultEntitiesDialog==null)
+			{
+				defaultEntitiesDialog = new DefaultEntityParametersDialog(containerFrame);
+			}
+			
+						
 		}
 		else if (evt.getActionCommand().equals("GenerateMissing"))
 		{
@@ -692,7 +722,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			
 			if(n == JOptionPane.OK_OPTION)
 			{
-				model.generateMissingEntities(this.chkIncludeSubobjects.isSelected());
+				model.generateMissingEntities(this.chkIncludeSubobjects.isSelected(), this.defaultEntitiesDialog);
 			}
 			
 			return;

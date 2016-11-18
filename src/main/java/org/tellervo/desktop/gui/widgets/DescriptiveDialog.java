@@ -20,7 +20,7 @@ import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.ui.Builder;
 
 /**
@@ -53,7 +53,9 @@ public abstract class DescriptiveDialog extends JDialog implements ActionListene
 		init();
 		setDescriptiveText(description);
 		setTitleText(title);
+		setTitle(title);
 		setBannerIcon(icon);
+		this.setIconImage(Builder.getApplicationIcon());
 		
 		try{
 			this.setIconImage(parent.getIconImages().get(0));

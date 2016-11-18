@@ -497,6 +497,14 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	
     	TellervoResourceAccessDialog dialog = null;
     	
+    	
+    	String objectcode = codes[0];
+    	if(codes[1]!=null && !codes[1].equals("null") && codes[1].length()>0)
+    	{
+    		objectcode = codes[1];
+    	}
+    	
+    	
     	if(clazz.equals(SearchReturnObject.OBJECT))
     	{
     		if(codes.length!=1) {
@@ -531,7 +539,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     			return null;
     		}
     		
-    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, codes[0]);
+    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, objectcode);
     		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
     		EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
     		dialog = new TellervoResourceAccessDialog(resource);
@@ -558,7 +566,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     			log.debug("Wrong number of codes for sample when splitting: "+code); 
     			return null;
     		}
-    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, codes[0]);
+    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, objectcode);
     		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
     		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[3]);
     		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
@@ -586,7 +594,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     			log.debug("Wrong number of codes for radius when splitting: "+code); 
     			return null;
     		}
-    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, codes[0]);
+    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, objectcode);
     		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[1]);
     		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[2]);
     		param.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.EQUALS, codes[3]);
@@ -615,7 +623,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     			log.debug("Wrong number of codes for series when splitting: "+code); 
     			return null;
     		}
-    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, codes[0]);
+    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, objectcode);
     		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[1]);
     		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[2]);
     		param.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.EQUALS, codes[3]);
@@ -642,7 +650,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		return null;
 	}
 
-	public void generateMissingEntities(boolean includeSubObjects)
+	public void generateMissingEntities(boolean includeSubObjects, DefaultEntityParametersDialog defaults)
 	{
 		for(SeriesIdentity id : this.ids)
 		{
@@ -653,11 +661,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				TridasObjectEx object = new TridasObjectEx();
 				object.setTitle(id.getObjectItem().getCode());
 				TridasUtils.setObjectCode(object, id.getObjectItem().getCode());
-				ControlledVoc cv = new ControlledVoc();
-				cv.setNormal("Site");
-				cv.setNormalId("1");
-				cv.setNormalStd("Tellervo");
-				object.setType(cv);
+				object.setType((ControlledVoc) defaults.cboObjectType.getSelectedItem());
 				
 				object = (TridasObjectEx) doSave(object, null);
 				
@@ -678,11 +682,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 					TridasObjectEx object = new TridasObjectEx();
 					object.setTitle(id.getSubObjectItem().getCode());
 					TridasUtils.setObjectCode(object, id.getSubObjectItem().getCode());
-					ControlledVoc cv = new ControlledVoc();
-					cv.setNormal("Site");
-					cv.setNormalId("1");
-					cv.setNormalStd("Tellervo");
-					object.setType(cv);
+					object.setType((ControlledVoc) defaults.cboObjectType.getSelectedItem());
 					
 					
 					String parentCode = id.getObjectItem().getCode();
@@ -695,15 +695,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 					}
 
 					searchForMatches(true);
-					
-					object = (TridasObjectEx) doSave(object, null);
-					
-					if(object!=null)
-					{
-						tridasCache.put(id.getObjectItem().getCode(), object);
-					}
-					
-					searchForMatches(true);
+
 				}
 			}
 			
@@ -714,22 +706,15 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 			{
 				TridasElement element = new TridasElement();
 				element.setTitle(id.getElementItem().getCode());
-				ControlledVoc cv = new ControlledVoc();
-				cv.setNormal("Unknown");
-				cv.setNormalId("4");
-				cv.setNormalStd("Tellervo");
-				element.setType(cv);
-				
-				
-				cv = new ControlledVoc();
-				cv.setNormal("Plantae");
-				cv.setNormalId("281");
-				cv.setNormalStd("Catalogue of Life Annual Checklist 2008");
-				element.setTaxon(cv);
+				element.setType((ControlledVoc) defaults.cboElementType.getSelectedItem());
+				element.setTaxon((ControlledVoc) defaults.cboTaxon.getSelectedItem());
 
-								
-				String parentCode = id.getObjectItem().getCode();
-				String thisCode   =id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode();
+				String parentCode = id.getObjectItem().getCode();		
+				String thisCode   = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode();
+				if(includeSubObjects)
+				{
+					parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode();
+				}
 				element = (TridasElement) doSave(element, tridasCache.get(parentCode));
 				
 				if(element!=null)
@@ -746,14 +731,11 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 			{
 				TridasSample sample = new TridasSample();
 				sample.setTitle(id.getSampleItem().getCode());
-				ControlledVoc cv = new ControlledVoc();
-				cv.setNormal("Unknown");
-				cv.setNormalId("4");
-				cv.setNormalStd("Tellervo");
-				sample.setType(cv);
+				sample.setType((ControlledVoc) defaults.cboSampleType.getSelectedItem());
+
 				
-				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode();
-				String thisCode   =id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode();
+				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode();
+				String thisCode   =id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode();
 				
 				ITridas parentitem = tridasCache.get(parentCode);
 				sample = (TridasSample) doSave(sample, parentitem);
@@ -791,8 +773,8 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				wc.setBark(bark);
 				radius.setWoodCompleteness(wc);
 				
-				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode();
-				String thisCode   = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode();
+				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode();
+				String thisCode   = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode();
 				
 				radius = (TridasRadius) doSave(radius, tridasCache.get(parentCode));
 				
@@ -822,12 +804,9 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 					((TridasMeasurementSeries) readerpopulatedseries).setMeasuringMethod(mm);
 				}
 				
-				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode();
-				String thisCode   = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode() + codeDelimiter + id.getSeriesItem().getCode();
-				
-				
-				
-				
+				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode();
+				String thisCode   = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode() + codeDelimiter + id.getSeriesItem().getCode();
+
 				ITridasSeries dbseries = (ITridasSeries) doSave(readerpopulatedseries, tridasCache.get(parentCode));
 						
 				if(dbseries!=null)
@@ -887,7 +866,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		{
 			for(int col=3; col<this.getColumnCount(); col++)
 			{
-				if(includeSubObjects && col==4) continue;
+				if(!includeSubObjects && col==4) continue;
 				
 				if(this.getValueAt(row, col)==null)
 				{
@@ -907,14 +886,14 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		return false;
 	}
 	
-	public ArrayList<Sample> getAllSamples()
+	public ArrayList<Sample> getAllSamples(boolean includeSubObjects)
 	{
 		
 		ArrayList<Sample> samples = new ArrayList<Sample>();
 		
 		for(SeriesIdentity id : ids)
 		{
-			samples.add(getPopulatedSampleFromSeriesIdentity(id));
+			samples.add(getPopulatedSampleFromSeriesIdentity(id, includeSubObjects));
 		}
 		
 		
@@ -927,31 +906,50 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 	 * 
 	 * @param s
 	 */
-	private Sample getPopulatedSampleFromSeriesIdentity(SeriesIdentity id) {
+	private Sample getPopulatedSampleFromSeriesIdentity(SeriesIdentity id, boolean includeSubObjects) {
 		LabCode labcode = new LabCode();
 		
 		Sample s = id.getSample();
 
 		TridasObjectEx object = (TridasObjectEx) tridasCache.get(id.getObjectItem().getCode());
-		TridasElement element = (TridasElement) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()); 
-		TridasSample sample = (TridasSample) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()  + codeDelimiter + id.getSampleItem().getCode());
-		TridasRadius radius = (TridasRadius) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()  + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode());
+		TridasObjectEx subobject = (TridasObjectEx) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter +  tridasCache.get(id.getSubObjectItem().getCode()));
+		TridasElement element = (TridasElement) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + tridasCache.get(id.getSubObjectItem().getCode()) + codeDelimiter + id.getElementItem().getCode()); 
+		TridasSample sample = (TridasSample) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + tridasCache.get(id.getSubObjectItem().getCode()) + codeDelimiter + id.getElementItem().getCode()  + codeDelimiter + id.getSampleItem().getCode());
+		TridasRadius radius = (TridasRadius) tridasCache.get(id.getObjectItem().getCode() + codeDelimiter + tridasCache.get(id.getSubObjectItem().getCode()) + codeDelimiter + id.getElementItem().getCode()  + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode());
 				
 		
 		ITridasSeries series = s.getSeries();
 		//TellervoWSILoader.attachNewSample(s);
 
-		if(object != null) {
-			s.setMeta(Metadata.OBJECT, object);
-			
-			
-			if(object instanceof TridasObjectEx){
-				labcode.appendSiteCode(((TridasObjectEx)object).getLabCode());
+		if(includeSubObjects)
+		{
+			if(subobject != null) {
+				s.setMeta(Metadata.OBJECT, subobject);
+				
+				
+				if(subobject instanceof TridasObjectEx){
+					labcode.appendSiteCode(((TridasObjectEx)subobject).getLabCode());
+				}
+				else{
+					labcode.appendSiteCode(subobject.getTitle());
+				}
+				
 			}
-			else{
-				labcode.appendSiteCode(object.getTitle());
+		}
+		else
+		{
+			if(object != null) {
+				s.setMeta(Metadata.OBJECT, object);
+				
+				
+				if(object instanceof TridasObjectEx){
+					labcode.appendSiteCode(((TridasObjectEx)object).getLabCode());
+				}
+				else{
+					labcode.appendSiteCode(object.getTitle());
+				}
+				
 			}
-			
 		}
 		
 		if(element != null) {

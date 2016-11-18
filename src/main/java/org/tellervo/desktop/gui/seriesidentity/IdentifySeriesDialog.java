@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.Icon;
 
 import org.tellervo.desktop.gui.widgets.DescriptiveDialog;
+import org.tellervo.desktop.ui.Builder;
 import org.tridas.io.AbstractDendroFormat;
 
 import javax.swing.JPanel;
@@ -26,7 +27,7 @@ public class IdentifySeriesDialog extends DescriptiveDialog implements TableMode
 				+ "into the Tellervo database you need to identify which object, element, sample, radius and series they "
 				+ "belong to.  Some of these entities may already be in the database, others may need to be generated. You "
 				+ "can manually enter the names for each in the table below, or alternatively you can define them using "
-				+ "patterns in the file name, folder, or series 'keycode' from the original data file.", null);
+				+ "patterns in the file name, folder, or series 'keycode' from the original data file.", Builder.getIcon("fileimport.png", 64));
 		
 		panel = new IdentifySeriesPanel(this, files, filetype);
 		getMainPanel().add(panel, BorderLayout.CENTER);
