@@ -48,10 +48,13 @@ import org.tridas.schema.TridasSample;
 import javax.swing.JPanel;
 
 import java.awt.Font;
+import org.tellervo.desktop.gui.seriesidentity.SeriesIdentityRegexDialog.FieldOptions;
+import org.tellervo.desktop.gui.seriesidentity.SeriesIdentityRegexDialog.MethodOptions;
 
 public class SeriesIdentityRegexDialog extends DescriptiveDialog implements ActionListener, DocumentListener{
 
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2810006094046253202L;
+
 	private final static Logger log = LoggerFactory.getLogger(SeriesIdentityRegexDialog.class);
 
 	private boolean cancelled = false;
@@ -85,7 +88,9 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		NONE("None"),
 		FIXED_WIDTH("Fixed width"),
 		REGEX("Regex"),
+		CONSTANT("Constant"),
 		ALL("All");
+		
 		
 		String humanName;
 		
@@ -131,24 +136,32 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	private JButton btnSaveConfiguration;
 	private JButton btnLoadDefinition;
 	private JPanel panel;
+	private final boolean includeSubobjects;
+	
+	private JComboBox<FieldOptions> cboSubObjectField;
+	private JComboBox<MethodOptions> cboSubObjectMethod;
+	private JTextField txtSubObjectPattern;
+	private JTextField txtSubObjectTest;
+	private JLabel lblSubObject;
 	
 	
 	/**
 	 * Create the dialog.
 	 */
-	public SeriesIdentityRegexDialog(Window parent, SeriesIdentity testcase) {
+	public SeriesIdentityRegexDialog(Window parent, SeriesIdentity testcase, boolean includeSubobjects) {
 		super(parent, "Define naming convention patterns", "Use this dialog to automatically assign names to entities based " +
 				"on patterns within the file or series names extracted from the input files. You can test your patterns by " +
 				"clicking the 'run tests' button which will use the values from the first series in your table. " +
 				"The fixed width pattern simply requires the range of characters you would like from the field (e.g. '1-3' would extract " +
 				"the first, second and third characters, whereas * returns all characters).  The regex pattern enables you to use standard regular expression notation " +
 				"to extract the information you want.", null);
+		this.includeSubobjects = includeSubobjects;
 		setTitle("Define Patterns");
 		setModal(true);
 		setBounds(100, 100, 676, 450);
 		this.testcase = testcase;
 		
-		getMainPanel().setLayout(new MigLayout("", "[][grow][grow][grow][grow]", "[][][fill][fill][fill][fill][fill][]"));
+		getMainPanel().setLayout(new MigLayout("hidemode 2,insets 0", "[][grow][grow][grow][grow]", "[][][fill][][fill][fill][fill][fill][]"));
 		{
 			panel = new JPanel();
 			getMainPanel().add(panel, "cell 0 0 5 1,alignx center,growy");
@@ -236,24 +249,51 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			txtObjectTest.setColumns(10);
 		}
 		{
+			lblSubObject = new JLabel("Sub-object code:");
+			getMainPanel().add(lblSubObject, "cell 0 3,alignx trailing");
+		}
+		{
+			cboSubObjectField = new JComboBox<FieldOptions>();
+			cboSubObjectField.setModel(new DefaultComboBoxModel<FieldOptions>(FieldOptions.values()));
+			getMainPanel().add(cboSubObjectField, "cell 1 3,growx");
+		}
+		{
+			cboSubObjectMethod = new JComboBox<MethodOptions>();
+			cboSubObjectMethod.setModel(new DefaultComboBoxModel<MethodOptions>(MethodOptions.values()));
+			cboSubObjectMethod.addActionListener(this);
+			getMainPanel().add(cboSubObjectMethod, "cell 2 3,growx");
+		}
+		{
+			txtSubObjectPattern = new JTextField();
+			getMainPanel().add(txtSubObjectPattern, "cell 3 3,growx,aligny top");
+			txtSubObjectPattern.setColumns(10);
+			txtSubObjectPattern.getDocument().addDocumentListener(this);
+		}
+		{
+			txtSubObjectTest = new JTextField();
+			txtSubObjectTest.setEditable(false);
+			getMainPanel().add(txtSubObjectTest, "cell 4 3,growx,aligny top");
+			txtSubObjectTest.setColumns(10);
+		}
+		{
 			JLabel lblElement = new JLabel("Element code:");
-			getMainPanel().add(lblElement, "cell 0 3,alignx trailing");
+			getMainPanel().add(lblElement, "cell 0 4,alignx trailing");
 		}
 		{
 			cboElementField = new JComboBox<FieldOptions>();
 			cboElementField.setModel(new DefaultComboBoxModel<FieldOptions>(FieldOptions.values()));
-			getMainPanel().add(cboElementField, "cell 1 3,growx");
+			getMainPanel().add(cboElementField, "cell 1 4,growx");
 		}
 		{
 			cboElementMethod = new JComboBox<MethodOptions>();
 			cboElementMethod.setModel(new DefaultComboBoxModel<MethodOptions>(MethodOptions.values()));
 			cboElementMethod.addActionListener(this);
-			getMainPanel().add(cboElementMethod, "cell 2 3,grow");
+			getMainPanel().add(cboElementMethod, "cell 2 4,grow");
 		}
 		{
 			txtElementPattern = new JTextField();
 			txtElementPattern.setColumns(10);
-			getMainPanel().add(txtElementPattern, "cell 3 3,growx");
+			getMainPanel().add(txtElementPattern, "cell 3 4,growx");
 			txtElementPattern.getDocument().addDocumentListener(this);
 
 		}
@@ -261,27 +301,27 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			txtElementTest = new JTextField();
 			txtElementTest.setEditable(false);
 			txtElementTest.setColumns(10);
-			getMainPanel().add(txtElementTest, "cell 4 3,growx");
+			getMainPanel().add(txtElementTest, "cell 4 4,growx");
 		}
 		{
 			JLabel lblSample = new JLabel("Sample code:");
-			getMainPanel().add(lblSample, "cell 0 4,alignx trailing");
+			getMainPanel().add(lblSample, "cell 0 5,alignx trailing");
 		}
 		{
 			cboSampleField = new JComboBox<FieldOptions>();
 			cboSampleField.setModel(new DefaultComboBoxModel<FieldOptions>(FieldOptions.values()));
-			getMainPanel().add(cboSampleField, "cell 1 4,growx");
+			getMainPanel().add(cboSampleField, "cell 1 5,growx");
 		}
 		{
 			cboSampleMethod = new JComboBox<MethodOptions>();
 			cboSampleMethod.setModel(new DefaultComboBoxModel<MethodOptions>(MethodOptions.values()));
 			cboSampleMethod.addActionListener(this);
-			getMainPanel().add(cboSampleMethod, "cell 2 4,growx");
+			getMainPanel().add(cboSampleMethod, "cell 2 5,growx");
 		}
 		{
 			txtSamplePattern = new JTextField();
 			txtSamplePattern.setColumns(10);
-			getMainPanel().add(txtSamplePattern, "cell 3 4,growx");
+			getMainPanel().add(txtSamplePattern, "cell 3 5,growx");
 			txtSamplePattern.getDocument().addDocumentListener(this);
 
 		}
@@ -289,27 +329,27 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			txtSampleTest = new JTextField();
 			txtSampleTest.setEditable(false);
 			txtSampleTest.setColumns(10);
-			getMainPanel().add(txtSampleTest, "cell 4 4,growx");
+			getMainPanel().add(txtSampleTest, "cell 4 5,growx");
 		}
 		{
 			JLabel lblRadius = new JLabel("Radius code:");
-			getMainPanel().add(lblRadius, "cell 0 5,alignx trailing");
+			getMainPanel().add(lblRadius, "cell 0 6,alignx trailing");
 		}
 		{
 			cboRadiusField = new JComboBox<FieldOptions>();
 			cboRadiusField.setModel(new DefaultComboBoxModel<FieldOptions>(FieldOptions.values()));
-			getMainPanel().add(cboRadiusField, "cell 1 5,growx");
+			getMainPanel().add(cboRadiusField, "cell 1 6,growx");
 		}
 		{
 			cboRadiusMethod = new JComboBox<MethodOptions>();
 			cboRadiusMethod.setModel(new DefaultComboBoxModel<MethodOptions>(MethodOptions.values()));
 			cboRadiusMethod.addActionListener(this);
-			getMainPanel().add(cboRadiusMethod, "cell 2 5,growx");
+			getMainPanel().add(cboRadiusMethod, "cell 2 6,growx");
 		}
 		{
 			txtRadiusPattern = new JTextField();
 			txtRadiusPattern.setColumns(10);
-			getMainPanel().add(txtRadiusPattern, "cell 3 5,growx");
+			getMainPanel().add(txtRadiusPattern, "cell 3 6,growx");
 			txtRadiusPattern.getDocument().addDocumentListener(this);
 
 		}
@@ -317,27 +357,27 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			txtRadiusTest = new JTextField();
 			txtRadiusTest.setEditable(false);
 			txtRadiusTest.setColumns(10);
-			getMainPanel().add(txtRadiusTest, "cell 4 5,growx");
+			getMainPanel().add(txtRadiusTest, "cell 4 6,growx");
 		}
 		{
 			JLabel lblSeries = new JLabel("Series code:");
-			getMainPanel().add(lblSeries, "cell 0 6,alignx trailing");
+			getMainPanel().add(lblSeries, "cell 0 7,alignx trailing");
 		}
 		{
 			cboSeriesField = new JComboBox<FieldOptions>();
 			cboSeriesField.setModel(new DefaultComboBoxModel<FieldOptions>(FieldOptions.values()));
-			getMainPanel().add(cboSeriesField, "cell 1 6,growx");
+			getMainPanel().add(cboSeriesField, "cell 1 7,growx");
 		}
 		{
 			cboSeriesMethod = new JComboBox<MethodOptions>();
 			cboSeriesMethod.setModel(new DefaultComboBoxModel<MethodOptions>(MethodOptions.values()));
 			cboSeriesMethod.addActionListener(this);
-			getMainPanel().add(cboSeriesMethod, "cell 2 6,growx");
+			getMainPanel().add(cboSeriesMethod, "cell 2 7,growx");
 		}
 		{
 			txtSeriesPattern = new JTextField();
 			txtSeriesPattern.setColumns(10);
-			getMainPanel().add(txtSeriesPattern, "cell 3 6,growx");
+			getMainPanel().add(txtSeriesPattern, "cell 3 7,growx");
 			txtSeriesPattern.getDocument().addDocumentListener(this);
 
 		}
@@ -345,7 +385,7 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			txtSeriesTest = new JTextField();
 			txtSeriesTest.setEditable(false);
 			txtSeriesTest.setColumns(10);
-			getMainPanel().add(txtSeriesTest, "cell 4 6,growx");
+			getMainPanel().add(txtSeriesTest, "cell 4 7,growx");
 		}
 		
 		setGUIForSelections();
@@ -354,6 +394,19 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	private void setGUIForSelections()
 	{
 		txtObjectPattern.setEnabled(cboObjectMethod.getSelectedIndex()>0);
+		if(this.includeSubobjects)
+		{
+			txtSubObjectPattern.setEnabled(cboSubObjectMethod.getSelectedIndex()>0);
+		}
+		else
+		{
+			cboSubObjectField.setVisible(false);
+			cboSubObjectMethod.setVisible(false);
+			txtSubObjectPattern.setVisible(false);
+			txtSubObjectTest.setVisible(false);
+			lblSubObject.setVisible(false);
+
+		}
 		txtElementPattern.setEnabled(cboElementMethod.getSelectedIndex()>0);
 		txtSamplePattern.setEnabled(cboSampleMethod.getSelectedIndex()>0);
 		txtRadiusPattern.setEnabled(cboRadiusMethod.getSelectedIndex()>0);
@@ -372,6 +425,18 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		else
 		{
 			txtObjectPattern.setBorder(getBorderValid());
+		}
+		
+		if(this.includeSubobjects)
+		{
+			if(!validPattern(txtSubObjectPattern.getText(),  (MethodOptions) cboSubObjectMethod.getSelectedItem()))  {
+				txtSubObjectPattern.setBorder(getBorderInvalid());
+				pass = false;
+			}
+			else
+			{
+				txtSubObjectPattern.setBorder(getBorderValid());
+			}
 		}
 		
 		if(!validPattern(txtElementPattern.getText(), (MethodOptions) cboElementMethod.getSelectedItem())) {
@@ -457,6 +522,14 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 				return false;
 			}
 		}
+		else if (method.equals(MethodOptions.CONSTANT))
+		{
+			if(pattern.length()>0)
+			{
+				return true;
+			}
+			return false;
+		}
 		else if (method.equals(MethodOptions.NONE))
 		{
 			return true;
@@ -471,6 +544,7 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	@Override
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getSource().equals(cboObjectMethod) || 
+			(evt.getSource().equals(cboSubObjectMethod)) ||	
 			(evt.getSource().equals(cboElementMethod)) || 
 			(evt.getSource().equals(cboSampleMethod)) || 
 			(evt.getSource().equals(cboRadiusMethod)) || 
@@ -518,9 +592,17 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		
 	}
 	
-	public MethodOptions getSelectedMethodOption(Class<? extends ITridas> clazz)
+	public MethodOptions getSelectedMethodOption(Class<? extends ITridas> clazz){
+		return getSelectedMethodOption(clazz, false);
+	}
+	
+	public MethodOptions getSelectedMethodOption(Class<? extends ITridas> clazz, boolean subobject)
 	{
-		if(clazz.equals(TridasObject.class))
+		if(subobject && clazz.equals(TridasObject.class))
+		{
+			return (MethodOptions) this.cboSubObjectMethod.getSelectedItem();
+		}
+		else if(clazz.equals(TridasObject.class))
 		{
 			return (MethodOptions) this.cboObjectMethod.getSelectedItem();
 		}
@@ -544,6 +626,11 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	}
 	
 	public FieldOptions getSelectedFieldOption(Class<? extends ITridas> clazz)
+	{
+		return getSelectedFieldOption(clazz, false);
+	}
+	
+	public FieldOptions getSelectedFieldOption(Class<? extends ITridas> clazz, boolean subobject)
 	{
 		if(clazz.equals(TridasObject.class))
 		{
@@ -570,7 +657,16 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	
 	public String getPattern(Class<? extends ITridas> clazz)
 	{
-		if(clazz.equals(TridasObject.class))
+		return getPattern(clazz, false);
+	}
+	
+	public String getPattern(Class<? extends ITridas> clazz, boolean subobject)
+	{
+		if(clazz.equals(TridasObject.class) && subobject)
+		{
+			return this.txtSubObjectPattern.getText();
+		}
+		else if(clazz.equals(TridasObject.class))
 		{
 			return this.txtObjectPattern.getText();
 		}
@@ -606,6 +702,14 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 				this.getTestCaseText((FieldOptions) cboObjectField.getSelectedItem()), 
 				(MethodOptions) cboObjectMethod.getSelectedItem(),
 				txtObjectPattern.getText()));
+		
+		if(this.includeSubobjects)
+		{
+			this.txtSubObjectTest.setText(getPatternMatch(
+					this.getTestCaseText((FieldOptions) cboSubObjectField.getSelectedItem()), 
+					(MethodOptions) cboSubObjectMethod.getSelectedItem(),
+					txtSubObjectPattern.getText()));
+		}
 		
 		this.txtElementTest.setText(getPatternMatch(
 				this.getTestCaseText((FieldOptions) cboElementField.getSelectedItem()), 
@@ -677,7 +781,10 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 						+ e.getMessage());
 
 			}
-  
+		}
+		else if (method.equals(MethodOptions.CONSTANT))
+		{
+			return pattern;
 		}
 		else if (method.equals(MethodOptions.ALL))
 		{
@@ -783,6 +890,13 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	        this.cboObjectMethod.setSelectedIndex(Integer.parseInt(line));
 	        line = br.readLine();
 	        this.txtObjectPattern.setText(line);
+	        
+	        line = br.readLine();
+	        this.cboSubObjectField.setSelectedIndex(Integer.parseInt(line));
+	        line = br.readLine();
+	        this.cboSubObjectMethod.setSelectedIndex(Integer.parseInt(line));
+	        line = br.readLine();
+	        this.txtSubObjectPattern.setText(line);
 	        
 	    	line = br.readLine();
 	    	if(line!=null) this.cboElementField.setEnabled(true);
@@ -899,6 +1013,9 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			writer = new BufferedWriter(new FileWriter(thisFile));
         	
 			String str = cboObjectField.getSelectedIndex() + System.lineSeparator() + cboObjectMethod.getSelectedIndex() + System.lineSeparator() + txtObjectPattern.getText() + System.lineSeparator();
+			writer.write(str);
+			
+			str = cboSubObjectField.getSelectedIndex() + System.lineSeparator() + cboSubObjectMethod.getSelectedIndex() + System.lineSeparator() + txtSubObjectPattern.getText() + System.lineSeparator();
 			writer.write(str);
 			
 			str = cboElementField.getSelectedIndex() + System.lineSeparator() + cboElementMethod.getSelectedIndex() + System.lineSeparator() + txtElementPattern.getText() + System.lineSeparator();

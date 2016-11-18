@@ -15,6 +15,7 @@ import org.tridas.io.AbstractDendroFormat;
 public class SeriesIdentity {
 
 	private IdentityItem objectItem = new IdentityItem();
+	private IdentityItem subObjectItem = new IdentityItem();
 	private IdentityItem elementItem = new IdentityItem();
 	private IdentityItem sampleItem = new IdentityItem();
 	private IdentityItem radiusItem = new IdentityItem();
@@ -73,8 +74,14 @@ public class SeriesIdentity {
 		return objectItem;
 	}
 
+	public IdentityItem getSubObjectItem() {
+		return subObjectItem;
+	}
 
-
+	public void setSubobjectItem(IdentityItem objectItem) {
+		this.subObjectItem = objectItem;
+	}
+	
 
 	public void setObjectItem(IdentityItem objectItem) {
 		this.objectItem = objectItem;

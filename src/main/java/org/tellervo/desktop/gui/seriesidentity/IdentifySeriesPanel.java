@@ -17,6 +17,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
@@ -28,7 +32,6 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.EditorFactory;
 import org.tellervo.desktop.editor.FullEditor;
-import org.tellervo.desktop.gui.seriesidentity.SeriesIdentityRegexDialog.MethodOptions;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -52,6 +55,9 @@ import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasTridas;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.TridasValues;
+import org.tellervo.desktop.gui.seriesidentity.SeriesIdentityRegexDialog;
+import org.tellervo.desktop.gui.seriesidentity.SeriesIdentityRegexDialog.MethodOptions;
+import org.tellervo.desktop.gui.widgets.DescriptiveDialog;
 
 import javax.swing.JLabel;
 
@@ -72,9 +78,9 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	private JXTable table;
 	private Window containerFrame = null; 
 	private NormalTridasUnit unitsIfNotSpecified = null;
-	private SeriesIdentityTableModel model;
-	private JButton btnFinish;
+	protected SeriesIdentityTableModel model;
 	private JCheckBox chckbxOpenSeriesIn;
+	private JCheckBox chkIncludeSubobjects;
 
 	
 	public IdentifySeriesPanel()
@@ -142,6 +148,46 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		table.getColumn(5).setCellRenderer(renderer);
 		table.getColumn(6).setCellRenderer(renderer);
 		table.getColumn(7).setCellRenderer(renderer);
+		table.getColumn(8).setCellRenderer(renderer);
+		table.getColumnExt(4).setIdentifier("SubObjectColumn");
+		table.getColumnExt("SubObjectColumn").setVisible(false);
+		
+		table.getColumnModel().addColumnModelListener(new TableColumnModelListener(){
+
+			@Override
+			public void columnAdded(TableColumnModelEvent arg0) {
+
+				chkIncludeSubobjects.setSelected(table.getColumnExt("SubObjectColumn").isVisible());
+				
+				
+			}
+
+			@Override
+			public void columnMarginChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void columnMoved(TableColumnModelEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void columnRemoved(TableColumnModelEvent arg0) {
+				chkIncludeSubobjects.setSelected(table.getColumnExt("SubObjectColumn").isVisible());
+				
+			}
+
+			@Override
+			public void columnSelectionChanged(ListSelectionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
 		scrollPane.setViewportView(table);
 		
 		JPanel panelButton = new JPanel();
@@ -172,10 +218,6 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		lblNotYet.setIcon(Builder.getIcon("wait.png", 16));
 		panel.add(lblNotYet, "cell 1 2,alignx left,aligny top");
 		
-		JButton btnCancel = new JButton("Cancel");
-		btnCancel.setActionCommand("Cancel");
-		btnCancel.addActionListener(this);
-		
 		JPanel panel_1 = new JPanel();
 		panelButton.add(panel_1, "cell 1 1 2 2,alignx right,growy");
 		panel_1.setLayout(new MigLayout("", "[116px,fill]", "[22px][][]"));
@@ -198,16 +240,14 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		btnDefineByPattern.addActionListener(this);
 		btnSearchDB.addActionListener(this);
 		
+		chkIncludeSubobjects = new JCheckBox("Include sub-object ");
+		chkIncludeSubobjects.addActionListener(this);
+		chkIncludeSubobjects.setActionCommand("IncludeExcludeSubObjects");
+		panelButton.add(chkIncludeSubobjects, "cell 0 3");
+		
 		chckbxOpenSeriesIn = new JCheckBox("Open series in editor when finished");
 		chckbxOpenSeriesIn.setSelected(true);
 		panelButton.add(chckbxOpenSeriesIn, "cell 0 4");
-		panelButton.add(btnCancel, "cell 1 4");
-		
-		btnFinish = new JButton("Finish");
-		btnFinish.setActionCommand("Finish");
-		btnFinish.addActionListener(this);
-		btnFinish.setEnabled(false);
-		panelButton.add(btnFinish, "cell 2 4");
 	}
 	
 	
@@ -457,7 +497,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	{
 		App.init();
 		
-		JFrame frame = new JFrame();
+		/*JFrame frame = new JFrame();
 	
 		frame.getContentPane().add(new IdentifySeriesPanel(frame, files, format));
 		frame.setIconImage(Builder.getApplicationIcon());
@@ -465,7 +505,10 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setSize(new Dimension(800, 500));
 		frame.setVisible(true);
-		frame.setLocationRelativeTo(null);
+		frame.setLocationRelativeTo(null);*/
+		
+		IdentifySeriesDialog dialog = new IdentifySeriesDialog(App.mainWindow, files, format);
+		dialog.setVisible(true);
 		
 	}
 
@@ -493,10 +536,11 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	 */
 	private void fillTableByPattern()
 	{
-		SeriesIdentityRegexDialog dialog = new SeriesIdentityRegexDialog(containerFrame, model.getSeriesIdentity(0));
+		SeriesIdentityRegexDialog dialog = new SeriesIdentityRegexDialog(containerFrame, model.getSeriesIdentity(0), this.chkIncludeSubobjects.isSelected());
+		
 		dialog.setLocationRelativeTo(containerFrame);
 		dialog.setVisible(true);
-		
+
 		for(int i=0; i<model.getRowCount(); i++)
 		{
 			SeriesIdentity id = model.getSeriesIdentity(i);
@@ -507,37 +551,50 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			String pattern = dialog.getPattern(TridasObject.class);
 			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 3);
 			
+			// Sub-Object
+			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasObject.class, true));
+			method = dialog.getSelectedMethodOption(TridasObject.class, true);
+			pattern = dialog.getPattern(TridasObject.class, true);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 4);
+			
 			// Element
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasElement.class));
 			method = dialog.getSelectedMethodOption(TridasElement.class);
 			pattern = dialog.getPattern(TridasElement.class);
-			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 4);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 5);
 			
 			// Sample
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasSample.class));
 			method = dialog.getSelectedMethodOption(TridasSample.class);
 			pattern = dialog.getPattern(TridasSample.class);
-			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 5);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 6);
 			
 			// Radius
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasRadius.class));
 			method = dialog.getSelectedMethodOption(TridasRadius.class);
 			pattern = dialog.getPattern(TridasRadius.class);
-			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 6);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 7);
 			
 			// Series
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasMeasurementSeries.class));
 			method = dialog.getSelectedMethodOption(TridasMeasurementSeries.class);
 			pattern = dialog.getPattern(TridasMeasurementSeries.class);
-			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 7);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 8);
 		}
 		
 		
 		
 	}
 	
-	private void commit()
+	protected void commit()
 	{
+		if(!model.isTableComplete())
+		{
+			JOptionPane.showMessageDialog(this, "The table is incomplete.  You must provide names for all series before continuing");
+			return;
+		}
+		
+		
 		searchDatabaseForMatches();
 		
 		if(model.areThereMissingEntites(true))
@@ -558,7 +615,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			
 			if(n == JOptionPane.OK_OPTION)
 			{
-				model.generateMissingEntities();
+				model.generateMissingEntities(this.chkIncludeSubobjects.isSelected());
 			}
 			else if (n== JOptionPane.CANCEL_OPTION)
 			{
@@ -598,9 +655,15 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		{
 			fillTableByPattern();
 		}
+		else if (evt.getActionCommand().equals("IncludeExcludeSubObjects"))
+		{
+
+			table.getColumnExt("SubObjectColumn").setVisible(this.chkIncludeSubobjects.isSelected());
+			
+		}
 		else if (evt.getActionCommand().equals("GenerateMissing"))
 		{
-			if(model.areThereEmptyCells())
+			if(model.areThereEmptyCells(this.chkIncludeSubobjects.isSelected()))
 			{
 				Alert.message(containerFrame, "Missing entries", "You must provide titles for all entities in the table.");
 				return;
@@ -629,7 +692,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			
 			if(n == JOptionPane.OK_OPTION)
 			{
-				model.generateMissingEntities();
+				model.generateMissingEntities(this.chkIncludeSubobjects.isSelected());
 			}
 			
 			return;
@@ -642,9 +705,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 	@Override
 	public void tableChanged(TableModelEvent evt) {
 
-		this.btnFinish.setEnabled(model.isTableComplete());
 	}
 	
-
 
 }

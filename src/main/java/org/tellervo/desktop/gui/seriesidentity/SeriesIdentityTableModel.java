@@ -66,7 +66,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 
 	private final static Logger log = LoggerFactory.getLogger(SeriesIdentityTableModel.class);
 
-	private String[] columns = new String[] {"Path", "Filename", "Keycode", "Object", "Element", "Sample", "Radius", "Series"};
+	private String[] columns = new String[] {"Path", "Filename", "Keycode", "Object", "SubObject", "Element", "Sample", "Radius", "Series"};
 	
 	private ArrayList<SeriesIdentity> ids = new ArrayList<SeriesIdentity>();
 	
@@ -80,6 +80,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 	{
 		this.parent = parent;
 	}
+
 	
 	@Override
 	public int getColumnCount() {
@@ -101,11 +102,14 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 			case 1: return id.getFile().getName();
 			case 2: return id.getSample().getDisplayTitle();
 			case 3: return id.getObjectItem();
-			case 4: return id.getElementItem();
-			case 5: return id.getSampleItem();
-			case 6: return id.getRadiusItem();
-			case 7: return id.getSeriesItem();
+			case 4: return id.getSubObjectItem();
+			case 5: return id.getElementItem();
+			case 6: return id.getSampleItem();
+			case 7: return id.getRadiusItem();
+			case 8: return id.getSeriesItem();
 		}
+		
+		
 		
 		return null;
 	}
@@ -174,6 +178,9 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		
 		SeriesIdentity id = getSeriesIdentity(row);
 		
+		log.debug("Setting value at row: "+row+", col: "+col+" to value: "+value.toString());
+
+		
 		switch(col)
 		{
 			case 3: 
@@ -185,27 +192,36 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				id.getSeriesItem().setDbChecked(false);
 				searchForMatches(true);
 				break;
-			case 4: id.getElementItem().setCode(value.toString()); 
+			case 4: 
+				id.getSubObjectItem().setCode(value.toString());
+				id.getSubObjectItem().setDbChecked(false);
+				id.getElementItem().setDbChecked(false);
+				id.getSampleItem().setDbChecked(false);
+				id.getRadiusItem().setDbChecked(false);
+				id.getSeriesItem().setDbChecked(false);
+				searchForMatches(true);
+				break;					
+			case 5: id.getElementItem().setCode(value.toString()); 
 				id.getElementItem().setDbChecked(false);
 				id.getSampleItem().setDbChecked(false);
 				id.getRadiusItem().setDbChecked(false);
 				id.getSeriesItem().setDbChecked(false);
 				searchForMatches(true);
 				break;
-			case 5: 
+			case 6: 
 				id.getSampleItem().setCode(value.toString()); 
 				id.getSampleItem().setDbChecked(false);
 				id.getRadiusItem().setDbChecked(false);
 				id.getSeriesItem().setDbChecked(false);
 				searchForMatches(true);
 				break;
-			case 6: 
+			case 7: 
 				id.getRadiusItem().setCode(value.toString()); 
 				id.getRadiusItem().setDbChecked(false);
 				id.getSeriesItem().setDbChecked(false);
 				searchForMatches(true);
 				break;
-			case 7: 
+			case 8: 
 				id.getSeriesItem().setCode(value.toString());
 				id.getSeriesItem().setDbChecked(false);
 				searchForMatches(true);
@@ -231,7 +247,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		SeriesIdentity id = getSeriesIdentity(row);
 		
 		if(clazz.equals(TridasObject.class))
-		{
+		{			
 			id.getObjectItem().setDbChecked(b);
 		}
 		else if(clazz.equals(TridasElement.class))
@@ -302,9 +318,11 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 	{
 		for(int col=3; col<getColumnCount(); col++)
 		{
+			
 			for(int row=0; row<getRowCount(); row++)
 			{
 				SeriesIdentity id = getSeriesIdentity(row);
+			
 				IdentityItem item = null;
 				String code = "";
 				ITridas entity = null;
@@ -330,9 +348,28 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 					}
 					break;
 				case 4: 
+					item = id.getSubObjectItem(); 
+					if(item==null || item.getCode()==null) continue;
+					code = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode(); 
+					
+					if(tridasCache.containsKey(code))
+					{
+						entity = tridasCache.get(code);
+						item.setDbChecked(true);
+						item.setInDatabase(entity!=null);
+					}
+					else 
+					{
+						entity = this.searchForSubObjectByCode(id.getObjectItem().getCode(), id.getSubObjectItem().getCode());
+						tridasCache.put(code, entity);
+						item.setDbChecked(true);
+						item.setInDatabase(entity!=null);
+					}
+					break;					
+				case 5: 
 					item = id.getElementItem();
 					if(item==null || item.getCode()==null) continue;
-					code = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode(); 
+					code = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode(); 
 					if(tridasCache.containsKey(code))
 					{
 						entity = tridasCache.get(code);
@@ -347,10 +384,10 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 						item.setInDatabase(entity!=null);
 					}
 					break;
-				case 5: 
+				case 6: 
 					item = id.getSampleItem();
 					if(item==null || item.getCode()==null) continue;
-					code = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()+ codeDelimiter + id.getSampleItem().getCode();
+					code = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode()+ codeDelimiter + id.getElementItem().getCode()+ codeDelimiter + id.getSampleItem().getCode();
 					if(tridasCache.containsKey(code))
 					{
 						entity = tridasCache.get(code);
@@ -365,10 +402,10 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 						item.setInDatabase(entity!=null);
 					}
 					break;
-				case 6: 
+				case 7: 
 					item = id.getRadiusItem();
 					if(item==null || item.getCode()==null) continue;
-					code = id.getObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode()+ codeDelimiter + id.getSampleItem().getCode()+codeDelimiter + id.getRadiusItem().getCode();
+					code = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode()+ codeDelimiter + id.getElementItem().getCode()+ codeDelimiter + id.getSampleItem().getCode()+codeDelimiter + id.getRadiusItem().getCode();
 					if(tridasCache.containsKey(code))
 					{
 						entity = tridasCache.get(code);
@@ -383,10 +420,11 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 						item.setInDatabase(entity!=null);
 					}
 					break;
-				case 7: 
+				case 8: 
 					item = id.getSeriesItem(); 
 					if(item==null || item.getCode()==null) continue;
 					code = id.getObjectItem().getCode() + codeDelimiter + 
+						   id.getSubObjectItem().getCode()	+ codeDelimiter + 
 						   id.getElementItem().getCode()+ codeDelimiter + 
 						   id.getSampleItem().getCode()+codeDelimiter + 
 						   id.getRadiusItem().getCode()+codeDelimiter + 
@@ -410,6 +448,37 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		}
 		
 		this.fireTableDataChanged();
+	}
+	
+	
+	private TridasObject searchForSubObjectByCode(String parentcode, String subobjectcode)
+	{
+		// Find all samples for an element 
+    	SearchParameters param = new SearchParameters(SearchReturnObject.OBJECT);
+    	
+    	TellervoResourceAccessDialog dialog = null;
+    	
+    	param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTCODE, SearchOperator.EQUALS, parentcode);
+    	param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, subobjectcode);
+		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
+		dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			return null;
+		}
+		
+		if(resource.getAssociatedResult()!=null && resource.getAssociatedResult().size()>0)
+		{
+			return resource.getAssociatedResult().get(0);
+		}
+		else
+		{
+			return null;
+		}
+    	
 	}
 	
 	/**
@@ -457,13 +526,13 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	}
     	else if (clazz.equals(SearchReturnObject.ELEMENT))
     	{
-    		if(codes.length!=2) {
+    		if(codes.length!=3) {
     			log.debug("Wrong number of codes for element when splitting: "+code); 
     			return null;
     		}
     		
     		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, codes[0]);
-    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[1]);
+    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
     		EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
     		dialog = new TellervoResourceAccessDialog(resource);
     		resource.query();	
@@ -485,13 +554,13 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	}
     	else if (clazz.equals(SearchReturnObject.SAMPLE))
     	{
-    		if(codes.length!=3) {
+    		if(codes.length!=4) {
     			log.debug("Wrong number of codes for sample when splitting: "+code); 
     			return null;
     		}
     		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, codes[0]);
-    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[1]);
-    		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[2]);
+    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
+    		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[3]);
     		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
     		dialog = new TellervoResourceAccessDialog(resource);
     		resource.query();
@@ -573,7 +642,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		return null;
 	}
 
-	public void generateMissingEntities()
+	public void generateMissingEntities(boolean includeSubObjects)
 	{
 		for(SeriesIdentity id : this.ids)
 		{
@@ -599,6 +668,45 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				
 				searchForMatches(true);
 			}
+			
+			if(includeSubObjects)
+			{
+				if(id.getSubObjectItem().isInDatabase()==false && 
+						id.getSubObjectItem().getCode()!=null && 
+						id.getSubObjectItem().getCode().length()>0)
+				{				
+					TridasObjectEx object = new TridasObjectEx();
+					object.setTitle(id.getSubObjectItem().getCode());
+					TridasUtils.setObjectCode(object, id.getSubObjectItem().getCode());
+					ControlledVoc cv = new ControlledVoc();
+					cv.setNormal("Site");
+					cv.setNormalId("1");
+					cv.setNormalStd("Tellervo");
+					object.setType(cv);
+					
+					
+					String parentCode = id.getObjectItem().getCode();
+					String thisCode   =id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode();
+					object = (TridasObjectEx) doSave(object, tridasCache.get(parentCode));
+					
+					if(object!=null)
+					{
+						tridasCache.put(thisCode, object);
+					}
+
+					searchForMatches(true);
+					
+					object = (TridasObjectEx) doSave(object, null);
+					
+					if(object!=null)
+					{
+						tridasCache.put(id.getObjectItem().getCode(), object);
+					}
+					
+					searchForMatches(true);
+				}
+			}
+			
 			
 			if(id.getElementItem().isInDatabase()==false && 
 					id.getElementItem().getCode()!=null && 
@@ -773,13 +881,22 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		return false;
 	}
 	
-	public boolean areThereEmptyCells()
+	public boolean areThereEmptyCells(boolean includeSubObjects)
 	{
 		for(int row=0; row<this.getRowCount(); row++)
 		{
 			for(int col=3; col<this.getColumnCount(); col++)
 			{
-				if(this.getValueAt(row, col)==null || this.getValueAt(row, col).toString().length()==0)
+				if(includeSubObjects && col==4) continue;
+				
+				if(this.getValueAt(row, col)==null)
+				{
+					return true;
+				}
+				
+				String asstr = this.getValueAt(row, col).toString();
+				
+				if (asstr==null || asstr.length()==0)
 				{
 					return true;
 				}
@@ -922,7 +1039,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		
 		if(temporaryEditingEntity instanceof TridasObjectEx)
 		{
-			resource = getNewAccessorResource((TridasObjectEx) temporaryEditingEntity, null, TridasObjectEx.class);
+			resource = getNewAccessorResource((TridasObjectEx) temporaryEditingEntity, parentEntity, TridasObjectEx.class);
 		}
 		else if (temporaryEditingEntity instanceof TridasElement)
 		{
