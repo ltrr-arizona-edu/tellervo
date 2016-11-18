@@ -48,16 +48,20 @@ import org.tridas.schema.TridasSample;
 import javax.swing.JPanel;
 
 import java.awt.Font;
+
 import org.tellervo.desktop.gui.seriesidentity.SeriesIdentityRegexDialog.FieldOptions;
 import org.tellervo.desktop.gui.seriesidentity.SeriesIdentityRegexDialog.MethodOptions;
 
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+
 public class SeriesIdentityRegexDialog extends DescriptiveDialog implements ActionListener, DocumentListener{
 
-	private static final long serialVersionUID = 2810006094046253202L;
+	private static final long serialVersionUID = 2528674890243357508L;
 
 	private final static Logger log = LoggerFactory.getLogger(SeriesIdentityRegexDialog.class);
 
-	private boolean cancelled = false;
+	public boolean cancelled = false;
 	private SeriesIdentity testcase = null;
 	
 	public enum FieldOptions{
@@ -86,10 +90,11 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	
 	public enum MethodOptions{
 		NONE("None"),
+		ALL("All"),
 		FIXED_WIDTH("Fixed width"),
 		REGEX("Regex"),
 		CONSTANT("Constant"),
-		ALL("All");
+		;
 		
 		
 		String humanName;
@@ -143,6 +148,13 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	private JTextField txtSubObjectPattern;
 	private JTextField txtSubObjectTest;
 	private JLabel lblSubObject;
+	private JSpinner spnObjectGroup;
+	private JLabel lblGroup;
+	private JSpinner spnElementGroup;
+	private JSpinner spnSampleGroup;
+	private JSpinner spnSubObjectGroup;
+	private JSpinner spnRadiusGroup;
+	private JSpinner spnSeriesGroup;
 	
 	
 	/**
@@ -154,17 +166,17 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 				"clicking the 'run tests' button which will use the values from the first series in your table. " +
 				"The fixed width pattern simply requires the range of characters you would like from the field (e.g. '1-3' would extract " +
 				"the first, second and third characters, whereas * returns all characters).  The regex pattern enables you to use standard regular expression notation " +
-				"to extract the information you want.", null);
+				"to extract the information you want. An example that matches anything between slashes would be: (?<=/)[^/]+", null);
 		this.includeSubobjects = includeSubobjects;
 		setTitle("Define Patterns");
 		setModal(true);
 		setBounds(100, 100, 676, 450);
 		this.testcase = testcase;
 		
-		getMainPanel().setLayout(new MigLayout("hidemode 2,insets 0", "[][grow][grow][grow][grow]", "[][][fill][][fill][fill][fill][fill][]"));
+		getMainPanel().setLayout(new MigLayout("hidemode 2,insets 0", "[][grow][grow][grow][fill][grow]", "[][][fill][fill][fill][fill][fill][fill][]"));
 		{
 			panel = new JPanel();
-			getMainPanel().add(panel, "cell 0 0 5 1,alignx center,growy");
+			getMainPanel().add(panel, "cell 0 0 6 1,alignx center,growy");
 			panel.setLayout(new MigLayout("", "[][][]", "[32px,fill]"));
 			{
 				btnLoadDefinition = new JButton("Load definition");
@@ -218,8 +230,12 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			getMainPanel().add(lblPattern, "cell 3 1,alignx center");
 		}
 		{
+			lblGroup = new JLabel("Match #");
+			getMainPanel().add(lblGroup, "cell 4 1");
+		}
+		{
 			JLabel lblTest = new JLabel("Test");
-			getMainPanel().add(lblTest, "cell 4 1,alignx center");
+			getMainPanel().add(lblTest, "cell 5 1,alignx center");
 		}
 		{
 			JLabel lblObject = new JLabel("Object code:");
@@ -238,14 +254,20 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		}
 		{
 			txtObjectPattern = new JTextField();
+			txtObjectPattern.setToolTipText("Match between slashes (?<=/)[^/]+");
 			getMainPanel().add(txtObjectPattern, "cell 3 2,growx,aligny top");
 			txtObjectPattern.setColumns(10);
 			txtObjectPattern.getDocument().addDocumentListener(this);
 		}
 		{
+			spnObjectGroup = new JSpinner();
+			spnObjectGroup.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+			getMainPanel().add(spnObjectGroup, "cell 4 2,growx");
+		}
+		{
 			txtObjectTest = new JTextField();
 			txtObjectTest.setEditable(false);
-			getMainPanel().add(txtObjectTest, "cell 4 2,growx,aligny top");
+			getMainPanel().add(txtObjectTest, "cell 5 2,growx,aligny top");
 			txtObjectTest.setColumns(10);
 		}
 		{
@@ -265,14 +287,20 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		}
 		{
 			txtSubObjectPattern = new JTextField();
-			getMainPanel().add(txtSubObjectPattern, "cell 3 3,growx,aligny top");
+			getMainPanel().add(txtSubObjectPattern, "cell 3 3,grow");
 			txtSubObjectPattern.setColumns(10);
 			txtSubObjectPattern.getDocument().addDocumentListener(this);
 		}
 		{
+			spnSubObjectGroup = new JSpinner();
+			spnSubObjectGroup.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+			spnSubObjectGroup.setEnabled(false);
+			getMainPanel().add(spnSubObjectGroup, "cell 4 3");
+		}
+		{
 			txtSubObjectTest = new JTextField();
 			txtSubObjectTest.setEditable(false);
-			getMainPanel().add(txtSubObjectTest, "cell 4 3,growx,aligny top");
+			getMainPanel().add(txtSubObjectTest, "cell 5 3,growx,aligny top");
 			txtSubObjectTest.setColumns(10);
 		}
 		{
@@ -298,10 +326,15 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 
 		}
 		{
+			spnElementGroup = new JSpinner();
+			spnElementGroup.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+			getMainPanel().add(spnElementGroup, "cell 4 4");
+		}
+		{
 			txtElementTest = new JTextField();
 			txtElementTest.setEditable(false);
 			txtElementTest.setColumns(10);
-			getMainPanel().add(txtElementTest, "cell 4 4,growx");
+			getMainPanel().add(txtElementTest, "cell 5 4,growx");
 		}
 		{
 			JLabel lblSample = new JLabel("Sample code:");
@@ -326,10 +359,15 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 
 		}
 		{
+			spnSampleGroup = new JSpinner();
+			spnSampleGroup.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+			getMainPanel().add(spnSampleGroup, "cell 4 5");
+		}
+		{
 			txtSampleTest = new JTextField();
 			txtSampleTest.setEditable(false);
 			txtSampleTest.setColumns(10);
-			getMainPanel().add(txtSampleTest, "cell 4 5,growx");
+			getMainPanel().add(txtSampleTest, "cell 5 5,growx");
 		}
 		{
 			JLabel lblRadius = new JLabel("Radius code:");
@@ -354,10 +392,15 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 
 		}
 		{
+			spnRadiusGroup = new JSpinner();
+			spnRadiusGroup.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+			getMainPanel().add(spnRadiusGroup, "cell 4 6");
+		}
+		{
 			txtRadiusTest = new JTextField();
 			txtRadiusTest.setEditable(false);
 			txtRadiusTest.setColumns(10);
-			getMainPanel().add(txtRadiusTest, "cell 4 6,growx");
+			getMainPanel().add(txtRadiusTest, "cell 5 6,growx");
 		}
 		{
 			JLabel lblSeries = new JLabel("Series code:");
@@ -382,10 +425,15 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 
 		}
 		{
+			spnSeriesGroup = new JSpinner();
+			spnSeriesGroup.setModel(new SpinnerNumberModel(new Integer(1), new Integer(1), null, new Integer(1)));
+			getMainPanel().add(spnSeriesGroup, "cell 4 7");
+		}
+		{
 			txtSeriesTest = new JTextField();
 			txtSeriesTest.setEditable(false);
 			txtSeriesTest.setColumns(10);
-			getMainPanel().add(txtSeriesTest, "cell 4 7,growx");
+			getMainPanel().add(txtSeriesTest, "cell 5 7,growx");
 		}
 		
 		setGUIForSelections();
@@ -403,14 +451,25 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			cboSubObjectField.setVisible(false);
 			cboSubObjectMethod.setVisible(false);
 			txtSubObjectPattern.setVisible(false);
+			spnSubObjectGroup.setVisible(false);
 			txtSubObjectTest.setVisible(false);
 			lblSubObject.setVisible(false);
-
 		}
-		txtElementPattern.setEnabled(cboElementMethod.getSelectedIndex()>0);
-		txtSamplePattern.setEnabled(cboSampleMethod.getSelectedIndex()>0);
-		txtRadiusPattern.setEnabled(cboRadiusMethod.getSelectedIndex()>0);
-		txtSeriesPattern.setEnabled(cboSeriesMethod.getSelectedIndex()>0);	
+
+		
+		spnObjectGroup.setEnabled(cboObjectMethod.getSelectedItem().equals(MethodOptions.REGEX));
+		spnSubObjectGroup.setEnabled(cboSubObjectMethod.getSelectedItem().equals(MethodOptions.REGEX));
+		spnElementGroup.setEnabled(cboElementMethod.getSelectedItem().equals(MethodOptions.REGEX));
+		spnSampleGroup.setEnabled(cboSampleMethod.getSelectedItem().equals(MethodOptions.REGEX));
+		spnRadiusGroup.setEnabled(cboRadiusMethod.getSelectedItem().equals(MethodOptions.REGEX));
+		spnSeriesGroup.setEnabled(cboSeriesMethod.getSelectedItem().equals(MethodOptions.REGEX));
+
+		txtObjectPattern.setEnabled(cboObjectMethod.getSelectedIndex()>1);
+		txtSubObjectPattern.setEnabled(cboSubObjectMethod.getSelectedIndex()>1);
+		txtElementPattern.setEnabled(cboElementMethod.getSelectedIndex()>1);
+		txtSamplePattern.setEnabled(cboSampleMethod.getSelectedIndex()>1);
+		txtRadiusPattern.setEnabled(cboRadiusMethod.getSelectedIndex()>1);
+		txtSeriesPattern.setEnabled(cboSeriesMethod.getSelectedIndex()>1);	
 		
 		this.btnOK.setEnabled(validatePatterns());
 	}
@@ -598,7 +657,7 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	
 	public MethodOptions getSelectedMethodOption(Class<? extends ITridas> clazz, boolean subobject)
 	{
-		if(subobject && clazz.equals(TridasObject.class))
+		if(clazz.equals(TridasObject.class) && subobject)
 		{
 			return (MethodOptions) this.cboSubObjectMethod.getSelectedItem();
 		}
@@ -660,6 +719,35 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		return getPattern(clazz, false);
 	}
 	
+	public Integer getMatchNum(Class<? extends ITridas> clazz, boolean subobject)
+	{
+		if(clazz.equals(TridasObject.class) && subobject)
+		{
+			return (Integer) this.spnSubObjectGroup.getValue();
+		}
+		else if(clazz.equals(TridasObject.class))
+		{
+			return (Integer) this.spnObjectGroup.getValue();
+		}
+		else if(clazz.equals(TridasElement.class))
+		{
+			return (Integer) this.spnElementGroup.getValue();
+		}
+		else if(clazz.equals(TridasSample.class))
+		{
+			return (Integer) this.spnSampleGroup.getValue();
+		}
+		if(clazz.equals(TridasRadius.class))
+		{
+			return (Integer) this.spnRadiusGroup.getValue();
+		}
+		if(clazz.equals(TridasMeasurementSeries.class))
+		{
+			return (Integer) this.spnSeriesGroup.getValue();
+		}
+		return 1;
+	}
+	
 	public String getPattern(Class<? extends ITridas> clazz, boolean subobject)
 	{
 		if(clazz.equals(TridasObject.class) && subobject)
@@ -701,39 +789,52 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 		this.txtObjectTest.setText(getPatternMatch(
 				this.getTestCaseText((FieldOptions) cboObjectField.getSelectedItem()), 
 				(MethodOptions) cboObjectMethod.getSelectedItem(),
-				txtObjectPattern.getText()));
+				txtObjectPattern.getText(),
+				(Integer) spnObjectGroup.getValue())
+				);
 		
 		if(this.includeSubobjects)
 		{
 			this.txtSubObjectTest.setText(getPatternMatch(
 					this.getTestCaseText((FieldOptions) cboSubObjectField.getSelectedItem()), 
 					(MethodOptions) cboSubObjectMethod.getSelectedItem(),
-					txtSubObjectPattern.getText()));
+					txtSubObjectPattern.getText(),
+					(Integer) spnSubObjectGroup.getValue())
+					);
 		}
 		
 		this.txtElementTest.setText(getPatternMatch(
 				this.getTestCaseText((FieldOptions) cboElementField.getSelectedItem()), 
 				(MethodOptions) cboElementMethod.getSelectedItem(),
-				txtElementPattern.getText()));		
+				txtElementPattern.getText(),
+				(Integer) spnElementGroup.getValue())
+				);	
 		
 		this.txtSampleTest.setText(getPatternMatch(
 				this.getTestCaseText((FieldOptions) cboSampleField.getSelectedItem()), 
 				(MethodOptions) cboSampleMethod.getSelectedItem(),
-				txtSamplePattern.getText()));		
+				txtSamplePattern.getText(),
+				(Integer) spnSampleGroup.getValue())
+				);		
 		
 		this.txtRadiusTest.setText(getPatternMatch(
 				this.getTestCaseText((FieldOptions) cboRadiusField.getSelectedItem()), 
 				(MethodOptions) cboRadiusMethod.getSelectedItem(),
-				txtRadiusPattern.getText()));	
+				txtRadiusPattern.getText(),
+				(Integer) spnRadiusGroup.getValue())
+				);	
 		
 		this.txtSeriesTest.setText(getPatternMatch(
 				this.getTestCaseText((FieldOptions) cboSeriesField.getSelectedItem()), 
 				(MethodOptions) cboSeriesMethod.getSelectedItem(),
-				txtSeriesPattern.getText()));
+				txtSeriesPattern.getText(),
+				(Integer) spnSeriesGroup.getValue())
+				);
 
 	}
 
-	public static String getPatternMatch(String teststring, MethodOptions method, String pattern) 
+	
+	public static String getPatternMatch(String teststring, MethodOptions method, String pattern, Integer matchNumber) 
 	{
 		if(method.equals(MethodOptions.FIXED_WIDTH))
 		{
@@ -772,13 +873,22 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 			try {
 				Pattern regexpattern = Pattern.compile(pattern);
 				Matcher matcher = regexpattern.matcher(teststring);
-
-				while (matcher.find()) {
-					return matcher.group();
-				}
+				int i=0;
+				while (matcher.find())
+				{
+					i++;
+					
+					if(i==matchNumber)
+					{
+						return matcher.group();
+					}
+				}		
+				
+				return "";
 			} catch (Exception e) {
 				log.error("Failed to perform regex pattern match. "
 						+ e.getMessage());
+				Alert.error("Regex error", "Regex failed: "+e.getMessage());
 
 			}
 		}
@@ -885,11 +995,22 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	    	br = new BufferedReader(new FileReader(thisFile));
 	        
 	    	String line = br.readLine();
+	    	
+	    	long checkID = Long.parseLong(line);
+	    	if(checkID!=SeriesIdentityRegexDialog.serialVersionUID)
+	    	{
+	    		Alert.error("Error", "Invalid or outdated configuration file.\n\nUnable to restore settings.");
+	    		return;
+	    	}
+	    	
+	    	line = br.readLine();
 	        this.cboObjectField.setSelectedIndex(Integer.parseInt(line));
 	        line = br.readLine();
 	        this.cboObjectMethod.setSelectedIndex(Integer.parseInt(line));
 	        line = br.readLine();
 	        this.txtObjectPattern.setText(line);
+	        line = br.readLine();
+	        this.spnObjectGroup.setValue(Integer.valueOf(line));
 	        
 	        line = br.readLine();
 	        this.cboSubObjectField.setSelectedIndex(Integer.parseInt(line));
@@ -897,6 +1018,8 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	        this.cboSubObjectMethod.setSelectedIndex(Integer.parseInt(line));
 	        line = br.readLine();
 	        this.txtSubObjectPattern.setText(line);
+	        line = br.readLine();
+	        this.spnSubObjectGroup.setValue(Integer.valueOf(line));
 	        
 	    	line = br.readLine();
 	    	if(line!=null) this.cboElementField.setEnabled(true);
@@ -907,6 +1030,8 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	        line = br.readLine();
 	        if(line!=null) this.txtElementPattern.setEnabled(true);
 	        this.txtElementPattern.setText(line);
+	        line = br.readLine();
+	        this.spnElementGroup.setValue(Integer.valueOf(line));
 	        
 	    	line = br.readLine();
 	        this.cboSampleField.setSelectedIndex(Integer.parseInt(line));
@@ -914,6 +1039,8 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	        this.cboSampleMethod.setSelectedIndex(Integer.parseInt(line));
 	        line = br.readLine();
 	        this.txtSamplePattern.setText(line);
+	        line = br.readLine();
+	        this.spnSampleGroup.setValue(Integer.valueOf(line));
 	        
 	    	line = br.readLine();
 	        this.cboRadiusField.setSelectedIndex(Integer.parseInt(line));
@@ -921,6 +1048,8 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	        this.cboRadiusMethod.setSelectedIndex(Integer.parseInt(line));
 	        line = br.readLine();
 	        this.txtRadiusPattern.setText(line);
+	        line = br.readLine();
+	        this.spnRadiusGroup.setValue(Integer.valueOf(line));
 	        
 	    	line = br.readLine();
 	        this.cboSeriesField.setSelectedIndex(Integer.parseInt(line));
@@ -928,6 +1057,8 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 	        this.cboSeriesMethod.setSelectedIndex(Integer.parseInt(line));
 	        line = br.readLine();
 	        this.txtSeriesPattern.setText(line);
+	        line = br.readLine();
+	        this.spnSeriesGroup.setValue(Integer.valueOf(line));
 	    
 	    } catch (FileNotFoundException e) {
 	    	
@@ -1012,22 +1143,25 @@ public class SeriesIdentityRegexDialog extends DescriptiveDialog implements Acti
 
 			writer = new BufferedWriter(new FileWriter(thisFile));
         	
-			String str = cboObjectField.getSelectedIndex() + System.lineSeparator() + cboObjectMethod.getSelectedIndex() + System.lineSeparator() + txtObjectPattern.getText() + System.lineSeparator();
+			String str = String.valueOf(SeriesIdentityRegexDialog.serialVersionUID) + System.lineSeparator();
 			writer.write(str);
 			
-			str = cboSubObjectField.getSelectedIndex() + System.lineSeparator() + cboSubObjectMethod.getSelectedIndex() + System.lineSeparator() + txtSubObjectPattern.getText() + System.lineSeparator();
+			str = cboObjectField.getSelectedIndex() + System.lineSeparator() + cboObjectMethod.getSelectedIndex() + System.lineSeparator() + txtObjectPattern.getText() + System.lineSeparator() + spnObjectGroup.getValue() + System.lineSeparator();
+			writer.write(str);
+						
+			str = cboSubObjectField.getSelectedIndex() + System.lineSeparator() + cboSubObjectMethod.getSelectedIndex() + System.lineSeparator() + txtSubObjectPattern.getText() + System.lineSeparator()+ spnSubObjectGroup.getValue() + System.lineSeparator();
 			writer.write(str);
 			
-			str = cboElementField.getSelectedIndex() + System.lineSeparator() + cboElementMethod.getSelectedIndex() + System.lineSeparator() + txtElementPattern.getText() + System.lineSeparator();
+			str = cboElementField.getSelectedIndex() + System.lineSeparator() + cboElementMethod.getSelectedIndex() + System.lineSeparator() + txtElementPattern.getText() + System.lineSeparator()+ spnElementGroup.getValue() + System.lineSeparator();
 			writer.write(str);
 			
-			str = cboSampleField.getSelectedIndex() + System.lineSeparator() + cboSampleMethod.getSelectedIndex() + System.lineSeparator() + txtSamplePattern.getText() + System.lineSeparator();
+			str = cboSampleField.getSelectedIndex() + System.lineSeparator() + cboSampleMethod.getSelectedIndex() + System.lineSeparator() + txtSamplePattern.getText() + System.lineSeparator()+ spnSampleGroup.getValue() + System.lineSeparator();
 			writer.write(str);
 			
-			str = cboRadiusField.getSelectedIndex() + System.lineSeparator() + cboRadiusMethod.getSelectedIndex() + System.lineSeparator() + txtRadiusPattern.getText() + System.lineSeparator();
+			str = cboRadiusField.getSelectedIndex() + System.lineSeparator() + cboRadiusMethod.getSelectedIndex() + System.lineSeparator() + txtRadiusPattern.getText() + System.lineSeparator()+ spnRadiusGroup.getValue() + System.lineSeparator();
 			writer.write(str);
 			
-			str = cboSeriesField.getSelectedIndex() + System.lineSeparator() + cboSeriesMethod.getSelectedIndex() + System.lineSeparator() + txtSeriesPattern.getText() + System.lineSeparator();
+			str = cboSeriesField.getSelectedIndex() + System.lineSeparator() + cboSeriesMethod.getSelectedIndex() + System.lineSeparator() + txtSeriesPattern.getText() + System.lineSeparator()+ spnSeriesGroup.getValue() + System.lineSeparator();
 			writer.write(str);
 			
 		} catch (IOException e) {

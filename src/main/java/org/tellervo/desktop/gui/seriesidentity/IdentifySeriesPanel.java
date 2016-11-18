@@ -551,6 +551,9 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		
 		dialog.setLocationRelativeTo(containerFrame);
 		dialog.setVisible(true);
+		
+		if(dialog.cancelled) return;
+		
 
 		for(int i=0; i<model.getRowCount(); i++)
 		{
@@ -560,37 +563,43 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			String orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasObject.class));
 			MethodOptions method = dialog.getSelectedMethodOption(TridasObject.class);
 			String pattern = dialog.getPattern(TridasObject.class);
-			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 3);
+			Integer matchNum = dialog.getMatchNum(TridasObject.class, false);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern, matchNum), i, 3);
 			
 			// Sub-Object
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasObject.class, true));
 			method = dialog.getSelectedMethodOption(TridasObject.class, true);
 			pattern = dialog.getPattern(TridasObject.class, true);
-			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 4);
+			matchNum = dialog.getMatchNum(TridasObject.class, true);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern, matchNum), i, 4);
 			
 			// Element
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasElement.class));
 			method = dialog.getSelectedMethodOption(TridasElement.class);
 			pattern = dialog.getPattern(TridasElement.class);
-			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 5);
+			matchNum = dialog.getMatchNum(TridasElement.class, true);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern, matchNum), i, 5);
 			
 			// Sample
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasSample.class));
 			method = dialog.getSelectedMethodOption(TridasSample.class);
 			pattern = dialog.getPattern(TridasSample.class);
-			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 6);
+			matchNum = dialog.getMatchNum(TridasSample.class, true);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern, matchNum), i, 6);
 			
 			// Radius
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasRadius.class));
 			method = dialog.getSelectedMethodOption(TridasRadius.class);
 			pattern = dialog.getPattern(TridasRadius.class);
-			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 7);
+			matchNum = dialog.getMatchNum(TridasRadius.class, true);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern, matchNum), i, 7);
 			
 			// Series
 			orig = SeriesIdentityRegexDialog.getStringToTest(id, dialog.getSelectedFieldOption(TridasMeasurementSeries.class));
 			method = dialog.getSelectedMethodOption(TridasMeasurementSeries.class);
 			pattern = dialog.getPattern(TridasMeasurementSeries.class);
-			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern), i, 8);
+			matchNum = dialog.getMatchNum(TridasMeasurementSeries.class, true);
+			if(!method.equals(MethodOptions.NONE)) model.setValueAt(SeriesIdentityRegexDialog.getPatternMatch(orig, method, pattern, matchNum), i, 8);
 		}
 		
 		

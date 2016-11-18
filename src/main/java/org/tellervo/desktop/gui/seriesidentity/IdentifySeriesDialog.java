@@ -27,7 +27,10 @@ public class IdentifySeriesDialog extends DescriptiveDialog implements TableMode
 				+ "into the Tellervo database you need to identify which object, element, sample, radius and series they "
 				+ "belong to.  Some of these entities may already be in the database, others may need to be generated. You "
 				+ "can manually enter the names for each in the table below, or alternatively you can define them using "
-				+ "patterns in the file name, folder, or series 'keycode' from the original data file.", Builder.getIcon("fileimport.png", 64));
+				+ "patterns in the file name, folder, or series 'keycode' from the original data file. Any newly generated "
+				+ "entities will be skeleton entries with no metadata.  You will need to update the metadata via the metadata "
+				+ "browser after the import is complete.  A number of key metadata fields can be set, however, using the "
+				+ "'Set default parameters' button. ", Builder.getIcon("fileimport.png", 64));
 		
 		panel = new IdentifySeriesPanel(this, files, filetype);
 		getMainPanel().add(panel, BorderLayout.CENTER);
