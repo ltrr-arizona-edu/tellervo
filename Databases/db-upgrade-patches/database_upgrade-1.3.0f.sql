@@ -1,4 +1,4 @@
-SET pljava.libjvm_location TO '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so';
+SET pljava.libjvm_location TO '/usr/share/tellervo-server/libjvm.so';
 
 DELETE FROM sqlj.jar_repository where jarname='tellervo_jar';
 SELECT sqlj.install_jar('file:///usr/share/tellervo-server/tellervo-pljava.jar', 'tellervo_jar', false);

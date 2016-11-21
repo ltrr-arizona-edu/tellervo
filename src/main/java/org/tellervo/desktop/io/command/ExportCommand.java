@@ -143,7 +143,7 @@ public class ExportCommand implements ICommand {
 			tseries.getGenericFields().add(gf);
 			
 			if(tseries instanceof TridasMeasurementSeries)
-			{
+			{				
 				// Set all the standard mSeries entities
 				trad.getMeasurementSeries().clear();
 				trad.getMeasurementSeries().add((TridasMeasurementSeries) tseries);
@@ -194,6 +194,8 @@ public class ExportCommand implements ICommand {
 				naming = new HierarchicalNamingConvention();
 			}
 		}*/
+		
+		
 		
 		ConvertModel cmodel = new ConvertModel(event.model.getNodes());
 		cmodel.setTridasProjects(projList.toArray(new TridasProject[0]));

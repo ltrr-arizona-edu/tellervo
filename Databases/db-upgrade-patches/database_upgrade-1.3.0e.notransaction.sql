@@ -3,6 +3,6 @@
 
 \set ON_ERROR_STOP true
 
-SET pljava.libjvm_location TO '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so';
-ALTER SYSTEM SET pljava.libjvm_location TO '/usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so';
+SET pljava.libjvm_location TO '/usr/share/tellervo-server/libjvm.so';
+ALTER SYSTEM SET pljava.libjvm_location TO '/usr/share/tellervo-server/libjvm.so';
 CREATE EXTENSION IF NOT EXISTS pljava;
