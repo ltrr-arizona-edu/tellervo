@@ -458,6 +458,90 @@ class search Implements IDBAccessor
         		$filterSQL.= $param['table'].".code ";
         		$filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)))\n AND ";
         	}
+		elseif($param['field']=='topobjectcode')
+		{
+                        switch ($param['operator'])
+                        { 
+        			case "=":
+        				$operator = "IN";
+        				$value = "'".$param['value']."'";
+        				break;
+        			case "!=":
+        				$operator = "NOT IN";
+        				$value = "'".$param['value']."'";
+        				break;
+        			default:
+    					// No other operators allowed
+    					$this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
+        				return null;     				
+			}
+        		$filterSQL.= $param['table'].".code ";
+        		$filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)) AND parentobjectid IS NULL) \n AND ";
+		}
+		elseif($param['field']=='topobjectid')
+		{
+                        switch ($param['operator'])
+                        {
+                                case "=":
+                                        $operator = "IN";
+                                        $value = "'".$param['value']."'";
+                                        break;
+                                case "!=":
+                                        $operator = "NOT IN";
+                                        $value = "'".$param['value']."'";
+                                        break;
+                                default:
+                                        // No other operators allowed
+                                        $this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
+                                        return null;
+                        }
+                        $filterSQL.= $param['table'].".objectid ";
+                        $filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true) WHERE parentobjectid IS NULL) \n AND ";
+
+		}
+                elseif($param['field']=='subobjectcode')
+                {
+                        switch ($param['operator'])
+                        {
+                                case "=":
+                                        $operator = "IN";
+                                        $value = "'".$param['value']."'";
+                                        break;
+                                case "!=":
+                                        $operator = "NOT IN";
+                                        $value = "'".$param['value']."'";
+                                        break;
+                                default:
+                                        // No other operators allowed
+                                        $this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
+                                        return null;
+                        }
+                        $filterSQL.= $param['table'].".code ";
+                        $filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)) AND parentobjectid IS NOT NULL) \n AND ";
+                }
+                elseif($param['field']=='subobjectid')
+                {
+                        switch ($param['operator'])
+                        {
+                                case "=":
+                                        $operator = "IN";
+                                        $value = "'".$param['value']."'";
+                                        break;
+                                case "!=":
+                                        $operator = "NOT IN";
+                                        $value = "'".$param['value']."'";
+                                        break;
+                                default:
+                                        // No other operators allowed
+                                        $this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
+                                        return null;
+                        }
+                        $filterSQL.= $param['table'].".objectid ";
+                        $filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true) WHERE parentobjectid IS NOT NULL) \n AND ";
+
+                }
+
+
         	elseif($param['field']=='dependentseriesid')
         	{
         		$firebug->log("building filter SQL clause for seriesdependencyid");

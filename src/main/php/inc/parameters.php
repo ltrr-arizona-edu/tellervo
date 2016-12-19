@@ -121,6 +121,11 @@ class searchParameters implements IParams
 									'countOfChildSeriesOfObject' =>			array('tbl' => 'vwtblobject', 'field' => 'countofchildvmeasurements'),
 									'anyparentobjectid' =>					array('tbl' => 'vwtblobject', 'field' => 'anyparentobjectid'),
 									'anyparentobjectcode' =>				array('tbl' => 'vwtblobject', 'field' => 'anyparentobjectcode'),
+									'topobjectid' =>					array('tbl' => 'vwtblobject', 'field' => 'topobjectid'),
+									'topobjectcode' =>				array('tbl' => 'vwtblobject', 'field' => 'topobjectcode'),
+									'subobjectid' =>					array('tbl' => 'vwtblobject', 'field' => 'subobjectid'),
+									'subobjectcode' =>				array('tbl' => 'vwtblobject', 'field' => 'subobjectcode'),
+
 		
 									'boxid' => 								array('tbl' => 'vwtblbox', 'field' => 'boxid'),
 		

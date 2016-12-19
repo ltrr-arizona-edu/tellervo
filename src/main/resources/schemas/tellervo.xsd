@@ -170,6 +170,10 @@
 			<xs:enumeration value="countOfChildSeriesOfObject"/>
 			<xs:enumeration value="anyparentobjectid"/>
 			<xs:enumeration value="anyparentobjectcode"/>
+			<xs:enumeration value="topobjectid"/>
+			<xs:enumeration value="topobjectcode"/>
+			<xs:enumeration value="subobjectid"/>
+			<xs:enumeration value="subobjectcode"/>
 			<xs:enumeration value="objectlatitude"/>
 			<xs:enumeration value="objectlongitude"/>
 			

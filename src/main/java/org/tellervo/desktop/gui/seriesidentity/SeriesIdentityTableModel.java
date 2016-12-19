@@ -538,9 +538,9 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     			log.debug("Wrong number of codes for element when splitting: "+code); 
     			return null;
     		}
-    		
-    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, objectcode);
-    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
+
+    		param.addSearchConstraint(SearchParameterName.TOPOBJECTCODE, SearchOperator.EQUALS, codes[0]);
+    		if(codes[1]!=null && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
     		EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
     		dialog = new TellervoResourceAccessDialog(resource);
     		resource.query();	
@@ -566,8 +566,8 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     			log.debug("Wrong number of codes for sample when splitting: "+code); 
     			return null;
     		}
-    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, objectcode);
-    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
+    		param.addSearchConstraint(SearchParameterName.TOPOBJECTCODE, SearchOperator.EQUALS, codes[0]);
+    		if(codes[1]!=null && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
     		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[3]);
     		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
     		dialog = new TellervoResourceAccessDialog(resource);
@@ -594,8 +594,8 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     			log.debug("Wrong number of codes for radius when splitting: "+code); 
     			return null;
     		}
-    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, objectcode);
-    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[1]);
+    		param.addSearchConstraint(SearchParameterName.TOPOBJECTCODE, SearchOperator.EQUALS, codes[0]);
+    		if(codes[1]!=null && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[1]);
     		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[2]);
     		param.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.EQUALS, codes[3]);
     		EntitySearchResource<TridasRadius> resource = new EntitySearchResource<TridasRadius>(param, TridasRadius.class);
@@ -623,7 +623,8 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     			log.debug("Wrong number of codes for series when splitting: "+code); 
     			return null;
     		}
-    		param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, objectcode);
+    		param.addSearchConstraint(SearchParameterName.TOPOBJECTCODE, SearchOperator.EQUALS, codes[0]);
+    		if(codes[1]!=null && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);
     		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[1]);
     		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[2]);
     		param.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.EQUALS, codes[3]);
