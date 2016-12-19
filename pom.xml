@@ -219,6 +219,12 @@
 			<type>nbm</type>
 			<scope>compile</scope>
 		</dependency>
+		  <!-- hid4java for cross-platform HID USB -->
+		  <dependency>
+		    <groupId>org.hid4java</groupId>
+		    <artifactId>hid4java</artifactId>
+		    <version>0.4.0</version>
+		  </dependency>
 		<dependency>
 			<groupId>org.swinglabs</groupId>
 			<artifactId>swing-layout</artifactId>

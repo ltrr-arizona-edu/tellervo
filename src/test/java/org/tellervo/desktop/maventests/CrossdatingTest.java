@@ -22,6 +22,11 @@ package org.tellervo.desktop.maventests;
 import java.text.DecimalFormat;
 import java.util.StringTokenizer;
 
+import org.hid4java.HidDevice;
+import org.hid4java.HidManager;
+import org.hid4java.HidServices;
+import org.hid4java.HidServicesListener;
+import org.hid4java.event.HidServicesEvent;
 import org.tellervo.desktop.cross.Histogram;
 
 import junit.framework.TestCase;
@@ -32,6 +37,7 @@ public class CrossdatingTest extends TestCase {
     }
 
 
+   
 
     // testing histogram
     public void testHistogram() {
