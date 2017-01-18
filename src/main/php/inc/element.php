@@ -705,11 +705,11 @@ class element extends elementEntity implements IDBAccessor
                        	$sql.= dbHelper::tellervo_pg_escape_string($this->getShape(true)).", ";
                         if ($this->hasDimensions())								
 	                    {
-	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimensionUnits(true))."', ";
-	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('height'))."', ";
-	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('width'))."', ";
-	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('depth'))."', ";
-	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('diameter'))."', ";;              	
+	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimensionUnits(true)).", ";
+	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('height')).", ";
+	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('width')).", ";
+	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('depth')).", ";
+	                    	$sql.= dbHelper::tellervo_pg_escape_string($this->getDimension('diameter')).", ";;              	
 	                    }                        
                        	$sql.= dbHelper::tellervo_pg_escape_string($this->getAuthenticity()).", ";
                         $sql.= dbHelper::tellervo_pg_escape_string($this->location->getTypeID()).", ";

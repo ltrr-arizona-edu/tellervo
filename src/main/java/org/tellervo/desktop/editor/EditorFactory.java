@@ -606,7 +606,7 @@ public class EditorFactory {
 			
 		}
 
-		sample.setSeries(series);
+		//sample.setSeries(series);
 		
 		if(ringWidthValues!=null)
 		{
@@ -622,7 +622,7 @@ public class EditorFactory {
 				return null;
 			}
 			
-			sample.setRingWidthData(values2);
+			//sample.setRingWidthData(values2);
 		}
 		else
 		{
@@ -650,8 +650,8 @@ public class EditorFactory {
 				return null;
 			}
 			
-			sample.setEarlywoodWidthData(early);
-			sample.setLatewoodWidthData(late);
+			//sample.setEarlywoodWidthData(early);
+			//sample.setLatewoodWidthData(late);
 		}
 			
 		sample.setSeries(series);
