@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.io.IdentityItem;
 import org.tellervo.desktop.io.Metadata;
+import org.tellervo.desktop.sample.Element;
+import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.LabCode;
@@ -23,12 +25,15 @@ import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoEntityAssociatedResource;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesResource;
+import org.tellervo.desktop.wsi.tellervo.resources.SeriesSearchResource;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
@@ -71,7 +76,9 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 	private ArrayList<SeriesIdentity> ids = new ArrayList<SeriesIdentity>();
 	
 	private HashMap<String, ITridas> tridasCache = new HashMap<String, ITridas>();
-	private String codeDelimiter = "XXXXXDELIMITERXXXXX";
+	private String codeDelimiter = "xDELIMx";
+	
+	private boolean includeSubObjects = false;
 	
 	private static final long serialVersionUID = 1L;
 	private Window parent;
@@ -79,6 +86,11 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 	public SeriesIdentityTableModel(Window parent)
 	{
 		this.parent = parent;
+	}
+	
+	public void setIncludeSubObjects(boolean b)
+	{ 
+		this.includeSubObjects = b;
 	}
 
 	
@@ -331,7 +343,8 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				case 3: 
 					item = id.getObjectItem(); 
 					if(item==null || item.getCode()==null) continue;
-					code = id.getObjectItem().getCode();
+					
+					code = id.getObjectItem().getCode()+ codeDelimiter + "NULL";
 					
 					if(tridasCache.containsKey(code))
 					{
@@ -341,13 +354,17 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 					}
 					else 
 					{
-						entity = TridasManipUtil.getTridasObjectByCode(code);
+						entity = TridasManipUtil.getTridasObjectByCode(id.getObjectItem().getCode());
 						tridasCache.put(code, entity);
 						item.setDbChecked(true);
 						item.setInDatabase(entity!=null);
 					}
 					break;
 				case 4: 
+					
+					// Only search if we're doing subobjects
+					if(!includeSubObjects) continue;
+					
 					item = id.getSubObjectItem(); 
 					if(item==null || item.getCode()==null) continue;
 					code = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode(); 
@@ -369,7 +386,15 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				case 5: 
 					item = id.getElementItem();
 					if(item==null || item.getCode()==null) continue;
-					code = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode(); 
+					
+					String parentcode = id.getObjectItem().getCode() + codeDelimiter + "NULL";
+					if(this.includeSubObjects)
+					{
+						parentcode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode();
+					}
+					code = parentcode + codeDelimiter 
+							+ id.getElementItem().getCode();
+					
 					if(tridasCache.containsKey(code))
 					{
 						entity = tridasCache.get(code);
@@ -387,7 +412,15 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				case 6: 
 					item = id.getSampleItem();
 					if(item==null || item.getCode()==null) continue;
-					code = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode()+ codeDelimiter + id.getElementItem().getCode()+ codeDelimiter + id.getSampleItem().getCode();
+					
+					parentcode = id.getObjectItem().getCode() + codeDelimiter + "NULL";
+					if(this.includeSubObjects)
+					{
+						parentcode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode();
+					}
+					code = parentcode + codeDelimiter
+							+ id.getElementItem().getCode() + codeDelimiter 
+							+ id.getSampleItem().getCode();
 					if(tridasCache.containsKey(code))
 					{
 						entity = tridasCache.get(code);
@@ -405,7 +438,16 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				case 7: 
 					item = id.getRadiusItem();
 					if(item==null || item.getCode()==null) continue;
-					code = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode()+ codeDelimiter + id.getElementItem().getCode()+ codeDelimiter + id.getSampleItem().getCode()+codeDelimiter + id.getRadiusItem().getCode();
+					
+					parentcode = id.getObjectItem().getCode() + codeDelimiter + "NULL";
+					if(this.includeSubObjects)
+					{
+						parentcode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode();
+					}
+					code = parentcode + codeDelimiter 
+							+ id.getElementItem().getCode() + codeDelimiter 
+							+ id.getSampleItem().getCode() + codeDelimiter 
+							+ id.getRadiusItem().getCode();
 					if(tridasCache.containsKey(code))
 					{
 						entity = tridasCache.get(code);
@@ -423,12 +465,17 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				case 8: 
 					item = id.getSeriesItem(); 
 					if(item==null || item.getCode()==null) continue;
-					code = id.getObjectItem().getCode() + codeDelimiter + 
-						   id.getSubObjectItem().getCode()	+ codeDelimiter + 
-						   id.getElementItem().getCode()+ codeDelimiter + 
-						   id.getSampleItem().getCode()+codeDelimiter + 
-						   id.getRadiusItem().getCode()+codeDelimiter + 
-						   id.getSeriesItem().getCode();
+					
+					parentcode = id.getObjectItem().getCode() + codeDelimiter + "NULL";
+					if(this.includeSubObjects)
+					{
+						parentcode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode();
+					}
+					code = parentcode + codeDelimiter + 
+							id.getElementItem().getCode()+ codeDelimiter + 
+							id.getSampleItem().getCode()+ codeDelimiter + 
+							id.getRadiusItem().getCode()+ codeDelimiter +  
+							id.getSeriesItem().getCode();
 					if(tridasCache.containsKey(code))
 					{
 						entity = tridasCache.get(code);
@@ -454,12 +501,12 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 	private TridasObject searchForSubObjectByCode(String parentcode, String subobjectcode)
 	{
 		// Find all samples for an element 
-    	SearchParameters param = new SearchParameters(SearchReturnObject.OBJECT);
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SUBOBJECT);
     	
     	TellervoResourceAccessDialog dialog = null;
     	
-    	param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTCODE, SearchOperator.EQUALS, parentcode);
-    	param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, subobjectcode);
+    	param.addSearchConstraint(SearchParameterName.TOPOBJECTCODE, SearchOperator.EQUALS, parentcode);
+    	param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, subobjectcode);
 		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
 		dialog = new TellervoResourceAccessDialog(resource);
 		resource.query();
@@ -499,7 +546,9 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	
     	
     	String objectcode = codes[0];
-    	if(codes[1]!=null && !codes[1].equals("null") && codes[1].length()>0)
+    	if(codes.length<2) return null;
+    	
+    	if(codes[1]!=null && !codes[1].equals("NULL") && codes[1].length()>0)
     	{
     		objectcode = codes[1];
     	}
@@ -507,7 +556,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	
     	if(clazz.equals(SearchReturnObject.OBJECT))
     	{
-    		if(codes.length!=1) {
+    		if(codes.length!=2) {
     			log.debug("Wrong number of codes for object when splitting: "+code); 
     			return null;
     		}
@@ -540,7 +589,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     		}
 
     		param.addSearchConstraint(SearchParameterName.TOPOBJECTCODE, SearchOperator.EQUALS, codes[0]);
-    		if(codes[1]!=null && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
+    		if(codes[1]!=null && !codes[1].equals("NULL") && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
     		EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
     		dialog = new TellervoResourceAccessDialog(resource);
     		resource.query();	
@@ -567,7 +616,8 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     			return null;
     		}
     		param.addSearchConstraint(SearchParameterName.TOPOBJECTCODE, SearchOperator.EQUALS, codes[0]);
-    		if(codes[1]!=null && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
+    		if(codes[1]!=null && !codes[1].equals("NULL") && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);    		
+    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
     		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[3]);
     		EntitySearchResource<TridasSample> resource = new EntitySearchResource<TridasSample>(param, TridasSample.class);
     		dialog = new TellervoResourceAccessDialog(resource);
@@ -590,14 +640,15 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	}
     	else if (clazz.equals(SearchReturnObject.RADIUS))
     	{
-    		if(codes.length!=4) {
+    		if(codes.length!=5) {
     			log.debug("Wrong number of codes for radius when splitting: "+code); 
     			return null;
     		}
     		param.addSearchConstraint(SearchParameterName.TOPOBJECTCODE, SearchOperator.EQUALS, codes[0]);
-    		if(codes[1]!=null && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[1]);
-    		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[2]);
-    		param.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.EQUALS, codes[3]);
+    		if(codes[1]!=null && !codes[1].equals("NULL") && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);    		
+    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
+    		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[3]);
+    		param.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.EQUALS, codes[4]);
     		EntitySearchResource<TridasRadius> resource = new EntitySearchResource<TridasRadius>(param, TridasRadius.class);
     		dialog = new TellervoResourceAccessDialog(resource);
     		resource.query();	
@@ -619,17 +670,19 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     	}
     	else if (clazz.equals(SearchReturnObject.MEASUREMENT_SERIES))
     	{
-    		if(codes.length!=5) {
+    		if(codes.length!=6) {
     			log.debug("Wrong number of codes for series when splitting: "+code); 
     			return null;
     		}
     		param.addSearchConstraint(SearchParameterName.TOPOBJECTCODE, SearchOperator.EQUALS, codes[0]);
-    		if(codes[1]!=null && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);
-    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[1]);
-    		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[2]);
-    		param.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.EQUALS, codes[3]);
-    		param.addSearchConstraint(SearchParameterName.SERIESCODE, SearchOperator.EQUALS, codes[4]);
+    		if(codes[1]!=null && !codes[1].equals("NULL") && codes[1].length()>0) param.addSearchConstraint(SearchParameterName.SUBOBJECTCODE, SearchOperator.EQUALS, codes[1]);
+    		param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, codes[2]);
+    		param.addSearchConstraint(SearchParameterName.SAMPLECODE, SearchOperator.EQUALS, codes[3]);
+    		param.addSearchConstraint(SearchParameterName.RADIUSCODE, SearchOperator.EQUALS, codes[4]);
+    		param.addSearchConstraint(SearchParameterName.SERIESCODE, SearchOperator.EQUALS, codes[5]);
     		EntitySearchResource<TridasMeasurementSeries> resource = new EntitySearchResource<TridasMeasurementSeries>(param, TridasMeasurementSeries.class);
+			resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);
+
     		dialog = new TellervoResourceAccessDialog(resource);
     		resource.query();	
     		dialog.setVisible(true);
@@ -641,7 +694,10 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
     		
     		if(resource.getAssociatedResult()!=null && resource.getAssociatedResult().size()>0)
     		{
-    			return resource.getAssociatedResult().get(0);
+    			
+    			TridasMeasurementSeries got = resource.getAssociatedResult().get(0);
+    			return got;
+    			
     		}
     		else
     		{
@@ -651,7 +707,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 		return null;
 	}
 
-	public void generateMissingEntities(boolean includeSubObjects, DefaultEntityParametersDialog defaults)
+	public void generateMissingEntities(DefaultEntityParametersDialog defaults)
 	{
 		for(SeriesIdentity id : this.ids)
 		{
@@ -668,7 +724,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				
 				if(object!=null)
 				{
-					tridasCache.put(id.getObjectItem().getCode(), object);
+					tridasCache.put(id.getObjectItem().getCode()+ codeDelimiter+"NULL", object);
 				}
 				
 				searchForMatches(true);
@@ -686,7 +742,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 					object.setType((ControlledVoc) defaults.cboObjectType.getSelectedItem());
 					
 					
-					String parentCode = id.getObjectItem().getCode();
+					String parentCode = id.getObjectItem().getCode() + codeDelimiter + "NULL";
 					String thisCode   =id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode();
 					object = (TridasObjectEx) doSave(object, tridasCache.get(parentCode));
 					
@@ -710,12 +766,12 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				element.setType((ControlledVoc) defaults.cboElementType.getSelectedItem());
 				element.setTaxon((ControlledVoc) defaults.cboTaxon.getSelectedItem());
 
-				String parentCode = id.getObjectItem().getCode();		
-				String thisCode   = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode();
+				String parentCode = id.getObjectItem().getCode()+ codeDelimiter +"NULL";		
 				if(includeSubObjects)
 				{
 					parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode();
 				}
+				String thisCode   = parentCode + codeDelimiter + id.getElementItem().getCode();
 				element = (TridasElement) doSave(element, tridasCache.get(parentCode));
 				
 				if(element!=null)
@@ -734,9 +790,15 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				sample.setTitle(id.getSampleItem().getCode());
 				sample.setType((ControlledVoc) defaults.cboSampleType.getSelectedItem());
 
+
+				String oCodes = id.getObjectItem().getCode()+ codeDelimiter +"NULL";		
+				if(includeSubObjects)
+				{
+					oCodes = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode();
+				}
 				
-				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode();
-				String thisCode   =id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode();
+				String parentCode = oCodes + codeDelimiter + id.getElementItem().getCode();
+				String thisCode = parentCode + codeDelimiter + id.getSampleItem().getCode();
 				
 				ITridas parentitem = tridasCache.get(parentCode);
 				sample = (TridasSample) doSave(sample, parentitem);
@@ -774,8 +836,14 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				wc.setBark(bark);
 				radius.setWoodCompleteness(wc);
 				
-				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode();
-				String thisCode   = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode();
+				String oCodes = id.getObjectItem().getCode()+ codeDelimiter +"NULL";		
+				if(includeSubObjects)
+				{
+					oCodes = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode();
+				}
+				
+				String parentCode = oCodes + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode();
+				String thisCode   = parentCode + codeDelimiter + id.getRadiusItem().getCode();
 				
 				radius = (TridasRadius) doSave(radius, tridasCache.get(parentCode));
 				
@@ -805,8 +873,14 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 					((TridasMeasurementSeries) readerpopulatedseries).setMeasuringMethod(mm);
 				}
 				
-				String parentCode = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode();
-				String thisCode   = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode() + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode() + codeDelimiter + id.getSeriesItem().getCode();
+				String oCodes = id.getObjectItem().getCode()+ codeDelimiter +"NULL";		
+				if(includeSubObjects)
+				{
+					oCodes = id.getObjectItem().getCode() + codeDelimiter + id.getSubObjectItem().getCode();
+				}
+				
+				String parentCode = oCodes + codeDelimiter + id.getElementItem().getCode() + codeDelimiter + id.getSampleItem().getCode() + codeDelimiter + id.getRadiusItem().getCode();
+				String thisCode   = parentCode + codeDelimiter + id.getSeriesItem().getCode();
 
 				ITridasSeries dbseries = (ITridasSeries) doSave(readerpopulatedseries, tridasCache.get(parentCode));
 						
@@ -1077,6 +1151,8 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
+		
+		log.debug(" Entity saved successfully");
 		
 		// replace the saved result
 

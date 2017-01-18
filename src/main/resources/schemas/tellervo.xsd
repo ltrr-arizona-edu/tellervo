@@ -17,6 +17,7 @@
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="sample" />
 			<xs:enumeration value="object" />
+			<xs:enumeration value="subobject" />
 			<xs:enumeration value="element" />
 			<xs:enumeration value="radius" />
 			<xs:enumeration value="taxon" />

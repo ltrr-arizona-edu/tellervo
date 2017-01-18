@@ -635,7 +635,8 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			
 			if(n == JOptionPane.OK_OPTION)
 			{
-				model.generateMissingEntities(this.chkIncludeSubobjects.isSelected(), defaultEntitiesDialog);
+				model.setIncludeSubObjects(this.chkIncludeSubobjects.isSelected());
+				model.generateMissingEntities(defaultEntitiesDialog);
 			}
 			else if (n== JOptionPane.CANCEL_OPTION)
 			{
@@ -678,6 +679,7 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 		else if (evt.getActionCommand().equals("IncludeExcludeSubObjects"))
 		{
 			table.getColumnExt("SubObjectColumn").setVisible(this.chkIncludeSubobjects.isSelected());
+			model.setIncludeSubObjects(this.chkIncludeSubobjects.isSelected());
 		}
 		else if (evt.getActionCommand().equals("SetDefaults"))
 		{
@@ -731,7 +733,8 @@ public class IdentifySeriesPanel extends JPanel implements ActionListener, Table
 			
 			if(n == JOptionPane.OK_OPTION)
 			{
-				model.generateMissingEntities(this.chkIncludeSubobjects.isSelected(), this.defaultEntitiesDialog);
+				model.setIncludeSubObjects(this.chkIncludeSubobjects.isSelected());
+				model.generateMissingEntities(this.defaultEntitiesDialog);
 			}
 			
 			return;

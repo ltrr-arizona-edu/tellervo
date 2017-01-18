@@ -126,6 +126,7 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 	 class TimeoutTask extends java.util.TimerTask
 		{
 			private Integer countdown;
+			private boolean overrideshutdown = false;
 			MeasurePanel parent;
 			
 			TimeoutTask(MeasurePanel parent, Integer timeoutlength)
@@ -135,15 +136,27 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 			}
 			
 			@Override
+			public boolean cancel(){
+				overrideshutdown = true;
+				return super.cancel();				
+			}
+			
+			@Override
 			public void run() {
 				if(countdown==1)
 				{
-					cancel();
-					closeMeasuringPanel();
+					if(overrideshutdown==false) closeMeasuringPanel();
+					super.cancel();	
 					return;
 				}
 				
 				countdown--;
+				
+				if(overrideshutdown==true)
+				{
+					super.cancel();	
+					return; 
+				}
 				
 				if(countdown<=60)
 				{
