@@ -558,26 +558,25 @@ if($myMetaHeader->status != "Error")
         // ********************
         if($myMetaHeader->status != "Error")
         {
-            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Outputting XML...");
+            if ($debugFlag===TRUE) $myMetaHeader->setTiming("Outputting XML...");               	
 
-            if( ($myRequest->getCrudMode()=='delete') )
-            {
-                    // No return XML required for delete requests
-            }
-            else
-            {
-                    if($myRequest->getFormat()!=NULL)
-                    {
-                        $xmldata.= $myObject->asXML($myRequest->getFormat());
-                    }
-                    else
-                    {
-                        $xmldata.= $myObject->asXML();
-                    }
-            }
-            if ($debugFlag===TRUE) $myMetaHeader->setTiming("XML output complete");
+  	    if( ($myRequest->getCrudMode()=='delete') )
+	    { 
+		    // No return XML required for delete requests
+	    }
+	    else
+	    {
+		    if($myRequest->getFormat()!=NULL)
+		    {
+			$xmldata.= $myObject->asXML($myRequest->getFormat());
+		    }
+		    else
+		    {
+			$xmldata.= $myObject->asXML();
+		    }
+	    }
+            if ($debugFlag===TRUE) $myMetaHeader->setTiming("XML output complete");                   
         }
-        
         
 
     // END Monster Foreach loop    

@@ -139,7 +139,15 @@ class search Implements IDBAccessor
         }
 
         // Build return object dependent SQL
-        $returnObjectSQL = "DISTINCT ON (".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id)". $this->tableName($this->returnObject).".* ";
+	if($this->includesSubObjects($myRequest->paramsArray) && $this->returnObject=='subobject')
+	{
+        	$returnObjectSQL = "DISTINCT ON (".$this->tableName('subobject').".objectid)". $this->tableName('subobject').".* ";
+		$myRequest->returnObject='subobject';
+	}
+	else
+	{
+        	$returnObjectSQL = "DISTINCT ON (".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id)". $this->tableName($this->returnObject).".* ";
+	}
         //$returnObjectSQL = $this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id as id ";
         $orderBySQL      = "\n ORDER BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id asc ";
         //$groupBySQL      = "\n GROUP BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id" ;
@@ -188,7 +196,7 @@ class search Implements IDBAccessor
         while ($row = pg_fetch_array($result))
         {                   	
             // Check user has permission to read requested entity
-            if($this->returnObject=="object") 
+            if($this->returnObject=="object" || $this->returnObject=='subobject') 
             {
             	$firebug->log("Checking object permissions");
                 $myReturnObject = new object();
@@ -460,23 +468,24 @@ class search Implements IDBAccessor
         	}
 		elseif($param['field']=='topobjectcode')
 		{
-                        switch ($param['operator'])
-                        { 
-        			case "=":
-        				$operator = "IN";
-        				$value = "'".$param['value']."'";
-        				break;
-        			case "!=":
-        				$operator = "NOT IN";
-        				$value = "'".$param['value']."'";
-        				break;
-        			default:
-    					// No other operators allowed
-    					$this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
-        				return null;     				
+			switch ($param['operator'])
+			{ 
+				case "=":
+					$operator = "IN";
+					$value = "'".$param['value']."'";
+					break;
+				case "!=":
+					$operator = "NOT IN";
+					$value = "'".$param['value']."'";
+					break;
+				default:
+					// No other operators allowed
+					$this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
+					return null;     				
 			}
-        		$filterSQL.= $param['table'].".code ";
-        		$filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)) AND parentobjectid IS NULL) \n AND ";
+			$table = $this->tableName("object");
+			$filterSQL.= $table.".code ";
+			$filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)) AND parentobjectid IS NULL) \n AND ";
 		}
 		elseif($param['field']=='topobjectid')
 		{
@@ -495,7 +504,8 @@ class search Implements IDBAccessor
                                         $this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
                                         return null;
                         }
-                        $filterSQL.= $param['table'].".objectid ";
+			$table = $this->tableName("object");
+                        $filterSQL.= $table.".objectid ";
                         $filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true) WHERE parentobjectid IS NULL) \n AND ";
 
 		}
@@ -516,8 +526,10 @@ class search Implements IDBAccessor
                                         $this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
                                         return null;
                         }
-                        $filterSQL.= $param['table'].".code ";
-                        $filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)) AND parentobjectid IS NOT NULL) \n AND ";
+			$table = $this->tableName("object");
+			if($this->includesSubObjects($paramsArray)) $table = $this->tableName("subobject");
+                        $filterSQL.= $table.".objectid ";
+                        $filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)) \n AND $table.parentobjectid IS NOT NULL \n AND ";
                 }
                 elseif($param['field']=='subobjectid')
                 {
@@ -536,7 +548,9 @@ class search Implements IDBAccessor
                                         $this->setErrorMessage("901", "Invalid search operator used. The '".$param['field']."' field can use only = or != equals operators");
                                         return null;
                         }
-                        $filterSQL.= $param['table'].".objectid ";
+			$table = $this->tableName("object");
+			if($this->includesSubObjects($paramsArray)) $table = $this->tableName("subobject");
+                        $filterSQL.= $table.".objectid ";
                         $filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true) WHERE parentobjectid IS NOT NULL) \n AND ";
 
                 }
@@ -627,6 +641,9 @@ class search Implements IDBAccessor
         case "tag":
             return $objectName;
             break;
+  	case "subobject":
+	    return "object";
+	    break;
         case "vmeasurement":
             return "vmeasurement";
             break;     			
@@ -649,6 +666,9 @@ class search Implements IDBAccessor
         {
         case "object":
             return "vwtblobject";
+            break;
+        case "subobject":
+            return "tblsubobject";
             break;
         case "element":
             return "vwtblelement";
@@ -711,7 +731,31 @@ class search Implements IDBAccessor
     	return $uniqTables;
     }
     
-    
+    /**  
+    * Return true if both subobjects and objects are in query
+    */
+    private function includesSubObjects($paramsArray)
+    {
+	global $firebug;
+	
+	$so = false;
+    	foreach ($paramsArray as $param)
+    	{
+                if($param['field']=='subobjectcode') $so = true;
+                if($param['field']=='subobjectid') $so = true;
+    	}
+
+	$tables  = $this->tablesFromParams($paramsArray);
+
+	if (in_array('vwtblobject', $tables) && $so===TRUE)
+	{
+		return true;		
+	}
+
+	return false;
+
+    }   
+ 
     private function fromSQL($paramsArray)
     {    
     	global $firebug;
@@ -734,31 +778,56 @@ class search Implements IDBAccessor
 		return $fromSQL .= "tblodkdefinition";
 	}
         
-        if( (($this->getLowestRelationshipLevel($tables)<=5) && ($this->getHighestRelationshipLevel($tables)>=5)) || ($this->returnObject == 'object'))  
-        {
-            if($withinJoin)
-            {
-                $fromSQL .= $this->tableName("object")." \n";
-            }
-            else
-            {
-                $fromSQL .= $this->tableName("object")." \n";
-                $withinJoin = TRUE;
-            }
-        }
-        
-        if( (($this->getLowestRelationshipLevel($tables)<=4) && ($this->getHighestRelationshipLevel($tables)>=4)) || ($this->returnObject == 'element'))
-        {
-            if($withinJoin)
-            {
-                $fromSQL .= "INNER JOIN ".$this->tableName("element")." ON ".$this->tableName("object").".objectid = ".$this->tableName("element").".objectid \n";
-            }
-            else
-            {
-                $fromSQL .= $this->tableName("element")." \n";
-                $withinJoin = TRUE;
-            }
-        }        
+	if($this->includesSubObjects($paramsArray))
+	{
+		if( (($this->getLowestRelationshipLevel($tables)<=5) && ($this->getHighestRelationshipLevel($tables)>=5)) || ($this->returnObject == 'object'))  
+		{
+			$fromSQL .= $this->tableName("object")." \n";
+			$fromSQL .= "INNER JOIN ".$this->tableName("object")." AS ".$this->tableName("subobject")." ON ".$this->tableName("object").".objectid = ".$this->tableName("subobject").".parentobjectid \n";
+			$withinJoin = TRUE;
+		}
+		
+		if( (($this->getLowestRelationshipLevel($tables)<=4) && ($this->getHighestRelationshipLevel($tables)>=4)) || ($this->returnObject == 'element'))
+		{
+		    if($withinJoin)
+		    {
+			$fromSQL .= "INNER JOIN ".$this->tableName("element")." ON ".$this->tableName("subobject").".objectid = ".$this->tableName("element").".objectid \n";
+		    }
+		    else
+		    {
+			$fromSQL .= $this->tableName("element")." \n";
+			$withinJoin = TRUE;
+		    }
+		}
+	}        
+	else
+	{
+		if( (($this->getLowestRelationshipLevel($tables)<=5) && ($this->getHighestRelationshipLevel($tables)>=5)) || ($this->returnObject == 'object'))  
+		{
+		    if($withinJoin)
+		    {
+			$fromSQL .= $this->tableName("object")." \n";
+		    }
+		    else
+		    {
+			$fromSQL .= $this->tableName("object")." \n";
+			$withinJoin = TRUE;
+		    }
+		}
+		
+		if( (($this->getLowestRelationshipLevel($tables)<=4) && ($this->getHighestRelationshipLevel($tables)>=4)) || ($this->returnObject == 'element'))
+		{
+		    if($withinJoin)
+		    {
+			$fromSQL .= "INNER JOIN ".$this->tableName("element")." ON ".$this->tableName("object").".objectid = ".$this->tableName("element").".objectid \n";
+		    }
+		    else
+		    {
+			$fromSQL .= $this->tableName("element")." \n";
+			$withinJoin = TRUE;
+		    }
+		}
+	}
 
         if( (($this->getLowestRelationshipLevel($tables)<=3) && ($this->getHighestRelationshipLevel($tables)>=3)) || ($this->returnObject == 'sample'))
         {
