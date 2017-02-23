@@ -58,6 +58,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	public static final String BOX = "Box";
 	public static final String IMPORTED = "Imported";
 	public static final String EXTERNAL_ID = "External ID";
+	public static final String SAMPLE_STATUS = "Sample Status";
 
 	
 	// radius stuff
@@ -70,7 +71,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 
 	public static final String[] TABLE_PROPERTIES = {
 		OBJECT, ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION, FILES,
-		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, EXTERNAL_ID, IMPORTED
+		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, EXTERNAL_ID, SAMPLE_STATUS, IMPORTED
 	};
 	
 	
@@ -203,6 +204,21 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			field.setType("xs:string");
 			field.setValue(getProperty(EXTERNAL_ID).toString());
 		}
+		if(getProperty(SAMPLE_STATUS) != null){
+			TridasGenericField field = null;
+			for(TridasGenericField gf: argSample.getGenericFields()){
+				if(gf.getName().equals("tellervo.sampleStatus")){
+					field = gf;
+				}
+			}
+			if(field == null){
+				field = new TridasGenericField();
+				argSample.getGenericFields().add(field);
+			}
+			field.setName("tellervo.sampleStatus");
+			field.setType("xs:string");
+			field.setValue(getProperty(SAMPLE_STATUS).toString());
+		}
 		
 		argSample.setIdentifier((TridasIdentifier) getProperty(IMPORTED));
 	}
@@ -232,6 +248,9 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			else if(gf.getName().equals("tellervo.externalID")){
 				
 				setProperty(EXTERNAL_ID, gf.getValue());
+			}
+			else if(gf.getName().equals("tellervo.sampleStatus")){
+				setProperty(SAMPLE_STATUS, gf.getValue());
 			}
 		}
 			

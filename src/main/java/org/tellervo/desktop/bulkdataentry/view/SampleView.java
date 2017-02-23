@@ -29,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.util.Comparator;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
@@ -56,6 +57,7 @@ import org.tellervo.desktop.components.table.TridasElementRenderer;
 import org.tellervo.desktop.components.table.TridasFileListEditor;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.components.table.WSIBoxRenderer;
+import org.tellervo.desktop.components.table.WSISampleStatusRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
@@ -66,8 +68,10 @@ import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
 import org.tellervo.desktop.tridasv2.ui.TridasDatingCellRenderer;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.schema.SampleStatus;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIBoxDictionary;
+import org.tellervo.schema.WSISampleStatusDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
 import org.tridas.schema.Date;
 import org.tridas.schema.TridasElement;
@@ -217,6 +221,26 @@ public class SampleView extends AbstractBulkImportView {
 				new ComboBoxCellEditor(cboBox));
 		argTable.setDefaultRenderer(WSIBoxDictionary.class,
 				new WSIBoxRenderer());
+		
+		JComboBox<SampleStatus> cboSampleStatus = new JComboBox<SampleStatus>(SampleStatus.values());
+		cboSampleStatus.setRenderer(new WSISampleStatusRenderer());
+		cboSampleStatus.setKeySelectionManager(new DynamicKeySelectionManager() {
+
+			@Override
+			public String convertToString(Object argO) {
+				if (argO == null) {
+					return "";
+				}
+				return ((SampleStatus) argO).value();
+			}
+		});
+
+		argTable.setDefaultEditor(WSISampleStatusDictionary.class,
+				new ComboBoxCellEditor(cboSampleStatus));
+		argTable.setDefaultRenderer(WSISampleStatusDictionary.class,
+				new WSISampleStatusRenderer());
+		
+		
 
 		/*
 		 * MVCJComboBox<TridasObjectEx> obj = new

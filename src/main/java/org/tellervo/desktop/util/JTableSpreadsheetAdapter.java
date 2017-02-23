@@ -5,6 +5,7 @@ import java.awt.event.*;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +59,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
    
    private List<ControlledVoc> taxonDictionary = Dictionary.getMutableDictionary("taxonDictionary");
    
+   private DefaultTableModel pasteErrorTableModel;
    
    
    /**
@@ -263,6 +265,10 @@ public class JTableSpreadsheetAdapter implements ActionListener
 	public void doPaste()
 	{
 		Boolean errorsEncountered = false;
+		pasteErrorTableModel = new DefaultTableModel();
+		pasteErrorTableModel.addColumn("Row");
+		pasteErrorTableModel.addColumn("Column");
+		pasteErrorTableModel.addColumn("Description");
 		
 		
         int startRow=(mainTable.getSelectedRows())[0];
@@ -346,7 +352,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							}
 						}
 						if(match==false) {
-							System.out.println("Error in WSIObjectTypeDictionary");
+							logPasteError(i,j,value,"Only items from the object type dictionary can be used.");
 							errorsEncountered = true;
 						}
 											
@@ -358,13 +364,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						for(ControlledVoc cvoc : types)
 						{
 							if(cvoc.getNormal().equals(value)) {
-				                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
 								tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
 								match = true;
 							}
 						}
 						if(match==false) {
-							System.out.println("Error in WSIElementTypeDictionary");
+							logPasteError(i,j,value,"Only items from the element type dictionary can be used.");
 							errorsEncountered = true;
 						}						
 					}
@@ -375,13 +380,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						for(ControlledVoc cvoc : types)
 						{
 							if(cvoc.getNormal().equals(value)) {
-				                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
 								tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
 								match = true;
 							}
 						}
 						if(match==false) {
-							System.out.println("Error in WSISampleTypeDictionary");
+							logPasteError(i,j,value,"Only items from the sample type dictionary can be used.");
 							errorsEncountered = true;
 						}						
 					}
@@ -398,7 +402,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							}
 						}
 						if(match==false) {
-							System.out.println("Error in WSIBoxDictionary");
+							logPasteError(i,j,value,"Only items from the object type dictionary can be used.");
 							errorsEncountered = true;
 						}						
 					}
@@ -409,15 +413,13 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						for(ControlledVoc cvoc : taxonDictionary)
 						{
 							if(cvoc.getNormal().equals(value)) {
-				                 System.out.println("Putting controlled voc "+ cvoc.getNormal()+" at row="+startRow+i+"column="+startCol+j);
 								tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
 								match = true;
 							}
 						}
 						if(match==false) {
-							System.out.println("Error in WSITaxonDictionary");
-							log.debug("Cannont find entry for '"+value+"'");
-							log.debug("Number of taxa in dictionary = "+taxonDictionary.size());
+							logPasteError(i,j,value,"Only items from the taxon dictionary can be used.");
+
 							errorsEncountered = true;
 						}						
 					}
@@ -436,7 +438,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							}
 						}
 						if(match==false) {
-							System.out.println("Error in TridasShape");
+							logPasteError(i,j,value,"Only items from the shape dictionary can be used.");
 							errorsEncountered = true;
 						}						
 					}
@@ -455,7 +457,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							}
 						}
 						if(match==false) {
-							System.out.println("Error in TridasShape");
+							logPasteError(i,j,value,"Only units defined by TRiDaS can be used.");
 							errorsEncountered = true;
 						}						
 					}
@@ -473,7 +475,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							}
 						}
 						if(match==false) {
-							System.out.println("Error in TridasObject");
+							logPasteError(i,j,value,"Only the names of existing objects can be specified");
 							errorsEncountered = true;
 						}
 					}
@@ -500,7 +502,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						}
 						else
 						{
-							System.out.println("Error in Boolean");
+							logPasteError(i,j,value,"Invalid boolean value.  Must be one of: true; yes; t; y; false; no; f; n; or null.");
 							errorsEncountered = true;
 						}
 					}
@@ -514,7 +516,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							tablemodel.setValueAt(dbl, rowIndex,startCol+j);
 						} catch (NumberFormatException e)
 						{
-							System.out.println("Error in Double");
+							logPasteError(i,j,value,"Not a valid decimal number");
 							errorsEncountered = true;
 						}
 					}else if (clazz.equals(org.tridas.schema.Date.class))
@@ -547,7 +549,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							tablemodel.setValueAt(schemadate,rowIndex,startCol+j);
 						} catch (Exception e)
 						{
-							System.out.println("Error in date");
+							logPasteError(i,j,value,"Not a valid representation of a date");
 							errorsEncountered = true;
 						}
 					}
@@ -601,15 +603,25 @@ public class JTableSpreadsheetAdapter implements ActionListener
         mainTable.repaint();
         if (errorsEncountered)
         {
-        	Alert.error("Error", "One or more errors were encountered when pasting data.  Erroneous fields will be left blank." +
-        						 "Check the data you are pasting is in the correct format " +
-        						 "and try again." );
+        	PasteErrorReportDialog dialog = new PasteErrorReportDialog(this.pasteErrorTableModel);
+        	dialog.setVisible(true);
+        	
+        	//Alert.error("Error", "One or more errors were encountered when pasting data.  Erroneous fields will be left blank." +
+        		//				 "Check the data you are pasting is in the correct format " +
+        			//			 "and try again." );
         }
         
         
 	}
 	
-	
+	private void logPasteError(int row, int col, String value, String msg)
+	{
+		String colname = mainTable.getModel().getColumnName(col+2);
+		
+		
+		Object[] error = {row+1,colname,value, "Object type '"+value+"' is not valid.  Only items from the object type dictionary can be used."};
+		pasteErrorTableModel.addRow(error);
+	}
 	
 	
 

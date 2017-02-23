@@ -1022,6 +1022,8 @@ public class PopulateFromODKCommand implements ICommand {
 			newrow.setProperty(SingleSampleModel.POSITION, parser.getFieldValueAsStringFromNodeList("tridas_sample_position", node.getChildNodes()));
 			newrow.setProperty(SingleSampleModel.STATE, parser.getFieldValueAsStringFromNodeList("tridas_sample_state", node.getChildNodes()));
 			newrow.setProperty(SingleSampleModel.EXTERNAL_ID, parser.getFieldValueAsStringFromNodeList("tridas_sample_externalid", node.getChildNodes()));
+			newrow.setProperty(SingleSampleModel.SAMPLE_STATUS, parser.getFieldValueAsStringFromNodeList("tridas_sample_samplestatus", node.getChildNodes()));
+
 
 			try{
 				String knots = parser.getFieldValueAsStringFromNodeList("tridas_sample_knots", node.getChildNodes());

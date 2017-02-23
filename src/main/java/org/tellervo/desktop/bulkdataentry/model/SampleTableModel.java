@@ -31,6 +31,7 @@ import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.WSIBoxDictionary;
+import org.tellervo.schema.WSISampleStatusDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
@@ -78,6 +79,9 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 			return TridasObjectOrPlaceholder.class;
 		}else if (argColumn.equals(SingleSampleModel.FILES)){
 			return TridasFileList.class;
+		}else if (argColumn.equals(SingleSampleModel.SAMPLE_STATUS))
+		{
+			return WSISampleStatusDictionary.class;
 		}
 		return null;
 	}
