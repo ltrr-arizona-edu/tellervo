@@ -426,7 +426,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							}
 						}
 						if(match==false) {
-							logPasteError(i,j,value,"Only items from the object type dictionary can be used.");
+							logPasteError(i,j,value,"Only items from the box dictionary can be used.");
 							errorsEncountered = true;
 						}						
 					}
@@ -663,7 +663,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 		String colname = mainTable.getModel().getColumnName(col+2);
 		
 		
-		Object[] error = {row+1,colname,value, "Object type '"+value+"' is not valid.  Only items from the object type dictionary can be used."};
+		Object[] error = {row+1,colname,value, msg};
 		pasteErrorTableModel.addRow(error);
 	}
 	
