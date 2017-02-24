@@ -130,14 +130,24 @@ public class ImportSelectedElementsCommand implements ICommand {
 				}else{
 					String attempt = som.getProperty(SingleElementModel.LATITUDE).toString().trim();
 					try{
-						Double.parseDouble(attempt);
+						Double lat = Double.parseDouble(attempt);
+						if(lat>-90 || lat<90)
+						{
+							requiredMessages.add("Latitude must be between -90 and 90");
+							incomplete = true;
+						}
 					}catch(NumberFormatException e){
 						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
 						incomplete = true;
 					}
 					attempt = som.getProperty(SingleElementModel.LONGITUDE).toString().trim();
 					try{
-						Double.parseDouble(attempt);
+						Double lng = Double.parseDouble(attempt);
+						if(lng>-180 || lng<180)
+						{
+							requiredMessages.add("Longitude must be between -180 and 180");
+							incomplete = true;
+						}
 					}catch(NumberFormatException e){
 						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
 						incomplete = true;

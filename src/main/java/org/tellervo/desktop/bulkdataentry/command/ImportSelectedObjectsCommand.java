@@ -133,14 +133,40 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				requiredMessages.add("Object must have a title");
 				incomplete = true;
 			}
-			
+						
 			// lat/long
 			if(definedProps.contains(SingleObjectModel.LATITUDE) || definedProps.contains(SingleObjectModel.LONGITUDE)){
 				if(!definedProps.contains(SingleObjectModel.LATITUDE) || !definedProps.contains(SingleObjectModel.LONGITUDE)){
 					requiredMessages.add("If coordinates are specified then both latitude and longitude are required");
 					incomplete = true;
+				}else{
+					String attempt = som.getProperty(SingleObjectModel.LATITUDE).toString().trim();
+					try{
+						Double lat = Double.parseDouble(attempt);
+						if(lat>-90 || lat<90)
+						{
+							requiredMessages.add("Latitude must be between -90 and 90");
+							incomplete = true;
+						}
+					}catch(NumberFormatException e){
+						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
+						incomplete = true;
+					}
+					attempt = som.getProperty(SingleObjectModel.LONGITUDE).toString().trim();
+					try{
+						Double lng = Double.parseDouble(attempt);
+						if(lng>-180 || lng<180)
+						{
+							requiredMessages.add("Longitude must be between -180 and 180");
+							incomplete = true;
+						}
+					}catch(NumberFormatException e){
+						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
+						incomplete = true;
+					}
 				}
 			}
+			
 			
 			
 			if(incomplete){
