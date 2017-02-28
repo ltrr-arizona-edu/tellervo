@@ -54,6 +54,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	private JMenuItem miBoxLabel;
 	private JMenuItem miBasicBoxLabel;
 	private JMenuItem miSampleBoxLabel;
+	private JMenuItem miRecordCard;
 	private JMenuItem miDatabaseStatistics;
 	private JMenu miCurationMenu;
 	private JMenuItem miCurationMenuFindSample;
@@ -244,9 +245,11 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		miBoxLabel = new JMenuItem(actions.adminBoxLabelAction);
 		miBasicBoxLabel = new JMenuItem(actions.adminBasicBoxLabelAction);
 		miSampleBoxLabel = new JMenuItem(actions.adminSampleLabelAction);
+		miRecordCard = new JMenuItem(actions.adminRecordCardAction);
 		miLabels.add(miBoxLabel);
 		miLabels.add(miBasicBoxLabel);
 		miLabels.add(miSampleBoxLabel);
+		miLabels.add(miRecordCard);
 		mnAdministration.add(miLabels);
 		
 		

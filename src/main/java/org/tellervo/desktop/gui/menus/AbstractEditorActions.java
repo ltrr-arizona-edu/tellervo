@@ -28,6 +28,7 @@ import org.tellervo.desktop.gui.menus.actions.AdminEditViewPermissionsAction;
 import org.tellervo.desktop.gui.menus.actions.AdminForgetPasswordAction;
 import org.tellervo.desktop.gui.menus.actions.AdminLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
+import org.tellervo.desktop.gui.menus.actions.AdminRecordCardAction;
 import org.tellervo.desktop.gui.menus.actions.AdminReportsAction;
 import org.tellervo.desktop.gui.menus.actions.AdminSampleLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminSiteMapAction;
@@ -138,6 +139,7 @@ public abstract class AbstractEditorActions{
 	public Action adminLabelAction;
 	public Action adminBoxLabelAction;
 	public Action adminBasicBoxLabelAction;
+	public Action adminRecordCardAction;
 	public Action adminSampleLabelAction;
 	public Action adminDatabaseStatisticsAction;
 	public Action adminCurationMenuBoxDetailsAction;
@@ -233,6 +235,7 @@ public abstract class AbstractEditorActions{
 		adminReportsAction = new AdminReportsAction();
 		adminLabelAction = new AdminLabelAction();
 		adminBoxLabelAction = new AdminBoxLabelAction();
+		adminRecordCardAction = new AdminRecordCardAction();
 		adminBasicBoxLabelAction = new AdminBasicBoxLabelAction();
 		adminSampleLabelAction = new AdminSampleLabelAction();
 		adminDatabaseStatisticsAction = new AdminDatabaseStatisticsAction();
