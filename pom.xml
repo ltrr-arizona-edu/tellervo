@@ -125,7 +125,7 @@
 
 	<!-- Repository to deploy to. When deploying make sure your .m2/settings.xml 
 		file contains the correct username and password for the repository server -->
-	<distributionManagement>
+	<!-- <distributionManagement>
 		<repository>
 			<id>tridas-releases</id>
 			<url>http://maven.tridas.org/repository/tridas-releases/</url>
@@ -134,7 +134,7 @@
 			<id>tridas-snapshots</id>
 			<url>http://maven.tridas.org/repository/tridas-snapshots/</url>
 		</snapshotRepository>
-	</distributionManagement>
+	</distributionManagement>-->
 
 	<!-- Packages that this project depends upon -->
 	<dependencies>

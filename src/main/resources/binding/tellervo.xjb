@@ -128,4 +128,111 @@
 	</jaxb:bindings>
 		
 
+<!-- ICMS -->
+	<jaxb:bindings schemaLocation="../schemas/icms.xsd" node="/xs:schema">
+		<jaxb:schemaBindings>
+			<jaxb:package name="com.rediscov.schema"/>
+			<jaxb:nameXmlTransform>
+				<jaxb:elementName prefix="ICMS" />
+			</jaxb:nameXmlTransform>
+		</jaxb:schemaBindings>
+		
+		<jaxb:bindings node="//xs:element[@name='Ctrl_x0020_Prop']">
+	      <jaxb:property name="CtrlProp"/>
+	    </jaxb:bindings>
+	    
+	    <jaxb:bindings node="//xs:element[@name='Class_x0020_1']">
+	      <jaxb:property name="Class1"/>
+	    </jaxb:bindings>
+	    <jaxb:bindings node="//xs:element[@name='Class_x0020_2']">
+	      <jaxb:property name="Class2"/>
+	    </jaxb:bindings>
+	    <jaxb:bindings node="//xs:element[@name='Class_x0020_3']">
+	      <jaxb:property name="Class3"/>
+	    </jaxb:bindings>
+	    <jaxb:bindings node="//xs:element[@name='Class_x0020_4']">
+	      <jaxb:property name="Class4"/>
+	    </jaxb:bindings>
+	    <jaxb:bindings node="//xs:element[@name='Object_x0028_NOM_x0029_']">
+	      <jaxb:property name="ObjectNom"/>
+	    </jaxb:bindings>	    
+	    <jaxb:bindings node="//xs:element[@name='Catalog_x0020__x0023_']">
+	      <jaxb:property name="CatalogCode"/>
+	    </jaxb:bindings>	
+	    <jaxb:bindings node="//xs:element[@name='Accession_x0020__x0023_']">
+	      <jaxb:property name="AccessionCode"/>
+	    </jaxb:bindings>		    
+	    <jaxb:bindings node="//xs:element[@name='Object_x0020_Status']">
+	      <jaxb:property name="ObjectStatus"/>
+	    </jaxb:bindings>		    
+	    <jaxb:bindings node="//xs:element[@name='Status_x0020_Date']">
+	      <jaxb:property name="StatusDate"/>
+	    </jaxb:bindings>	
+	    <jaxb:bindings node="//xs:element[@name='Item_x0020_Count']">
+	      <jaxb:property name="ItemCount"/>
+	    </jaxb:bindings>	    
+	    <jaxb:bindings node="//xs:element[@name='Storage_x0020_Unit']">
+	      <jaxb:property name="StorageUnit"/>
+	    </jaxb:bindings>	    
+	    <jaxb:bindings node="//xs:element[@name='Other_x0020_Numbers']">
+	      <jaxb:property name="OtherNumbers"/>
+	    </jaxb:bindings>
+	    <jaxb:bindings node="//xs:element[@name='Catalog_x0020_Date']">
+	      <jaxb:property name="CatalogDate"/>
+	    </jaxb:bindings>	    
+	    <jaxb:bindings node="//xs:element[@name='Identified_x0020_By']">
+	      <jaxb:property name="IdentifiedBy"/>
+	    </jaxb:bindings>	    
+	    <jaxb:bindings node="//xs:element[@name='Ident_x0020_Date']">
+	      <jaxb:property name="IdentDate"/>
+	    </jaxb:bindings>		    
+	    <jaxb:bindings node="//xs:element[@name='Field_x0020_Site_x0020__x0023_']">
+	      <jaxb:property name="FieldSite"/>
+	    </jaxb:bindings>		
+	    <jaxb:bindings node="//xs:element[@name='State_x0020_Site_x0020__x0023_']">
+	      <jaxb:property name="StateSite"/>
+	    </jaxb:bindings>		    
+	    <jaxb:bindings node="//xs:element[@name='Site_x0020_Name']">
+	      <jaxb:property name="SiteName"/>
+	    </jaxb:bindings>	    
+	    <jaxb:bindings node="//xs:element[@name='Within_x0020_Site']">
+	      <jaxb:property name="WithinSite"/>
+	    </jaxb:bindings>	    	    
+	    <jaxb:bindings node="//xs:element[@name='UTM_x0020_Z_x002F_E_x002F_N']">
+	      <jaxb:property name="UTMCoords"/>
+	    </jaxb:bindings>	
+	    <jaxb:bindings node="//xs:element[@name='Lat_x0020_LongN_x002F_W']">
+	      <jaxb:property name="LatLonCoords"/>
+	    </jaxb:bindings>	    
+	    <jaxb:bindings node="//xs:element[@name='Hist_x002F_Cult_x0020_Per']">
+	      <jaxb:property name="HistCultPer"/>
+	    </jaxb:bindings>		    
+	    <jaxb:bindings node="//xs:element[@name='Cultural_x0020_ID']">
+	      <jaxb:property name="CulturalID"/>
+	    </jaxb:bindings>	    
+	    <jaxb:bindings node="//xs:element[@name='Fld_x0020_Specimen_x0020__x0023_']">
+	      <jaxb:property name="FldSpecimen"/>
+	    </jaxb:bindings>	    
+	    <jaxb:bindings node="//xs:element[@name='Object_x0020_Part']">
+	      <jaxb:property name="ObjectPart"/>
+	    </jaxb:bindings>		    
+	    <jaxb:bindings node="//xs:element[@name='User_x0020_1']">
+	      <jaxb:property name="InnerRingDate"/>
+	    </jaxb:bindings>			    
+	    <jaxb:bindings node="//xs:element[@name='User_x0020_2']">
+	      <jaxb:property name="PithCode"/>
+	    </jaxb:bindings>
+	    <jaxb:bindings node="//xs:element[@name='User_x0020_3']">
+	      <jaxb:property name="OuterRingDate"/>
+	    </jaxb:bindings>
+	    <jaxb:bindings node="//xs:element[@name='User_x0020_4']">
+	      <jaxb:property name="BarkCode"/>
+	    </jaxb:bindings>
+	    <jaxb:bindings node="//xs:element[@name='User_x0020_5']">
+	      <jaxb:property name="ITRDBSpeciesCode"/>
+	    </jaxb:bindings>	    	    	    
+
+	    
+	</jaxb:bindings>
+
 </jaxb:bindings> 
