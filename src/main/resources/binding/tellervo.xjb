@@ -132,9 +132,6 @@
 	<jaxb:bindings schemaLocation="../schemas/icms.xsd" node="/xs:schema">
 		<jaxb:schemaBindings>
 			<jaxb:package name="com.rediscov.schema"/>
-			<jaxb:nameXmlTransform>
-				<jaxb:elementName prefix="ICMS" />
-			</jaxb:nameXmlTransform>
 		</jaxb:schemaBindings>
 		
 		<jaxb:bindings node="//xs:element[@name='Ctrl_x0020_Prop']">
@@ -231,8 +228,14 @@
 	    <jaxb:bindings node="//xs:element[@name='User_x0020_5']">
 	      <jaxb:property name="ITRDBSpeciesCode"/>
 	    </jaxb:bindings>	    	    	    
-
-	    
+	    <jaxb:bindings node="//xs:element[@name='RediscoveryExport']">
+	      <jaxb:property name="ICMSRecord"/>
+	    </jaxb:bindings>	    
+	    	
+	    <!-- Rename object element to custom class -->
+		<jaxb:bindings node="//xs:element[@name='RediscoveryExport']">
+			<jaxb:class implClass="com.rediscov.util.RediscoveryExportEx" />
+		</jaxb:bindings>
 	</jaxb:bindings>
 
 </jaxb:bindings> 
