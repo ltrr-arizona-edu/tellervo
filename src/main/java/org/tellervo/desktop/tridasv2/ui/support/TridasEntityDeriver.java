@@ -36,7 +36,13 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.tridasv2.ui.TellervoGenericFieldProperty;
+import org.tellervo.schema.UserExtendableDataType;
+import org.tellervo.schema.UserExtendableEntity;
+import org.tellervo.schema.WSIBox;
+import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasEditProperties;
 import org.tridas.interfaces.NormalTridasVoc;
@@ -48,6 +54,8 @@ import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+
+import com.dmurph.mvc.model.MVCArrayList;
 
 
 public class TridasEntityDeriver {
@@ -265,6 +273,49 @@ public class TridasEntityDeriver {
 			fieldMap.put(pd3.getName(), pd3);
 			parent.addChildProperty(pd3);
 			nChildren++;	
+			
+			// ICMS
+			
+			MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+			
+			for(WSIUserDefinedField fld : udfdictionary)
+			{
+			
+				if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+				{
+					Class clazz2 = String.class;
+					if(fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
+					{
+						clazz2 = String.class;
+					}
+					else if(fld.getDatatype().equals(UserExtendableDataType.XS___INTEGER))
+					{
+						clazz2 = Integer.class;
+					}
+					else if(fld.getDatatype().equals(UserExtendableDataType.XS___DOUBLE))
+					{
+						clazz2 = Double.class;
+					}
+					else
+					{
+						log.error("Invalid data type!");
+					}
+					TellervoGenericFieldProperty pd4 = new TellervoGenericFieldProperty("sample."+fld.getName(), fld.getName(), fld.getName(), 
+							clazz2, TridasSample.class, false, false);
+					pd4.setCategoryPrefix(rootName);
+					fieldMap.put(pd4.getName(), pd4);
+					parent.addChildProperty(pd4);
+					nChildren++;	
+					
+				}
+				
+
+	
+			}
+			
+			
+			
+			
 			
 		}
 		
