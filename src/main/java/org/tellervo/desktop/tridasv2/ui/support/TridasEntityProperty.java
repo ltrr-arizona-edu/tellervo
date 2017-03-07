@@ -32,9 +32,12 @@ import java.util.List;
 import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tellervo.desktop.tridasv2.ui.ImagePreviewPanel;
+import org.tellervo.schema.WSIUserDefinedField;
 
+import com.dmurph.mvc.model.MVCArrayList;
 import com.l2fprod.common.beans.BeanUtils;
 import com.l2fprod.common.propertysheet.AbstractProperty;
 import com.l2fprod.common.propertysheet.Property;
@@ -244,6 +247,17 @@ public class TridasEntityProperty extends AbstractProperty {
 		if(docs != null)
 			return docs;
 		
+		// Not found in TRiDaS Schema documentation so check if it's a user defined field
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			if(this.lname.equals(fld.getName()))
+			{
+				return fld.getDescription();
+			}
+		}
+		
+				
 		log.debug("No documentation available for qname: "+qname);
 		return "<i>No documentation is available for this entity</i>";
 	}

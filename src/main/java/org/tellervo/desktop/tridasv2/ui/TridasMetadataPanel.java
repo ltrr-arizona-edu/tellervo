@@ -82,6 +82,7 @@ import org.tridas.schema.TridasLastRingUnderBark;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasPith;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasSapwood;
@@ -782,6 +783,14 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 	 */
 	private List<? extends ITridas> getEntityList(EditType mode, boolean goRemote) {
 		switch(mode) {
+		
+		case PROJECT:
+			TridasProject p = new TridasProject();
+			p.setTitle("Default");
+			ArrayList<TridasProject> list2 = new ArrayList<TridasProject>();
+			list2.add(p);
+			return list2;
+		
 		case OBJECT:
 			return App.tridasObjects.getObjectList();
 		
@@ -1212,6 +1221,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 	 */
 
 	public static enum EditType {
+		PROJECT(TridasProject.class, "Project", "project.png", Metadata.PROJECT),
 		OBJECT(TridasObjectEx.class, I18n.getText("tridas.object"), "object.png", Metadata.OBJECT),
 		ELEMENT(TridasElement.class, I18n.getText("tridas.element"), "element.png", Metadata.ELEMENT),
 		SAMPLE(TridasSample.class, I18n.getText("tridas.sample"), "sample.png", Metadata.SAMPLE),

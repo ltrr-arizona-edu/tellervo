@@ -55,6 +55,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
 
 /*************************
  * FIELDS TO HANDLE
+ * ****************
  * CtrlProp - CONSTANT - N  
  * Class_1 - CONSTANT - ARCHEOLOGY
  * Class_2 - Autohandle through HistCultPer field 
@@ -82,7 +83,7 @@ State_Site
  * Site_Name -> Object.title
  * Within_Site -> Element.location.description?
  * Origin -> parsed -> element.location.address.addressLine2, stateProvinceRegion, country
-UTM_Z_E_N  -> Ignore?
+ * UTM_Z_E_N  -> element.location.locationGeometry
  * Lat_LongN_W  -> element.location.locationGeometry
 Hist_Cult_Per -> New field
 Cultural_ID -> New field
