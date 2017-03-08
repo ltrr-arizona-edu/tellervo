@@ -51,22 +51,57 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 		if(clazz.equals(String.class))
 		{
 			gf.setType("xs:string");
+			gf.setValue((String) this.getValue());
+
 		}
 		else if (clazz.equals(Integer.class))
 		{
-			gf.setType("xs:integer");
+			gf.setType("xs:int");
+			if(this.getValue()!=null)
+			{
+				int v = (int) this.getValue();
+				gf.setValue(Integer.valueOf(v).toString());
+			} else
+			{
+				gf.setValue(null);
+			}
+
 		}
-		
-		
+		else if (clazz.equals(Float.class))
+		{
+			gf.setType("xs:float");
+			if(this.getValue()!=null)
+			{
+				float v = (float) this.getValue();
+				gf.setValue(Double.valueOf(v).toString());
+			} else
+			{
+				gf.setValue(null);
+			}
+		}
+		else if (clazz.equals(Boolean.class))
+		{
+			gf.setType("xs:boolean");
+			if(this.getValue()!=null)
+			{
+				boolean v = (boolean) this.getValue();
+				gf.setValue(Boolean.valueOf(v).toString());
+			} else
+			{
+				gf.setValue(null);
+			}
+		}
+		else
+		{
+			gf.setType("xs:string");
+		}
+
 		if(this.getValue() instanceof SampleStatus)
 		{
 			SampleStatus ss = (SampleStatus) this.getValue();
 			gf.setValue(ss.value());
 		}
-		else
-		{
-			gf.setValue((String) this.getValue());
-		}
+
 		
 		return gf;
 	}

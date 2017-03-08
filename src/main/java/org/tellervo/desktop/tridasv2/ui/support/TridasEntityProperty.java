@@ -54,6 +54,8 @@ public class TridasEntityProperty extends AbstractProperty {
 	/** The local name of this property (e.g. title) */
 	public final String lname;
 	
+	public String humanReadableName = null;
+	
 	/** The class of this property */
 	protected Class<?> clazz;
 	
@@ -193,7 +195,15 @@ public class TridasEntityProperty extends AbstractProperty {
 	}
 	
 	public String getDisplayName() {
-		return getNiceName();
+		
+		if(this.humanReadableName!=null)
+		{
+			return humanReadableName;
+		}
+		else
+		{
+			return getNiceName();
+		}
 	}
 	
 	public String getName() {

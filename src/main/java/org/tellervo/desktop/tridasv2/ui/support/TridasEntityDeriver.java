@@ -288,20 +288,25 @@ public class TridasEntityDeriver {
 					{
 						clazz2 = String.class;
 					}
-					else if(fld.getDatatype().equals(UserExtendableDataType.XS___INTEGER))
+					else if(fld.getDatatype().equals(UserExtendableDataType.XS___INT))
 					{
 						clazz2 = Integer.class;
 					}
-					else if(fld.getDatatype().equals(UserExtendableDataType.XS___DOUBLE))
+					else if(fld.getDatatype().equals(UserExtendableDataType.XS___FLOAT))
 					{
-						clazz2 = Double.class;
+						clazz2 = Float.class;
 					}
+					else if(fld.getDatatype().equals(UserExtendableDataType.XS___BOOLEAN))
+					{
+						clazz2 = Boolean.class;
+					}					
 					else
 					{
 						log.error("Invalid data type!");
 					}
-					TellervoGenericFieldProperty pd4 = new TellervoGenericFieldProperty("sample."+fld.getName(), fld.getName(), fld.getName(), 
+					TellervoGenericFieldProperty pd4 = new TellervoGenericFieldProperty("sample."+fld.getName(), fld.getName(), fld.getName(),
 							clazz2, TridasSample.class, false, false);
+					pd4.humanReadableName = fld.getLongfieldname();
 					pd4.setCategoryPrefix(rootName);
 					fieldMap.put(pd4.getName(), pd4);
 					parent.addChildProperty(pd4);

@@ -23,17 +23,20 @@
  */
 package org.tellervo.desktop.bulkdataentry.model;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
-import net.opengis.gml.schema.PointType;
-import net.opengis.gml.schema.Pos;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
+import org.tellervo.schema.UserExtendableEntity;
+import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasAddress;
-import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasLocation;
@@ -43,6 +46,7 @@ import org.tridas.spatial.GMLPointSRSHandler;
 import org.tridas.spatial.SpatialUtils;
 
 import com.dmurph.mvc.model.HashModel;
+import com.dmurph.mvc.model.MVCArrayList;
 
 
 /**
@@ -51,7 +55,8 @@ import com.dmurph.mvc.model.HashModel;
  */
 public class SingleObjectModel extends HashModel implements IBulkImportSingleRowModel{
 	private static final long serialVersionUID = 1L;
-	
+	protected final static Logger log = LoggerFactory.getLogger(SingleObjectModel.class);
+
 	public static final String OBJECT_CODE = "Object Code";
 	public static final String TITLE = "Title";
 	public static final String COMMENTS = "Comments";
@@ -74,7 +79,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	public static final String OWNER = "Owner";
 	public static final String CREATOR = "Creator";
 	public static final String VEGETATION_TYPE = "Vegetation type";
-	
+	private static boolean userDefinedFieldsInit = false;  // Whether user defined fields have been added to TABLE_PROPERTIES or not
 	
 	
 	// Not implemented yet
@@ -82,12 +87,33 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	//public static final String COVERAGE_TEMPORAL_FOUNDATION = "Time period foundation";
 	
 	
-	public static final String[] TABLE_PROPERTIES = {
+	public static String[] TABLE_PROPERTIES = {
 		PARENT_OBJECT, OBJECT_CODE, TITLE, TYPE, DESCRIPTION, FILES, COMMENTS, LATITUDE, LONGITUDE, WAYPOINT, LOCATION_PRECISION, LOCATION_TYPE, LOCATION_COMMENT,
 		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, POSTCODE, COUNTRY,  OWNER, CREATOR, VEGETATION_TYPE,
 	};
-	
+		
 	public SingleObjectModel(){
+
+		if(userDefinedFieldsInit == false)
+		{
+			HashSet<String> arr = new HashSet<String>(Arrays.asList(TABLE_PROPERTIES));
+			MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+			
+			for(WSIUserDefinedField fld : udfdictionary)
+			{
+				if(fld.getAttachedto().equals(UserExtendableEntity.OBJECT))
+				{
+					arr.add(fld.getName());
+				}
+			}
+			
+			userDefinedFieldsInit = true;
+			
+			TABLE_PROPERTIES = arr.toArray(new String[arr.size()]);
+		}
+		
+		
+		log.debug("Number of columns is : "+TABLE_PROPERTIES.length);
 		registerProperty(TABLE_PROPERTIES, PropertyType.READ_WRITE);
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, null);
 	}

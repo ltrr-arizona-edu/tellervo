@@ -23,8 +23,16 @@
  */
 package org.tellervo.desktop.bulkdataentry.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.schema.UserExtendableDataType;
+import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIBox;
+import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.Date;
 import org.tridas.schema.TridasElement;
@@ -59,7 +67,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	public static final String IMPORTED = "Imported";
 	public static final String EXTERNAL_ID = "External ID";
 	public static final String SAMPLE_STATUS = "Sample Status";
-
+	
 	
 	// radius stuff
 	public static final String RADIUS_MODEL = "RADIUS_MODEL";
@@ -69,16 +77,40 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	public static final String POPULATING_ELEMENT_LIST = "POPULATING_ELEMENT_LIST";
 	
 
-	public static final String[] TABLE_PROPERTIES = {
+	public static String[] TABLE_PROPERTIES = {
 		OBJECT, ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION, FILES,
 		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, EXTERNAL_ID, SAMPLE_STATUS, IMPORTED
 	};
+	private static boolean isUserDefinedFieldsInit = false;
 	
 	
 	public SingleSampleModel(){
-		for(String s : TABLE_PROPERTIES){
-			registerProperty(s, PropertyType.READ_WRITE);
+		
+		
+		if(isUserDefinedFieldsInit==false)
+		{
+			ArrayList<String> arr = new ArrayList<String>(Arrays.asList(TABLE_PROPERTIES));
+
+			MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		
+			for(WSIUserDefinedField fld : udfdictionary)
+			{
+				if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+				{
+					arr.add(fld.getLongfieldname());
+				}
+			}
+			
+			TABLE_PROPERTIES = arr.toArray(new String[arr.size()]);
+			isUserDefinedFieldsInit = true;
+			
+			for(String s : TABLE_PROPERTIES){
+				registerProperty(s, PropertyType.READ_WRITE);
+			}
 		}
+		
+		
+
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, null);
 		registerProperty(RADIUS_MODEL, PropertyType.READ_ONLY, null);
 		registerProperty(POSSIBLE_ELEMENTS, PropertyType.READ_WRITE, new MVCArrayList<TridasElement>());
@@ -218,6 +250,28 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			field.setName("tellervo.sampleStatus");
 			field.setType("xs:string");
 			field.setValue(getProperty(SAMPLE_STATUS).toString());
+		}
+
+		// Handle all user defined fields
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+			{
+				TridasGenericField field = null;
+				for(TridasGenericField gf: argSample.getGenericFields()){
+					if(gf.getName().equals(fld.getName())){
+						field = gf;
+					}
+				}
+				if(field == null){
+					field = new TridasGenericField();
+					argSample.getGenericFields().add(field);
+				}
+				field.setName(fld.getName());
+				field.setType(fld.getDatatype().value());
+				field.setValue(getProperty(fld.getLongfieldname()).toString());
+			}
 		}
 		
 		argSample.setIdentifier((TridasIdentifier) getProperty(IMPORTED));

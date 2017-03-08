@@ -30,9 +30,12 @@ import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.UserExtendableDataType;
+import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIBoxDictionary;
 import org.tellervo.schema.WSISampleStatusDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
+import org.tellervo.schema.WSIUserDefinedField;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
@@ -83,6 +86,37 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 		{
 			return WSISampleStatusDictionary.class;
 		}
+		
+		// Get data type of user defined fields
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+			{
+				if(fld.getLongfieldname().equals(argColumn))
+				{
+					UserExtendableDataType dt = fld.getDatatype();
+					if(dt.equals(UserExtendableDataType.XS___STRING))
+					{
+						return String.class;
+					}
+					else if(dt.equals(UserExtendableDataType.XS___BOOLEAN))
+					{
+						return Boolean.class;
+					}
+					else if(dt.equals(UserExtendableDataType.XS___FLOAT))
+					{
+						return Float.class;
+					}
+					else if(dt.equals(UserExtendableDataType.XS___INT))
+					{
+						return Integer.class;
+					}
+				}
+			}
+		}
+		
+		
 		return null;
 	}
 	

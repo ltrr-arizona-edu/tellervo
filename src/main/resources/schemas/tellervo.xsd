@@ -1066,6 +1066,7 @@
 	<xs:element name="userDefinedField" >
 		<xs:complexType>
 			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="longfieldname" type="xs:string" use="required"/>
 			<xs:attribute name="datatype" type="userExtendableDataType" use="required"/>
 			<xs:attribute name="attachedto" type="userExtendableEntity" use="required"/>
 			<xs:attribute name="description" type="xs:string" use="optional"/>
@@ -1076,8 +1077,9 @@
 	<xs:simpleType name="userExtendableDataType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="xs:string" />
-			<xs:enumeration value="xs:integer" />
-			<xs:enumeration value="xs:double" />
+			<xs:enumeration value="xs:int" />
+			<xs:enumeration value="xs:float" />
+			<xs:enumeration value="xs:boolean" />
 		</xs:restriction>
 	</xs:simpleType>
 	
