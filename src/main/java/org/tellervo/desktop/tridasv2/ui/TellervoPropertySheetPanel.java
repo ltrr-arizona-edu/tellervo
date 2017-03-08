@@ -5,9 +5,11 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.desktop.ui.Alert;
+import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasFile;
@@ -15,6 +17,7 @@ import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 
+import com.dmurph.mvc.model.MVCArrayList;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
 
@@ -90,7 +93,9 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 			TellervoGenericFieldProperty curationStatus = TellervoGenericFieldProperty.getSampleCurationStatusProperty();
 			TellervoGenericFieldProperty sampleStatus = TellervoGenericFieldProperty.getSampleStatusProperty();
 
+			MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
 			
+		
 			if (sample.isSetGenericFields())
 			{
 				for(TridasGenericField gf : sample.getGenericFields())
@@ -130,6 +135,27 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 								p.setValue(gf.getValue());
 							}
 						}
+					}
+					else
+					{
+						for(WSIUserDefinedField fld : udfdictionary)
+						{	
+							if(fld.getName().equals(gf.getName()))
+							{
+								for(Property p : prop)
+								{
+									TridasEntityProperty tep = (TridasEntityProperty) p;
+									//log.debug("Property name : "+tep.qname);
+									if(tep.humanReadableName!=null && tep.humanReadableName.equals(fld.getLongfieldname()))
+									{
+										p.setValue(gf.getValue());
+									}
+								}
+							}
+						}
+						
+						
+						
 					}
 				}
 			}
