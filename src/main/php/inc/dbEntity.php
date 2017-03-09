@@ -20,6 +20,7 @@ require_once('geometry.php');
 require_once('taxon.php');
 require_once('lookupEntity.php');
 require_once('securityUser.php');
+require_once('userdefinedfield.php');
 require_once('box.php');
 
 /**
@@ -35,6 +36,67 @@ interface IDBAccessor
 	function validateRequestParams($paramsClass, $crudMode);
 }
 
+abstract class UserExtendableEntity extends dbEntity
+{
+	/**
+	 * Array of user defined fields
+	 *
+	 * @var array()
+	 */
+	protected $userDefinedFieldAndValueArray = null;
+
+	abstract function setUserDefinedFieldAndValueArrayByEntityID($id);
+		
+	public function setUserDefinedFieldAndValueArray($arr)
+	{
+		$this->userDefinedFieldAndValueArray = $arr;
+	}
+	
+	abstract function setUserDefinedFieldByName($value, $fieldname);
+			
+	public function getUserDefinedFieldAndValueArray()
+	{
+		return $this->userDefinedFieldAndValueArray;
+	}
+		
+	public function getUserDefinedFieldFromFieldname($fieldname)
+	{
+		if($this->userDefinedFieldAndValueArray==null | count($this->userDefinedFieldAndValueArray<1))
+		{
+			return null;
+		}
+		
+		foreach($this->userDefinedFieldAndValueArray as $field)
+		{
+			if($field->name==$fieldname)
+			{
+				return $field;
+			}
+		}
+	
+		return null;
+	}
+	
+	/**
+	 * Get the user defined field value by fieldname
+	 *
+	 * @param unknown $fieldname
+	 * @return String
+	 */
+	function getUserDefinedFieldValueByName($fieldname)
+	{
+		$field  = $this->getUserDefinedFieldFromFieldname($fieldname);	
+		if($field!=null)
+		{
+			return $field->value;
+		}
+		else
+		{
+			return null;
+		}
+	}
+	
+}
 
 /**
  * Base class for entities that are representations of database tables
@@ -98,6 +160,9 @@ class dbEntity
      * @var String
      */
     protected $title = NULL;    
+    
+    
+
     
     /**
      * XML tag for this entities parent entity
@@ -195,7 +260,8 @@ class dbEntity
     /* SETTERS */
     /***********/   
     
-
+    
+    
 	/**
 	 * Set an array of associated file urls
 	 *
@@ -357,9 +423,7 @@ class dbEntity
     /***********/
     /* GETTERS */
     /***********/    
-    
-
-    
+        
 	/**
 	 * Get the array of associated files of this entity
 	 *
@@ -369,7 +433,9 @@ class dbEntity
 	{
 		return $this->files;
 	}    
-    
+	
+	
+	
     /**
      * Get the open parent XML tag 
      *
@@ -1671,7 +1737,7 @@ class elementEntity extends dbEntity
  * Class for representing a TRiDaS sample database entity.  A sample is the physical sample of an element to be measured
  *
  */
-class sampleEntity extends dbEntity
+class sampleEntity extends UserExtendableEntity  
 {
 	protected $elementID = NULL;
 	 /**
@@ -1740,6 +1806,69 @@ class sampleEntity extends dbEntity
     /* SETTERS */
     /***********/ 
     
+	function setUserDefinedFieldByName($value, $fieldname)
+	{
+		$field  = $this->getUserDefinedFieldFromFieldname($fieldname);
+		if($field!=null)
+		{
+			// Field already exists, just modify value and we're done
+			$field->value = $value;
+		}
+		else
+		{
+			// Field doesn't exist.
+			try{
+				$field = new userDefinedFieldAndValue();
+				$field->construct($fieldname, $this->id, 4, $value);
+			} catch (Exception $e)
+			{
+				$this->setErrorMessage("002", $e->getMessage());
+				return;
+			}
+				
+			if($this->userDefinedFieldAndValueArray==null)
+			{
+				$this->userDefinedFieldAndValueArray = array();
+			}
+			array_push($this->userDefinedFieldAndValueArray, $field);
+		}
+	
+	}
+	
+	function setUserDefinedFieldAndValueArrayByEntityID($id)
+	{
+		global $dbconn;
+		global $firebug;
+		
+		$result = pg_query_params("SELECT * FROM vwtbluserdefinedfieldandvalue WHERE entityid=$1", array($this->id));
+	
+		if($result===FALSE)
+		{
+			return;
+		}
+		
+		if(pg_num_rows($result)==0)
+		{
+			return;
+		}
+		
+		
+		while ($row = pg_fetch_array($result)) {
+								
+			$field = new userDefinedFieldAndValue();
+			$firebug->log($row, "DB row is ");
+			$field->setFromDBRow($row);
+			
+			if($this->userDefinedFieldAndValueArray==null || count($this->userDefinedFieldAndValueArray)==0)
+			{
+				$this->userDefinedFieldAndValueArray = array();
+			}
+			
+			array_push($this->userDefinedFieldAndValueArray, $field);
+		}
+		
+	}
+
 	function setExternalID($id)
 	{
 		$this->externalID = $id;

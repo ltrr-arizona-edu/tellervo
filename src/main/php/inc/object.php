@@ -35,7 +35,7 @@ class object extends objectEntity implements IDBAccessor
     /***********/
     /* SETTERS */
     /***********/
-
+    
     function setParamsFromDBRow($row, $format="standard")
     {  	
         global $debugFlag;

@@ -57,7 +57,7 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 		else if (clazz.equals(Integer.class))
 		{
 			gf.setType("xs:int");
-			if(this.getValue()!=null)
+			if(this.getValue()!=null && this.getValue().getClass().equals(Integer.class))
 			{
 				int v = (int) this.getValue();
 				gf.setValue(Integer.valueOf(v).toString());
@@ -70,10 +70,10 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 		else if (clazz.equals(Float.class))
 		{
 			gf.setType("xs:float");
-			if(this.getValue()!=null)
+			if(this.getValue()!=null && this.getValue().getClass().equals(Float.class))
 			{
-				float v = (float) this.getValue();
-				gf.setValue(Double.valueOf(v).toString());
+				Float f = (float) this.getValue();
+				gf.setValue(f.toString());
 			} else
 			{
 				gf.setValue(null);
@@ -82,7 +82,7 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 		else if (clazz.equals(Boolean.class))
 		{
 			gf.setType("xs:boolean");
-			if(this.getValue()!=null)
+			if(this.getValue()!=null && this.getValue().getClass().equals(Boolean.class))
 			{
 				boolean v = (boolean) this.getValue();
 				gf.setValue(Boolean.valueOf(v).toString());

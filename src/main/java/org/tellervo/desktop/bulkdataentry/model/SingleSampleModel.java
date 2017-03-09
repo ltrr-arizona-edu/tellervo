@@ -25,8 +25,9 @@ package org.tellervo.desktop.bulkdataentry.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.schema.UserExtendableDataType;
@@ -51,6 +52,7 @@ import com.dmurph.mvc.model.MVCArrayList;
 @SuppressWarnings("unchecked")
 public class SingleSampleModel extends HashModel implements IBulkImportSingleRowModel {
 	private static final long serialVersionUID = 1L;
+	private final static Logger log = LoggerFactory.getLogger(SingleSampleModel.class);
 
 	public static final String OBJECT = "Object code";
 	public static final String ELEMENT = "Element code";
@@ -282,7 +284,6 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		setProperty(COMMENTS, argSample.getComments());
 		setProperty(TYPE, argSample.getType());
 		setProperty(DESCRIPTION, argSample.getDescription());
-		setProperty(FILES, argSample.getFiles());
 		setProperty(SAMPLING_DATE, argSample.getSamplingDate());
 		setProperty(POSITION, argSample.getPosition());
 		setProperty(STATE, argSample.getState());
@@ -292,9 +293,11 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		// Set box to null initially
 		setProperty(BOX, null);
 		
-		// Get boxID generic field
+		// Files
+		setProperty(FILES, new TridasFileList(argSample.getFiles()));
+			
+		// Handle Generic Fields
 		TridasGenericField field = null;
-
 		for(TridasGenericField gf: argSample.getGenericFields()){
 			if(gf.getName().equals("tellervo.boxID")){
 				field = gf;
@@ -305,6 +308,50 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			}
 			else if(gf.getName().equals("tellervo.sampleStatus")){
 				setProperty(SAMPLE_STATUS, gf.getValue());
+			}
+			else if (gf.getName().startsWith("userDefinedField"))
+			{
+				MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+				
+				for(WSIUserDefinedField fld : udfdictionary)
+				{
+					if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+					{
+						if(gf.getName().equals(fld.getName()))
+						{
+							Object val = null;
+							if(fld.getDatatype().equals(UserExtendableDataType.XS___BOOLEAN))
+							{
+								val = false;
+								if(gf.getValue().toLowerCase().equals("true") || gf.getValue().toLowerCase().equals("t"))
+								{
+									
+									val = true;
+								}									
+							}
+							else if (fld.getDatatype().equals(UserExtendableDataType.XS___FLOAT))
+							{
+								val = Float.parseFloat(gf.getValue());
+							}
+							else if (fld.getDatatype().equals(UserExtendableDataType.XS___INT))
+							{
+								val = Integer.parseInt(gf.getValue());
+							}
+							else if (fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
+							{
+								val = gf.getValue();
+							}
+							else
+							{
+								log.error("Unsupported data type for generic field");
+								
+							}
+							
+							setProperty(fld.getLongfieldname(), val);
+
+						}
+					}
+				}
 			}
 		}
 			

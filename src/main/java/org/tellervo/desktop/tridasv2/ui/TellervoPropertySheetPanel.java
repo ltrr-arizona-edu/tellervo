@@ -9,6 +9,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.desktop.ui.Alert;
+import org.tellervo.schema.UserExtendableDataType;
 import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasEntity;
@@ -136,19 +137,58 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 							}
 						}
 					}
-					else
+					else if (gf.getName().startsWith("userDefinedField"))
 					{
 						for(WSIUserDefinedField fld : udfdictionary)
 						{	
 							if(fld.getName().equals(gf.getName()))
 							{
-								for(Property p : prop)
+								for(Property p2 : prop)
 								{
-									TridasEntityProperty tep = (TridasEntityProperty) p;
-									//log.debug("Property name : "+tep.qname);
-									if(tep.humanReadableName!=null && tep.humanReadableName.equals(fld.getLongfieldname()))
+									TridasEntityProperty tep2 = (TridasEntityProperty) p2;
+									
+									if(!tep2.lname.equals("custom fields")) continue;
+									
+									for(Property p : tep2.getChildProperties())
 									{
-										p.setValue(gf.getValue());
+										TridasEntityProperty tep = (TridasEntityProperty) p;
+
+										if(tep.humanReadableName!=null && tep.humanReadableName.equals(fld.getLongfieldname()))
+										{
+											try{
+												if(fld.getDatatype().equals(UserExtendableDataType.XS___BOOLEAN))
+												{
+													Boolean b = false;
+													if(gf.getValue().toLowerCase().equals("true") || gf.getValue().toLowerCase().equals("t"))
+													{
+														
+														b = true;
+													}	
+													p.setValue(b);
+													
+												}
+												else if (fld.getDatatype().equals(UserExtendableDataType.XS___FLOAT))
+												{
+													p.setValue(Float.parseFloat(gf.getValue()));
+												}
+												else if (fld.getDatatype().equals(UserExtendableDataType.XS___INT))
+												{
+													p.setValue(Integer.parseInt(gf.getValue()));
+												}
+												else if (fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
+												{
+													p.setValue(gf.getValue());
+												}
+												else
+												{
+													log.error("Unsupported data type for generic field");
+												}
+											} catch (NumberFormatException e)
+											{
+												log.error("Invalid value for generic field.  Doesn't match specified data type");
+											}
+										
+										}
 									}
 								}
 							}
@@ -208,7 +248,21 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 				TellervoGenericFieldProperty.addOrReplaceGenericField((TridasEntity)data, tgfp.getTridasGenericField());
 
 			}
-				
+			
+			// Look inside custom fields category
+			TridasEntityProperty tep2 = (TridasEntityProperty) p;
+			if(tep2.lname.equals("custom fields")) 
+			{			
+				for(Property p3 : tep2.getChildProperties())
+				{
+					if(p3 instanceof TellervoGenericFieldProperty)
+					{
+						TellervoGenericFieldProperty tgfp = (TellervoGenericFieldProperty) p3;
+						TellervoGenericFieldProperty.addOrReplaceGenericField((TridasEntity)data, tgfp.getTridasGenericField());
+					}
+				}
+			}
+						
 			
 			/*if(tep.qname.equals("sample.externalId"))
 			{

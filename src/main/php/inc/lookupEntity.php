@@ -38,7 +38,7 @@ class lookupEntity
 		}
 	}
 	
-	protected function setLookupEntity($id, $value)
+	protected function setLookupEntity($id, $value, $casesensitive=true)
 	{
 		global $dbconn;
 		global $firebug;
@@ -48,6 +48,12 @@ class lookupEntity
 		echo "value = $value\n";
 		echo "****\n";
 		*/
+		
+		$operator = " = ";
+		if($casesensitive===FALSE)
+		{
+			$operator = " ILIKE ";
+		}
 		
 		if( ($id!=NULL) && ($value==NULL) )
 		{
@@ -83,7 +89,7 @@ class lookupEntity
 			// Value given but no ID
 			$sql =   "SELECT ".pg_escape_string($this->idfieldname)." AS theid "
 					."FROM ".pg_escape_string($this->tablename)." "
-					."WHERE ".pg_escape_string($this->fieldname)." = '".pg_escape_string($value)."'";
+					."WHERE ".pg_escape_string($this->fieldname).$operator." '".pg_escape_string($value)."'";
 
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -508,7 +514,7 @@ class sampleStatus extends lookupEntity
 
 	function setSampleStatus($id, $value)
 	{
-		return $this->setLookupEntity($id, $value);
+		return $this->setLookupEntity($id, $value, FALSE);
 	}
 
 }

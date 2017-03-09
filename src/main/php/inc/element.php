@@ -39,7 +39,8 @@ class element extends elementEntity implements IDBAccessor
     /***********/
     /* SETTERS */
     /***********/
-
+   
+    
     function setParentsFromDB()
     {
         require_once('object.php');

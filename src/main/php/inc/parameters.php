@@ -1170,6 +1170,7 @@ class sampleParameters extends sampleEntity implements IParams
 
         $children = $this->xmlRequestDom->documentElement->childNodes;
         
+        
         foreach($children as $child)
         {
 		   if($child->nodeType != XML_ELEMENT_NODE) continue;        	
@@ -1228,7 +1229,23 @@ class sampleParameters extends sampleEntity implements IParams
 		   				$this->setSampleStatus(null, $value);
 		   				break; 			
 		   			default:
-		   			//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'sample' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   				
+		   				if(substr($name, 0, strlen("userDefinedField"))==="userDefinedField")
+		   				{
+		   					$fieldname = substr($name, strlen("userDefinedField."));
+		   					try{
+		   						$this->setUserDefinedFieldByName($value, $fieldname);
+		   						break;
+		   					} catch (Exception $e)
+		   					{
+		   						
+		   						trigger_error("901".$e->getMessage(), E_USER_NOTICE);
+		   					}
+		   				}
+		   				else
+		   				{
+		   					//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'sample' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   				}
 	
 		   		}
 		   		break;

@@ -149,7 +149,7 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 	 */
 	@Override
 	public String[] getModelTableProperties() {
-		if(isRadiusWithSample()){
+		if(isRadiusWithSample()){	
 			// modified a bit so imported is at the end
 			String[] ret = new String[SingleSampleModel.TABLE_PROPERTIES.length - 1 + SingleRadiusModel.PROPERTIES.length ];
 			System.arraycopy(SingleSampleModel.TABLE_PROPERTIES, 0, ret, 0, SingleSampleModel.TABLE_PROPERTIES.length-1);

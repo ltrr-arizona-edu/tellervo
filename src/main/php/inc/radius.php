@@ -34,7 +34,7 @@ class radius extends radiusEntity implements IDBAccessor
     /***********/
     /* SETTERS */
     /***********/
-
+    
     function setParamsFromDBRow($row, $format="standard")
     {
         $this->setTitle($row['radiuscode']);

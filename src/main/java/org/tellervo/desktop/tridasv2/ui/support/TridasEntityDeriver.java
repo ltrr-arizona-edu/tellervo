@@ -271,13 +271,19 @@ public class TridasEntityDeriver {
 			parent.addChildProperty(pd3);
 			nChildren++;	
 			
-			// ICMS
+			// User Defined Fields
 			
 			MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
 			
+			TridasEntityProperty custom = new TridasEntityProperty(entityName + ".customFields", "custom fields");
+			custom.setCategoryPrefix(rootName);
+			custom.required = false;
+			custom.setType(String.class, null);
+			custom.readOnly = true;
+			parent.addChildProperty(custom);
+			
 			for(WSIUserDefinedField fld : udfdictionary)
 			{
-			
 				if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
 				{
 					Class clazz2 = String.class;
@@ -301,12 +307,12 @@ public class TridasEntityDeriver {
 					{
 						log.error("Invalid data type!");
 					}
-					TellervoGenericFieldProperty pd4 = new TellervoGenericFieldProperty("sample."+fld.getName(), fld.getName(), fld.getName(),
+					TellervoGenericFieldProperty pd4 = new TellervoGenericFieldProperty(entityName + ".customFields."+fld.getName(), fld.getName(), fld.getName(),
 							clazz2, TridasSample.class, false, false);
 					pd4.humanReadableName = fld.getLongfieldname();
 					pd4.setCategoryPrefix(rootName);
 					fieldMap.put(pd4.getName(), pd4);
-					parent.addChildProperty(pd4);
+					custom.addChildProperty(pd4);
 					nChildren++;	
 					
 				}

@@ -39,7 +39,7 @@ class sample extends sampleEntity implements IDBAccessor
     /***********/
     /* SETTERS */
     /***********/
-
+    
     function setParamsFromDBRow($row, $format="standard")
     {
         global $domain;
@@ -64,6 +64,7 @@ class sample extends sampleEntity implements IDBAccessor
 		$this->setSampleStatus($row['samplestatusid'], $row['samplestatus']);
 		$this->setSummaryObjectCode($row['objectcode']);
 		$this->setSummaryElementCode($row['elementcode']);
+		$this->setUserDefinedFieldAndValueArrayByEntityID($this->getID());
 		
         return true;
     }
@@ -192,11 +193,12 @@ class sample extends sampleEntity implements IDBAccessor
         $this->setPosition($paramsClass->getPosition());
         $this->setState($paramsClass->getState());
         $this->setExternalID($paramsClass->getExternalID());
-	$this->setSampleStatus($paramsClass->getSampleStatus(true), $paramsClass->getSampleStatus());
+		$this->setSampleStatus($paramsClass->getSampleStatus(true), $paramsClass->getSampleStatus());
 
         $this->setKnots($paramsClass->getKnots());        
     	$this->setCode($paramsClass->getCode());        
-    	$this->setBoxID($paramsClass->getBoxID());              
+    	$this->setBoxID($paramsClass->getBoxID());
+    	$this->setUserDefinedFieldAndValueArray($paramsClass->getUserDefinedFieldAndValueArray());
      
 	if ($paramsClass->parentID!=NULL)
         {
@@ -467,6 +469,30 @@ class sample extends sampleEntity implements IDBAccessor
             $xml.="<tridas:genericField name=\"tellervo.curationStatus\" type=\"xs:string\">".$this->getCurationStatus()."</tridas:genericField>\n";
             $xml.="<tridas:genericField name=\"tellervo.sampleStatus\" type=\"xs:string\">".$this->getSampleStatus()."</tridas:genericField>\n";
             
+            /*if($this->getUserDefinedFieldData()!=null && count($this->getUserDefinedFieldData()>0))
+            {
+            	
+            	// User defined field data included
+            	for($i=0; $i<count($this->getUserDefinedFieldData()); $i++)
+            	{
+            		$value = $this->getUserDefinedFieldData()[$i];
+            		$fieldname = $this->getUserDefinedFieldNames()[$i];
+            		$datatype = $this->getUserDefinedFieldDataTypes()[$i];
+            		$xml.="<tridas:genericField name=\"userDefinedField.".$fieldname."\" type=\"$datatype\">".$value."</tridas:genericField>\n";
+            		
+            	}
+            	
+            }*/
+            
+            if($this->getUserDefinedFieldAndValueArray()!=null && count($this->getUserDefinedFieldAndValueArray()>0))
+            {
+            	foreach($this->getUserDefinedFieldAndValueArray() as $field)
+            	{
+            		$xml.= $field->getAsTridasXML();
+            	}
+            }
+            
+            
             if ($format=="summary")
             {
             	$xml.="<tridas:genericField name=\"tellervo.objectLabCode\" type=\"xs:string\">".$this->getSummaryObjectCode()."</tridas:genericField>\n";           
@@ -558,7 +584,7 @@ class sample extends sampleEntity implements IDBAccessor
                         $sql.=dbHelper::tellervo_pg_escape_string($this->getType(true)).", ";
                        	$sql.=dbHelper::tellervo_pg_escape_string($this->getDescription()).", ";                        
                        	$sql.=dbHelper::phpArrayToPGStrArray($this->getFiles()).", ";
-	                $sql.=dbHelper::tellervo_pg_escape_string($this->getSamplingDate()).", ";
+   	                $sql.=dbHelper::tellervo_pg_escape_string($this->getSamplingDate()).", ";
                         $sql.=dbHelper::tellervo_pg_escape_string($this->getPosition()).", ";
                         $sql.=dbHelper::tellervo_pg_escape_string($this->getState()).", ";
                         $sql.=dbHelper::formatBool($this->getKnots(),"pg").", ";
@@ -579,7 +605,7 @@ class sample extends sampleEntity implements IDBAccessor
                         $sql.="comments="      .dbHelper::tellervo_pg_escape_string($this->getComments()).", ";
                         $sql.="typeid="     	.dbHelper::tellervo_pg_escape_string($this->getType(true)).", ";
                         $sql.="description="	.dbHelper::tellervo_pg_escape_string($this->getDescription()).", ";                             
-                       	$sql.="file="	 	.dbHelper::phpArrayToPGStrArray($this->getFiles()).", ";                                 
+                       	$sql.="file="	 	.dbHelper::phpArrayToPGStrArray($this->getFiles()).", ";
                         $sql.="samplingdate=" 	.dbHelper::tellervo_pg_escape_string($this->getSamplingDate()).", ";
                        	$sql.="position="	.dbHelper::tellervo_pg_escape_string($this->getPosition()).", ";
                         $sql.="state="		.dbHelper::tellervo_pg_escape_string($this->getState()).", ";
@@ -624,9 +650,31 @@ class sample extends sampleEntity implements IDBAccessor
                     $result = pg_query($dbconn, $sql2);
                     while ($row = pg_fetch_array($result))
                     {
+                    	$this->setID($row['sampleid']);
                         $this->setCreatedTimestamp($row['createdtimestamp']);   
                         $this->setLastModifiedTimestamp($row['lastmodifiedtimestamp']);   
                     }
+                }
+                
+                // Write user defined fields to database
+                if(count($this->userDefinedFieldAndValueArray)>0)
+                {
+                	
+                	foreach($this->userDefinedFieldAndValueArray as $field)
+                	{
+                		try{
+	                		$result = $field->writeToDB($this->getID());
+	                		if($result===false)
+	                		{
+	                			$this->setErrorMessage("002", pg_result_error($result)." Error writing user defined fields to disk");
+	                		}
+                		} catch (Exception $e)
+                		{
+                			$this->setErrorMessage("002", "Error writing user defined fields to disk. ".$e->getMessage());
+                			 
+                		}
+                		
+                	}
                 }
             }
             else
