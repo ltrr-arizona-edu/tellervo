@@ -585,6 +585,7 @@
 			<xs:choice maxOccurs="unbounded">
 				<xs:element name="sql" minOccurs="0" maxOccurs="1"/>
                                 
+                <xs:element ref="tridas:project" minOccurs="0" maxOccurs="unbounded"/>                     
                 <xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
@@ -602,6 +603,8 @@
 				<xs:element ref="odkFormInstance" minOccurs="0" maxOccurs="unbounded"/>
 				
 
+                <xs:element ref="projectTypeDictionary" minOccurs="0" maxOccurs="1"/>
+                <xs:element ref="projectCategoryDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="objectTypeDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="elementTypeDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="sampleTypeDictionary" minOccurs="0" maxOccurs="1"/>
@@ -649,6 +652,22 @@
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
+
+        <xs:element name="projectTypeDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="projectType" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
+        
+        <xs:element name="projectCategoryDictionary">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="projectCategory" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+        </xs:element>
 
         <xs:element name="objectTypeDictionary">
                 <xs:complexType>

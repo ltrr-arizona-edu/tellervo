@@ -1,14 +1,11 @@
 package org.tellervo.desktop.tridasv2.ui;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
-import org.tellervo.desktop.ui.Alert;
 import org.tellervo.schema.UserExtendableDataType;
 import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.schema.TridasElement;

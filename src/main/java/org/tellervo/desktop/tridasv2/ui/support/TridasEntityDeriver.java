@@ -49,6 +49,7 @@ import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
@@ -61,6 +62,7 @@ public class TridasEntityDeriver {
 	private static Set<Class<?>> ignoreClasses = new HashSet<Class<?>>();
 	
 	static {
+		ignoreClasses.add(TridasProject.class);
 		ignoreClasses.add(TridasObject.class);
 		ignoreClasses.add(TridasElement.class);
 		ignoreClasses.add(TridasSample.class);

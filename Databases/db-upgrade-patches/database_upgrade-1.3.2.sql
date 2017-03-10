@@ -71,3 +71,82 @@ SELECT udfv.userdefinedfieldvalueid,
   ALTER VIEW public.vwtbluserdefinedfieldandvalue
   OWNER TO tellervo;
 
+DROP VIEW vwtblproject;
+CREATE OR REPLACE VIEW vwtblproject AS 
+SELECT p.projectid,
+dom.domainid,
+dom.domain,
+p.title,
+p.projecttypeid,
+p.createdtimestamp,
+p.lastmodifiedtimestamp,
+p.comments,
+p.description,
+p.file,
+p.projectcategoryid,
+p.investigator,
+p.period,
+p.requestdate,
+p.commissioner,
+p.reference,
+p.research,
+projtype.projecttype
+ FROM tblproject p
+ LEFT JOIN tlkpdomain dom on p.domainid=dom.domainid
+ LEFT JOIN tlkpprojecttype projtype ON p.projecttypeid = projtype.projecttypeid;
+  ALTER VIEW public.vwtblproject
+  OWNER TO tellervo;
+  
+DROP VIEW vwtblobject;
+CREATE VIEW vwtblobject AS   
+  SELECT cquery.countofchildvmeasurements,
+    o.projectid,
+    o.vegetationtype,
+    o.comments,
+    o.objectid,
+    dom.domainid,
+    dom.domain,
+    o.title,
+    o.code,
+    o.createdtimestamp,
+    o.lastmodifiedtimestamp,
+    o.locationgeometry,
+    ( SELECT st_asgml(3, o.locationgeometry, 15, 1) AS st_asgml) AS gml,
+    xmin(o.locationgeometry::box3d) AS longitude,
+    ymin(o.locationgeometry::box3d) AS latitude,
+    o.locationtypeid,
+    o.locationprecision,
+    o.locationcomment,
+    o.locationaddressline1,
+    o.locationaddressline2,
+    o.locationcityortown,
+    o.locationstateprovinceregion,
+    o.locationpostalcode,
+    o.locationcountry,
+    array_to_string(o.file, '><'::text) AS file,
+    o.creator,
+    o.owner,
+    o.parentobjectid,
+    o.description,
+    o.objecttypeid,
+    loctype.locationtype,
+    objtype.objecttype,
+    covtemp.coveragetemporal,
+    covtempfound.coveragetemporalfoundation
+   FROM tblobject o
+     LEFT JOIN tlkpdomain dom ON o.domainid = dom.domainid
+     LEFT JOIN tlkplocationtype loctype ON o.locationtypeid = loctype.locationtypeid
+     LEFT JOIN tlkpobjecttype objtype ON o.objecttypeid = objtype.objecttypeid
+     LEFT JOIN tlkpcoveragetemporal covtemp ON o.coveragetemporalid = covtemp.coveragetemporalid
+     LEFT JOIN tlkpcoveragetemporalfoundation covtempfound ON o.coveragetemporalfoundationid = covtempfound.coveragetemporalfoundationid
+     LEFT JOIN ( SELECT e.objectid AS masterobjectid,
+            count(e.objectid) AS countofchildvmeasurements
+           FROM tblelement e
+             JOIN tblsample s ON s.elementid = e.elementid
+             JOIN tblradius r ON r.sampleid = s.sampleid
+             JOIN tblmeasurement m ON m.radiusid = r.radiusid
+             JOIN tblvmeasurementderivedcache vc ON vc.measurementid = m.measurementid
+          GROUP BY e.objectid) cquery ON cquery.masterobjectid = o.objectid;
+   ALTER VIEW public.vwtblobject
+  OWNER TO tellervo;
+

@@ -20,6 +20,7 @@ import org.tellervo.desktop.ui.Alert;
 import org.tellervo.schema.WSIBoxDictionary;
 import org.tellervo.schema.WSIElementTypeDictionary;
 import org.tellervo.schema.WSIObjectTypeDictionary;
+import org.tellervo.schema.WSIProjectTypeDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
 import org.tellervo.schema.WSITaxonDictionary;
 import org.tridas.io.util.DateUtils;
@@ -364,6 +365,23 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						log.debug("Value for cell was '"+value+"' so setting cell to null");
 						
 						if(!simulateFirst) tablemodel.setValueAt(null,rowIndex,startCol+j);
+					}
+					else if(clazz.equals(WSIProjectTypeDictionary.class))
+					{
+						List<ControlledVoc> types = Dictionary.getMutableDictionary("projectTypeDictionary");
+						Boolean match = false;
+						for(ControlledVoc cvoc : types)
+						{
+							if(cvoc.getNormal().equals(value)) {
+				                 if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
+								match = true;
+							}
+						}
+						if(match==false) {
+							logPasteError(i,j,value,"Only items from the project type dictionary can be used.");
+							errorsEncountered = true;
+						}
+											
 					}
 					else if(clazz.equals(WSIObjectTypeDictionary.class))
 					{
