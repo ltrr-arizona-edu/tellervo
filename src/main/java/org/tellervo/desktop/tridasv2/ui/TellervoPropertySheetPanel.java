@@ -50,94 +50,18 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 		
 		Property[] prop = this.getProperties();
 		
-		if(object instanceof TridasObject)
-		{
-			TridasObject obj = (TridasObject) object;
-			TellervoGenericFieldProperty refField = TellervoGenericFieldProperty.getObjectCodeProperty();
-			TellervoGenericFieldProperty refField2 = TellervoGenericFieldProperty.getVegetationTypeProperty();
-			
-			if (obj.isSetGenericFields())
-			{
-				for(TridasGenericField gf : obj.getGenericFields())
-				{
-					if(gf.getName().equals(refField.getXMLFieldName()))
-					{
-						for(Property p : prop)
-						{
-							TridasEntityProperty tep = (TridasEntityProperty) p;
-							if(tep.qname.equals(refField.qname))
-							{
-								p.setValue(gf.getValue());
-							}
-						}
-					}
-					else if(gf.getName().equals(refField2.getXMLFieldName()))
-					{
-						for(Property p : prop)
-						{
-							TridasEntityProperty tep = (TridasEntityProperty) p;
-							if(tep.qname.equals(refField2.qname))
-							{
-								p.setValue(gf.getValue());
-							}
-						}
-					}
-				}
-			}
-		}
 		
-		
-		if(object instanceof TridasSample)
+		// Handle UserDefined Fields generically
+		if(object instanceof TridasEntity)
 		{
-			TridasSample sample = (TridasSample) object;
-			TellervoGenericFieldProperty externalID = TellervoGenericFieldProperty.getSampleExternalIDProperty();
-			TellervoGenericFieldProperty curationStatus = TellervoGenericFieldProperty.getSampleCurationStatusProperty();
-			TellervoGenericFieldProperty sampleStatus = TellervoGenericFieldProperty.getSampleStatusProperty();
-
 			MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
-			
-		
-			if (sample.isSetGenericFields())
+
+			TridasEntity entity = (TridasEntity) object;
+			if (entity.isSetGenericFields())
 			{
-				for(TridasGenericField gf : sample.getGenericFields())
+				for(TridasGenericField gf : entity.getGenericFields())
 				{
-					if(gf.getName().equals(externalID.getXMLFieldName()))
-					{
-						for(Property p : prop)
-						{
-							TridasEntityProperty tep = (TridasEntityProperty) p;
-							//log.debug("Property name : "+tep.qname);
-							if(tep.qname.equals(externalID.qname))
-							{
-								p.setValue(gf.getValue());
-							}
-						}
-					}
-					else if(gf.getName().equals(curationStatus.getXMLFieldName()))
-					{
-						for(Property p : prop)
-						{
-							TridasEntityProperty tep = (TridasEntityProperty) p;
-							//log.debug("Property name : "+tep.qname);
-							if(tep.qname.equals(curationStatus.qname))
-							{
-								p.setValue(gf.getValue());
-							}
-						}
-					}
-					else if(gf.getName().equals(sampleStatus.getXMLFieldName()))
-					{
-						for(Property p : prop)
-						{
-							TridasEntityProperty tep = (TridasEntityProperty) p;
-							//log.debug("Property name : "+tep.qname);
-							if(tep.qname.equals(sampleStatus.qname))
-							{
-								p.setValue(gf.getValue());
-							}
-						}
-					}
-					else if (gf.getName().startsWith("userDefinedField"))
+					if (gf.getName().startsWith("userDefinedField"))
 					{
 						for(WSIUserDefinedField fld : udfdictionary)
 						{	
@@ -193,17 +117,100 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 								}
 							}
 						}
-						
-						
-						
+					}
+				}
+			}
+		}
+		
+		// Handle Object-specific generic fields
+		if(object instanceof TridasObject)
+		{
+			TridasObject obj = (TridasObject) object;
+			TellervoGenericFieldProperty refField = TellervoGenericFieldProperty.getObjectCodeProperty();
+			TellervoGenericFieldProperty refField2 = TellervoGenericFieldProperty.getVegetationTypeProperty();
+			
+			if (obj.isSetGenericFields())
+			{
+				for(TridasGenericField gf : obj.getGenericFields())
+				{
+					if(gf.getName().equals(refField.getXMLFieldName()))
+					{
+						for(Property p : prop)
+						{
+							TridasEntityProperty tep = (TridasEntityProperty) p;
+							if(tep.qname.equals(refField.qname))
+							{
+								p.setValue(gf.getValue());
+							}
+						}
+					}
+					else if(gf.getName().equals(refField2.getXMLFieldName()))
+					{
+						for(Property p : prop)
+						{
+							TridasEntityProperty tep = (TridasEntityProperty) p;
+							if(tep.qname.equals(refField2.qname))
+							{
+								p.setValue(gf.getValue());
+							}
+						}
 					}
 				}
 			}
 		}
 		
 		
+		// Handle sample specific generic fields
+		if(object instanceof TridasSample)
+		{
+			TridasSample sample = (TridasSample) object;
+			TellervoGenericFieldProperty externalID = TellervoGenericFieldProperty.getSampleExternalIDProperty();
+			TellervoGenericFieldProperty curationStatus = TellervoGenericFieldProperty.getSampleCurationStatusProperty();
+			TellervoGenericFieldProperty sampleStatus = TellervoGenericFieldProperty.getSampleStatusProperty();			
 		
-		
+			if (sample.isSetGenericFields())
+			{
+				for(TridasGenericField gf : sample.getGenericFields())
+				{
+					if(gf.getName().equals(externalID.getXMLFieldName()))
+					{
+						for(Property p : prop)
+						{
+							TridasEntityProperty tep = (TridasEntityProperty) p;
+							//log.debug("Property name : "+tep.qname);
+							if(tep.qname.equals(externalID.qname))
+							{
+								p.setValue(gf.getValue());
+							}
+						}
+					}
+					else if(gf.getName().equals(curationStatus.getXMLFieldName()))
+					{
+						for(Property p : prop)
+						{
+							TridasEntityProperty tep = (TridasEntityProperty) p;
+							//log.debug("Property name : "+tep.qname);
+							if(tep.qname.equals(curationStatus.qname))
+							{
+								p.setValue(gf.getValue());
+							}
+						}
+					}
+					else if(gf.getName().equals(sampleStatus.getXMLFieldName()))
+					{
+						for(Property p : prop)
+						{
+							TridasEntityProperty tep = (TridasEntityProperty) p;
+							//log.debug("Property name : "+tep.qname);
+							if(tep.qname.equals(sampleStatus.qname))
+							{
+								p.setValue(gf.getValue());
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -262,20 +269,6 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 					}
 				}
 			}
-						
-			
-			/*if(tep.qname.equals("sample.externalId"))
-			{
-				if(data instanceof TridasSample)
-				{
-					TridasGenericField gf = new TridasGenericField();
-					gf.setName("tellervo.externalID");
-					gf.setType("xs:string");
-					gf.setValue((String) p.getValue());
-					
-					((TridasSample)data).getGenericFields().add(gf);
-				}
-			}*/
 		}
 		
 

@@ -458,7 +458,7 @@ public class TridasEntityProperty extends AbstractProperty {
 			ensureParentValuesExist(ep.parentProperty);
 		
 		if(ep.getValue() == null) {
-			System.out.println("Creating " + ep.qname);
+			log.debug("Creating " + ep.qname);
 
 			try {
 				Constructor<?> cons = ep.clazz.getConstructor((Class<?>[]) null);
