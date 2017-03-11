@@ -704,6 +704,120 @@ class authenticationParameters implements IParams
     
 }
 
+class projectParameters extends projectEntity implements IParams
+{
+	var $xmlRequestDom = NULL;
+	var $hasChild   = FALSE;
+	var $parentID   = NULL;
+	var $mergeWithID = NULL;
+
+	function __construct($xmlrequest, $parentID=NULL, $mergeWithID=NULL)
+	{
+		parent::__construct();
+
+		// Load the xmlrequest into a local DOM variable
+		if (gettype($xmlrequest)=='project')
+		{
+			$this->xmlRequestDom = $xmlrequest;
+		}
+		else
+		{
+			$this->xmlRequestDom = new DomDocument();
+			$this->xmlRequestDom->loadXML($xmlrequest);
+		}
+		 
+		$this->parentID=$parentID;
+		$this->mergeWithID = $mergeWithID;
+
+		// Extract parameters from the XML request
+		$this->setParamsFromXMLRequest();
+	}
+
+	function setParamsFromXMLRequest()
+	{
+		global $tellervoNS;
+		global $tridasNS;
+		global $firebug;
+
+
+		$children = $this->xmlRequestDom->documentElement->childNodes;
+
+		foreach($children as $child)
+		{
+			if($child->nodeType != XML_ELEMENT_NODE) continue;
+
+
+			switch ($child->tagName)
+			{
+				case "tridas:identifier": 			$this->setID($child->nodeValue, $child->getAttribute("domain")); break;
+				case "tridas:description":			$this->setDescription($child->nodeValue); break;
+				case "tridas:title":				$this->setTitle($child->nodeValue); break;
+				case "tridas:title":				$this->setTitle($child->nodeValue); break;
+				case "tridas:comments":			$this->setComments($child->nodeValue); break;
+				case "tridas:createdTimestamp":	break;
+				case "tridas:lastModifiedTimestamp": break;
+
+				case "tridas:file":
+					if($child->hasAttribute("xlink:href"))
+					{
+						$this->addFile($child->getAttribute("xlink:href"));
+					}
+					else
+					{
+						trigger_error("901"."Error getting href", E_USER_ERROR);
+					}
+					break;
+
+				case "tridas:type":
+					if($child->hasAttribute("normalStd"))
+					{
+						if($child->getAttribute("normalStd")=="Tellervo")
+						{
+							$this->setType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
+						}
+						else
+						{
+							trigger_error("901"."Webservice only supports Tellervo vocabularies for element type", E_USER_ERROR);
+							break;
+						}
+					}
+					trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+
+
+				case "tridas:genericField":
+					$type = $child->getAttribute("type");
+					$name = $child->getAttribute("name");
+					$value = $child->nodeValue;
+					switch($name)
+					{
+						default:
+							if(substr($name, 0, strlen("userDefinedField"))==="userDefinedField")
+							{
+								$fieldname = substr($name, strlen("userDefinedField."));
+								try{
+									$this->setUserDefinedFieldByName($value, $fieldname);
+									break;
+								} catch (Exception $e)
+								{
+									 
+									trigger_error("901".$e->getMessage(), E_USER_NOTICE);
+								}
+							}
+							else
+							{
+								//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'object' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+							}
+							 
+					}
+					break;
+										 
+				default:
+					trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'project' entity of the XML request", E_USER_NOTICE);
+			}
+		}
+	}
+}
+
 class objectParameters extends objectEntity implements IParams
 {
 	var $xmlRequestDom = NULL;
@@ -835,7 +949,23 @@ class objectParameters extends objectEntity implements IParams
 		   			case "tellervo.mapLink" :		break;
 		   			
 		   			default:
-		   			trigger_error("901"."Unknown attribute type $name in the &lt;".$child->tagName."&gt; tag of the 'object'. This tag is being ignored", E_USER_NOTICE);
+		   				if(substr($name, 0, strlen("userDefinedField"))==="userDefinedField")
+		   				{
+		   					$fieldname = substr($name, strlen("userDefinedField."));
+		   					try{
+		   						$this->setUserDefinedFieldByName($value, $fieldname);
+		   						break;
+		   					} catch (Exception $e)
+		   					{
+		   				
+		   						trigger_error("901".$e->getMessage(), E_USER_NOTICE);
+		   					}
+		   				}
+		   				else
+		   				{
+		   					//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'object' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   				}
+		   				
 		   		}
 		   		break;
 			
@@ -1101,7 +1231,27 @@ class elementParameters extends elementEntity implements IParams
 		   			case "tellervo.order":	break;
 		   			case "tellervo.family":	break;
 		   			case "tellervo.genus":	break;
-		   			case "tellervo.species":	break;		   			
+		   			case "tellervo.species":	break;		
+		   			default:
+		   				 
+		   				if(substr($name, 0, strlen("userDefinedField"))==="userDefinedField")
+		   				{
+		   					$fieldname = substr($name, strlen("userDefinedField."));
+		   					try{
+		   						$this->setUserDefinedFieldByName($value, $fieldname);
+		   						break;
+		   					} catch (Exception $e)
+		   					{
+		   							
+		   						trigger_error("901".$e->getMessage(), E_USER_NOTICE);
+		   					}
+		   				}
+		   				else
+		   				{
+		   					//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'sample' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   				}
+		   			
+		   			
 		   			//default:
 		   			//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'element' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
 		   		}
@@ -1397,8 +1547,23 @@ class radiusParameters extends radiusEntity implements IParams
 		   		switch($name)
 		   		{	   			
 		   			default:
-		   			trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'radius' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
-	
+		   			if(substr($name, 0, strlen("userDefinedField"))==="userDefinedField")
+		   				{
+		   					$fieldname = substr($name, strlen("userDefinedField."));
+		   					try{
+		   						$this->setUserDefinedFieldByName($value, $fieldname);
+		   						break;
+		   					} catch (Exception $e)
+		   					{
+		   				
+		   						trigger_error("901".$e->getMessage(), E_USER_NOTICE);
+		   					}
+		   				}
+		   				else
+		   				{
+		   					//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'radius' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   				}
+		   					
 		   		}
 		   		break;		   		   	
 		   	default:
@@ -1600,7 +1765,24 @@ class measurementParameters extends measurementEntity implements IParams
 		   			case "tellervo.mapLink":				break;
 		   			case "tellervo.isPublished":			break;
 		   			case "tellervo.readingCount":			break;		   			
-		   				
+		   			default:
+		   				if(substr($name, 0, strlen("userDefinedField"))==="userDefinedField")
+		   				{
+		   					$fieldname = substr($name, strlen("userDefinedField."));
+		   					try{
+		   						$this->setUserDefinedFieldByName($value, $fieldname);
+		   						break;
+		   					} catch (Exception $e)
+		   					{
+		   						 
+		   						trigger_error("901".$e->getMessage(), E_USER_NOTICE);
+		   					}
+		   				}
+		   				else
+		   				{
+		   					//trigger_error("901"."Unknown tag &lt;".$child->tagName."&gt; in 'object' entity of the XML request. Tag is being ignored", E_USER_NOTICE);
+		   				}
+		   				 
 		   		}
 		   		break;
 

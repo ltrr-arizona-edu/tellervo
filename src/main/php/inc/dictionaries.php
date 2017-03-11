@@ -71,7 +71,7 @@ class dictionaries
         
         //$dictItems = array('objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
         //				  'elementAuthenticity', 'datingType', 'taxon', 'configuration', 'sampleStatus');
-        $dictItems = array('objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
+        $dictItems = array('projectType', 'objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
         				  'elementAuthenticity', 'datingType', 'taxon', 'configuration', 'sampleStatus', 'userDefinedField');
        
         

@@ -44,21 +44,76 @@ abstract class UserExtendableEntity extends dbEntity
 	 * @var array()
 	 */
 	protected $userDefinedFieldAndValueArray = null;
-
-	abstract function setUserDefinedFieldAndValueArrayByEntityID($id);
-		
+	
+	private $attachedlevelinteger;
+	
+	
+	function __construct($attachedlevelinteger)
+	{
+		$this->attachedlevelinteger = $attachedlevelinteger;
+	}
+	
+	/**
+	 * Set the user defined field value by field name
+	 * 
+	 * @param String $value
+	 * @param String $fieldname
+	 */
+	function setUserDefinedFieldByName($value, $fieldname)
+	{
+		$field  = $this->getUserDefinedFieldFromFieldname($fieldname);
+		if($field!=null)
+		{
+			// Field already exists, just modify value and we're done
+			$field->value = $value;
+		}
+		else
+		{
+			// Field doesn't exist.
+			try{
+				$field = new userDefinedFieldAndValue();
+				$field->construct($fieldname, $this->id, $this->attachedlevelinteger, $value);
+			} catch (Exception $e)
+			{
+				$this->setErrorMessage("002", $e->getMessage());
+				return;
+			}
+				
+			if($this->userDefinedFieldAndValueArray==null)
+			{
+				$this->userDefinedFieldAndValueArray = array();
+			}
+			array_push($this->userDefinedFieldAndValueArray, $field);
+		}
+	
+	}
+	
+	/**
+	 * Set the array of user defined fields
+	 * 
+	 * @param unknown $arr
+	 */
 	public function setUserDefinedFieldAndValueArray($arr)
 	{
 		$this->userDefinedFieldAndValueArray = $arr;
 	}
-	
-	abstract function setUserDefinedFieldByName($value, $fieldname);
-			
+
+	/**
+	 * Get the array of user defined fields
+	 *  
+	 * @return array()
+	 */
 	public function getUserDefinedFieldAndValueArray()
 	{
 		return $this->userDefinedFieldAndValueArray;
 	}
 		
+	/**
+	 * Get the user defined field by fieldname
+	 * 
+	 * @param String $fieldname
+	 * @return UserDefinedField
+	 */
 	public function getUserDefinedFieldFromFieldname($fieldname)
 	{
 		if($this->userDefinedFieldAndValueArray==null | count($this->userDefinedFieldAndValueArray<1))
@@ -68,7 +123,7 @@ abstract class UserExtendableEntity extends dbEntity
 		
 		foreach($this->userDefinedFieldAndValueArray as $field)
 		{
-			if($field->name==$fieldname)
+			if(strtolower($field->name)==strtolower($fieldname))
 			{
 				return $field;
 			}
@@ -80,7 +135,7 @@ abstract class UserExtendableEntity extends dbEntity
 	/**
 	 * Get the user defined field value by fieldname
 	 *
-	 * @param unknown $fieldname
+	 * @param String $fieldname
 	 * @return String
 	 */
 	function getUserDefinedFieldValueByName($fieldname)
@@ -94,6 +149,45 @@ abstract class UserExtendableEntity extends dbEntity
 		{
 			return null;
 		}
+	}
+	
+	/**
+	 * Query the database for all user defined field values for by entity UUID 
+	 * 
+	 * @param UUID $id
+	 */
+	function setUserDefinedFieldAndValueArrayByEntityID($id)
+	{
+		global $dbconn;
+		global $firebug;
+	
+		$result = pg_query_params("SELECT * FROM vwtbluserdefinedfieldandvalue WHERE entityid=$1", array($this->id));
+	
+		if($result===FALSE)
+		{
+			return;
+		}
+	
+		if(pg_num_rows($result)==0)
+		{
+			return;
+		}
+	
+	
+		while ($row = pg_fetch_array($result)) {
+	
+			$field = new userDefinedFieldAndValue();
+			//$firebug->log($row, "DB row is ");
+			$field->setFromDBRow($row);
+	
+			if($this->userDefinedFieldAndValueArray==null || count($this->userDefinedFieldAndValueArray)==0)
+			{
+				$this->userDefinedFieldAndValueArray = array();
+			}
+	
+			array_push($this->userDefinedFieldAndValueArray, $field);
+		}
+	
 	}
 	
 }
@@ -764,13 +858,11 @@ class dbEntity
       dbEntity::$dbEntityCache[$key] = $entity;
    }
 }
-
-
 /**
- * Class for representing a TRiDaS object database entity.  An object is the subject of dendro-research - an item that is investigated 
+ * Class for representing a TRiDaS object database entity.  An object is the subject of dendro-research - an item that is investigated
  *
  */
-class objectEntity extends dbEntity
+class objectEntity extends UserExtendableEntity
 {
 	/**
 	 * Functional description: building (church, house etc) water well, painting,
@@ -779,27 +871,344 @@ class objectEntity extends dbEntity
 	 * @var objectType
 	 */
 	protected $type = NULL;
-	
+
 	/**
 	 * Name, place of the workshop/wharf
 	 *
 	 * @var String
 	 */
 	protected $creator = NULL;
-	
+
 	/**
 	 * Owner of the object
 	 *
 	 * @var String
 	 */
 	protected $owner = NULL;
-		
+
 	/**
-	 * Geometry object representing the location 
+	 * Geometry object representing the location
 	 *
 	 * @var Location
 	 */
 	protected $location = NULL;
+
+	/**
+	 * Description of this object
+	 *
+	 * @var String
+	 */
+	protected $description = NULL;
+
+	/**
+	 * Title of this object
+	 *
+	 * @var String
+	 */
+	protected $title = NULL;
+
+	/**
+	 * Broad historical period this object covers
+	 *
+	 * @var String
+	 */
+	protected $coverageTemporal = NULL;
+
+	/**
+	 * Foundation for the broad historical date of this object
+	 *
+	 * @var unknown_type
+	 */
+	protected $coverageTemporalFoundation = NULL;
+
+	/**
+	 * Code name for this object
+	 *
+	 * @var String
+	 */
+	protected $code = NULL;
+
+	/**
+	 * Number of vmeasurements associated with this object
+	 *
+	 * @var Integer
+	 */
+	protected $countOfChildVMeasurements= NULL;
+
+	protected $vegetationType=NULL;
+	
+	protected $projectid = NULL;
+	
+	protected $parentobjectid = NULL;
+
+	function __construct()
+	{
+		parent::__construct(2);
+		$this->location = new location();
+		$this->object = new objectType();
+		$this->type = new objectType();
+		$this->files = array();
+
+	}
+
+	/***********/
+	/* SETTERS */
+	/***********/
+
+	function setVegetationType($type)
+	{
+		$this->vegetationType = $type;
+	}
+
+	function setCountOfChildVMeasurements($count)
+	{
+		$this->countOfChildVMeasurements = (int) $count;
+	}
+
+	function setProjectID($id)
+	{
+		$this->projectid = $id;
+	}
+	
+	function setParentObjectID($id)
+	{
+		$this->parentobjectid = $id;
+	}
+	
+	/**
+	 * Set the object type
+	 *
+	 * @param Integer $id
+	 * @param String $value
+	 * @return Boolean
+	 */
+	function setType($id, $value)
+	{
+		if(!isset($this->type))
+		{
+			$this->type = new objectType();
+		}
+
+		return $this->type->setObjectType($id, $value);
+	}
+
+	/**
+	 * Set this object's description
+	 *
+	 * @param String $value
+	 */
+	function setDescription($value)
+	{
+		$this->description = $value;
+	}
+
+	/**
+	 * Set the title of this object
+	 *
+	 * @param String $value
+	 */
+	function setTitle($value)
+	{
+		$this->title = $value;
+	}
+
+	/**
+	 * Set the name of the creator - name, place of the workshop/wharf etc
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
+	function setCreator($value)
+	{
+		$this->creator = $value;
+		return true;
+	}
+
+	/**
+	 * Set the name of the owner of this object
+	 *
+	 * @param String $value
+	 * @return Boolean
+	 */
+	function setOwner($value)
+	{
+		$this->owner = $value;
+		return true;
+	}
+		
+	/**
+	 * Empty the file array
+	 *
+	 * @return Boolean
+	 */
+	function clearFiles()
+	{
+		$this->files = array();
+		return true;
+	}
+
+	/**
+	 * Set the broad historical period of the object and the foundation for thinking that
+	 *
+	 * @param String $period
+	 * @param String $foundation
+	 */
+	function setCoverageTemporal($period, $foundation)
+	{
+		$this->coverageTemporal = $period;
+		$this->coverageTemporalFoundation = $foundation;
+	}
+
+	/**
+	 * Set this object's code name
+	 *
+	 * @param String $value
+	 */
+	function setCode($value)
+	{
+		$this->code = $value;
+	}
+
+
+	/***********/
+	/* GETTERS */
+	/***********/
+
+	function getVegetationType()
+	{
+		return $this->vegetationType;
+	}
+
+	function getCountOfChildVMeasurements()
+	{
+		return $this->countOfChildVMeasurements;
+	}
+
+	/**
+	 * Get the type of object
+	 *
+	 * @param Boolean $asKey
+	 * @return unknown
+	 */
+	function getType($asKey=false)
+	{
+		if($asKey)
+		{
+			return $this->type->getID();
+		}
+		else
+		{
+			return $this->type->getValue();
+		}
+	}
+	
+	function getProjectID()
+	{
+		return $this->projectid;
+	}
+
+	function getParentObjectID()
+	{
+		return $this->parentobjectid;
+	}
+	
+	/**
+	 * Get the description of this object
+	 *
+	 * @return String
+	 */
+	function getDescription()
+	{
+		return $this->description;
+	}
+
+	/**
+	 * Get this object's title
+	 *
+	 * @return unknown
+	 */
+	function getTitle()
+	{
+		return $this->title;
+	}
+
+	/**
+	 * Get the name of the creator of this object
+	 *
+	 * @return String
+	 */
+	function getCreator()
+	{
+		return $this->creator;
+	}
+
+	/**
+	 * Get the name of the owner of this object
+	 *
+	 * @return String
+	 */
+	function getOwner()
+	{
+		return $this->owner;
+	}
+
+
+
+	/**
+	 * Get the broad historical period this object covers
+	 *
+	 * @return String
+	 */
+	function getTemporalCoverage()
+	{
+		return $this->coverageTemporal;
+	}
+
+	/**
+	 * Get the foundation for the broad historical periods this object covers
+	 *
+	 * @return String
+	 */
+	function getTemporalCoverageFoundation()
+	{
+		return $this->coverageTemporalFoundation;
+	}
+
+	/**
+	 * Get code name for this object
+	 *
+	 * @return String
+	 */
+	function getCode()
+	{
+		return $this->code;
+	}
+
+	/**
+	 * Does this object have any geometry information?
+	 *
+	 * @return Geometry
+	 */
+	function hasGeometry()
+	{
+		return $this->location->getLocationGeometry()!=NULL;
+	}
+}
+
+
+/**
+ * Class for representing a TRiDaS project database entity.   
+ *
+ */
+class projectEntity extends UserExtendableEntity
+{
+	/**
+	 * Functional description: building (church, house etc) water well, painting,
+	 * musical instrucment, ship, type of forest
+	 *
+	 * @var objectType
+	 */
+	protected $type = NULL;
 	
 	/**
 	 * Description of this object
@@ -815,61 +1224,28 @@ class objectEntity extends dbEntity
 	 */
 	protected $title = NULL;
 	
-	/**
-	 * Broad historical period this object covers
-	 *
-	 * @var String
-	 */
-	protected $coverageTemporal = NULL;
+	protected $investigator = NULL;
 	
-	/**
-	 * Foundation for the broad historical date of this object
-	 *
-	 * @var unknown_type
-	 */
-	protected $coverageTemporalFoundation = NULL;
-
-	/**
-	 * Code name for this object
-	 *
-	 * @var String
-	 */
-	protected $code = NULL;
+	protected $commissioner = NULL;
 	
-	/**
-	 * Number of vmeasurements associated with this object
-	 *
-	 * @var Integer
-	 */
-	protected $countOfChildVMeasurements= NULL;
-
-	protected $vegetationType=NULL;
-	
+	protected $period = NULL;
+		
     function __construct()
     {  
-    	$this->location = new location();
-    	$this->object = new objectType();
-	$this->type = new objectType();
+    	parent::__construct(1);
+    	
+		$this->type = new projectType();
     	$this->files = array();
-        parent::__construct();  	
+         	
 	}
 
 	/***********/
     /* SETTERS */
     /***********/   	
 
-	function setVegetationType($type)
-	{
-		$this->vegetationType = $type;
-	}	
-
-	function setCountOfChildVMeasurements($count)
-	{
-		$this->countOfChildVMeasurements = (int) $count;
-	}
-        
-        /**
-	 * Set the object type
+	
+     /**
+	 * Set the project type
 	 *
 	 * @param Integer $id
 	 * @param String $value
@@ -879,10 +1255,10 @@ class objectEntity extends dbEntity
 	{
 		if(!isset($this->type))
 		{
-			$this->type = new objectType();
+			$this->type = new projectType();
 		}
 		
-		return $this->type->setObjectType($id, $value);
+		return $this->type->setProjectType($id, $value);
 	}
 	
 	/**
@@ -905,30 +1281,21 @@ class objectEntity extends dbEntity
 		$this->title = $value;
 	}
 	
-	/**
-	 * Set the name of the creator - name, place of the workshop/wharf etc
-	 *
-	 * @param String $value
-	 * @return Boolean
-	 */
-	function setCreator($value)
+	function setInvestigator($value)
 	{
-		$this->creator = $value;
-		return true;
+		$this->investigator = $value;
 	}
 	
-	/**
-	 * Set the name of the owner of this object
-	 *
-	 * @param String $value
-	 * @return Boolean
-	 */
-	function setOwner($value)
-	{	
-		$this->owner = $value;
-		return true;
+	function setPeriod($value)
+	{
+		$this->period = $value;
 	}
-			
+	
+	function setCommissioner($value)
+	{
+		$this->commissioner = $value;
+	}
+	
 	/**
 	 * Empty the file array
 	 * 
@@ -939,43 +1306,10 @@ class objectEntity extends dbEntity
 		$this->files = array();
 		return true;
 	}
-	
-	/**
-	 * Set the broad historical period of the object and the foundation for thinking that
-	 *
-	 * @param String $period
-	 * @param String $foundation
-	 */
-	function setCoverageTemporal($period, $foundation)
-	{
-		$this->coverageTemporal = $period;
-		$this->coverageTemporalFoundation = $foundation;	
-	}
-	
-	/**
-	 * Set this object's code name
-	 *
-	 * @param String $value
-	 */
-	function setCode($value)
-	{
-		$this->code = $value;
-	}
-	
 
 	/***********/
     /* GETTERS */
     /***********/ 	
-
-	function getVegetationType()
-	{
-		return $this->vegetationType;
-	}
-
-	function getCountOfChildVMeasurements()
-	{
-		return $this->countOfChildVMeasurements;
-	}
 	
 	/**
 	 * Get the type of object
@@ -1015,74 +1349,28 @@ class objectEntity extends dbEntity
 		return $this->title;
 	}
 	
-	/**
-	 * Get the name of the creator of this object
-	 *
-	 * @return String
-	 */
-	function getCreator()
+	function getInvestigator()
 	{
-		return $this->creator;
+		return $this->investigator;
 	}
 	
-	/**
-	 * Get the name of the owner of this object
-	 *
-	 * @return String
-	 */
-	function getOwner()
-	{	
-		return $this->owner;
-	}
-	
-
-
-	/**
-	 * Get the broad historical period this object covers
-	 *
-	 * @return String
-	 */
-	function getTemporalCoverage()
+	function getCommissioner()
 	{
-		return $this->coverageTemporal;
+		return $this->commissioner;
 	}
 	
-	/**
-	 * Get the foundation for the broad historical periods this object covers
-	 *
-	 * @return String
-	 */
-	function getTemporalCoverageFoundation()
+	function getPeriod()
 	{
-		return $this->coverageTemporalFoundation;
+		return $this->period;
 	}
 	
-	/**
-	 * Get code name for this object
-	 *
-	 * @return String
-	 */
-	function getCode()
-	{
-		return $this->code;
-	}
-	
-	/**
-	 * Does this object have any geometry information?
-	 *
-	 * @return Geometry
-	 */
-    function hasGeometry()
-    {
-        return $this->location->getLocationGeometry()!=NULL;
-    }
 }
 
 /**
  * Class for representing a TRiDaS element database entity.  An element is a piece of wood originating from one tree
  *
  */
-class elementEntity extends dbEntity
+class elementEntity extends UserExtendableEntity
 {
 	protected $objectID = NULL;
 
@@ -1215,7 +1503,7 @@ class elementEntity extends dbEntity
 	
     function __construct()
     {  
-		parent::__construct();
+		parent::__construct(3);
 		$this->location = new location();	
 		$this->taxon = new taxon(); 	
 		$this->type = new elementType(); 	
@@ -1225,7 +1513,7 @@ class elementEntity extends dbEntity
 	/***********/
     /* SETTERS */
     /***********/ 	
-		
+	
 	function setSummaryObjectCode($code)
 	{
 		$this->summaryObjectCode=$code;
@@ -1795,7 +2083,7 @@ class sampleEntity extends UserExtendableEntity
 	
     function __construct()
     {  
-        parent::__construct();
+        parent::__construct(4);
         $this->type = new sampleType();  	
         $this->box = new box();
         $this->samplestatus = new sampleStatus();
@@ -1805,70 +2093,7 @@ class sampleEntity extends UserExtendableEntity
 	/***********/
     /* SETTERS */
     /***********/ 
-    
-	function setUserDefinedFieldByName($value, $fieldname)
-	{
-		$field  = $this->getUserDefinedFieldFromFieldname($fieldname);
-		if($field!=null)
-		{
-			// Field already exists, just modify value and we're done
-			$field->value = $value;
-		}
-		else
-		{
-			// Field doesn't exist.
-			try{
-				$field = new userDefinedFieldAndValue();
-				$field->construct($fieldname, $this->id, 4, $value);
-			} catch (Exception $e)
-			{
-				$this->setErrorMessage("002", $e->getMessage());
-				return;
-			}
-				
-			if($this->userDefinedFieldAndValueArray==null)
-			{
-				$this->userDefinedFieldAndValueArray = array();
-			}
-			array_push($this->userDefinedFieldAndValueArray, $field);
-		}
 	
-	}
-	
-	function setUserDefinedFieldAndValueArrayByEntityID($id)
-	{
-		global $dbconn;
-		global $firebug;
-		
-		$result = pg_query_params("SELECT * FROM vwtbluserdefinedfieldandvalue WHERE entityid=$1", array($this->id));
-	
-		if($result===FALSE)
-		{
-			return;
-		}
-		
-		if(pg_num_rows($result)==0)
-		{
-			return;
-		}
-		
-		
-		while ($row = pg_fetch_array($result)) {
-								
-			$field = new userDefinedFieldAndValue();
-			$firebug->log($row, "DB row is ");
-			$field->setFromDBRow($row);
-			
-			if($this->userDefinedFieldAndValueArray==null || count($this->userDefinedFieldAndValueArray)==0)
-			{
-				$this->userDefinedFieldAndValueArray = array();
-			}
-			
-			array_push($this->userDefinedFieldAndValueArray, $field);
-		}
-		
-	}
-
 	function setExternalID($id)
 	{
 		$this->externalID = $id;
@@ -2136,7 +2361,7 @@ class sampleEntity extends UserExtendableEntity
  * Class for representing a TRiDaS radius database entity.  A radius is a line from pith to bark from which the measurements are made.
  *
  */
-class radiusEntity extends dbEntity
+class radiusEntity extends UserExtendableEntity
 {
     protected $sampleID = NULL;   
     protected $measurementArray = array();
@@ -2246,7 +2471,7 @@ class radiusEntity extends dbEntity
     
     function __construct()
     {
-        parent::__construct();  
+        parent::__construct(5);  
         $this->pith = new complexPresenceAbsence();
         $this->heartwood = new complexPresenceAbsence();
         $this->sapwood = new complexPresenceAbsence();
@@ -3588,7 +3813,7 @@ class odkFormDefinitionEntity extends dbEntity
  * A class representing TRiDaS measurementSeries and derivedSeries in the database.  This class also includes representations of TRiDaS values.
  *
  */
-class measurementEntity extends dbEntity 
+class measurementEntity extends UserExtendableEntity 
 {	
 	/**
 	 * What method was used to measure 
@@ -3829,7 +4054,7 @@ class measurementEntity extends dbEntity
     
     function __construct()
     {  
-        parent::__construct(); 
+        parent::__construct(6); 
 		$this->location = new location();	
 		$this->taxon = new taxon(); 	
 		$this->dendrochronologist = new securityUser();

@@ -473,6 +473,19 @@ class objectType extends lookupEntity
 	}
 }
 
+class projectType extends lookupEntity
+{
+	function __construct()
+	{
+		parent::__construct("tlkpprojecttype", "projecttype", "projecttypeid");
+	}
+
+	function setProjectType($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
+	}
+}
+
 
 class locationType extends lookupEntity
 {

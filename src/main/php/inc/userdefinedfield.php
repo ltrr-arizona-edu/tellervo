@@ -12,6 +12,11 @@
  */
 require_once('dbhelper.php');
 
+/**
+ * Class representation of a user defined field and associated data value.  
+ * 
+ * @author pbrewer
+ */
 class userDefinedFieldAndValue
 {
 	private $name;
@@ -36,12 +41,16 @@ class userDefinedFieldAndValue
 	}
 
 		
-	
+	/**
+	 * Set the class variable values based on a row returned from vwtbluserdefinedfieldandvalue 
+	 * 
+	 * @param unknown $row
+	 */
 	function setFromDBRow($row)
 	{
 		$this->userdefinedfieldvalueid = $row['userdefinedfieldvalueid'];
 		$this->userdefinedfieldid = $row['userdefinedfieldid'];
-		$this->name = $row['fieldname'];
+		$this->name = strtolower($row['fieldname']);
 		$this->longfieldname = $row['longfieldname'];
 		$this->datatype = $row['datatype'];
 		$this->attachedto = $row['attachedto'];
@@ -59,7 +68,7 @@ class userDefinedFieldAndValue
 	{
 		global $dbconn;
 		
-		$result = pg_query_params($dbconn, "SELECT * FROM tlkpuserdefinedfield WHERE fieldname=$1 AND attachedto=$2", array($this->name, $this->attachedto));
+		$result = pg_query_params($dbconn, "SELECT * FROM tlkpuserdefinedfield WHERE fieldname=$1 AND attachedto=$2", array(strtolower($this->name), $this->attachedto));
 
 		if ($result===FALSE) {
 			throw new Exception("Field '".$this->name."' has not been defined");
@@ -73,9 +82,14 @@ class userDefinedFieldAndValue
 		
 	}
 	
+	/**
+	 * Get the TRiDaS XML representation of this user defined field
+	 * 
+	 * @return string
+	 */
 	function getAsTridasXML()
 	{
-		$xml ="<tridas:genericField name=\"userDefinedField.".$this->name."\" type=\"$this->datatype\">".$this->value."</tridas:genericField>\n";
+		$xml ="<tridas:genericField name=\"userDefinedField.".strtolower($this->name)."\" type=\"$this->datatype\">".$this->value."</tridas:genericField>\n";
 		return $xml;
 	}
 	
@@ -91,7 +105,6 @@ class userDefinedFieldAndValue
 		global $dbconn;
 		global $firebug;
 		
-
 		if($entityid==null && $this->entityid==null)
 		{
 			throw new Exception("Missing entity id");
@@ -102,15 +115,14 @@ class userDefinedFieldAndValue
 			$this->entityid = $entityid;
 		}
 		
-		
 		if($this->userdefinedfieldid==null)
 		{
-			$sql = "SELECT userdefinedfieldid AS id, fieldname AS nme FROM tlkpuserdefinedfield WHERE fieldname='".$this->name."' AND attachedto=".$this->attachedto;
+			$sql = "SELECT userdefinedfieldid AS id, fieldname AS nme FROM tlkpuserdefinedfield WHERE fieldname='".strtolower($this->name)."' AND attachedto=".$this->attachedto;
 			$firebug->log($sql, "SQL");
 			$result = pg_query($dbconn, $sql);
 			if(pg_num_rows($result)==0)
 			{
-				throw new Exception("Field '".$this->name."' has not been defined");
+				throw new Exception("Field '".strtolower($this->name)."' has not been defined");
 			}
 			else
 			{
@@ -137,9 +149,7 @@ class userDefinedFieldAndValue
 					$this->userdefinedfieldvalueid = $row[0];
 				}
 			}
-			
 		}
-		
 		
 		if($this->userdefinedfieldvalueid!=null)
 		{
@@ -167,7 +177,7 @@ class userDefinedFieldAndValue
 			}
 			else
 			{
-				$firebug->log("User defined field '".$this->name."' written to database with value '".$this->value."'");
+				$firebug->log("User defined field '".strtolower($this->name)."' written to database with value '".$this->value."'");
 				return true;
 			}
 			

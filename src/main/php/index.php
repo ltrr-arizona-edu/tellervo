@@ -30,6 +30,7 @@ require_once("inc/errors.php");
 require_once("inc/request.php");
 require_once("inc/parameters.php");
 require_once("inc/output.php");
+require_once("inc/project.php");
 require_once("inc/object.php");
 require_once("inc/element.php");
 require_once("inc/sample.php");
@@ -110,10 +111,11 @@ if($myMetaHeader->status != "Error")
         // Create classes to hold data in, based on type of sections in xml request 
         switch(get_class($paramObj))
         {
+        	case "projectParameters": 			$myObject = new project(); break;
+        	case "objectParameters": 			$myObject = new object(); break;   	 
             case "elementParameters": 			$myObject = new element(); break;
             case "sampleParameters":  			$myObject = new sample(); break;
             case "radiusParameters": 			$myObject = new radius(); break;
-            case "objectParameters": 			$myObject = new object(); break;            
             case "measurementParameters": 		$myObject = new measurement(); break;
             //case "readingNoteParameters": 		$myObject = new readingNote(); break;
             case "authenticationParameters": 		$myObject = new authenticate(); break;
@@ -184,9 +186,14 @@ if($myMetaHeader->status != "Error")
                     $objectType="radius";
                     break;
 
-                // These objects don't have parents     
+                // These objects don't have parents
+                case "project":
+                   	$myID = $paramObj->getID();
+                   	$objectType='project';
+                    break;
                 case "object":
                 	$myID = $paramObj->getID();
+                	$objectType='object';
                 	break;           
                 case "siteNote":
                     $myID = $paramObj->id;
@@ -258,6 +265,13 @@ if($myMetaHeader->status != "Error")
             if($hasPermission!=TRUE)
             {
                 // Permission denied
+                
+            	if($originalObjectType=='project')
+            	{
+            		trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." was denied. ".$myAuth->authFailReason, $defaultErrType);
+            		break;
+            	}
+            	
                 if (($originalObjectType=='object') && ($objectType=='default'))
                 {
                     // Permission determined from database default
