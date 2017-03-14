@@ -65,7 +65,7 @@ public class SecurityUserEntityResource extends TellervoAssociatedResource<WSISe
 		
 		// get a list of only the 'series' elements
 		List<WSISecurityUser> usrList = ListUtil.subListOfType(
-				object.getContent().getSqlsAndObjectsAndElements(), WSISecurityUser.class);
+				object.getContent().getSqlsAndProjectsAndObjects(), WSISecurityUser.class);
 
 		if (usrList.size()>0)
 		{

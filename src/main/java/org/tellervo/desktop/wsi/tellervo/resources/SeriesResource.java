@@ -99,7 +99,7 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 	@Override
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {
-		List<Object> content = object.getContent().getSqlsAndObjectsAndElements();
+		List<Object> content = object.getContent().getSqlsAndProjectsAndObjects();
 		List<WSIBox> boxes = ListUtil.subListOfType(content, WSIBox.class);
 		List<TridasProject> tridasProjects = ListUtil.subListOfType(content, TridasProject.class);
 		List<TridasObject> tridasObjects = ListUtil.subListOfType(content, TridasObject.class);
