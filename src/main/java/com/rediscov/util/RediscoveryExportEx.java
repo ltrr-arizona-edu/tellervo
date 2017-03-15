@@ -51,16 +51,20 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * FIELDS TO HANDLE - CULTURAL RECORDS
  * **************************************
  * CtrlProp 
+ * - Import - ignore
+ * - Export - constant - N
  * - ICMS Form Location - Registration tab
- * - CONSTANT - N
  * - Whether sample is an item of value, firearm etc.  For us always 'n'.
  *   
  * Class_1
+ * - Import - project.type
+ * - Export - interpret project.type
  * - ICMS Form Location - Registration tab 
- * - CONSTANT - ARCHEOLOGY
- * - Discipline.  For us always 'ARCHAEOLOGY'
+ * - Discipline.  For us always 'ARCHAEOLOGY' or 'Biology' for natural history records
  * 
  * Class_2 
+ * - Import - ignore
+ * - Export - interpret icms.histcultper
  * - ICMS Form Location - Registration tab
  * - Autohandle through HistCultPer field
  *  One of Historic, Prehistoric of Unknown.  No clear distinction for this field given in help text.
@@ -68,21 +72,23 @@ import edu.emory.mathcs.backport.java.util.Collections;
  *  we autopopulate this field from HistCultPer. But how to handle continuously used site?
  *  
  * Class_3 
+ * - Import - ignore
+ * - Export - constant - VEGETAL
  * - ICMS Form Location - Registration tab
- * - CONSTANT - VEGETAL
- * Always VEGETAL for us 
  *  
  * Class_4 
+ * - Import - ignore
+ * - Export - constant - WOOD
  * - ICMS Form Location - Registration tab
- * - CONSTANT - WOOD
- * Always WOOD for us
  *  
  * Object_NOM 
+ * - Import - ignore
+ * - Export - constant - DENDRO SAMPLE
  * - ICMS Form Location - Registration tab
- * - CONSTANT - DENDRO SAMPLE
- * Always DENDRO SAMPLE for us, although various typos and variants in ICMS export. Standardise?
  *  
  * Catalog -> new field at sample level
+ * - Import - icms.catalog
+ * - Export - icms.catalog
  * - ICMS Form Location - Registration tab
  * A 3 part 12 character field.  
  *   - 1-4 = Alpha - four letter park code
@@ -91,19 +97,22 @@ import edu.emory.mathcs.backport.java.util.Collections;
  *   - 6-12 = Numeric - sequential numbers assigned to each 'record'
  * 
  * Accession -> New field at sample level?  or ignore?
+ * - Import - icms.accession
+ * - Export - icms.accession
  * - ICMS Form Location - Registration tab
  * A 3 part 10 character field
  *    - 1-4 = Alpha - four letter park code
  *    - 5 = always a hyphen!
  *    - 6-10 = Numeric - Five digit sequential number 
- * Jenna says... "The center # (center accession #) field is only present in ICMS for NPS regional centers 
- * (i.e. WACC). That's why we don't have it over at LTRR. You can ignore it." 
  * 
  * Alt_Name - IGNORE
+ * - Import - ignore
+ * - Export - empty
  * - ICMS Form Location - Registration tab
- * Not filled in
  *  
  * Location -> Parsed -> Box name
+ * - Import - parsed - box.name
+ * - Export - prefix + box.name
  * - ICMS Form Location - Registration tab
  * "Enter the physical storage location of hte object, starting with the most general location. For example, enter
  * the building number or name, the room number, the cabinet number, and the shelf number.  For specimens stored
@@ -112,16 +121,22 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * U OF A LTRR/BOX 537
  *  
  * Object_Status - parse for sample.samplestatus (NS)
+ * - Import - parse - sample.samplestatus
+ * - Export - parse - sample.samplestatus
  * - ICMS Form Location - Registration tab 
  * "Enter the current status of the object by choosing an entry from the table"
  * According to Jenna this field should always be "STORAGE - INCOMING LOAN" but there are a number of variants in
  * the export.  An option for "MISSING" is include in the ICMS dictionary which we should probably utilise
  * 
- * Status_Date -> New field at sample level
+ * Status_Date 
+ * - Import - icms.statusdate
+ * - Export - icms.statusdate
  * - ICMS Form Location - Registration tab 
  * "Enter the 4-digit fiscal year for which the status applies" [presumably it means the 'object_status' field]
  * 
  * Item_Count
+ * - Import - icms.itemcount
+ * - Export - icms.itemcount
  * - ICMS Form Location - Registration tab
  * "Enter 1 for a single object, even if the object has component parts. Example:
  *   1 teapot with lid = 1 item
@@ -130,14 +145,18 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * ICMS records represents multiple samples.   
  *  
  * Storage_Unit - Constant - EA
+ * - Import - ignore
+ * - Export - constant - EA
  * - ICMS Form Location - Registration tab
  * "Enter the storage unit for bulk objects e.g. BAG, BOX, LF"
  * Should be always EA for us
  * 
  * Description
+ * - Import - sample.description
+ * - Export - sample.description
  * - ICMS Form Location - Registration tab
  * "Enter the description of the object.  The description should provide enough information to identify the object 
- * from others.  Do not use unathorized abbreviations or codes."
+ * from others.  Do not use unauthorized abbreviations or codes."
  * Currently this field contains duplicate information from other fields in long hand e.g.
  *   LTRR CATALOG #: AZ-181
  *   SEQUENCE #:31B-55
@@ -166,7 +185,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * - ICMS Form Location - Catalog tab
  * Not relevant  
  * 
- * Measurements
+ * Measurements - IGNORE
  * - ICMS Form Location - Catalog tab
  * "Formatted Memo field.  The field will expand into four subfields: Dimensions, weight, volume, other. An 
  * underline seperates the subfield entries on the screen."
@@ -174,12 +193,16 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * Ignore? 
  * 
  * Other_Numbers -> External id (NS)
+ * - Import - sample.externalid
+ * - Export - sample.externalid
  * - ICMS Form Location - Catalog tab
  * "Record other numbers assigned to the object, such as catalog numbers from a previous owner.  If known, 
  * indicate a source for the other number.  Note: the archaeology specialty screen contains separate fields
  * for field specimen numbers and previous catalog numbers.
  *  
- * Condition -> New field at sample level?
+ * Condition 
+ * - Import - ignore
+ * - Export - constant - COM-GD
  * - ICMS Form Location - Catalog tab
  * "Enter the condition of the object using one term from each of the two criteria groups:
  *  - Group I - COM (complete); INC (incomplete); FRG (fragment)
@@ -191,7 +214,9 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * - ICMS Form Location - Catalog tab
  * Not used
  * 
- * Cataloger -> New field at sample level?
+ * Cataloger 
+ * - Import - icms.cataloger
+ * - Export - icms.cataloger
  * - ICMS Form Location - Catalog tab
  * "Enter the full name, last name first, of the person who cataloged the object."
  * Not consistently used in export. * 
