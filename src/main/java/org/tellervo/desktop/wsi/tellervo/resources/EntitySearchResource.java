@@ -199,7 +199,7 @@ public class EntitySearchResource<T extends ICoreTridas> extends
 			throws ResourceException {
 		
 		// make a list of all of the types we want
-		setAssociatedResult((List<T>) ListUtil.subListOfType(object.getContent().getSqlsAndObjectsAndElements(), returnType));
+		setAssociatedResult((List<T>) ListUtil.subListOfType(object.getContent().getSqlsAndProjectsAndObjects(), returnType));
 		
 		return true;
 	}

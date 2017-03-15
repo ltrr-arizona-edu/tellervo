@@ -63,7 +63,7 @@ public class Dictionary extends TellervoResource {
 	protected boolean processQueryResult(WSIRootElement object)
 			throws ResourceException {
 		
-		List<Object> content = object.getContent().getSqlsAndObjectsAndElements();
+		List<Object> content = object.getContent().getSqlsAndProjectsAndObjects();
 
 		for(Object o : content) {
 			XmlRootElement dict;

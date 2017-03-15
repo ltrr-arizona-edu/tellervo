@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -17,10 +18,12 @@ import org.tridas.schema.TridasLocation;
 import org.tridas.spatial.SpatialUtils;
 import org.tridas.spatial.SpatialUtils.UTMDatum;
 
+import com.jidesoft.swing.ListSearchable;
 import com.rediscov.schema.NormalCondition;
 import com.rediscov.schema.RediscoveryExport;
 import com.rediscov.util.RediscoveryExportEx;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 public class ICMSTest extends TestCase {
@@ -146,6 +149,7 @@ public class ICMSTest extends TestCase {
 				log.error("ITRDB species code "+rec.getITRDBSpeciesCode()+" is invalid for " + rec.getCatalogCode());
 				logFailedCatalogCode(rec.getCatalogCode()+ "   - ITRDB species code is invalid");
 				countfailure++;
+				
 			}
 			
 		}
@@ -421,6 +425,256 @@ public class ICMSTest extends TestCase {
 		} else {
 			log.debug("Records with codes missing: "
 					+ (recordcount - codes.size()));
+			fail();
+		}
+
+	}
+	
+	public void testHistCultPer() {
+		
+		String[] dict = {
+				"16TH C",
+				"16TH C, EARLY",
+				"16TH C, MIDDLE",
+				"16TH C, LATE",
+				
+				"17TH C",
+				"17TH C, EARLY",
+				"17TH C, MIDDLE",
+				"17TH C, LATE",
+				
+				"18TH C",
+				"18TH C, EARLY",
+				"18TH C, MIDDLE",
+				"18TH C, LATE",
+				
+				"19TH C",
+				"19TH C, EARLY",
+				"19TH C, MIDDLE",
+				"19TH C, LATE",
+				"19TH C, SECOND HALF",
+				
+				"20TH C",
+				"20TH C, EARLY",
+				"20TH C, MIDDLE",
+				"20TH C, LATE",
+				"ACKMEN",
+				"AMARGOSA",
+				"AMARGOSA I",
+				"AMARGOSA II",
+				"AMERICAN",
+				"ANGELL",
+				"ANIMAS",
+				"APACHE WARS",
+				"APISHAPA PHASE",
+				"ARCHAIC",
+				"ARCHAIC, EARLY",
+				"ARCHAIC, LATE",
+				"ARCHAIC, MIDDLE",
+				"BAKER",
+				"BASKETMAKER",
+				"BASKETMAKER II",
+				"BASKETMAKER III",
+				"BASKETMAKER II-III",
+				"BLACK ROCK",
+				"BONITO",
+				"BONNEVILLE",
+				"CAMP VERDE",
+				"CAMP VERDE, EARLY",
+				"CAMP VERDE, LATE",
+				"CANYON DEL ORO",
+				"CERAMIC, EARLY",
+				"CERROS",
+				"CHIRICAHUA",
+				"CINDER PARK",
+				"CIVANO",
+				"CIVIL WAR",
+				"CLASSIC",
+				"CLASSIC, EARLY",
+				"CLASSIC, LATE",
+				"CLASSIC, MIDDLE",
+				"CLOVERDALE",
+				"CLOVIS",
+				"COLONIAL",
+				"COLONIAL, LATE",
+				"COWHORN",
+				"DE CHELLY",
+				"DEATH VALLEY I",
+				"DEATH VALLEY II",
+				"DEATH VALLEY II, LATE",
+				"DEATH VALLEY III",
+				"DEATH VALLEY IV",
+				"DEATH VALLEY V",
+				"DEL MUERTO",
+				"DEPRESSION ERA",
+				"EARLY HISTORIC",
+				"EL PASO",
+				"EL TOVAR",
+				"EL TOVAR, POST",
+				"EL TOVAR, PRE",
+				"ELDEN",
+				"EN MEDIO",
+				"ENCINAS",
+				"ESTRELLA",
+				"FOLSOM",
+				"FORMATIVE",
+				"GALIURO",
+				"GILA",
+				"GILA BUTTE",
+				"GOBERNADOR, EARLY",
+				"HARDT",
+				"HISTORIC",
+				"HISTORIC, EARLY",
+				"HOMESTEADING, INDIAN WARS",
+				"HOMESTEADING, RANCHING",
+				"HONANKI",
+				"HOSTA BUTTE",
+				"INDIAN WARS",
+				"KLONDIKE",
+				"LA PLATA",
+				"LATE PREHISTORIC",
+				"LLANO",
+				"MANCOS",
+				"MANGAS",
+				"MARANA",
+				"MCELMO",
+				"MEDIO",
+				"MESA VERDE",
+				"MIAMI",
+				"MISSION",
+				"MISSION, EARLY",
+				"MISSION, LATE",
+				"MODERN",
+				"NAVAJO",
+				"NAVAJO, EARLY",
+				"NAVAJO, LATE",
+				"PADRE",
+				"PATAYAN I",
+				"PATAYAN II",
+				"PATAYAN III",
+				"PATAYAN III, LATE",
+				"PIEDRA",
+				"PIEDRA, LATE",
+				"PINTO",
+				"PIONEER",
+				"PIONEER, LATE",
+				"PRECLASSIC",
+				"PROTOHISTORIC",
+				"PUEBLO",
+				"PUEBLO I",
+				"PUEBLO I, EARLY",
+				"PUEBLO I, LATE",
+				"PUEBLO I, MIDDLE",
+				"PUEBLO II",
+				"PUEBLO II, EARLY",
+				"PUEBLO II, LATE",
+				"PUEBLO II, MIDDLE",
+				"PUEBLO III",
+				"PUEBLO III, EARLY",
+				"PUEBLO III, LATE",
+				"PUEBLO III, MIDDLE",
+				"PUEBLO IV",
+				"PUEBLO V",
+				"RESERVE",
+				"RILLITO",
+				"RINCON",
+				"RINCON, EARLY",
+				"RINCON, LATE",
+				"RIO DE FLAG",
+				"ROOSEVELT",
+				"ROSA",
+				"RUSSIAN",
+				"SACATON",
+				"SACATON, EARLY",
+				"SACATON, LATE",
+				"SAN DIEGUITO",
+				"SAN DIEGUITO I",
+				"SAN DIEGUITO II",
+				"SAN FRANCISCO",
+				"SAN JOSE",
+				"SAN PEDRO",
+				"SANTA CRUZ",
+				"SANTA CRUZ, LATE",
+				"SANTAN",
+				"SEDENTARY",
+				"SEDENTARY, EARLY",
+				"SEDENTARY, LATE",
+				"SELLS",
+				"SELLS, EARLY",
+				"SNAKETOWN",
+				"SOHO",
+				"SQUAW PEAK",
+				"SUNSET",
+				"SWEETWATER",
+				"TANQUE VERDE",
+				"TANQUE VERDE, EARLY",
+				"TRADING POST/TOURIST",
+				"TUCSON",
+				"TULAROSA",
+				"TURKEY HILL",
+				"TUZIGOOT",
+				"VAHKI",
+				"VAMORI",
+				"VENTANA",
+				"WENDOVER",
+				"WORLD WAR I",
+				"WORLD WAR II",
+				"WORLD WAR II INTERNMENT",
+				"YUMAN II",
+				"YUMAN III"};
+		
+		ArrayList<String> standard = new ArrayList<String>(Arrays.asList(dict));
+		
+		List<RediscoveryExport> lst = RediscoveryExportEx
+				.getICMSRecordsFromXMLFile(filename, false);
+
+		Double recordcount = 0.0;
+		Double goodcount = 0.0;
+		HashSet<String> nonstandard = new HashSet<String>();
+		
+
+		if (lst == null) {
+			fail();
+		}
+
+		for (RediscoveryExport record : lst) {
+			
+
+			RediscoveryExportEx rec = (RediscoveryExportEx) record;
+			String code = rec.getHistCultPer().trim();
+			
+			String[] codes = code.split("--");
+			
+			
+			for(String c : codes)
+			{
+				recordcount++;
+				
+				c = c.trim();
+				if(standard.contains(c))
+				{
+					goodcount++;
+				}
+				else
+				{
+					nonstandard.add(c);
+				}
+			}
+		}
+
+		if(nonstandard.size()==0)
+		{
+			log.debug("Passed!");
+			return;
+		}
+		else
+		{
+			Iterator iter = nonstandard.iterator();
+			while (iter.hasNext()) {
+			    log.debug(iter.next().toString());
+			}
+			log.debug("Total number of non-standard codes: "+ nonstandard.size());
+			log.debug("Percentage non-standard codes     : "+(goodcount/recordcount)*100);
 			fail();
 		}
 

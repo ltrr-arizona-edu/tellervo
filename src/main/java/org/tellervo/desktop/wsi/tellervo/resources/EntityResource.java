@@ -139,7 +139,7 @@ public class EntityResource<T extends ICoreTridas> extends
 
 		// get the type we want
 		List<T> values = ListUtil.subListOfType(object.getContent()
-				.getSqlsAndObjectsAndElements(), entityType);
+				.getSqlsAndProjectsAndObjects(), entityType);
 		
 		// set our value, maybe?
 		setAssociatedResult((values.size() == 0) ? null : values.get(0));

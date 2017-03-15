@@ -151,9 +151,9 @@ public class PermissionsResource extends TellervoAssociatedResource<ArrayList<WS
 			throws ResourceException {
 		
 
-		if (object.getContent().getSqlsAndObjectsAndElements().size()>0)
+		if (object.getContent().getSqlsAndProjectsAndObjects().size()>0)
 		{
-			setAssociatedResult((ArrayList) object.getContent().getSqlsAndObjectsAndElements());
+			setAssociatedResult((ArrayList) object.getContent().getSqlsAndProjectsAndObjects());
 			return true;
 		}
 		

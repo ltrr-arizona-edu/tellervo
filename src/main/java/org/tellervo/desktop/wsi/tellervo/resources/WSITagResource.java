@@ -117,7 +117,7 @@ public class WSITagResource<T extends WSITag> extends
 		Class<T> entityType = (Class<T>) WSITag.class;
 
 		// get the type we want
-		List<T> values = ListUtil.subListOfType(object.getContent().getSqlsAndObjectsAndElements(), entityType);
+		List<T> values = ListUtil.subListOfType(object.getContent().getSqlsAndProjectsAndObjects(), entityType);
 		
 		// set our value, maybe?
 		setAssociatedResult((values.size() == 0) ? null : values.get(0));
