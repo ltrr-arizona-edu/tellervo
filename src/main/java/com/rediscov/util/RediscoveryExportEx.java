@@ -58,7 +58,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * FIELDS TO HANDLE - CULTURAL RECORDS
  * **************************************
  * CtrlProp 
- * - Import - ignore
+ *x - Import - ignore
  * - Export - constant - N
  * - ICMS Form Location - Registration tab
  * - Whether sample is an item of value, firearm etc.  For us always 'n'.
@@ -70,7 +70,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * - Discipline.  For us always 'ARCHAEOLOGY' or 'Biology' for natural history records
  * 
  * Class_2 
- * - Import - ignore
+ *x - Import - ignore
  * - Export - interpret icms.histcultper
  * - ICMS Form Location - Registration tab
  * - Autohandle through HistCultPer field
@@ -79,22 +79,22 @@ import edu.emory.mathcs.backport.java.util.Collections;
  *  we autopopulate this field from HistCultPer. But how to handle continuously used site?
  *  
  * Class_3 
- * - Import - ignore
+ *x - Import - ignore
  * - Export - constant - VEGETAL
  * - ICMS Form Location - Registration tab
  *  
  * Class_4 
- * - Import - ignore
+ *x - Import - ignore
  * - Export - constant - WOOD
  * - ICMS Form Location - Registration tab
  *  
  * Object_NOM 
- * - Import - ignore
+ *x - Import - ignore
  * - Export - constant - DENDRO SAMPLE
  * - ICMS Form Location - Registration tab
  *  
  * Catalog -> new field at sample level
- * - Import - icms.catalog
+ *x - Import - icms.catalog
  * - Export - icms.catalog
  * - ICMS Form Location - Registration tab
  * A 3 part 12 character field.  
@@ -104,7 +104,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  *   - 6-12 = Numeric - sequential numbers assigned to each 'record'
  * 
  * Accession -> New field at sample level?  or ignore?
- * - Import - icms.accession
+ *x - Import - icms.accession
  * - Export - icms.accession
  * - ICMS Form Location - Registration tab
  * A 3 part 10 character field
@@ -113,7 +113,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  *    - 6-10 = Numeric - Five digit sequential number 
  * 
  * Alt_Name - IGNORE
- * - Import - ignore
+ *x - Import - ignore
  * - Export - empty
  * - ICMS Form Location - Registration tab
  *  
@@ -127,16 +127,16 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * This field can be parsed to determined box name.  Typical entry is:
  * U OF A LTRR/BOX 537
  *  
- * Object_Status - parse for sample.samplestatus (NS)
- * - Import - parse - sample.samplestatus
- * - Export - parse - sample.samplestatus
+ * Object_Status - parse for sample.curationstatus (NS)
+ *x - Import - parse - sample.curationstatus
+ * - Export - parse - sample.curationstatus
  * - ICMS Form Location - Registration tab 
  * "Enter the current status of the object by choosing an entry from the table"
  * According to Jenna this field should always be "STORAGE - INCOMING LOAN" but there are a number of variants in
  * the export.  An option for "MISSING" is include in the ICMS dictionary which we should probably utilise
  * 
  * Status_Date 
- * - Import - icms.statusdate
+ *x - Import - icms.statusdate
  * - Export - icms.statusdate
  * - ICMS Form Location - Registration tab 
  * "Enter the 4-digit fiscal year for which the status applies" [presumably it means the 'object_status' field]
@@ -152,15 +152,15 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * ICMS records represents multiple samples.   
  *  
  * Storage_Unit - Constant - EA
- * - Import - ignore
+ *x - Import - ignore
  * - Export - constant - EA
  * - ICMS Form Location - Registration tab
  * "Enter the storage unit for bulk objects e.g. BAG, BOX, LF"
  * Should be always EA for us
  * 
  * Description
- * - Import - sample.description
- * - Export - sample.description
+ *x - Import - sample.description
+ *x - Export - sample.description
  * - ICMS Form Location - Registration tab
  * "Enter the description of the object.  The description should provide enough information to identify the object 
  * from others.  Do not use unauthorized abbreviations or codes."
@@ -173,26 +173,38 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * Field is not consistent enough to be automatically parsed.  How should we use? 
  * 
  * Artist_Maker - IGNORE
+ *x - Import - ignore
+ *x - Export - ignore
  * - ICMS Form Location - Catalog tab
  * Not relevant
  * 
  * Maint_Cycle - IGNORE
+ *x - Import - ignore
+ *x - Export - ignore 
  * - ICMS Form Location - Catalog tab
  * Not relevant
  * 
  * Manufact_Date - IGNORE
+ *x - Import - ignore
+ *x - Export - ignore 
  * - ICMS Form Location - Catalog tab
  * Not relevant
  * 
  * Material - IGNORE
+ *x - Import - ignore
+ *x - Export - ignore
  * - ICMS Form Location - Catalog tab
  * Not relevant
  * 
  * Use_Date - IGNORE
+ *x - Import - ignore
+ *x - Export - ignore 
  * - ICMS Form Location - Catalog tab
  * Not relevant  
  * 
  * Measurements - IGNORE
+ *x - Import - ignore
+ *x - Export - ignore 
  * - ICMS Form Location - Catalog tab
  * "Formatted Memo field.  The field will expand into four subfields: Dimensions, weight, volume, other. An 
  * underline seperates the subfield entries on the screen."
@@ -200,7 +212,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * Ignore? 
  * 
  * Other_Numbers -> External id (NS)
- * - Import - sample.externalid
+ *x - Import - sample.externalid
  * - Export - sample.externalid
  * - ICMS Form Location - Catalog tab
  * "Record other numbers assigned to the object, such as catalog numbers from a previous owner.  If known, 
@@ -208,7 +220,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * for field specimen numbers and previous catalog numbers.
  *  
  * Condition 
- * - Import - ignore
+ *x - Import - ignore
  * - Export - constant - COM-GD
  * - ICMS Form Location - Catalog tab
  * "Enter the condition of the object using one term from each of the two criteria groups:
@@ -218,20 +230,23 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * in export. 
  * 
  * Condition_Desc IGNORE
+ *x - Import - ignore
+ *x - Export - ignore 
  * - ICMS Form Location - Catalog tab
  * Not used
  * 
  * Cataloger 
- * - Import - icms.cataloger
+ *x - Import - icms.cataloger
  * - Export - icms.cataloger
  * - ICMS Form Location - Catalog tab
  * "Enter the full name, last name first, of the person who cataloged the object."
  * Not consistently used in export. * 
  * 
  * Catalog_Date -> Sample.createdTimestamp?
+ *X - Import - icms.catalogdateoverride
  * - ICMS Form Location - Catalog tab
  * "Enter the numeric month, day and full year the object was cataloged"
- * Seems a good match for sample.createdtimestamp, but this is not overridable by the user.
+ * A good match for sample.createdtimestamp for new records, but must be overrideable so used icms.catalogdateoverride when importing
  * 
  * Identified_By -> New field? Ignore?
  * - ICMS Form Location - Catalog tab
@@ -244,26 +259,36 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * Ignore?
  * 
  * Field_Site -> New field at sample level
+ *x - Import - icms.fieldsite
+ * - Export - icms.fieldsite 
  * - ICMS Form Location - Prof/Manf tab
  * "Record any field site number that the investigator assigned to the archaeological site.  This is
  * the site from which the object was originally recovered.  Do not record the state site number
  * in this field"
  * 
  * State_Site -> New field
+ *x - Import - icms.statesite
+ * - Export - icms.statesite
  * - ICMS Form Location - Prof/Manf tab
  * "Enter the number assigned to the site within the relevant state archaeological inventory This is 
  * the site from which the object was originally recovered.  If a state site number has not be 
  * assigned, enter UNASSIGNED"
  * 
- * Site_Name -> Object.title
+ * Site_Name 
+ *x - Import - subobject.title
+ * - Export - subobject.title 
  * - ICMS Form Location - Prof/Manf tab
  * "For archaeology, enter the distinctive name of the location where the material was collected"
  *  
- * Within_Site -> Element.location.description?
+ * Within_Site 
+ *x - Import - Element.location.description
+ * - Export - Element.location.description
  * - ICMS Form Location - Prof/Manf tab
  * "For archaeology, enter the specific within site provenience of the object.  Example: P5, L M7, D 25"
  * 
  * Origin -> parsed -> object.location.address.addressLine2, stateProvinceRegion, country
+ *x - Import - Element.location.address
+ * - Export - Element.location.address
  * - ICMS Form Location - Prof/Manf tab
  * "Repeating formatted memo field.  The field will expand into four repeatable subfields: City,
  * County; State; and Country... Multiple terms are separated by double underscores(__), rows are 
@@ -272,6 +297,8 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * is largely US specific, but we can used addressLine2 for this.
  * 
  * UTM_Z_E_N  -> object.location.locationGeometry
+ *x - Import - Element.location.locationGeometry
+ * - Export - Element.location.locationGeometry
  * - ICMS Form Location - Prof/Manf tab
  * "Enter the UTM coordinates for the collection site, if the collector provides these data."
  * The entry is limited to digits, and should be formatted like this:
@@ -281,6 +308,8 @@ import edu.emory.mathcs.backport.java.util.Collections;
  *  error if we pick the wrong datum.  Also how to handle conflicting coordinates with LatLon?
  * 
  * Lat_LongN_W  -> object.location.locationGeometry
+ *x - Import - Element.location.locationGeometry
+ * - Export - Element.location.locationGeometry
  * - ICMS Form Location - Prof/Manf tab
  * "Enter the standard latitude and longitude for the collection site, if the collector provides 
  * these data".
@@ -288,6 +317,8 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * spatial parsing will do it's best to extract meaningful info.
  * 
  * Hist_Cult_Per -> New field
+ *x - Import - icms.histcultper
+ * - Export - icms.histcultper
  * - ICMS Form Location - Prof/Manf tab
  * "Historic/Cultural Period.  Enter a distinctive stylistic or historical period.  
  * Example: Colonial Pueblo III"
@@ -295,36 +326,48 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * Various non-dictionary terms used in export  
  * 
  * Cultural_ID -> New field
+ *x - Import - icms.culturalid
+ * - Export - icms.culturalid
  * - ICMS Form Location - Prof/Manf tab
  * "Enter the cultural affiliation of the material or the person(s) or group who manufactured
  * the object.  Examples: Pennsylvania Dutch; Pima; Anasazi."
  * 
  * Cult_of_Use - IGNORE
+ *x - Import - ignore
+ *x - Export - ignore 
  * - ICMS Form Location - Prof/Manf tab
  * Not used
  * 
  * NAGPRA - IGNORE
+ *x - Import - ignore
+ *x - Export - ignore 
  * - ICMS Form Location - Prof/Manf tab
  * Not used
  * 
  * Place_of_Manuf - IGNORE
+ *x - Import - ignore
+ *x - Export - ignore 
  * - ICMS Form Location - Prof/Manf tab
  * Not used 
  * 
  * Fld_Specimen -> New field? or concatenate Object-Element-Sample codes?
+ *x - Import - icms.fieldspecimen
+ * - Export - ignore 
  * - ICMS Form Location - Archaeology tab
  * "Enter the field specimen number(s) assigned to the object.  If known, indicate
  * the source of the field specimen number by giving the name of the person who 
  * assigned it"
  * 
  * Type_Name - IGNORE
+ *x - Import - ignore
+ *x - Export - ignore 
  * - ICMS Form Location - Prof/Manf tab
  * Not used
  * 
  * Collector -> sample.sampledBy (NS) and sample.samplingDate
  * - ICMS Form Location - Archaeology tab
  * "The field will expand into two subfields: collector and collection date. An underline
- * seperates the subfield entries on the screen.  Collector: enter the full name of the
+ * separates the subfield entries on the screen.  Collector: enter the full name of the
  * person, lastname, first, who collected the material.  Collection date: flexible 
  * date field. Enter the date on which the collector collected the material"
  * 
@@ -338,6 +381,8 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * NB NOT INCLUDED IN WACC EXPORT!
  * 
  * Color - IGNORE
+ *x - Import - ignore
+ *x - Export - ignore
  * - ICMS Form Location - Archaeology tab
  * Not relevant 
  * 
@@ -357,11 +402,23 @@ public class RediscoveryExportEx extends RediscoveryExport {
 
 	private static final long serialVersionUID = 1L;
 	protected final static Logger log = LoggerFactory.getLogger(RediscoveryExportEx.class);
-
+	private boolean itemCountNeedsChecking = false;
 	
 	public RediscoveryExportEx()
 	{
 		
+	}
+	
+	/**
+	 * Whether there is ambiguity in the item count that needs checking 
+	 * 
+	 * @return
+	 */
+	public boolean doesItemCountNeedChecking()
+	{
+		// Run this to make sure we're set
+		getSubSamples();
+		return this.itemCountNeedsChecking;
 	}
 	
 	public boolean isImportable()
@@ -412,6 +469,13 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 	}
 	
+	@Override
+	public String getCulturalID()
+	{
+		String id = super.getCulturalID();
+		return WordUtils.capitalize(id.toLowerCase().replace("--", " - "));	
+	}
+	
 	/**
 	 * Extract the county from the Origin field
 	 * 
@@ -440,7 +504,9 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	{
 		ArrayList<ControlledVoc> cvs = new ArrayList<ControlledVoc>();
 
-		String[] parts = this.getParts().split(",");
+		String s = this.getObjectPart();
+		
+		String[] parts = s.split(",");
 		
 		for(String part : parts)
 		{
@@ -495,39 +561,146 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	 * 
 	 * @return
 	 */
-	public ArrayList<ControlledVoc> getSampleTypes()
+	public ArrayList<RediscoverySubSample> getSubSamples()
 	{
-		ArrayList<ControlledVoc> types = new ArrayList<ControlledVoc>();
 		ArrayList<ControlledVoc> parts = getPartsAsCV();
-		
-		MultiKeyMap<ControlledVoc, Integer> map = new MultiKeyMap<ControlledVoc, Integer>();
-		
+		ArrayList<RediscoverySubSample> subsamples = new ArrayList<RediscoverySubSample>();
 		Integer itemCount = this.getItemCount().toBigInteger().intValue();
 		
-		if(itemCount==1)
+		
+		if(parts.size()==0)
 		{
-			// Item count of 1 so just use the parts 
-			return parts;
+			// No parts records.  Create single sample of unknown type with all pieces assigned to it
+			RediscoverySubSample ss = new RediscoverySubSample();
+			ss.itemCount = itemCount;
+			ControlledVoc cv = DictionaryUtil.getControlledVocForName("Unknown", "sampleTypeDictionary");	
+			ss.sampleType = cv;
+			subsamples.add(ss);
+			
 		}
-		
-		if(itemCount<=parts.size())
+		else if(parts.size()==itemCount || itemCount==1)
 		{
-			return parts;
-		}
-		
-	
-		
-		if(parts.size()==1 && itemCount>1)
-		{
-			// 1 part, but multiple 
-			for(int i=0; i<itemCount; i++)
+			// Simple.  Each  sample has 1 item
+			for(ControlledVoc part : parts)
 			{
-				types.add(parts.get(0));
+				RediscoverySubSample ss = new RediscoverySubSample();
+				ss.itemCount = 1;
+				ss.sampleType = part;
+				subsamples.add(ss);
 			}
 		}
+		else if (parts.size()==1)
+		{
+			if(this.containsFragments())
+			{
+				// Assuming one sample with multiple pieces
+				RediscoverySubSample ss = new RediscoverySubSample();
+				ss.itemCount = itemCount;
+				ss.sampleType = parts.get(0);
+				subsamples.add(ss);
+			}
+			else
+			{
+				// Assuming multiple samples of the same sample type
+				this.itemCountNeedsChecking = true;
+				for(int x=0; x<itemCount; x++)
+				{
+					RediscoverySubSample ss = new RediscoverySubSample();
+					ss.itemCount = 1;
+					ss.sampleType = parts.get(0);
+					subsamples.add(ss);
+				}
+			}
+		}
+		else 
+		{
+			// More parts and items
+			
+			this.itemCountNeedsChecking = true;
+			
+			// First see how many charcoal or fragment types we have
+			int countOfFrags=0;
+			for(ControlledVoc part:parts)
+			{
+				String p = part.getNormal();
+				if(p.toLowerCase().contains("chcl") || p.toLowerCase().contains("char"))
+				{
+					countOfFrags++;
+				}
+			}
+			
+			if(countOfFrags==1)
+			{
+				// Just one fragment type, so we'll give all the excess item counts to this 		
+				for(ControlledVoc part:parts)
+				{
+					RediscoverySubSample ss = new RediscoverySubSample();
+					ss.sampleType = part;
+					ss.itemCount = 1;
+
+					String p = part.getNormal();
+					if(p.toLowerCase().contains("chcl") || p.toLowerCase().contains("char"))
+					{
+						ss.itemCount = itemCount - parts.size();
+						subsamples.add(ss);
+					}
+
+					subsamples.add(ss);
+					
+				}
+			}
+			else if (countOfFrags==0)
+			{
+				// No fragments, so arbitrarily give all the excess counts to the first sample and 1 item to each of the rest 
+				boolean first = true;
+				for(ControlledVoc part:parts)
+				{
+					RediscoverySubSample ss = new RediscoverySubSample();
+					ss.itemCount = 1;
+					ss.sampleType = part;
+					if(first==true)
+					{
+						ss.itemCount = itemCount - parts.size();
+						first=false;
+					}
+					subsamples.add(ss);
+				}
+			}
+			else
+			{
+				// Multiple fragment types, so arbitrarily give all the excess counts to the first fragment and 1 item to each of the rest
+				boolean found = false;
+				for(ControlledVoc part:parts)
+				{
+					RediscoverySubSample ss = new RediscoverySubSample();
+					ss.itemCount = 1;
+					ss.sampleType = part;
+
+					String p = part.getNormal();
+					if(p.toLowerCase().contains("chcl") || p.toLowerCase().contains("char"))
+					{
+						if(found==false)
+						{
+							ss.itemCount = itemCount - parts.size();
+							subsamples.add(ss);
+						}
+						else
+						{
+							subsamples.add(ss);
+							found = true;
+						}
+					}
+					subsamples.add(ss);
+				}
+			}
+		}		
+	
+		if(subsamples.size()>1)
+		{
+			log.debug("Multiple subsamples in this record: "+this.catalogCode);
+		}
 		
-		
-		return types;
+		return subsamples;
 	}
 	
 	/**
@@ -584,6 +757,21 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 		log.error("Unable to convert taxon field to true taxon");
 		return null;
+		
+	}
+	
+	public String getCleanBoxName()
+	{
+		String boxname = this.getLocation(); 
+		
+		boxname = boxname.replace("U OF A LTRR/", "");
+		
+		if(boxname.startsWith("BOX"))
+		{
+			boxname = boxname.substring(3).trim();
+		}
+		
+		return boxname;
 		
 	}
 	
@@ -974,4 +1162,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	      }
 	   }
 	
+	
+}
+
+class RediscoverySubSample{
+
+	public ControlledVoc sampleType;
+	public Integer itemCount;
 }

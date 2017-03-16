@@ -10,6 +10,7 @@ import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
@@ -42,6 +43,17 @@ public class TridasManipUtil {
 		return null;
 	}
 
+	
+	public static TridasGenericField createGenericField(String fieldname, String fieldvalue, String datatype)
+	{
+		TridasGenericField gf = new TridasGenericField();
+		gf.setName(fieldname);
+		gf.setValue(fieldvalue);
+		gf.setType(datatype);
+		
+		return gf;
+	}
+	
 	/**
 	 * NOT TESTED!
 	 * 

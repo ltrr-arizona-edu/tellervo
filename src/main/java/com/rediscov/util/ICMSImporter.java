@@ -19,10 +19,23 @@ import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.DictionaryUtil;
+import org.tellervo.desktop.util.TridasManipUtil;
 import org.tellervo.desktop.wsi.Resource;
+import org.tellervo.desktop.wsi.ResourceEvent;
+import org.tellervo.desktop.wsi.ResourceEventListener;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.schema.CurationStatus;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSIBox;
+import org.tellervo.schema.WSIEntity;
 import org.tellervo.schema.WSIRootElement;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.ControlledVoc;
@@ -35,7 +48,7 @@ import org.tridas.util.TridasObjectEx;
 
 import com.rediscov.schema.RediscoveryExport;
 
-public class ICMSImporter {
+public class ICMSImporter{
 
 	List<RediscoveryExport> records;
 	protected final static Logger log = LoggerFactory.getLogger(ICMSImporter.class);
@@ -105,8 +118,15 @@ public class ICMSImporter {
 			
 			}
 			
+
+			
 			
 			try {
+				if(rec.getObjectCode().equals("AZRU"))
+				{
+					continue;
+				}
+				
 				TridasObjectEx park = Dictionary.getTridasObjectByCode(rec.getObjectCode());
 				if(park==null)
 				{
@@ -221,29 +241,55 @@ public class ICMSImporter {
 				// SAMPLE
 				//***********************************
 							
-				int title=0;
-				ArrayList<ControlledVoc> types = rec.getSampleTypes();
-				for(ControlledVoc sampletype : types )
+				int title=-1;
+				ArrayList<RediscoverySubSample> types = rec.getSubSamples();
+				for(RediscoverySubSample subsample : types )
 				{ 
+					title++;
 					TridasSample sample = new TridasSample();
 					sample.setTitle(numberToAlphaSequence(title));
-					sample.setType(sampletype);
+					sample.setType(subsample.sampleType);
+					sample.setDescription(rec.getDescription());
+					if(rec.doesItemCountNeedChecking())
+					{
+						sample.setComments("This record was imported from ICMS.  There was ambiguity in the itemCount so this sample needs to be checked manually");
+					}
+					
 
-					
-					
-					
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("tellervo.curationStatus", CurationStatus.ARCHIVED.value(), "xs:string"));
+
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.itemcount", subsample.itemCount+"", "xs:int"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.catalog", rec.getCatalogCode(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.accession", rec.getAccessionCode(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.statusdate", rec.getStatusDate().intValue()+"", "xs:int"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("tellervo.externalID", rec.getOtherNumbers(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.cataloger", rec.getCataloger(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.catalogdateoverride", rec.getCatalogDate(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.fieldsite", rec.getFieldSite(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.statesite", rec.getStateSite(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.histcultper", rec.getHistCultPer(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.culturalid", rec.getCulturalID(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.fieldspecimen", rec.getFldSpecimen(), "xs:string"));
+
 					EntityResource<TridasSample> resource2 = new EntityResource<TridasSample>(sample, element, TridasSample.class);
 					TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(App.mainWindow, resource2, i, records.size());
 					resource2.query();
 					dialog2.setVisible(true);
 					if(!dialog2.isSuccessful()) {
 						JOptionPane.showMessageDialog(BulkImportModel.getInstance().getMainView(), "Failed at "+rec.getCatalogCode()+"\n"+ I18n.getText("error.savingChanges") + "\r\n" +
-								I18n.getText("error") +": " + dialog.getFailException().getLocalizedMessage(),
+								I18n.getText("error") +": " + dialog2.getFailException().getLocalizedMessage(),
 								I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 						break;
 					}
 					sample = resource2.getAssociatedResult();
 					
+					
+					WSIBox box = getOrCreateBox(rec.getCleanBoxName());
+					
+					if(box!=null)
+					{
+						box.getSamples().add(sample);
+					}
 
 				}
 				
@@ -256,6 +302,46 @@ public class ICMSImporter {
 			
 			
 		}
+	}
+		
+	private static WSIBox getOrCreateBox(String boxname)
+	{
+		
+		WSIBox box = App.dictionary.getBoxByCode(boxname);
+		
+		if(box==null)
+		{
+			return createbox(boxname);
+		}
+		else
+		{
+			return box;
+		}
+	
+	}
+	
+	private static WSIBox createbox(String boxname)
+	{
+
+		WSIBox bx = new WSIBox();
+		bx.setTitle(boxname);
+		bx.setCurationLocation("U OF A LTRR");
+		
+		EntityResource<WSIBox> resource2 = new EntityResource<WSIBox>(bx, TellervoRequestType.CREATE, WSIBox.class);
+		TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(App.mainWindow, resource2);
+		resource2.query();
+		dialog2.setVisible(true);
+		if(!dialog2.isSuccessful()) {
+			JOptionPane.showMessageDialog(BulkImportModel.getInstance().getMainView(),  I18n.getText("error.savingChanges") + "\r\n" +
+					I18n.getText("error") +": " + dialog2.getFailException().getLocalizedMessage(),
+					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
+		WSIBox box = resource2.getAssociatedResult();
+		
+		App.dictionary.getMutableDictionary("boxDictionary").add(box);
+		
+		return box;
 	}
 	
 	private static String numberToAlphaSequence(int i) {
@@ -278,6 +364,8 @@ public class ICMSImporter {
 		
 		return null;
 	}
+
+
 	
 	
 	

@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIRequest;
 import org.tellervo.schema.WSIRootElement;
 import org.tellervo.schema.WSIRequest.Dictionaries;
@@ -199,6 +200,22 @@ public class Dictionary extends TellervoResource {
 			if(TridasUtils.getGenericFieldByName(obj, TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE).getValue().equals(code))
 			{
 				return obj;
+			}
+		}
+		return null;
+	}
+	
+	public static WSIBox getBoxByCode(String code)
+	{
+		if(code==null) return null;
+
+		List<WSIBox> entities = App.dictionary.getMutableDictionary("boxDictionary");
+
+		for(WSIBox box : entities)
+		{
+			if(box.getTitle().equals(code))
+			{
+				return box;
 			}
 		}
 		return null;
