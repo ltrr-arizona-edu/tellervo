@@ -13,6 +13,7 @@ import junit.framework.TestCase;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tridas.schema.DateTime;
 import org.tridas.schema.TridasLocation;
 import org.tridas.spatial.SpatialUtils;
@@ -21,6 +22,7 @@ import org.tridas.spatial.SpatialUtils.UTMDatum;
 import com.jidesoft.swing.ListSearchable;
 import com.rediscov.schema.NormalCondition;
 import com.rediscov.schema.RediscoveryExport;
+import com.rediscov.util.ICMSImporter;
 import com.rediscov.util.RediscoveryExportEx;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
@@ -29,8 +31,17 @@ import edu.emory.mathcs.backport.java.util.Collections;
 public class ICMSTest extends TestCase {
 	private static final Logger log = LoggerFactory.getLogger(ICMSTest.class);
 
-	private String filename = "/home/pbrewer/Documents/Lab/Curation/fullexport.xml";
+	private String filename = "/home/pbrewer/Dropbox/export4.xml";
 
+	
+	public void testImporter()
+	{
+	
+		
+		ICMSImporter importer = new ICMSImporter(filename);
+		importer.doImport();
+		
+	}
 	
 	private static void logFailedCatalogCode(String code)
 	{
@@ -105,7 +116,7 @@ public class ICMSTest extends TestCase {
 			// Check LTRR code is valid
 			String ltrrcode = null;
 			try {
-				ltrrcode = rec.getObjectCode() + "-" + rec.getElementCode();
+				ltrrcode = rec.getSubObjectCode() + "-" + rec.getElementCode();
 			} catch (Exception e) {
 				log.error("Invalid LTRR code: '"+rec.getOtherNumbers()+"' for " + rec.getCatalogCode());
 				logFailedCatalogCode(rec.getCatalogCode()+ "   - LTRR code in OtherNumbers field is invalid");
@@ -349,7 +360,7 @@ public class ICMSTest extends TestCase {
 			RediscoveryExportEx rec = (RediscoveryExportEx) record;
 			String code = null;
 			try {
-				code = rec.getObjectCode() + "-" + rec.getElementCode();
+				code = rec.getSubObjectCode() + "-" + rec.getElementCode();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				log.error(e.getLocalizedMessage());

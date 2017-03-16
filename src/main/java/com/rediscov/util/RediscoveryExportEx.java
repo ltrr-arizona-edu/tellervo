@@ -3,6 +3,7 @@ package com.rediscov.util;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,8 +18,13 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
+import org.apache.commons.collections15.MultiMap;
+import org.apache.commons.collections15.map.MultiKeyMap;
+import org.apache.commons.lang.WordUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.util.DictionaryUtil;
 import org.tridas.io.I18n;
 import org.tridas.io.TridasIO;
 import org.tridas.io.util.DateUtils;
@@ -27,6 +33,7 @@ import org.tridas.io.util.IOUtils;
 import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.DateTime;
+import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasLocation;
 import org.tridas.spatial.SpatialUtils;
 import org.tridas.spatial.SpatialUtils.UTMDatum;
@@ -356,6 +363,39 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	{
 		
 	}
+	
+	public boolean isImportable()
+	{
+		
+		if(this.getSiteName()==null || this.getSiteName().trim().length()==0)
+		{
+			return false;
+		}
+		
+		try {
+			if(this.getSubObjectCode()==null)
+			{
+				return false;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return false;
+		}
+		
+		try {
+			if(this.getObjectCode()==null)
+			{
+				return false;
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			return false;
+		}
+		
+		
+		return true;
+		
+	}
 		
 	/**
 	 * Set all ICMS fields that are constant for dendrochronology
@@ -383,13 +423,111 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		String[] parts = origin.split("__");
 		if(parts.length==4)
 		{
-			return parts[1].trim();
+			
+			 String county = parts[1].trim();
+			 return WordUtils.capitalize(county.toLowerCase().replace("--", " - "));	
+			
 		}
 		
 		log.error("Unable to extract County information from origin field from '"+this.getCatalogCode()+"'");
 
 		return null;
 		
+	}
+	
+	
+	private ArrayList<ControlledVoc> getPartsAsCV()
+	{
+		ArrayList<ControlledVoc> cvs = new ArrayList<ControlledVoc>();
+
+		String[] parts = this.getParts().split(",");
+		
+		for(String part : parts)
+		{
+			cvs.add(translatePartToCV(part));
+		}
+		
+		
+		return cvs;
+	}
+	
+	private ControlledVoc translatePartToCV(String part)
+	{
+		
+		if(part.toLowerCase().contains("core"))
+		{
+			return DictionaryUtil.getControlledVocForName("Core", "sampleTypeDictionary");	
+		}
+		
+		if(part.toLowerCase().contains("xs"))
+		{
+			return DictionaryUtil.getControlledVocForName("Section", "sampleTypeDictionary");	
+		}
+		
+		if(part.toLowerCase().contains("chcl") || part.toLowerCase().contains("char"))
+		{
+			return DictionaryUtil.getControlledVocForName("Charcoal", "sampleTypeDictionary");	
+		}
+		
+		return DictionaryUtil.getControlledVocForName("Unknown", "sampleTypeDictionary");	
+	}
+	
+	
+	private boolean containsFragments()
+	{
+		String[] parts = this.getParts().split(",");
+		for(String part : parts)
+		{
+			if(part.toLowerCase().contains("chcl") || part.toLowerCase().contains("char"))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+
+	}
+	
+	/**
+	 * Use some logic to determine the number of samples
+	 * 
+	 * TODO Finish 
+	 * 
+	 * @return
+	 */
+	public ArrayList<ControlledVoc> getSampleTypes()
+	{
+		ArrayList<ControlledVoc> types = new ArrayList<ControlledVoc>();
+		ArrayList<ControlledVoc> parts = getPartsAsCV();
+		
+		MultiKeyMap<ControlledVoc, Integer> map = new MultiKeyMap<ControlledVoc, Integer>();
+		
+		Integer itemCount = this.getItemCount().toBigInteger().intValue();
+		
+		if(itemCount==1)
+		{
+			// Item count of 1 so just use the parts 
+			return parts;
+		}
+		
+		if(itemCount<=parts.size())
+		{
+			return parts;
+		}
+		
+	
+		
+		if(parts.size()==1 && itemCount>1)
+		{
+			// 1 part, but multiple 
+			for(int i=0; i<itemCount; i++)
+			{
+				types.add(parts.get(0));
+			}
+		}
+		
+		
+		return types;
 	}
 	
 	/**
@@ -432,6 +570,8 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 	}
 	
+
+	
 	public ControlledVoc getTaxon()
 	{
 		String taxon = this.getITRDBSpeciesCode();
@@ -441,9 +581,10 @@ public class RediscoveryExportEx extends RediscoveryExport {
 			return ITRDBTaxonConverter.getControlledVocFromCode(taxon);
 		}
 		
+		
 		log.error("Unable to convert taxon field to true taxon");
-
 		return null;
+		
 	}
 	
 	public DateTime getCatalogDateAsDateTime()
@@ -475,25 +616,44 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	 */
 	public ControlledVoc getElementType()
 	{
-		String part = this.getObjectPart();
-		
 		
 		
 		return null;
 	}
 	
 	
+	
+	public String getObjectCode() throws Exception {
+
+		String catcode = this.getCatalogCode();
+		return catcode.substring(0, 4);
+
+	}
+	
+	public String getCatalogCodeNumber() {
+		
+		String catcode = this.getCatalogCode().substring(4, this.getCatalogCode().length());
+		return catcode;
+
+		
+	}
+	
+	public String getPrettySiteName()
+	{
+		return WordUtils.capitalize(getSiteName().toLowerCase().replace("--", " - "));
+	}
+	
 	/**
 	 * TODO 
 	 * 
 	 * @return
 	 */
-	public String getObjectCode() throws Exception
+	public String getSubObjectCode() throws Exception
 	{
 		String[] parts = getOtherNumberParts();
 		
 		if(parts==null) {
-			throw new Exception("Failed to get object code for '"+this.getCatalogCode()+"' from OtherNumbers field ("+this.getOtherNumbers()+")");
+			throw new Exception("Failed to get sub object code for '"+this.getCatalogCode()+"' from OtherNumbers field ("+this.getOtherNumbers()+")");
 			
 		}
 		
@@ -502,7 +662,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 			return parts[0].trim();
 		}
 		
-		throw new Exception("Failed to get object code for '"+this.getCatalogCode()+"' from OtherNumbers field ("+this.getOtherNumbers()+")");
+		throw new Exception("Failed to get sub object code for '"+this.getCatalogCode()+"' from OtherNumbers field ("+this.getOtherNumbers()+")");
 
 	}
 	
@@ -567,56 +727,45 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		return null;
 	}
 	
-	public TridasObjectEx getTridasObject()
+
+	public TridasLocation getTridasLocation()
 	{
+		TridasLocation loc = this.getTridasLocationFromLatLon();
+		if(loc==null) {
+			loc = this.getTridasLocationFromUTM(UTMDatum.NAD83);
+		}
+
+		if(loc==null)
+		{
+			loc = new TridasLocation();
+		}
+		
+		loc.setLocationComment(this.getWithinSite());
+		
+		TridasAddress address = new TridasAddress();
+		address.setAddressLine2(this.getCounty());
+		address.setCountry(this.getCountry());
+		address.setStateProvinceRegion(this.getState());
+		loc.setAddress(address);
 		
 		
-		return null;
+		return loc;
 	}
+	
 	
 	private TridasLocation getTridasLocationFromLatLon()
 	{
 		TridasLocation loc;
-		String utm = this.getUTMCoords().trim();
+		String latlon = this.getLatLonCoords().trim();
 		
-		if(utm==null || utm.length()==0)
-		{
-			return null;
-		} 
 		
-		String[] parts = utm.split("/");
 		
-		if(parts.length==3)
-		{
-			try{
-				Integer zone = Integer.parseInt(parts[0].trim());
-				Integer easting = Integer.parseInt(parts[1].trim());
-				Integer northing = Integer.parseInt(parts[2].trim());
-				UTMDatum datum = SpatialUtils.UTMDatum.NAD27;
-				
-				loc = SpatialUtils.getLocationGeometryFromUTM(datum, zone, easting, northing);
-				if(loc!=null)
-				{
-					return loc;
-				}
-				else
-				{
-					log.error("Failed to project UTM string: "+utm);
-					return null;
-				}
-				
-			}
-			catch (NumberFormatException e)
-			{
-				log.error("Failed to parse numbers from UTM string: "+utm);
-				return null;
-			}
-		}
-		else
-		{
-			log.error("Invalid number of parts in UTM string: "+utm);
-			return null;
-		}
+		
+		
+		
+		
+		return null;
+
 		
 	}
 	

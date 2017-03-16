@@ -40,7 +40,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	private JMenuItem miDesignODKForm;
 	private JMenuItem miDeleteODKDefinitions;
 	private JMenuItem miDeleteODKInstances;
-
+	private JMenuItem miICMSImport;
 	private Window parent;
 
 	
@@ -101,6 +101,9 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		mnFile.addSeparator();
 		
 		mnFile.add(getImportDataOnlyMenu());
+		
+		miICMSImport = new JMenuItem(actions.fileImportICMSAction);
+		mnFile.add(miICMSImport);
 		//mnFile.add(getImportDataAndMetadataMenu());
 
 		miExportData = new JMenuItem(actions.fileExportDataAction);

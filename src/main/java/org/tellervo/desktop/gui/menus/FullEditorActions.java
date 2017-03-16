@@ -9,6 +9,7 @@ import org.tellervo.desktop.gui.menus.actions.FileDeleteODKDefinitionsAction;
 import org.tellervo.desktop.gui.menus.actions.FileDeleteODKInstancesAction;
 import org.tellervo.desktop.gui.menus.actions.FileDesignODKFormAction;
 import org.tellervo.desktop.gui.menus.actions.FileExportMapAction;
+import org.tellervo.desktop.gui.menus.actions.FileICMSImportAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogoffAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogonAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
@@ -52,7 +53,7 @@ public class FullEditorActions extends AbstractEditorActions {
 	public Action fileDesignODKFormAction;
 	public Action fileDeleteODKDefinitionsAction;
 	public Action fileDeleteODKInstancesAction;
-	
+	public Action fileImportICMSAction;
 	
 	public Action graphCreateFileHistoryPlotAction;
 	
@@ -104,6 +105,7 @@ public class FullEditorActions extends AbstractEditorActions {
 		fileDesignODKFormAction = new FileDesignODKFormAction(editor);
 		fileDeleteODKDefinitionsAction = new FileDeleteODKDefinitionsAction();
 		fileDeleteODKInstancesAction = new FileDeleteODKInstancesAction();
+		fileImportICMSAction = new FileICMSImportAction(editor);
 		
 
 		tagSeriesAction = new TagSeriesAction((FullEditor) editor);
