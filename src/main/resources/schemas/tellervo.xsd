@@ -1163,6 +1163,13 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:any processContents="skip"/>
+				<xs:element ref="tridas:identifier" minOccurs="0">
+					<xs:annotation>
+						<xs:documentation xml:lang="EN">
+							Do not use  
+						</xs:documentation>
+					</xs:annotation>
+				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:string" use="optional"/>
 			<xs:attribute name="name" type="xs:string" use="optional"/>

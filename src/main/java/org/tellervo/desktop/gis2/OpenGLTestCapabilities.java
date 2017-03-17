@@ -6,7 +6,6 @@ import javax.media.opengl.GLCapabilitiesImmutable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
-import javax.swing.JFrame;
 
 public class OpenGLTestCapabilities implements GLEventListener{
 
