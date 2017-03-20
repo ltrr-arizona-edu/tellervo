@@ -46,7 +46,8 @@ public class ListComboBoxRenderer extends AbstractComboBoxRenderer {
 
 	public ListComboBoxRenderer(boolean required) {
 		renderer = new ListComboBoxItemRenderer();
-		
+		renderer.setBackground(null);
+		renderer.setOpaque(false);
 		this.required = required;
 		
         Icon icon = Builder.getIcon("dropdown.png", Builder.ICONS, 22);
@@ -54,6 +55,9 @@ public class ListComboBoxRenderer extends AbstractComboBoxRenderer {
         	dropdown = new JLabel("[...]");
         else
         	dropdown = new JLabel(icon);
+        
+        dropdown.setOpaque(false);
+        dropdown.setBackground(null);
         
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         add(renderer);

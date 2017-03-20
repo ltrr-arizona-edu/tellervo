@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.schema.WSICuration;
+import org.tellervo.schema.WSIUserDefinedTerm;
 import org.tridas.io.formats.tridas.TridasFile;
 import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDatingReference;

@@ -7,6 +7,7 @@ import java.util.Iterator;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.schema.SampleStatus;
 import org.tellervo.schema.WSICuration;
+import org.tellervo.schema.WSIUserDefinedTerm;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasGenericField;
@@ -90,6 +91,12 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 			{
 				gf.setValue(null);
 			}
+		}
+		else if (clazz.equals(WSIUserDefinedTerm.class))
+		{
+			gf.setType("xs:string");			
+			gf.setValue((String) this.getValue());
+			
 		}
 		else
 		{

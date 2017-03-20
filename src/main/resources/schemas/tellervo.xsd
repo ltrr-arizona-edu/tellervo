@@ -629,6 +629,7 @@
 				<xs:element ref="sampleStatusDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="statisticalResults" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="userDefinedFieldDictionary" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="userDefinedTermDictionary" minOccurs="0" maxOccurs="1"/>
 				
 			</xs:choice>
 		</xs:complexType>
@@ -851,6 +852,14 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="userDefinedField" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="userDefinedTermDictionary">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="userDefinedTerm" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -1087,12 +1096,12 @@
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="longfieldname" type="xs:string" use="required"/>
 			<xs:attribute name="datatype" type="userExtendableDataType" use="required"/>
+			<xs:attribute name="dictionarykey" type="xs:string" use="optional"/>
 			<xs:attribute name="attachedto" type="userExtendableEntity" use="required"/>
 			<xs:attribute name="description" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	
-	
+		
 	<xs:simpleType name="userExtendableDataType">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="xs:string" />
@@ -1112,6 +1121,19 @@
 			<xs:enumeration value="series" />
 		</xs:restriction>
 	</xs:simpleType>
+	
+	<!--
+		%%%%%%%%%%%%%%
+		% UserDefinedTerm
+		%%%%%%%%%%%%%% -->
+	
+	<xs:element name="userDefinedTerm" >
+		<xs:complexType>
+			<xs:attribute name="id" type="xs:string" use="required"/>
+			<xs:attribute name="term" type="xs:string" use="required"/>
+			<xs:attribute name="dictionarykey" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
 	
 		<!--
 		%%%%%%%%%%%%%%

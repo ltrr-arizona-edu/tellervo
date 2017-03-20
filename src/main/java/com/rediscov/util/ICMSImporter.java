@@ -37,6 +37,7 @@ import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIEntity;
 import org.tellervo.schema.WSIRootElement;
+import org.tridas.io.util.DateUtils;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasElement;
@@ -254,10 +255,12 @@ public class ICMSImporter{
 					{
 						sample.setComments("This record was imported from ICMS.  There was ambiguity in the itemCount so this sample needs to be checked manually");
 					}
+					if(rec.getCollectorDate()!=null)
+					{
+						sample.setSamplingDate(rec.getCollectorDate());
+					}
 					
-
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("tellervo.curationStatus", CurationStatus.ARCHIVED.value(), "xs:string"));
-
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.itemcount", subsample.itemCount+"", "xs:int"));
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.catalog", rec.getCatalogCode(), "xs:string"));
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.accession", rec.getAccessionCode(), "xs:string"));
@@ -270,6 +273,7 @@ public class ICMSImporter{
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.histcultper", rec.getHistCultPer(), "xs:string"));
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.culturalid", rec.getCulturalID(), "xs:string"));
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.fieldspecimen", rec.getFldSpecimen(), "xs:string"));
+					
 
 					EntityResource<TridasSample> resource2 = new EntityResource<TridasSample>(sample, element, TridasSample.class);
 					TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(App.mainWindow, resource2, i, records.size());

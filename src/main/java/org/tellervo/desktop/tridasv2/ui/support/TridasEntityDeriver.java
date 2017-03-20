@@ -41,6 +41,7 @@ import org.tellervo.desktop.tridasv2.ui.TellervoGenericFieldProperty;
 import org.tellervo.schema.UserExtendableDataType;
 import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIUserDefinedField;
+import org.tellervo.schema.WSIUserDefinedTerm;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasEditProperties;
 import org.tridas.interfaces.NormalTridasVoc;
@@ -353,7 +354,12 @@ public class TridasEntityDeriver {
 		for(WSIUserDefinedField fld : myUserDefinedFields)
 		{
 			Class clazz2 = String.class;
-			if(fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
+			
+			if(fld.isSetDictionarykey())
+			{
+				clazz2 = WSIUserDefinedTerm.class;
+			}
+			else if(fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
 			{
 				clazz2 = String.class;
 			}
@@ -375,6 +381,12 @@ public class TridasEntityDeriver {
 			}
 			TellervoGenericFieldProperty pd4 = new TellervoGenericFieldProperty(entityName + ".customFields."+fld.getName(), fld.getName(), fld.getName(),
 					clazz2, TridasSample.class, false, false);
+			
+			if(fld.isSetDictionarykey())
+			{
+				pd4.setDictionary(fld.getDictionarykey());
+			}
+						
 			pd4.humanReadableName = fld.getLongfieldname();
 			pd4.setCategoryPrefix(rootName);
 			fieldMap.put(pd4.getName(), pd4);

@@ -36,6 +36,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tellervo.desktop.tridasv2.ui.ImagePreviewPanel;
 import org.tellervo.schema.WSIUserDefinedField;
+import org.tellervo.schema.WSIUserDefinedTerm;
 
 import com.dmurph.mvc.model.MVCArrayList;
 import com.l2fprod.common.beans.BeanUtils;
@@ -74,6 +75,8 @@ public class TridasEntityProperty extends AbstractProperty {
 	protected List<TridasEntityProperty> childProperties;
 		
 	protected TridasEntityProperty parentProperty;
+	
+	private List<?> dictionary;
 
 	/** The object being acted upon from the root of this tree
 	 * Only valid when parentProperty == null
@@ -191,7 +194,15 @@ public class TridasEntityProperty extends AbstractProperty {
 	}
 	
 	public List<?> getDictionary() {
-		throw new IllegalArgumentException("No dictionary for " + qname);
+		
+		if(this.isDictionaryAttached())
+		{
+			return this.dictionary;
+		}
+		else
+		{
+			throw new IllegalArgumentException("No dictionary for " + qname);
+		}
 	}
 	
 	public String getDisplayName() {
@@ -311,7 +322,15 @@ public class TridasEntityProperty extends AbstractProperty {
 	}
 	
 	public boolean isDictionaryAttached() {
-		return false;
+		
+		if(this.dictionary==null || this.dictionary.size()==0)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	/**
@@ -380,6 +399,31 @@ public class TridasEntityProperty extends AbstractProperty {
 	
 	public void setCategoryPrefix(String categoryPrefix) {
 		this.categoryPrefix = categoryPrefix.substring(0, 1).toUpperCase() + categoryPrefix.substring(1);
+	}
+	
+	public void setDictionary(String dictionarykey)
+	{
+		ArrayList<WSIUserDefinedTerm> dict = new ArrayList<WSIUserDefinedTerm>();
+		ArrayList<String> dict2 = new ArrayList<String>();
+		
+		dict = App.dictionary.getMutableDictionary("userDefinedTermDictionary");
+		
+		for(WSIUserDefinedTerm term : dict)
+		{
+			if(term.getDictionarykey().equals(dictionarykey))
+			{
+				dict2.add(term.getTerm());
+			}
+		}
+		
+		dictionary = dict2;
+		
+		
+	}
+	
+	public void setDictionary(List<?> dictionary)
+	{
+		this.dictionary = dictionary;
 	}
 
 	public void setReadOnly(boolean readOnly) {

@@ -32,6 +32,7 @@ import org.tridas.io.util.FileHelper;
 import org.tridas.io.util.IOUtils;
 import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.Date;
 import org.tridas.schema.DateTime;
 import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasLocation;
@@ -142,7 +143,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * "Enter the 4-digit fiscal year for which the status applies" [presumably it means the 'object_status' field]
  * 
  * Item_Count
- * - Import - icms.itemcount
+ *x - Import - icms.itemcount
  * - Export - icms.itemcount
  * - ICMS Form Location - Registration tab
  * "Enter 1 for a single object, even if the object has component parts. Example:
@@ -364,7 +365,9 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * - ICMS Form Location - Prof/Manf tab
  * Not used
  * 
- * Collector -> sample.sampledBy (NS) and sample.samplingDate
+ * Collector -> 
+ * - Import - sample.sampledBy (NS) and sample.samplingDate
+ * - Export -  
  * - ICMS Form Location - Archaeology tab
  * "The field will expand into two subfields: collector and collection date. An underline
  * separates the subfield entries on the screen.  Collector: enter the full name of the
@@ -468,14 +471,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		this.setStorageUnit(NormalStorageUnit.EA);
 		
 	}
-	
-	@Override
-	public String getCulturalID()
-	{
-		String id = super.getCulturalID();
-		return WordUtils.capitalize(id.toLowerCase().replace("--", " - "));	
-	}
-	
+		
 	/**
 	 * Extract the county from the Origin field
 	 * 
@@ -499,6 +495,50 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 	}
 	
+	public String getCollectorName()
+	{
+		if(this.getCollector()==null || this.getCollector().length()==0)
+		{
+			return null;
+		}
+		
+		String[] parts = this.getCollector().split("__");
+		
+		if(parts.length==2)
+		{
+			return parts[0].trim();
+		}
+		
+		return null;
+	}
+	
+	public String getCollectorDateString()
+	{
+		if(this.getCollector()==null || this.getCollector().length()==0)
+		{
+			return null;
+		}
+		
+		String[] parts = this.getCollector().split("__");
+		
+		if(parts.length==2)
+		{
+			return parts[1].trim();
+		}
+		
+		return null;
+	}
+	
+	public Date getCollectorDate()
+	{
+		String colstr = this.getCollectorDateString();
+		
+		if(colstr==null) return null;
+		
+		DateTime dt = DateUtils.parseDateTimeFromShortNaturalString(colstr);
+		
+		return DateUtils.dateTimeToDate(dt);
+	}
 	
 	private ArrayList<ControlledVoc> getPartsAsCV()
 	{
