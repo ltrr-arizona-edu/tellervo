@@ -29,7 +29,9 @@ import edu.emory.mathcs.backport.java.util.Collections;
 public class ICMSTest extends TestCase {
 	private static final Logger log = LoggerFactory.getLogger(ICMSTest.class);
 
-	private String filename = "/home/pbrewer/Dropbox/export4.xml";
+	//private String filename = "/home/pbrewer/Dropbox/export4.xml";
+	private String filename = "/home/pbrewer/Documents/Lab/Curation/fullexport.xml";
+
 	private boolean skipAllTests= true;
 
 	
@@ -51,6 +53,102 @@ public class ICMSTest extends TestCase {
 		}catch (IOException e) {
 		    //exception handling left as an exercise for the reader
 		}
+	}
+	
+	public void testInnerCode()
+	{
+		//if(skipAllTests) return;
+		log.info("******************************************");
+		log.info("Running testInnerCode()");
+		log.info("******************************************");
+
+		Double countall = 0.0;
+		Double count = 0.0;
+
+		List<RediscoveryExport> lst = RediscoveryExportEx
+				.getICMSRecordsFromXMLFile(filename, false);
+
+		HashSet<String> codes = new HashSet<String>();
+		
+		if (lst == null) {
+			fail();
+		}
+
+		for (RediscoveryExport record : lst) {
+			RediscoveryExportEx rec = (RediscoveryExportEx) record;
+			countall++;
+
+			
+			if(rec.getPithCode()!=null && rec.getPithCode().length()>0)	{
+				count++;
+				String c =rec.getPithCode().replace(" ", ""); 
+				codes.add(c);
+				
+			}
+			
+			
+			
+		}
+		
+		for(String code : codes)
+		{
+			log.debug(code);
+		}
+		
+
+		log.debug("Total of " + count.intValue()
+				+ " records had parseable pith codes");
+		log.debug("Total of " + (countall - count)
+				+ " records had blank pith codes");
+		log.debug(" = " + ((count / countall) * 100) + "% populated");
+	}
+	
+	public void testOuterCode()
+	{
+		//if(skipAllTests) return;
+		log.info("******************************************");
+		log.info("Running testOuterCode()");
+		log.info("******************************************");
+
+		Double countall = 0.0;
+		Double count = 0.0;
+
+		List<RediscoveryExport> lst = RediscoveryExportEx
+				.getICMSRecordsFromXMLFile(filename, false);
+
+		HashSet<String> codes = new HashSet<String>();
+		
+		if (lst == null) {
+			fail();
+		}
+
+		for (RediscoveryExport record : lst) {
+			RediscoveryExportEx rec = (RediscoveryExportEx) record;
+			countall++;
+
+			
+			if(rec.getBarkCode()!=null && rec.getBarkCode().length()>0)	{
+				count++;
+				String c =rec.getBarkCode().replace(" ", ""); 
+				codes.add(c);
+				
+			}
+			
+			
+			
+		}
+		
+		for(String code : codes)
+		{
+			log.debug(code);
+		}
+		
+
+		log.debug("Total of " + count.intValue()
+				+ " records had one of "+codes.size()+" parseable bark codes");
+		log.debug("Total of " + (countall - count)
+				+ " records had blank bark codes");
+		log.debug(" = " + ((count / countall) * 100) + "% populated");
 	}
 	
 	public void testByRecord()

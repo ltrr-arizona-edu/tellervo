@@ -119,7 +119,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * - ICMS Form Location - Registration tab
  *  
  * Location -> Parsed -> Box name
- * - Import - parsed - box.name
+ *x - Import - parsed - box.name
  * - Export - prefix + box.name
  * - ICMS Form Location - Registration tab
  * "Enter the physical storage location of hte object, starting with the most general location. For example, enter
@@ -424,6 +424,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		return this.itemCountNeedsChecking;
 	}
 	
+	/**
+	 * Check whether this record is complete enought to be imported 
+	 * 
+	 * @return
+	 */
 	public boolean isImportable()
 	{
 		
@@ -495,6 +500,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 	}
 	
+	/**
+	 * Parse collector's name from Collector field.
+	 * 
+	 * @return
+	 */
 	public String getCollectorName()
 	{
 		if(this.getCollector()==null || this.getCollector().length()==0)
@@ -512,6 +522,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		return null;
 	}
 	
+	/**
+	 * Parse the collection date string from the Collector field
+	 *  
+	 * @return
+	 */
 	public String getCollectorDateString()
 	{
 		if(this.getCollector()==null || this.getCollector().length()==0)
@@ -529,6 +544,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		return null;
 	}
 	
+	/**
+	 * Parse the collection data as a org.tridas.schema.Date from the Collector field
+	 * 
+	 * @return
+	 */
 	public Date getCollectorDate()
 	{
 		String colstr = this.getCollectorDateString();
@@ -539,6 +559,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 		return DateUtils.dateTimeToDate(dt);
 	}
+	
 	
 	private ArrayList<ControlledVoc> getPartsAsCV()
 	{

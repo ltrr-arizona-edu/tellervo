@@ -274,7 +274,9 @@ public class ICMSImporter{
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.culturalid", rec.getCulturalID(), "xs:string"));
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.fieldspecimen", rec.getFldSpecimen(), "xs:string"));
 					
-
+					WSIBox box = getOrCreateBox(rec.getCleanBoxName());
+					sample.getGenericFields().add(TridasManipUtil.createGenericField("tellervo.boxID", box.getIdentifier().getValue(), "xs:string"));
+					
 					EntityResource<TridasSample> resource2 = new EntityResource<TridasSample>(sample, element, TridasSample.class);
 					TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(App.mainWindow, resource2, i, records.size());
 					resource2.query();
@@ -288,12 +290,8 @@ public class ICMSImporter{
 					sample = resource2.getAssociatedResult();
 					
 					
-					WSIBox box = getOrCreateBox(rec.getCleanBoxName());
+			
 					
-					if(box!=null)
-					{
-						box.getSamples().add(sample);
-					}
 
 				}
 				
@@ -322,6 +320,26 @@ public class ICMSImporter{
 			return box;
 		}
 	
+	}
+	
+	private static void writeBoxToDB(WSIBox bx)
+	{
+
+		
+		EntityResource<WSIBox> resource2 = new EntityResource<WSIBox>(bx, TellervoRequestType.UPDATE, WSIBox.class);
+		TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(App.mainWindow, resource2);
+		resource2.query();
+		dialog2.setVisible(true);
+		if(!dialog2.isSuccessful()) {
+			JOptionPane.showMessageDialog(BulkImportModel.getInstance().getMainView(),  I18n.getText("error.savingChanges") + "\r\n" +
+					I18n.getText("error") +": " + dialog2.getFailException().getLocalizedMessage(),
+					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+			return;
+		}	
+		
+		return;
+		
+		
 	}
 	
 	private static WSIBox createbox(String boxname)
