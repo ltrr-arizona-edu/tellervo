@@ -232,10 +232,6 @@
 	      <jaxb:property name="ICMSRecord"/>
 	    </jaxb:bindings>	    
 	    	
-	    <!-- Rename object element to custom class -->
-		<jaxb:bindings node="//xs:element[@name='RediscoveryExport']">
-			<jaxb:class implClass="com.rediscov.util.RediscoveryExportEx" />
-		</jaxb:bindings>
 	</jaxb:bindings>
 
 </jaxb:bindings> 

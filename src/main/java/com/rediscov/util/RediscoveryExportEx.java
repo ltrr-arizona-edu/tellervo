@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -47,6 +48,7 @@ import com.rediscov.schema.NewDataSet;
 import com.rediscov.schema.NormalClass1;
 import com.rediscov.schema.NormalClass3;
 import com.rediscov.schema.NormalClass4;
+import com.rediscov.schema.NormalCondition;
 import com.rediscov.schema.NormalDendroSample;
 import com.rediscov.schema.NormalObjectStatus;
 import com.rediscov.schema.NormalStorageUnit;
@@ -60,7 +62,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * **************************************
  * CtrlProp 
  *x - Import - ignore
- * - Export - constant - N
+ *x - Export - constant - N
  * - ICMS Form Location - Registration tab
  * - Whether sample is an item of value, firearm etc.  For us always 'n'.
  *   
@@ -392,17 +394,40 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * ***************
  * USER fields defined by LTRR 
  * 
- * User_1 (inner ring date)
- * User_2 (inner-ring code)
- * User_3 (outer ring date)
- * User_4 (outer ring code)
- * User_5 -> Parsed -> taxon ControlledVoc
+ * *User_1 (inner ring date)
+ * *User_2 (inner-ring code)
+ * *User_3 (outer ring date)
+ * *User_4 (outer ring code)
+ * *User_5 -> Parsed -> taxon ControlledVoc
 *************************8*/
 
 
 @XmlRootElement(name = "RediscoveryExport")
 public class RediscoveryExportEx extends RediscoveryExport {
 
+	public static String ACCESSION_CODE = "userDefinedField.icms.accession"; 
+			
+			
+	public static String ITEM_COUNT = "userDefinedField.icms.itemcount"; 
+	public static String CATALOG_CODE = "userDefinedField.icms.catalog";
+	public static String STATUS_DATE = "userDefinedField.icms.statusdate";
+	public static String CATALOGER = "userDefinedField.icms.cataloger";
+	public static String CATALOG_OVERRIDE_DATE = "userDefinedField.icms.catalogdateoverride";
+	public static String FIELD_SITE = "userDefinedField.icms.fieldsite";
+	public static String STATE_SITE = "userDefinedField.icms.statesite";
+	public static String HIST_CULT_PER = "userDefinedField.icms.histcultper";
+	public static String CULTURAL_ID = "userDefinedField.icms.culturalid";
+	public static String FIELD_SPECIMEN = "userDefinedField.icms.fieldspecimen";
+	public static String OUTER_CODE = "userDefinedField.swarch.outercode";
+	public static String INNER_CODE = "userDefinedField.swarch.innercode";
+	public static String BARK_YEAR = "userDefinedField.ltrr.barkyear";
+	public static String FIRST_YEAR = "userDefinedField.ltrr.firstyear";
+	public static String LAST_RING_UNDER_BARK = "userDefinedField.ltrr.lastringunderbark";
+	public static String LAST_YEAR = "userDefinedField.ltrr.lastyear";
+	public static String PITH_PRESENT = "userDefinedField.ltrr.pithpresent";
+	public static String PITH_YEAR = "userDefinedField.ltrr.pithyear";
+	
+	
 	private static final long serialVersionUID = 1L;
 	protected final static Logger log = LoggerFactory.getLogger(RediscoveryExportEx.class);
 	private boolean itemCountNeedsChecking = false;
@@ -474,6 +499,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		this.setObjectNom(NormalDendroSample.DENDRO___SAMPLE);
 		this.setObjectStatus(NormalObjectStatus.STORAGE_____INCOMING___LOAN);
 		this.setStorageUnit(NormalStorageUnit.EA);
+		this.setCondition(NormalCondition.COM___GD);
 		
 	}
 		
@@ -1090,7 +1116,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 			}
 		}
 
-		SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+		SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		URL file = IOUtils.getFileInJarURL("schemas/icms.xsd");
 		Schema schema = null;
 		if (file == null) {
@@ -1222,6 +1248,63 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	    	  return lineerrs;
 	      }
 	   }
+
+	public Boolean isPithPresent() {
+		
+		String innercode = this.getPithCode();
+		
+		
+		if(innercode.trim().toLowerCase().equals("p"))
+		{
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public String getBarkCode()
+	{
+		String outercode = super.getBarkCode();
+		
+
+		
+		return outercode;
+	}
+	
+	public Boolean isLastRingUnderBarkPresent() {
+
+		String outercode = getBarkCode().toUpperCase();
+		
+		if(outercode.contains("INC") || outercode.contains("COMP"))
+		{
+			return true;
+		}
+		
+		outercode = outercode.replace("INCOMPLETE", "");
+		outercode = outercode.replace("INCOMP", "");
+		outercode = outercode.replace("INC", "");
+		outercode = outercode.replace("COMPLETE", "");
+		outercode = outercode.replace("NEARCOMP", "");
+		outercode = outercode.replace("COMP", "");
+		/*outercode = outercode.replace("(", "");
+		outercode = outercode.replace(")", "");
+		outercode = outercode.replace("?", "");
+		outercode = outercode.replace("/", "");*/
+		
+		if(outercode.contains("+") || outercode.contains("-") || outercode.contains("±") || outercode.contains("V"))
+		{
+			return false;
+		}
+		if(outercode.contains("L") || outercode.contains("G") || outercode.contains("B"))
+		{
+			return true;
+		}
+		
+		
+		return false;
+		
+	}
 	
 	
 }

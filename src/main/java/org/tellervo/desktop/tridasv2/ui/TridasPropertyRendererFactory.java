@@ -81,13 +81,13 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		super.registerRenderer(TridasFile.class, new TridasFileArrayRenderer());
 
 		super.registerRenderer(TridasGenericField.class, new TridasGenericFieldRenderer());
-
+		
 		
 	}
 	
 	public synchronized TableCellRenderer getRenderer(Property property) {
 		boolean required = false;
-		
+				
 		// handle enums nicely
 		if(property instanceof TridasEntityProperty) {
 			TridasEntityProperty ep = (TridasEntityProperty)property;
@@ -101,6 +101,11 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 			
 			if(ep.isDictionaryAttached())
 				return new ListComboBoxRenderer(required);
+			
+			if(ep.getType().equals(Integer.class))
+			{
+				return new UserDefinedIntegerRenderer();
+			}
 		}
 		
 		// get a renderer, if one exists

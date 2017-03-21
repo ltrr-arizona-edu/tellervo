@@ -14,6 +14,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.dictionary.DictionaryRegisteredEvent;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.menus.actions.FileImportLegacyFile;
 import org.tellervo.desktop.gui.seriesidentity.IdentifySeriesPanel;
@@ -27,9 +29,14 @@ import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
 
+import com.dmurph.mvc.IEventListener;
+import com.dmurph.mvc.MVC;
+import com.dmurph.mvc.MVCEvent;
+import com.rediscov.util.ICMSImporter;
+
 import edu.emory.mathcs.backport.java.util.Collections;
 
-public class FullEditorMenuBar extends EditorMenuBar{
+public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 
 	private static final long serialVersionUID = 1L;
 	private JMenuItem miOpenMulti;
@@ -41,6 +48,8 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	private JMenuItem miDeleteODKDefinitions;
 	private JMenuItem miDeleteODKInstances;
 	private JMenuItem miICMSImport;
+	private JMenuItem miICMSExport;
+
 	private Window parent;
 
 	
@@ -103,7 +112,15 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		mnFile.add(getImportDataOnlyMenu());
 		
 		miICMSImport = new JMenuItem(actions.fileImportICMSAction);
+		miICMSImport.setVisible(false);
 		mnFile.add(miICMSImport);
+		
+		miICMSExport = new JMenuItem(actions.fileExportICMSAction);
+		miICMSExport.setVisible(false);
+		mnFile.add(miICMSExport);
+		
+		MVC.addEventListener(Dictionary.DICTIONARY_REGISTERED, this);
+		
 		//mnFile.add(getImportDataAndMetadataMenu());
 
 		miExportData = new JMenuItem(actions.fileExportDataAction);
@@ -591,6 +608,23 @@ public class FullEditorMenuBar extends EditorMenuBar{
 			fileimportdataonly.add(importitem);
 		}
 		return fileimportdataonly;
+	}
+
+
+	@Override
+	public boolean eventReceived(MVCEvent argEvent) {
+		DictionaryRegisteredEvent e = (DictionaryRegisteredEvent) argEvent;
+		if(e.getValue().equals("userDefinedFieldDictionary"))
+		{
+			miICMSImport.setVisible(ICMSImporter.isDatabaseICMSCapable());
+			miICMSExport.setVisible(ICMSImporter.isDatabaseICMSCapable());
+
+			return false;
+		}
+		
+
+	
+		return true;
 	}
 	
 

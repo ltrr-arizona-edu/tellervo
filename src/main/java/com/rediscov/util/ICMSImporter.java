@@ -1,6 +1,7 @@
 package com.rediscov.util;
 
 import java.awt.Window;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIEntity;
 import org.tellervo.schema.WSIRootElement;
+import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.io.util.DateUtils;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.ControlledVoc;
@@ -47,6 +49,7 @@ import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
+import com.dmurph.mvc.model.MVCArrayList;
 import com.rediscov.schema.RediscoveryExport;
 
 public class ICMSImporter{
@@ -63,6 +66,69 @@ public class ICMSImporter{
 	ControlledVoc defaultTaxon;
 
 	private String filename;
+	
+	
+	/**
+	 * Indicates whether the user defined fields required for importing ICMS data are present
+	 * in this database or not.
+	 * 
+	 * @return
+	 */
+	public static boolean isDatabaseICMSCapable()
+	{
+		
+		String[] icmsfieldnames = {
+				RediscoveryExportEx.ITEM_COUNT,
+				RediscoveryExportEx.CATALOG_CODE,
+				RediscoveryExportEx.ACCESSION_CODE,
+				RediscoveryExportEx.STATUS_DATE,
+				RediscoveryExportEx.CATALOGER,
+				RediscoveryExportEx.CATALOG_OVERRIDE_DATE,
+				RediscoveryExportEx.FIELD_SITE,
+				RediscoveryExportEx.STATE_SITE,
+				RediscoveryExportEx.HIST_CULT_PER,
+				RediscoveryExportEx.CULTURAL_ID,
+				RediscoveryExportEx.FIELD_SPECIMEN,
+				RediscoveryExportEx.OUTER_CODE,
+				RediscoveryExportEx.INNER_CODE,
+				RediscoveryExportEx.BARK_YEAR,
+				RediscoveryExportEx.FIRST_YEAR,
+				RediscoveryExportEx.LAST_RING_UNDER_BARK,
+				RediscoveryExportEx.LAST_YEAR,
+				RediscoveryExportEx.PITH_PRESENT,
+				RediscoveryExportEx.PITH_YEAR,
+		};
+		
+		for(String fieldname : icmsfieldnames)
+		{
+			if(doesDatabaseContainUserDefinedField(fieldname)==false)
+			{
+				log.debug("Database doesn't include the user defined field "+fieldname+" so ICMS features are unavailable");
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Indicates whether the user defined field with the specified name is present in this database
+	 * 
+	 * @param fieldname
+	 * @return
+	 */
+	private static boolean doesDatabaseContainUserDefinedField(String fieldname)
+	{
+		MVCArrayList<WSIUserDefinedField> fields = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+
+		for(WSIUserDefinedField field : fields)
+		{
+			if(field.getName().equals(fieldname)) return true;
+		}
+
+		return false;
+		
+	}
 	
 	public ICMSImporter(String filename)
 	{
@@ -261,18 +327,39 @@ public class ICMSImporter{
 					}
 					
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("tellervo.curationStatus", CurationStatus.ARCHIVED.value(), "xs:string"));
-					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.itemcount", subsample.itemCount+"", "xs:int"));
-					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.catalog", rec.getCatalogCode(), "xs:string"));
-					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.accession", rec.getAccessionCode(), "xs:string"));
-					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.statusdate", rec.getStatusDate().intValue()+"", "xs:int"));
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("tellervo.externalID", rec.getOtherNumbers(), "xs:string"));
-					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.cataloger", rec.getCataloger(), "xs:string"));
-					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.catalogdateoverride", rec.getCatalogDate(), "xs:string"));
-					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.fieldsite", rec.getFieldSite(), "xs:string"));
-					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.statesite", rec.getStateSite(), "xs:string"));
-					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.histcultper", rec.getHistCultPer(), "xs:string"));
-					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.culturalid", rec.getCulturalID(), "xs:string"));
-					sample.getGenericFields().add(TridasManipUtil.createGenericField("userDefinedField.icms.fieldspecimen", rec.getFldSpecimen(), "xs:string"));
+
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.ITEM_COUNT, subsample.itemCount+"", "xs:int"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.CATALOG_CODE, rec.getCatalogCode(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.ACCESSION_CODE, rec.getAccessionCode(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.STATUS_DATE, rec.getStatusDate().intValue()+"", "xs:int"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.CATALOGER, rec.getCataloger(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.CATALOG_OVERRIDE_DATE, rec.getCatalogDate(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.FIELD_SITE, rec.getFieldSite(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.STATE_SITE, rec.getStateSite(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.HIST_CULT_PER, rec.getHistCultPer(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.CULTURAL_ID, rec.getCulturalID(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.FIELD_SPECIMEN, rec.getFldSpecimen(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.OUTER_CODE, rec.getBarkCode(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.INNER_CODE, rec.getPithCode(), "xs:string"));
+					
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.FIRST_YEAR, rec.getInnerRingDate()+"", "xs:int"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.LAST_YEAR, rec.getOuterRingDate()+"", "xs:int"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.PITH_PRESENT, rec.isPithPresent().toString(), "xs:boolean"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.LAST_RING_UNDER_BARK, rec.isLastRingUnderBarkPresent().toString(), "xs:boolean"));
+					if(rec.isPithPresent())
+					{
+						sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.PITH_YEAR, rec.getInnerRingDate()+"", "xs:int"));
+					}
+					if(rec.isLastRingUnderBarkPresent())
+					{
+						sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.BARK_YEAR, rec.getInnerRingDate()+"", "xs:int"));
+					}
+					
+					/**
+					"ltrr.unmeasuredinnerrings"
+					"ltrr.unmeasuredouterrings"
+					**/
 					
 					WSIBox box = getOrCreateBox(rec.getCleanBoxName());
 					sample.getGenericFields().add(TridasManipUtil.createGenericField("tellervo.boxID", box.getIdentifier().getValue(), "xs:string"));

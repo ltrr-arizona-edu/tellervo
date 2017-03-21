@@ -23,43 +23,20 @@
  */
 package org.tellervo.desktop.tridasv2.ui;
 
-import java.util.ArrayList;
 
-import org.tridas.io.util.TridasUtils;
-import org.tridas.schema.TridasGenericField;
 
-/**
- * renderer for a tridas controlled vocabulary
- * 
- * Contains a dictionary that specifies specific behaviors
- * for different enums, based on qname
- * 
- * @author Lucas Madar
- */
-public class TridasGenericFieldRenderer extends DefaultCellRendererEx {
+public class UserDefinedIntegerRenderer extends DefaultCellRendererEx {
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected String convertToString(Object value) {
 		
-		
-		if(value instanceof ArrayList)
-		{				
-			for(Object v : (ArrayList<Object>) value)
-			{
-				if(v instanceof TridasGenericField)
-				{
-					if(((TridasGenericField)v).getName().equals(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE))
-					{
-						return ((TridasGenericField)v).getValue();
-					}
-					else if(((TridasGenericField)v).getName().equals("tellervo.curationStatus"))
-					{
-						return ((TridasGenericField)v).getValue();
-					}					
-				}
-			}
+		if (value instanceof Integer)
+		{
+			return super.convertToString(value).replace(",", "");
 		}
+		
+			
 		
 		return super.convertToString(value);
 	}
