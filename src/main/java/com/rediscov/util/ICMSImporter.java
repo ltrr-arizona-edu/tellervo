@@ -342,7 +342,9 @@ public class ICMSImporter{
 					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.FIELD_SPECIMEN, rec.getFldSpecimen(), "xs:string"));
 					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.OUTER_CODE, rec.getBarkCode(), "xs:string"));
 					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.INNER_CODE, rec.getPithCode(), "xs:string"));
-					
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.IDENTIFIED_BY, rec.getIdentifiedBy(), "xs:string"));
+					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.IDENT_DATE, rec.getIdentDate(), "xs:string"));
+
 					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.FIRST_YEAR, rec.getInnerRingDate()+"", "xs:int"));
 					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.LAST_YEAR, rec.getOuterRingDate()+"", "xs:int"));
 					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.PITH_PRESENT, rec.isPithPresent().toString(), "xs:boolean"));
@@ -396,7 +398,7 @@ public class ICMSImporter{
 	private static WSIBox getOrCreateBox(String boxname)
 	{
 		
-		WSIBox box = App.dictionary.getBoxByCode(boxname);
+		WSIBox box = Dictionary.getBoxByCode(boxname);
 		
 		if(box==null)
 		{
@@ -448,7 +450,7 @@ public class ICMSImporter{
 		}
 		WSIBox box = resource2.getAssociatedResult();
 		
-		App.dictionary.getMutableDictionary("boxDictionary").add(box);
+		Dictionary.getMutableDictionary("boxDictionary").add(box);
 		
 		return box;
 	}
