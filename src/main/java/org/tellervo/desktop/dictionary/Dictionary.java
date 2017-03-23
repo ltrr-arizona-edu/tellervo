@@ -221,4 +221,23 @@ public class Dictionary extends TellervoResource {
 		return null;
 	}
 	
+	public static WSIBox getBoxByID(String id)
+	{
+		
+		if(id==null) return null;
+		
+		List<WSIBox> entities = App.dictionary.getMutableDictionary("boxDictionary");
+
+		for(WSIBox box : entities)
+		{
+			if(box.getIdentifier().getValue().equals(id))
+			{
+				return box;
+			}
+		}
+		return null;
+
+		
+	}
+	
 }

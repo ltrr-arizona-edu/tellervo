@@ -3,7 +3,6 @@ package com.rediscov.util;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,14 +18,11 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.apache.commons.collections15.MultiMap;
-import org.apache.commons.collections15.map.MultiKeyMap;
 import org.apache.commons.lang.WordUtils;
 import org.jvnet.jaxb2_commons.lang.CopyStrategy;
 import org.jvnet.jaxb2_commons.lang.JAXBCopyStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.util.DictionaryUtil;
 import org.tridas.io.I18n;
 import org.tridas.io.TridasIO;
@@ -41,13 +37,13 @@ import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasLocation;
 import org.tridas.spatial.SpatialUtils;
 import org.tridas.spatial.SpatialUtils.UTMDatum;
-import org.tridas.util.TridasObjectEx;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.rediscov.schema.NewDataSet;
 import com.rediscov.schema.NormalClass1;
+import com.rediscov.schema.NormalClass2;
 import com.rediscov.schema.NormalClass3;
 import com.rediscov.schema.NormalClass4;
 import com.rediscov.schema.NormalCondition;
@@ -57,6 +53,7 @@ import com.rediscov.schema.NormalStorageUnit;
 import com.rediscov.schema.RediscoveryExport;
 import com.rediscov.schema.StrBoolean;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 /****************************************
@@ -69,14 +66,14 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * - Whether sample is an item of value, firearm etc.  For us always 'n'.
  *   
  * Class_1
- * - Import - project.type
- * - Export - interpret project.type
+ *x - Import - project.type
+ *x - Export - interpret project.type
  * - ICMS Form Location - Registration tab 
  * - Discipline.  For us always 'ARCHAEOLOGY' or 'Biology' for natural history records
  * 
  * Class_2 
  *x - Import - ignore
- * - Export - interpret icms.histcultper
+ *x - Export - interpret icms.histcultper
  * - ICMS Form Location - Registration tab
  * - Autohandle through HistCultPer field
  *  One of Historic, Prehistoric of Unknown.  No clear distinction for this field given in help text.
@@ -85,22 +82,27 @@ import edu.emory.mathcs.backport.java.util.Collections;
  *  
  * Class_3 
  *x - Import - ignore
- * - Export - constant - VEGETAL
+ *x - Export - constant - VEGETAL
  * - ICMS Form Location - Registration tab
  *  
  * Class_4 
  *x - Import - ignore
- * - Export - constant - WOOD
+ *x - Export - constant - WOOD
  * - ICMS Form Location - Registration tab
  *  
  * Object_NOM 
  *x - Import - ignore
- * - Export - constant - DENDRO SAMPLE
+ *x - Export - constant - DENDRO SAMPLE
  * - ICMS Form Location - Registration tab
+ * 
+ * Object_Part
+ *x - Import - complicated! 
+ *x - Export - sample.type
+ *
  *  
  * Catalog -> new field at sample level
  *x - Import - icms.catalog
- * - Export - icms.catalog
+ *x - Export - icms.catalog
  * - ICMS Form Location - Registration tab
  * A 3 part 12 character field.  
  *   - 1-4 = Alpha - four letter park code
@@ -110,7 +112,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * Accession -> New field at sample level?  or ignore?
  *x - Import - icms.accession
- * - Export - icms.accession
+ *x - Export - icms.accession
  * - ICMS Form Location - Registration tab
  * A 3 part 10 character field
  *    - 1-4 = Alpha - four letter park code
@@ -119,12 +121,12 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * Alt_Name - IGNORE
  *x - Import - ignore
- * - Export - empty
+ *x - Export - empty
  * - ICMS Form Location - Registration tab
  *  
  * Location -> Parsed -> Box name
  *x - Import - parsed - box.name
- * - Export - prefix + box.name
+ *x - Export - prefix + box.name
  * - ICMS Form Location - Registration tab
  * "Enter the physical storage location of hte object, starting with the most general location. For example, enter
  * the building number or name, the room number, the cabinet number, and the shelf number.  For specimens stored
@@ -134,7 +136,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  *  
  * Object_Status - parse for sample.curationstatus (NS)
  *x - Import - parse - sample.curationstatus
- * - Export - parse - sample.curationstatus
+ *x - Export - parse - sample.curationstatus
  * - ICMS Form Location - Registration tab 
  * "Enter the current status of the object by choosing an entry from the table"
  * According to Jenna this field should always be "STORAGE - INCOMING LOAN" but there are a number of variants in
@@ -142,13 +144,13 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * Status_Date 
  *x - Import - icms.statusdate
- * - Export - icms.statusdate
+ *x - Export - icms.statusdate
  * - ICMS Form Location - Registration tab 
  * "Enter the 4-digit fiscal year for which the status applies" [presumably it means the 'object_status' field]
  * 
  * Item_Count
  *x - Import - icms.itemcount
- * - Export - icms.itemcount
+ *x - Export - icms.itemcount
  * - ICMS Form Location - Registration tab
  * "Enter 1 for a single object, even if the object has component parts. Example:
  *   1 teapot with lid = 1 item
@@ -158,7 +160,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  *  
  * Storage_Unit - Constant - EA
  *x - Import - ignore
- * - Export - constant - EA
+ *x - Export - constant - EA
  * - ICMS Form Location - Registration tab
  * "Enter the storage unit for bulk objects e.g. BAG, BOX, LF"
  * Should be always EA for us
@@ -218,7 +220,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * Other_Numbers -> External id (NS)
  *x - Import - sample.externalid
- * - Export - sample.externalid
+ *x - Export - sample.externalid
  * - ICMS Form Location - Catalog tab
  * "Record other numbers assigned to the object, such as catalog numbers from a previous owner.  If known, 
  * indicate a source for the other number.  Note: the archaeology specialty screen contains separate fields
@@ -226,7 +228,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  *  
  * Condition 
  *x - Import - ignore
- * - Export - constant - COM-GD
+ *x - Export - constant - COM-GD
  * - ICMS Form Location - Catalog tab
  * "Enter the condition of the object using one term from each of the two criteria groups:
  *  - Group I - COM (complete); INC (incomplete); FRG (fragment)
@@ -242,30 +244,34 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * Cataloger 
  *x - Import - icms.cataloger
- * - Export - icms.cataloger
+ *x - Export - icms.cataloger
  * - ICMS Form Location - Catalog tab
  * "Enter the full name, last name first, of the person who cataloged the object."
  * Not consistently used in export. * 
  * 
  * Catalog_Date -> Sample.createdTimestamp?
- *X - Import - icms.catalogdateoverride
- * - ICMS Form Location - Catalog tab
+ *x - Import - icms.catalogdateoverride
+ *x - ICMS Form Location - Catalog tab
  * "Enter the numeric month, day and full year the object was cataloged"
  * A good match for sample.createdtimestamp for new records, but must be overrideable so used icms.catalogdateoverride when importing
  * 
  * Identified_By -> New field? Ignore?
+ *x - Import - icms.identifiedby
+ *x - Export - icsm.identifiedby
  * - ICMS Form Location - Catalog tab
  * "Enter the name of person, last name first, who identified the object"
  * Not clear what 'identified' means in terms of dendro samples?  Ignore?
  * 
  * Ident_Date -> New field? Ignore?
+ *x - Import - icms.identdate
+ *x - Export - icsm.identdate
  * - ICMS Form Location - Catalog tab
  * "Enter the date of identification"
  * Ignore?
  * 
  * Field_Site -> New field at sample level
  *x - Import - icms.fieldsite
- * - Export - icms.fieldsite 
+ *x - Export - icms.fieldsite 
  * - ICMS Form Location - Prof/Manf tab
  * "Record any field site number that the investigator assigned to the archaeological site.  This is
  * the site from which the object was originally recovered.  Do not record the state site number
@@ -273,7 +279,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * State_Site -> New field
  *x - Import - icms.statesite
- * - Export - icms.statesite
+ *x - Export - icms.statesite
  * - ICMS Form Location - Prof/Manf tab
  * "Enter the number assigned to the site within the relevant state archaeological inventory This is 
  * the site from which the object was originally recovered.  If a state site number has not be 
@@ -281,19 +287,19 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * Site_Name 
  *x - Import - subobject.title
- * - Export - subobject.title 
+ *x - Export - subobject.title 
  * - ICMS Form Location - Prof/Manf tab
  * "For archaeology, enter the distinctive name of the location where the material was collected"
  *  
  * Within_Site 
  *x - Import - Element.location.description
- * - Export - Element.location.description
+ *x - Export - Element.location.description
  * - ICMS Form Location - Prof/Manf tab
  * "For archaeology, enter the specific within site provenience of the object.  Example: P5, L M7, D 25"
  * 
  * Origin -> parsed -> object.location.address.addressLine2, stateProvinceRegion, country
  *x - Import - Element.location.address
- * - Export - Element.location.address
+ *x - Export - Element.location.address
  * - ICMS Form Location - Prof/Manf tab
  * "Repeating formatted memo field.  The field will expand into four repeatable subfields: City,
  * County; State; and Country... Multiple terms are separated by double underscores(__), rows are 
@@ -303,7 +309,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * UTM_Z_E_N  -> object.location.locationGeometry
  *x - Import - Element.location.locationGeometry
- * - Export - Element.location.locationGeometry
+ *x - Export - Ignore
  * - ICMS Form Location - Prof/Manf tab
  * "Enter the UTM coordinates for the collection site, if the collector provides these data."
  * The entry is limited to digits, and should be formatted like this:
@@ -314,7 +320,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * Lat_LongN_W  -> object.location.locationGeometry
  *x - Import - Element.location.locationGeometry
- * - Export - Element.location.locationGeometry
+ *x - Export - Element.location.locationGeometry
  * - ICMS Form Location - Prof/Manf tab
  * "Enter the standard latitude and longitude for the collection site, if the collector provides 
  * these data".
@@ -323,7 +329,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * Hist_Cult_Per -> New field
  *x - Import - icms.histcultper
- * - Export - icms.histcultper
+ *x - Export - icms.histcultper
  * - ICMS Form Location - Prof/Manf tab
  * "Historic/Cultural Period.  Enter a distinctive stylistic or historical period.  
  * Example: Colonial Pueblo III"
@@ -332,7 +338,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * Cultural_ID -> New field
  *x - Import - icms.culturalid
- * - Export - icms.culturalid
+ *x - Export - icms.culturalid
  * - ICMS Form Location - Prof/Manf tab
  * "Enter the cultural affiliation of the material or the person(s) or group who manufactured
  * the object.  Examples: Pennsylvania Dutch; Pima; Anasazi."
@@ -357,7 +363,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * 
  * Fld_Specimen -> New field? or concatenate Object-Element-Sample codes?
  *x - Import - icms.fieldspecimen
- * - Export - ignore 
+ *x - Export - icms.fieldspecimen 
  * - ICMS Form Location - Archaeology tab
  * "Enter the field specimen number(s) assigned to the object.  If known, indicate
  * the source of the field specimen number by giving the name of the person who 
@@ -370,8 +376,8 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * Not used
  * 
  * Collector -> 
- * - Import - sample.sampledBy (NS) and sample.samplingDate
- * - Export -  
+ *x - Import - sample.sampledBy (NS) and sample.samplingDate
+ *x - Export -  
  * - ICMS Form Location - Archaeology tab
  * "The field will expand into two subfields: collector and collection date. An underline
  * separates the subfield entries on the screen.  Collector: enter the full name of the
@@ -379,13 +385,12 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * date field. Enter the date on which the collector collected the material"
  * 
  * Parts
+ *x - Import - ignore
+ *x - Export - ignore
  * - ICMS Form Location - Archaeology tab
  * "Enter the appropriate term for the part of the object that is present e.g. lid, handle, rim, lock (gun)"
  * The dictionary created by LTRR staff contains a mix of sample.type and element.shape. 
- * e.g. 5/8 IN CORE; 7/8 IN CORE; FRAG; CHCL FRAG; BE.  
- * Another complication is the inclusion of multiple samples
- * e.g.  1 IN CORE, XS 
- * NB NOT INCLUDED IN WACC EXPORT!
+ * 
  * 
  * Color - IGNORE
  *x - Import - ignore
@@ -428,6 +433,8 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	public static String LAST_YEAR = "userDefinedField.ltrr.lastyear";
 	public static String PITH_PRESENT = "userDefinedField.ltrr.pithpresent";
 	public static String PITH_YEAR = "userDefinedField.ltrr.pithyear";
+	public static String IDENTIFIED_BY = "userDefinedField.icms.identifiedby";
+	public static String IDENT_DATE = "userDefinedField.ltrr.identdate";
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -458,7 +465,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	}
 	
 	/**
-	 * Check whether this record is complete enought to be imported 
+	 * Check whether this record is complete enough to be imported 
 	 * 
 	 * @return
 	 */
@@ -508,7 +515,215 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		this.setObjectStatus(NormalObjectStatus.STORAGE_____INCOMING___LOAN);
 		this.setStorageUnit(NormalStorageUnit.EA);
 		this.setCondition(NormalCondition.COM___GD);
+		this.setMeasurements(" ");
+		this.setParts("-");
+	}
+	
+	@Override
+	public void setHistCultPer(String value)
+	{
+		super.setHistCultPer(value);
+				
+		String[] historic = {"16TH C",
+				"16TH C, EARLY",
+				"16TH C, MIDDLE",
+				"16TH C, LATE","17TH C",
+				"17TH C, EARLY",
+				"17TH C, MIDDLE",
+				"17TH C, LATE",
+				"18TH C",
+				"18TH C, EARLY",
+				"18TH C, MIDDLE",
+				"18TH C, LATE",
+				"19TH C",
+				"19TH C, EARLY",
+				"19TH C, MIDDLE",
+				"19TH C, LATE",
+				"19TH C, SECOND HALF",
+				"20TH C",
+				"20TH C, EARLY",
+				"20TH C, MIDDLE",
+				"20TH C, LATE",
+				"AMERICAN",
+				"APACHE WARS",
+				"CIVIL WAR",
+				"COLONIAL",
+				"COLONIAL, LATE",
+				"EARLY HISTORIC",
+				"HISTORIC",
+				"HISTORIC, EARLY",
+				"MODERN",
+				"WORLD WAR I",
+				"WORLD WAR II",
+				"WORLD WAR II INTERNMENT",
+				"INDIAN WARS",
+				"HOMESTEADING, INDIAN WARS",
+				"HOMESTEADING, RANCHING",
+				"MISSION",
+				"MISSION, EARLY",
+				"MISSION, LATE",
+				"DEPRESSION ERA",
+				"PIONEER",
+				"PIONEER, LATE",
+				"KLONDIKE",
+				"ROOSEVELT",
+				"RUSSIAN",
+				"NAVAJO",
+				"NAVAJO, EARLY",
+				"NAVAJO, LATE",
+				"TUCSON"};
 		
+		String[] prehistoric = {
+				"ACKMEN",
+				"AMARGOSA",
+				"AMARGOSA I",
+				"AMARGOSA II",
+				"ANGELL",
+				"ANIMAS",
+				"APISHAPA PHASE",
+				"ARCHAIC",
+				"ARCHAIC, EARLY",
+				"ARCHAIC, LATE",
+				"ARCHAIC, MIDDLE",
+				"BAKER",
+				"BASKETMAKER",
+				"BASKETMAKER II",
+				"BASKETMAKER III",
+				"BASKETMAKER II-III",
+				"BLACK ROCK",
+				"BONITO",
+				"BONNEVILLE",
+				"CAMP VERDE",
+				"CAMP VERDE, EARLY",
+				"CAMP VERDE, LATE",
+				"CANYON DEL ORO",
+				"CERAMIC, EARLY",
+				"CERROS",
+				"CHIRICAHUA",
+				"CINDER PARK",
+				"CIVANO",
+				"CLASSIC",
+				"CLASSIC, EARLY",
+				"CLASSIC, LATE",
+				"CLASSIC, MIDDLE",
+				"CLOVERDALE",
+				"CLOVIS",
+				"COWHORN",
+				"DE CHELLY",
+				"DEATH VALLEY I",
+				"DEATH VALLEY II",
+				"DEATH VALLEY II, LATE",
+				"DEATH VALLEY III",
+				"DEATH VALLEY IV",
+				"DEATH VALLEY V",
+				"DEL MUERTO",
+				"EL PASO",
+				"EL TOVAR",
+				"EL TOVAR, POST",
+				"EL TOVAR, PRE",
+				"ELDEN",
+				"EN MEDIO",
+				"ENCINAS",
+				"ESTRELLA",
+				"FOLSOM",
+				"FORMATIVE",
+				"GALIURO",
+				"GILA",
+				"GILA BUTTE",
+				"GOBERNADOR, EARLY",
+				"HARDT",
+				"HONANKI",
+				"HOSTA BUTTE",
+				"LA PLATA",
+				"LATE PREHISTORIC",
+				"LLANO",
+				"MANCOS",
+				"MANGAS",
+				"MARANA",
+				"MCELMO",
+				"MEDIO",
+				"MESA VERDE",
+				"MIAMI",
+				"PADRE",
+				"PATAYAN I",
+				"PATAYAN II",
+				"PATAYAN III",
+				"PATAYAN III, LATE",
+				"PIEDRA",
+				"PIEDRA, LATE",
+				"PINTO",
+				"PRECLASSIC",
+				"PROTOHISTORIC",
+				"PUEBLO",
+				"PUEBLO I",
+				"PUEBLO I, EARLY",
+				"PUEBLO I, LATE",
+				"PUEBLO I, MIDDLE",
+				"PUEBLO II",
+				"PUEBLO II, EARLY",
+				"PUEBLO II, LATE",
+				"PUEBLO II, MIDDLE",
+				"PUEBLO III",
+				"PUEBLO III, EARLY",
+				"PUEBLO III, LATE",
+				"PUEBLO III, MIDDLE",
+				"PUEBLO IV",
+				"PUEBLO V",
+				"RESERVE",
+				"RILLITO",
+				"RINCON",
+				"RINCON, EARLY",
+				"RINCON, LATE",
+				"RIO DE FLAG",
+				"ROSA",
+				"SACATON",
+				"SACATON, EARLY",
+				"SACATON, LATE",
+				"SAN DIEGUITO",
+				"SAN DIEGUITO I",
+				"SAN DIEGUITO II",
+				"SAN FRANCISCO",
+				"SAN JOSE",
+				"SAN PEDRO",
+				"SANTA CRUZ",
+				"SANTA CRUZ, LATE",
+				"SANTAN",
+				"SEDENTARY",
+				"SEDENTARY, EARLY",
+				"SEDENTARY, LATE",
+				"SELLS",
+				"SELLS, EARLY",
+				"SNAKETOWN",
+				"SOHO",
+				"SQUAW PEAK",
+				"SUNSET",
+				"SWEETWATER",
+				"TANQUE VERDE",
+				"TANQUE VERDE, EARLY",
+				"TRADING POST/TOURIST",
+				"TULAROSA",
+				"TURKEY HILL",
+				"TUZIGOOT",
+				"VAHKI",
+				"VAMORI",
+				"VENTANA",
+				"WENDOVER",
+				"YUMAN II",
+				"YUMAN III"	
+		};
+		
+		if(Arrays.asList(historic).contains(value))
+		{
+			this.setClass2(NormalClass2.HISTORIC);
+		}
+		else if(Arrays.asList(prehistoric).contains(value))
+		{
+			this.setClass2(NormalClass2.PREHISTORIC);
+		}
+		else
+		{
+			this.setClass2(NormalClass2.UNKNOWN);
+		}		
 	}
 		
 	/**
@@ -595,6 +810,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	}
 	
 	
+	/**
+	 * Parse the ObjectPart field and return a list of ControlledVocs indicating sample types
+	 * 
+	 * @return
+	 */
 	private ArrayList<ControlledVoc> getPartsAsCV()
 	{
 		ArrayList<ControlledVoc> cvs = new ArrayList<ControlledVoc>();
@@ -612,6 +832,12 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		return cvs;
 	}
 	
+	/**
+	 * Convert a single ObjectPart item to a ControlledVoc sample type
+	 * 
+	 * @param part
+	 * @return
+	 */
 	private ControlledVoc translatePartToCV(String part)
 	{
 		
@@ -634,6 +860,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	}
 	
 	
+	/**
+	 * Whether this record contains fragmented samples
+	 * 
+	 * @return
+	 */
 	private boolean containsFragments()
 	{
 		String[] parts = this.getParts().split(",");
@@ -651,8 +882,6 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	
 	/**
 	 * Use some logic to determine the number of samples
-	 * 
-	 * TODO Finish 
 	 * 
 	 * @return
 	 */
@@ -839,7 +1068,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	}
 	
 
-	
+	/**
+	 * Convert the Taxon field into a ControlledVoc
+	 * 
+	 * @return
+	 */
 	public ControlledVoc getTaxon()
 	{
 		String taxon = this.getITRDBSpeciesCode();
@@ -855,6 +1088,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 	}
 	
+	/**
+	 * Get the box name without the "U OF A LTRR/" prefix
+	 * 
+	 * @return
+	 */
 	public String getCleanBoxName()
 	{
 		String boxname = this.getLocation(); 
@@ -870,6 +1108,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 	}
 	
+	/**
+	 * Convert the CatalogDate field into a DateTime
+	 * 
+	 * @return DateTime
+	 */
 	public DateTime getCatalogDateAsDateTime()
 	{
 		return DateUtils.parseDateTimeFromNaturalString(this.getCatalogDate());		
@@ -905,7 +1148,12 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	}
 	
 	
-	
+	/**
+	 * Convert the CatalogCode into an Tridas Object code
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	public String getObjectCode() throws Exception {
 
 		String catcode = this.getCatalogCode();
@@ -913,6 +1161,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 
 	}
 	
+	/**
+	 * Get the number portion of the Catalog Code.  This number is akin to a Tridas Element title
+	 * 
+	 * @return
+	 */
 	public String getCatalogCodeNumber() {
 		
 		String catcode = this.getCatalogCode().substring(4, this.getCatalogCode().length());
@@ -921,13 +1174,18 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 	}
 	
+	/**
+	 * Get the site name formatted to remove the ICMS SHOUTY CASE!
+	 * 
+	 * @return
+	 */
 	public String getPrettySiteName()
 	{
 		return WordUtils.capitalize(getSiteName().toLowerCase().replace("--", " - "));
 	}
 	
 	/**
-	 * TODO 
+	 * Get the subobject code from the Other Numbers Field
 	 * 
 	 * @return
 	 */
@@ -949,6 +1207,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 
 	}
 	
+	/**
+	 * Extract sample code from other numbers field 
+	 * 
+	 * @return
+	 */
 	public String getSampleCode()
 	{
 		String[] parts = getOtherNumberParts();
@@ -985,8 +1248,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		{
 			return parts;
 		}
-		
-		
+
 		return null;
 	}
 	
@@ -1011,6 +1273,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	}
 	
 
+	/**
+	 * Compile locality fields into a TridasLocation 
+	 * 
+	 * @return
+	 */
 	public TridasLocation getTridasLocation()
 	{
 		TridasLocation loc = this.getTridasLocationFromLatLon();
@@ -1030,12 +1297,17 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		address.setCountry(this.getCountry());
 		address.setStateProvinceRegion(this.getState());
 		loc.setAddress(address);
-		
-		
+
 		return loc;
 	}
 	
 	
+	/**
+	 * NOT IMPLEMENTED.  I have no examples of how LatLon should look in ICMS files 
+	 * 
+	 * TODO
+	 * @return
+	 */
 	private TridasLocation getTridasLocationFromLatLon()
 	{
 		TridasLocation loc;
@@ -1043,17 +1315,16 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 		
 		
-		
-		
-		
-		
 		return null;
-
-		
 	}
 	
 	
-	
+	/**
+	 * Convert UTM field into a TridasLocation
+	 * 
+	 * @param datum
+	 * @return
+	 */
 	public TridasLocation getTridasLocationFromUTM(UTMDatum datum)
 	{
 		TridasLocation loc;
@@ -1100,6 +1371,13 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 	}
 	
+	/**
+	 * Open an ICMS XML file, validate, parse and return a list of RediscoveryExport items
+	 * 
+	 * @param filename
+	 * @param logErrors
+	 * @return
+	 */
 	public static List<RediscoveryExport> getICMSRecordsFromXMLFile(String filename, boolean logErrors)
 	{
 		StringBuilder fileString = new StringBuilder();
@@ -1219,48 +1497,16 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		return null;
 	}
 
-	 private static class MyErrorHandler extends DefaultHandler {
-		 
-		 private HashMap<Integer, String> errors = new HashMap<Integer, String>();
-		 private HashSet<Integer> lineerrs = new HashSet<Integer>();
-		 public boolean logErrors = true;
-		 
-		 
-	      public void warning(SAXParseException e) throws SAXException {
-	        if(logErrors) log.warn(printInfo(e));
-	      }
-	      public void error(SAXParseException e) throws SAXException {
-	    	  if(logErrors) log.error(printInfo(e));
-	      }
-	      public void fatalError(SAXParseException e) throws SAXException {
-	    	  if(logErrors) log.error(printInfo(e));
-	      }
-	      private String printInfo(SAXParseException e) {
-	    	  String msg = "\n";
-	         msg+="   Line number  : "+e.getLineNumber()+"\n";
-	         msg+="   Column number: "+e.getColumnNumber()+"\n";
-	         msg+="   Message      : "+e.getMessage()+"\n";
-	         
-	         errors.put(e.getLineNumber(), e.getMessage());
-	         lineerrs.add(e.getLineNumber());
-	         return msg;
-	      }
-	      
-	      public HashMap<Integer, String> getErrors()
-	      {
-	    	  return errors;
-	      }
-	      
-	      public HashSet<Integer> getLineErrors()
-	      {
-	    	  return lineerrs;
-	      }
-	   }
+	
 
+	/**
+	 * Convert the pith code field into a boolean indicating presence
+	 * 
+	 * @return
+	 */
 	public Boolean isPithPresent() {
 		
 		String innercode = this.getPithCode();
-		
 		
 		if(innercode.trim().toLowerCase().equals("p"))
 		{
@@ -1274,12 +1520,14 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	public String getBarkCode()
 	{
 		String outercode = super.getBarkCode();
-		
-
-		
 		return outercode;
 	}
 	
+	/**
+	 * Interpret the last ring under the bark field to indicate presence
+	 * 
+	 * @return
+	 */
 	public Boolean isLastRingUnderBarkPresent() {
 
 		String outercode = getBarkCode().toUpperCase();
@@ -1315,6 +1563,45 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	}
 	
 	
+
+
+private static class MyErrorHandler extends DefaultHandler {
+	 
+	 private HashMap<Integer, String> errors = new HashMap<Integer, String>();
+	 private HashSet<Integer> lineerrs = new HashSet<Integer>();
+	 public boolean logErrors = true;
+	 
+	 
+     public void warning(SAXParseException e) throws SAXException {
+       if(logErrors) log.warn(printInfo(e));
+     }
+     public void error(SAXParseException e) throws SAXException {
+   	  if(logErrors) log.error(printInfo(e));
+     }
+     public void fatalError(SAXParseException e) throws SAXException {
+   	  if(logErrors) log.error(printInfo(e));
+     }
+     private String printInfo(SAXParseException e) {
+   	  String msg = "\n";
+        msg+="   Line number  : "+e.getLineNumber()+"\n";
+        msg+="   Column number: "+e.getColumnNumber()+"\n";
+        msg+="   Message      : "+e.getMessage()+"\n";
+        
+        errors.put(e.getLineNumber(), e.getMessage());
+        lineerrs.add(e.getLineNumber());
+        return msg;
+     }
+     
+     public HashMap<Integer, String> getErrors()
+     {
+   	  return errors;
+     }
+     
+     public HashSet<Integer> getLineErrors()
+     {
+   	  return lineerrs;
+     }
+  }
 }
 
 class RediscoverySubSample{
