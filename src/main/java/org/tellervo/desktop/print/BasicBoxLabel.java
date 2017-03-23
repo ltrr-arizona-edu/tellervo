@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;

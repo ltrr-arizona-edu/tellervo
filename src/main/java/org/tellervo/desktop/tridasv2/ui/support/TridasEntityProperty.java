@@ -29,12 +29,10 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.doc.Documentation;
-import org.tellervo.desktop.tridasv2.ui.ImagePreviewPanel;
 import org.tellervo.schema.WSIUserDefinedField;
 import org.tellervo.schema.WSIUserDefinedTerm;
 

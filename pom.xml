@@ -333,11 +333,6 @@
 			<version>2.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.fhaes</groupId>
-			<artifactId>fhchart</artifactId>
-			<version>0.2.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>2.2</version>
@@ -352,6 +347,12 @@
 			<groupId>net.sf.jung</groupId>
 			<artifactId>jung-samples</artifactId>
 			<version>2.0.1</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>stax-api</artifactId>
+					<groupId>stax</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.jidesoft</groupId>
@@ -359,6 +360,11 @@
 			<version>3.6.1</version>
 		</dependency>
 
+		<dependency>
+			<groupId>jfree</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.13</version>
+		</dependency>
 	</dependencies>
 	<profiles>
 		<profile>

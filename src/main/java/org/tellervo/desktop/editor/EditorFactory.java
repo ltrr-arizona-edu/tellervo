@@ -6,7 +6,6 @@ package org.tellervo.desktop.editor;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.io.File;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -23,8 +22,6 @@ import org.tellervo.desktop.Year;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.sample.BaseSample;
-import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.TellervoWSILoader;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
@@ -44,15 +41,11 @@ import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIEntity;
-import org.tridas.interfaces.ITridas;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.io.AbstractDendroFormat;
-import org.tridas.io.exceptions.ConversionWarningException;
 import org.tridas.io.util.SafeIntYear;
 import org.tridas.io.util.TridasUtils;
-import org.tridas.io.util.UnitUtils;
 import org.tridas.schema.NormalTridasMeasuringMethod;
-import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
@@ -67,8 +60,6 @@ import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
 import org.tridas.schema.TridasVariable;
 import org.tridas.util.TridasObjectEx;
-
-import com.itextpdf.text.Meta;
 
 
 /**

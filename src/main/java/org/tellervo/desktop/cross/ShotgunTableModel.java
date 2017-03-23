@@ -4,13 +4,9 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.desktop.util.ColorUtils;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 public class ShotgunTableModel extends AbstractTableModel {
 

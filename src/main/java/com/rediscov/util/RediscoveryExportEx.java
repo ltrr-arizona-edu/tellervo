@@ -22,6 +22,8 @@ import javax.xml.validation.Validator;
 import org.apache.commons.collections15.MultiMap;
 import org.apache.commons.collections15.map.MultiKeyMap;
 import org.apache.commons.lang.WordUtils;
+import org.jvnet.jaxb2_commons.lang.CopyStrategy;
+import org.jvnet.jaxb2_commons.lang.JAXBCopyStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
@@ -435,6 +437,12 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	public RediscoveryExportEx()
 	{
 		
+	}
+	
+	public RediscoveryExportEx(RediscoveryExport rde)
+	{
+		final CopyStrategy strategy = JAXBCopyStrategy.INSTANCE;
+		rde.copyTo(null, this, strategy);
 	}
 	
 	/**

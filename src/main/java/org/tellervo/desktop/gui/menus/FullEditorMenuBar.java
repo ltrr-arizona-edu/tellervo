@@ -422,10 +422,7 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 	    
 	    JMenuItem miAllSeries = new JMenuItem(actions.graphAllSeriesAction);
 	    mnGraph.add(miAllSeries);
-	    
-	    JMenuItem miCreateFileHistoryPlot = new JMenuItem(actions.graphCreateFileHistoryPlotAction);
-	    mnGraph.add(miCreateFileHistoryPlot);
-	    
+	   	    
 		add(mnGraph);
 
 

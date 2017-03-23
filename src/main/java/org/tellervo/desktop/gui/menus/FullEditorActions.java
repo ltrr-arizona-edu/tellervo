@@ -17,7 +17,6 @@ import org.tellervo.desktop.gui.menus.actions.FileLogoffAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogonAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAllAction;
-import org.tellervo.desktop.gui.menus.actions.GraphCreateFileHistoryPlotAction;
 import org.tellervo.desktop.gui.menus.actions.MapAddLayersAction;
 import org.tellervo.desktop.gui.menus.actions.MapAnnotationsAction;
 import org.tellervo.desktop.gui.menus.actions.MapCompassToggleAction;
@@ -63,9 +62,7 @@ public class FullEditorActions extends AbstractEditorActions implements IEventLi
 	public Action fileDeleteODKInstancesAction;
 	public Action fileImportICMSAction;
 	public Action fileExportICMSAction;
-	
-	public Action graphCreateFileHistoryPlotAction;
-	
+		
 	public Action viewZoomToExtent;
 	
 	public Action toolsReconcileAction;
@@ -127,7 +124,6 @@ public class FullEditorActions extends AbstractEditorActions implements IEventLi
 		tagSeriesAction = new TagSeriesAction((FullEditor) editor);
 		addRemoveTagAction = new AddRemoveTagAction((FullEditor) editor);
 		
-		graphCreateFileHistoryPlotAction = new GraphCreateFileHistoryPlotAction(editor);
 		
 		viewZoomToExtent = new ViewToExtentAction((FullEditor) editor);
 		
@@ -210,7 +206,6 @@ public class FullEditorActions extends AbstractEditorActions implements IEventLi
 		
 		graphAllSeriesAction.setEnabled(App.isLoggedIn());
 		graphCurrentSeriesAction.setEnabled(App.isLoggedIn());
-		graphCreateFileHistoryPlotAction.setEnabled(App.isLoggedIn());
 		
 		toolsTruncateAction.setEnabled(App.isLoggedIn());
 		toolsReverseAction.setEnabled(App.isLoggedIn());
@@ -234,7 +229,6 @@ public class FullEditorActions extends AbstractEditorActions implements IEventLi
 		toolsReconcileAction.setEnabled(currentSample!=null);
 		toolsSumAction.setEnabled(currentSample!=null);	
 		
-		graphCreateFileHistoryPlotAction.setEnabled(currentSample!=null);
 	}
 
 	@Override

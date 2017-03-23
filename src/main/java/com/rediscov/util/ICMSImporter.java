@@ -172,7 +172,7 @@ public class ICMSImporter{
 		for(RediscoveryExport record : records)
 		{
 			i++;
-			RediscoveryExportEx rec = (RediscoveryExportEx) record;
+			RediscoveryExportEx rec = new RediscoveryExportEx(record);
 			
 			if(!rec.isImportable())
 			{
@@ -184,10 +184,7 @@ public class ICMSImporter{
 				log.debug("Importing record '"+rec.getCatalogCode()+"'");
 			
 			}
-			
 
-			
-			
 			try {
 				if(rec.getObjectCode().equals("AZRU"))
 				{

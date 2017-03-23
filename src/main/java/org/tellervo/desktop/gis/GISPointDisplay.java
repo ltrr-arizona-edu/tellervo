@@ -18,7 +18,7 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
-import org.fhaes.util.Builder;
+import org.tellervo.desktop.ui.Builder;
 
 public class GISPointDisplay extends JDialog implements ActionListener{
 

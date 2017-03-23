@@ -60,7 +60,6 @@ import org.tellervo.schema.WSIConfiguration;
 import org.tellervo.schema.WSISecurityUser;
 import org.tridas.io.TridasIO;
 
-import uk.org.lidalia.sysoutslf4j.context.SysOutOverSLF4J;
 
 /**
  * Contextual state of the app; holds references to all "subsystems".
@@ -130,7 +129,6 @@ public static synchronized void init() {
     logviewer = new Log4JViewer();
     logviewer.setVisible(false);
     
-    SysOutOverSLF4J.sendSystemOutAndErrToSLF4J();
         
 }
 

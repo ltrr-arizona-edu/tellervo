@@ -177,6 +177,7 @@ public class ICMSExporter {
 			rec.setItemCount(BigDecimal.valueOf(Integer.parseInt(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.ITEM_COUNT).getValue())));
 			rec.setStateSite(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.STATE_SITE).getValue());
 			rec.setPithCode(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.INNER_CODE).getValue());
+			rec.setOuterRingDate(BigInteger.valueOf(Integer.parseInt(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.LAST_YEAR).getValue())));
 
 			if(e.isSetLocation())
 			{
@@ -199,7 +200,8 @@ public class ICMSExporter {
 			}
 			rec.setDescription(s.getDescription());
 			rec.setSiteName(o.getTitle());
-			
+			rec.setITRDBSpeciesCode(e.getTaxon().getNormal());
+
 			
 			
 			rec.setCatalogDate("1");
@@ -208,13 +210,11 @@ public class ICMSExporter {
 			rec.setCollector("1");
 			rec.setIdentDate("1");
 			rec.setIdentifiedBy("1");
-			rec.setITRDBSpeciesCode("1");
 			rec.setLatLonCoords("1");
 			rec.setLocation("1");
 			rec.setMeasurements("1");
 			rec.setObjectPart("1");
 			rec.setOtherNumbers("1");
-			rec.setOuterRingDate(BigInteger.ONE);
 			rec.setParts("1");
 			rec.setStatusDate(BigInteger.ONE);
 			rec.setUTMCoords("1");
