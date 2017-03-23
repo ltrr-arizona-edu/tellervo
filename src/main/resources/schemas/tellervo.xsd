@@ -15,10 +15,11 @@
 			<xs:documentation>Type of entity the client would like to search for</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="sample" />
+			<xs:enumeration value="project" />
 			<xs:enumeration value="object" />
 			<xs:enumeration value="subobject" />
 			<xs:enumeration value="element" />
+			<xs:enumeration value="sample" />
 			<xs:enumeration value="radius" />
 			<xs:enumeration value="taxon" />
 			<xs:enumeration value="measurementSeries" />
@@ -151,6 +152,11 @@
 				</xs:annotation>
 			</xs:enumeration>
 			
+			<xs:enumeration value="projectdbid"/>
+			<xs:enumeration value="projectid"/>	
+			<xs:enumeration value="projecttitle"/>
+			<xs:enumeration value="projectcreated"/>
+			<xs:enumeration value="projectlastmodified"/>
 			<xs:enumeration value="objectdbid"/>						
 			<xs:enumeration value="objecttitle"/>
 			<xs:enumeration value="objectcreated"/>

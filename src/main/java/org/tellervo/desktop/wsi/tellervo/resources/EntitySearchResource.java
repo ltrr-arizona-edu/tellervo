@@ -43,6 +43,7 @@ import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
@@ -134,6 +135,8 @@ public class EntitySearchResource<T extends ICoreTridas> extends
 	 * @return
 	 */
 	private static SearchReturnObject getDirectChildSearchType(ICoreTridas parent) {
+		if(parent instanceof TridasProject)
+			return SearchReturnObject.OBJECT;
 		if(parent instanceof TridasObject)
 			return SearchReturnObject.ELEMENT;
 		if(parent instanceof TridasElement)
@@ -152,6 +155,8 @@ public class EntitySearchResource<T extends ICoreTridas> extends
 	 * @return
 	 */
 	private static SearchParameterName getIdNameForEntity(ICoreTridas parent) {
+		if(parent instanceof TridasProject)
+			return SearchParameterName.PROJECTID;
 		if(parent instanceof TridasObject)
 			return SearchParameterName.OBJECTID;
 		if(parent instanceof TridasElement)
@@ -170,6 +175,8 @@ public class EntitySearchResource<T extends ICoreTridas> extends
 	 */
 	private static Class<? extends ICoreTridas> entityForSearchReturnObject(SearchReturnObject value) {
 		switch(value) {
+		case PROJECT:
+			return TridasProject.class;
 		case OBJECT:
 			return TridasObject.class;
 		case ELEMENT:

@@ -112,7 +112,7 @@ public class TridasEntityListHolder {
 	}
 	
 	/**
-	 * Get a list of child objects (either from cache or for the server)
+	 * Get a list of child objects (either from cache or from the server)
 	 * May pop up a dialog for waiting
 	 * 
 	 * @param parentObject

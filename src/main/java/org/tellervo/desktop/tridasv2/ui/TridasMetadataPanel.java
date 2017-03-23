@@ -784,12 +784,8 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 	private List<? extends ITridas> getEntityList(EditType mode, boolean goRemote) {
 		switch(mode) {
 		
-		case PROJECT:
-			TridasProject p = new TridasProject();
-			p.setTitle("Default");
-			ArrayList<TridasProject> list2 = new ArrayList<TridasProject>();
-			list2.add(p);
-			return list2;
+		/*case PROJECT:
+			return App.tridasProjects.getProjectList();*/
 		
 		case OBJECT:
 			return App.tridasObjects.getObjectList();
@@ -1200,6 +1196,8 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 				// skip over these series types if we're not dealing with them
 				if(t == EditType.DERIVED_SERIES)
 					continue;
+				/*if(t == EditType.PROJECT)
+					continue;*/
 			
 				button = createButton(t);
 				entityButtons.add(button);
@@ -1221,7 +1219,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 	 */
 
 	public static enum EditType {
-		PROJECT(TridasProject.class, "Project", "project.png", Metadata.PROJECT),
+		//PROJECT(TridasProject.class, "Project", "project.png", Metadata.PROJECT),
 		OBJECT(TridasObjectEx.class, I18n.getText("tridas.object"), "object.png", Metadata.OBJECT),
 		ELEMENT(TridasElement.class, I18n.getText("tridas.element"), "element.png", Metadata.ELEMENT),
 		SAMPLE(TridasSample.class, I18n.getText("tridas.sample"), "sample.png", Metadata.SAMPLE),
@@ -1454,6 +1452,8 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 		 */
 		public EditType next() {
 			switch(this) {
+			/*case PROJECT:
+				return OBJECT;*/
 			case OBJECT:
 				return ELEMENT;
 			case ELEMENT:

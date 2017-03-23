@@ -48,6 +48,7 @@ import org.tridas.interfaces.NormalTridasVoc;
 import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
@@ -92,8 +93,11 @@ public class TridasEntityDeriver {
 		// get any property names and stick them at the head of the list
 		XmlType type = clazz.getAnnotation(XmlType.class);
 		String[] typeProperties;
+		
 		if (type != null && (typeProperties = type.propOrder()) != null && typeProperties.length > 0) {
 
+
+			
 			// load into type properties
 			for (String s : typeProperties) {
 				// ignore zero properties
@@ -105,6 +109,18 @@ public class TridasEntityDeriver {
 				fieldMap.put(s, pd);
 			}
 			
+			if(clazz.equals(TridasObject.class))
+			{
+				// Hack on a project id to TridasObjects
+				log.debug("Adding projectid field to TridasObject");
+				
+				TridasProjectDictionaryProperty pd3 = new TridasProjectDictionaryProperty("object.project", "project");
+				pd3.setCategoryPrefix(rootName);
+				fieldMap.put("project", pd3);
+				parent.addChildProperty(pd3);
+				nChildren++;
+			}
+						
 			Field[] declaredFields = clazz.getDeclaredFields();
 			for (Field f : clazz.getDeclaredFields()) {
 				String fieldType = f.getGenericType().toString();
@@ -248,7 +264,7 @@ public class TridasEntityDeriver {
 				}
 			}
 		}
-		
+				
 		// Adding in TellervoSpecificGenericFields
 		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
 		ArrayList<WSIUserDefinedField> myUserDefinedFields = new ArrayList<WSIUserDefinedField>();
@@ -261,12 +277,17 @@ public class TridasEntityDeriver {
 		
 		if(clazz.equals(TridasObject.class))
 		{
+			
+
+			
 			// Object lab code
 			TellervoGenericFieldProperty pd =  TellervoGenericFieldProperty.getObjectCodeProperty();
 			pd.setCategoryPrefix(rootName);
 			fieldMap.put(pd.getName(), pd);
 			parent.addChildProperty(pd);
-			nChildren++;	
+			nChildren++;
+			
+
 			
 			// Vegetation type
 			TellervoGenericFieldProperty pd2 =  TellervoGenericFieldProperty.getVegetationTypeProperty();
@@ -349,6 +370,9 @@ public class TridasEntityDeriver {
 				}
 			}
 		}
+		
+		
+		
 		
 		// Add the true user defined fields to the list			
 		for(WSIUserDefinedField fld : myUserDefinedFields)
@@ -452,7 +476,7 @@ public class TridasEntityDeriver {
 	public static void main(String[] args) {
 		List<TridasEntityProperty> propertyList = new ArrayList<TridasEntityProperty>();
 
-		propertyList = buildDerivationList(TridasSample.class);
+		propertyList = buildDerivationList(TridasObject.class);
 		
 		dumpPropertyList(propertyList, 0);
 	}

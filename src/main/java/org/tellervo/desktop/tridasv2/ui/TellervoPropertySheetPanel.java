@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
+import org.tellervo.desktop.tridasv2.ui.support.TridasProjectDictionaryProperty;
 import org.tellervo.schema.UserExtendableDataType;
 import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.schema.TridasElement;
@@ -152,6 +153,16 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 							}
 						}
 					}
+					
+					else if(gf.getName().equals("tellervo.object.projectid"))
+					{
+						for(Property p : prop)
+						{
+							TridasProjectDictionaryProperty tep = (TridasProjectDictionaryProperty) p;
+							p.setValue(gf.getValue());
+							
+						}
+					}
 				}
 			}
 		}
@@ -224,7 +235,9 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 		
 		for(Property p : prop2)
 		{
-
+			
+			
+			
 			// Find any properties called 'files'
 			if(p.getName().equals("files"))
 			{
@@ -244,6 +257,11 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 				}
 			}
 			
+			if(p instanceof TridasProjectDictionaryProperty)
+			{
+				TridasProjectDictionaryProperty tgfp = (TridasProjectDictionaryProperty) p;
+				TellervoGenericFieldProperty.addOrReplaceGenericField((TridasEntity)data, tgfp.getTridasGenericField());
+			}
 			
 			if(p instanceof TellervoGenericFieldProperty)
 			{

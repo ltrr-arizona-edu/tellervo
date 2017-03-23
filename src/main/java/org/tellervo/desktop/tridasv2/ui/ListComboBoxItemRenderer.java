@@ -31,6 +31,7 @@ import javax.swing.JList;
 
 import org.tellervo.schema.WSISecurityUser;
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.TridasProject;
 
 
 /**
@@ -84,6 +85,10 @@ public class ListComboBoxItemRenderer extends DefaultListCellRenderer implements
 				WSISecurityUser u = (WSISecurityUser) value;
 				
 				setText(u.getLastName() + ", " + u.getFirstName());
+			}
+			else if (value instanceof TridasProject){
+				TridasProject p = (TridasProject) value;
+				setText(p.getTitle());
 			}
 			else
 				setText(value.toString());

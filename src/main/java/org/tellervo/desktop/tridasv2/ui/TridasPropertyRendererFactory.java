@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
+import org.tellervo.desktop.tridasv2.ui.support.TridasProjectDictionaryProperty;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.Date;
 import org.tridas.schema.DateTime;
@@ -40,6 +41,7 @@ import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasLocationGeometry;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.Year;
 
 import com.l2fprod.common.propertysheet.Property;
@@ -82,7 +84,7 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 
 		super.registerRenderer(TridasGenericField.class, new TridasGenericFieldRenderer());
 		
-		
+		super.registerRenderer(TridasProject.class, new TridasProjectRenderer());
 	}
 	
 	public synchronized TableCellRenderer getRenderer(Property property) {
@@ -107,6 +109,17 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 				return new UserDefinedIntegerRenderer();
 			}
 		}
+		
+		if(property instanceof TridasProjectDictionaryProperty)
+		{
+			TridasProjectDictionaryProperty ep = (TridasProjectDictionaryProperty)property;
+			
+			// flag if it's required
+			required = ep.isRequired();
+			
+			return new ListComboBoxRenderer(required);
+		}
+		
 		
 		// get a renderer, if one exists
 		TableCellRenderer defaultRenderer = super.getRenderer(property);

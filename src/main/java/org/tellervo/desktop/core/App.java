@@ -52,6 +52,7 @@ import org.tellervo.desktop.prefs.Prefs;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.setupwizard.SetupWizard;
 import org.tellervo.desktop.tridasv2.TridasObjectList;
+import org.tellervo.desktop.tridasv2.TridasProjectList;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.versioning.UpdateChecker;
@@ -77,6 +78,8 @@ public class App{
   public static Logging logging;
   public static Dictionary dictionary;
   public static TridasObjectList tridasObjects;
+  public static TridasProjectList tridasProjects;
+
   public static WSISecurityUser currentUser;
   public static Boolean isAdmin;
   public static String domain;
@@ -341,6 +344,8 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
     	meter.setNote(I18n.getText("login.initObjectList"));
     	updateTridasObjectList();
         meter.setNote(I18n.getText("login.updateObjectList"));
+    	updateTridasProjectList();
+
     }
     
 	// Check whether updates are available
@@ -386,6 +391,16 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
 	  if(App.isLoggedIn())
 	  {
 		  tridasObjects.query();
+	  }
+  }
+  
+  public static void updateTridasProjectList()
+  {	  
+	  tridasProjects = new TridasProjectList();
+
+	  if(App.isLoggedIn())
+	  {
+		  tridasProjects.query();
 	  }
   }
 

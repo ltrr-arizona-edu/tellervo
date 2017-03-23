@@ -446,6 +446,11 @@ public class RediscoveryExportEx extends RediscoveryExport {
 		
 	}
 	
+	/**
+	 * Create a RediscoveryExportEx from a standard RediscoveryExport
+	 * 
+	 * @param rde
+	 */
 	public RediscoveryExportEx(RediscoveryExport rde)
 	{
 		final CopyStrategy strategy = JAXBCopyStrategy.INSTANCE;
@@ -524,10 +529,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	{
 		super.setHistCultPer(value);
 				
-		String[] historic = {"16TH C",
-				"16TH C, EARLY",
-				"16TH C, MIDDLE",
-				"16TH C, LATE","17TH C",
+		String[] historic = {"17TH C",
 				"17TH C, EARLY",
 				"17TH C, MIDDLE",
 				"17TH C, LATE",
@@ -571,9 +573,17 @@ public class RediscoveryExportEx extends RediscoveryExport {
 				"NAVAJO",
 				"NAVAJO, EARLY",
 				"NAVAJO, LATE",
-				"TUCSON"};
+				"TUCSON", 
+				"GOBERNADOR, EARLY",
+				"PUEBLO V",};
 		
+		
+		// Terms that are commented out, the 
 		String[] prehistoric = {
+				"16TH C",
+				"16TH C, EARLY",
+				"16TH C, MIDDLE",
+				"16TH C, LATE",
 				"ACKMEN",
 				"AMARGOSA",
 				"AMARGOSA I",
@@ -585,20 +595,13 @@ public class RediscoveryExportEx extends RediscoveryExport {
 				"ARCHAIC, EARLY",
 				"ARCHAIC, LATE",
 				"ARCHAIC, MIDDLE",
-				"BAKER",
 				"BASKETMAKER",
 				"BASKETMAKER II",
 				"BASKETMAKER III",
 				"BASKETMAKER II-III",
-				"BLACK ROCK",
 				"BONITO",
-				"BONNEVILLE",
-				"CAMP VERDE",
-				"CAMP VERDE, EARLY",
-				"CAMP VERDE, LATE",
 				"CANYON DEL ORO",
 				"CERAMIC, EARLY",
-				"CERROS",
 				"CHIRICAHUA",
 				"CINDER PARK",
 				"CIVANO",
@@ -610,17 +613,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 				"CLOVIS",
 				"COWHORN",
 				"DE CHELLY",
-				"DEATH VALLEY I",
-				"DEATH VALLEY II",
-				"DEATH VALLEY II, LATE",
-				"DEATH VALLEY III",
-				"DEATH VALLEY IV",
-				"DEATH VALLEY V",
-				"DEL MUERTO",
 				"EL PASO",
-				"EL TOVAR",
-				"EL TOVAR, POST",
-				"EL TOVAR, PRE",
 				"ELDEN",
 				"EN MEDIO",
 				"ENCINAS",
@@ -630,7 +623,6 @@ public class RediscoveryExportEx extends RediscoveryExport {
 				"GALIURO",
 				"GILA",
 				"GILA BUTTE",
-				"GOBERNADOR, EARLY",
 				"HARDT",
 				"HONANKI",
 				"HOSTA BUTTE",
@@ -668,7 +660,6 @@ public class RediscoveryExportEx extends RediscoveryExport {
 				"PUEBLO III, LATE",
 				"PUEBLO III, MIDDLE",
 				"PUEBLO IV",
-				"PUEBLO V",
 				"RESERVE",
 				"RILLITO",
 				"RINCON",
@@ -691,8 +682,6 @@ public class RediscoveryExportEx extends RediscoveryExport {
 				"SEDENTARY",
 				"SEDENTARY, EARLY",
 				"SEDENTARY, LATE",
-				"SELLS",
-				"SELLS, EARLY",
 				"SNAKETOWN",
 				"SOHO",
 				"SQUAW PEAK",
@@ -711,6 +700,27 @@ public class RediscoveryExportEx extends RediscoveryExport {
 				"YUMAN II",
 				"YUMAN III"	
 		};
+		
+		// Terms that are ambigous or unknown (consulted with Jeff Dean)
+		String[] oddbods = {"BAKER",
+			"BLACK ROCK",
+			"BONNEVILLE",
+			"CAMP VERDE",
+			"CAMP VERDE, EARLY",
+			"CAMP VERDE, LATE",
+			"CERROS",
+			"DEATH VALLEY I",
+			"DEATH VALLEY II",
+			"DEATH VALLEY II, LATE",
+			"DEATH VALLEY III",
+			"DEATH VALLEY IV",
+			"DEATH VALLEY V",
+			"DEL MUERTO",  //<-- Could be either
+			"EL TOVAR",
+			"EL TOVAR, POST",
+			"EL TOVAR, PRE",
+			"SELLS",
+			"SELLS, EARLY",};
 		
 		if(Arrays.asList(historic).contains(value))
 		{
