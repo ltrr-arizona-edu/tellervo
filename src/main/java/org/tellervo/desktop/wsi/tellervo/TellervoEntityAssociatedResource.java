@@ -41,6 +41,7 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
@@ -252,7 +253,9 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 
 	
 	private void populateAppropriateList(WSIRequest request) {
-		if(createOrUpdateEntity instanceof TridasObject)
+		if(createOrUpdateEntity instanceof TridasProject)
+			request.getProjects().add((TridasProject) createOrUpdateEntity);
+		else if(createOrUpdateEntity instanceof TridasObject)
 			request.getObjects().add((TridasObject) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof TridasElement)
 			request.getElements().add((TridasElement) createOrUpdateEntity);

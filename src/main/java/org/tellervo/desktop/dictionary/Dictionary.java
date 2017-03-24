@@ -41,6 +41,7 @@ import org.tellervo.desktop.wsi.ResourceException;
 import org.tellervo.desktop.wsi.tellervo.TellervoResource;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceCacher;
 import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.TridasProject;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.MVCArrayList;
@@ -200,6 +201,22 @@ public class Dictionary extends TellervoResource {
 			if(TridasUtils.getGenericFieldByName(obj, TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE).getValue().equals(code))
 			{
 				return obj;
+			}
+		}
+		return null;
+	}
+	
+	public static TridasProject getTridasProjectByID(String id)
+	{
+		if(id==null) return null;
+
+		List<TridasProject> entities = App.tridasProjects.getMutableObjectList();
+
+		for(TridasProject p : entities)
+		{
+			if(p.getIdentifier().getValue().equals(id))
+			{
+				return p;
 			}
 		}
 		return null;

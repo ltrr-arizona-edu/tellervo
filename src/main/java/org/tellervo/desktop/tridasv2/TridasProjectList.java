@@ -133,7 +133,7 @@ public class TridasProjectList extends TellervoResource {
 	 * adds a project to the list, which will notify listeners
 	 * @param argProject
 	 */
-	public void addTridasObject(TridasProject argProject){
+	public void addTridasProject(TridasProject argProject){
 		synchronized (data) {
 			data.add(argProject);
 			
@@ -160,7 +160,7 @@ public class TridasProjectList extends TellervoResource {
 	/**
 	 * Retrieves the mutable object list used to populate all other requests.
 	 * Modifying this list will change results for other method calls in this class.
-	 * One should not add/remove objects from this list, instead us {@link #addTridasObject(TridasObjectEx)}
+	 * One should not add/remove objects from this list, instead us {@link #addTridasProject(TridasObjectEx)}
 	 * @return
 	 */
 	public synchronized MVCArrayList<TridasProject> getMutableObjectList(){

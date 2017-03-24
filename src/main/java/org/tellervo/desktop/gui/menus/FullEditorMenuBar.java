@@ -80,7 +80,9 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 	private JMenuItem miToolsCrossdate;
 	private JMenuItem miToolsCrossdateWorkspace;
 	private JMenuItem miToolsTruncate;
-	private JMenuItem miNew;
+	private JMenuItem miNewSeries;
+	private JMenuItem miNewBox;
+	private JMenuItem miNewProject;
 	private JMenuItem miOpen;
 	private JMenu openrecent;
 	private JMenuItem miSave;
@@ -95,8 +97,17 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		// FILE MENU
 		JMenu mnFile = new JMenu("File");
 
-		miNew = new JMenuItem(actions.fileNewAction);
-		mnFile.add(miNew);
+		JMenu mnNew = new JMenu("New");
+		mnFile.add(mnNew);
+		
+		miNewSeries = new JMenuItem(actions.fileNewAction);
+		mnNew.add(miNewSeries);
+		
+		miNewProject = new JMenuItem(actions.fileNewProjectAction);
+		mnNew.add(miNewProject);
+		
+		miNewBox = new JMenuItem(actions.fileNewBoxAction);
+		mnNew.add(miNewBox);
 
 		miOpen = new JMenuItem(actions.fileOpenAction);
 		mnFile.add(miOpen);

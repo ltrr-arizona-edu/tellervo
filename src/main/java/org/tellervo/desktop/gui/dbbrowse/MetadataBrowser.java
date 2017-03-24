@@ -511,7 +511,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 			temporaryEditingEntity = null;
 
 			
-			// don't display anything if we have nothingk!
+			// don't display anything if we have nothing!
 			if(currentEntity != null)
 			{
 				propertiesPanel.readFromObject(currentEntity);

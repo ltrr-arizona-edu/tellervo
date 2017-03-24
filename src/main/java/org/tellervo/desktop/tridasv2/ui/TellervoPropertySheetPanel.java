@@ -158,8 +158,10 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 					{
 						for(Property p : prop)
 						{
-							TridasProjectDictionaryProperty tep = (TridasProjectDictionaryProperty) p;
-							p.setValue(gf.getValue());
+							if(p instanceof TridasProjectDictionaryProperty)
+							{
+								p.setValue(App.dictionary.getTridasProjectByID(gf.getValue()));
+							}
 							
 						}
 					}
@@ -235,9 +237,6 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 		
 		for(Property p : prop2)
 		{
-			
-			
-			
 			// Find any properties called 'files'
 			if(p.getName().equals("files"))
 			{

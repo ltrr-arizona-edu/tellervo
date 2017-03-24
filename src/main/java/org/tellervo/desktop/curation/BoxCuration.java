@@ -749,12 +749,12 @@ implements KeyListener, ActionListener, TableModelListener{
 
 		btnOk.setText("OK");
 
-		btnApply.setText("Apply");
+		btnApply.setText("Save changes");
 
 		btnCreateNewBox.setText("Create New Box");
 
 		lblSelectBox.setText("...or select box:");
-		getContentPane().setLayout(new MigLayout("", "[127.00px][242px,grow][86px][54px]", "[19px][25px][347px,grow][25px]"));
+		getContentPane().setLayout(new MigLayout("hidemode 3", "[127.00px][242px,grow][86px][54px]", "[][][347px,grow][25px]"));
 
 		panel = new JPanel();
 		panel.setBorder(null);
@@ -867,7 +867,7 @@ implements KeyListener, ActionListener, TableModelListener{
 				btnMarkMissing.setEnabled(false);
 				panelContents.add(btnMarkMissing, "cell 0 1,alignx left,aligny top");
 		panelContents.add(lblSampleCount, "cell 0 2,alignx left,aligny top");
-		getContentPane().add(btnApply, "cell 2 3,alignx right,aligny top");
+		getContentPane().add(btnApply, "cell 1 3 2 1,alignx right,aligny top");
 		getContentPane().add(btnOk, "cell 3 3,alignx left,aligny top");
 		getContentPane().add(lblSelectBox, "cell 0 1,alignx left,aligny center");
 		getContentPane().add(lblScanOrSelect, "cell 0 0,alignx left,aligny center");
@@ -884,9 +884,36 @@ implements KeyListener, ActionListener, TableModelListener{
 	 * Show the actual dialog empty ready for user to pick a box
 	 */
 	public static void showDialog() {
+		showDialog(false);
+	}
+	
+	/**
+	 * Show the actual dialog empty ready for user to pick a box
+	 */
+	public static void showDialog(boolean createNewBox) {
 		BoxCuration dialog = new BoxCuration(new javax.swing.JFrame(), false);
-		dialog.setLocationRelativeTo(null);
+		dialog.setLocationRelativeTo(null);		
+		
+		
+		if(createNewBox)
+		{
+			dialog.createNewBox();
+			dialog.setSearchVisible(false);
+			dialog.setTitle("Create new box");
+		}
+		
 		dialog.setVisible(true);
+	}
+
+	private void setSearchVisible(boolean b) {
+
+		this.txtBarcode.setVisible(b);
+		this.btnCreateNewBox.setVisible(b);
+		this.lblSelectBox.setVisible(b);
+		this.lblScanOrSelect.setVisible(b);
+		this.cboBox.setVisible(b);
+		
+		
 	}
 
 	/**
@@ -1024,24 +1051,31 @@ implements KeyListener, ActionListener, TableModelListener{
 	}
 	
 
+	public void createNewBox()
+	{
+		if(btnApply.isEnabled())
+		{
+			int response = confirmLossOfData();
+			switch(response)
+			{
+			case JOptionPane.NO_OPTION:
+			case JOptionPane.CANCEL_OPTION:
+				return;		
+			}
+		}
+		isNewRecord = true;
+		box = new WSIBox();
+		this.btnAddSampleToBox.setEnabled(false);
+		updateBoxGui();
+		
+		this.txtName.requestFocus();
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(btnCreateNewBox))
 		{
-			if(btnApply.isEnabled())
-			{
-				int response = confirmLossOfData();
-				switch(response)
-				{
-				case JOptionPane.NO_OPTION:
-				case JOptionPane.CANCEL_OPTION:
-					return;		
-				}
-			}
-			isNewRecord = true;
-			box = new WSIBox();
-			this.btnAddSampleToBox.setEnabled(false);
-			updateBoxGui();
+			createNewBox();
 		}
 		else if (e.getActionCommand().equals("RemoveSample"))
 		{
