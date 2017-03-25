@@ -619,8 +619,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 				"ENCINAS",
 				"ESTRELLA",
 				"FOLSOM",
-				"FORMATIVE",
-				"GALIURO",
+				"FORMATIVE",		
 				"GILA",
 				"GILA BUTTE",
 				"HARDT",
@@ -719,6 +718,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 			"EL TOVAR",
 			"EL TOVAR, POST",
 			"EL TOVAR, PRE",
+			"GALIURO",
 			"SELLS",
 			"SELLS, EARLY",};
 		

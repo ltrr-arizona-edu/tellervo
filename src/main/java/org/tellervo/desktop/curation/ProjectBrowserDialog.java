@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -41,6 +42,10 @@ import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.schema.TellervoRequestType;
 import org.tridas.interfaces.ITridas;
+import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.TridasAddress;
+import org.tridas.schema.TridasLaboratory;
+import org.tridas.schema.TridasLaboratory.Name;
 import org.tridas.schema.TridasProject;
 
 import com.l2fprod.common.propertysheet.Property;
@@ -212,6 +217,40 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		TridasProject p = new TridasProject();
 		p.setTitle("New Project");
 		
+		ArrayList<ControlledVoc> types = new ArrayList<ControlledVoc>();
+		ControlledVoc type = new ControlledVoc();
+		type.setValue("Unsupported");
+		types.add(type);
+		p.setTypes(types);
+		
+		
+		
+		ArrayList<TridasLaboratory> laboratories = new ArrayList<TridasLaboratory>();
+		TridasLaboratory lab = new TridasLaboratory();
+		Name name = new Name();
+		name.setAcronym("Unknown");
+		name.setValue("Unknown");
+		lab.setName(name);
+		
+		TridasAddress address = new TridasAddress();
+		address.setAddressLine1("Unknown");
+		address.setAddressLine1("Unknown");
+		
+		lab.setAddress(address);
+		
+		laboratories.add(lab);
+		
+		
+		
+		
+		p.setLaboratories(laboratories);
+	
+		p.setCategory(type);
+		p.setInvestigator("Unknown");
+		p.setPeriod("Unknown");
+		
+		
+		
 		App.tridasProjects.addTridasProject(p);
 		
 		updateProjectList();
@@ -279,6 +318,9 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 			throw new IllegalStateException();
 		
 		propertiesPanel.writeToObject(temporaryEditingEntity);
+		
+		
+
 
 		if (temporaryEditingEntity==null) 
 		{

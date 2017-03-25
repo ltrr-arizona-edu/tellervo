@@ -165,9 +165,10 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 			throw new IllegalArgumentException("Invalid request type: must be one of CREATE, UPDATE or DELETE for this method");
 		}
 		
-		// derived series, objects and box don't have a parent entity ID
+		// derived series, projects, objects and box don't have a parent entity ID
 		if (queryType == TellervoRequestType.CREATE && parentEntityID == null) {
 			if (!(entity instanceof ITridasDerivedSeries 
+					|| entity instanceof TridasProject
 					|| entity instanceof TridasObject 
 				    || entity instanceof WSIBox 
 				    || entity instanceof WSILoan 
