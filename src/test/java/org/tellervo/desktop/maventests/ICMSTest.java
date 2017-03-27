@@ -57,7 +57,7 @@ public class ICMSTest extends TestCase {
 	
 	public void testInnerCode()
 	{
-		//if(skipAllTests) return;
+		if(skipAllTests) return;
 		log.info("******************************************");
 		log.info("Running testInnerCode()");
 		log.info("******************************************");
@@ -105,7 +105,7 @@ public class ICMSTest extends TestCase {
 	
 	public void testOuterCode()
 	{
-		//if(skipAllTests) return;
+		if(skipAllTests) return;
 		log.info("******************************************");
 		log.info("Running testOuterCode()");
 		log.info("******************************************");
