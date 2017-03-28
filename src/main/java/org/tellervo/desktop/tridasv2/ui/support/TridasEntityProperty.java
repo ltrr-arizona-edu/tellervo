@@ -342,6 +342,9 @@ public class TridasEntityProperty extends AbstractProperty {
 		
 		if(   (qname.equals("object.genericFields"))
 		   || (qname.equals("object.files"))
+		   || (qname.equals("project.files"))
+		   || (qname.equals("project.references"))
+		   || (qname.equals("project.types"))
 		   || (qname.equals("element.files"))
 		   || (qname.equals("sample.files"))
 		  )

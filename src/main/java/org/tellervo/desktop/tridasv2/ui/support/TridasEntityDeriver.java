@@ -100,12 +100,16 @@ public class TridasEntityDeriver {
 			
 			// load into type properties
 			for (String s : typeProperties) {
+				
+				
 				// ignore zero properties
 				if (s.length() == 0)
 					continue;
 
 				TridasEntityProperty pd = new TridasEntityProperty(entityName + "." + s, s);
 				pd.setCategoryPrefix(rootName);
+				
+				//log.debug("Adding "+s+" to field map");
 				fieldMap.put(s, pd);
 			}
 			
@@ -125,6 +129,13 @@ public class TridasEntityDeriver {
 			for (Field f : clazz.getDeclaredFields()) {
 				String fieldType = f.getGenericType().toString();
 				TridasEntityProperty pd = fieldMap.get(f.getName());
+				
+				if(pd!=null)
+				{
+					log.debug("Setting up field "+pd.getDisplayName());
+				}
+				
+				
 				XmlElement xmlElement;
 				XmlAttribute attribute;
 				TridasEditProperties fieldprops = f.getAnnotation(TridasEditProperties.class);
@@ -143,9 +154,7 @@ public class TridasEntityDeriver {
 				{
 					// ignore this field if we don't have property data for it
 					if (pd == null) {
-						// System.out.println("No property data for " +
-						// f.getName()
-						// + " as " + fieldType);
+						 log.debug("No property data for " + f.getName() + " as " + fieldType);
 						continue;
 					}
 
@@ -226,6 +235,9 @@ public class TridasEntityDeriver {
 					if((classprops != null && classprops.readOnly()) || (fieldprops != null && fieldprops.readOnly()))
 						pd.setReadOnly(true);
 					
+					
+					pd.setReadOnly(false);
+					
 					// add type to property list
 					parent.addChildProperty(pd);
 					nChildren++;
@@ -244,10 +256,17 @@ public class TridasEntityDeriver {
 				if (entType.isEnum() || 
 						entType.getAnnotation(XmlType.class) == null ||
 						pd.qname.equals("object.genericFields") ||
-						pd.qname.equals("sample.genericFields") || 
-						pd.qname.equals("object.files")|| 
+						pd.qname.equals("sample.genericFields") ||
+						pd.qname.equals("project.files")||
+						pd.qname.equals("object.files")||
 						pd.qname.equals("element.files") ||
-						pd.qname.equals("sample.files")) {
+						pd.qname.equals("sample.files") || 
+						pd.qname.equals("project.types") ||
+						pd.qname.equals("project.category")||
+						pd.qname.equals("project.laboratories")||
+						pd.qname.equals("project.references")||
+						pd.qname.equals("project.researches")
+						){
 					continue;
 				}
 
@@ -465,6 +484,10 @@ public class TridasEntityDeriver {
 				System.out.print(" [REQUIRED] ");
 			if (pd.isList)
 				System.out.print(" [LIST] ");
+			if (pd.isEditable())
+				System.out.print(" [EDITABLE] ");
+			
+			
 			if (pd.getChildProperties().size() > 0)
 				System.out.print(" " + pd.getChildProperties().size() + " ");
 			System.out.println();
@@ -476,7 +499,7 @@ public class TridasEntityDeriver {
 	public static void main(String[] args) {
 		List<TridasEntityProperty> propertyList = new ArrayList<TridasEntityProperty>();
 
-		propertyList = buildDerivationList(TridasObject.class);
+		propertyList = buildDerivationList(TridasProject.class);
 		
 		dumpPropertyList(propertyList, 0);
 	}

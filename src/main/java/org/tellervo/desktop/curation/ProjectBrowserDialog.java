@@ -79,7 +79,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 	
 	private void initGUI()
 	{
-		iniPropertyPanel();
+		initPropertyPanel();
 		
 		
 		getContentPane().setLayout(new BorderLayout());
@@ -181,7 +181,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 	}
 	
 	
-	private void iniPropertyPanel()
+	private void initPropertyPanel()
 	{
 		// Create table and panel to hold it
 		propHolder = new JPanel();

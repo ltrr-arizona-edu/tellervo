@@ -79,7 +79,7 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		super.registerRenderer(TridasLocation.class, new TridasLocationRenderer());
 
 		//nicely render file links
-		super.registerRenderer(List.class, new TridasFileArrayRenderer());
+		super.registerRenderer(List.class, new TridasArrayRenderer());
 		super.registerRenderer(TridasFile.class, new TridasFileArrayRenderer());
 
 		super.registerRenderer(TridasGenericField.class, new TridasGenericFieldRenderer());
@@ -90,6 +90,8 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 	public synchronized TableCellRenderer getRenderer(Property property) {
 		boolean required = false;
 				
+		log.debug(property.getDisplayName());
+		
 		// handle enums nicely
 		if(property instanceof TridasEntityProperty) {
 			TridasEntityProperty ep = (TridasEntityProperty)property;
@@ -132,15 +134,17 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 				return new TridasDefaultPropertyRenderer();			
 		}
 
-		if(!required)
-			return defaultRenderer;
-		
 		if(property.getName().equals("files"))
 		{
 			log.debug("Property class = "+property.getType());
 			return new TridasFileArrayRenderer();
 		}
 		
+		
+		if(!required)
+			return defaultRenderer;
+		
+
 		// ok, create a renderer for it if nothing exists
 		if(defaultRenderer == null)
 			defaultRenderer = new DefaultTableCellRenderer();

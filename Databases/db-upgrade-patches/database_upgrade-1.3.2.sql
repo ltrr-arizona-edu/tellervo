@@ -1,3 +1,8 @@
+
+--
+-- USER DEFINED FIELDS
+--
+
 CREATE TABLE public.tlkpdatatype
 (
   datatype character varying NOT NULL,
@@ -71,34 +76,76 @@ SELECT udfv.userdefinedfieldvalueid,
   ALTER VIEW public.vwtbluserdefinedfieldandvalue
   OWNER TO tellervo;
 
+
+
+-- 
+-- IMPLEMENTING PROJECTS
+-- 
+
+
+
 DROP VIEW vwtblproject;
+DROP VIEW vwtblobject;
+DROP TABLE tlkplaboratory;
+
+
+CREATE TABLE public.tbllaboratory
+(
+  laboratoryid uuid NOT NULL DEFAULT uuid_generate_v1mc(),
+  name character varying NOT NULL,
+  acronym character varying,
+  address1 character varying,
+  address2 character varying,
+  city character varying,
+  state character varying,
+  postalcode character varying,
+  country character varying,
+  CONSTRAINT pkey_laboratory PRIMARY KEY (laboratoryid),
+  CONSTRAINT uniq_labname UNIQUE (name)
+)
+WITH (
+  OIDS=FALSE
+);
+
+grant all on tbllaboratory to tellervo;
+
+
+
+ALTER TABLE tblproject add column projecttypes character varying[];
+ALTER TABLE tblproject drop column projecttypeid;
+ALTER TABLE tblproject add column laboratories character varying[];
+
+
+
 CREATE OR REPLACE VIEW vwtblproject AS 
 SELECT p.projectid,
 dom.domainid,
 dom.domain,
 p.title,
-p.projecttypeid,
+p.projecttypes,
 p.createdtimestamp,
 p.lastmodifiedtimestamp,
 p.comments,
 p.description,
-p.file,
-p.projectcategoryid,
+array_to_string(p.file, '><'::text) AS file,
 p.investigator,
 p.period,
 p.requestdate,
 p.commissioner,
 p.reference,
 p.research,
-projtype.projecttype
+p.laboratories,
+p.projectcategoryid,
+pc.projectcategory
  FROM tblproject p
  LEFT JOIN tlkpdomain dom on p.domainid=dom.domainid
- LEFT JOIN tlkpprojecttype projtype ON p.projecttypeid = projtype.projecttypeid;
+ LEFT JOIN tlkpprojectcategory pc on p.projectcategoryid=pc.projectcategoryid;
   ALTER VIEW public.vwtblproject
   OWNER TO tellervo;
   
-DROP VIEW vwtblobject;
-CREATE VIEW vwtblobject AS   
+  
+  
+CREATE OR REPLACE VIEW vwtblobject AS   
   SELECT cquery.countofchildvmeasurements,
     o.projectid,
     o.vegetationtype,
@@ -149,4 +196,6 @@ CREATE VIEW vwtblobject AS
           GROUP BY e.objectid) cquery ON cquery.masterobjectid = o.objectid;
    ALTER VIEW public.vwtblobject
   OWNER TO tellervo;
+
+
 
