@@ -79,7 +79,8 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		super.registerRenderer(TridasLocation.class, new TridasLocationRenderer());
 
 		//nicely render file links
-		super.registerRenderer(List.class, new TridasArrayRenderer());
+		//super.registerRenderer(List.class, new TridasArrayRenderer());
+		super.registerRenderer(List.class, new TridasListRenderer());
 		super.registerRenderer(TridasFile.class, new TridasFileArrayRenderer());
 
 		super.registerRenderer(TridasGenericField.class, new TridasGenericFieldRenderer());
@@ -134,11 +135,11 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 				return new TridasDefaultPropertyRenderer();			
 		}
 
-		if(property.getName().equals("files"))
+		/*if(property.getName().equals("files"))
 		{
 			log.debug("Property class = "+property.getType());
 			return new TridasFileArrayRenderer();
-		}
+		}*/
 		
 		
 		if(!required)

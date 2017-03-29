@@ -434,7 +434,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	public static String PITH_PRESENT = "userDefinedField.ltrr.pithpresent";
 	public static String PITH_YEAR = "userDefinedField.ltrr.pithyear";
 	public static String IDENTIFIED_BY = "userDefinedField.icms.identifiedby";
-	public static String IDENT_DATE = "userDefinedField.ltrr.identdate";
+	public static String IDENT_DATE = "userDefinedField.icms.identdate";
 	
 	
 	private static final long serialVersionUID = 1L;
@@ -1385,10 +1385,39 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	 * Open an ICMS XML file, validate, parse and return a list of RediscoveryExport items
 	 * 
 	 * @param filename
-	 * @param logErrors
+	 * @param logErrors - if false then throw exceptions if true just log errors
 	 * @return
 	 */
-	public static List<RediscoveryExport> getICMSRecordsFromXMLFile(String filename, boolean logErrors)
+	public static List<RediscoveryExport> getICMSRecordsFromXMLFileQuietly(String filename)
+	{
+		try{
+			return getICMSRecordsFromXMLFile(filename,true);
+		} catch (Exception e)
+		{
+			return null;
+		}
+	}
+	
+	/**
+	 * Open an ICMS XML file, validate, parse and return a list of RediscoveryExport items
+	 * 
+	 * @param filename
+	 * @param logErrors - if false then throw exceptions if true just log errors
+	 * @return
+	 */
+	public static List<RediscoveryExport> getICMSRecordsFromXMLFileWithExceptions(String filename) throws Exception
+	{
+		return getICMSRecordsFromXMLFile(filename,false);
+	}
+	
+	/**
+	 * Open an ICMS XML file, validate, parse and return a list of RediscoveryExport items
+	 * 
+	 * @param filename
+	 * @param logErrors - if false then throw exceptions if true just log errors
+	 * @return
+	 */
+	public static List<RediscoveryExport> getICMSRecordsFromXMLFile(String filename, boolean logErrors) throws Exception
 	{
 		StringBuilder fileString = new StringBuilder();
 		StringReader reader;
@@ -1400,8 +1429,14 @@ public class RediscoveryExportEx extends RediscoveryExport {
 				argFileString = fileHelper.loadStrings(filename,
 						TridasIO.getReadingCharset());
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				if(logErrors)
+				{
+					e.printStackTrace();
+				} else
+				{
+					throw e;
+				}
 			}
 		} else {
 			if (TridasIO.isCharsetDetection()) {
@@ -1423,8 +1458,16 @@ public class RediscoveryExportEx extends RediscoveryExport {
 			try {
 				schema = factory.newSchema(file);
 			} catch (Exception e) {
-				log.error(I18n.getText("Schema missing",
-						e.getLocalizedMessage()));
+				
+				if(logErrors)
+				{
+					log.error(I18n.getText("Schema missing",
+							e.getLocalizedMessage()));
+				} else
+				{
+					throw e;
+				}
+
 				return null;
 			}
 
@@ -1467,11 +1510,27 @@ public class RediscoveryExportEx extends RediscoveryExport {
 				}
 
 			} catch (SAXException ex) {
-				log.error(ex.getLocalizedMessage());
+				
+				if(logErrors)
+				{
+					log.error(ex.getLocalizedMessage());
+				} else
+				{
+					throw ex;
+				}
+				
+				
 				return null;
 			} catch (IOException e) {
-				log.error(e.getLocalizedMessage());
-
+				
+				if(logErrors)
+				{
+					log.error(e.getLocalizedMessage());
+				} else
+				{
+					throw e;
+				}
+				
 				return null;
 			}
 		}
@@ -1499,8 +1558,15 @@ public class RediscoveryExportEx extends RediscoveryExport {
 			
 			
 		} catch (Exception e){
-			log.error(e.getLocalizedMessage());
-
+			
+			if(logErrors)
+			{
+				log.error(e.getLocalizedMessage());
+			} else
+			{
+				throw e;
+			}
+			
 			return null;
 		}
 		
@@ -1583,13 +1649,31 @@ private static class MyErrorHandler extends DefaultHandler {
 	 
 	 
      public void warning(SAXParseException e) throws SAXException {
-       if(logErrors) log.warn(printInfo(e));
+       if(logErrors) {
+    	   log.warn(printInfo(e));
+       }
+       else
+       {
+    	   throw e;
+       }
      }
      public void error(SAXParseException e) throws SAXException {
-   	  if(logErrors) log.error(printInfo(e));
+   	  if(logErrors){
+   		  log.error(printInfo(e));
+      }
+      else
+      {
+   	   throw e;
+      }
      }
      public void fatalError(SAXParseException e) throws SAXException {
-   	  if(logErrors) log.error(printInfo(e));
+   	  if(logErrors) {
+   		  log.error(printInfo(e));
+      }
+      else
+      {
+   	   throw e;
+      }
      }
      private String printInfo(SAXParseException e) {
    	  String msg = "\n";

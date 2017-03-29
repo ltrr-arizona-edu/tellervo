@@ -44,7 +44,7 @@ public class FileICMSImportAction extends AbstractAction {
 		fc.addChoosableFileFilter(filter);
 		fc.setFileFilter(filter);
 		fc.setMultiSelectionEnabled(false);
-		/*int returnVal = fc.showOpenDialog(editor);
+		int returnVal = fc.showOpenDialog(editor);
 			
 		// Get details from user
 	    if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -59,15 +59,7 @@ public class FileICMSImportAction extends AbstractAction {
 			
 				
 	    }
-	    */
-	    
-    	ICMSImporter importer = new ICMSImporter("/home/pbrewer/Dropbox/export4.xml");
-		importer.doImport();
-		
-	    
-		
-
-		
+	    	
 	}
 
 

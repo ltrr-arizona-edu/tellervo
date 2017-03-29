@@ -66,7 +66,7 @@ public class ICMSTest extends TestCase {
 		Double count = 0.0;
 
 		List<RediscoveryExport> lst = RediscoveryExportEx
-				.getICMSRecordsFromXMLFile(filename, false);
+				.getICMSRecordsFromXMLFileQuietly(filename);
 
 		HashSet<String> codes = new HashSet<String>();
 		
@@ -114,7 +114,7 @@ public class ICMSTest extends TestCase {
 		Double count = 0.0;
 
 		List<RediscoveryExport> lst = RediscoveryExportEx
-				.getICMSRecordsFromXMLFile(filename, false);
+				.getICMSRecordsFromXMLFileQuietly(filename);
 
 		HashSet<String> codes = new HashSet<String>();
 		
@@ -165,7 +165,7 @@ public class ICMSTest extends TestCase {
 		ArrayList<String> ltrrcodes = new ArrayList<String>();
 
 		
-		List<RediscoveryExport> lst = RediscoveryExportEx.getICMSRecordsFromXMLFile(filename, false);
+		List<RediscoveryExport> lst = RediscoveryExportEx.getICMSRecordsFromXMLFileQuietly(filename);
 
 		if (lst == null) {
 			fail();
@@ -286,13 +286,23 @@ public class ICMSTest extends TestCase {
 		
 
 		
-		List<RediscoveryExport> lst = RediscoveryExportEx
-				.getICMSRecordsFromXMLFile(filename, true);
-
-		if (lst == null) {
+		List<RediscoveryExport> lst;
+		try {
+			lst = RediscoveryExportEx
+					.getICMSRecordsFromXMLFileWithExceptions(filename);
+			
+			if (lst == null) {
+				fail();
+			}
+			
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 			fail();
 		}
-		
+
+
 		
 	}
 	
@@ -308,7 +318,7 @@ public class ICMSTest extends TestCase {
 		Double count = 0.0;
 
 		List<RediscoveryExport> lst = RediscoveryExportEx
-				.getICMSRecordsFromXMLFile(filename, false);
+				.getICMSRecordsFromXMLFileQuietly(filename);
 
 		if (lst == null) {
 			fail();
@@ -347,7 +357,7 @@ public class ICMSTest extends TestCase {
 		Double count = 0.0;
 
 		List<RediscoveryExport> lst = RediscoveryExportEx
-				.getICMSRecordsFromXMLFile(filename, false);
+				.getICMSRecordsFromXMLFileQuietly(filename);
 
 		if (lst == null) {
 			fail();
@@ -385,7 +395,7 @@ public class ICMSTest extends TestCase {
 		log.info("******************************************");
 
 		List<RediscoveryExport> lst = RediscoveryExportEx
-				.getICMSRecordsFromXMLFile(filename, false);
+				.getICMSRecordsFromXMLFileQuietly(filename);
 
 		if (lst == null) {
 			fail();
@@ -409,7 +419,7 @@ public class ICMSTest extends TestCase {
 		log.info("Running testCountFieldUse()");
 		log.info("******************************************");
 		List<RediscoveryExport> lst = RediscoveryExportEx
-				.getICMSRecordsFromXMLFile(filename, false);
+				.getICMSRecordsFromXMLFileQuietly(filename);
 
 		Double recordcount = 0.0;
 		Double origin = 0.0;
@@ -447,7 +457,7 @@ public class ICMSTest extends TestCase {
 		log.info("******************************************");
 
 		List<RediscoveryExport> lst = RediscoveryExportEx
-				.getICMSRecordsFromXMLFile(filename, false);
+				.getICMSRecordsFromXMLFileQuietly(filename);
 		Boolean failed = false;
 		Double recordcount = 0.0;
 		ArrayList<String> codes = new ArrayList<String>();
@@ -501,7 +511,7 @@ public class ICMSTest extends TestCase {
 	public void testCatalogCode() {
 		if(skipAllTests) return;
 		List<RediscoveryExport> lst = RediscoveryExportEx
-				.getICMSRecordsFromXMLFile(filename, false);
+				.getICMSRecordsFromXMLFileQuietly(filename);
 
 		Double recordcount = 0.0;
 		ArrayList<String> codes = new ArrayList<String>();
@@ -740,7 +750,7 @@ public class ICMSTest extends TestCase {
 		ArrayList<String> standard = new ArrayList<String>(Arrays.asList(dict));
 		
 		List<RediscoveryExport> lst = RediscoveryExportEx
-				.getICMSRecordsFromXMLFile(filename, false);
+				.getICMSRecordsFromXMLFileQuietly(filename);
 
 		Double recordcount = 0.0;
 		Double goodcount = 0.0;
@@ -801,7 +811,7 @@ public class ICMSTest extends TestCase {
 		log.info("******************************************");
 
 		List<RediscoveryExport> lst = RediscoveryExportEx
-				.getICMSRecordsFromXMLFile(filename, false);
+				.getICMSRecordsFromXMLFileQuietly(filename);
 		Double count = 0.0;
 		Double countall = 0.0;
 

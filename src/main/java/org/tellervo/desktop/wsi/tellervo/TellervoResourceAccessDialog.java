@@ -26,6 +26,7 @@ import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -36,6 +37,7 @@ import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
+import javax.swing.SwingWorker;
 
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.util.Center;
@@ -399,4 +401,7 @@ public class TellervoResourceAccessDialog extends JDialog implements ResourceEve
 		
 		super.dispose();
 	}
+	
+	
+
 }
