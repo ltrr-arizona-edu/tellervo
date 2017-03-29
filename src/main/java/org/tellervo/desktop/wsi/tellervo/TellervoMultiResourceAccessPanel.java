@@ -22,6 +22,7 @@ public class TellervoMultiResourceAccessPanel extends JPanel implements Resource
 	private JLabel lblInfo;
 	private long startTimestamp ;
 	private JButton btnCancel;
+	private JLabel lblStatus;
 
 	/**
 	 * Create the panel.
@@ -36,6 +37,9 @@ public class TellervoMultiResourceAccessPanel extends JPanel implements Resource
 		
 		lblInfo = new JLabel("Please wait...");
 		add(lblInfo, "cell 0 1 2 1");
+		
+		lblStatus = new JLabel("");
+		add(lblStatus, "cell 0 2");
 		
 		btnCancel = new JButton("Cancel");
 		add(btnCancel, "cell 1 2,alignx right");
@@ -134,6 +138,15 @@ public class TellervoMultiResourceAccessPanel extends JPanel implements Resource
 		
 		
 	}
+	
+	
+	public void setStatusMessage(String message){
+		
+		lblStatus.setText(message);
+		
+	}
+	
+	
 	public JButton getBtnCancel() {
 		return btnCancel;
 	}

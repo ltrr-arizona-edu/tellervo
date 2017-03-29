@@ -406,7 +406,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
  * *User_3 (outer ring date)
  * *User_4 (outer ring code)
  * *User_5 -> Parsed -> taxon ControlledVoc
-*************************8*/
+**************************/
 
 
 @XmlRootElement(name = "RediscoveryExport")

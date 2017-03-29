@@ -1,10 +1,13 @@
 package com.rediscov.util;
 
+import gov.nasa.worldwind.geom.Position;
+
 import java.io.File;
 import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,8 +22,10 @@ import javax.xml.validation.SchemaFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gis.TridasMarker;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
@@ -30,6 +35,7 @@ import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tridas.io.I18n;
+import org.tridas.io.util.DateUtils;
 import org.tridas.io.util.FileHelper;
 import org.tridas.io.util.IOUtils;
 import org.tridas.io.util.TridasUtils;
@@ -38,6 +44,8 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
+import org.tridas.spatial.GMLPointSRSHandler;
+import org.tridas.spatial.SpatialUtils;
 import org.xml.sax.SAXException;
 
 import com.rediscov.schema.NewDataSet;
@@ -93,6 +101,7 @@ public class ICMSExporter {
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			Alert.error("Failed", "Failed to export to ICMS XML file.  Check logs of details.");
 		}
 		
 		
@@ -120,24 +129,37 @@ public class ICMSExporter {
 		List<TridasObject> objList = sampresource.getAssociatedResult();
 		
 		if(objList==null || objList.size()==0) return null;
-	
-		if(objList.get(0).isSetElements())
+				
+		for(TridasObject o : objList)
 		{
-			for(TridasElement e : objList.get(0).getElements())
+			records.addAll(recursingAdd(o));
+		}
+				
+		return records;
+	}
+	
+	private static  List<RediscoveryExport> recursingAdd(TridasObject o)
+	{
+		ArrayList<RediscoveryExport> records = new  ArrayList<RediscoveryExport>();
+		
+		if(o.isSetObjects())
+		{
+			for(TridasObject o2 : o.getObjects())
 			{
-				records.addAll(getRecords(object, e));
+				records.addAll(recursingAdd(o2));
 			}
 		}
-			
-		for(TridasObject o : objList.get(0).getObjects())
+		
+		if(o.isSetElements())
 		{
 			for(TridasElement e : o.getElements())
 			{
 				records.addAll(getRecords(o, e));
 			}
 		}
-				
+		
 		return records;
+		
 	}
 	
 	private static List<RediscoveryExport> getRecords(TridasObject o, TridasElement e)
@@ -150,6 +172,7 @@ public class ICMSExporter {
 		{
 			RediscoveryExportEx rec = new RediscoveryExportEx();
 			
+			// Constants
 			rec.setCtrlProp(StrBoolean.N);
 			rec.setClass1(NormalClass1.ARCHEOLOGY);
 			rec.setClass3(NormalClass3.VEGETAL);
@@ -158,58 +181,166 @@ public class ICMSExporter {
 			rec.setObjectStatus(NormalObjectStatus.STORAGE_____INCOMING___LOAN);
 			rec.setStorageUnit(NormalStorageUnit.EA);
 			rec.setCondition(NormalCondition.COM___GD);
-			rec.setAccessionCode(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.ACCESSION_CODE).getValue());
-			rec.setBarkCode(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.OUTER_CODE).getValue());
-			rec.setCatalogCode(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.CATALOG_CODE).getValue());
-			rec.setCulturalID(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.CULTURAL_ID).getValue());
-			rec.setFieldSite(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.FIELD_SITE).getValue());
-			rec.setFldSpecimen(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.FIELD_SPECIMEN).getValue());
-			rec.setHistCultPer(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.HIST_CULT_PER).getValue());
-			rec.setInnerRingDate(BigInteger.valueOf(Integer.parseInt(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.FIRST_YEAR).getValue())));
-			rec.setItemCount(BigDecimal.valueOf(Integer.parseInt(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.ITEM_COUNT).getValue())));
-			rec.setStateSite(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.STATE_SITE).getValue());
-			rec.setPithCode(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.INNER_CODE).getValue());
-			rec.setOuterRingDate(BigInteger.valueOf(Integer.parseInt(TridasUtils.getGenericFieldByName(s, RediscoveryExportEx.LAST_YEAR).getValue())));
 
+			// TRiDaS/Tellervo fields
+			rec.setDescription(s.getDescription());
+			rec.setSiteName(o.getTitle());
+			rec.setObjectPart(s.getType().getValue());
+			rec.setITRDBSpeciesCode(e.getTaxon().getNormal());
+			rec.setOtherNumbers(TridasUtils.getGenericFieldValueByName(s, "tellervo.externalID"));
+
+			// ICMS specific fields
+			rec.setAccessionCode(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.ACCESSION_CODE));
+			rec.setBarkCode(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.OUTER_CODE));
+			rec.setCatalogCode(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.CATALOG_CODE));
+			rec.setCulturalID(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.CULTURAL_ID));
+			rec.setFieldSite(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.FIELD_SITE));
+			rec.setFldSpecimen(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.FIELD_SPECIMEN));
+			rec.setHistCultPer(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.HIST_CULT_PER));
+			rec.setCataloger(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.CATALOGER));
+			rec.setIdentDate(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.IDENT_DATE));
+			rec.setStateSite(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.STATE_SITE));
+			rec.setPithCode(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.INNER_CODE));
+			
+			
+			// Unused fields - output as empty elements
+			rec.setMeasurements("");
+			rec.setUTMCoords("");
+			rec.setParts("");
+			
+			// Fields that require casting
+			if(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.STATUS_DATE)!="")
+			{
+				try{
+					rec.setStatusDate(BigInteger.valueOf(Integer.parseInt(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.STATUS_DATE))));
+				} catch (NumberFormatException ex)
+				{
+					rec.setStatusDate(null);
+					log.debug("Failed to convert status date ("+TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.STATUS_DATE)+") to a BigInteger value");
+				}
+			}
+			else
+			{
+				log.debug("Failed to convert status dat ("+TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.STATUS_DATE)+") to a BigInteger value");				
+				rec.setStatusDate(null);
+			}
+			
+			if(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.FIRST_YEAR)!="")
+			{
+				try{
+					rec.setInnerRingDate(BigInteger.valueOf(Integer.parseInt(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.FIRST_YEAR))));
+				} catch (NumberFormatException ex)
+				{
+					rec.setInnerRingDate(BigInteger.ZERO);
+					log.debug("Failed to convert inner ring date ("+TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.FIRST_YEAR)+") to a BigInteger value");
+				}
+			}
+			else
+			{
+				log.debug("Failed to convert inner ring date ("+TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.FIRST_YEAR)+") to a BigInteger value");				
+				rec.setInnerRingDate(BigInteger.ZERO);
+			}
+			
+			if(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.ITEM_COUNT)!="")
+			{
+				try{
+				rec.setItemCount(BigDecimal.valueOf(Integer.parseInt(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.ITEM_COUNT))));
+				} catch (NumberFormatException ex)
+				{
+					rec.setItemCount(BigDecimal.ZERO);
+					log.debug("Failed to convert item count ("+TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.ITEM_COUNT)+") to a BigDecimal value");
+
+				}
+			}
+			else
+			{
+				log.debug("Failed to convert item count ("+TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.ITEM_COUNT)+") to a BigDecimal value");
+				rec.setItemCount(BigDecimal.ZERO);
+			}
+			
+			if(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.LAST_YEAR)!="")
+			{
+				try{
+				rec.setOuterRingDate(BigInteger.valueOf(Integer.parseInt(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.LAST_YEAR))));
+				} catch (NumberFormatException ex)
+				{
+					rec.setOuterRingDate(BigInteger.ZERO);
+					log.debug("Failed to convert outer ring date ("+TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.LAST_YEAR)+") to a BigInteger value");
+				}
+			}
+			else
+			{
+				log.debug("Failed to convert outer ring date ("+TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.LAST_YEAR)+") to a BigInteger value");
+				rec.setOuterRingDate(BigInteger.ZERO);
+			}
+			
+
+
+			rec.setOrigin(" ");
 			if(e.isSetLocation())
 			{
 				TridasLocation loc = e.getLocation();
 				
 				if(loc.isSetLocationComment()) rec.setWithinSite(e.getLocation().getLocationComment());
 				
-				if(loc.isSetLocationGeometry())
-				{
-					
+				if(loc.getLocationGeometry().isSetPoint())
+				{			
+					GMLPointSRSHandler tph = new GMLPointSRSHandler(loc.getLocationGeometry().getPoint());
+					if(tph.getWGS84LatCoord()!=null && tph.getWGS84LongCoord()!=null)
+					{
+						String coords = tph.getWGS84LatCoord() +"/"+tph.getWGS84LongCoord();
+						rec.setLatLonCoords(coords);
+					}
 				}
 				
 				if(loc.isSetAddress())
 				{
-					TridasAddress add = loc.getAddress();
+					TridasAddress add = loc.getAddress();				
+					String origin = "";
+					if(add.isSetCityOrTown())
+					{
+						origin += add.getCityOrTown();
+					}
+					origin+="__";
 					
-					String origin=add.getCityOrTown()+"__"+add.getAddressLine2()+"__"+add.getStateProvinceRegion()+"__"+add.getCountry();
+					if(add.isSetAddressLine2())
+					{
+						origin += add.getAddressLine2();
+					}
+					origin+="__";					
+					
+					if(add.isSetStateProvinceRegion())
+					{
+						origin += add.getStateProvinceRegion();
+					}
+					origin+="__";					
+					
+					if(add.isSetCountry())
+					{
+						origin += add.getCountry();
+					}
 					rec.setOrigin(origin);	
 				}
 			}
-			rec.setDescription(s.getDescription());
-			rec.setSiteName(o.getTitle());
-			rec.setITRDBSpeciesCode(e.getTaxon().getNormal());
+
+			if(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.CATALOG_OVERRIDE_DATE)!="")
+			{
+				rec.setCatalogDate(TridasUtils.getGenericFieldValueByName(s, RediscoveryExportEx.CATALOG_OVERRIDE_DATE));
+			}
+			else
+			{
+				rec.setCatalogDate(DateUtils.getFormattedDateTime(s.getCreatedTimestamp(), new SimpleDateFormat("mm/dd/yyyy")));
+			}
+			
 
 			
 			
-			rec.setCatalogDate("1");
-			rec.setCataloger("1");
+			// TODO
 			rec.setClass2(NormalClass2.UNKNOWN); 
-			rec.setCollector("1");
-			rec.setIdentDate("1");
-			rec.setIdentifiedBy("1");
-			rec.setLatLonCoords("1");
-			rec.setLocation("1");
-			rec.setMeasurements("1");
-			rec.setObjectPart("1");
-			rec.setOtherNumbers("1");
-			rec.setParts("1");
-			rec.setStatusDate(BigInteger.ONE);
-			rec.setUTMCoords("1");
+			rec.setCollector("");
+			rec.setIdentifiedBy("");
+			rec.setLocation("");
+			
 			
 			
 			

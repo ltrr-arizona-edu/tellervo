@@ -187,6 +187,7 @@ public class ICMSImporter implements PropertyChangeListener{
 		
 		d = new JDialog();
 		d.setIconImage(Builder.getApplicationIcon());
+		d.setTitle("Import ICMS Records");
 		d.setLayout(new BorderLayout());
 		
 		progress = new TellervoMultiResourceAccessPanel(100);
@@ -217,7 +218,7 @@ public class ICMSImporter implements PropertyChangeListener{
 		});
 		
 		task.execute();
-		
+		d.setVisible(true);
 		
 		
 		
@@ -245,7 +246,7 @@ public class ICMSImporter implements PropertyChangeListener{
 		return null;
 	}
 
-    class Task extends SwingWorker<Void, Void> {
+    class Task extends SwingWorker<Void, String> {
             	
     	int successfulCount = 0;
     	int i = 0;
@@ -260,6 +261,8 @@ public class ICMSImporter implements PropertyChangeListener{
         	
         	//statuslabel.setText("Loading XML File");
         	setProgress(0);
+        	
+        	publish("Reading import file");
     		try {
     			records = RediscoveryExportEx.getICMSRecordsFromXMLFileQuietly(filename);
     		} catch (Exception e1) {
@@ -298,7 +301,7 @@ public class ICMSImporter implements PropertyChangeListener{
     			else
     			{
     				log.debug("Importing record '"+rec.getCatalogCode()+"'");
-    			
+    				publish("Importing:  '"+rec.getCatalogCode()+"'");
     			}
 
     			try {
@@ -328,7 +331,12 @@ public class ICMSImporter implements PropertyChangeListener{
     					resource.queryThread.join();
     					if(failException!=null)	throw failException;
 
-						park = resource.getAssociatedResult();
+						try{
+							park = resource.getAssociatedResult();
+						} catch (Exception e)
+						{
+							throw new Exception("Object not found.");
+						}
 						App.tridasObjects.addTridasObject(park);
    
     				}
@@ -377,7 +385,13 @@ public class ICMSImporter implements PropertyChangeListener{
     					resource.queryThread.join();
     					if(failException!=null)	throw failException;
  
-    					site = resource.getAssociatedResult();
+    					try{
+    						site = resource.getAssociatedResult();
+						} catch (Exception e)
+						{
+							throw new Exception("Object not found.");
+						}
+
         				park.getObjects().add(site);
 					
     				}
@@ -414,8 +428,13 @@ public class ICMSImporter implements PropertyChangeListener{
 					resource.queryThread.join();
 					if(failException!=null)	throw failException;
 					
-					element = resource.getAssociatedResult();
-	
+					 
+					try{
+						element = resource.getAssociatedResult();
+					} catch (Exception e)
+					{
+						throw new Exception("Error writing element to database");
+					}
 
     				//***********************************
     				// SAMPLE
@@ -499,8 +518,17 @@ public class ICMSImporter implements PropertyChangeListener{
     						
     						resource3.query();
         					resource3.queryThread.join();
+        					
+        					if(failException!=null)	throw failException;
+        					
+        					try{
+        						box = resource3.getAssociatedResult();
+        					}
+    						catch (Exception e)
+    						{
+    							throw new Exception("Error writing box to database");
+    						}
 
-    						box = resource3.getAssociatedResult();
     						
     						// Add it to the dictionary for next time
     						Dictionary.getMutableDictionary("boxDictionary").add(box);
@@ -521,7 +549,14 @@ public class ICMSImporter implements PropertyChangeListener{
     					resource2.queryThread.join();
     					if(failException!=null)	throw failException;
     				
-    					sample = resource2.getAssociatedResult();
+    					
+    					try{
+    						sample = resource2.getAssociatedResult();
+    					}catch (Exception e)
+    					{
+    						throw new Exception("Error writing sample to database");
+    					}
+
 
     				}
     				
@@ -541,7 +576,12 @@ public class ICMSImporter implements PropertyChangeListener{
 
         }
         
-
+        @Override
+        protected void process(final List<String> chunks) {
+          for (final String string : chunks) {
+        	  progress.setStatusMessage(string);
+          }
+        }
  
         /*
          * Executed in event dispatching thread
@@ -549,13 +589,14 @@ public class ICMSImporter implements PropertyChangeListener{
         @Override
         public void done() {
            
+        	d.setVisible(false);
         	
         	try {
                 get();
             }catch (InterruptedException e )
         	{
             	Alert.message(App.mainWindow, "Interrupted", "Import interrupted after importing "+successfulCount+ " records.");
-            	d.setVisible(false);
+            	
             	return;
         	}
         	
@@ -576,9 +617,10 @@ public class ICMSImporter implements PropertyChangeListener{
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		
-		d.setVisible(true);
+		
 		
 		if ("progress" == evt.getPropertyName()) {
+			d.setVisible(true);
             int p = (Integer) evt.getNewValue();
             progress.getProgressBar().setValue(p);
             progress.setEstimate();
