@@ -49,6 +49,7 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 	private JMenuItem miDeleteODKInstances;
 	private JMenuItem miICMSImport;
 	private JMenuItem miICMSExport;
+	private JMenuItem miDWCExport;
 
 	private Window parent;
 
@@ -129,6 +130,9 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		miICMSExport = new JMenuItem(actions.fileExportICMSAction);
 		miICMSExport.setVisible(false);
 		mnFile.add(miICMSExport);
+		
+		miDWCExport = new JMenuItem(actions.fileExportDWCAction);
+		mnFile.add(miDWCExport);
 		
 		MVC.addEventListener(Dictionary.DICTIONARY_REGISTERED, this);
 		

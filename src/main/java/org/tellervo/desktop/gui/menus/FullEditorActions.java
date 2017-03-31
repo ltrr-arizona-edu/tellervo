@@ -7,6 +7,7 @@ import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.dictionary.DictionaryRegisteredEvent;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.menus.actions.AddRemoveTagAction;
+import org.tellervo.desktop.gui.menus.actions.FileDWCExportAction;
 import org.tellervo.desktop.gui.menus.actions.FileDeleteODKDefinitionsAction;
 import org.tellervo.desktop.gui.menus.actions.FileDeleteODKInstancesAction;
 import org.tellervo.desktop.gui.menus.actions.FileDesignODKFormAction;
@@ -62,6 +63,7 @@ public class FullEditorActions extends AbstractEditorActions implements IEventLi
 	public Action fileDeleteODKInstancesAction;
 	public Action fileImportICMSAction;
 	public Action fileExportICMSAction;
+	public Action fileExportDWCAction;
 		
 	public Action viewZoomToExtent;
 	
@@ -116,9 +118,12 @@ public class FullEditorActions extends AbstractEditorActions implements IEventLi
 		
 		fileExportICMSAction = new FileICMSExportAction();
 		fileExportICMSAction.setEnabled(false);
+		
 
 		MVC.addEventListener(Dictionary.DICTIONARY_REGISTERED, this);
 		
+		fileExportDWCAction = new FileDWCExportAction();
+
 		
 
 		tagSeriesAction = new TagSeriesAction((FullEditor) editor);
