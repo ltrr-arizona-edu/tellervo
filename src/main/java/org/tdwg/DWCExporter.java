@@ -3,6 +3,7 @@ package org.tdwg;
 import java.io.File;
 import java.io.StringWriter;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +15,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.purl.dc.elements._1.SimpleLiteral;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdwg.rs.dwc.xsd.simpledarwincore.SimpleDarwinRecord;
@@ -31,6 +33,7 @@ import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tridas.io.I18n;
+import org.tridas.io.util.DateUtils;
 import org.tridas.io.util.FileHelper;
 import org.tridas.io.util.IOUtils;
 import org.tridas.schema.TridasElement;
@@ -142,6 +145,15 @@ public class DWCExporter {
 		
 	}
 	
+	private static SimpleLiteral getSimpleLiteral(String s)
+	{
+		SimpleLiteral sl = new SimpleLiteral();
+		ArrayList<String> al = new ArrayList<String>();
+		al.add(s);
+		
+		return sl;
+	}
+	
 	private static List<SimpleDarwinRecord> getRecords(TridasObject o, TridasElement e)
 	{
 		ArrayList<SimpleDarwinRecord> records = new ArrayList<SimpleDarwinRecord>();
@@ -155,6 +167,12 @@ public class DWCExporter {
 			
 			rec.setIdentificationID(s.getIdentifier().getValue());
 			
+
+			//TODO
+			// Many fields to add here!
+			rec.setModified(getSimpleLiteral(DateUtils.getFormattedDateTime(s.getLastModifiedTimestamp(), new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.Z"))));
+			rec.setLanguage(getSimpleLiteral("en"));
+			rec.setScientificName(e.getTaxon().getNormal());
 			
 			records.add(rec);
 		}
@@ -191,6 +209,8 @@ public class DWCExporter {
 		try {
 			jc = JAXBContext.newInstance("org.tdwg.rs.dwc.xsd.simpledarwincore");
 			Marshaller m = jc.createMarshaller();
+			m.setProperty("com.sun.xml.bind.namespacePrefixMapper", new DWCNamespacePrefixMapper());
+
 			if (schema != null) {
 				m.setSchema(schema);
 			}

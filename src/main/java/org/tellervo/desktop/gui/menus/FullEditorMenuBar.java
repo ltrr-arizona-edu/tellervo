@@ -47,6 +47,10 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 	private JMenuItem miDesignODKForm;
 	private JMenuItem miDeleteODKDefinitions;
 	private JMenuItem miDeleteODKInstances;
+	
+	private JMenu mnImportMetadata;
+	private JMenu mnExportMetadata;
+
 	private JMenuItem miICMSImport;
 	private JMenuItem miICMSExport;
 	private JMenuItem miDWCExport;
@@ -123,27 +127,21 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		
 		mnFile.add(getImportDataOnlyMenu());
 		
+		
+		mnImportMetadata = new JMenu("Import metadata...");
+		
+		
 		miICMSImport = new JMenuItem(actions.fileImportICMSAction);
 		miICMSImport.setVisible(false);
-		mnFile.add(miICMSImport);
+		mnImportMetadata.setVisible(false);
 		
-		miICMSExport = new JMenuItem(actions.fileExportICMSAction);
-		miICMSExport.setVisible(false);
-		mnFile.add(miICMSExport);
 		
-		miDWCExport = new JMenuItem(actions.fileExportDWCAction);
-		mnFile.add(miDWCExport);
-		
-		MVC.addEventListener(Dictionary.DICTIONARY_REGISTERED, this);
-		
-		//mnFile.add(getImportDataAndMetadataMenu());
-
-		miExportData = new JMenuItem(actions.fileExportDataAction);
-		mnFile.add(miExportData);
+		mnImportMetadata.add(miICMSImport);
+		mnFile.add(mnImportMetadata);
 		
 		miBulkDataEntry = new JMenuItem(actions.fileBulkDataEntryAction);
 		mnFile.add(miBulkDataEntry);
-
+		
 		JMenu mnODK = new JMenu("Field data collection");
 		mnODK.setIcon(Builder.getIcon("odk-logo.png", 22));
 		mnFile.add(mnODK);
@@ -155,6 +153,33 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		mnODK.add(miDeleteODKDefinitions);
 		miDeleteODKInstances = new JMenuItem(actions.fileDeleteODKInstancesAction);
 		mnODK.add(miDeleteODKInstances);
+		
+		
+		mnFile.addSeparator();
+
+		
+		miExportData = new JMenuItem(actions.fileExportDataAction);
+		mnFile.add(miExportData);
+		
+		mnExportMetadata = new JMenu("Export metadata...");
+		
+		miICMSExport = new JMenuItem(actions.fileExportICMSAction);
+		miICMSExport.setVisible(false);
+		mnExportMetadata.add(miICMSExport);
+		
+		miDWCExport = new JMenuItem(actions.fileExportDWCAction);
+		mnExportMetadata.add(miDWCExport);
+		
+		MVC.addEventListener(Dictionary.DICTIONARY_REGISTERED, this);
+		
+		mnFile.add(mnExportMetadata);
+		
+		//mnFile.add(getImportDataAndMetadataMenu());
+
+
+		
+
+
 		
 		mnFile.addSeparator();
 
@@ -629,6 +654,8 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		if(e.getValue().equals("userDefinedFieldDictionary"))
 		{
 			miICMSImport.setVisible(ICMSImporter.isDatabaseICMSCapable());
+			mnImportMetadata.setVisible(ICMSImporter.isDatabaseICMSCapable());
+			
 			miICMSExport.setVisible(ICMSImporter.isDatabaseICMSCapable());
 
 			return false;
