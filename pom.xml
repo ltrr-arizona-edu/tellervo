@@ -561,6 +561,7 @@
 						running Ant instead -->
 					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.3</version>
 						<executions>
 
 							<execution>
@@ -638,6 +639,7 @@
 						running Ant instead -->
 					<plugin>
 						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.3</version>
 						<executions>
 
 							<execution>
@@ -857,7 +859,7 @@
 					<dependency>
 						<groupId>org.tridas</groupId>
 						<artifactId>tridasjlib</artifactId>
-						<version>1.22.3</version>
+						<version>1.22.5-SNAPSHOT</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -989,6 +991,7 @@
 				running Ant instead -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.3</version>
 				<executions>
 
 
@@ -1161,7 +1164,7 @@
 											maven-antrun-plugin
 										</artifactId>
 										<versionRange>
-											[1.3,)
+											[1.3]
 										</versionRange>
 										<goals>
 											<goal>run</goal>
