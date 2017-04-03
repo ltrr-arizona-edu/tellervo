@@ -14,17 +14,12 @@ public class ODKUserDefinedChoiceField extends AbstractODKChoiceField {
 	private Class<? extends ITridas> attachedTo;
 	
 	public ODKUserDefinedChoiceField(String fieldcode, String fieldname, String description,
-			Object defaultvalue, Class<? extends ITridas> attachedTo, Enumeration<String> choices) {
+			Object defaultvalue, Class<? extends ITridas> attachedTo, ArrayList<Object>  choices) {
 		super(ODKDataType.SELECT_ONE, fieldcode, fieldname, description, defaultvalue);
 		this.attachedTo = attachedTo;
+	
+		this.setPossibleChoices(SelectableChoice.makeObjectsSelectable(choices));
 		
-		ArrayList<Object> list = new ArrayList<Object>();
-		while(choices.hasMoreElements()){
-			list.add(choices.nextElement());
-			
-		}
-		this.setPossibleChoices(SelectableChoice.makeObjectsSelectable(list));
-		this.selectAllChoices();
 	}
 
 	@Override

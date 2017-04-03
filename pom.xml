@@ -30,6 +30,12 @@
 			<organizationUrl>http://ltrr.arizona.edu</organizationUrl>
 		</developer>
 		<developer>
+			<name>Martin Munro</name>
+			<email>mmunro@ltrr.arizona.edu</email>
+			<organization>Laboratory of Tree-Ring Research, University of Arizona</organization>
+			<organizationUrl>http://ltrr.arizona.edu</organizationUrl>
+		</developer>
+		<developer>
 			<name>Chris Dunham</name>
 			<organization>The Epison Group</organization>
 			<roles>

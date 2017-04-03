@@ -372,7 +372,7 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 	 * 
 	 * @return
 	 */
-	public AbstractODKField getField()
+	/*public AbstractODKField getField()
 	{
 		if(getFieldType().equals(ODKDataType.SELECT_ONE))
 		{
@@ -416,7 +416,7 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 					getAttachedTo()
 					);
 		}
-	}
+	}*/
 
 }
 
