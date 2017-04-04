@@ -26,6 +26,8 @@ package org.tellervo.desktop.bulkdataentry.model;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
@@ -37,6 +39,7 @@ import org.tellervo.schema.WSISampleStatusDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
 import org.tellervo.schema.WSIUserDefinedField;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.odk.ODKParser;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
@@ -55,7 +58,8 @@ import com.dmurph.mvc.model.MVCArrayList;
  */
 public class SampleTableModel extends AbstractBulkImportTableModel {
 	private static final long serialVersionUID = 2L;
-	
+	private static final Logger log = LoggerFactory.getLogger(SampleTableModel.class);
+
 	public SampleTableModel(SampleModel argModel){
 		super(argModel);
 	}
@@ -87,6 +91,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 			return WSISampleStatusDictionary.class;
 		}
 		
+		
 		// Get data type of user defined fields
 		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
 		for(WSIUserDefinedField fld : udfdictionary)
@@ -116,8 +121,9 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 			}
 		}
 		
-		
-		return null;
+		log.debug("Looking for data type of field "+argColumn);
+
+		return String.class;
 	}
 	
 	/**
