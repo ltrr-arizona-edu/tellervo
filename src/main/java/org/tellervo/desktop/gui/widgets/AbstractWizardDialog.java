@@ -150,6 +150,21 @@ public class AbstractWizardDialog extends JDialog implements ActionListener {
 		showPage(0, Direction.FORWARD);
 	}
 
+	private boolean validatePage(Integer index)
+	{
+		AbstractWizardPanel page;
+		try {
+			page = pages.get(index);
+		} catch (Exception e) {
+			log.error("Error validating wizard page at index: " + index);
+			e.printStackTrace();
+			return false;
+		}
+		
+		return page.doPageValidation();		
+	}
+	
+	
 	/**
 	 * Show the specified wizard page
 	 * 
@@ -226,6 +241,13 @@ public class AbstractWizardDialog extends JDialog implements ActionListener {
 	 * Show this next page in the wizard
 	 */
 	protected void showNextPage() {
+		
+		// Validate page before showing next
+		if(validatePage(currPageIndex)==false)
+		{
+			return;
+		}
+		
 		if (currPageIndex.equals(pages.size() - 1)) {
 			// Last page so dispose
 

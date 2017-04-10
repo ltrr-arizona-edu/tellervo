@@ -91,7 +91,7 @@ public class TridasObjectList extends TellervoResource {
 
 		// get a list of only tridas objects
 		List<TridasObjectEx> objects = ListUtil.subListOfType(
-				object.getContent().getSqlsAndObjectsAndElements(), TridasObjectEx.class);
+				object.getContent().getSqlsAndProjectsAndObjects(), TridasObjectEx.class);
 		
 		ListViews newData = new ListViews();
 		

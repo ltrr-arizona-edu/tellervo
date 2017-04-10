@@ -169,7 +169,7 @@ public class AuthenticateResource extends TellervoResource {
 		// if we got here, things are all good -> go!
 		
 		try{
-			user = (WSISecurityUser) object.getContent().getSqlsAndObjectsAndElements().get(0);
+			user = (WSISecurityUser) object.getContent().getSqlsAndProjectsAndObjects().get(0);
 		} catch (Exception e){}
 		
 		return true;

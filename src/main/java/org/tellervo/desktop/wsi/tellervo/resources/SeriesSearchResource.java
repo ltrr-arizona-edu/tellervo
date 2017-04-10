@@ -84,7 +84,7 @@ public class SeriesSearchResource extends TellervoAssociatedResource<ElementList
 		
 		// get a list of only the 'series' elements
 		List<ITridasSeries> seriesList = ListUtil.subListOfType(
-				object.getContent().getSqlsAndObjectsAndElements(), ITridasSeries.class);
+				object.getContent().getSqlsAndProjectsAndObjects(), ITridasSeries.class);
 
 		// a list of our elements
 		ElementList elements = new ElementList(seriesList.size());

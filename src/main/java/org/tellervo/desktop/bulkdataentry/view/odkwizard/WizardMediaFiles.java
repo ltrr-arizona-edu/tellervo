@@ -18,6 +18,7 @@ import org.tellervo.desktop.gui.widgets.AbstractWizardPanel;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
+import org.tellervo.desktop.ui.Alert;
 
 
 public class WizardMediaFiles extends AbstractWizardPanel {
@@ -79,8 +80,10 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 
 				JFileChooser fc = new JFileChooser(App.prefs.getPref(PrefKey.ODK_COPY_TO, null));
 				fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-				int returnVal = fc.showOpenDialog(App.mainWindow);
-
+				fc.setAcceptAllFileFilterUsed(false);
+				
+				int returnVal = fc.showOpenDialog(getParent());
+				
 				if (returnVal == JFileChooser.APPROVE_OPTION) txtCopyTo.setText(fc.getSelectedFile().getAbsolutePath());			
 			}
 			
@@ -159,6 +162,39 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 
 	public String getFilenamePrefix() {
 		return this.txtFilenamePrefix.getText();
+	}
+
+	@Override
+	public boolean doPageValidation(){
+		
+		if(!this.chkImportMedia.isSelected()) return true;
+		
+		File folder = new File(txtCopyTo.getText());
+		if(folder.exists() && folder.isFile())
+		{
+			Alert.error("Error", "Copy to folder must be a folder and not a file");
+			return false;
+		}
+		if(folder.exists()==false)
+		{
+			try{
+				folder.mkdir();
+				} catch (Exception e)
+				{
+					Alert.error("Error", "Failed to create folder");
+					return false;
+				}
+		}
+		
+		if(folder.canWrite())
+		{
+			return true;
+		}
+		else
+		{
+			Alert.error("Error", "'Copy to' folder is not writeable");
+			return false;
+		}
 	}
 
 

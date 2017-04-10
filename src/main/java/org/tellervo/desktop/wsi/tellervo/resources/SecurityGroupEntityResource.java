@@ -64,7 +64,7 @@ public class SecurityGroupEntityResource extends TellervoAssociatedResource<WSIS
 		
 		// get a list of only the 'series' elements
 		List<WSISecurityGroup> groupList = ListUtil.subListOfType(
-				object.getContent().getSqlsAndObjectsAndElements(), WSISecurityGroup.class);
+				object.getContent().getSqlsAndProjectsAndObjects(), WSISecurityGroup.class);
 
 		if (groupList.size()>0)
 		{
