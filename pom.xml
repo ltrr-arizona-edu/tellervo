@@ -364,7 +364,6 @@
 			<artifactId>jide-oss</artifactId>
 			<version>3.6.1</version>
 		</dependency>
-
 		<dependency>
 			<groupId>org.jfree</groupId>
 			<artifactId>jfreechart</artifactId>

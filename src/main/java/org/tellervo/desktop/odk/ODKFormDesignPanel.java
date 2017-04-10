@@ -465,7 +465,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		
 		cbxlstChoices = new CheckBoxList();
 		
-				choicesScrollPane.setViewportView(cbxlstChoices);
+		choicesScrollPane.setViewportView(cbxlstChoices);
 		panelFieldOptions.add(btnAll, "flowy,cell 3 6,aligny top");
 		
 		btnNone = new JButton("");
@@ -980,6 +980,45 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 	                }
 	            }
 	        });
+	        
+	        cbxlstChoices.addMouseListener(new MouseListener(){
+
+				@Override
+				public void mouseClicked(MouseEvent e) {
+				
+					
+				}
+
+				@Override
+				public void mousePressed(MouseEvent e) {
+					 maybeShowPopup(e);
+				}
+
+				@Override
+				public void mouseReleased(MouseEvent e) {
+					 maybeShowPopup(e);
+					
+				}
+
+				@Override
+				public void mouseEntered(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+
+				@Override
+				public void mouseExited(MouseEvent e) {
+					// TODO Auto-generated method stub
+					
+				}
+				
+			    private void maybeShowPopup(MouseEvent e) {
+			        if (e.isPopupTrigger()) {
+			        	showChoicesPopup(e);
+			        }
+			    }
+	        	
+	        });
 			
 			cbxlstChoices.repaint();
 			choicesScrollPane.revalidate();
@@ -1062,6 +1101,57 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			
 		quietFieldChangeFlag = false;
 
+	}
+	
+	private void showChoicesPopup(MouseEvent e)
+	{
+		JPopupMenu popup = new JPopupMenu();
+		
+		CheckBoxList list = (CheckBoxList)e.getSource();
+        int row = list.locationToIndex(e.getPoint());
+        list.setSelectedIndex(row);
+		
+		JMenuItem mi = new JMenuItem("Rename");
+		mi.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showRenameChoiceItemDialog();
+				
+			}
+			
+		});
+		
+		popup.add(mi);
+		popup.show(e.getComponent(),
+                e.getX(), e.getY());
+	}
+	
+	private void showRenameChoiceItemDialog()
+	{
+		
+		SelectableChoice selected = (SelectableChoice) this.cbxlstChoices.getSelectedValue();
+		
+		//JOptionPane.showInputDialog(this, "Change the text of this choice.  Make sure you don't change the meaning of the original choice.", "Set synonym", JOptionPane.QUESTION_MESSAGE, JOptionPane.QUESTION_MESSAGE);
+		String deflt;
+		if(selected.getSynonym()==null)
+		{
+			deflt = selected.toStringIgnoreSynonym();
+		}
+		else
+		{
+			deflt = selected.getSynonym();
+		}
+
+		Object result = JOptionPane.showInputDialog(this, "Change the text of this choice but make sure you don't\nchange the meaning of the original choice.\nLeave blank to set to default.",deflt);
+		if(result==null || result.toString().length()==0)
+		{
+			selected.setSynonym(null);
+		}
+		else
+		{
+			selected.setSynonym(result.toString());
+		}
 	}
 	
 	/**

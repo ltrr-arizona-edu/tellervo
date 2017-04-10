@@ -16,28 +16,60 @@ public class SelectableChoice implements Selectable, Serializable {
 	boolean selected = false;
 	boolean enabled = true;
 	Object item;
-	
+	String synonym = null;
+
 	public SelectableChoice(Object item)
 	{
 		this.item = item;
 	}
 	
-	public String toString()
+	public void setSynonym(String str)
 	{
+		this.synonym = str;
+	}
+	
+	public String getSynonym()
+	{
+		return synonym;
+	}
+	
+	public String toStringIgnoreSynonym()
+	{
+		String real = "";
+
 		if(item instanceof ControlledVoc)
 		{
-			return ((ControlledVoc)item).getNormal();
+			real = ((ControlledVoc)item).getNormal();
 		}
 		else if (item instanceof NormalTridasShape)
 		{
-			return ((NormalTridasShape)item).value();
+			real =  ((NormalTridasShape)item).value();
 		}
 		else if (item instanceof NormalTridasLocationType)
 		{
-			return ((NormalTridasLocationType)item).value();
+			real =  ((NormalTridasLocationType)item).value();
+		}
+		else
+		{
+			real = item.toString();
 		}
 		
-		return item.toString();
+		return real;
+	}
+	
+	public String toString()
+	{
+		String real = toStringIgnoreSynonym();
+		
+		
+		if(this.synonym!=null)
+		{
+			return this.synonym + " ("+real+")";
+		}
+		else
+		{
+			return real;
+		}
 	}
 	
 	@Override

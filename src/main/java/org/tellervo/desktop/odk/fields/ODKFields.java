@@ -68,7 +68,13 @@ public class ODKFields {
 		fieldsList.add(ODKTridasElementSoil.class);
 		fieldsList.add(ODKTridasElementBedrock.class);
 		//fieldsList.add(ODKTridasElementAltitude.class);
-		// dimensions
+		fieldsList.add(ODKTridasElementDimUnit.class);
+		fieldsList.add(ODKTridasElementDimHeight.class);
+		fieldsList.add(ODKTridasElementDimWidth.class);
+		fieldsList.add(ODKTridasElementDimDepth.class);
+		fieldsList.add(ODKTridasElementDimDiameter.class);
+
+		
 
 		
 		// SAMPLE FIELDS
