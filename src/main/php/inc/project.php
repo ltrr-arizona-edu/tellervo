@@ -47,13 +47,15 @@ class project extends projectEntity implements IDBAccessor {
 		$this->setCreatedTimestamp ( $row ['createdtimestamp'] );
 		$this->setLastModifiedTimestamp ( $row ['lastmodifiedtimestamp'] );
 		$this->setComments ( $row ['comments'] );
-		$this->setType ( $row ['projecttypeid'], $row ['projecttype'] );
+		$this->setTypesFromStrArray ( $row ['types'] );
 		$this->setDescription ( $row ['description'] );
 		$this->setFilesFromStrArray ( $row ['file'] );
 		$this->setInvestigator($row['investigator']);
 		$this->setPeriod($row['period']);
 		$this->setCommissioner($row['commissioner']);
 		$this->setUserDefinedFieldAndValueArrayByEntityID ( $this->getID () );
+		$this->setCategory($row['projectcategoryid'], $row['projectcategory']);
+		$this->setRequestDate($row['requestdate']);
 		
 		return true;
 	}
@@ -148,14 +150,15 @@ class project extends projectEntity implements IDBAccessor {
 		
 		$this->setTitle ( $paramsClass->getTitle () );
 		$this->setComments ( $paramsClass->getComments () );
-		$this->setType ( $paramsClass->getType ( true ), $paramsClass->getType () );
+		$this->setTypes ( $paramsClass->getTypes () );
 		$this->setDescription ( $paramsClass->getDescription () );
 		$this->setFiles ( $paramsClass->getFiles () );
 		$this->setInvestigator($paramsClass->getInvestigator());
 		$this->setCommissioner($paramsClass->getCommissioner());
 		$this->setPeriod($paramsClass->getPeriod());
-		
+		$this->setCategory($paramsClass->getCategory(true), $paramsClass->getCategory());
 		$this->setUserDefinedFieldAndValueArray ( $paramsClass->getUserDefinedFieldAndValueArray () );
+		$this->setRequestDate($paramsClass->getRequestDate());
 		
 		return true;
 	}
@@ -258,7 +261,22 @@ class project extends projectEntity implements IDBAccessor {
 				$xml .= $this->getIdentifierXML ();
 				if ($this->getComments () != NULL)
 					$xml .= "<tridas:comments>" . dbhelper::escapeXMLChars ( $this->getComments () ) . "</tridas:comments>\n";
-				$xml .= "<tridas:type normal=\"" . dbhelper::escapeXMLChars ( $this->getType () ) . "\" normalId=\"" . $this->getType ( TRUE ) . "\" normalStd=\"Tellervo\" />\n";
+				
+					
+				if(($this->getTypes()!=NULL) && (count($this->getTypes())>0))
+		       	{
+		        	foreach($this->getTypes() as $type)	
+		        	{
+		        		$projectType = new projectType();
+		        		$projectType->setProjectType($type, null);
+						$xml .= "<tridas:type normal=\"" . $projectType->getValue() . "\" normalId=\"" . $projectType->getID() . "\" normalStd=\"Tellervo\" />\n";
+		        	}
+		       	}
+		       	else
+		       	{
+		       		$xml .= "<tridas:type normal=\"\" normalId=\"\" normalStd=\"\" />\n";
+		       		 
+		       	}
 
 				if ($this->getDescription () !== NULL)
 					$xml .= "<tridas:description>" . dbHelper::escapeXMLChars ( $this->getDescription () ) . "</tridas:description>";
@@ -272,17 +290,20 @@ class project extends projectEntity implements IDBAccessor {
         					</tridas:laboratory>";
 
 				// Category
-				$xml.= "<tridas:category>Unsupported</tridas:category>";
-				
-				if($this->getInvestigator()!=NULL)
-					$xml .= "<tridas:investigator>".dbHelper::escapeXMLChars($this->getInvestigator())."</tridas:investigator>";
-				if($this->getPeriod()!=NULL)
-					$xml .= "<tridas:period>".dbHelper::escapeXMLChars($this->getPeriod())."</tridas:period>";
+				$xml .= "<tridas:category normal=\"" . dbhelper::escapeXMLChars ( $this->getCategory () ) . "\" normalId=\"" . $this->getCategory ( TRUE ) . "\" normalStd=\"Tellervo\" />\n";
+								
+	
+				$xml .= "<tridas:investigator>".dbHelper::escapeXMLChars($this->getInvestigator())."</tridas:investigator>";
+
+				$xml .= "<tridas:period>".dbHelper::escapeXMLChars($this->getPeriod())."</tridas:period>";
 
 				// Request date
-				
-				if($this->getCommissioner()!=NULL)
-					$xml .= "<tridas:commissioner>".dbHelper::escapeXMLChars($this->getCommissioner())."</tridas:commissioner>";
+				if($this->getRequestDate()!=null )
+				{
+					$xml .= "<tridas:requestDate>".dbHelper::escapeXMLChars($this->getRequestDate())."</tridas:requestDate>";
+				}
+		
+				$xml .= "<tridas:commissioner>".dbHelper::escapeXMLChars($this->getCommissioner())."</tridas:commissioner>";
 				
 				// Reference
 				// Research
@@ -361,18 +382,22 @@ class project extends projectEntity implements IDBAccessor {
 					$sql .= "title, ";
 					$sql .= "projectid, ";
 					$sql .= "comments, ";
-					$sql .= "projecttypeid, ";
+					//$sql .= "projecttypeid, ";
 					$sql .= "description, ";
-					$sql .= "file";
+					$sql .= "file,";
+					$sql .= "requestdate,";
+					$sql .= "projectcategoryid";
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ") values (";
 					
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getID () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
+					//$sql .= dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
 					$sql .= dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string ( $this->requestDate() ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getCategory( true ) ) . ", ";
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ")";
 					$sql2 = "select * from tblproject where projectid='" . $this->getID () . "'";
@@ -381,9 +406,12 @@ class project extends projectEntity implements IDBAccessor {
 					$sql = "update tblproject set ";
 					$sql .= "title=" . dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
 					$sql .= "comments=" . dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					$sql .= "projecttypeid=" . dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
+					//$sql .= "projecttypeid=" . dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
 					$sql .= "description=" . dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
 					$sql .= "file=" . dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
+					$sql .= "requestdate=" . dbHelper::tellervo_pg_escape_string ( $this->getRequestDate () ) . ", ";
+					$sql .= "projectcategoryid=" . dbHelper::tellervo_pg_escape_string ( $this->getCategory ( true ) ) . ", ";
+						
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= " where projectid='" . $this->getID () . "'";
 				}

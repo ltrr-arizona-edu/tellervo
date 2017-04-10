@@ -243,7 +243,7 @@ class object extends objectEntity implements IDBAccessor {
 		$this->location->setCountry ( $paramsClass->location->getCountry () );
 		$this->setUserDefinedFieldAndValueArray ( $paramsClass->getUserDefinedFieldAndValueArray () );
 		$this->setProjectID($paramsClass->getProjectID());
-		$this->setProjectID($paramsClass->getParentObjectID());
+		//$this->setProjectID($paramsClass->getParentObjectID());
 		
 		$this->setCode ( $paramsClass->getCode () );
 		
@@ -426,6 +426,8 @@ class object extends objectEntity implements IDBAccessor {
 					$xml .= "<tridas:genericField name=\"tellervo.countOfChildSeries\" type=\"xs:int\">" . $this->getCountOfChildVMeasurements () . "</tridas:genericField>\n";
 				if ($this->getVegetationType () != NULL)
 					$xml .= "<tridas:genericField name=\"tellervo.vegetationType\" type=\"xs:string\">" . $this->getVegetationType () . "</tridas:genericField>\n";
+				if( ($this->getProjectID()!= NULL))
+					$xml .= "<tridas:genericField name=\"tellervo.object.projectid\" type=\"xs:string\">" . $this->getProjectID() . "</tridas:genericField>\n";
 				
 				if ($this->getUserDefinedFieldAndValueArray () != null && count ( $this->getUserDefinedFieldAndValueArray () > 0 )) {
 					foreach ( $this->getUserDefinedFieldAndValueArray () as $field ) {
@@ -530,6 +532,8 @@ class object extends objectEntity implements IDBAccessor {
 					$sql .= "locationcountry, ";
 					$sql .= "code, ";
 					$sql .= "vegetationtype, ";
+					if(isset ($this->projectid)) $sql .= "projectid, ";
+					
 					if (isset ( $this->parentEntityArray ) && count ( $this->parentEntityArray ) > 0)
 						$sql .= "parentobjectid, ";
 					$sql = substr ( $sql, 0, - 2 );
@@ -557,8 +561,9 @@ class object extends objectEntity implements IDBAccessor {
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getCountry () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getCode () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getVegetationType () ) . ", ";
+					if (isset ($this->projectid)) $sql .= dbHelper::tellervo_pg_escape_string ( $this->getProjectID()) . ", ";
 					if (isset ( $this->parentEntityArray ) && count ( $this->parentEntityArray ) > 0)
-						$sql .= "'" . pg_escape_string ( $this->parentEntityArray [0]->getID () ) . ", ";
+						$sql .= "'" . pg_escape_string ( $this->parentEntityArray [0]->getID () ) . "', ";
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ")";
 					$sql2 = "select * from tblobject where objectid='" . $this->getID () . "'";
@@ -586,8 +591,9 @@ class object extends objectEntity implements IDBAccessor {
 					$sql .= "locationcountry=" . dbHelper::tellervo_pg_escape_string ( $this->location->getCountry () ) . ", ";
 					$sql .= "code=" . dbHelper::tellervo_pg_escape_string ( $this->getCode () ) . ", ";
 					$sql .= "vegetationtype=" . dbHelper::tellervo_pg_escape_string ( $this->getVegetationType () ) . ", ";
-					if (isset ( $this->parentEntityArrayi ))
-						$sql .= "parentobject='" . pg_escape_string ( $this->parentEntityArray [0]->getID () ) . ", ";
+					if(isset($this->projectid)) $sql .= "projectid=".dbHelper::tellervo_pg_escape_string ( $this->getProjectID()) . ", ";
+					if (isset ( $this->parentEntityArray ) && count ( $this->parentEntityArray ) > 0)
+						$sql .= "parentobject='" . pg_escape_string ( $this->parentEntityArray[0]->getID () ) . ", ";
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= " where objectid='" . $this->getID () . "'";
 				}

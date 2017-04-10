@@ -51,6 +51,7 @@ abstract class UserExtendableEntity extends dbEntity
 	function __construct($attachedlevelinteger)
 	{
 		$this->attachedlevelinteger = $attachedlevelinteger;
+		parent::__construct();
 	}
 	
 	/**
@@ -948,6 +949,8 @@ class objectEntity extends UserExtendableEntity
 		$this->object = new objectType();
 		$this->type = new objectType();
 		$this->files = array();
+		$this->parentEntityArray = array();
+		$this->childrenEntityArray = array();
 
 	}
 
@@ -1229,6 +1232,10 @@ class projectEntity extends UserExtendableEntity
 	protected $commissioner = NULL;
 	
 	protected $period = NULL;
+	
+	protected $category = NULL;
+	
+	protected $requestDate = NULL;
 		
     function __construct()
     {  
@@ -1244,21 +1251,37 @@ class projectEntity extends UserExtendableEntity
     /***********/   	
 
 	
-     /**
-	 * Set the project type
+    
+    
+	/**
+	 * Set an array of types
 	 *
-	 * @param Integer $id
-	 * @param String $value
-	 * @return Boolean
+	 * @param Array $array
+	 * @return true;
 	 */
-	function setType($id, $value)
+	function setTypes($array)
 	{
-		if(!isset($this->type))
-		{
-			$this->type = new projectType();
-		}
-		
-		return $this->type->setProjectType($id, $value);
+		$this->types = $array;
+
+		return true;
+	}	
+	
+	/**
+	 * Set an array of types using a string representation of a PG array delimited with ><
+	 *
+	 * @param String $pgstrarray
+	 * @return true;
+	 */
+	function setTypesFromStrArray($pgstrarray)
+	{
+		$this->types = dbHelper::pgStrArrayToPHPArray($pgstrarray);		
+		return true;
+	}	
+	
+	
+	function setRequestDate($value)
+	{
+		$this->requestDate = $value;
 	}
 	
 	/**
@@ -1269,6 +1292,16 @@ class projectEntity extends UserExtendableEntity
 	function setDescription($value)
 	{
 		$this->description = $value;
+	}
+	
+	function setCategory($id, $value)
+	{
+		if(!isset($this->category))
+		{
+			$this->category = new projectCategory();
+		}
+		
+		return $this->category->setProjectCategory($id, $value);
 	}
 	
 	/**
@@ -1311,6 +1344,24 @@ class projectEntity extends UserExtendableEntity
     /* GETTERS */
     /***********/ 	
 	
+	
+	/**
+	 * Get the array types
+	 *
+	 * @return array
+	 */
+	function getTypes()
+	{
+		return $this->types;
+	}
+	
+	function getRequestDate()
+	{
+		return $this->requestDate;
+		
+	}
+	
+	
 	/**
 	 * Get the type of object
 	 *
@@ -1326,6 +1377,18 @@ class projectEntity extends UserExtendableEntity
 		else
 		{
 			return $this->type->getValue();
+		}
+	}
+	
+	function getCategory($asKey=false)
+	{
+		if($asKey)
+		{
+			return $this->category->getID();
+		}
+		else
+		{
+			return $this->category->getValue();
 		}
 	}
 		

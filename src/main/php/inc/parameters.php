@@ -97,7 +97,12 @@ class searchParameters implements IParams
 		$paramsTags = $this->xmlRequestDom->getElementsByTagName("param");	
 		
 				// Create an array for translating the search parameters names into Tellervo database table and field names
-		$translationArray = array (		
+		$translationArray = array (	
+									'projectid' =>							array('tbl' => 'vwtblproject', 'field' => 'projectid'),
+									'projecttitle' =>						array('tbl' => 'vwtblproject', 'field' => 'title'),
+									'projectcreated' =>						array('tbl' => 'vwtblproject', 'field' => 'createdtimestamp'),
+									'projectmodified' =>					array('tbl' => 'vwtblproject', 'field' => 'lastmodifiedtimestamp'),
+				
 									'objectid' => 							array('tbl' => 'vwtblobject', 'field' => 'objectid'),
 									//'objectdbid' => 						array('tbl' => 'vwtblobject', 'field' => 'objectid'),                        
 									'objecttitle' => 						array('tbl' => 'vwtblobject', 'field' => 'title'),
@@ -754,9 +759,20 @@ class projectParameters extends projectEntity implements IParams
 				case "tridas:title":				$this->setTitle($child->nodeValue); break;
 				case "tridas:title":				$this->setTitle($child->nodeValue); break;
 				case "tridas:comments":			$this->setComments($child->nodeValue); break;
+				case "tridas:commissioner":		$this->setCommissioner($child->nodeValue); break;
+				case "tridas:period": 			$this->setPeriod($child->nodeValue); break;
+				case "tridas:investigator":		$this->setInvestigator($child->nodeValue); break;
+				
+				
 				case "tridas:createdTimestamp":	break;
 				case "tridas:lastModifiedTimestamp": break;
 
+				case "tridas:requestDate": 			$this->setRequestDate($child->nodeValue); break;;
+				case "tridas:reference": 			break;
+				case "tridas:research": 			break;
+				case "tridas:laboratory": 			break;
+				
+				
 				case "tridas:file":
 					if($child->hasAttribute("xlink:href"))
 					{
@@ -768,6 +784,21 @@ class projectParameters extends projectEntity implements IParams
 					}
 					break;
 
+				case "tridas:category":
+					if($child->hasAttribute("normalStd"))
+					{
+						if($child->getAttribute("normalStd")=="Tellervo")
+						{
+							$this->setCategory($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
+						}
+						else
+						{
+							trigger_error("901"."Webservice only supports Tellervo vocabularies for project category", E_USER_ERROR);
+							break;
+						}
+					}
+					trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+					
 				case "tridas:type":
 					if($child->hasAttribute("normalStd"))
 					{
@@ -777,7 +808,7 @@ class projectParameters extends projectEntity implements IParams
 						}
 						else
 						{
-							trigger_error("901"."Webservice only supports Tellervo vocabularies for element type", E_USER_ERROR);
+							trigger_error("901"."Webservice only supports Tellervo vocabularies for project type", E_USER_ERROR);
 							break;
 						}
 					}
@@ -947,6 +978,7 @@ class objectParameters extends objectEntity implements IParams
 		   			case "tellervo.vegetationType" : $this->setVegetationType($value); break;
 		   			case "tellervo.countOfChildSeries" : break;
 		   			case "tellervo.mapLink" :		break;
+		   			case "tellervo.object.projectid" : $this->setProjectID($value); break;
 		   			
 		   			default:
 		   				if(substr($name, 0, strlen("userDefinedField"))==="userDefinedField")

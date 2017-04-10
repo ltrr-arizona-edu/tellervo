@@ -24,6 +24,7 @@ class userDefinedFieldAndValue
 	private $datatype;
 	private $attachedto;
 	private $description;
+	private $dictionarykey;
 	
 	private $userdefinedfieldid;
 	private $value;
@@ -57,6 +58,7 @@ class userDefinedFieldAndValue
 		$this->description = $row['description'];
 		$this->value = $row['value'];
 		$this->entityid = $row['entityid'];
+		$this->dictionarykey = $row['dictionarykey'];
 	}
 	
 	/**

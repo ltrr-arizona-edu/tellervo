@@ -486,6 +486,19 @@ class projectType extends lookupEntity
 	}
 }
 
+class projectCategory extends lookupEntity
+{
+	function __construct()
+	{
+		parent::__construct("tlkpprojectcategory", "projectcategory", "projectcategoryid");
+	}
+
+	function setProjectCategory($id, $value)
+	{
+		return $this->setLookupEntity($id, $value);
+	}
+}
+
 
 class locationType extends lookupEntity
 {
