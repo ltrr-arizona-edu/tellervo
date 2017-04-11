@@ -4,8 +4,7 @@ import java.io.Serializable;
 
 public class ODKSerializedForm implements Serializable {
 
-
-	private static final long serialVersionUID = 3516194818372083752L;
+	private static final long serialVersionUID = 2262566599993233500L;
 	private ODKTreeModel treeModel;
 	private String formTitle;
 	
