@@ -511,6 +511,7 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     	//check it's a group node
     	if(!parent.getType().equals(UserGroupNode.Type.GROUP)) return null;
     	
+    	try{
     	WSISecurityGroup group = ((TransferableGroup) parent.getUserObject()).getGroup();
     	for(String childId: group.getGroupMembers()){
     		WSISecurityGroup child = mainModel.getGroupById(childId);
@@ -523,6 +524,11 @@ public class UserGroupAdminView extends javax.swing.JDialog implements ActionLis
     		if(!child.isIsActive()) continue;
     		UserGroupNode childNode = new UserGroupNode(new TransferableUser(child));
     		parent.add(childNode);
+    	}
+    	} catch (Exception e)
+    	{
+    		log.error(e.getLocalizedMessage());
+    		e.printStackTrace();
     	}
     	return parent;
     }
