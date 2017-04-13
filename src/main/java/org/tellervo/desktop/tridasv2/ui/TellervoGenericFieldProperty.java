@@ -128,6 +128,8 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 		
 		if(entity==null ) return null;
 		
+		if(gf==null) return null;
+		
 		if(entity.isSetGenericFields())
 		{
 			ArrayList<TridasGenericField> gfs = (ArrayList<TridasGenericField>) entity.getGenericFields();

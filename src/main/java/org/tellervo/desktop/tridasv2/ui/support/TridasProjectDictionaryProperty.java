@@ -121,6 +121,9 @@ public class TridasProjectDictionaryProperty extends TridasEntityProperty {
 	
 	public TridasGenericField getTridasGenericField()
 	{
+		if(this.getValue()==null) return null;
+		
+		
 		TridasGenericField gf = new TridasGenericField();
 		gf.setName("tellervo.object.projectid");
 		
