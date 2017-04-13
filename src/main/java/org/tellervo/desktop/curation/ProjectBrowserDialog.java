@@ -13,8 +13,12 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
@@ -22,10 +26,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.miginfocom.swing.MigLayout;
-
-import javax.swing.JList;
-import javax.swing.JSplitPane;
-import javax.swing.JScrollPane;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.BugDialog;
@@ -41,7 +41,6 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.schema.TellervoRequestType;
-import org.tridas.interfaces.ITridas;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasLaboratory;
@@ -51,12 +50,11 @@ import org.tridas.schema.TridasProject;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
 
-import javax.swing.JLabel;
-
 public class ProjectBrowserDialog extends JDialog implements PropertyChangeListener, ActionListener{
 
+	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
-	private JList lstProjects;
+	private JList<TridasProject> lstProjects;
 	private JPanel propHolder;
 	private TellervoPropertySheetPanel propertiesPanel;
 	private TellervoPropertySheetTable propertiesTable;
@@ -64,18 +62,21 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 	private JButton btnRemove;
 	private TridasProject temporaryEditingEntity;
 	private boolean isDirty = false;
+	private JSplitPane splitPane;
 	
-	/**
-	 * Create the dialog.
-	 */
-	public ProjectBrowserDialog() {
-
+	
+	public ProjectBrowserDialog(Boolean createNew)
+	{
 		initGUI();
+		initFactories();
 		
-		
+		if (createNew)
+		{
+			addNewProject();
+			splitPane.setDividerLocation(0);
+		}
 
 	}
-	
 	
 	private void initGUI()
 	{
@@ -87,8 +88,8 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new MigLayout("", "[grow]", "[grow]"));
 		{
-			JSplitPane splitPane = new JSplitPane();
-			splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+			splitPane = new JSplitPane();
+			splitPane.setOneTouchExpandable(true);
 			contentPanel.add(splitPane, "cell 0 0,grow");
 			{
 				
@@ -97,10 +98,14 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 			{
 				JPanel panelChoose = new JPanel();
 				splitPane.setLeftComponent(panelChoose);
-				panelChoose.setLayout(new MigLayout("", "[350.00,grow][42.00]", "[grow]"));
+				panelChoose.setLayout(new MigLayout("", "[228.00,grow,right]", "[][309.00,grow][]"));
+				{
+					JLabel lblProjects = new JLabel("Projects:");
+					panelChoose.add(lblProjects, "cell 0 0,alignx left");
+				}
 				{
 					JScrollPane scrollPane = new JScrollPane();
-					panelChoose.add(scrollPane, "cell 0 0,grow");
+					panelChoose.add(scrollPane, "cell 0 1,grow");
 					{
 						lstProjects = new JList<TridasProject>();
 						
@@ -140,18 +145,20 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 					}
 				}
 				{
-					JPanel panelButtons = new JPanel();
-					panelChoose.add(panelButtons, "cell 1 0,alignx left,growy");
-					panelButtons.setLayout(new MigLayout("", "[117px,fill]", "[25px][]"));
+					JPanel panel = new JPanel();
+					panelChoose.add(panel, "cell 0 2,grow");
+					panel.setLayout(new MigLayout("", "[81px,grow,fill][grow,fill]", "[26px]"));
 					{
-						btnNew = new JButton("+");
+						btnNew = new JButton("Add");
+						panel.add(btnNew, "cell 0 0,alignx left,aligny top");
+						btnNew.setIcon(Builder.getIcon("edit_add.png", 16));
 						btnNew.setActionCommand("New");
+						{
+							btnRemove = new JButton("Delete");
+							panel.add(btnRemove, "cell 1 0");
+							btnRemove.setIcon(Builder.getIcon("edit_remove.png", 16));
+						}
 						btnNew.addActionListener(this);
-						panelButtons.add(btnNew, "cell 0 0,alignx left,aligny top");
-					}
-					{
-						btnRemove = new JButton("-");
-						panelButtons.add(btnRemove, "cell 0 1");
 					}
 				}
 			}
@@ -196,8 +203,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		propertiesPanel.setDescriptionVisible(true);
 		propertiesPanel.setMode(PropertySheet.VIEW_AS_FLAT_LIST);
 		propertiesPanel.getTable().setRowHeight(24);
-		propertiesPanel.getTable().setRendererFactory(new TridasPropertyRendererFactory());
-		propertiesPanel.getTable().setEditorFactory(new TridasPropertyEditorFactory());
+
 		propertiesPanel.getTable().addPropertyChangeListener(this);
 		propHolder.add(propertiesPanel);
 		
@@ -210,6 +216,12 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		propertiesTable.expandAllBranches(true);
 		
 		
+	}
+	
+	private void initFactories()
+	{
+		propertiesPanel.getTable().setRendererFactory(new TridasPropertyRendererFactory());
+		propertiesPanel.getTable().setEditorFactory(new TridasPropertyEditorFactory());
 	}
 	
 	private void addNewProject()
@@ -404,4 +416,5 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 			this.addNewProject();
 		}
 	}
+
 }

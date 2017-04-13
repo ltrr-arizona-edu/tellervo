@@ -28,6 +28,7 @@ import org.tellervo.desktop.gui.menus.actions.AdminEditViewPermissionsAction;
 import org.tellervo.desktop.gui.menus.actions.AdminForgetPasswordAction;
 import org.tellervo.desktop.gui.menus.actions.AdminLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
+import org.tellervo.desktop.gui.menus.actions.AdminProjectBrowser;
 import org.tellervo.desktop.gui.menus.actions.AdminRecordCardAction;
 import org.tellervo.desktop.gui.menus.actions.AdminReportsAction;
 import org.tellervo.desktop.gui.menus.actions.AdminSampleLabelAction;
@@ -152,6 +153,7 @@ public abstract class AbstractEditorActions{
 	public Action adminCurationMenuNewLoanAction;
 	public Action adminCurationMenuSampleStatusAction;
 	public Action adminSiteMapAction;
+	public Action adminProjectBrowserAction;
 
 	// View menu actions
 
@@ -251,6 +253,7 @@ public abstract class AbstractEditorActions{
 		adminCurationMenuNewLoanAction = new AdminCurationMenuNewLoanAction(editor);
 		adminCurationMenuSampleStatusAction = new AdminCurationMenuSampleStatusAction();		
 		adminMetaDBAction = new AdminMetadatabaseBrowserAction();
+		adminProjectBrowserAction = new AdminProjectBrowser(editor);
 		adminSiteMapAction = new AdminSiteMapAction();
 
 		toolsTruncateAction = new ToolsTruncateAction(editor);

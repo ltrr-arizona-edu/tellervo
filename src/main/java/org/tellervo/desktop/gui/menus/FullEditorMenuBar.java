@@ -93,6 +93,8 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 	private JMenuItem miSave;
 	private JMenuItem miPrint;
 	
+	private JMenuItem miProjectBrowser;
+	
 
 	
 	public FullEditorMenuBar(FullEditorActions actions, FullEditor editor)
@@ -336,6 +338,9 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		
 		miMetaDB = new JMenuItem(actions.adminMetaDBAction);
 		mnAdministration.add(miMetaDB);
+		
+		miProjectBrowser = new JMenuItem(actions.adminProjectBrowserAction);
+		mnAdministration.add(miProjectBrowser);
 		
 		miSiteMap = new JMenuItem(actions.adminSiteMapAction);
 		mnAdministration.add(miSiteMap);		

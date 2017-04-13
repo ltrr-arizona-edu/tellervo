@@ -122,11 +122,14 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 
 			}
 			
-			// load the tridas object tree first
-			/*for(TridasObject obj : tridasObjects) {
-			
-				doc.loadFromObject(obj, samples, refmap, true);
-			}*/
+			if(tridasProjects==null || tridasProjects.size()==0)
+			{
+				// load the tridas object tree first
+				for(TridasObject obj : tridasObjects) {
+				
+					doc.loadFromObject(obj, samples, refmap, true);
+				}
+			}
 			
 			// now load any base series lying around (usually derived series here)
 			for(ITridasSeries series : tridasSeries) {
@@ -188,6 +191,9 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 	 * @return a sample, or null
 	 */
 	public Sample getSample(TridasIdentifier identifier) {
+		
+		log.debug("Associated result: "+this.getAssociatedResult());
+		
 		for(BaseSample bs : getAssociatedResult()) {
 			if(bs.getSeries().getIdentifier().getValue().equals(identifier.getValue())) {
 				if(!(bs instanceof Sample))

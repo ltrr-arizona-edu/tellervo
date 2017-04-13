@@ -142,6 +142,10 @@ class request
    		}        
         
         // Do the validation
+        
+   		//$firebug->log($xmlrequest, "Raw XML Request ");
+   		//$firebug->log($doc, "XML Doc");
+   		
         if($doc->schemaValidate($tellervoXSD))
         {      
         	$this->xmlrequest = $xmlrequest;

@@ -146,6 +146,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 			if (pg_num_rows ( $result ) == 0) {
 				// No records match the id specified
 				$this->setErrorMessage ( "903", "No match for measurement id=" . $this->getID () );
+				$firebug->log($sql, "SQL");
 				return FALSE;
 			} else {
 				// Set parameters from db
@@ -680,9 +681,29 @@ class measurement extends measurementEntity implements IDBAccessor {
 			$myelement = $mysample->parentEntityArray [0];
 			$myobjects = $myelement->parentEntityArray;
 			
-			$firebug->log($myobjects, "Objects parent array for element ".$myelement->getID());
-			$lastobject = $myobjects [count ( $myobjects ) - 1];
-			$myproject = $lastobject->parentEntityArray[0];
+			$firebug->log($myobjects, "All objects");
+			
+			$lastobject = null;
+			foreach($myobjects as $o)
+			{
+				if($o->getProjectID()!=null && count($o->getProjectID())>0)
+				{
+					$lastobject = $o;
+				}
+			}
+			
+			
+			
+			//$firebug->log($lastobject, "The top level object which should have a project is...");
+			
+			//$firebug->log($myobjects, "Objects parent array for element ".$myelement->getID());
+			//$lastobject = $myobjects [count ( $myobjects ) - 1];
+			
+			
+			$myproject = new project();
+			$myproject->setParamsFromDB($lastobject->getProjectID());
+			
+			//$firebug->log($myproject, "The project is...");
 			
 			// get the box, add it to the list if we don't have it
 			$mybox = $this->getSampleBox ( $mysample );
@@ -694,7 +715,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 			$sid = $mysample->getID ();
 			$eid = $myelement->getID ();
 			$did = $d->getID ();
-			$loid = $lastobject->getID ();
+			$loid = $lastobject->getID ();	
 			$pid = $myproject->getID();
 			
 			// now, we have a map from element -> sample -> radius -> measurementSeries

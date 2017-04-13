@@ -48,7 +48,6 @@ import org.tridas.interfaces.NormalTridasVoc;
 import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
@@ -119,6 +118,7 @@ public class TridasEntityDeriver {
 				log.debug("Adding projectid field to TridasObject");
 				
 				TridasProjectDictionaryProperty pd3 = new TridasProjectDictionaryProperty("object.project", "project");
+				
 				pd3.setCategoryPrefix(rootName);
 				fieldMap.put("project", pd3);
 				parent.addChildProperty(pd3);

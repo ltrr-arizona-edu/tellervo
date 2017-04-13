@@ -134,7 +134,7 @@ class object extends objectEntity implements IDBAccessor {
 	
 		if($this->getProjectID()==null)
 		{
-			if($this->getParentObjectID()!=null) {
+			/*if($this->getParentObjectID()!=null) {
 				$firebug->log("Project ID is null and parent object id is not.  So no project to lookup");
 				return true;
 			}
@@ -143,6 +143,49 @@ class object extends objectEntity implements IDBAccessor {
 				$this->setErrorMessage ( "903", "There are no projects associated with object id=" . $this->getID () );
 				return false; 
 			}
+			*/
+			
+			// First find all parent objects
+			$sql = "SELECT * from cpgdb.findobjectancestors('" . pg_escape_string ( $this->getID () ) . ", false')";
+			$dbconnstatus = pg_connection_status ( $dbconn );
+			if ($dbconnstatus === PGSQL_CONNECTION_OK) {
+				pg_send_query ( $dbconn, $sql );
+				$result = pg_get_result ( $dbconn );
+					
+				if (pg_num_rows ( $result ) == 0) {
+					// No records match the id specified
+					$this->setErrorMessage ( "903", "There are no parent objects or projects associated with object id =" . $this->getID () );
+					return FALSE;
+				} else {
+					// Empty array before populating it
+					$this->parentEntityArray = array ();
+			
+					// Loop through all the parents
+					while ( $row = pg_fetch_array ( $result ) ) {
+						$myObject = new object ();
+						$success = $myObject->setParamsFromDB ( $row ['objectid'] );
+						if ($success === FALSE) {
+							trigger_error ( $myObject->getLastErrorCode () . $myObject->getLastErrorMessage () );
+						}
+							
+						// Get the top level object to look up it's project
+						if($myObject->getProjectID()!=null)
+						{
+							$myObject->setParentsFromDB();
+						}
+						
+						// Add to the array of parents
+						array_push ( $this->parentEntityArray, $myObject );
+					}
+			
+					// Reverse array so that the immediate parent is first and is followed by
+					// successively more ancestral parents
+					$this->parentEntityArray = array_reverse ( $this->parentEntityArray );
+					$this->cacheEntity ( $this->parentEntityArray, "objectEntityArray", $this->objectID );
+				}
+			}
+			
+			return true;			
 		}
 		
 		
@@ -493,6 +536,18 @@ class object extends objectEntity implements IDBAccessor {
 		
 		if ($crudMode == "update" && $this->getID () == NULL) {
 			$this->setErrorMessage ( "902", "Missing parameter - 'id' field is required when editing" );
+			return FALSE;
+		}
+		
+		if($this->getProjectID()==null && $this->getParentObjectID()==null)
+		{
+			$this->setErrorMessage ( "902", "Missing parameter - top level objects must have a project" );
+			return FALSE;
+		}
+		
+		if($this->getProjectID()!=null && $this->getParentObjectID()!=null)
+		{
+			$this->setErrorMessage ( "902", "Sub-objects cannot be manually assigned to a project.  Sub-objects automatically belong to the project that their parent object belongs to." );
 			return FALSE;
 		}
 		

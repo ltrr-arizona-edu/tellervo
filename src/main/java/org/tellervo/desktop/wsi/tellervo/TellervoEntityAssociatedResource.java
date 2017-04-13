@@ -116,6 +116,16 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 	
 	private final void initializeForCUD(ICoreTridas entity, String parentEntityID, 
 			TellervoRequestType queryType) {
+		
+		// Clear any subobjects as they screw up JAXB marshalling
+		if(entity instanceof TridasObject)
+		{
+			if(((TridasObject)entity).isSetObjects())
+			{
+				((TridasObject)entity).setObjects(null);
+			}
+		}
+
 		switch(queryType) {
 		case CREATE:
 		case UPDATE:
