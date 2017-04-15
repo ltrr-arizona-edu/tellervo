@@ -122,10 +122,14 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 			
 			return new ListComboBoxRenderer(required);
 		}
-		
-		
+			
 		// get a renderer, if one exists
 		TableCellRenderer defaultRenderer = super.getRenderer(property);
+		
+		if(((TridasEntityProperty)property).isList)
+		{
+			defaultRenderer = new TridasListRenderer();
+		}
 		
 		// if one doesn't exist, and it has children, mark it as such
 		if(defaultRenderer == null && property instanceof TridasEntityProperty) {

@@ -46,9 +46,6 @@ public class TridasListRenderer extends DefaultCellRendererEx {
 		
 		List<Object> items=null;
 		items  = (List<Object>) value;
-		
-		
-		Class clazz = items.get(0).getClass();
 
 		if(items.size()==0) 
 		{
@@ -56,6 +53,7 @@ public class TridasListRenderer extends DefaultCellRendererEx {
 		}
 		if(items.size()==1) 
 		{
+			Class clazz = items.get(0).getClass();
 			if(clazz==TridasFile.class)
 			{
 				return ((TridasFile)items.get(0)).getHref();
@@ -71,6 +69,7 @@ public class TridasListRenderer extends DefaultCellRendererEx {
 		}
 		else
 		{
+			Class clazz = items.get(0).getClass();
 			String type="";
 			if(clazz==TridasFile.class)
 			{

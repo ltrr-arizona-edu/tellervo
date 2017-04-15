@@ -89,6 +89,11 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 			{
 				return new WSICurationEditor((TridasSample) ep.getRootObject());
 			}
+			
+			if(ep.qname.equals("project.types"))
+			{
+				return new TridasProjectTypesEditor();
+			}
 		}
 		
 		if(property instanceof TridasProjectDictionaryProperty)
@@ -104,6 +109,8 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		{
 			return new TridasFileEditor();
 		}
+		
+	
 				
 		PropertyEditor defaultEditor = super.getEditor(property);
 	
