@@ -25,6 +25,8 @@ package org.tellervo.desktop.tridasv2.ui;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasFile;
@@ -35,12 +37,15 @@ import org.tridas.schema.TridasFile;
  */
 public class TridasListRenderer extends DefaultCellRendererEx {
 	private static final long serialVersionUID = 1L;
+	  private final static Logger log = LoggerFactory.getLogger(TridasListRenderer.class);
 
 	/* (non-Javadoc)
 	 * @see com.l2fprod.common.swing.renderer.DefaultCellRenderer#convertToString(java.lang.Object)
 	 */
 	@Override
 	protected String convertToString(Object value) {
+		
+		log.debug("TridasListRenderer called for "+value);
 		
 		if(!(value instanceof List)) return null;
 		
@@ -77,7 +82,7 @@ public class TridasListRenderer extends DefaultCellRendererEx {
 			}
 			else if(clazz==ControlledVoc.class)
 			{
-				type = "items";
+				type = "vocab items";
 			}
 			else
 			{

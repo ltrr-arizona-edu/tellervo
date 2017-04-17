@@ -90,9 +90,7 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 	
 	public synchronized TableCellRenderer getRenderer(Property property) {
 		boolean required = false;
-				
-		log.debug(property.getDisplayName());
-		
+						
 		// handle enums nicely
 		if(property instanceof TridasEntityProperty) {
 			TridasEntityProperty ep = (TridasEntityProperty)property;

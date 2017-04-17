@@ -68,7 +68,6 @@ public class SelectableChoice implements Selectable, Serializable {
 
 	}
 	
-
 	/**
 	 * Convert an array list of objects into an array list of selectable choices
 	 *  
@@ -76,13 +75,25 @@ public class SelectableChoice implements Selectable, Serializable {
 	 * @return
 	 */
 	public static ArrayList<SelectableChoice> makeObjectsSelectable(Collection<Object> objects)
+	{		
+		return makeObjectsSelectable(objects, true);	
+	}
+	
+
+	/**
+	 * Convert an array list of objects into an array list of selectable choices
+	 *  
+	 * @param objects
+	 * @return
+	 */
+	public static ArrayList<SelectableChoice> makeObjectsSelectable(Collection<Object> objects, boolean initiallyselected )
 	{
 		ArrayList<SelectableChoice> choices = new ArrayList<SelectableChoice>();
 		
 		for(Object o : objects)
 		{
 			SelectableChoice choice = new SelectableChoice(o);
-			choice.setSelected(true);
+			choice.setSelected(initiallyselected);
 			choices.add(choice);
 		}
 		

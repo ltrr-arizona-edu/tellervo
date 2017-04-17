@@ -31,7 +31,6 @@ import java.util.List;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.desktop.tridasv2.ui.support.TridasProjectDictionaryProperty;
 import org.tellervo.schema.WSICuration;
-import org.tellervo.schema.WSIUserDefinedTerm;
 import org.tridas.io.formats.tridas.TridasFile;
 import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDatingReference;
@@ -68,7 +67,7 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		registerEditor(org.tridas.schema.Date.class, TridasDateEditor.class);
 		
 		registerEditor(TridasFile.class, TridasFileEditor.class);
-		registerEditor(List.class, TridasFileEditor.class);
+		registerEditor(List.class, TridasProjectTypesEditor.class);
 		
 		
 		registerEditor(WSICuration.class, WSICurationEditor.class);
@@ -109,8 +108,6 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		{
 			return new TridasFileEditor();
 		}
-		
-	
 				
 		PropertyEditor defaultEditor = super.getEditor(property);
 	

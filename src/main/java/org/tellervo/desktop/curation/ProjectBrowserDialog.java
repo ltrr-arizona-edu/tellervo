@@ -27,6 +27,8 @@ import javax.swing.event.ListSelectionListener;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel;
@@ -51,6 +53,7 @@ import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
 
 public class ProjectBrowserDialog extends JDialog implements PropertyChangeListener, ActionListener{
+	private final static Logger log = LoggerFactory.getLogger(ProjectBrowserDialog.class);
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
@@ -68,7 +71,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 	public ProjectBrowserDialog(Boolean createNew)
 	{
 		initGUI();
-		initFactories();
+		//initFactories();
 		
 		if (createNew)
 		{
@@ -203,8 +206,8 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		propertiesPanel.setDescriptionVisible(true);
 		propertiesPanel.setMode(PropertySheet.VIEW_AS_FLAT_LIST);
 		propertiesPanel.getTable().setRowHeight(24);
-
-		propertiesPanel.getTable().addPropertyChangeListener(this);
+		propertiesPanel.getTable().setRendererFactory(new TridasPropertyRendererFactory());
+		propertiesPanel.getTable().setEditorFactory(new TridasPropertyEditorFactory());
 		propHolder.add(propertiesPanel);
 		
 		// derive a property list
@@ -215,13 +218,14 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		propertiesPanel.setProperties(propArray);
 		propertiesTable.expandAllBranches(true);
 		
+		propertiesPanel.getTable().addPropertyChangeListener(this);
+
 		
 	}
 	
 	private void initFactories()
 	{
-		propertiesPanel.getTable().setRendererFactory(new TridasPropertyRendererFactory());
-		propertiesPanel.getTable().setEditorFactory(new TridasPropertyEditorFactory());
+
 	}
 	
 	private void addNewProject()
@@ -279,9 +283,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		{
 			// warn
 		}
-		
 
-		
 		// Add data to table from entity
 		if(entity!=null)
 		{
@@ -319,7 +321,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		isDirty = true;
-		
+		log.debug(" Property Change Event detected for "+evt.getPropertyName()+ " - "+evt.getOldValue()+" -> "+evt.getNewValue());
 	}
 
 
@@ -330,9 +332,6 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 			throw new IllegalStateException();
 		
 		propertiesPanel.writeToObject(temporaryEditingEntity);
-		
-		
-
 
 		if (temporaryEditingEntity==null) 
 		{

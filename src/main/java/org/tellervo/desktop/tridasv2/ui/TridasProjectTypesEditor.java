@@ -47,7 +47,7 @@ public class TridasProjectTypesEditor extends AbstractPropertyEditor {
 	private TridasListRenderer label;
 	private JButton cancelButton;
 	private JButton editButton;
-	private ArrayList<ControlledVoc> typeList;
+	private ArrayList<ControlledVoc> projectTypesList;
 	
 	/**
 	 * 
@@ -80,10 +80,8 @@ public class TridasProjectTypesEditor extends AbstractPropertyEditor {
 	
 	@Override
 	public Object getValue() {
-		
-		
-		
-		return this.typeList;
+
+		return projectTypesList;
 	}
 	
 	@Override
@@ -91,12 +89,12 @@ public class TridasProjectTypesEditor extends AbstractPropertyEditor {
 		
 		if(value instanceof ControlledVoc)
 		{
-			typeList = new ArrayList<ControlledVoc>();
-			typeList.add((ControlledVoc) value);
+			projectTypesList = new ArrayList<ControlledVoc>();
+			projectTypesList.add((ControlledVoc) value);
 		}
 		else
 		{
-			typeList = (ArrayList<ControlledVoc>) value;
+			projectTypesList = (ArrayList<ControlledVoc>) value;
 		}
 		
 		label.setValue(value);
@@ -106,11 +104,11 @@ public class TridasProjectTypesEditor extends AbstractPropertyEditor {
 	 * Remove the current list
 	 */
 	private void selectNull() {
-		ArrayList<ControlledVoc> oldList = (ArrayList<ControlledVoc>) typeList.clone();
+		ArrayList<ControlledVoc> oldList = (ArrayList<ControlledVoc>) projectTypesList.clone();
 		label.setValue(null);
-		typeList = null;
+		projectTypesList = null;
 		
-		firePropertyChange(oldList, typeList);
+		firePropertyChange(oldList, projectTypesList);
 	}
 	
 	/**
@@ -119,15 +117,15 @@ public class TridasProjectTypesEditor extends AbstractPropertyEditor {
 	@SuppressWarnings("unchecked")
 	private void setList() {
 		ArrayList<ControlledVoc> oldList;
-		if(typeList!=null)
+		if(projectTypesList!=null)
 		{
-			oldList = (ArrayList<ControlledVoc>) typeList.clone();
+			oldList = (ArrayList<ControlledVoc>) projectTypesList.clone();
 		}
 		else
 		{
 			oldList = null;
 		}
-		TridasProjectTypesDialog dialog = new TridasProjectTypesDialog(label, typeList);
+		TridasProjectTypesDialog dialog = new TridasProjectTypesDialog(label, oldList);
 		
 		// show the dialog...
 		dialog.setVisible(true);
@@ -135,9 +133,12 @@ public class TridasProjectTypesEditor extends AbstractPropertyEditor {
 		// cancelled...
 		if(!dialog.hasResults()) return;
 		
-		ArrayList<ControlledVoc> lst = dialog.getList();
-		label.setValue(lst);
-		firePropertyChange(oldList, lst);
+		ArrayList<ControlledVoc> newList = dialog.getList();
+		
+		
+		projectTypesList = newList;
+		firePropertyChange(oldList, projectTypesList);
+		label.setValue(projectTypesList);
 		
 
 	}

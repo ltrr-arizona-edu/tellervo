@@ -117,24 +117,16 @@ public class TridasProjectTypesDialog extends JDialog implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent ev) {
-		
 		if(ev.getActionCommand()=="Cancel")
 		{
 			contentPanel.setHasResults(false);
 			this.dispose();
 		}
 		if(ev.getActionCommand()=="OK")
-		{
-			
-			
+		{	
 			contentPanel.setHasResults(true);
 			this.dispose();
-			
 		}
-		
-		
-
-		
 	}
 	
 	public ArrayList<ControlledVoc> getList()

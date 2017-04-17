@@ -9,11 +9,13 @@ import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.desktop.tridasv2.ui.support.TridasProjectDictionaryProperty;
 import org.tellervo.schema.UserExtendableDataType;
 import org.tellervo.schema.WSIUserDefinedField;
+import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.model.MVCArrayList;
@@ -253,6 +255,16 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 				else if(data instanceof TridasSample)
 				{
 					((TridasSample)data).setFiles((List<TridasFile>) files);
+				}
+			}
+			
+			if(p.getName().equals("types"))
+			{
+				Object types = p.getValue();
+				
+				if(data instanceof TridasProject)
+				{
+					((TridasProject)data).setTypes((List<ControlledVoc>) types);
 				}
 			}
 			
