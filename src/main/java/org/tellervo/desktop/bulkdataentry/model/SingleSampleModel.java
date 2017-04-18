@@ -259,7 +259,8 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		for(WSIUserDefinedField fld : udfdictionary)
 		{
 			if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
-			{
+			{	
+				
 				TridasGenericField field = null;
 				for(TridasGenericField gf: argSample.getGenericFields()){
 					if(gf.getName().equals(fld.getName())){
@@ -268,11 +269,28 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 				}
 				if(field == null){
 					field = new TridasGenericField();
-					argSample.getGenericFields().add(field);
 				}
-				field.setName(fld.getName());
-				field.setType(fld.getDatatype().value());
-				field.setValue(getProperty(fld.getLongfieldname()).toString());
+				
+				if(fld.isSetName() && fld.isSetDatatype() && fld.isSetLongfieldname())
+				{				
+					field.setName(fld.getName());
+					field.setType(fld.getDatatype().value());
+					Object prop = getProperty(fld.getLongfieldname());
+					if(prop!=null){
+						field.setValue(prop.toString());
+					}
+					else
+					{
+						field.setValue(null);
+						log.debug(fld.getName() + " was empty when writing to XML");
+						argSample.getGenericFields().add(field);
+					}
+				}
+				else
+				{
+					log.error("Failed to write "+fld.getName()+" field to XML");
+				}
+				
 			}
 		}
 		
@@ -319,35 +337,44 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 					{
 						if(gf.getName().equals(fld.getName()))
 						{
-							Object val = null;
-							if(fld.getDatatype().equals(UserExtendableDataType.XS___BOOLEAN))
-							{
-								val = false;
-								if(gf.getValue().toLowerCase().equals("true") || gf.getValue().toLowerCase().equals("t"))
-								{
-									
-									val = true;
-								}									
-							}
-							else if (fld.getDatatype().equals(UserExtendableDataType.XS___FLOAT))
-							{
-								val = Float.parseFloat(gf.getValue());
-							}
-							else if (fld.getDatatype().equals(UserExtendableDataType.XS___INT))
-							{
-								val = Integer.parseInt(gf.getValue());
-							}
-							else if (fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
-							{
-								val = gf.getValue();
-							}
-							else
-							{
-								log.error("Unsupported data type for generic field");
-								
-							}
 							
-							setProperty(fld.getLongfieldname(), val);
+							if(!gf.isSetValue() || gf.getValue()==null || gf.getValue().length()==0) continue;
+							
+							try{
+								Object val = null;
+								if(fld.getDatatype().equals(UserExtendableDataType.XS___BOOLEAN))
+								{
+									val = false;
+									if(gf.getValue().toLowerCase().equals("true") || gf.getValue().toLowerCase().equals("t"))
+									{
+										
+										val = true;
+									}									
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___FLOAT))
+								{
+									val = Float.parseFloat(gf.getValue());
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___INT))
+								{
+									val = Integer.parseInt(gf.getValue());
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
+								{
+									val = gf.getValue();
+								}
+								else
+								{
+									log.error("Unsupported data type for generic field");
+									
+								}
+								
+								setProperty(fld.getLongfieldname(), val);
+							} catch (NumberFormatException e)
+							{
+								
+								log.error("Failed to cast number value in user defined field "+fld.getName());
+							}
 
 						}
 					}

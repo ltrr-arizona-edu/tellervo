@@ -31,6 +31,10 @@ import net.opengis.gml.schema.Pos;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.command.ImportSelectedElementsCommand;
+import org.tellervo.desktop.core.App;
+import org.tellervo.schema.UserExtendableDataType;
+import org.tellervo.schema.UserExtendableEntity;
+import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.io.formats.heidelberg.HeidelbergToTridasDefaults.DefaultFields;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
@@ -38,6 +42,7 @@ import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasBedrock;
 import org.tridas.schema.TridasDimensions;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasLocationGeometry;
@@ -49,6 +54,7 @@ import org.tridas.spatial.GMLPointSRSHandler;
 import org.tridas.spatial.SpatialUtils;
 
 import com.dmurph.mvc.model.HashModel;
+import com.dmurph.mvc.model.MVCArrayList;
 
 /**
  * @author Daniel Murphy
@@ -322,6 +328,63 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		
 		if(argElement.getBedrock() != null){
 			setProperty(BEDROCK_DESCRIPTION, argElement.getBedrock().getDescription());
+		}
+		
+		// Handle Generic Fields
+		TridasGenericField field = null;
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		for(TridasGenericField gf: argElement.getGenericFields())
+		{
+			if (gf.getName().startsWith("userDefinedField"))
+			{			
+				for(WSIUserDefinedField fld : udfdictionary)
+				{
+					if(fld.getAttachedto().equals(UserExtendableEntity.ELEMENT))
+					{
+						if(gf.getName().equals(fld.getName()))
+						{
+							
+							if(!gf.isSetValue() || gf.getValue()==null || gf.getValue().length()==0) continue;
+							
+							try{
+								Object val = null;
+								if(fld.getDatatype().equals(UserExtendableDataType.XS___BOOLEAN))
+								{
+									val = false;
+									if(gf.getValue().toLowerCase().equals("true") || gf.getValue().toLowerCase().equals("t"))
+									{
+										
+										val = true;
+									}									
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___FLOAT))
+								{
+									val = Float.parseFloat(gf.getValue());
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___INT))
+								{
+									val = Integer.parseInt(gf.getValue());
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
+								{
+									val = gf.getValue();
+								}
+								else
+								{
+									log.error("Unsupported data type for generic field");
+									
+								}
+								
+								setProperty(fld.getLongfieldname(), val);
+							} catch (NumberFormatException e)
+							{
+								
+								log.error("Failed to cast number value in user defined field "+fld.getName());
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 }

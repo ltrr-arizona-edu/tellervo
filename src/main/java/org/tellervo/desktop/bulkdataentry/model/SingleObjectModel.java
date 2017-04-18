@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
+import org.tellervo.schema.UserExtendableDataType;
 import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.io.util.TridasUtils;
@@ -266,6 +267,64 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		{
 			setProperty(CREATOR, argObject.getCreator());
 		}
+		
+		// Handle Generic Fields
+		TridasGenericField field = null;
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		for(TridasGenericField gf: argObject.getGenericFields())
+		{
+			if (gf.getName().startsWith("userDefinedField"))
+			{			
+				for(WSIUserDefinedField fld : udfdictionary)
+				{
+					if(fld.getAttachedto().equals(UserExtendableEntity.OBJECT))
+					{
+						if(gf.getName().equals(fld.getName()))
+						{
+							
+							if(!gf.isSetValue() || gf.getValue()==null || gf.getValue().length()==0) continue;
+							
+							try{
+								Object val = null;
+								if(fld.getDatatype().equals(UserExtendableDataType.XS___BOOLEAN))
+								{
+									val = false;
+									if(gf.getValue().toLowerCase().equals("true") || gf.getValue().toLowerCase().equals("t"))
+									{
+										
+										val = true;
+									}									
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___FLOAT))
+								{
+									val = Float.parseFloat(gf.getValue());
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___INT))
+								{
+									val = Integer.parseInt(gf.getValue());
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
+								{
+									val = gf.getValue();
+								}
+								else
+								{
+									log.error("Unsupported data type for generic field");
+									
+								}
+								
+								setProperty(fld.getLongfieldname(), val);
+							} catch (NumberFormatException e)
+							{
+								
+								log.error("Failed to cast number value in user defined field "+fld.getName());
+							}
+						}
+					}
+				}
+			}
+		}
+		
 		
 		setProperty(IMPORTED, argObject.getIdentifier());
 	}
