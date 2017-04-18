@@ -14,6 +14,12 @@ public abstract class AbstractODKDecimalField extends AbstractODKField {
 
 	}
 	
+	public AbstractODKDecimalField(String fieldcode, String fieldname, String description, Object defaultvalue, int sortIndex )
+	{
+		super(ODKDataType.DECIMAL, fieldcode, fieldname, description, defaultvalue, sortIndex);
+
+	}
+	
 	public void setMinValue(Double val)
 	{
 		minValue = val;

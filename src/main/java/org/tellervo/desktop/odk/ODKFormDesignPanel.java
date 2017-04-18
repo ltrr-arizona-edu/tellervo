@@ -72,6 +72,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.odk.fields.AbstractODKChoiceField;
 import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.ODKDataType;
+import org.tellervo.desktop.odk.fields.ODKFieldComparator;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 import org.tellervo.desktop.odk.fields.ODKFields;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -1114,8 +1115,9 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		if(fields==null || fields.size()==0) return;	
 		
 		
+		Collections.sort(fields, new ODKFieldComparator());
 		Collections.reverse(fields);
-		
+				
 		for(ODKFieldInterface field : fields)
 		{
 			log.debug("Adding field "+field.getFieldName()+" to tree");

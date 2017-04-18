@@ -17,7 +17,7 @@ public class ODKTridasObjectType extends AbstractODKChoiceField {
 	
 	public ODKTridasObjectType()
 	{
-		super(ODKDataType.SELECT_ONE, "tridas_object_type", "Object type", Documentation.getDocumentation("Object type"), null);
+		super(ODKDataType.SELECT_ONE, "tridas_object_type", "Object type", Documentation.getDocumentation("Object type"), null, 3);
 		
 		@SuppressWarnings("unchecked")
 		List<ControlledVoc> dictItems = Dictionary.getMutableDictionary("objectTypeDictionary");	
