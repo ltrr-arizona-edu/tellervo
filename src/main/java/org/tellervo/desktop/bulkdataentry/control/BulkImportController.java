@@ -20,6 +20,10 @@
  ******************************************************************************/
 package org.tellervo.desktop.bulkdataentry.control;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+
 import org.tellervo.desktop.bulkdataentry.command.AddRowCommand;
 import org.tellervo.desktop.bulkdataentry.command.CopyRowCommand;
 import org.tellervo.desktop.bulkdataentry.command.CopySelectedRowsCommand;
@@ -43,6 +47,8 @@ import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.view.BulkDataEntryWindow;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.FrontController;
@@ -138,85 +144,152 @@ public class BulkImportController extends FrontController {
 	
 	private void populateObjectDefaults(ColumnChooserModel ccmodel){
 		
+		// First populate an array with all the default columns in it
+		ArrayList<String> defaults = new ArrayList<String>();
+		defaults.add(SingleObjectModel.IMPORTED);
+		defaults.add(SingleObjectModel.PARENT_OBJECT);
+		defaults.add(SingleObjectModel.OBJECT_CODE);
+		defaults.add(SingleObjectModel.TITLE);
+		defaults.add(SingleObjectModel.TYPE);
+		defaults.add(SingleObjectModel.COMMENTS);
+		defaults.add(SingleObjectModel.DESCRIPTION);
+		//defaults.add(SingleObjectModel.FILES);
+		defaults.add(SingleObjectModel.LATITUDE);
+		defaults.add(SingleObjectModel.LONGITUDE);
+		defaults.add(SingleObjectModel.LOCATION_TYPE);
+		defaults.add(SingleObjectModel.LOCATION_PRECISION);
+		defaults.add(SingleObjectModel.LOCATION_COMMENT);
+		//defaults.add(SingleObjectModel.WAYPOINT);
+		//defaults.add(SingleObjectModel.ADDRESSLINE1);
+		//defaults.add(SingleObjectModel.ADDRESSLINE2);
+		//defaults.add(SingleObjectModel.CITY_TOWN);
+		defaults.add(SingleObjectModel.STATE_PROVINCE_REGION);
+		//defaults.add(SingleObjectModel.POSTCODE);
+		defaults.add(SingleObjectModel.COUNTRY);
+		//defaults.add(SingleObjectModel.OWNER);
+		//defaults.add(SingleObjectModel.CREATOR);
 		
-		// TODO adding choice of columns to preferences.  
-		ccmodel.add(SingleObjectModel.IMPORTED);
-		ccmodel.add(SingleObjectModel.PARENT_OBJECT);
-		ccmodel.add(SingleObjectModel.OBJECT_CODE);
-		ccmodel.add(SingleObjectModel.TITLE);
-		ccmodel.add(SingleObjectModel.TYPE);
-		ccmodel.add(SingleObjectModel.COMMENTS);
-		ccmodel.add(SingleObjectModel.DESCRIPTION);
-		ccmodel.add(SingleObjectModel.FILES);
-		ccmodel.add(SingleObjectModel.LATITUDE);
-		ccmodel.add(SingleObjectModel.LONGITUDE);
-		ccmodel.add(SingleObjectModel.LOCATION_TYPE);
-		ccmodel.add(SingleObjectModel.LOCATION_PRECISION);
-		ccmodel.add(SingleObjectModel.LOCATION_COMMENT);
-		//ccmodel.add(SingleObjectModel.WAYPOINT);
-		ccmodel.add(SingleObjectModel.ADDRESSLINE1);
-		ccmodel.add(SingleObjectModel.ADDRESSLINE2);
-		ccmodel.add(SingleObjectModel.CITY_TOWN);
-		ccmodel.add(SingleObjectModel.STATE_PROVINCE_REGION);
-		ccmodel.add(SingleObjectModel.POSTCODE);
-		ccmodel.add(SingleObjectModel.COUNTRY);
-		ccmodel.add(SingleObjectModel.OWNER);
-		ccmodel.add(SingleObjectModel.CREATOR);
+		// Grab preferred fields from preferences, falling back to default if not specified
+		ArrayList<String> fields = App.prefs.getArrayListPref(PrefKey.OBJECT_FIELD_VISIBILITY_ARRAY, defaults);
+		
+		// Actually populate model with the fields
+		// Done in stupid way to maintain logical ordering
+		for(String f : defaults)
+		{
+			if(fields.contains(f))
+			{
+				ccmodel.add(f);
+			}
+		}
+		for(String f : fields)
+		{
+			if(!defaults.contains(f))
+			{
+				ccmodel.add(f);
+			}
+		}
+
 	}
 	
 	private void populateElementDefaults(ColumnChooserModel ccmodel){
-		ccmodel.add(SingleElementModel.IMPORTED);
-		ccmodel.add(SingleElementModel.OBJECT);
-		ccmodel.add(SingleElementModel.TITLE);
-		ccmodel.add(SingleElementModel.TYPE);
-		ccmodel.add(SingleElementModel.TAXON);
-		ccmodel.add(SingleElementModel.COMMENTS);
-		ccmodel.add(SingleElementModel.DESCRIPTION);
-		ccmodel.add(SingleElementModel.FILES);
-		ccmodel.add(SingleElementModel.SHAPE);
-		ccmodel.add(SingleElementModel.HEIGHT);
-		ccmodel.add(SingleElementModel.WIDTH);
-		ccmodel.add(SingleElementModel.DEPTH);
-		ccmodel.add(SingleElementModel.DIAMETER);
-		ccmodel.add(SingleElementModel.UNIT);
-		//ccmodel.add(SingleElementModel.AUTHENTICITY);
-		//ccmodel.add(SingleElementModel.WAYPOINT);
-		ccmodel.add(SingleElementModel.LATITUDE);
-		ccmodel.add(SingleElementModel.LONGITUDE);
-		ccmodel.add(SingleElementModel.LOCATION_PRECISION);
-		ccmodel.add(SingleElementModel.LOCATION_COMMENT);
-		ccmodel.add(SingleElementModel.LOCATION_TYPE);
-		ccmodel.add(SingleElementModel.ADDRESSLINE1);
-		ccmodel.add(SingleElementModel.ADDRESSLINE2);
-		ccmodel.add(SingleElementModel.CITY_TOWN);
-		ccmodel.add(SingleElementModel.STATE_PROVINCE_REGION);
-		ccmodel.add(SingleElementModel.POSTCODE);
-		ccmodel.add(SingleElementModel.COUNTRY);
-		ccmodel.add(SingleElementModel.MARKS);
-		ccmodel.add(SingleElementModel.ALTITUDE);
-		ccmodel.add(SingleElementModel.SLOPE_ANGLE);
-		ccmodel.add(SingleElementModel.SLOPE_AZIMUTH);
-		ccmodel.add(SingleElementModel.SOIL_DESCRIPTION);
-		ccmodel.add(SingleElementModel.SOIL_DEPTH);
-		ccmodel.add(SingleElementModel.BEDROCK_DESCRIPTION);
+		
+		// First populate an array with all the default columns in it
+		ArrayList<String> defaults = new ArrayList<String>();	
+		
+		defaults.add(SingleElementModel.IMPORTED);
+		defaults.add(SingleElementModel.OBJECT);
+		defaults.add(SingleElementModel.TITLE);
+		defaults.add(SingleElementModel.TYPE);
+		defaults.add(SingleElementModel.TAXON);
+		defaults.add(SingleElementModel.COMMENTS);
+		defaults.add(SingleElementModel.DESCRIPTION);
+		//defaults.add(SingleElementModel.FILES);
+		//defaults.add(SingleElementModel.SHAPE);
+		defaults.add(SingleElementModel.HEIGHT);
+		defaults.add(SingleElementModel.WIDTH);
+		defaults.add(SingleElementModel.DEPTH);
+		defaults.add(SingleElementModel.DIAMETER);
+		defaults.add(SingleElementModel.UNIT);
+		//defaults.add(SingleElementModel.AUTHENTICITY);
+		//defaults.add(SingleElementModel.WAYPOINT);
+		defaults.add(SingleElementModel.LATITUDE);
+		defaults.add(SingleElementModel.LONGITUDE);
+		defaults.add(SingleElementModel.LOCATION_PRECISION);
+		defaults.add(SingleElementModel.LOCATION_COMMENT);
+		defaults.add(SingleElementModel.LOCATION_TYPE);
+		//defaults.add(SingleElementModel.ADDRESSLINE1);
+		//defaults.add(SingleElementModel.ADDRESSLINE2);
+		//defaults.add(SingleElementModel.CITY_TOWN);
+		defaults.add(SingleElementModel.STATE_PROVINCE_REGION);
+		//defaults.add(SingleElementModel.POSTCODE);
+		defaults.add(SingleElementModel.COUNTRY);
+		//defaults.add(SingleElementModel.MARKS);
+		defaults.add(SingleElementModel.ALTITUDE);
+		//defaults.add(SingleElementModel.SLOPE_ANGLE);
+		//defaults.add(SingleElementModel.SLOPE_AZIMUTH);
+		//defaults.add(SingleElementModel.SOIL_DESCRIPTION);
+		//defaults.add(SingleElementModel.SOIL_DEPTH);
+		//defaults.add(SingleElementModel.BEDROCK_DESCRIPTION);
+		
+		// Grab preferred fields from preferences, falling back to default if not specified
+		ArrayList<String> fields = App.prefs.getArrayListPref(PrefKey.ELEMENT_FIELD_VISIBILITY_ARRAY, defaults);
+		
+		// Actually populate model with the fields
+		// Done in stupid way to maintain logical ordering
+		for(String f : defaults)
+		{
+			if(fields.contains(f))
+			{
+				ccmodel.add(f);
+			}
+		}
+		for(String f : fields)
+		{
+			if(!defaults.contains(f))
+			{
+				ccmodel.add(f);
+			}
+		}
 	}
 	
 	private void populateSampleDefaults(ColumnChooserModel ccmodel){
-		ccmodel.add(SingleSampleModel.IMPORTED);
-		ccmodel.add(SingleSampleModel.OBJECT);
-		ccmodel.add(SingleSampleModel.ELEMENT);
-		ccmodel.add(SingleSampleModel.TITLE);
-		ccmodel.add(SingleSampleModel.TYPE);
-		ccmodel.add(SingleSampleModel.BOX);
-		ccmodel.add(SingleSampleModel.COMMENTS);
-		ccmodel.add(SingleSampleModel.DESCRIPTION);
-		ccmodel.add(SingleSampleModel.FILES);
-		ccmodel.add(SingleSampleModel.SAMPLING_DATE);
-		ccmodel.add(SingleSampleModel.POSITION);
-		ccmodel.add(SingleSampleModel.STATE);
-		ccmodel.add(SingleSampleModel.KNOTS);
+		
+		// First populate an array with all the default columns in it
+		ArrayList<String> defaults = new ArrayList<String>();		
+		defaults.add(SingleSampleModel.IMPORTED);
+		defaults.add(SingleSampleModel.OBJECT);
+		defaults.add(SingleSampleModel.ELEMENT);
+		defaults.add(SingleSampleModel.TITLE);
+		defaults.add(SingleSampleModel.TYPE);
+		defaults.add(SingleSampleModel.BOX);
+		defaults.add(SingleSampleModel.COMMENTS);
+		defaults.add(SingleSampleModel.DESCRIPTION);
+		//defaults.add(SingleSampleModel.FILES);
+		defaults.add(SingleSampleModel.SAMPLING_DATE);
+		defaults.add(SingleSampleModel.POSITION);
+		//defaults.add(SingleSampleModel.STATE);
+		//defaults.add(SingleSampleModel.KNOTS);
 
-
+		// Grab preferred fields from preferences, falling back to default if not specified
+		ArrayList<String> fields = App.prefs.getArrayListPref(PrefKey.SAMPLE_FIELD_VISIBILITY_ARRAY, defaults);
+		fields = new ArrayList<String>(new HashSet<String>(fields));
+		
+		// Actually populate model with the fields
+		// Done in stupid way to maintain logical ordering
+		for(String f : defaults)
+		{
+			if(fields.contains(f))
+			{
+				ccmodel.add(f);
+			}
+		}
+		for(String f : fields)
+		{
+			if(!defaults.contains(f))
+			{
+				ccmodel.add(f);
+			}
+		}
 	}
 	
 	private void populateRadiusDefaults(ColumnChooserModel ccmodel){

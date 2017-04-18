@@ -1120,7 +1120,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 				
 		for(ODKFieldInterface field : fields)
 		{
-			log.debug("Adding field "+field.getFieldName()+" to tree");
+			//log.debug("Adding field "+field.getFieldName()+" to tree");
 			//selectedFieldsTreeModel.addNodeToRoot(field);
 			
 			AbstractODKTreeNode newChild = new ODKFieldNode(field);
@@ -1169,12 +1169,12 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			{
 				ODKFieldInterface obj = (ODKFieldInterface) childnode.getUserObject();
 				if(obj.isFieldRequired()) {
-					log.debug(obj.getFieldName() + " is mandatory so leaving in tree");
+					//log.debug(obj.getFieldName() + " is mandatory so leaving in tree");
 					continue;
 				}
 				else
 				{
-					log.debug(obj.getFieldName() + " is optional so deleting from tree");
+					//log.debug(obj.getFieldName() + " is optional so deleting from tree");
 					
 					try{
 						ODKFieldInterface field = (ODKFieldInterface) childnode.getUserObject();

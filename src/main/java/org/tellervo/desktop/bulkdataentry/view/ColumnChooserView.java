@@ -259,7 +259,6 @@ public class ColumnChooserView extends JWindow{
 		   public Component getTableCellRendererComponent(JTable table, Object value,
 		            boolean isSelected, boolean hasFocus, int row, int col) {
 
-			   System.out.println("Called");
 		      Component c = super.getTableCellRendererComponent(table, value,
 		               isSelected, hasFocus, row, col);
 		      

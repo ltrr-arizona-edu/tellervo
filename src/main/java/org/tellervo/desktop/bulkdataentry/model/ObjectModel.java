@@ -23,11 +23,15 @@
  */
 package org.tellervo.desktop.bulkdataentry.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.HashModel;
@@ -48,6 +52,17 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 		registerProperty(TABLE_MODEL, PropertyType.FINAL, new ObjectTableModel(this));
 		registerProperty(IMPORTED_LIST, PropertyType.FINAL, new MVCArrayList<TridasObjectEx>());
 		registerProperty(WAYPOINT_LIST, PropertyType.FINAL, new MVCArrayList<GPXWaypoint>());
+		getColumnModel().populatePossibleColumns(getModelTableProperties());
+		
+		
+		getColumnModel().addPropertyChangeListener(new PropertyChangeListener(){
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				App.prefs.setArrayListPref(PrefKey.OBJECT_FIELD_VISIBILITY_ARRAY, getColumnModel());	
+			}
+			
+		});
 
 	}
 	

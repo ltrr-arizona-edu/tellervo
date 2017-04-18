@@ -22,6 +22,8 @@ package org.tellervo.desktop.bulkdataentry.command;
 
 import org.tellervo.desktop.bulkdataentry.control.ColumnsModifiedEvent;
 import org.tellervo.desktop.bulkdataentry.model.ColumnChooserModel;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 import com.dmurph.mvc.IllegalThreadException;
 import com.dmurph.mvc.IncorrectThreadException;
@@ -53,6 +55,7 @@ public class ColumnAddedCommand implements ICommand{
 		
 		ColumnsModifiedEvent event = (ColumnsModifiedEvent) argEvent;
 		ColumnChooserModel model = event.model;
+				
 		int i=0;
 		for(String s: model.getPossibleColumns()){
 			if(s.equals(event.getValue())){

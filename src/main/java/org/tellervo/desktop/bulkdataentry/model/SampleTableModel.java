@@ -121,7 +121,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 			}
 		}
 		
-		log.debug("Looking for data type of field "+argColumn);
+		//log.debug("Looking for data type of field "+argColumn);
 
 		return String.class;
 	}
