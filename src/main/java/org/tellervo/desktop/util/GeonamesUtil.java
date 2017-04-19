@@ -63,6 +63,7 @@ public class GeonamesUtil {
 				   
 				   address.setCountry((String) item.get("countryName"));
 				   address.setCityOrTown((String) item.get("toponymName"));
+				   address.setStateProvinceRegion((String) item.get("adminName1"));
 				   
 				   return address;
 			   }  
@@ -95,5 +96,16 @@ public class GeonamesUtil {
 				
 				
 		return address.getCityOrTown();
+	}
+	
+	public static String getStateForLocation(TridasLocation location)
+	{		
+		TridasAddress address = getAddressForLocation(location);
+		if(address==null) return null;
+		
+		if(!address.isSetStateProvinceRegion()) return null;
+				
+				
+		return address.getStateProvinceRegion();
 	}
 }

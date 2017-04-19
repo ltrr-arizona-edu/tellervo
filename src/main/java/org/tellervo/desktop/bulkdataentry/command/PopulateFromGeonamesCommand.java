@@ -181,16 +181,20 @@ public class PopulateFromGeonamesCommand implements ICommand {
 				Double longitude= null;
 				String country= null;
 				String city= null;
+				String state= null;
 				String countryProp = null;
 				String cityProp = null;
+				String stateProp = null;
 				if (event.model instanceof ObjectModel)
 				{
 					latitude = (Double) row.getProperty(SingleObjectModel.LATITUDE);
 					longitude = (Double) row.getProperty(SingleObjectModel.LONGITUDE);
 					country = (String) row.getProperty(SingleObjectModel.COUNTRY);
 					city = (String) row.getProperty(SingleObjectModel.CITY_TOWN);
+					state = (String) row.getProperty(SingleObjectModel.STATE_PROVINCE_REGION);
 					countryProp = SingleObjectModel.COUNTRY;
 					cityProp = SingleObjectModel.CITY_TOWN;
+					stateProp = SingleObjectModel.STATE_PROVINCE_REGION;
 				}
 				else if (event.model instanceof ElementModel)
 				{
@@ -198,8 +202,10 @@ public class PopulateFromGeonamesCommand implements ICommand {
 					longitude = (Double) row.getProperty(SingleElementModel.LONGITUDE);
 					country = (String) row.getProperty(SingleElementModel.COUNTRY);
 					city = (String) row.getProperty(SingleElementModel.CITY_TOWN);
+					state = (String) row.getProperty(SingleElementModel.STATE_PROVINCE_REGION);
 					countryProp = SingleElementModel.COUNTRY;
 					cityProp = SingleElementModel.CITY_TOWN;
+					stateProp = SingleElementModel.STATE_PROVINCE_REGION;
 				}
 
 				if(latitude!=null && longitude!=null)
@@ -223,6 +229,12 @@ public class PopulateFromGeonamesCommand implements ICommand {
 						{
 							log.debug("Setting city to :"+address.getCityOrTown());
 							row.setProperty(cityProp, address.getCityOrTown());
+						}
+						
+						if(address.isSetStateProvinceRegion() && state==null )
+						{
+							log.debug("Setting state to :"+address.getStateProvinceRegion());
+							row.setProperty(stateProp, address.getStateProvinceRegion());
 						}	
 					}
 				}
