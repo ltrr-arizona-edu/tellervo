@@ -27,6 +27,7 @@ CREATE TABLE public.tlkpuserdefinedfield
   attachedto integer NOT NULL, -- Integer indicated at what tridas level this field is attached.  1=project, 2=object, 3=element, 4=sample, 5=radius, 6=measurementseries
   datatype character varying NOT NULL DEFAULT 'xs:string'::character varying,
   longfieldname character varying NOT NULL,
+  dictionarykey character varying,
   CONSTRAINT pkey_userdefinedfield PRIMARY KEY (userdefinedfieldid),
   CONSTRAINT "tlkpuserdefinedfields-datatype" FOREIGN KEY (datatype)
       REFERENCES public.tlkpdatatype (datatype) MATCH SIMPLE
@@ -77,6 +78,40 @@ SELECT udfv.userdefinedfieldvalueid,
   OWNER TO tellervo;
 
 
+CREATE OR REPLACE VIEW public.vwtbluserdefinedfieldandvalue AS 
+ SELECT udfv.userdefinedfieldvalueid,
+    udfv.value,
+    udfv.entityid,
+    udf.userdefinedfieldid,
+    udf.fieldname,
+    udf.description,
+    udf.attachedto,
+    udf.datatype,
+    udf.longfieldname,
+    udf.dictionarykey
+   FROM tbluserdefinedfieldvalue udfv,
+    tlkpuserdefinedfield udf
+  WHERE udfv.userdefinedfieldid = udf.userdefinedfieldid;
+
+ALTER TABLE public.vwtbluserdefinedfieldandvalue
+  OWNER TO tellervo;
+  
+  
+  CREATE TABLE public.tlkpuserdefinedterm
+(
+  userdefinedtermid uuid NOT NULL DEFAULT uuid_generate_v1mc(),
+  term character varying NOT NULL,
+  dictionarykey character varying NOT NULL,
+  CONSTRAINT pkey_userdefinedterm PRIMARY KEY (userdefinedtermid),
+  CONSTRAINT uniq_userdefinedtermindict UNIQUE (term, dictionarykey)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.tlkpuserdefinedterm
+  OWNER TO tellervo;
+  
+  
 
 -- 
 -- IMPLEMENTING PROJECTS
