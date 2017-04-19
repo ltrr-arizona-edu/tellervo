@@ -141,20 +141,24 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 		 * JOptionPane.ERROR_MESSAGE); return; }
 		 */
 
-		// First add column headers
 		int colsdone = 0;
-		for (int j : colsselected) {
-			colsdone++;
-
-			if (j <= 1)
-				continue;
-
-			sbf.append(mainTable.getColumnName(j));
-
-			if (colsdone < colsselected.size())
-				sbf.append("\t");
+		
+		// First add column headers - but only if multiple columns are selected
+		if(colsselected.size()>1)
+		{	
+			for (int j : colsselected) {
+				colsdone++;
+	
+				if (j <= 1)
+					continue;
+	
+				sbf.append(mainTable.getColumnName(j));
+	
+				if (colsdone < colsselected.size())
+					sbf.append("\t");
+			}
+			sbf.append("\n");
 		}
-		sbf.append("\n");
 
 		for (int i = 0; i < numrows; i++) {
 			for (int j = 0; j < numcols; j++) {
@@ -538,7 +542,14 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 								tablemodel.setValueAt(tempElement, rowModelIndex,
 										colModelIndex);
 						} else if (clazz.equals(GPXWaypoint.class)) {
-							// ignore
+							
+							if(value!=null && value.length()>0)
+							{
+								logPasteError(lineindex, colModelIndex, value,
+										"Pasting in waypoint names not supported");
+								errorsEncountered = true;
+							}
+							
 						} else if (clazz.equals(Boolean.class)) {
 							if (value.toLowerCase().equals("true")
 									|| value.toLowerCase().equals("t")
