@@ -14,7 +14,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
-import org.fhaes.util.Builder;
+import org.tellervo.desktop.ui.Builder;
 
 import net.miginfocom.swing.MigLayout;
 

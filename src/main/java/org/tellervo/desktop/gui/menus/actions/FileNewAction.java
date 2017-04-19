@@ -15,7 +15,7 @@ public class FileNewAction extends AbstractAction {
 	private Window parent;
 	
 	public FileNewAction(Window parent) {
-        super(I18n.getText("menus.file.new"), Builder.getIcon("filenew.png", 22));
+        super("New series", Builder.getIcon("filenew.png", 22));
 		putValue(SHORT_DESCRIPTION, "Create a new series");
         putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.new")); 
         putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.new"));

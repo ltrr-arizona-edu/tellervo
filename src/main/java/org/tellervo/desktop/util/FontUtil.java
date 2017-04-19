@@ -87,4 +87,13 @@ public class FontUtil {
 		return realFont;
 		
 	}
+	
+	public static String getFontFilenameFromResources(String fontname)
+	{		
+		java.net.URL url = cl.getResource("Fonts/"+fontname);
+		
+		return url.toString();
+	
+		
+	}
 }

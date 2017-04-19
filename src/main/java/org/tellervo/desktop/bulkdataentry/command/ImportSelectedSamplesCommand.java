@@ -173,16 +173,27 @@ public class ImportSelectedSamplesCommand implements ICommand {
 		int i=0;
 		for(IBulkImportSingleRowModel srm : selected)
 		{
-			SingleSampleModel som = (SingleSampleModel) srm;
+			SingleSampleModel ssm = (SingleSampleModel) srm;
 			TridasSample origSample = new TridasSample();
 			
-			if(!som.isDirty()){
-				System.out.println("Object isn't dirty, not saving/updating: "+som.getProperty(SingleSampleModel.TITLE).toString());
+			if(!ssm.isDirty()){
+				System.out.println("Object isn't dirty, not saving/updating: "+ssm.getProperty(SingleSampleModel.TITLE).toString());
 			}
 			
-			som.populateToTridasSample(origSample);
-			TridasElement parentElement = ((TridasElementOrPlaceholder) som.getProperty(SingleSampleModel.ELEMENT)).getTridasElement();
+			ssm.populateToTridasSample(origSample);
 			
+			Object e = ssm.getProperty(SingleSampleModel.ELEMENT);
+			TridasElement parentElement = null;
+			if(e instanceof TridasElementOrPlaceholder)
+			{
+				parentElement = ((TridasElementOrPlaceholder)e).getTridasElement();
+			}
+			else if (e instanceof TridasElement)
+			{
+				parentElement = (TridasElement) e;
+			}
+			
+					
 			// sample first
 			EntityResource<TridasSample> sampleResource;
 			if(origSample.getIdentifier() != null){
@@ -207,9 +218,9 @@ public class ImportSelectedSamplesCommand implements ICommand {
 						I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 				continue;
 			}
-			som.populateFromTridasSample(sampleResource.getAssociatedResult());
-			som.setDirty(false);
-			tmodel.setSelected(som, false);
+			ssm.populateFromTridasSample(sampleResource.getAssociatedResult());
+			ssm.setDirty(false);
+			tmodel.setSelected(ssm, false);
 			
 			// add to imported list or update existing
 			if(origSample.getIdentifier() != null){
@@ -221,7 +232,7 @@ public class ImportSelectedSamplesCommand implements ICommand {
 					}
 				}
 				if(found == null){
-					Alert.error("Error updating model", "Couldn't find the object in the model to update, please report bug.");
+					//Alert.error("Error updating model", "Couldn't find the object in the model to update, please report bug.");
 				}else{
 					sampleResource.getAssociatedResult().copyTo(found);
 				}
@@ -230,10 +241,10 @@ public class ImportSelectedSamplesCommand implements ICommand {
 				model.getSampleModel().getImportedList().add(sampleResource.getAssociatedResult());
 			}
 			
-			if(som.getRadiusModel() != null){
+			if(ssm.getRadiusModel() != null){
 				// now lets do the radius
 				TridasRadius origRadius = new TridasRadius();
-				som.getRadiusModel().populateToTridasRadius(origRadius);
+				ssm.getRadiusModel().populateToTridasRadius(origRadius);
 				
 				TridasSample parentSample = sampleResource.getAssociatedResult();
 				
@@ -259,9 +270,9 @@ public class ImportSelectedSamplesCommand implements ICommand {
 							I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
 					continue;
 				}
-				som.getRadiusModel().populateFromTridasRadius(radiusResource.getAssociatedResult());
-				som.getRadiusModel().setDirty(false);
-				tmodel.setSelected(som, false);
+				ssm.getRadiusModel().populateFromTridasRadius(radiusResource.getAssociatedResult());
+				ssm.getRadiusModel().setDirty(false);
+				tmodel.setSelected(ssm, false);
 			}
 			i++;
 		}

@@ -10,7 +10,7 @@ public class ODKTridasElementCode extends AbstractODKField {
 
 	public ODKTridasElementCode()
 	{
-		super(ODKDataType.STRING, "tridas_element_title", "Element code", Documentation.getDocumentation("element.title"), null);
+		super(ODKDataType.STRING, "tridas_element_title", "Element code", Documentation.getDocumentation("element.title"), null, 4);
 	}
 	
 	@Override

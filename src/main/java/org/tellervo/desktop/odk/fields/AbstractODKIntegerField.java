@@ -14,6 +14,12 @@ public abstract class AbstractODKIntegerField extends AbstractODKField {
 
 	}
 	
+	public AbstractODKIntegerField(String fieldcode, String fieldname, String description, Object defaultvalue, int sortIndex )
+	{
+		super(ODKDataType.INTEGER, fieldcode, fieldname, description, defaultvalue, sortIndex);
+
+	}
+	
 	public void setMinValue(Integer val)
 	{
 		minValue = val;

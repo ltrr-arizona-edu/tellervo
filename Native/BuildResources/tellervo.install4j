@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="6.0.1" transformSequenceNumber="5">
-  <directoryPresets config="../../target/classes/MacBuild/fixportpermissions.sh" />
-  <application name="Tellervo" distributionSourceDir="" applicationId="3241-8043-2524-6669" mediaDir="../../target/binaries/desktop/${compiler:sys.version}/${compiler:platformtype}" mediaFilePattern="tellervo-${compiler:sys.version}-${compiler:sys.platform}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="false" shrinkRuntime="true" shortName="Tellervo" publisher="University of Arizona" publisherWeb="http://www.tellervo.org" version="1.3.1-SNAPSHOT" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="add89b377a765064" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
+  <directoryPresets config="${project.build.directory}/classes/fixportpermissions.sh" />
+  <application name="Tellervo" distributionSourceDir="" applicationId="3241-8043-2524-6669" mediaDir="${project.build.directory}/binaries/desktop/${compiler:sys.version}/${compiler:platformtype}" mediaFilePattern="tellervo-${compiler:sys.version}-${compiler:sys.platform}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="false" shrinkRuntime="true" shortName="Tellervo" publisher="University of Arizona" publisherWeb="http://www.tellervo.org" version="${version}" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="add89b377a765064" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
       <additionalLanguages />
@@ -15,7 +15,7 @@
       <variable name="platformtype" value="${compiler:sys.platform}" description="" category="" />
     </variables>
     <mergedProjects />
-    <codeSigning macEnabled="true" macPkcs12File="../../../../.ssh/pwb_code_signing_2014.p12" windowsEnabled="true" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="../../../../.ssh/pwb_code_signing_2014.p12" />
+    <codeSigning macEnabled="true" macPkcs12File="${pkcs12.filename}" windowsEnabled="true" windowsKeySource="pkcs12" windowsPvkFile="" windowsSpcFile="" windowsPkcs12File="${pkcs12.filename}" />
   </application>
   <files keepModificationTimes="false" missingFilesStrategy="warn" globalExcludeSuffixes="" defaultOverwriteMode="4" defaultUninstallMode="0" launcherOverwriteMode="3" defaultFileMode="644" defaultDirMode="755">
     <filesets>
@@ -49,19 +49,19 @@
       <mountPoint id="519" root="515" location="" mode="755" />
     </mountPoints>
     <entries>
-      <dirEntry mountPoint="40" file="../../target/dependency" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="lib" excludeSuffixes="" dirMode="755" overrideDirMode="false">
+      <dirEntry mountPoint="40" file="${project.build.directory}/dependency" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" entryMode="subdir" subDirectory="lib" excludeSuffixes="" dirMode="755" overrideDirMode="false">
         <exclude />
       </dirEntry>
-      <fileEntry mountPoint="40" file="../../target/tellervo-${compiler:sys.version}.jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="299" file="../Libraries/windows-i586/rxtxSerial.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="42" file="../Libraries/windows-amd64/rxtxSerial.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="43" file="../Libraries/linux-i586/librxtxSerial.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="44" file="../Libraries/linux-amd64/librxtxSerial.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="651" file="../../target/classes/MacBuild/fixportpermissions.sh" overwriteMode="4" shared="false" fileMode="555" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="232" file="../Libraries/macosx-universal/librxtxSerial.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="67" file="../../Documentation/tellervo-manual.pdf" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="519" file="../../target/classes/LinBuild/tellervo.desktop" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="519" file="../../src/main/resources/Icons/512x512/tellervo-application.png" overwriteMode="4" shared="false" fileMode="655" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="40" file="${project.build.directory}/tellervo-${compiler:sys.version}.jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="299" file="${project.build.directory}/classes/Libraries/windows-i586/rxtxSerial.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="42" file="${project.build.directory}/classes/Libraries/windows-amd64/rxtxSerial.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="43" file="${project.build.directory}/classes/Libraries/linux-i586/librxtxSerial.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="44" file="${project.build.directory}/classes/Libraries/linux-amd64/librxtxSerial.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="651" file="${project.build.directory}/classes/fixportpermissions.sh" overwriteMode="4" shared="false" fileMode="555" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="232" file="${project.build.directory}/classes/Libraries/macosx-universal/librxtxSerial.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="67" file="../Documentation/tellervo-manual.pdf" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="519" file="${project.build.directory}/classes/tellervo.desktop" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="519" file="${project.build.directory}/classes/Icons/512x512/tellervo-application.png" overwriteMode="4" shared="false" fileMode="655" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="false" overrideUninstallMode="false" />
     </entries>
     <components>
       <component name="Tellervo Desktop" id="58" customizedId="" displayDescription="true" hideHelpButton="false" selected="true" changeable="false" downloadable="false" hidden="false">
@@ -156,6 +156,7 @@
       <java mainClass="org.tellervo.desktop.gui.Startup" vmParameters="" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
         <classPath>
           <archive location="tellervo-${compiler:sys.version}.jar" failOnError="false" />
+          <directory location="lib" failOnError="false" />
         </classPath>
         <nativeLibraryDirectories>
           <directory name="." />
@@ -174,14 +175,14 @@
         <content />
       </infoPlist>
       <iconImageFiles>
-        <file path="../../src/main/resources/Icons/16x16/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/22x22/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/32x32/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/48x48/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/64x64/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/128x128/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/256x256/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/512x512/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/16x16/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/22x22/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/32x32/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/48x48/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/64x64/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/128x128/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/256x256/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/512x512/tellervo-application.png" />
       </iconImageFiles>
     </launcher>
     <launcher name="Copy of Tellervo" id="593" customizedId="" external="false" excludeFromMenu="true" unixMode="755" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="">
@@ -215,14 +216,14 @@
         <content />
       </infoPlist>
       <iconImageFiles>
-        <file path="../../src/main/resources/Icons/16x16/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/22x22/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/32x32/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/48x48/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/64x64/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/128x128/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/256x256/tellervo-application.png" />
-        <file path="../../src/main/resources/Icons/512x512/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/16x16/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/22x22/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/32x32/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/48x48/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/64x64/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/128x128/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/256x256/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/512x512/tellervo-application.png" />
       </iconImageFiles>
     </launcher>
   </launchers>
@@ -240,38 +241,38 @@
             <object class="com.install4j.runtime.beans.applications.InstallerApplication" id="InstallerApplication0">
               <void property="customHeaderImage">
                 <object class="com.install4j.api.beans.ExternalFile">
-                  <string>../../src/main/resources/Icons/install4j-titlebarimage.png</string>
+                  <string>${project.build.directory}/classes/Icons/install4j-titlebarimage.png</string>
                 </object>
               </void>
               <void property="customIconImageFiles">
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../src/main/resources/Icons/16x16/tellervo-application.png</string>
+                    <string>${project.build.directory}/classes/Icons/16x16/tellervo-application.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../src/main/resources/Icons/32x32/tellervo-installer.png</string>
+                    <string>${project.build.directory}/classes/Icons/32x32/tellervo-installer.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../src/main/resources/Icons/48x48/tellervo-installer.png</string>
+                    <string>${project.build.directory}/classes/Icons/48x48/tellervo-installer.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../src/main/resources/Icons/128x128/tellervo-installer.png</string>
+                    <string>${project.build.directory}/classes/Icons/128x128/tellervo-installer.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../src/main/resources/Icons/256x256/tellervo-installer.png</string>
+                    <string>${project.build.directory}/classes/Icons/256x256/tellervo-installer.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../src/main/resources/Icons/512x512/tellervo-installer.png</string>
+                    <string>${project.build.directory}/classes/Icons/512x512/tellervo-installer.png</string>
                   </object>
                 </void>
               </void>
@@ -478,7 +479,7 @@
                           <object class="com.install4j.runtime.beans.screens.components.ProgramGroupFileConfig">
                             <void property="iconFile">
                               <object class="com.install4j.api.beans.ExternalFile">
-                                <string>../../src/main/resources/Icons/128x128/pdf.ico</string>
+                                <string>${project.build.directory}/classes/Icons/128x128/pdf.ico</string>
                               </object>
                             </void>
                             <void property="name">
@@ -556,22 +557,22 @@
               <void property="customIconImageFiles">
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../src/main/resources/Icons/16x16/tellervo-uninstaller.png</string>
+                    <string>${project.build.directory}/classes/Icons/16x16/tellervo-uninstaller.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../src/main/resources/Icons/32x32/tellervo-uninstaller.png</string>
+                    <string>${project.build.directory}/classes/Icons/32x32/tellervo-uninstaller.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../src/main/resources/Icons/48x48/tellervo-uninstaller.png</string>
+                    <string>${project.build.directory}/classes/Icons/48x48/tellervo-uninstaller.png</string>
                   </object>
                 </void>
                 <void method="add">
                   <object class="com.install4j.api.beans.ExternalFile">
-                    <string>../../src/main/resources/Icons/128x128/tellervo-uninstaller.png</string>
+                    <string>${project.build.directory}/classes/Icons/128x128/tellervo-uninstaller.png</string>
                   </object>
                 </void>
               </void>

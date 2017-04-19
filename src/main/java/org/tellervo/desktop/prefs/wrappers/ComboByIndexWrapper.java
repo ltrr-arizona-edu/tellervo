@@ -20,12 +20,10 @@
 package org.tellervo.desktop.prefs.wrappers;
 
 import java.awt.event.ItemEvent;
-import java.text.DecimalFormat;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
-import org.jfree.util.Log;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 

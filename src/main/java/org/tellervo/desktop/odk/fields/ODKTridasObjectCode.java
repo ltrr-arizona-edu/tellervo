@@ -10,7 +10,7 @@ public class ODKTridasObjectCode extends AbstractODKField {
 	
 	public ODKTridasObjectCode()
 	{
-		super(ODKDataType.STRING, "tridas_object_code", "Object code", "Short code name for object, traditionally three letters", null);
+		super(ODKDataType.STRING, "tridas_object_code", "Object code", "Short code name for object, traditionally three letters", null, 1);
 	}
 	
 	@Override

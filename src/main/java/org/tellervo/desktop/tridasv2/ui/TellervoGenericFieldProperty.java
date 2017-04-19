@@ -7,6 +7,7 @@ import java.util.Iterator;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.schema.SampleStatus;
 import org.tellervo.schema.WSICuration;
+import org.tellervo.schema.WSIUserDefinedTerm;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasEntity;
 import org.tridas.schema.TridasGenericField;
@@ -51,22 +52,63 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 		if(clazz.equals(String.class))
 		{
 			gf.setType("xs:string");
+			gf.setValue((String) this.getValue());
+
 		}
 		else if (clazz.equals(Integer.class))
 		{
-			gf.setType("xs:integer");
+			gf.setType("xs:int");
+			if(this.getValue()!=null && this.getValue().getClass().equals(Integer.class))
+			{
+				int v = (int) this.getValue();
+				gf.setValue(Integer.valueOf(v).toString());
+			} else
+			{
+				gf.setValue(null);
+			}
+
 		}
-		
-		
+		else if (clazz.equals(Float.class))
+		{
+			gf.setType("xs:float");
+			if(this.getValue()!=null && this.getValue().getClass().equals(Float.class))
+			{
+				Float f = (float) this.getValue();
+				gf.setValue(f.toString());
+			} else
+			{
+				gf.setValue(null);
+			}
+		}
+		else if (clazz.equals(Boolean.class))
+		{
+			gf.setType("xs:boolean");
+			if(this.getValue()!=null && this.getValue().getClass().equals(Boolean.class))
+			{
+				boolean v = (boolean) this.getValue();
+				gf.setValue(Boolean.valueOf(v).toString());
+			} else
+			{
+				gf.setValue(null);
+			}
+		}
+		else if (clazz.equals(WSIUserDefinedTerm.class))
+		{
+			gf.setType("xs:string");			
+			gf.setValue((String) this.getValue());
+			
+		}
+		else
+		{
+			gf.setType("xs:string");
+		}
+
 		if(this.getValue() instanceof SampleStatus)
 		{
 			SampleStatus ss = (SampleStatus) this.getValue();
 			gf.setValue(ss.value());
 		}
-		else
-		{
-			gf.setValue((String) this.getValue());
-		}
+
 		
 		return gf;
 	}
@@ -85,6 +127,8 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 	{
 		
 		if(entity==null ) return null;
+		
+		if(gf==null) return null;
 		
 		if(entity.isSetGenericFields())
 		{

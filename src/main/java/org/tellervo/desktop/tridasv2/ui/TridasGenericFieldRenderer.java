@@ -61,7 +61,6 @@ public class TridasGenericFieldRenderer extends DefaultCellRendererEx {
 			}
 		}
 		
-		
 		return super.convertToString(value);
 	}
 	

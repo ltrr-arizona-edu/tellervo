@@ -3,17 +3,21 @@ package org.tellervo.desktop.gui.menus;
 import javax.swing.Action;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.dictionary.DictionaryRegisteredEvent;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.menus.actions.AddRemoveTagAction;
+import org.tellervo.desktop.gui.menus.actions.FileDWCExportAction;
 import org.tellervo.desktop.gui.menus.actions.FileDeleteODKDefinitionsAction;
 import org.tellervo.desktop.gui.menus.actions.FileDeleteODKInstancesAction;
 import org.tellervo.desktop.gui.menus.actions.FileDesignODKFormAction;
 import org.tellervo.desktop.gui.menus.actions.FileExportMapAction;
+import org.tellervo.desktop.gui.menus.actions.FileICMSExportAction;
+import org.tellervo.desktop.gui.menus.actions.FileICMSImportAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogoffAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogonAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAllAction;
-import org.tellervo.desktop.gui.menus.actions.GraphCreateFileHistoryPlotAction;
 import org.tellervo.desktop.gui.menus.actions.MapAddLayersAction;
 import org.tellervo.desktop.gui.menus.actions.MapAnnotationsAction;
 import org.tellervo.desktop.gui.menus.actions.MapCompassToggleAction;
@@ -43,7 +47,12 @@ import org.tellervo.desktop.gui.menus.actions.ToolsSumAction;
 import org.tellervo.desktop.gui.menus.actions.ViewToExtentAction;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
 
-public class FullEditorActions extends AbstractEditorActions {
+import com.dmurph.mvc.IEventListener;
+import com.dmurph.mvc.MVC;
+import com.dmurph.mvc.MVCEvent;
+import com.rediscov.util.ICMSImporter;
+
+public class FullEditorActions extends AbstractEditorActions implements IEventListener {
 
 	public Action fileSaveAllAction;
 	public Action filePrintAction;
@@ -52,10 +61,10 @@ public class FullEditorActions extends AbstractEditorActions {
 	public Action fileDesignODKFormAction;
 	public Action fileDeleteODKDefinitionsAction;
 	public Action fileDeleteODKInstancesAction;
-	
-	
-	public Action graphCreateFileHistoryPlotAction;
-	
+	public Action fileImportICMSAction;
+	public Action fileExportICMSAction;
+	public Action fileExportDWCAction;
+		
 	public Action viewZoomToExtent;
 	
 	public Action toolsReconcileAction;
@@ -104,12 +113,22 @@ public class FullEditorActions extends AbstractEditorActions {
 		fileDesignODKFormAction = new FileDesignODKFormAction(editor);
 		fileDeleteODKDefinitionsAction = new FileDeleteODKDefinitionsAction();
 		fileDeleteODKInstancesAction = new FileDeleteODKInstancesAction();
+		fileImportICMSAction = new FileICMSImportAction(editor);
+		fileImportICMSAction.setEnabled(false);
+		
+		fileExportICMSAction = new FileICMSExportAction();
+		fileExportICMSAction.setEnabled(false);
+		
+
+		MVC.addEventListener(Dictionary.DICTIONARY_REGISTERED, this);
+		
+		fileExportDWCAction = new FileDWCExportAction();
+
 		
 
 		tagSeriesAction = new TagSeriesAction((FullEditor) editor);
 		addRemoveTagAction = new AddRemoveTagAction((FullEditor) editor);
 		
-		graphCreateFileHistoryPlotAction = new GraphCreateFileHistoryPlotAction(editor);
 		
 		viewZoomToExtent = new ViewToExtentAction((FullEditor) editor);
 		
@@ -192,7 +211,6 @@ public class FullEditorActions extends AbstractEditorActions {
 		
 		graphAllSeriesAction.setEnabled(App.isLoggedIn());
 		graphCurrentSeriesAction.setEnabled(App.isLoggedIn());
-		graphCreateFileHistoryPlotAction.setEnabled(App.isLoggedIn());
 		
 		toolsTruncateAction.setEnabled(App.isLoggedIn());
 		toolsReverseAction.setEnabled(App.isLoggedIn());
@@ -216,7 +234,22 @@ public class FullEditorActions extends AbstractEditorActions {
 		toolsReconcileAction.setEnabled(currentSample!=null);
 		toolsSumAction.setEnabled(currentSample!=null);	
 		
-		graphCreateFileHistoryPlotAction.setEnabled(currentSample!=null);
+	}
+
+	@Override
+	public boolean eventReceived(MVCEvent argEvent) {
+		
+		DictionaryRegisteredEvent e = (DictionaryRegisteredEvent) argEvent;
+		if(e.getValue().equals("userDefinedFieldDictionary"))
+		{
+			fileImportICMSAction.setEnabled(ICMSImporter.isDatabaseICMSCapable());
+			fileExportICMSAction.setEnabled(ICMSImporter.isDatabaseICMSCapable());
+			return false;
+		}
+		
+
+	
+		return true;
 	}
 
 	

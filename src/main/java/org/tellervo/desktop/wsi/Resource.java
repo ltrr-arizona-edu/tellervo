@@ -291,7 +291,7 @@ public abstract class Resource<INTYPE, OUTTYPE> {
 		}
 	}
 	
-	private Thread queryThread;
+	public Thread queryThread;
 
 	/**
 	 * This procedure simply starts a new thread and calls queryWait

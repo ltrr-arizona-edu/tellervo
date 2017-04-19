@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="NewDataSet">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="RediscoveryExport"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="RediscoveryExport">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Ctrl_x0020_Prop"/>
+        <xs:element ref="Class_x0020_1"/>
+        <xs:element ref="Class_x0020_2"/>
+        <xs:element ref="Class_x0020_3"/>
+        <xs:element ref="Class_x0020_4"/>
+        <xs:element ref="Object_x0028_NOM_x0029_"/>
+        <xs:element ref="Catalog_x0020__x0023_"/>
+        <xs:element ref="Parts"/>
+        <xs:element ref="Accession_x0020__x0023_"/>
+        <xs:element ref="Location"/>
+        <xs:element ref="Object_x0020_Status"/>
+        <xs:element ref="Status_x0020_Date"/>
+        <xs:element ref="Item_x0020_Count"/>
+        <xs:element ref="Storage_x0020_Unit"/>
+        <xs:element ref="Description"/>
+        <xs:element ref="Measurements"/>
+        <xs:element ref="Other_x0020_Numbers"/>
+        <xs:element ref="Condition"/>
+        <xs:element ref="Cataloger"/>
+        <xs:element ref="Catalog_x0020_Date"/>
+        <xs:element ref="Identified_x0020_By"/>
+        <xs:element ref="Ident_x0020_Date"/>
+        <xs:element ref="Field_x0020_Site_x0020__x0023_"/>
+        <xs:element ref="State_x0020_Site_x0020__x0023_"/>
+        <xs:element ref="Site_x0020_Name"/>
+        <xs:element ref="Within_x0020_Site"/>
+        <xs:element ref="Origin"/>
+        <xs:element ref="UTM_x0020_Z_x002F_E_x002F_N"/>
+        <xs:element ref="Lat_x0020_LongN_x002F_W"/>
+        <xs:element ref="Hist_x002F_Cult_x0020_Per"/>
+        <xs:element ref="Cultural_x0020_ID"/>
+        <xs:element ref="Fld_x0020_Specimen_x0020__x0023_"/>
+        <xs:element ref="Collector"/>
+        <xs:element ref="Object_x0020_Part"/>
+        <xs:element ref="User_x0020_1"/>
+        <xs:element ref="User_x0020_2"/>
+        <xs:element ref="User_x0020_3"/>
+        <xs:element ref="User_x0020_4"/>
+        <xs:element ref="User_x0020_5"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  
+  
+  <!--
+    %%%%%%%%%%%%%%
+    %		ELEMENTS
+    %%%%%%%%%%%%%% -->
+  
+  
+  <xs:element name="Ctrl_x0020_Prop" type="strBoolean" nillable="true"/>
+  <xs:element name="Class_x0020_1" type="normalClass1" nillable="true"/>
+  <xs:element name="Class_x0020_2" type="normalClass2" nillable="true"/>
+  <xs:element name="Class_x0020_3" type="normalClass3" nillable="true"/>
+  <xs:element name="Class_x0020_4" type="normalClass4" nillable="true"/>
+  <xs:element name="Object_x0028_NOM_x0029_" type="normalDendroSample" nillable="true"/>
+  <xs:element name="Catalog_x0020__x0023_" type="xs:string" nillable="true"/>
+  <xs:element name="Parts" type="xs:string" nillable="true"/>
+  <xs:element name="Accession_x0020__x0023_" type="xs:NCName" nillable="true"/>
+  <xs:element name="Location" type="xs:string" nillable="true"/>
+  <xs:element name="Object_x0020_Status" type="normalObjectStatus" nillable="true"/>
+  <xs:element name="Status_x0020_Date" type="xs:integer" nillable="true"/>
+  <xs:element name="Item_x0020_Count" type="xs:decimal" nillable="true"/>
+  <xs:element name="Storage_x0020_Unit" type="normalStorageUnit" nillable="true"/>
+  <xs:element name="Description" type="xs:string" nillable="true"/>
+  <xs:element name="Measurements" type="xs:string" nillable="true"/>
+  <xs:element name="Other_x0020_Numbers" type="xs:string" nillable="true"/>
+  <xs:element name="Condition" type="normalCondition" nillable="true"/>
+  <xs:element name="Cataloger" type="xs:string" nillable="true"/>
+  <xs:element name="Catalog_x0020_Date" type="xs:string" nillable="true"/>
+  <xs:element name="Identified_x0020_By" type="xs:string" nillable="true"/>
+  <xs:element name="Ident_x0020_Date" type="xs:string" nillable="true"/>
+  <xs:element name="Field_x0020_Site_x0020__x0023_" type="xs:string" nillable="true"/>
+  <xs:element name="State_x0020_Site_x0020__x0023_" type="xs:string" nillable="true"/>
+  <xs:element name="Site_x0020_Name" type="xs:string" nillable="true"/>
+  <xs:element name="Within_x0020_Site" type="xs:string" nillable="true"/>
+  <xs:element name="Origin" type="xs:string" nillable="true"/>
+  <xs:element name="UTM_x0020_Z_x002F_E_x002F_N" type="xs:string" nillable="true"/>
+  <xs:element name="Lat_x0020_LongN_x002F_W" type="xs:string" nillable="true"/>
+  <xs:element name="Hist_x002F_Cult_x0020_Per" type="xs:string" nillable="true"/>
+  <xs:element name="Cultural_x0020_ID" type="xs:string" nillable="true"/>
+  <xs:element name="Fld_x0020_Specimen_x0020__x0023_" type="xs:string" nillable="true"/>
+  <xs:element name="Collector" type="xs:string" nillable="true"/>
+  <xs:element name="Object_x0020_Part" type="xs:string" nillable="true"/>
+  <xs:element name="User_x0020_1" type="nullableInteger" nillable="true"/>
+  <xs:element name="User_x0020_2" type="xs:string" nillable="true"/>
+  <xs:element name="User_x0020_3" type="nullableInteger" nillable="true"/>
+  <xs:element name="User_x0020_4" type="xs:string" nillable="true"/>
+  <xs:element name="User_x0020_5" type="xs:string" nillable="true"/>
+  
+  
+  <!--
+    %%%%%%%%%%%%%%
+    %		DATA TYPES
+    %%%%%%%%%%%%%% -->
+  
+ <!-- <xs:simpleType name="nullableInteger">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base='xs:string'>
+          <xs:length value='0'/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base='xs:integer'>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>-->
+  
+  <xs:simpleType name="nullableInteger">
+
+ 
+        <xs:restriction base='xs:integer'>
+        </xs:restriction>
+
+  </xs:simpleType>
+  
+   
+  <xs:simpleType name="normalObjectStatus">
+    <xs:annotation>
+      <xs:documentation xml:lang="EN">
+        ICMS enumeration of object status
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="STORAGE - INCOMING LOAN"/>
+      <xs:enumeration value="STORAGE"/> 
+      <xs:enumeration value="DEACC - CONVEYANCE (DONATION)"/>
+      <xs:enumeration value="DEACC - DESTRUCTIVE ANALYSIS"/>
+      <xs:enumeration value="DEACC - EXCHANGE"/>
+      <xs:enumeration value="DEACC - INVOLUNTARY DESTRUCTION"/>
+      <xs:enumeration value="DEACC - LOSS"/>
+      <xs:enumeration value="DEACC - NAGPRA COMPLIANCE"/>
+      <xs:enumeration value="DEACC - RETURN TO RIGHTFUL OWNER"/>
+      <xs:enumeration value="DEACC - THEFT"/>
+      <xs:enumeration value="DEACC - TRANSFER DOI"/>
+      <xs:enumeration value="DEACC - TRANSFER NPS"/>
+      <xs:enumeration value="DEACC - TRANSFER OTHER FEDERAL AGENCY"/>
+      <xs:enumeration value="DEACC - VOL. DESTRUCTION/ABANDONMENT"/>
+      <xs:enumeration value="DRAFT RECORD"/>
+      <xs:enumeration value="EXHIBIT"/>
+      <xs:enumeration value="EXHIBIT - INCOMING LOAN"/>
+      <xs:enumeration value="INCORPORATED INTO LARGER ARCHIVAL COLLECTION"/>
+      <xs:enumeration value="LOAN OUT - NON-NPS"/>
+      <xs:enumeration value="LOAN OUT - NON-NPS - NON-FEDERAL"/>
+      <xs:enumeration value="LOAN OUT - NPS"/>
+      <xs:enumeration value="LOAN RETURNED"/>
+      <xs:enumeration value="MISSING"/>
+      <xs:enumeration value="RECORD INACTIVE"/>
+      <xs:enumeration value="REMOVED - NON-MUSEUM PROPERTY"/>
+    </xs:restriction>
+  </xs:simpleType> 
+  
+  
+  
+  <xs:simpleType name="normalCondition">
+    <xs:annotation>
+      <xs:documentation xml:lang="EN">
+        ICMS dictionary of sample conditions
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="COM/EX"/> <!-- Complete/Excellent -->
+      <xs:enumeration value="COM/FR"/> <!-- Complete/Fair -->
+      <xs:enumeration value="COM/GD"/> <!-- Complete/Good -->
+      <xs:enumeration value="COM/PR"/> <!-- Complete/Poor -->
+      <xs:enumeration value="EXCELLENT"/> <!-- Archival/Manuscript Collections -->
+      <xs:enumeration value="FAIR"/> <!-- Archival/Manuscript Collections -->
+      <xs:enumeration value="GOOD"/> <!-- Archival/Manuscript Collections -->
+      <xs:enumeration value="POOR"/> <!-- Archival/Manuscript Collections -->
+      <xs:enumeration value="FRG/EX"/> <!-- Fragment/Excellent -->
+      <xs:enumeration value="FRG/FR"/> <!-- Fragment/Fair -->
+      <xs:enumeration value="FRG/GD"/> <!-- Fragment/Good -->
+      <xs:enumeration value="FRG/PR"/> <!-- Fragment/Poor -->
+      <xs:enumeration value="INC/EX"/> <!-- Incomplete/Excellent -->
+      <xs:enumeration value="INC/FR"/> <!-- Incomplete/Fair -->
+      <xs:enumeration value="INC/GD"/> <!-- Incomplete/Good -->
+      <xs:enumeration value="INC/PR"/> <!-- Incomplete/Poor -->
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:simpleType name="normalStorageUnit">
+    <xs:annotation>
+      <xs:documentation xml:lang="EN">
+        ICMS enumeration of storage units.  Typically EA for each.
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="BG"/> <!-- Bag -->
+      <xs:enumeration value="BX"/> <!-- Box -->
+      <xs:enumeration value="CF"/> <!-- Cubic feet -->
+      <xs:enumeration value="EA"/> <!-- Each -->
+      <xs:enumeration value="LF"/> <!-- Linear feet -->
+      <xs:enumeration value="OZ"/> <!-- Ounces!!! -->
+    </xs:restriction>
+  </xs:simpleType>
+   
+  <xs:simpleType name="strBoolean">
+    <xs:annotation>
+      <xs:documentation xml:lang="EN">
+        Simple y/n boolean field
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Y"/>
+      <xs:enumeration value="N"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+    
+  <xs:simpleType name="normalClass1">
+    <xs:annotation>
+      <xs:documentation xml:lang="EN">
+        ICMS classification type 1 - subject area
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ARCHEOLOGY"/>
+      <xs:enumeration value="ETHNOLOGY"/>
+      <xs:enumeration value="HISTORY"/>
+    </xs:restriction>
+  </xs:simpleType>    
+   
+  <xs:simpleType name="normalClass2">
+    <xs:annotation>
+      <xs:documentation xml:lang="EN">
+        ICMS classification type 2 - time period
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="UNKNOWN"/>
+      <xs:enumeration value="HISTORIC"/>
+      <xs:enumeration value="PREHISTORIC"/>
+    </xs:restriction>
+  </xs:simpleType>
+   
+  <xs:simpleType name="normalClass3">
+    <xs:annotation>
+      <xs:documentation xml:lang="EN">
+        ICMS classification type 3 - animal, vegetable, mineral
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="ANIMAL"/>
+      <xs:enumeration value="COMPOSITE"/>
+      <xs:enumeration value="HUMAN REMAINS"/>
+      <xs:enumeration value="MINERAL"/>
+      <xs:enumeration value="UNIDENTIFIED MINERAL"/>
+      <xs:enumeration value="VEGETAL"/>
+    </xs:restriction>
+  </xs:simpleType>    
+    
+  <xs:simpleType name="normalClass4">
+    <xs:annotation>
+      <xs:documentation xml:lang="EN">
+        ICMS classification type 4 - plant part
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="FIBERS"/>
+      <xs:enumeration value="OTHER PLANT MATERIALS"/>
+      <xs:enumeration value="PAPER"/>
+      <xs:enumeration value="REEDS"/>
+      <xs:enumeration value="WOOD"/>
+    </xs:restriction>
+  </xs:simpleType>
+    
+    
+  <xs:simpleType name="normalDendroSample">
+    <xs:annotation>
+      <xs:documentation xml:lang="EN">
+        Object type - always DENDRO SAMPLE for dendrochronology
+      </xs:documentation>
+    </xs:annotation>
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="DENDRO SAMPLE"/>
+    </xs:restriction>
+  </xs:simpleType>    
+    
+  
+  <xs:simpleType name="itrdbcode">
+    <xs:union>
+      <xs:simpleType>
+        <xs:restriction base='xs:string'>
+          <xs:length value='0'/>
+        </xs:restriction>
+      </xs:simpleType>
+      <xs:simpleType>
+        <xs:restriction base="xs:string">
+          <xs:length value="4"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:union>
+  </xs:simpleType>
+  
+
+</xs:schema>

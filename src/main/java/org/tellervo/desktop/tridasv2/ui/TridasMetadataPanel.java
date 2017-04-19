@@ -21,6 +21,7 @@
 package org.tellervo.desktop.tridasv2.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Image;
 import java.awt.Window;
@@ -82,6 +83,7 @@ import org.tridas.schema.TridasLastRingUnderBark;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasPith;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasSapwood;
@@ -188,8 +190,10 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 		mainPanel.add(panelBottomBar, BorderLayout.SOUTH);
 		
 		add(mainPanel, BorderLayout.CENTER);
-		add(new JScrollPane(buttonBar, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.WEST);
+		JScrollPane sp = new JScrollPane(buttonBar, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		sp.getViewport().setBackground(Color.WHITE);
+		add(sp, BorderLayout.WEST);
 		
 		// set up initial state!
 		// first, ensure we have a series
@@ -243,6 +247,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 
 			if(temporaryEditingEntity != null)
 				propertiesPanel.readFromObject(temporaryEditingEntity);
+				currentMode.clearChanged();
 		}
 		else {
 			temporaryEditingEntity = null;
@@ -348,12 +353,19 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 		btnEditEntity.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(!btnEditEntity.isSelected() && currentMode.hasChanged()) {
-					if(!warnLosingChanges()) {
+					int response = saveBeforeChange();
+					
+					if(response==JOptionPane.NO_OPTION)
+					{
+						currentMode.clearChanged();
+					}
+					else if  (response==JOptionPane.CANCEL_OPTION)
+					{
 						btnEditEntity.setSelected(true);
 						return;
 					}
 					else {
-						currentMode.clearChanged();
+						doSave();
 					}
 				}
 				enableEditing(btnEditEntity.isSelected());
@@ -606,7 +618,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 	/**
 	 * @return true if the user wants to lose changes, false otherwise
 	 */
-	private boolean warnLosingChanges() {
+	/*private boolean warnLosingChanges() {
 		if(currentMode == null || !currentMode.hasChanged())
 			return true;
 		
@@ -616,7 +628,30 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 				JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
 		
 		return (ret == JOptionPane.YES_OPTION);
+	}*/
+	
+	private int saveBeforeChange(){
+		
+		if(currentMode == null || !currentMode.hasChanged())
+			// Nothing changed so no saving required
+			return JOptionPane.NO_OPTION;
+		
+		Object[] options = {"Save",
+                "Discard",
+                "Cancel"};
+			int ret = JOptionPane.showOptionDialog(this,
+			"You have unsaved changes to the metadata for this entity.\n\nWould you like to save before continuing?",
+			"Save changes?",
+			JOptionPane.YES_NO_CANCEL_OPTION,
+			JOptionPane.WARNING_MESSAGE,
+			null,
+			options,
+			options[0]);
+					
+		return ret;
+		
 	}
+	
 	
 	private void doSave() {
 		if(temporaryEditingEntity == null)
@@ -782,6 +817,10 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 	 */
 	private List<? extends ITridas> getEntityList(EditType mode, boolean goRemote) {
 		switch(mode) {
+		
+		/*case PROJECT:
+			return App.tridasProjects.getProjectList();*/
+		
 		case OBJECT:
 			return App.tridasObjects.getObjectList();
 		
@@ -927,7 +966,8 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 				lists.prepareChildList(temporarySelectingEntity);			
 		}
 		
-		propertiesPanel.readFromObject(temporarySelectingEntity);		
+		propertiesPanel.readFromObject(temporarySelectingEntity);	
+		currentMode.clearChanged();
 	}
 	
 	/**
@@ -1019,11 +1059,23 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 		if(currentMode != null) {
 			// prompt if the user wants to save any changes they made
 			if(currentMode.hasChanged()) {
-				if(!warnLosingChanges()) {
-					// act like the user clicked the old button again
+				
+				int response = saveBeforeChange();
+				
+				if(response==JOptionPane.CANCEL_OPTION)
+				{
 					currentMode.getButton().doClick();
 					return;
 				}
+				else if (response==JOptionPane.NO_OPTION)
+				{
+					
+				}
+				else
+				{
+					doSave();					
+				}
+				
 				
 				currentMode.clearChanged();
 				
@@ -1065,6 +1117,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
         
         // set properties and load from entity
 		propertiesPanel.setProperties(propArray);
+		
 
 		// handle top bar
 		if(currentMode == EditType.DERIVED_SERIES || currentMode == EditType.MEASUREMENT_SERIES) {
@@ -1127,6 +1180,8 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 			btnEditEntity.setSelected(false);
 			break;
 		}
+		
+		currentMode.clearChanged();
 	}
 	
 	/**
@@ -1191,6 +1246,8 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 				// skip over these series types if we're not dealing with them
 				if(t == EditType.DERIVED_SERIES)
 					continue;
+				/*if(t == EditType.PROJECT)
+					continue;*/
 			
 				button = createButton(t);
 				entityButtons.add(button);
@@ -1203,6 +1260,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 		}
 		
 		buttonBar.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 4));
+
 	}
 	
 	/**
@@ -1212,6 +1270,7 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 	 */
 
 	public static enum EditType {
+		//PROJECT(TridasProject.class, "Project", "project.png", Metadata.PROJECT),
 		OBJECT(TridasObjectEx.class, I18n.getText("tridas.object"), "object.png", Metadata.OBJECT),
 		ELEMENT(TridasElement.class, I18n.getText("tridas.element"), "element.png", Metadata.ELEMENT),
 		SAMPLE(TridasSample.class, I18n.getText("tridas.sample"), "sample.png", Metadata.SAMPLE),
@@ -1444,6 +1503,8 @@ public class TridasMetadataPanel extends AbstractMetadataPanel implements Proper
 		 */
 		public EditType next() {
 			switch(this) {
+			/*case PROJECT:
+				return OBJECT;*/
 			case OBJECT:
 				return ELEMENT;
 			case ELEMENT:

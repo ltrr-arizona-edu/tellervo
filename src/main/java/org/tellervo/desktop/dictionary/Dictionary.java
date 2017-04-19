@@ -32,12 +32,17 @@ import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIRequest;
 import org.tellervo.schema.WSIRootElement;
 import org.tellervo.schema.WSIRequest.Dictionaries;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.wsi.ResourceException;
 import org.tellervo.desktop.wsi.tellervo.TellervoResource;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceCacher;
+import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.TridasProject;
+import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.MVCArrayList;
 
@@ -183,6 +188,73 @@ public class Dictionary extends TellervoResource {
 		ArrayList<?> dictionary = (ArrayList<?>) dictionaries.get(dictionaryName);
 
 		return dictionary;
+	}
+	
+	public static TridasObjectEx getTridasObjectByCode(String code)
+	{
+		if(code==null) return null;
+
+		List<TridasObjectEx> entities = App.tridasObjects.getMutableObjectList();
+
+		for(TridasObjectEx obj : entities)
+		{
+			if(TridasUtils.getGenericFieldByName(obj, TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE).getValue().equals(code))
+			{
+				return obj;
+			}
+		}
+		return null;
+	}
+	
+	public static TridasProject getTridasProjectByID(String id)
+	{
+		if(id==null) return null;
+
+		List<TridasProject> entities = App.tridasProjects.getMutableObjectList();
+
+		for(TridasProject p : entities)
+		{
+			if(p.getIdentifier().getValue().equals(id))
+			{
+				return p;
+			}
+		}
+		return null;
+	}
+	
+	public static WSIBox getBoxByCode(String code)
+	{
+		if(code==null) return null;
+
+		List<WSIBox> entities = App.dictionary.getMutableDictionary("boxDictionary");
+
+		for(WSIBox box : entities)
+		{
+			if(box.getTitle().equals(code))
+			{
+				return box;
+			}
+		}
+		return null;
+	}
+	
+	public static WSIBox getBoxByID(String id)
+	{
+		
+		if(id==null) return null;
+		
+		List<WSIBox> entities = App.dictionary.getMutableDictionary("boxDictionary");
+
+		for(WSIBox box : entities)
+		{
+			if(box.getIdentifier().getValue().equals(id))
+			{
+				return box;
+			}
+		}
+		return null;
+
+		
 	}
 	
 }

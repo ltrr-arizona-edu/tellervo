@@ -85,7 +85,18 @@ public class BooleanCellRenderer extends DefaultCellRendererEx {
 				Boolean b = (Boolean) value;
 				JLabel label = new JLabel();
 				label.setHorizontalAlignment( JLabel.CENTER );
-				if(b== true)
+				if(b==null)
+				{
+					if(blankForFalse)
+					{
+						
+					}
+					else
+					{
+						label.setIcon(falseicon);
+					}
+				}
+				else if(b== true)
 				{
 					
 					label.setIcon(trueicon);

@@ -23,10 +23,14 @@
  */
 package org.tellervo.desktop.bulkdataentry.model;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.model.HashModel;
@@ -50,6 +54,15 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 		registerProperty(RADIUS_WITH_SAMPLE, PropertyType.READ_WRITE, false);
 		registerProperty(IMPORTED_LIST, PropertyType.FINAL, new MVCArrayList<TridasSample>());
 		getColumnModel().populatePossibleColumns(getModelTableProperties());
+		
+		getColumnModel().addPropertyChangeListener(new PropertyChangeListener(){
+
+			@Override
+			public void propertyChange(PropertyChangeEvent evt) {
+				App.prefs.setArrayListPref(PrefKey.SAMPLE_FIELD_VISIBILITY_ARRAY, getColumnModel());	
+			}
+			
+		});
 	}
 	
 	public MVCArrayList<SingleSampleModel> getRows(){
@@ -149,7 +162,7 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 	 */
 	@Override
 	public String[] getModelTableProperties() {
-		if(isRadiusWithSample()){
+		if(isRadiusWithSample()){	
 			// modified a bit so imported is at the end
 			String[] ret = new String[SingleSampleModel.TABLE_PROPERTIES.length - 1 + SingleRadiusModel.PROPERTIES.length ];
 			System.arraycopy(SingleSampleModel.TABLE_PROPERTIES, 0, ret, 0, SingleSampleModel.TABLE_PROPERTIES.length-1);

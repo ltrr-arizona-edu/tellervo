@@ -41,6 +41,7 @@ import org.tellervo.desktop.gis.GISFrame;
 import org.tellervo.desktop.gui.AboutBox;
 import org.tellervo.desktop.gui.dbbrowse.MetadataBrowser;
 import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
+import org.tellervo.desktop.gui.menus.actions.AdminProjectBrowser;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -54,7 +55,7 @@ import org.tridas.schema.TridasSample;
 @SuppressWarnings("serial")
 public class AdminMenu extends JMenu {
 	
-	
+	JFrame parent;
 	
   public static final TellervoAction ABOUT_ACTION = new TellervoAction("menus.about") {
     public void actionPerformed(ActionEvent ae) {
@@ -65,7 +66,7 @@ public class AdminMenu extends JMenu {
 /** Make a new Admin menu. */
   public AdminMenu(JFrame frame) {
       super(I18n.getText("menus.admin"));
-      
+      parent = frame;
       init();
       linkModel();  
   }
@@ -335,8 +336,11 @@ public class AdminMenu extends JMenu {
 	 	Action metadbAction = new AdminMetadatabaseBrowserAction();
 	 	JMenuItem metadb = new JMenuItem(metadbAction);
 	 	add(metadb);
-
 	 	
+	 	Action projectBrowserAction = new AdminProjectBrowser(parent);
+	 	JMenuItem projectbrowser = new JMenuItem(projectBrowserAction);
+	 	add(projectbrowser);
+
 	 	JMenuItem showMap = Builder.makeMenuItem("general.sitemap", "org.tellervo.desktop.gui.menus.AdminMenu.showMap()", "globe.png");
 	 	add(showMap);
 	 	// Disable if OpenGL support is screen

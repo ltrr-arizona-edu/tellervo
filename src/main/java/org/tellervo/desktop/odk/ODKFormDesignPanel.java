@@ -72,6 +72,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.odk.fields.AbstractODKChoiceField;
 import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.ODKDataType;
+import org.tellervo.desktop.odk.fields.ODKFieldComparator;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 import org.tellervo.desktop.odk.fields.ODKFields;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -1204,11 +1205,12 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		if(fields==null || fields.size()==0) return;	
 		
 		
+		Collections.sort(fields, new ODKFieldComparator());
 		Collections.reverse(fields);
-		
+				
 		for(ODKFieldInterface field : fields)
 		{
-			log.debug("Adding field "+field.getFieldName()+" to tree");
+			//log.debug("Adding field "+field.getFieldName()+" to tree");
 			//selectedFieldsTreeModel.addNodeToRoot(field);
 			
 			AbstractODKTreeNode newChild = new ODKFieldNode(field);
@@ -1257,12 +1259,12 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 			{
 				ODKFieldInterface obj = (ODKFieldInterface) childnode.getUserObject();
 				if(obj.isFieldRequired()) {
-					log.debug(obj.getFieldName() + " is mandatory so leaving in tree");
+					//log.debug(obj.getFieldName() + " is mandatory so leaving in tree");
 					continue;
 				}
 				else
 				{
-					log.debug(obj.getFieldName() + " is optional so deleting from tree");
+					//log.debug(obj.getFieldName() + " is optional so deleting from tree");
 					
 					try{
 						ODKFieldInterface field = (ODKFieldInterface) childnode.getUserObject();
@@ -1416,7 +1418,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		}
 		else if (evt.getActionCommand().equals("AddUserDefinedField"))
 		{
-			addUserDefinedField();
+			//addUserDefinedField();
 		}
 		else if (evt.getActionCommand().equals("Group"))
 		{
@@ -1534,7 +1536,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
     /**
      * Show dialog to enable user to create a user defined field
      */
-	private void addUserDefinedField()
+	/*private void addUserDefinedField()
 	{
 		boolean isObjectField = cboFormType.getSelectedIndex()==0;
 		
@@ -1549,7 +1551,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		{
 			return;
 		}
-	}
+	}*/
 	
 	
 	/**

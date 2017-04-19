@@ -12,6 +12,27 @@ public abstract class AbstractODKField implements ODKFieldInterface, Serializabl
 	protected String fieldcode;
 	protected ODKDataType datatype;
 	protected boolean isFieldHidden = false;
+	private final int sortIndex;
+	
+	/**
+	 * Constructor for a generic ODK field
+	 * 
+	 * @param datatype
+	 * @param fieldcode
+	 * @param fieldname
+	 * @param description
+	 * @param defaultvalue
+	 * @param sortIndex
+	 */
+	public AbstractODKField(ODKDataType datatype, String fieldcode, String fieldname, String description, Object defaultvalue, int sortIndex)
+	{
+		this.description = description;
+		this.name = fieldname;
+		this.defaultvalue = defaultvalue;
+		this.fieldcode = fieldcode;
+		this.datatype = datatype;
+		this.sortIndex = sortIndex;
+	}
 	
 	/**
 	 * Constructor for a generic ODK field
@@ -29,6 +50,7 @@ public abstract class AbstractODKField implements ODKFieldInterface, Serializabl
 		this.defaultvalue = defaultvalue;
 		this.fieldcode = fieldcode;
 		this.datatype = datatype;
+		this.sortIndex = 99999;
 	}
 		
 	@Override
@@ -97,5 +119,10 @@ public abstract class AbstractODKField implements ODKFieldInterface, Serializabl
 		ODKFieldInterface ob = (ODKFieldInterface) o;
 		
 		return this.getFieldName().compareTo(ob.getFieldName());
+	}
+	
+	public int getSortIndex()
+	{
+		return this.sortIndex;
 	}
 }

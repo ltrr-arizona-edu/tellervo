@@ -23,8 +23,17 @@
  */
 package org.tellervo.desktop.bulkdataentry.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.schema.UserExtendableDataType;
+import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIBox;
+import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.Date;
 import org.tridas.schema.TridasElement;
@@ -43,6 +52,7 @@ import com.dmurph.mvc.model.MVCArrayList;
 @SuppressWarnings("unchecked")
 public class SingleSampleModel extends HashModel implements IBulkImportSingleRowModel {
 	private static final long serialVersionUID = 1L;
+	private final static Logger log = LoggerFactory.getLogger(SingleSampleModel.class);
 
 	public static final String OBJECT = "Object code";
 	public static final String ELEMENT = "Element code";
@@ -59,7 +69,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	public static final String IMPORTED = "Imported";
 	public static final String EXTERNAL_ID = "External ID";
 	public static final String SAMPLE_STATUS = "Sample Status";
-
+	
 	
 	// radius stuff
 	public static final String RADIUS_MODEL = "RADIUS_MODEL";
@@ -69,16 +79,40 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	public static final String POPULATING_ELEMENT_LIST = "POPULATING_ELEMENT_LIST";
 	
 
-	public static final String[] TABLE_PROPERTIES = {
+	public static String[] TABLE_PROPERTIES = {
 		OBJECT, ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION, FILES,
 		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, EXTERNAL_ID, SAMPLE_STATUS, IMPORTED
 	};
+	private static boolean isUserDefinedFieldsInit = false;
 	
 	
 	public SingleSampleModel(){
-		for(String s : TABLE_PROPERTIES){
-			registerProperty(s, PropertyType.READ_WRITE);
+		
+		
+		if(isUserDefinedFieldsInit==false)
+		{
+			ArrayList<String> arr = new ArrayList<String>(Arrays.asList(TABLE_PROPERTIES));
+
+			MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		
+			for(WSIUserDefinedField fld : udfdictionary)
+			{
+				if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+				{
+					arr.add(fld.getLongfieldname());
+				}
+			}
+			
+			TABLE_PROPERTIES = arr.toArray(new String[arr.size()]);
+			isUserDefinedFieldsInit = true;
+			
+			for(String s : TABLE_PROPERTIES){
+				registerProperty(s, PropertyType.READ_WRITE);
+			}
 		}
+		
+		
+
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, null);
 		registerProperty(RADIUS_MODEL, PropertyType.READ_ONLY, null);
 		registerProperty(POSSIBLE_ELEMENTS, PropertyType.READ_WRITE, new MVCArrayList<TridasElement>());
@@ -219,6 +253,46 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			field.setType("xs:string");
 			field.setValue(getProperty(SAMPLE_STATUS).toString());
 		}
+
+		// Handle all user defined fields
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+			{	
+				
+				TridasGenericField field = null;
+				for(TridasGenericField gf: argSample.getGenericFields()){
+					if(gf.getName().equals(fld.getName())){
+						field = gf;
+					}
+				}
+				if(field == null){
+					field = new TridasGenericField();
+				}
+				
+				if(fld.isSetName() && fld.isSetDatatype() && fld.isSetLongfieldname())
+				{				
+					field.setName(fld.getName());
+					field.setType(fld.getDatatype().value());
+					Object prop = getProperty(fld.getLongfieldname());
+					if(prop!=null){
+						field.setValue(prop.toString());
+					}
+					else
+					{
+						field.setValue(null);
+						log.debug(fld.getName() + " was empty when writing to XML");
+						argSample.getGenericFields().add(field);
+					}
+				}
+				else
+				{
+					log.error("Failed to write "+fld.getName()+" field to XML");
+				}
+				
+			}
+		}
 		
 		argSample.setIdentifier((TridasIdentifier) getProperty(IMPORTED));
 	}
@@ -228,7 +302,6 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		setProperty(COMMENTS, argSample.getComments());
 		setProperty(TYPE, argSample.getType());
 		setProperty(DESCRIPTION, argSample.getDescription());
-		setProperty(FILES, argSample.getFiles());
 		setProperty(SAMPLING_DATE, argSample.getSamplingDate());
 		setProperty(POSITION, argSample.getPosition());
 		setProperty(STATE, argSample.getState());
@@ -238,9 +311,11 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		// Set box to null initially
 		setProperty(BOX, null);
 		
-		// Get boxID generic field
+		// Files
+		setProperty(FILES, new TridasFileList(argSample.getFiles()));
+			
+		// Handle Generic Fields
 		TridasGenericField field = null;
-
 		for(TridasGenericField gf: argSample.getGenericFields()){
 			if(gf.getName().equals("tellervo.boxID")){
 				field = gf;
@@ -251,6 +326,59 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			}
 			else if(gf.getName().equals("tellervo.sampleStatus")){
 				setProperty(SAMPLE_STATUS, gf.getValue());
+			}
+			else if (gf.getName().startsWith("userDefinedField"))
+			{
+				MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+				
+				for(WSIUserDefinedField fld : udfdictionary)
+				{
+					if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+					{
+						if(gf.getName().equals(fld.getName()))
+						{
+							
+							if(!gf.isSetValue() || gf.getValue()==null || gf.getValue().length()==0) continue;
+							
+							try{
+								Object val = null;
+								if(fld.getDatatype().equals(UserExtendableDataType.XS___BOOLEAN))
+								{
+									val = false;
+									if(gf.getValue().toLowerCase().equals("true") || gf.getValue().toLowerCase().equals("t"))
+									{
+										
+										val = true;
+									}									
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___FLOAT))
+								{
+									val = Float.parseFloat(gf.getValue());
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___INT))
+								{
+									val = Integer.parseInt(gf.getValue());
+								}
+								else if (fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
+								{
+									val = gf.getValue();
+								}
+								else
+								{
+									log.error("Unsupported data type for generic field");
+									
+								}
+								
+								setProperty(fld.getLongfieldname(), val);
+							} catch (NumberFormatException e)
+							{
+								
+								log.error("Failed to cast number value in user defined field "+fld.getName());
+							}
+
+						}
+					}
+				}
 			}
 		}
 			

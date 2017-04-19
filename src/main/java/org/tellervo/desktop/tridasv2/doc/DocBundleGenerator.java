@@ -116,6 +116,7 @@ public class DocBundleGenerator {
 			w.println("certainty = Information regarding how precise this date is");
 			w.println("suffix = Whether the year is AD, BC or BP");
 			w.println("vegetationType = Only applicable when object is associated with live trees.  Records the type of vegetation at a site");
+			w.println("sample.userDefinedField.icms.catalogcode = Catalog code used by the Re:discovery ICMS software to identify a sample.");
 			
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

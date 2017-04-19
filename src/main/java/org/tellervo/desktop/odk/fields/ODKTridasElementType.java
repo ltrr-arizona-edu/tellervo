@@ -20,7 +20,7 @@ public class ODKTridasElementType extends AbstractODKChoiceField {
 	
 	public ODKTridasElementType()
 	{
-		super(ODKDataType.SELECT_ONE, "tridas_element_type", "Element type", Documentation.getDocumentation("element.type"), null);
+		super(ODKDataType.SELECT_ONE, "tridas_element_type", "Element type", Documentation.getDocumentation("element.type"), null, 5);
 		
 		@SuppressWarnings("unchecked")
 		List<ControlledVoc> types = Dictionary.getMutableDictionary("elementTypeDictionary");

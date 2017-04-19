@@ -32,14 +32,9 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Comparator;
 
-import javax.swing.AbstractButton;
 import javax.swing.Box;
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -117,6 +112,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 
 	private void initComponents(){
 		table = new JTable();
+	
 		//table.setCellSelectionEnabled(true);
 		table.setShowGrid(true);
 		table.setGridColor(Color.GRAY);

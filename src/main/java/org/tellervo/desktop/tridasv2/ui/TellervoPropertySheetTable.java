@@ -152,7 +152,7 @@ public class TellervoPropertySheetTable extends PropertySheetTable {
 		    column = this.getColumnModel().getColumn(i);
 		    if (i == 0) {
 		        column.setMinWidth(170);
-		        column.setMaxWidth(270);
+		        column.setMaxWidth(470);
 		        column.setPreferredWidth(170);
 		    } 
 		    else

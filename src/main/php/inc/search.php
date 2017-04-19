@@ -196,7 +196,18 @@ class search Implements IDBAccessor
         while ($row = pg_fetch_array($result))
         {                   	
             // Check user has permission to read requested entity
-            if($this->returnObject=="object" || $this->returnObject=='subobject') 
+        	if($this->returnObject=="project")
+        	{
+        		$firebug->log("Checking project permissions");
+        		$myReturnObject = new project();
+        		$hasPermission = $myAuth->getPermission("read", "project", $row['projectid']);
+        		if($hasPermission===FALSE) {
+        			array_push($this->deniedRecArray, $row['projectid']);
+        			$firebug->log($row['projectid'], "Permission denied on projectid");
+        			continue;
+        		}
+        	}
+            elseif($this->returnObject=="object" || $this->returnObject=='subobject') 
             {
             	$firebug->log("Checking object permissions");
                 $myReturnObject = new object();
@@ -631,6 +642,7 @@ class search Implements IDBAccessor
 
         switch($objectName)
         {
+        case "project":
         case "object":
         case "element":
         case "sample":
@@ -664,6 +676,9 @@ class search Implements IDBAccessor
 
         switch($objectName)
         {
+       	case "project":
+        	return "vwtblproject";
+        	break;
         case "object":
             return "vwtblobject";
             break;
@@ -802,6 +817,20 @@ class search Implements IDBAccessor
 	}        
 	else
 	{
+		if( (($this->getLowestRelationshipLevel($tables)<=6) && ($this->getHighestRelationshipLevel($tables)>=6)) || ($this->returnObject == 'project'))
+		{
+			if($withinJoin)
+			{
+				$fromSQL .= $this->tableName("project")." \n";
+			}
+			else
+			{
+				$fromSQL .= $this->tableName("project")." \n";
+				$withinJoin = TRUE;
+			}
+		}
+		
+		
 		if( (($this->getLowestRelationshipLevel($tables)<=5) && ($this->getHighestRelationshipLevel($tables)>=5)) || ($this->returnObject == 'object'))  
 		{
 		    if($withinJoin)
@@ -1056,10 +1085,10 @@ class search Implements IDBAccessor
         {
             return 5;
         }
-        //elseif ((in_array('vwtblproject')) || ($this->returnObject == 'project'))
-        //{
-        //    return 6;
-        //}
+        elseif ((in_array('vwtblproject', $tables)) || ($this->returnObject == 'project'))
+        {
+            return 6;
+        }
         else
         {
             return false;
@@ -1076,11 +1105,11 @@ class search Implements IDBAccessor
         // tblradius       -- 2 --
         // tblmeasurement  -- 1 -- most junior
 
-        //if (($myRequest->projectParamsArray) || ($this->returnObject == 'project'))
-        //{
-        //    return 6;
-        //}
-        if ((in_array('vwtblobject', $tables)) || ($this->returnObject == 'object'))
+        if ((in_array('vwtblproject', $tables)) || ($this->returnObject == 'project'))
+        {
+            return 6;
+        }
+        elseif ((in_array('vwtblobject', $tables)) || ($this->returnObject == 'object'))
         {
             return 5;
         }
@@ -1138,10 +1167,10 @@ class search Implements IDBAccessor
         {
             $sql .= "vwtblelement.objectid=vwtblobject.objectid and ";
         }
-        //if (($lowestLevel<=5) && ($highestLevel>5))
-        //{
-        //    $sql .= "vwtblsubsite.siteid=vwtblsite.siteid and ";
-        //}
+        if (($lowestLevel<=5) && ($highestLevel>5))
+        {
+            $sql .= "vwtblobject.projectid=vwtblproject.projectid and ";
+        }
 
         return $sql;
     }

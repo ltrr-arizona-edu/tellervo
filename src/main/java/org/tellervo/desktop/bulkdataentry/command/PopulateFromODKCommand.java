@@ -90,6 +90,8 @@ import org.tellervo.desktop.versioning.Build;
 import org.tellervo.desktop.wsi.WebJaxbAccessor;
 import org.tellervo.desktop.wsi.tellervo.TridasElementTemporaryCacher;
 import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
+import org.tellervo.schema.UserExtendableEntity;
+import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.io.util.TridasUtils;
@@ -112,6 +114,7 @@ import com.dmurph.mvc.IncorrectThreadException;
 import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
+import com.dmurph.mvc.model.MVCArrayList;
 
 
 public class PopulateFromODKCommand implements ICommand {
@@ -759,6 +762,19 @@ public class PopulateFromODKCommand implements ICommand {
 			log.debug("Failed top get media files");
 		}
 			
+		// Handle user defined fields
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			if(fld.getAttachedto().equals(UserExtendableEntity.OBJECT))
+			{			
+				Object val = parser.getFieldValueAsString(fld.getName());
+				if(val!=null)
+				{
+					newrow.setProperty(fld.getLongfieldname(), val);
+				}
+			}
+		}
 		
 		model.getRows().add(newrow);
 		filesLoadedSuccessfully++;
@@ -1004,6 +1020,19 @@ public class PopulateFromODKCommand implements ICommand {
 			log.debug("Failed to get media files");
 		}
 
+		// Handle user defined fields
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			if(fld.getAttachedto().equals(UserExtendableEntity.ELEMENT))
+			{			
+				Object val = parser.getFieldValueAsString(fld.getName());
+				if(val!=null)
+				{
+					newrow.setProperty(fld.getLongfieldname(), val);
+				}
+			}
+		}
 		
 		model.getRows().add(newrow);
 		filesLoadedSuccessfully++;
@@ -1093,8 +1122,7 @@ public class PopulateFromODKCommand implements ICommand {
 			newrow.setProperty(SingleSampleModel.STATE, parser.getFieldValueAsStringFromNodeList("tridas_sample_state", node.getChildNodes()));
 			newrow.setProperty(SingleSampleModel.EXTERNAL_ID, parser.getFieldValueAsStringFromNodeList("tridas_sample_externalid", node.getChildNodes()));
 			newrow.setProperty(SingleSampleModel.SAMPLE_STATUS, parser.getFieldValueAsStringFromNodeList("tridas_sample_samplestatus", node.getChildNodes()));
-
-
+			
 			try{
 				String knots = parser.getFieldValueAsStringFromNodeList("tridas_sample_knots", node.getChildNodes());
 				Boolean kb = null;
@@ -1135,6 +1163,21 @@ public class PopulateFromODKCommand implements ICommand {
 			{
 				log.debug("Failed to get media files");
 			}
+
+			// Handle user defined fields
+			MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+			for(WSIUserDefinedField fld : udfdictionary)
+			{
+				if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+				{			
+					Object val = parser.getFieldValueAsStringFromNodeList(fld.getName(), node.getChildNodes());
+					if(val!=null)
+					{
+						newrow.setProperty(fld.getLongfieldname(), val);
+					}
+				}
+			}
+			
 			
 			model.getRows().add(newrow);
 		}

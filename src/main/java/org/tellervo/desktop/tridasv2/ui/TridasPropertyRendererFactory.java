@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
+import org.tellervo.desktop.tridasv2.ui.support.TridasProjectDictionaryProperty;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.Date;
 import org.tridas.schema.DateTime;
@@ -40,6 +41,7 @@ import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasLocationGeometry;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.Year;
 
 import com.l2fprod.common.propertysheet.Property;
@@ -77,17 +79,18 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		super.registerRenderer(TridasLocation.class, new TridasLocationRenderer());
 
 		//nicely render file links
-		super.registerRenderer(List.class, new TridasFileArrayRenderer());
+		//super.registerRenderer(List.class, new TridasArrayRenderer());
+		super.registerRenderer(List.class, new TridasListRenderer());
 		super.registerRenderer(TridasFile.class, new TridasFileArrayRenderer());
 
 		super.registerRenderer(TridasGenericField.class, new TridasGenericFieldRenderer());
-
 		
+		super.registerRenderer(TridasProject.class, new TridasProjectRenderer());
 	}
 	
 	public synchronized TableCellRenderer getRenderer(Property property) {
 		boolean required = false;
-		
+						
 		// handle enums nicely
 		if(property instanceof TridasEntityProperty) {
 			TridasEntityProperty ep = (TridasEntityProperty)property;
@@ -101,10 +104,30 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 			
 			if(ep.isDictionaryAttached())
 				return new ListComboBoxRenderer(required);
+			
+			if(ep.getType().equals(Integer.class))
+			{
+				return new UserDefinedIntegerRenderer();
+			}
 		}
 		
+		if(property instanceof TridasProjectDictionaryProperty)
+		{
+			TridasProjectDictionaryProperty ep = (TridasProjectDictionaryProperty)property;
+			
+			// flag if it's required
+			required = ep.isRequired();
+			
+			return new ListComboBoxRenderer(required);
+		}
+			
 		// get a renderer, if one exists
 		TableCellRenderer defaultRenderer = super.getRenderer(property);
+		
+		if(((TridasEntityProperty)property).isList)
+		{
+			defaultRenderer = new TridasListRenderer();
+		}
 		
 		// if one doesn't exist, and it has children, mark it as such
 		if(defaultRenderer == null && property instanceof TridasEntityProperty) {
@@ -114,15 +137,17 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 				return new TridasDefaultPropertyRenderer();			
 		}
 
-		if(!required)
-			return defaultRenderer;
-		
-		if(property.getName().equals("files"))
+		/*if(property.getName().equals("files"))
 		{
 			log.debug("Property class = "+property.getType());
 			return new TridasFileArrayRenderer();
-		}
+		}*/
 		
+		
+		if(!required)
+			return defaultRenderer;
+		
+
 		// ok, create a renderer for it if nothing exists
 		if(defaultRenderer == null)
 			defaultRenderer = new DefaultTableCellRenderer();

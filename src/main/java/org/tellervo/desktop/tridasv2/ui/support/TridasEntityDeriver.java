@@ -36,18 +36,25 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.ui.TellervoGenericFieldProperty;
+import org.tellervo.schema.UserExtendableDataType;
+import org.tellervo.schema.UserExtendableEntity;
+import org.tellervo.schema.WSIUserDefinedField;
+import org.tellervo.schema.WSIUserDefinedTerm;
 import org.tridas.annotations.TridasCustomDictionary;
 import org.tridas.annotations.TridasEditProperties;
 import org.tridas.interfaces.NormalTridasVoc;
 import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
+
+import com.dmurph.mvc.model.MVCArrayList;
 
 
 public class TridasEntityDeriver {
@@ -56,6 +63,7 @@ public class TridasEntityDeriver {
 	private static Set<Class<?>> ignoreClasses = new HashSet<Class<?>>();
 	
 	static {
+		ignoreClasses.add(TridasProject.class);
 		ignoreClasses.add(TridasObject.class);
 		ignoreClasses.add(TridasElement.class);
 		ignoreClasses.add(TridasSample.class);
@@ -84,23 +92,50 @@ public class TridasEntityDeriver {
 		// get any property names and stick them at the head of the list
 		XmlType type = clazz.getAnnotation(XmlType.class);
 		String[] typeProperties;
+		
 		if (type != null && (typeProperties = type.propOrder()) != null && typeProperties.length > 0) {
 
+
+			
 			// load into type properties
 			for (String s : typeProperties) {
+				
+				
 				// ignore zero properties
 				if (s.length() == 0)
 					continue;
 
 				TridasEntityProperty pd = new TridasEntityProperty(entityName + "." + s, s);
 				pd.setCategoryPrefix(rootName);
+				
+				//log.debug("Adding "+s+" to field map");
 				fieldMap.put(s, pd);
 			}
 			
+			if(clazz.equals(TridasObject.class))
+			{
+				// Hack on a project id to TridasObjects
+				log.debug("Adding projectid field to TridasObject");
+				
+				TridasProjectDictionaryProperty pd3 = new TridasProjectDictionaryProperty("object.project", "project");
+				
+				pd3.setCategoryPrefix(rootName);
+				fieldMap.put("project", pd3);
+				parent.addChildProperty(pd3);
+				nChildren++;
+			}
+						
 			Field[] declaredFields = clazz.getDeclaredFields();
 			for (Field f : clazz.getDeclaredFields()) {
 				String fieldType = f.getGenericType().toString();
 				TridasEntityProperty pd = fieldMap.get(f.getName());
+				
+				if(pd!=null)
+				{
+					log.debug("Setting up field "+pd.getDisplayName());
+				}
+				
+				
 				XmlElement xmlElement;
 				XmlAttribute attribute;
 				TridasEditProperties fieldprops = f.getAnnotation(TridasEditProperties.class);
@@ -119,9 +154,7 @@ public class TridasEntityDeriver {
 				{
 					// ignore this field if we don't have property data for it
 					if (pd == null) {
-						// System.out.println("No property data for " +
-						// f.getName()
-						// + " as " + fieldType);
+						 log.debug("No property data for " + f.getName() + " as " + fieldType);
 						continue;
 					}
 
@@ -202,6 +235,9 @@ public class TridasEntityDeriver {
 					if((classprops != null && classprops.readOnly()) || (fieldprops != null && fieldprops.readOnly()))
 						pd.setReadOnly(true);
 					
+					
+					pd.setReadOnly(false);
+					
 					// add type to property list
 					parent.addChildProperty(pd);
 					nChildren++;
@@ -220,10 +256,17 @@ public class TridasEntityDeriver {
 				if (entType.isEnum() || 
 						entType.getAnnotation(XmlType.class) == null ||
 						pd.qname.equals("object.genericFields") ||
-						pd.qname.equals("sample.genericFields") || 
-						pd.qname.equals("object.files")|| 
+						pd.qname.equals("sample.genericFields") ||
+						pd.qname.equals("project.files")||
+						pd.qname.equals("object.files")||
 						pd.qname.equals("element.files") ||
-						pd.qname.equals("sample.files")) {
+						pd.qname.equals("sample.files") || 
+						pd.qname.equals("project.types") ||
+						pd.qname.equals("project.category")||
+						pd.qname.equals("project.laboratories")||
+						pd.qname.equals("project.references")||
+						pd.qname.equals("project.researches")
+						){
 					continue;
 				}
 
@@ -240,10 +283,59 @@ public class TridasEntityDeriver {
 				}
 			}
 		}
-		
+				
 		// Adding in TellervoSpecificGenericFields
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		ArrayList<WSIUserDefinedField> myUserDefinedFields = new ArrayList<WSIUserDefinedField>();
+		TridasEntityProperty custom = new TridasEntityProperty(entityName + ".customFields", "custom fields");
+		custom.setCategoryPrefix(rootName);
+		custom.required = false;
+		custom.setType(String.class, null);
+		custom.readOnly = true;
 		
-		if(clazz.equals(TridasSample.class))
+		
+		if(clazz.equals(TridasObject.class))
+		{
+			
+
+			
+			// Object lab code
+			TellervoGenericFieldProperty pd =  TellervoGenericFieldProperty.getObjectCodeProperty();
+			pd.setCategoryPrefix(rootName);
+			fieldMap.put(pd.getName(), pd);
+			parent.addChildProperty(pd);
+			nChildren++;
+			
+
+			
+			// Vegetation type
+			TellervoGenericFieldProperty pd2 =  TellervoGenericFieldProperty.getVegetationTypeProperty();
+			pd2.setCategoryPrefix(rootName);
+			fieldMap.put(pd2.getName(), pd2);
+			parent.addChildProperty(pd2);
+			nChildren++;		
+			
+			// User Defined Fields			
+			for(WSIUserDefinedField fld : udfdictionary)
+			{
+				if(fld.getAttachedto().equals(UserExtendableEntity.OBJECT))
+				{
+					myUserDefinedFields.add(fld);
+				}
+			}
+		}
+		else if (clazz.equals(TridasElement.class))
+		{
+			// User Defined Fields			
+			for(WSIUserDefinedField fld : udfdictionary)
+			{
+				if(fld.getAttachedto().equals(UserExtendableEntity.ELEMENT))
+				{
+					myUserDefinedFields.add(fld);
+				}
+			}
+		}
+		else if(clazz.equals(TridasSample.class))
 		{
 			// External sample id
 			TellervoGenericFieldProperty pd =  TellervoGenericFieldProperty.getSampleExternalIDProperty();
@@ -266,25 +358,91 @@ public class TridasEntityDeriver {
 			parent.addChildProperty(pd3);
 			nChildren++;	
 			
+			// User Defined Fields			
+			for(WSIUserDefinedField fld : udfdictionary)
+			{
+				if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+				{
+					myUserDefinedFields.add(fld);
+				}
+			}
 		}
-		
-		if(clazz.equals(TridasObject.class))
+		else if (clazz.equals(TridasRadius.class))
 		{
-			// Object lab code
-			TellervoGenericFieldProperty pd =  TellervoGenericFieldProperty.getObjectCodeProperty();
-			pd.setCategoryPrefix(rootName);
-			fieldMap.put(pd.getName(), pd);
-			parent.addChildProperty(pd);
-			nChildren++;	
-			
-			// Vegetation type
-			TellervoGenericFieldProperty pd2 =  TellervoGenericFieldProperty.getVegetationTypeProperty();
-			pd2.setCategoryPrefix(rootName);
-			fieldMap.put(pd2.getName(), pd2);
-			parent.addChildProperty(pd2);
-			nChildren++;		
+			// User Defined Fields			
+			for(WSIUserDefinedField fld : udfdictionary)
+			{
+				if(fld.getAttachedto().equals(UserExtendableEntity.RADIUS))
+				{
+					myUserDefinedFields.add(fld);
+				}
+			}
+		}
+		else if (clazz.equals(TridasMeasurementSeries.class))
+		{
+			// User Defined Fields			
+			for(WSIUserDefinedField fld : udfdictionary)
+			{
+				if(fld.getAttachedto().equals(UserExtendableEntity.SERIES))
+				{
+					myUserDefinedFields.add(fld);
+				}
+			}
 		}
 		
+		
+		
+		
+		// Add the true user defined fields to the list			
+		for(WSIUserDefinedField fld : myUserDefinedFields)
+		{
+			Class clazz2 = String.class;
+			
+			if(fld.isSetDictionarykey())
+			{
+				clazz2 = WSIUserDefinedTerm.class;
+			}
+			else if(fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
+			{
+				clazz2 = String.class;
+			}
+			else if(fld.getDatatype().equals(UserExtendableDataType.XS___INT))
+			{
+				clazz2 = Integer.class;
+			}
+			else if(fld.getDatatype().equals(UserExtendableDataType.XS___FLOAT))
+			{
+				clazz2 = Float.class;
+			}
+			else if(fld.getDatatype().equals(UserExtendableDataType.XS___BOOLEAN))
+			{
+				clazz2 = Boolean.class;
+			}					
+			else
+			{
+				log.error("Invalid data type!");
+			}
+			TellervoGenericFieldProperty pd4 = new TellervoGenericFieldProperty(entityName + ".customFields."+fld.getName(), fld.getName(), fld.getName(),
+					clazz2, TridasSample.class, false, false);
+			
+			if(fld.isSetDictionarykey())
+			{
+				pd4.setDictionary(fld.getDictionarykey());
+			}
+						
+			pd4.humanReadableName = fld.getLongfieldname();
+			pd4.setCategoryPrefix(rootName);
+			fieldMap.put(pd4.getName(), pd4);
+			custom.addChildProperty(pd4);
+			nChildren++;	
+		}
+		
+		// Add Custom Fields category, but only if there are some custome fields
+		if(custom.getChildProperties().size()>0)
+		{
+			parent.addChildProperty(custom);
+		}
+
 		return nChildren;
 	}
 
@@ -326,6 +484,10 @@ public class TridasEntityDeriver {
 				System.out.print(" [REQUIRED] ");
 			if (pd.isList)
 				System.out.print(" [LIST] ");
+			if (pd.isEditable())
+				System.out.print(" [EDITABLE] ");
+			
+			
 			if (pd.getChildProperties().size() > 0)
 				System.out.print(" " + pd.getChildProperties().size() + " ");
 			System.out.println();
@@ -337,7 +499,7 @@ public class TridasEntityDeriver {
 	public static void main(String[] args) {
 		List<TridasEntityProperty> propertyList = new ArrayList<TridasEntityProperty>();
 
-		propertyList = buildDerivationList(TridasSample.class);
+		propertyList = buildDerivationList(TridasProject.class);
 		
 		dumpPropertyList(propertyList, 0);
 	}

@@ -54,6 +54,7 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasValues;
@@ -70,6 +71,18 @@ public class TridasDoc implements Filetype {
 	
 	public String getDefaultExtension() {
 		return ".xml";
+	}
+	
+	private void breakUpTridasLinks(TridasProject p) {
+		// first, disassociate any children of child objects
+		if(p.isSetObjects()) {
+			
+			
+			for(TridasObject o : p.getObjects())
+			{
+				breakUpTridasLinks(o);
+			}
+		}
 	}
 	
 	private void breakUpTridasLinks(TridasObject obj) {
@@ -95,6 +108,20 @@ public class TridasDoc implements Filetype {
 			element.unsetSamples();
 		}
 		obj.unsetElements();
+	}
+	
+	
+	private void loadProjectMeasurementsIntoList(TridasProject p, 
+			List<BaseSample> samples,
+			TridasIdentifierMap<BaseSample> references,
+			List<TridasObject> objectHierarchy) throws IOException {
+		
+		
+		for(TridasObject o : p.getObjects())
+		{
+			loadObjectMeasurementsIntoList(o, samples, references, objectHierarchy);
+		}
+		
 	}
 	
 	/**
@@ -194,6 +221,19 @@ public class TridasDoc implements Filetype {
 		
 		if(disassociate)
 			breakUpTridasLinks(obj);
+		
+		return appendSamples;
+	}
+	
+	public List<BaseSample> loadFromProject(TridasProject p, 
+			List<BaseSample> appendSamples, 
+			TridasIdentifierMap<BaseSample> references,
+			boolean disassociate) throws IOException {
+		
+		loadProjectMeasurementsIntoList(p, appendSamples, references, new ArrayList<TridasObject>());
+		
+		if(disassociate)
+			breakUpTridasLinks(p);
 		
 		return appendSamples;
 	}

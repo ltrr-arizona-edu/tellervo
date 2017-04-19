@@ -74,6 +74,11 @@ public class ControlledVocRenderer extends DefaultCellRendererEx {
 		
 		if(value instanceof ArrayList)
 		{
+			if(((ArrayList) value).size()==0)
+			{
+				return "";
+			}
+			
 			return ((ArrayList)value).get(0).toString();
 		}
 		

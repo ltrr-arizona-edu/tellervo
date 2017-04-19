@@ -29,12 +29,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.doc.Documentation;
-import org.tellervo.desktop.tridasv2.ui.ImagePreviewPanel;
+import org.tellervo.schema.WSIUserDefinedField;
+import org.tellervo.schema.WSIUserDefinedTerm;
 
+import com.dmurph.mvc.model.MVCArrayList;
 import com.l2fprod.common.beans.BeanUtils;
 import com.l2fprod.common.propertysheet.AbstractProperty;
 import com.l2fprod.common.propertysheet.Property;
@@ -50,6 +52,8 @@ public class TridasEntityProperty extends AbstractProperty {
 	
 	/** The local name of this property (e.g. title) */
 	public final String lname;
+	
+	public String humanReadableName = null;
 	
 	/** The class of this property */
 	protected Class<?> clazz;
@@ -69,6 +73,8 @@ public class TridasEntityProperty extends AbstractProperty {
 	protected List<TridasEntityProperty> childProperties;
 		
 	protected TridasEntityProperty parentProperty;
+	
+	private List<?> dictionary;
 
 	/** The object being acted upon from the root of this tree
 	 * Only valid when parentProperty == null
@@ -186,11 +192,27 @@ public class TridasEntityProperty extends AbstractProperty {
 	}
 	
 	public List<?> getDictionary() {
-		throw new IllegalArgumentException("No dictionary for " + qname);
+		
+		if(this.isDictionaryAttached())
+		{
+			return this.dictionary;
+		}
+		else
+		{
+			throw new IllegalArgumentException("No dictionary for " + qname);
+		}
 	}
 	
 	public String getDisplayName() {
-		return getNiceName();
+		
+		if(this.humanReadableName!=null)
+		{
+			return humanReadableName;
+		}
+		else
+		{
+			return getNiceName();
+		}
 	}
 	
 	public String getName() {
@@ -244,6 +266,17 @@ public class TridasEntityProperty extends AbstractProperty {
 		if(docs != null)
 			return docs;
 		
+		// Not found in TRiDaS Schema documentation so check if it's a user defined field
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			if(this.lname.equals(fld.getName()))
+			{
+				return fld.getDescription();
+			}
+		}
+		
+				
 		log.debug("No documentation available for qname: "+qname);
 		return "<i>No documentation is available for this entity</i>";
 	}
@@ -287,7 +320,15 @@ public class TridasEntityProperty extends AbstractProperty {
 	}
 	
 	public boolean isDictionaryAttached() {
-		return false;
+		
+		if(this.dictionary==null || this.dictionary.size()==0)
+		{
+			return false;
+		}
+		else
+		{
+			return true;
+		}
 	}
 
 	/**
@@ -301,6 +342,9 @@ public class TridasEntityProperty extends AbstractProperty {
 		
 		if(   (qname.equals("object.genericFields"))
 		   || (qname.equals("object.files"))
+		   || (qname.equals("project.files"))
+		   || (qname.equals("project.references"))
+		   || (qname.equals("project.types"))
 		   || (qname.equals("element.files"))
 		   || (qname.equals("sample.files"))
 		  )
@@ -356,6 +400,31 @@ public class TridasEntityProperty extends AbstractProperty {
 	
 	public void setCategoryPrefix(String categoryPrefix) {
 		this.categoryPrefix = categoryPrefix.substring(0, 1).toUpperCase() + categoryPrefix.substring(1);
+	}
+	
+	public void setDictionary(String dictionarykey)
+	{
+		ArrayList<WSIUserDefinedTerm> dict = new ArrayList<WSIUserDefinedTerm>();
+		ArrayList<String> dict2 = new ArrayList<String>();
+		
+		dict = App.dictionary.getMutableDictionary("userDefinedTermDictionary");
+		
+		for(WSIUserDefinedTerm term : dict)
+		{
+			if(term.getDictionarykey().equals(dictionarykey))
+			{
+				dict2.add(term.getTerm());
+			}
+		}
+		
+		dictionary = dict2;
+		
+		
+	}
+	
+	public void setDictionary(List<?> dictionary)
+	{
+		this.dictionary = dictionary;
 	}
 
 	public void setReadOnly(boolean readOnly) {
@@ -434,7 +503,7 @@ public class TridasEntityProperty extends AbstractProperty {
 			ensureParentValuesExist(ep.parentProperty);
 		
 		if(ep.getValue() == null) {
-			System.out.println("Creating " + ep.qname);
+			log.debug("Creating " + ep.qname);
 
 			try {
 				Constructor<?> cons = ep.clazz.getConstructor((Class<?>[]) null);

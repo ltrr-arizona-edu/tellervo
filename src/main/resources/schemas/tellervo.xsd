@@ -152,7 +152,8 @@
 				</xs:annotation>
 			</xs:enumeration>
 			
-			<xs:enumeration value="projectdbid"/>						
+
+			<xs:enumeration value="projectid"/>	
 			<xs:enumeration value="projecttitle"/>
 			<xs:enumeration value="projectcreated"/>
 			<xs:enumeration value="projectlastmodified"/>

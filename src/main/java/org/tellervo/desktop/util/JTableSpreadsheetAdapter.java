@@ -17,9 +17,11 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
 import org.tellervo.desktop.ui.Alert;
+import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIBoxDictionary;
 import org.tellervo.schema.WSIElementTypeDictionary;
 import org.tellervo.schema.WSIObjectTypeDictionary;
+import org.tellervo.schema.WSIProjectTypeDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
 import org.tellervo.schema.WSITaxonDictionary;
 import org.tridas.io.util.DateUtils;
@@ -167,13 +169,17 @@ public class JTableSpreadsheetAdapter implements ActionListener
         	   
         	Object value = mainTable.getValueAt(rowsselected[i],colsselected.get(j));
         	
-        	if (value instanceof TridasShape)
+        	if (value==null)
+        	{
+        		sbf.append("");
+        	}
+        	else if (value instanceof TridasShape)
         	{
         		TridasShape shape = (TridasShape) value;
         		sbf.append(shape.getNormalTridas().value());
         				
         	}
-        	if (value instanceof TridasUnit)
+        	else if (value instanceof TridasUnit)
         	{
         		TridasUnit unit = (TridasUnit) value;
         		sbf.append(unit.getNormalTridas().value());
@@ -196,6 +202,11 @@ public class JTableSpreadsheetAdapter implements ActionListener
         		{
         			sbf.append(cvoc.getNormal());
         		}
+        	}
+        	else if (value instanceof WSIBox)
+        	{
+        		WSIBox box = (WSIBox)value;
+        		sbf.append(box.getTitle());
         	}
         	else if (value instanceof org.tridas.schema.Date)
         	{
@@ -290,9 +301,16 @@ public class JTableSpreadsheetAdapter implements ActionListener
 		pasteErrorTableModel.addColumn("Value");
 		pasteErrorTableModel.addColumn("Error");
 		
-		
-        int startRow=(mainTable.getSelectedRows())[0];
-        int startCol=(mainTable.getSelectedColumns())[0];
+		int startRow;
+		int startCol;
+		try{
+			startRow=(mainTable.getSelectedRows())[0];
+			startCol=(mainTable.getSelectedColumns())[0];
+		} catch (Exception e)
+		{
+			startRow = 0;
+			startCol = 0;
+		}
         
         // Make sure we skip the first two columns.
         if(startCol<2) startCol=2;
@@ -316,54 +334,94 @@ public class JTableSpreadsheetAdapter implements ActionListener
            log.debug("Clipboard contents: "+system.getName());
            String trstring= (String)(system.getContents(this).getTransferData(DataFlavor.stringFlavor));
            log.debug("Clipboard string is: "+trstring);
-           StringTokenizer st1=new StringTokenizer(trstring,"\n");
+           String[] lines = trstring.split("\n");
                 
            Boolean firstRun = true;
            int rowsignored = 0;
-           for(int i=0;st1.hasMoreTokens();i++)
+           int lineindex = -1;
+           for(String rowstring : lines)
            { 
-              rowstring=st1.nextToken();
-              StringTokenizer st2=new StringTokenizer(rowstring,"\t");
-              for(int j=0;st2.hasMoreTokens();j++)
+        	  lineindex++;
+              //rowstring=st1.nextToken();
+              String[] cells = rowstring.split("\t");
+              
+              if(cells.length==0) continue;
+              
+              // Check to see if we have a header line that needs to be ignored
+              String colname = mainTable.getColumnName(0);
+              if(cells[0].equals(mainTable.getColumnName(0)) || cells[0].equals(mainTable.getColumnName(2)))
               {
-                 value=(String)st2.nextToken();
-               
-                 if(firstRun)
+            	  // Header found so skip
+            	  log.debug("Found header line.  Skipping");
+            	  rowsignored++;
+            	  continue;
+              }
+              else
+              {
+            	  log.debug("First cell is "+cells[0]+ " which doesn't match the first column name "+colname);
+            	  log.debug("No header to skip");
+              }
+              
+              
+              int colindex=-1;
+              for(String value : cells)
+              {
+            	 colindex++;
+                 //value=(String)st2.nextToken();
+                 
+                 log.debug("Value of this cell is = '"+value+"'");
+                                
+                 /*if(firstRun)
                  {
                 	 String colname = mainTable.getColumnName(startCol);
                 	 if(value.equals(colname))
                 	 {
                 		 // Clipboard has header line which needs to be skipped
-                		 for(int k=0;st2.hasMoreTokens();k++)
-                		 {
-                			 st2.nextToken();
-                		 }
+                		 
                 		 rowsignored=1;
                 		 firstRun = false;
-                		 continue;
+                		 break lineloop;
                 	 }
                 	 firstRun = false;
-                 }
+                 }*/
                  
                 
                  
-				if ((startRow+i-rowsignored< mainTable.getRowCount()  &&
-                     startCol+j< mainTable.getColumnCount()) || (simulateFirst && pasteAppend))
+				if ((startRow+lineindex-rowsignored< mainTable.getRowCount()  &&
+                     startCol+colindex< mainTable.getColumnCount()) || (simulateFirst && pasteAppend))
 				{
-                    int rowIndex = startRow+i-rowsignored;
+                    int rowIndex = startRow+lineindex-rowsignored;
                 
 					AbstractBulkImportTableModel tablemodel = ((AbstractBulkImportTableModel)mainTable.getModel());
 					
-					Class clazz = tablemodel.getColumnClass(startCol+j);
+					Class clazz = tablemodel.getColumnClass(startCol+colindex);
 					
-					log.debug("Value for cell "+j+" was '"+value+"'");
+					log.debug("Value for cell "+colindex+" was '"+value+"'");
 
-					
-					if(value==null || value.toLowerCase().equals("null") || value.equals(" ") || value.equals(""))
+					// Replace various representations of 'null' with a real null
+					if(value==null || value.toLowerCase().equals("null") || value.equals(" ") 
+							|| value.equals("") || value.replace(" ", "").length()==0)
 					{
 						log.debug("Value for cell was '"+value+"' so setting cell to null");
 						
-						if(!simulateFirst) tablemodel.setValueAt(null,rowIndex,startCol+j);
+						if(!simulateFirst) tablemodel.setValueAt(null,rowIndex,startCol+colindex);
+					}
+					else if(clazz.equals(WSIProjectTypeDictionary.class))
+					{
+						List<ControlledVoc> types = Dictionary.getMutableDictionary("projectTypeDictionary");
+						Boolean match = false;
+						for(ControlledVoc cvoc : types)
+						{
+							if(cvoc.getNormal().equals(value)) {
+				                 if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+colindex);
+								match = true;
+							}
+						}
+						if(match==false) {
+							logPasteError(lineindex,colindex,value,"Only items from the project type dictionary can be used.");
+							errorsEncountered = true;
+						}
+											
 					}
 					else if(clazz.equals(WSIObjectTypeDictionary.class))
 					{
@@ -372,12 +430,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						for(ControlledVoc cvoc : types)
 						{
 							if(cvoc.getNormal().equals(value)) {
-				                 if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
+				                 if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+colindex);
 								match = true;
 							}
 						}
 						if(match==false) {
-							logPasteError(i,j,value,"Only items from the object type dictionary can be used.");
+							logPasteError(lineindex,colindex,value,"Only items from the object type dictionary can be used.");
 							errorsEncountered = true;
 						}
 											
@@ -389,12 +447,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						for(ControlledVoc cvoc : types)
 						{
 							if(cvoc.getNormal().equals(value)) {
-								if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
+								if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+colindex);
 								match = true;
 							}
 						}
 						if(match==false) {
-							logPasteError(i,j,value,"Only items from the element type dictionary can be used.");
+							logPasteError(lineindex,colindex,value,"Only items from the element type dictionary can be used.");
 							errorsEncountered = true;
 						}						
 					}
@@ -405,12 +463,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						for(ControlledVoc cvoc : types)
 						{
 							if(cvoc.getNormal().equals(value)) {
-								if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
+								if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+colindex);
 								match = true;
 							}
 						}
 						if(match==false) {
-							logPasteError(i,j,value,"Only items from the sample type dictionary can be used.");
+							logPasteError(lineindex,colindex,value,"Only items from the sample type dictionary can be used.");
 							errorsEncountered = true;
 						}						
 					}
@@ -421,12 +479,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						for(ControlledVoc cvoc : types)
 						{
 							if(cvoc.getNormal().equals(value)) {
-								if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
+								if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+colindex);
 								match = true;
 							}
 						}
 						if(match==false) {
-							logPasteError(i,j,value,"Only items from the box dictionary can be used.");
+							logPasteError(lineindex,colindex,value,"Only items from the box dictionary can be used.");
 							errorsEncountered = true;
 						}						
 					}
@@ -437,12 +495,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						for(ControlledVoc cvoc : taxonDictionary)
 						{
 							if(cvoc.getNormal().equals(value)) {
-								if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+j);
+								if(!simulateFirst) tablemodel.setValueAt(cvoc,rowIndex,startCol+colindex);
 								match = true;
 							}
 						}
 						if(match==false) {
-							logPasteError(i,j,value,"Only items from the taxon dictionary can be used.");
+							logPasteError(lineindex,colindex,value,"Only items from the taxon dictionary can be used.");
 
 							errorsEncountered = true;
 						}						
@@ -457,12 +515,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
 				                 
 								TridasShape shape = new TridasShape();
 								shape.setNormalTridas(item);
-								if(!simulateFirst) tablemodel.setValueAt(shape,rowIndex,startCol+j);
+								if(!simulateFirst) tablemodel.setValueAt(shape,rowIndex,startCol+colindex);
 								match = true;
 							}
 						}
 						if(match==false) {
-							logPasteError(i,j,value,"Only items from the shape dictionary can be used.");
+							logPasteError(lineindex,colindex,value,"Only items from the shape dictionary can be used.");
 							errorsEncountered = true;
 						}						
 					}
@@ -476,12 +534,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
 				                 
 								TridasUnit unit = new TridasUnit();
 								unit.setNormalTridas(item);
-								if(!simulateFirst) tablemodel.setValueAt(unit,rowIndex,startCol+j);
+								if(!simulateFirst) tablemodel.setValueAt(unit,rowIndex,startCol+colindex);
 								match = true;
 							}
 						}
 						if(match==false) {
-							logPasteError(i,j,value,"Only units defined by TRiDaS can be used.");
+							logPasteError(lineindex,colindex,value,"Only units defined by TRiDaS can be used.");
 							errorsEncountered = true;
 						}						
 					}
@@ -494,12 +552,12 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						{
 							if(obj.getLabCode().equals(value)) {
 				     
-								if(!simulateFirst) tablemodel.setValueAt(obj,rowIndex,startCol+j);
+								if(!simulateFirst) tablemodel.setValueAt(obj,rowIndex,startCol+colindex);
 								match = true;
 							}
 						}
 						if(match==false) {
-							logPasteError(i,j,value,"Only the names of existing objects can be specified");
+							logPasteError(lineindex,colindex,value,"Only the names of existing objects can be specified");
 							errorsEncountered = true;
 						}
 					}
@@ -509,7 +567,7 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						TridasElement tempElement = new TridasElement();
 						tempElement.setTitle(value);
 		
-						if(!simulateFirst) tablemodel.setValueAt(tempElement,rowIndex,startCol+j);
+						if(!simulateFirst) tablemodel.setValueAt(tempElement,rowIndex,startCol+colindex);
 					}
 					else if (clazz.equals(GPXWaypoint.class))
 					{
@@ -519,15 +577,15 @@ public class JTableSpreadsheetAdapter implements ActionListener
 					{
 						if(value.toLowerCase().equals("true") || value.toLowerCase().equals("t")|| value.toLowerCase().equals("y") || value.toLowerCase().equals("yes"))
 						{
-							if(!simulateFirst) tablemodel.setValueAt(true,rowIndex,startCol+j);
+							if(!simulateFirst) tablemodel.setValueAt(true,rowIndex,startCol+colindex);
 						}
 						else if(value==null || value.toLowerCase().equals("null") || value.toLowerCase().equals("false") || value.toLowerCase().equals("f")|| value.toLowerCase().equals("n") || value.toLowerCase().equals("no"))
 						{
-							if(!simulateFirst) tablemodel.setValueAt(false,rowIndex,startCol+j);
+							if(!simulateFirst) tablemodel.setValueAt(false,rowIndex,startCol+colindex);
 						}
 						else
 						{
-							logPasteError(i,j,value,"Invalid boolean value.  Must be one of: true; yes; t; y; false; no; f; n; or null.");
+							logPasteError(lineindex,colindex,value,"Invalid boolean value.  Must be one of: true; yes; t; y; false; no; f; n; or null.");
 							errorsEncountered = true;
 						}
 					}
@@ -538,10 +596,10 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							double dbl = Double.parseDouble(value.toString());
 							log.debug("Value = "+dbl);
 							
-							if(!simulateFirst) tablemodel.setValueAt(dbl, rowIndex,startCol+j);
+							if(!simulateFirst) tablemodel.setValueAt(dbl, rowIndex,startCol+colindex);
 						} catch (NumberFormatException e)
 						{
-							logPasteError(i,j,value,"Not a valid decimal number");
+							logPasteError(lineindex,colindex,value,"Not a valid decimal number");
 							errorsEncountered = true;
 						}
 					}else if (clazz.equals(org.tridas.schema.Date.class))
@@ -571,10 +629,10 @@ public class JTableSpreadsheetAdapter implements ActionListener
 								}
 							}	
 															
-							if(!simulateFirst) tablemodel.setValueAt(schemadate,rowIndex,startCol+j);
+							if(!simulateFirst) tablemodel.setValueAt(schemadate,rowIndex,startCol+colindex);
 						} catch (Exception e)
 						{
-							logPasteError(i,j,value,"Not a valid representation of a date");
+							logPasteError(lineindex,colindex,value,"Not a valid representation of a date");
 							errorsEncountered = true;
 						}
 					}
@@ -588,10 +646,10 @@ public class JTableSpreadsheetAdapter implements ActionListener
 							log.debug("Parsing '"+dbl+"' to BigDecimal");
 							log.debug("BigDecimal value = "+bd);
 															
-							if(!simulateFirst) tablemodel.setValueAt(bd,rowIndex,startCol+j);
+							if(!simulateFirst) tablemodel.setValueAt(bd,rowIndex,startCol+colindex);
 						} catch (NumberFormatException e)
 						{
-							logPasteError(i,j,value,"Not a valid representation of a decimal number");
+							logPasteError(lineindex,colindex,value,"Not a valid representation of a decimal number");
 							errorsEncountered = true;
 						}
 					}
@@ -600,16 +658,16 @@ public class JTableSpreadsheetAdapter implements ActionListener
 						// Assuming string, catch cast exception if not
 						if(value.toLowerCase().equals("null"))
 						{
-							if(!simulateFirst) tablemodel.setValueAt(null,rowIndex,startCol+j);
+							if(!simulateFirst) tablemodel.setValueAt(null,rowIndex,startCol+colindex);
 						}
 						else
 						{
 							try{
-								if(!simulateFirst) tablemodel.setValueAt(value,rowIndex,startCol+j);
+								if(!simulateFirst) tablemodel.setValueAt(value,rowIndex,startCol+colindex);
 							} catch (ClassCastException e)
 							{
-								if(!simulateFirst) tablemodel.setValueAt(null,rowIndex,startCol+j);
-								logPasteError(i,j,value,"Not a valid entry");
+								if(!simulateFirst) tablemodel.setValueAt(null,rowIndex,startCol+colindex);
+								logPasteError(lineindex,colindex,value,"Not a valid entry");
 								errorsEncountered=true;
 							}
 						}

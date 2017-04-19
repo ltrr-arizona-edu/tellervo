@@ -57,6 +57,7 @@ import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasSample;
 
 
@@ -100,6 +101,7 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 			throws ResourceException {
 		List<Object> content = object.getContent().getSqlsAndProjectsAndObjects();
 		List<WSIBox> boxes = ListUtil.subListOfType(content, WSIBox.class);
+		List<TridasProject> tridasProjects = ListUtil.subListOfType(content, TridasProject.class);
 		List<TridasObject> tridasObjects = ListUtil.subListOfType(content, TridasObject.class);
 		List<ITridasSeries> tridasSeries = ListUtil.subListOfType(content, ITridasSeries.class);
 		List<BaseSample> samples = new ArrayList<BaseSample>();
@@ -114,10 +116,19 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 		TridasDoc doc = new TridasDoc();
 		
 		try {
-			// load the tridas object tree first
-			for(TridasObject obj : tridasObjects) {
 			
-				doc.loadFromObject(obj, samples, refmap, true);
+			for(TridasProject p : tridasProjects){
+				doc.loadFromProject(p, samples, refmap, true);
+
+			}
+			
+			if(tridasProjects==null || tridasProjects.size()==0)
+			{
+				// load the tridas object tree first
+				for(TridasObject obj : tridasObjects) {
+				
+					doc.loadFromObject(obj, samples, refmap, true);
+				}
 			}
 			
 			// now load any base series lying around (usually derived series here)
@@ -180,6 +191,9 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 	 * @return a sample, or null
 	 */
 	public Sample getSample(TridasIdentifier identifier) {
+		
+		log.debug("Associated result: "+this.getAssociatedResult());
+		
 		for(BaseSample bs : getAssociatedResult()) {
 			if(bs.getSeries().getIdentifier().getValue().equals(identifier.getValue())) {
 				if(!(bs instanceof Sample))

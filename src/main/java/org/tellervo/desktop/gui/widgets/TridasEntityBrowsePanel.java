@@ -85,6 +85,8 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 		
 		populateObjectCombo();
 		setListenersEnabled(true);
+    	cboObject.setSelectedIndex(-1);
+
 		
 	}
 	
@@ -96,6 +98,8 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 		
 		populateObjectCombo();
 		setListenersEnabled(true);
+    	cboObject.setSelectedIndex(-1);
+
 		
 	}
 		
@@ -184,7 +188,7 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				populateObjectCombo();	
-				cboObject.setSelectedItem(null);
+				cboObject.setSelectedIndex(-1);
 			}
 			
 		});
@@ -224,10 +228,10 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 			cboSample.setEnabled(false);
 			cboRadius.setEnabled(false);
 			cboSeries.setEnabled(false);
-			cboElement.setSelectedItem(null);
-			cboSample.setSelectedItem(null);
-			cboRadius.setSelectedItem(null);
-			cboSeries.setSelectedItem(null);
+			cboElement.setSelectedIndex(-1);
+			cboSample.setSelectedIndex(-1);
+			cboRadius.setSelectedIndex(-1);
+			cboSeries.setSelectedIndex(-1);
 		}
 		else if(clazz.equals(TridasElement.class))
 		{
@@ -236,9 +240,9 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 			cboSample.setEnabled(false);
 			cboRadius.setEnabled(false);
 			cboSeries.setEnabled(false);
-			cboSample.setSelectedItem(null);
-			cboRadius.setSelectedItem(null);
-			cboSeries.setSelectedItem(null);
+			cboSample.setSelectedIndex(-1);
+			cboRadius.setSelectedIndex(-1);
+			cboSeries.setSelectedIndex(-1);
 		}
 		else if(clazz.equals(TridasSample.class))
 		{
@@ -247,8 +251,8 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 			cboSample.setEnabled(true);
 			cboRadius.setEnabled(false);
 			cboSeries.setEnabled(false);
-			cboRadius.setSelectedItem(null);
-			cboSeries.setSelectedItem(null);
+			cboRadius.setSelectedIndex(-1);
+			cboSeries.setSelectedIndex(-1);
 		}		
 		else if(clazz.equals(TridasRadius.class))
 		{
@@ -257,7 +261,7 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 			cboSample.setEnabled(true);
 			cboRadius.setEnabled(true);	
 			cboSeries.setEnabled(false);
-			cboSeries.setSelectedItem(null);
+			cboSeries.setSelectedIndex(-1);
 		}	
 		
 		setVisibilityBasedOnClasses();
@@ -307,11 +311,10 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
     	rend.setMaximumTitleLength(30);
     	rend.setHideTitles(true);
     	cboObject.setRenderer(rend);
-    	objModel = new FilterableComboBoxModel();
+    	objModel = new FilterableComboBoxModel();    	
     	objModel.addElements(App.tridasObjects.getObjectList());
-
     	cboObject.setModel(objModel);
-    	cboObject.setSelectedItem(null);
+    	
     	enableCombos(TridasObject.class);
     }
     
@@ -356,7 +359,7 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 		
 		elModel.replaceContents(elList); 	
     	
-		cboElement.setSelectedItem(null);
+		cboElement.setSelectedIndex(-1);
     	
      	cboElement.setModel(elModel);
     	log.debug("Element combo contains " + cboElement.getItemCount()+" items");
@@ -408,7 +411,7 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 		sampModel.replaceContents(sampList); 	
     	
 		// Pick first in list
-		cboSample.setSelectedItem(null);
+		cboSample.setSelectedIndex(-1);
     	
 		enableCombos(TridasSample.class);
     }
@@ -457,7 +460,7 @@ public class TridasEntityBrowsePanel extends JPanel implements ItemListener{
 		radModel.replaceContents(radiiList); 	
 		cboRadius.setRenderer(new TridasListCellRenderer());
     	
-		cboRadius.setSelectedItem(null);
+		cboRadius.setSelectedIndex(-1);
 		
 		enableCombos(TridasRadius.class);
     	

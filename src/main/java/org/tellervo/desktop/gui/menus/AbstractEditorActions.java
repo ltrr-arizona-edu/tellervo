@@ -28,6 +28,8 @@ import org.tellervo.desktop.gui.menus.actions.AdminEditViewPermissionsAction;
 import org.tellervo.desktop.gui.menus.actions.AdminForgetPasswordAction;
 import org.tellervo.desktop.gui.menus.actions.AdminLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminMetadatabaseBrowserAction;
+import org.tellervo.desktop.gui.menus.actions.AdminProjectBrowser;
+import org.tellervo.desktop.gui.menus.actions.AdminRecordCardAction;
 import org.tellervo.desktop.gui.menus.actions.AdminReportsAction;
 import org.tellervo.desktop.gui.menus.actions.AdminSampleLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminSiteMapAction;
@@ -52,6 +54,8 @@ import org.tellervo.desktop.gui.menus.actions.FileDesignODKFormAction;
 import org.tellervo.desktop.gui.menus.actions.FileExitAction;
 import org.tellervo.desktop.gui.menus.actions.FileExportDataAction;
 import org.tellervo.desktop.gui.menus.actions.FileNewAction;
+import org.tellervo.desktop.gui.menus.actions.FileNewBoxAction;
+import org.tellervo.desktop.gui.menus.actions.FileNewProject;
 import org.tellervo.desktop.gui.menus.actions.FileOpenAction;
 import org.tellervo.desktop.gui.menus.actions.FileOpenMultiAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAction;
@@ -105,6 +109,8 @@ public abstract class AbstractEditorActions{
 	public Action fileExportDataAction;
 	//public Action fileExportMapAction;
 	public Action fileNewAction;
+	public Action fileNewBoxAction;
+	public Action fileNewProjectAction;
 	public Action fileOpenMultiAction;
 	public Action fileBulkDataEntryAction;
 	
@@ -138,6 +144,7 @@ public abstract class AbstractEditorActions{
 	public Action adminLabelAction;
 	public Action adminBoxLabelAction;
 	public Action adminBasicBoxLabelAction;
+	public Action adminRecordCardAction;
 	public Action adminSampleLabelAction;
 	public Action adminDatabaseStatisticsAction;
 	public Action adminCurationMenuBoxDetailsAction;
@@ -146,6 +153,7 @@ public abstract class AbstractEditorActions{
 	public Action adminCurationMenuNewLoanAction;
 	public Action adminCurationMenuSampleStatusAction;
 	public Action adminSiteMapAction;
+	public Action adminProjectBrowserAction;
 
 	// View menu actions
 
@@ -199,6 +207,8 @@ public abstract class AbstractEditorActions{
 		
 
 		fileNewAction = new FileNewAction(editor);
+		fileNewBoxAction = new FileNewBoxAction(editor);
+		fileNewProjectAction = new FileNewProject(editor);
 		fileOpenAction = new FileOpenAction(editor);
 		fileOpenMultiAction = new FileOpenMultiAction(editor);
 		fileExportDataAction = new FileExportDataAction(editor);
@@ -233,6 +243,7 @@ public abstract class AbstractEditorActions{
 		adminReportsAction = new AdminReportsAction();
 		adminLabelAction = new AdminLabelAction();
 		adminBoxLabelAction = new AdminBoxLabelAction();
+		adminRecordCardAction = new AdminRecordCardAction();
 		adminBasicBoxLabelAction = new AdminBasicBoxLabelAction();
 		adminSampleLabelAction = new AdminSampleLabelAction();
 		adminDatabaseStatisticsAction = new AdminDatabaseStatisticsAction();
@@ -242,6 +253,7 @@ public abstract class AbstractEditorActions{
 		adminCurationMenuNewLoanAction = new AdminCurationMenuNewLoanAction(editor);
 		adminCurationMenuSampleStatusAction = new AdminCurationMenuSampleStatusAction();		
 		adminMetaDBAction = new AdminMetadatabaseBrowserAction();
+		adminProjectBrowserAction = new AdminProjectBrowser(editor);
 		adminSiteMapAction = new AdminSiteMapAction();
 
 		toolsTruncateAction = new ToolsTruncateAction(editor);
@@ -416,3 +428,4 @@ public abstract class AbstractEditorActions{
 
 
 }
+

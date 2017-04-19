@@ -23,12 +23,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.io.Metadata;
-import org.tellervo.schema.TellervoRequestType;
-import org.tellervo.schema.EntityType;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesResource;
+import org.tellervo.schema.EntityType;
+import org.tellervo.schema.TellervoRequestType;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.schema.SeriesLink;
@@ -58,6 +60,9 @@ import org.tridas.schema.TridasRadius;
  */
 
 public class TellervoWSILoader extends AbstractTellervoGUIDeletableSampleLoader<SeriesResource> implements Cloneable {
+	
+	private final static Logger log = LoggerFactory.getLogger(TellervoWSILoader.class);
+
 	private String shortName;
 	private String name;
 	private TridasIdentifier identifier;
@@ -111,6 +116,8 @@ public class TellervoWSILoader extends AbstractTellervoGUIDeletableSampleLoader<
 	protected Sample doLoad(SeriesResource resource,
 			TellervoResourceAccessDialog dialog) throws IOException {
 
+		log.debug("Loading sample");
+		
 		// start the query
 		resource.query();
 		dialog.setVisible(true);
@@ -123,6 +130,10 @@ public class TellervoWSILoader extends AbstractTellervoGUIDeletableSampleLoader<
 			else
 				throw new IOException("Error: " + e.toString());
 		}
+		
+		log.debug("Queried server successfully");
+		
+		log.debug("Building a Sample with Tridas Identifier: "+getTridasIdentifier());
 
 		Sample s = resource.getSample(getTridasIdentifier());
 

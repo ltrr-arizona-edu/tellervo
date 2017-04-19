@@ -444,7 +444,11 @@ class auth
 	    $theObjectID = "aaaaaaaa-aaaa-4aaa-aaaa-aaaaaaaaaaaa";
         }
 
-                
+        if($theObjectType=='project')
+        {
+        	// Only admins can edit projects
+        	return false;
+        }    
         
         if (($theObjectType=='securityUser') || ($theObjectType=='securityGroup'))
         {

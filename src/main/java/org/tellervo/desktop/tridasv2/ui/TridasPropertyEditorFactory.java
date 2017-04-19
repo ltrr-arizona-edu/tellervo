@@ -29,6 +29,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
+import org.tellervo.desktop.tridasv2.ui.support.TridasProjectDictionaryProperty;
 import org.tellervo.schema.WSICuration;
 import org.tridas.io.formats.tridas.TridasFile;
 import org.tridas.schema.SeriesLink;
@@ -66,7 +67,7 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		registerEditor(org.tridas.schema.Date.class, TridasDateEditor.class);
 		
 		registerEditor(TridasFile.class, TridasFileEditor.class);
-		registerEditor(List.class, TridasFileEditor.class);
+		registerEditor(List.class, TridasProjectTypesEditor.class);
 		
 		
 		registerEditor(WSICuration.class, WSICurationEditor.class);
@@ -87,7 +88,21 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 			{
 				return new WSICurationEditor((TridasSample) ep.getRootObject());
 			}
+			
+			if(ep.qname.equals("project.types"))
+			{
+				return new TridasProjectTypesEditor();
+			}
 		}
+		
+		if(property instanceof TridasProjectDictionaryProperty)
+		{
+			TridasProjectDictionaryProperty ep = (TridasProjectDictionaryProperty)property;
+		
+			
+			return new ListComboBoxPropertyEditor(ep.getDictionary());
+		}
+		
 
 		if(property.getName().equals("files"))
 		{

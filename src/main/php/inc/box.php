@@ -34,7 +34,7 @@ class box extends boxEntity implements IDBAccessor
     /***********/
     /* SETTERS */
     /***********/
-
+    
     function setParamsFromDBRow($row, $format="standard")
     {
         $this->setTitle($row['title']);

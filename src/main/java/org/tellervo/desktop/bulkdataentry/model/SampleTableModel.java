@@ -26,14 +26,20 @@ package org.tellervo.desktop.bulkdataentry.model;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.UserExtendableDataType;
+import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIBoxDictionary;
 import org.tellervo.schema.WSISampleStatusDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
+import org.tellervo.schema.WSIUserDefinedField;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.odk.ODKParser;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
@@ -52,7 +58,8 @@ import com.dmurph.mvc.model.MVCArrayList;
  */
 public class SampleTableModel extends AbstractBulkImportTableModel {
 	private static final long serialVersionUID = 2L;
-	
+	private static final Logger log = LoggerFactory.getLogger(SampleTableModel.class);
+
 	public SampleTableModel(SampleModel argModel){
 		super(argModel);
 	}
@@ -83,7 +90,40 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 		{
 			return WSISampleStatusDictionary.class;
 		}
-		return null;
+		
+		
+		// Get data type of user defined fields
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+			{
+				if(fld.getLongfieldname().equals(argColumn))
+				{
+					UserExtendableDataType dt = fld.getDatatype();
+					if(dt.equals(UserExtendableDataType.XS___STRING))
+					{
+						return String.class;
+					}
+					else if(dt.equals(UserExtendableDataType.XS___BOOLEAN))
+					{
+						return Boolean.class;
+					}
+					else if(dt.equals(UserExtendableDataType.XS___FLOAT))
+					{
+						return Float.class;
+					}
+					else if(dt.equals(UserExtendableDataType.XS___INT))
+					{
+						return Integer.class;
+					}
+				}
+			}
+		}
+		
+		//log.debug("Looking for data type of field "+argColumn);
+
+		return String.class;
 	}
 	
 	/**

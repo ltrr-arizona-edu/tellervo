@@ -142,6 +142,10 @@ class request
    		}        
         
         // Do the validation
+        
+   		//$firebug->log($xmlrequest, "Raw XML Request ");
+   		//$firebug->log($doc, "XML Doc");
+   		
         if($doc->schemaValidate($tellervoXSD))
         {      
         	$this->xmlrequest = $xmlrequest;
@@ -304,12 +308,17 @@ class request
 	                
 	                switch(strtolower($item->getAttribute('type')))
 	                {
+	                	case 'project':
+	                		$newxml = "<tridas:project xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier domain=\"$domain\">".$item->getAttribute('id')."</tridas:identifier></tridas:project>";
+	                		$myParamObj = new projectParameters($newxml, $parentID, $mergeWithID);
+	                		break;
+	                	
 	                	case 'object':    
 	                		$newxml = "<tridas:object xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier domain=\"$domain\">".$item->getAttribute('id')."</tridas:identifier></tridas:object>";
 	                		$myParamObj = new objectParameters($newxml, $parentID, $mergeWithID);
                             break;	                		
 
-                        	case 'element':    
+                        case 'element':    
 	                		$newxml = "<tridas:element xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier domain=\"$domain\">".$item->getAttribute('id')."</tridas:identifier></tridas:element>";
 	                		$myParamObj = new elementParameters($newxml, $parentID, $mergeWithID);
                             break;	                		
@@ -349,7 +358,7 @@ class request
 	                		$myParamObj = new securityGroupParameters($newxml);
                             break;	  
                             
-	                case 'loan':
+	               		case 'loan':
 	                		$newxml = "<loan xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier>".$item->getAttribute('id')."</tridas:identifier></loan>";
 	                		$myParamObj = new loanParameters($newxml);
                             break;		  
@@ -365,7 +374,7 @@ class request
                            
                             break;                            
                         
-			case 'odkformdefinition':
+						case 'odkformdefinition':
                             $newxml = "<odkFormDefinition id=\"".$item->getAttribute('id')."\"></odkFormDefinition>";
                             $myParamObj = new odkFormDefinitionParameters($newxml);
                            
@@ -412,6 +421,10 @@ class request
             	             	
             	switch($item->tagName)
             	{
+            		case "tridas:project":
+            			$myParamObj = new projectParameters($this->xmlRequestDom->saveXML($item), $parentID);
+            			break;
+            		
             		case "tridas:element":
             			$myParamObj = new elementParameters($this->xmlRequestDom->saveXML($item), $parentID);
             			break;

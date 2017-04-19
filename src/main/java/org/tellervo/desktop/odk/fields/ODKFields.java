@@ -1,42 +1,56 @@
 package org.tellervo.desktop.odk.fields;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.odk.ODKFormDesignPanel;
+import org.tellervo.schema.UserExtendableDataType;
+import org.tellervo.schema.UserExtendableEntity;
+import org.tellervo.schema.WSIUserDefinedField;
+import org.tellervo.schema.WSIUserDefinedTerm;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
+import com.dmurph.mvc.model.MVCArrayList;
+
 public class ODKFields {
 
-	private ArrayList<Class<? extends ODKFieldInterface>> fieldsList = new ArrayList<Class<? extends ODKFieldInterface>>();
-	
+	private ArrayList<ODKFieldInterface> fieldsList = new ArrayList<ODKFieldInterface>();
+	private static final Logger log = LoggerFactory.getLogger(ODKFields.class);
+
 	public ODKFields()
 	{
 		
 		// OBJECT FIELDS
-		fieldsList.add(ODKTridasParentObjectCode.class);
-		fieldsList.add(ODKTridasObjectCode.class);
-		fieldsList.add(ODKTridasObjectTitle.class);
-		fieldsList.add(ODKTridasObjectType.class);
-		fieldsList.add(ODKTridasObjectComments.class);
-		fieldsList.add(ODKTridasObjectDescription.class);
-		fieldsList.add(ODKTridasObjectPhoto.class);
-		//fieldsList.add(ODKTridasObjectSound.class);
-		fieldsList.add(ODKTridasObjectVideo.class);
-		fieldsList.add(ODKTridasObjectLocation.class);
-		fieldsList.add(ODKTridasObjectLocationType.class);
-		fieldsList.add(ODKTridasObjectLocationComments.class);
-		fieldsList.add(ODKTridasObjectAddressLine1.class);
-		fieldsList.add(ODKTridasObjectAddressLine2.class);
-		fieldsList.add(ODKTridasObjectAddressCityOrTown.class);
-		fieldsList.add(ODKTridasObjectAddressStateProvince.class);
-		fieldsList.add(ODKTridasObjectAddressPostalCode.class);
-		fieldsList.add(ODKTridasObjectAddressCountry.class);
-		fieldsList.add(ODKTridasObjectVegetationType.class);
-		fieldsList.add(ODKTridasObjectOwner.class);
-		fieldsList.add(ODKTridasObjectCreator.class);
+		fieldsList.add(new ODKTridasParentObjectCode());
+		fieldsList.add(new ODKTridasObjectCode());
+		fieldsList.add(new ODKTridasObjectTitle());
+		fieldsList.add(new ODKTridasObjectType());
+		fieldsList.add(new ODKTridasObjectComments());
+		fieldsList.add(new ODKTridasObjectDescription());
+		fieldsList.add(new ODKTridasObjectPhoto());
+		//fieldsList.add(new ODKTridasObjectSound());
+		fieldsList.add(new ODKTridasObjectVideo());
+		fieldsList.add(new ODKTridasObjectLocation());
+		fieldsList.add(new ODKTridasObjectLocationType());
+		fieldsList.add(new ODKTridasObjectLocationComments());
+		fieldsList.add(new ODKTridasObjectAddressLine1());
+		fieldsList.add(new ODKTridasObjectAddressLine2());
+		fieldsList.add(new ODKTridasObjectAddressCityOrTown());
+		fieldsList.add(new ODKTridasObjectAddressStateProvince());
+		fieldsList.add(new ODKTridasObjectAddressPostalCode());
+		fieldsList.add(new ODKTridasObjectAddressCountry());
+		fieldsList.add(new ODKTridasObjectVegetationType());
+		fieldsList.add(new ODKTridasObjectOwner());
+		fieldsList.add(new ODKTridasObjectCreator());
 
 		
 		// ELEMENT FIELDS
@@ -73,27 +87,100 @@ public class ODKFields {
 		fieldsList.add(ODKTridasElementDimWidth.class);
 		fieldsList.add(ODKTridasElementDimDepth.class);
 		fieldsList.add(ODKTridasElementDimDiameter.class);
-
-		
-
 		
 		// SAMPLE FIELDS
-		fieldsList.add(ODKTridasSampleCode.class);
-		fieldsList.add(ODKTridasSampleComments.class);
-		fieldsList.add(ODKTridasSampleType.class);
-		fieldsList.add(ODKTridasSampleDescription.class);
-		fieldsList.add(ODKTridasSamplePhoto.class);
-		fieldsList.add(ODKTridasSampleSamplingDate.class);
-		fieldsList.add(ODKTridasSamplePosition.class);
-		fieldsList.add(ODKTridasSampleState.class);
-		fieldsList.add(ODKTridasSampleKnots.class);
-		fieldsList.add(ODKTridasSampleExternalID.class);
+		fieldsList.add(new ODKTridasSampleCode());
+		fieldsList.add(new ODKTridasSampleComments());
+		fieldsList.add(new ODKTridasSampleType());
+		fieldsList.add(new ODKTridasSampleDescription());
+		fieldsList.add(new ODKTridasSamplePhoto());
+		fieldsList.add(new ODKTridasSampleSamplingDate());
+		fieldsList.add(new ODKTridasSamplePosition());
+		fieldsList.add(new ODKTridasSampleState());
+		fieldsList.add(new ODKTridasSampleKnots());
+		fieldsList.add(new ODKTridasSampleExternalID());
 		// sampling date
 
 		
 		// RADIUS FIELDS
-		//fieldsList.add(ODKTridasRadiusAzimuth.class);
+		//fieldsList.add(new ODKTridasRadiusAzimuth());
 
+		
+		addUserDefinedFields();
+	}
+	
+	
+	private void addUserDefinedFields()
+	{
+		
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			Class<? extends ITridas> attachedto = null;
+			if(fld.getAttachedto().equals(UserExtendableEntity.OBJECT))
+			{
+				attachedto = TridasObject.class;
+			}
+			else if (fld.getAttachedto().equals(UserExtendableEntity.ELEMENT))
+			{
+				attachedto = TridasElement.class;
+			}
+			else if (fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+			{
+				attachedto = TridasSample.class;
+			}
+			else {
+				// Unsupported
+				log.debug("Skipping field "+fld.getName()+ ". Unsupported attachment type");
+				continue;
+			}
+			
+			AbstractODKField field;
+			
+			if(fld.isSetDictionarykey())
+			{
+				ArrayList<WSIUserDefinedTerm> dict = new ArrayList<WSIUserDefinedTerm>();
+				ArrayList<Object> dict2 = new ArrayList<Object>();
+				
+				dict = App.dictionary.getMutableDictionary("userDefinedTermDictionary");
+				
+				for(WSIUserDefinedTerm term : dict)
+				{
+					if(term.getDictionarykey().equals(fld.getDictionarykey()))
+					{
+						dict2.add(term.getTerm());
+					}
+				}
+				
+				field = new ODKUserDefinedChoiceField(fld.getName(), fld.getLongfieldname(), fld.getDescription(), null, attachedto, dict2);
+
+			}
+			else if(fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
+			{
+				field = new ODKUserDefinedField(ODKDataType.STRING, fld.getName(), fld.getLongfieldname(), fld.getDescription(), null, attachedto);
+			}
+			else if(fld.getDatatype().equals(UserExtendableDataType.XS___BOOLEAN))
+			{
+				field = new ODKUserDefinedBooleanField(fld.getName(), fld.getLongfieldname(), fld.getDescription(), null, attachedto);
+			}
+			else if(fld.getDatatype().equals(UserExtendableDataType.XS___FLOAT))
+			{
+				field = new ODKUserDefinedDecimalField(fld.getName(), fld.getLongfieldname(), fld.getDescription(), null, attachedto);
+			}
+			else if(fld.getDatatype().equals(UserExtendableDataType.XS___INT))
+			{
+				field = new ODKUserDefinedIntegerField(fld.getName(), fld.getLongfieldname(), fld.getDescription(), null, attachedto);
+			}
+			else 
+			{
+				// Unsupported
+				log.debug("Skipping field "+fld.getName()+ ". Unsupported data type");
+				continue;
+			}
+			
+			fieldsList.add(field);
+		}
 	}
 	
 	/**
@@ -101,7 +188,7 @@ public class ODKFields {
 	 * 
 	 * @return
 	 */
-	public ArrayList<Class<? extends ODKFieldInterface>> getFields()
+	public ArrayList<ODKFieldInterface> getFields()
 	{
 		return fieldsList;
 	}
@@ -124,23 +211,12 @@ public class ODKFields {
 		
 		ArrayList<ODKFieldInterface> f = new ArrayList<ODKFieldInterface>();
 		
-		for(Class<? extends ODKFieldInterface> fieldClass : c.fieldsList)
-		{
-			try {
-				ODKFieldInterface instance = fieldClass.newInstance();
-				
-				if(instance.getTridasClass().equals(clazz))
-				{
-					f.add(instance);
-				}
-				
-			} catch (InstantiationException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		for(ODKFieldInterface instance : c.fieldsList)
+		{		
+			if(instance.getTridasClass().equals(clazz))
+			{
+				f.add(instance);
+			}	
 		}
 		
 		return f;

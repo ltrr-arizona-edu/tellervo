@@ -203,6 +203,10 @@ public class Prefs extends AbstractSubsystem {
 		
 		CHECK_FOR_UPDATES("tellervo.checkforupdates"),
 		
+		OBJECT_FIELD_VISIBILITY_ARRAY("tellervo.object.field.visibility.array"),
+		ELEMENT_FIELD_VISIBILITY_ARRAY("tellervo.element.field.visibility.array"),
+		SAMPLE_FIELD_VISIBILITY_ARRAY("tellervo.sample.field.visibility.array"),
+		
 		OBJECT_FIELD_VISIBLE_OBJECT_CODE("tellervo.object.field.visible.objectcode"),
 		OBJECT_FIELD_VISIBLE_TITLE("tellervo.object.field.visible.title"),
 		OBJECT_FIELD_VISIBLE_COMMENTS("tellervo.object.field.visible.comments"),
@@ -223,6 +227,8 @@ public class Prefs extends AbstractSubsystem {
 		OBJECT_FIELD_VISIBLE_OWNER("tellervo.object.field.visible.owner"),
 		OBJECT_FIELD_VISIBLE_CREATOR("tellervo.object.field.visible.creator"),
 		
+		
+		
 		MAP_CONTROLS_ENABLED("tellervo.map.controls"),
 		MAP_COMPASS_ENABLED("tellervo.map.compass"), 
 		MAP_COUNTRYBOUNDARY_ENABLED("tellervo.map.countryboundary"),
@@ -238,7 +244,7 @@ public class Prefs extends AbstractSubsystem {
 		ODK_IMPORT_MEDIA("tellervo.odk.importmedia"),
 		ODK_RENAME_MEDIA("tellervo.odk.renamemedia"), 
 		ODK_CSV_FILENAME("tellervo.odk.csvoutput"), 
-		ODK_CREATE_CSV("tellervo.odk.createcsv"),  
+		ODK_CREATE_CSV("tellervo.odk.createcsv"), 
 		
 		;
 		

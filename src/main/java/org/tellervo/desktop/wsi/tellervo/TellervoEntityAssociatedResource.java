@@ -41,6 +41,7 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
@@ -115,6 +116,16 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 	
 	private final void initializeForCUD(ICoreTridas entity, String parentEntityID, 
 			TellervoRequestType queryType) {
+		
+		// Clear any subobjects as they screw up JAXB marshalling
+		if(entity instanceof TridasObject)
+		{
+			if(((TridasObject)entity).isSetObjects())
+			{
+				((TridasObject)entity).setObjects(null);
+			}
+		}
+
 		switch(queryType) {
 		case CREATE:
 		case UPDATE:
@@ -164,9 +175,10 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 			throw new IllegalArgumentException("Invalid request type: must be one of CREATE, UPDATE or DELETE for this method");
 		}
 		
-		// derived series, objects and box don't have a parent entity ID
+		// derived series, projects, objects and box don't have a parent entity ID
 		if (queryType == TellervoRequestType.CREATE && parentEntityID == null) {
 			if (!(entity instanceof ITridasDerivedSeries 
+					|| entity instanceof TridasProject
 					|| entity instanceof TridasObject 
 				    || entity instanceof WSIBox 
 				    || entity instanceof WSILoan 
@@ -252,7 +264,9 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 
 	
 	private void populateAppropriateList(WSIRequest request) {
-		if(createOrUpdateEntity instanceof TridasObject)
+		if(createOrUpdateEntity instanceof TridasProject)
+			request.getProjects().add((TridasProject) createOrUpdateEntity);
+		else if(createOrUpdateEntity instanceof TridasObject)
 			request.getObjects().add((TridasObject) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof TridasElement)
 			request.getElements().add((TridasElement) createOrUpdateEntity);

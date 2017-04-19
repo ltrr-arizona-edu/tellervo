@@ -69,10 +69,10 @@ class dictionaries
         
         $xmldata = "";
         
-        $dictItems = array('objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
-        				  'elementAuthenticity', 'datingType', 'taxon', 'configuration', 'sampleStatus');
-        //$dictItems = array('elementType',  
-        //				  'elementAuthenticity', 'datingType', 'configuration');
+        //$dictItems = array('objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
+        //				  'elementAuthenticity', 'datingType', 'taxon', 'configuration', 'sampleStatus');
+        $dictItems = array('projectType', 'objectType', 'elementType', 'sampleType', 'coverageTemporal', 'coverageTemporalFoundation', 
+        				  'elementAuthenticity', 'datingType', 'taxon', 'configuration', 'sampleStatus', 'userDefinedField', 'userDefinedTerm', 'projectCategory');
        
         
 		// Standard dictionary items
@@ -96,6 +96,14 @@ class dictionaries
                 elseif($item=='configuration')
                 {
                 }
+                elseif($item=="userDefinedField")
+                {
+                	
+                }
+                elseif ($item=="userDefinedTerm")
+                {
+                	
+                }
                 else
                 {
                 	// Looking up in tlkp style table
@@ -110,6 +118,52 @@ class dictionaries
                 	global $labacronym;
                 	$xmldata.="<configuration key=\"lab.name\" value=\"$labname\" />\n";
                 	$xmldata.="<configuration key=\"lab.acronym\" value=\"$labacronym\" />\n";
+                }
+                else if($item=='userDefinedField')
+                {
+                	// Run SQL
+                	$sql = "SELECT dictionarykey, fieldname, longfieldname, datatype, attachedto, description FROM tlkpuserdefinedfield";
+                	$result = pg_query($dbconn, $sql);
+                	while ($row = pg_fetch_array($result))
+                	{
+                		switch ($row['attachedto'])
+                		{
+                			case 1:
+                				$attachedto = 'project';
+                				break;
+                			case 2:
+                				$attachedto = 'object';
+                				break;
+               				case 3:
+               					$attachedto = 'element';
+               					break;                	
+               				case 4:
+               					$attachedto = 'sample';
+               					break;               					
+          					case 5:
+           						$attachedto = 'radius';
+           						break;
+           					case 6:
+           						$attachedto = 'series';
+           						break;           						
+                		}
+                		$xmldata .= "<userDefinedField name=\"userDefinedField.".$row['fieldname']."\" longfieldname=\"".$row['longfieldname']."\" datatype=\"".$row['datatype']."\" attachedto=\"".$attachedto."\"  description=\"".$row['description']."\"  ";
+                		if($row['dictionarykey']!=null)
+                		{
+                			$xmldata.= " dictionarykey=\"".$row['dictionarykey']."\"";
+                		}
+                		$xmldata .= " />\n";
+                	}
+                }
+                else if ($item=='userDefinedTerm')
+                {
+                	$sql = "SELECT * FROM tlkpuserdefinedterm";
+                	$result = pg_query($dbconn, $sql);
+                	while ($row = pg_fetch_array($result))
+                	{
+                		
+                		$xmldata .= "<userDefinedTerm term=\"".$row['term']."\" id=\"".$row['userdefinedtermid']."\" dictionarykey=\"".$row['dictionarykey']."\" />\n";
+                	}
                 }
                 else
                 {

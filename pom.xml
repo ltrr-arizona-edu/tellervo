@@ -14,6 +14,7 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+
 	<organization>
 		<name>Laboratory of Tree-Ring Research, University of Arizona</name>
 		<url>http://www.tellervo.org</url>
@@ -25,6 +26,12 @@
 			<roles>
 				<role>Lead Developer</role>
 			</roles>
+			<organization>Laboratory of Tree-Ring Research, University of Arizona</organization>
+			<organizationUrl>http://ltrr.arizona.edu</organizationUrl>
+		</developer>
+		<developer>
+			<name>Martin Munro</name>
+			<email>mmunro@ltrr.arizona.edu</email>
 			<organization>Laboratory of Tree-Ring Research, University of Arizona</organization>
 			<organizationUrl>http://ltrr.arizona.edu</organizationUrl>
 		</developer>
@@ -125,16 +132,9 @@
 
 	<!-- Repository to deploy to. When deploying make sure your .m2/settings.xml 
 		file contains the correct username and password for the repository server -->
-	<distributionManagement>
-		<repository>
-			<id>tridas-releases</id>
-			<url>http://maven.tridas.org/repository/tridas-releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>tridas-snapshots</id>
-			<url>http://maven.tridas.org/repository/tridas-snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
+	<!-- <distributionManagement> <repository> <id>tridas-releases</id> <url>http://maven.tridas.org/repository/tridas-releases/</url> 
+		</repository> <snapshotRepository> <id>tridas-snapshots</id> <url>http://maven.tridas.org/repository/tridas-snapshots/</url> 
+		</snapshotRepository> </distributionManagement> -->
 
 	<!-- Packages that this project depends upon -->
 	<dependencies>
@@ -219,12 +219,12 @@
 			<type>nbm</type>
 			<scope>compile</scope>
 		</dependency>
-		  <!-- hid4java for cross-platform HID USB -->
-		  <dependency>
-		    <groupId>org.hid4java</groupId>
-		    <artifactId>hid4java</artifactId>
-		    <version>0.4.0</version>
-		  </dependency>
+		<!-- hid4java for cross-platform HID USB -->
+		<dependency>
+			<groupId>org.hid4java</groupId>
+			<artifactId>hid4java</artifactId>
+			<version>0.4.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.swinglabs</groupId>
 			<artifactId>swing-layout</artifactId>
@@ -339,11 +339,6 @@
 			<version>2.2</version>
 		</dependency>
 		<dependency>
-			<groupId>org.fhaes</groupId>
-			<artifactId>fhchart</artifactId>
-			<version>0.2.6-SNAPSHOT</version>
-		</dependency>
-		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 			<version>2.2</version>
@@ -358,6 +353,12 @@
 			<groupId>net.sf.jung</groupId>
 			<artifactId>jung-samples</artifactId>
 			<version>2.0.1</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>stax-api</artifactId>
+					<groupId>stax</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.jidesoft</groupId>
@@ -365,12 +366,351 @@
 			<version>3.6.1</version>
 		</dependency>
 		<dependency>
-			<groupId>org.jfree</groupId>
+			<groupId>jfree</groupId>
 			<artifactId>jfreechart</artifactId>
-			<version>1.0.17</version>
+			<version>1.0.13</version>
+		</dependency>
+		<dependency>
+			<groupId>org.tridas</groupId>
+			<artifactId>tridasjlib</artifactId>
+			<version>1.22.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+	<profiles>
+		<profile>
 
+			<!-- This profile should be used to create the Windows, Linux and MacOSX 
+				binaries. It requries the Install4j (closed-sourced) application as well 
+				as access to the appropriate code signing certificate. As such it is not 
+				run by default. The following keys must be set in your .m2/settings.xml file: 
+				- install4jc.binary - Absolute path to the install4jc binary - pkcs12.filename 
+				- Absolute path to the PKCS12 certificate file - cert.password - Password 
+				to unlock PKCS12 certificate file -->
+
+			<id>binaries</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+
+			<build>
+				<plugins>
+
+					<!-- Create a MacOSX native executable n.b. on Linux and Windows this 
+						will create an *app.zip file on MacOSX it will also create a DMG file. Also 
+						note that on Linux and Windows computers the App will not include the Apple 
+						integration portions therefore they will have an ugly menu bar. -->
+					<!-- handled by install4j now -->
+					<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>osxappbundle-maven-plugin</artifactId> 
+						<version>1.0-alpha-2</version> <configuration> <mainClass>org.tellervo.desktop.gui.Startup</mainClass> 
+						<iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile> <jvmVersion>1.5+</jvmVersion> 
+						<bundleName>${project.name}</bundleName> <javaApplicationStub>Native/BuildResources/MacBuild/JavaApplicationStub</javaApplicationStub> 
+						</configuration> <executions> <execution> <phase>package</phase> <goals> 
+						<goal>bundle</goal> </goals> </execution> </executions> </plugin> <plugin> 
+						<groupId>org.codehaus.mojo</groupId> <artifactId>osxappbundle-maven-plugin</artifactId> 
+						<version>1.0-alpha-2</version> <configuration> <additionalResources> <fileSet> 
+						<directory>src/main/resources/Licenses</directory> <includes> <include>license.txt</include> 
+						</includes> </fileSet> <fileSet> <directory>Documentation/</directory> <includes> 
+						<include>tellervo-manual.pdf</include> </includes> </fileSet> <fileSet> <directory>${project.build.directory}/classes/MacBuild</directory> 
+						<includes> <include>Tellervo Drivers.pkg</include> </includes> </fileSet> 
+						</additionalResources> <bundleName>Tellervo</bundleName> <zipFile>${project.build.directory}/mac-app.zip</zipFile> 
+						<mainClass>org.tellervo.desktop.gui.Startup</mainClass> <jvmVersion>1.5+</jvmVersion> 
+						<iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile> <javaApplicationStub>${project.build.directory}/classes/MacBuild/JavaApplicationStub</javaApplicationStub> 
+						</configuration> <executions> <execution> <phase>package</phase> <goals> 
+						<goal>bundle</goal> </goals> </execution> </executions> </plugin> -->
+
+
+					<!-- Create a Linux Ubuntu debian native installer -->
+
+					<plugin>
+						<artifactId>jdeb</artifactId>
+						<groupId>org.vafer</groupId>
+						<version>1.5</version>
+						<executions>
+
+
+							<!-- Desktop Installer -->
+							<!-- <execution> <id>deb-desktop-build</id> <phase>package</phase> 
+								<goals> <goal>jdeb</goal> </goals> <configuration> <deb>${project.build.directory}/binaries/desktop/${project.version}/Linux/${project.build.finalName}.deb</deb> 
+								<controlDir>${project.build.directory}/classes/LinBuild/DesktopControl/</controlDir> 
+								<dataSet> <data> <src>${project.build.directory}/${project.build.finalName}.jar</src> 
+								<type>file</type> <mapper> <type>perm</type> <prefix>/usr/share/tellervo</prefix> 
+								</mapper> </data> <data> <src>${project.build.directory}/classes/LinBuild/tellervo</src> 
+								<type>file</type> <mapper> <type>perm</type> <prefix>/usr/bin/</prefix> <filemode>755</filemode> 
+								</mapper> </data> <data> <src>${project.build.directory}/classes/LinBuild/tellervo.desktop</src> 
+								<type>file</type> <mapper> <type>perm</type> <prefix>/usr/share/applications/</prefix> 
+								<filemode>755</filemode> </mapper> </data> <data> <src>src/main/resources/Icons/256x256/tellervo-application.png</src> 
+								<type>file</type> <mapper> <type>perm</type> <prefix>/usr/share/pixmaps/</prefix> 
+								</mapper> </data> </dataSet> </configuration> </execution> -->
+
+							<!-- Server installer -->
+							<!-- <execution>
+								<id>deb-server-build</id>
+								<phase>package</phase>
+								<goals>
+									<goal>jdeb</goal>
+								</goals>
+								<configuration>
+									<deb>${project.build.directory}/binaries/server/${serverversion}/Linux/tellervo-server-${serverversion}.deb</deb>
+									<controlDir>${project.build.directory}/classes/LinBuild/ServerControl/</controlDir>
+									<dataSet>
+										<data>
+											<src>${project.build.directory}/classes/LinBuild/tellervo-server</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/bin</prefix>
+												<filemode>755</filemode>
+											</mapper>
+										</data>
+										<data>
+											<src>${project.build.directory}/classes/LinBuild/create-tellervo-instance</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/bin</prefix>
+												<filemode>755</filemode>
+											</mapper>
+										</data>
+										<data>
+											<type>template</type>
+											<paths>
+												<path>/usr/share/tellervo-server/mediastore</path>
+												<user>www-data</user>
+												<group>www-data</group>
+											</paths>
+										</data>
+										<data>
+											<src>${project.build.directory}/tellervo-pljava.jar</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/share/tellervo-server/</prefix>
+												<filemode>755</filemode>
+											</mapper>
+										</data>
+										<data>
+											<src>${project.build.directory}/classes/LinBuild/tellervo-apache.conf</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/etc/apache2/sites-available/</prefix>
+												<filemode>755</filemode>
+											</mapper>
+										</data>
+										<data>
+											<src>Native/BuildResources/LinBuild/pljava-pg9.5-i386-Linux-gpp.jar</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/share/tellervo-server/</prefix>
+												<filemode>755</filemode>
+											</mapper>
+										</data>
+										<data>
+											<src>Native/BuildResources/LinBuild/pljava-pg9.5-amd64-Linux-gpp.jar</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/share/tellervo-server/</prefix>
+												<filemode>755</filemode>
+											</mapper>
+										</data>
+										<data>
+											<src>Databases/db-upgrade-patches</src>
+											<type>directory</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/share/tellervo-server/db-upgrade-patches</prefix>
+											</mapper>
+										</data>
+										<data>
+											<src>Databases/db-templates</src>
+											<type>directory</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/share/tellervo-server</prefix>
+											</mapper>
+										</data>
+										<data>
+											<src>Native/BuildResources/LinBuild/firstrun.template</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/share/tellervo-server</prefix>
+												<filemode>777</filemode>
+											</mapper>
+										</data>
+										<data>
+											<src>src/main/php/config.php.template</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/share/tellervo-server</prefix>
+											</mapper>
+										</data>
+										<data>
+											<src>src/main/php</src>
+											<type>directory</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/var/www/tellervo</prefix>
+											</mapper>
+										</data>
+									</dataSet>
+								</configuration>
+							</execution>-->
+						</executions>
+					</plugin>
+
+					<!-- Nasty kludge fixes. Tasks that Maven can not perform are done by 
+						running Ant instead -->
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.3</version>
+						<executions>
+
+							<execution>
+								<id>Install4J</id>
+								<phase>package</phase>
+								<configuration>
+									<tasks>
+										<taskdef resource="net/sf/antcontrib/antcontrib.properties"
+											classpathref="maven.plugin.classpath" />
+										<!-- <exec dir="${project.build.directory}" executable="/home/pbrewer/bin/install4j6/bin/install4jc"> -->
+										<exec dir="${project.build.directory}" executable="${install4jc.binary}">
+
+											<arg value="--win-keystore-password" />
+											<arg value="${cert.password}" />
+											<arg value="--mac-keystore-password" />
+											<arg value="${cert.password}" />
+											<arg value="${project.build.directory}/classes/tellervo.install4j" />
+										</exec>
+									</tasks>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+
+						</executions>
+
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+
+		<profile>
+			<id>docs</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+						<version>2.7</version>
+						<executions>
+							<execution>
+								<id>attach-javadocs</id>
+								<goals>
+									<goal>jar</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+
+				</plugins>
+
+			</build>
+
+		</profile>
+
+		<profile>
+			<id>default-build</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+				<property>
+					<name>!binaries</name>
+				</property>
+			</activation>
+
+			<build>
+				<plugins>
+
+
+					<!-- Nasty kludge fixes. Tasks that Maven can not perform are done by 
+						running Ant instead -->
+					<plugin>
+						<artifactId>maven-antrun-plugin</artifactId>
+						<version>1.3</version>
+						<executions>
+
+							<execution>
+								<id>CopyJarFile</id>
+								<phase>package</phase>
+								<configuration>
+									<tasks>
+										<taskdef resource="net/sf/antcontrib/antcontrib.properties"
+											classpathref="maven.plugin.classpath" />
+										<mkdir
+											dir="${project.build.directory}/binaries/desktop/${project.version}/Java" />
+										<trycatch>
+											<try>
+												<!-- Try to sign the jar with the University of Arizona certificate -->
+												<exec dir="${project.build.directory}" executable="jarsigner">
+													<arg value="-storetype" />
+													<arg value="pkcs12" />
+													<arg value="-tsa" />
+													<arg value="http://tsa.starfieldtech.com" />
+													<arg value="-keystore" />
+													<!-- <arg value="/home/pbrewer/.ssh/pwb_code_signing_2014.p12" 
+														/> -->
+													<arg value="${pkcs12.filename}" />
+													<arg value="-storepass" />
+													<!-- <arg value="/home/pbrewer/.ssh/key" /> -->
+													<arg value="${cert.password}" />
+													<arg value="-keypass" />
+													<!-- <arg value="/home/pbrewer/.ssh/key" /> -->
+													<arg value="${cert.password}" />
+													<arg
+														value="${project.build.directory}/${project.build.finalName}.jar" />
+													<arg value="the university of arizona's internet2 id" />
+												</exec>
+											</try>
+											<catch>
+												<echo>*******************************************************</echo>
+												<echo> UNABLE TO SIGN executable jar. Certificate/pwd
+													invalid</echo>
+												<echo>*******************************************************</echo>
+												<sleep seconds="5" />
+											</catch>
+										</trycatch>
+
+										<copy
+											file="${project.build.directory}/${project.build.finalName}.jar"
+											tofile="${project.build.directory}/binaries/desktop/${project.version}/Java/${project.build.finalName}.jar"
+											failonerror="false" />
+									</tasks>
+								</configuration>
+								<goals>
+									<goal>run</goal>
+								</goals>
+							</execution>
+
+						</executions>
+
+					</plugin>
+
+
+
+				</plugins>
+			</build>
+
+		</profile>
+
+	</profiles>
 	<build>
 
 		<!-- Create launch scripts for Linux builds with correct version number -->
@@ -390,6 +730,24 @@
 			<resource>
 				<directory>Native/BuildResources/</directory>
 				<filtering>true</filtering>
+				<includes>
+					<include>**/*.install4j</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>Native/BuildResources/MacBuild</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/JavaApplicationStub</include>
+					<include>**/fixportpermissions.sh</include>
+				</includes>
+			</resource>
+			<resource>
+				<directory>Native/BuildResources/LinBuild</directory>
+				<filtering>true</filtering>
+				<includes>
+					<include>**/tellervo.desktop</include>
+				</includes>
 			</resource>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -406,13 +764,16 @@
 
 		</resources>
 
+
+
+
 		<plugins>
 
 			<!-- Check the code is up-to-date and grab SVN version number -->
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>buildnumber-maven-plugin</artifactId>
-				<version>1.1</version>
+				<version>1.3</version>
 				<executions>
 					<execution>
 						<phase>validate</phase>
@@ -503,7 +864,7 @@
 					<dependency>
 						<groupId>org.tridas</groupId>
 						<artifactId>tridasjlib</artifactId>
-						<version>1.22.3</version>
+						<version>1.22.5-SNAPSHOT</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -544,12 +905,6 @@
 					</filesets>
 				</configuration>
 			</plugin>
-
-
-			<!-- <plugin> <groupId>org.apache.maven.plugins</groupId> <artifactId>maven-javadoc-plugin</artifactId> 
-				<version>2.7</version> <executions> <execution> <id>attach-javadocs</id> 
-				<goals> <goal>jar</goal> </goals> </execution> </executions> </plugin> -->
-
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -595,8 +950,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>2.3.2</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<excludes>
 						<exclude>**/edu/cornell/dendro/cpgdb/*</exclude>
 						<exclude>**/edu/cornell/dendro/webservice/*</exclude>
@@ -618,6 +973,7 @@
 				<exclude>META-INF/*.DSA</exclude> <exclude>META-INF/*.RSA</exclude> </excludes> 
 				</filter> </filters> </configuration> </execution> </executions> </plugin> -->
 
+
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
@@ -636,183 +992,11 @@
 				</executions>
 			</plugin>
 
-
-
-
-
-
-
-
-
-			<!-- Create a MacOSX native executable n.b. on Linux and Windows this 
-				will create an *app.zip file on MacOSX it will also create a DMG file. Also 
-				note that on Linux and Windows computers the App will not include the Apple 
-				integration portions therefore they will have an ugly menu bar. -->
-			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>osxappbundle-maven-plugin</artifactId> 
-				<version>1.0-alpha-2</version> <configuration> <mainClass>org.tellervo.desktop.gui.Startup</mainClass> 
-				<iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile> <jvmVersion>1.5+</jvmVersion> 
-				<bundleName>${project.name}</bundleName> <javaApplicationStub>Native/BuildResources/MacBuild/JavaApplicationStub</javaApplicationStub> 
-				</configuration> <executions> <execution> <phase>package</phase> <goals> 
-				<goal>bundle</goal> </goals> </execution> </executions> </plugin> -->
-
-			<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>osxappbundle-maven-plugin</artifactId> 
-				<version>1.0-alpha-2</version> <configuration> <additionalResources> <fileSet> 
-				<directory>src/main/resources/Licenses</directory> <includes> <include>license.txt</include> 
-				</includes> </fileSet> <fileSet> <directory>Documentation/</directory> <includes> 
-				<include>tellervo-manual.pdf</include> </includes> </fileSet> <fileSet> <directory>${project.build.directory}/classes/MacBuild</directory> 
-				<includes> <include>Tellervo Drivers.pkg</include> </includes> </fileSet> 
-				</additionalResources> <bundleName>Tellervo</bundleName> <zipFile>${project.build.directory}/mac-app.zip</zipFile> 
-				<mainClass>org.tellervo.desktop.gui.Startup</mainClass> <jvmVersion>1.5+</jvmVersion> 
-				<iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile> <javaApplicationStub>${project.build.directory}/classes/MacBuild/JavaApplicationStub</javaApplicationStub> 
-				</configuration> <executions> <execution> <phase>package</phase> <goals> 
-				<goal>bundle</goal> </goals> </execution> </executions> </plugin> -->
-
-
-			<!-- Create a Linux Ubuntu debian native installer -->
-			<plugin>
-				<artifactId>jdeb</artifactId>
-				<groupId>org.vafer</groupId>
-				<version>1.5</version>
-				<executions>
-
-					<!-- Desktop Installer -->
-					<!-- <execution> <id>deb-desktop-build</id> <phase>package</phase> <goals> 
-						<goal>jdeb</goal> </goals> <configuration> <deb>${project.build.directory}/binaries/desktop/${project.version}/Linux/${project.build.finalName}.deb</deb> 
-						<controlDir>${project.build.directory}/classes/LinBuild/DesktopControl/</controlDir> 
-						<dataSet> <data> <src>${project.build.directory}/${project.build.finalName}.jar</src> 
-						<type>file</type> <mapper> <type>perm</type> <prefix>/usr/share/tellervo</prefix> 
-						</mapper> </data> <data> <src>${project.build.directory}/classes/LinBuild/tellervo</src> 
-						<type>file</type> <mapper> <type>perm</type> <prefix>/usr/bin/</prefix> <filemode>755</filemode> 
-						</mapper> </data> <data> <src>${project.build.directory}/classes/LinBuild/tellervo.desktop</src> 
-						<type>file</type> <mapper> <type>perm</type> <prefix>/usr/share/applications/</prefix> 
-						<filemode>755</filemode> </mapper> </data> <data> <src>src/main/resources/Icons/256x256/tellervo-application.png</src> 
-						<type>file</type> <mapper> <type>perm</type> <prefix>/usr/share/pixmaps/</prefix> 
-						</mapper> </data> </dataSet> </configuration> </execution> -->
-
-					<!-- Server installer -->
-					<execution>
-						<id>deb-server-build</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jdeb</goal>
-						</goals>
-						<configuration>
-							<deb>${project.build.directory}/binaries/server/${serverversion}/Linux/tellervo-server-${serverversion}.deb</deb>
-							<controlDir>${project.build.directory}/classes/LinBuild/ServerControl/</controlDir>
-							<dataSet>
-								<data>
-									<src>${project.build.directory}/classes/LinBuild/tellervo-server</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/bin</prefix>
-										<filemode>755</filemode>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.build.directory}/classes/LinBuild/create-tellervo-instance</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/bin</prefix>
-										<filemode>755</filemode>
-									</mapper>
-								</data>
-								<data>
-									<type>template</type>
-									<paths>
-										<path>/usr/share/tellervo-server/mediastore</path>
-										<user>www-data</user>
-										<group>www-data</group>
-									</paths>
-								</data>
-								<data>
-									<src>${project.build.directory}/tellervo-pljava.jar</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/tellervo-server/</prefix>
-										<filemode>755</filemode>
-									</mapper>
-								</data>
-								<data>
-									<src>${project.build.directory}/classes/LinBuild/tellervo-apache.conf</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/etc/apache2/sites-available/</prefix>
-										<filemode>755</filemode>
-									</mapper>
-								</data>
-								<data>
-									<src>Native/BuildResources/LinBuild/pljava-pg9.5-i386-Linux-gpp.jar</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/tellervo-server/</prefix>
-										<filemode>755</filemode>
-									</mapper>
-								</data>
-								<data>
-									<src>Native/BuildResources/LinBuild/pljava-pg9.5-amd64-Linux-gpp.jar</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/tellervo-server/</prefix>
-										<filemode>755</filemode>
-									</mapper>
-								</data>
-								<data>
-									<src>Databases/db-upgrade-patches</src>
-									<type>directory</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/tellervo-server/db-upgrade-patches</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>Databases/db-templates</src>
-									<type>directory</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/tellervo-server</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>Native/BuildResources/LinBuild/firstrun.template</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/tellervo-server</prefix>
-										<filemode>777</filemode>
-									</mapper>
-								</data>
-								<data>
-									<src>src/main/php/config.php.template</src>
-									<type>file</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/usr/share/tellervo-server</prefix>
-									</mapper>
-								</data>
-								<data>
-									<src>src/main/php</src>
-									<type>directory</type>
-									<mapper>
-										<type>perm</type>
-										<prefix>/var/www/tellervo</prefix>
-									</mapper>
-								</data>
-							</dataSet>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
 			<!-- Nasty kludge fixes. Tasks that Maven can not perform are done by 
 				running Ant instead -->
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.3</version>
 				<executions>
 
 
@@ -837,26 +1021,8 @@
 						</goals>
 					</execution>
 
-					<execution>
-						<id>Install4J</id>
-						<phase>package</phase>
-						<configuration>
-							<tasks>
-								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
-									classpathref="maven.plugin.classpath" />
-								<exec dir="${project.build.directory}" executable="/home/pbrewer/bin/install4j6/bin/install4jc">
-									<arg value="--win-keystore-password" />
-									<arg value="${cert.password}" />
-									<arg value="--mac-keystore-password" />
-									<arg value="${cert.password}" />
-									<arg value="../Native/BuildResources/tellervo.install4j" />
-								</exec>
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
+
+
 
 					<!-- Strip duplicate deps from MacOSX bundle, and add native libraries 
 						manual and license files. Finally zip up and move into binaries folder -->
@@ -908,55 +1074,7 @@
 						<sleep seconds="5"/> </catch> </trycatch> </tasks> </configuration> <goals> 
 						<goal>run</goal> </goals> </execution> -->
 
-					<execution>
-						<id>CopyJarFile</id>
-						<phase>package</phase>
-						<configuration>
-							<tasks>
-								<taskdef resource="net/sf/antcontrib/antcontrib.properties"
-									classpathref="maven.plugin.classpath" />
-								<mkdir
-									dir="${project.build.directory}/binaries/desktop/${project.version}/Java" />
 
-
-								<trycatch>
-									<try>
-										<!-- Try to sign the jar with the University of Arizona certificate -->
-										<exec dir="${project.build.directory}" executable="jarsigner">
-											<arg value="-storetype" />
-											<arg value="pkcs12" />
-											<arg value="-tsa" />
-											<arg value="http://tsa.starfieldtech.com" />
-											<!-- <arg value="-keystore"/> <arg value="/home/pbrewer/.ssh/incommon-certificate.p12"/> -->
-											<arg value="-keystore" />
-											<arg value="/home/pbrewer/.ssh/pwb_code_signing_2014.p12" />
-											<arg value="-storepass:file" />
-											<arg value="/home/pbrewer/.ssh/key" />
-											<arg value="-keypass:file" />
-											<arg value="/home/pbrewer/.ssh/key" />
-											<arg
-												value="${project.build.directory}/${project.build.finalName}.jar" />
-											<arg value="the university of arizona's internet2 id" />
-										</exec>
-									</try>
-									<catch>
-										<echo>**********************************************</echo>
-										<echo> UNABLE TO SIGN executable jar            </echo>
-										<echo>**********************************************</echo>
-										<sleep seconds="5" />
-									</catch>
-								</trycatch>
-
-								<copy
-									file="${project.build.directory}/${project.build.finalName}.jar"
-									tofile="${project.build.directory}/binaries/desktop/${project.version}/Java/${project.build.finalName}.jar"
-									failonerror="false" />
-							</tasks>
-						</configuration>
-						<goals>
-							<goal>run</goal>
-						</goals>
-					</execution>
 
 
 					<execution>
@@ -1051,7 +1169,7 @@
 											maven-antrun-plugin
 										</artifactId>
 										<versionRange>
-											[1.3,)
+											[1.3]
 										</versionRange>
 										<goals>
 											<goal>run</goal>
@@ -1083,15 +1201,6 @@
 	</build>
 
 	<repositories>
-		<!-- <repository> <id>maven.iscpif.fr</id> <url>http://maven.iscpif.fr/snapshots</url> 
-			</repository> <repository> <id>thirdparty.maven.iscpif.fr</id> <url>http://maven.iscpif.fr/thirdparty/</url> 
-			</repository> <repository> <id>repo1.maven.org</id> <url>http://repo1.maven.org/maven2/</url> 
-			<snapshots> <enabled>true</enabled> </snapshots> </repository> <repository> 
-			<id>maven2-repository.dev.java.net</id> <name>Java.net Repository for Maven</name> 
-			<url>http://download.java.net/maven/2/</url> <snapshots> <enabled>true</enabled> 
-			<updatePolicy>never</updatePolicy> <checksumPolicy>fail</checksumPolicy> 
-			</snapshots> </repository> <repository> <id>geotk</id> <name>Geotk</name> 
-			<url>http://maven.geotoolkit.org/</url> </repository> -->
 		<repository>
 			<id>tridas-releases</id>
 			<name>TRiDaS Maven Releases Repository</name>
@@ -1114,30 +1223,21 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
-		<!-- <repository> <id>m2-copy</id> <name>m2-copy</name> <url>http://maven.tridas.org/repository/m2-copy/</url> 
-			<releases> <enabled>true</enabled> </releases> <snapshots> <enabled>true</enabled> 
-			</snapshots> </repository> <repository> <id>maven.geomajas.org</id> <name>Geomajas 
-			repository for JPedal</name> <url>http://maven.geomajas.org/</url> <layout>default</layout> 
-			<snapshots> <enabled>true</enabled> <updatePolicy>never</updatePolicy> <checksumPolicy>fail</checksumPolicy> 
-			</snapshots> </repository> -->
 	</repositories>
 
 
 
 	<pluginRepositories>
-
 		<pluginRepository>
 			<id>tridas-releases</id>
 			<name>TRiDaS Maven Releases Repository</name>
 			<url>http://maven.tridas.org/repository/tridas-releases/</url>
 		</pluginRepository>
-
 		<pluginRepository>
 			<id>tridas-snapshots</id>
 			<name>TRiDaS Maven Snapshots Repository</name>
 			<url>http://maven.tridas.org/repository/tridas-snapshots/</url>
 		</pluginRepository>
-
 	</pluginRepositories>
 
 

@@ -76,6 +76,9 @@ public class SingleRadiusModel extends HashModel implements IBulkImportSingleRow
 		setProperty(TITLE, argTridasRadius.getTitle());
 		setProperty(COMMENTS, argTridasRadius.getComments());
 		setProperty(AZIMUTH, argTridasRadius.getAzimuth());
+		
+		
+		
 	}
 
 	/**

@@ -38,6 +38,7 @@ import org.tellervo.desktop.tridasv2.ui.TridasMetadataPanel.EditType;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tridas.schema.TridasRadius;
 
 public class FullEditor extends AbstractEditor {
 
@@ -349,12 +350,35 @@ public class FullEditor extends AbstractEditor {
 
 		// complain if it's not complete yet 
 		// but only if it's not derived!
-		if(!sample.getSampleType().isDerived() && !sample.hasMeta(Metadata.RADIUS)) {
-			JOptionPane.showMessageDialog(this,
-					I18n.getText("error.metadataIncompleteRadiusRequired"),
-					I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
-			tabbedPane.setSelectedIndex(1);
-			return;
+		if(!sample.getSampleType().isDerived()) {
+			
+			boolean incomplete = false;
+			if(!sample.hasMeta(Metadata.RADIUS))
+			{
+				incomplete = true;
+			}
+			else
+			{
+				 TridasRadius r = (TridasRadius) sample.getMeta(Metadata.RADIUS);
+				 if(r!=null && r.isSetIdentifier())
+				 {
+					 
+				 }
+				 else
+				 {
+					 incomplete = true;
+				 }
+			}
+			
+			
+			if(incomplete)
+			{
+				JOptionPane.showMessageDialog(this,
+						I18n.getText("error.metadataIncompleteRadiusRequired"),
+						I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+				tabbedPane.setSelectedIndex(1);
+				return;
+			}
 		}
 		
 		// now, actually try and save the sample

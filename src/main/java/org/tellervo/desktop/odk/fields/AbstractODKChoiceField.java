@@ -21,6 +21,12 @@ public abstract class AbstractODKChoiceField extends AbstractODKField {
 
 	}
 	
+	public AbstractODKChoiceField(ODKDataType datatype, String fieldcode, String fieldname, String description, Object defaultvalue, int sortIndex)
+	{
+		super(datatype, fieldcode, fieldname, description, defaultvalue, sortIndex);
+
+	}
+	
 	public void setPossibleChoices(ArrayList<SelectableChoice> choices)
 	{
 		this.choices = choices;

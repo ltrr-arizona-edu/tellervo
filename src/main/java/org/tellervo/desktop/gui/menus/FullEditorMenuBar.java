@@ -14,6 +14,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JRadioButtonMenuItem;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.dictionary.DictionaryRegisteredEvent;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.menus.actions.FileImportLegacyFile;
 import org.tellervo.desktop.gui.seriesidentity.IdentifySeriesPanel;
@@ -27,9 +29,14 @@ import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
 
+import com.dmurph.mvc.IEventListener;
+import com.dmurph.mvc.MVC;
+import com.dmurph.mvc.MVCEvent;
+import com.rediscov.util.ICMSImporter;
+
 import edu.emory.mathcs.backport.java.util.Collections;
 
-public class FullEditorMenuBar extends EditorMenuBar{
+public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 
 	private static final long serialVersionUID = 1L;
 	private JMenuItem miOpenMulti;
@@ -40,6 +47,13 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	private JMenuItem miDesignODKForm;
 	private JMenuItem miDeleteODKDefinitions;
 	private JMenuItem miDeleteODKInstances;
+	
+	private JMenu mnImportMetadata;
+	private JMenu mnExportMetadata;
+
+	private JMenuItem miICMSImport;
+	private JMenuItem miICMSExport;
+	private JMenuItem miDWCExport;
 
 	private Window parent;
 
@@ -54,6 +68,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	private JMenuItem miBoxLabel;
 	private JMenuItem miBasicBoxLabel;
 	private JMenuItem miSampleBoxLabel;
+	private JMenuItem miRecordCard;
 	private JMenuItem miDatabaseStatistics;
 	private JMenu miCurationMenu;
 	private JMenuItem miCurationMenuFindSample;
@@ -70,11 +85,15 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	private JMenuItem miToolsCrossdate;
 	private JMenuItem miToolsCrossdateWorkspace;
 	private JMenuItem miToolsTruncate;
-	private JMenuItem miNew;
+	private JMenuItem miNewSeries;
+	private JMenuItem miNewBox;
+	private JMenuItem miNewProject;
 	private JMenuItem miOpen;
 	private JMenu openrecent;
 	private JMenuItem miSave;
 	private JMenuItem miPrint;
+	
+	private JMenuItem miProjectBrowser;
 	
 
 	
@@ -85,8 +104,17 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		// FILE MENU
 		JMenu mnFile = new JMenu("File");
 
-		miNew = new JMenuItem(actions.fileNewAction);
-		mnFile.add(miNew);
+		JMenu mnNew = new JMenu("New");
+		mnFile.add(mnNew);
+		
+		miNewSeries = new JMenuItem(actions.fileNewAction);
+		mnNew.add(miNewSeries);
+		
+		miNewProject = new JMenuItem(actions.fileNewProjectAction);
+		mnNew.add(miNewProject);
+		
+		miNewBox = new JMenuItem(actions.fileNewBoxAction);
+		mnNew.add(miNewBox);
 
 		miOpen = new JMenuItem(actions.fileOpenAction);
 		mnFile.add(miOpen);
@@ -100,14 +128,22 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		mnFile.addSeparator();
 		
 		mnFile.add(getImportDataOnlyMenu());
-		//mnFile.add(getImportDataAndMetadataMenu());
-
-		miExportData = new JMenuItem(actions.fileExportDataAction);
-		mnFile.add(miExportData);
+		
+		
+		mnImportMetadata = new JMenu("Import metadata...");
+		
+		
+		miICMSImport = new JMenuItem(actions.fileImportICMSAction);
+		miICMSImport.setVisible(false);
+		mnImportMetadata.setVisible(false);
+		
+		
+		mnImportMetadata.add(miICMSImport);
+		mnFile.add(mnImportMetadata);
 		
 		miBulkDataEntry = new JMenuItem(actions.fileBulkDataEntryAction);
 		mnFile.add(miBulkDataEntry);
-
+		
 		JMenu mnODK = new JMenu("Field data collection");
 		mnODK.setIcon(Builder.getIcon("odk-logo.png", 22));
 		mnFile.add(mnODK);
@@ -119,6 +155,33 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		mnODK.add(miDeleteODKDefinitions);
 		miDeleteODKInstances = new JMenuItem(actions.fileDeleteODKInstancesAction);
 		mnODK.add(miDeleteODKInstances);
+		
+		
+		mnFile.addSeparator();
+
+		
+		miExportData = new JMenuItem(actions.fileExportDataAction);
+		mnFile.add(miExportData);
+		
+		mnExportMetadata = new JMenu("Export metadata...");
+		
+		miICMSExport = new JMenuItem(actions.fileExportICMSAction);
+		miICMSExport.setVisible(false);
+		mnExportMetadata.add(miICMSExport);
+		
+		miDWCExport = new JMenuItem(actions.fileExportDWCAction);
+		mnExportMetadata.add(miDWCExport);
+		
+		MVC.addEventListener(Dictionary.DICTIONARY_REGISTERED, this);
+		
+		mnFile.add(mnExportMetadata);
+		
+		//mnFile.add(getImportDataAndMetadataMenu());
+
+
+		
+
+
 		
 		mnFile.addSeparator();
 
@@ -244,9 +307,11 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		miBoxLabel = new JMenuItem(actions.adminBoxLabelAction);
 		miBasicBoxLabel = new JMenuItem(actions.adminBasicBoxLabelAction);
 		miSampleBoxLabel = new JMenuItem(actions.adminSampleLabelAction);
+		miRecordCard = new JMenuItem(actions.adminRecordCardAction);
 		miLabels.add(miBoxLabel);
 		miLabels.add(miBasicBoxLabel);
 		miLabels.add(miSampleBoxLabel);
+		miLabels.add(miRecordCard);
 		mnAdministration.add(miLabels);
 		
 		
@@ -273,6 +338,9 @@ public class FullEditorMenuBar extends EditorMenuBar{
 		
 		miMetaDB = new JMenuItem(actions.adminMetaDBAction);
 		mnAdministration.add(miMetaDB);
+		
+		miProjectBrowser = new JMenuItem(actions.adminProjectBrowserAction);
+		mnAdministration.add(miProjectBrowser);
 		
 		miSiteMap = new JMenuItem(actions.adminSiteMapAction);
 		mnAdministration.add(miSiteMap);		
@@ -399,10 +467,7 @@ public class FullEditorMenuBar extends EditorMenuBar{
 	    
 	    JMenuItem miAllSeries = new JMenuItem(actions.graphAllSeriesAction);
 	    mnGraph.add(miAllSeries);
-	    
-	    JMenuItem miCreateFileHistoryPlot = new JMenuItem(actions.graphCreateFileHistoryPlotAction);
-	    mnGraph.add(miCreateFileHistoryPlot);
-	    
+	   	    
 		add(mnGraph);
 
 
@@ -585,6 +650,25 @@ public class FullEditorMenuBar extends EditorMenuBar{
 			fileimportdataonly.add(importitem);
 		}
 		return fileimportdataonly;
+	}
+
+
+	@Override
+	public boolean eventReceived(MVCEvent argEvent) {
+		DictionaryRegisteredEvent e = (DictionaryRegisteredEvent) argEvent;
+		if(e.getValue().equals("userDefinedFieldDictionary"))
+		{
+			miICMSImport.setVisible(ICMSImporter.isDatabaseICMSCapable());
+			mnImportMetadata.setVisible(ICMSImporter.isDatabaseICMSCapable());
+			
+			miICMSExport.setVisible(ICMSImporter.isDatabaseICMSCapable());
+
+			return false;
+		}
+		
+
+	
+		return true;
 	}
 	
 

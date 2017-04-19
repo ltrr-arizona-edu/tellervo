@@ -145,7 +145,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 						Double lat = Double.parseDouble(attempt);
 						if(lat>-90 || lat<90)
 						{
-							requiredMessages.add("Latitude must be between -90 and 90");
+							requiredMessages.add("Latitude must be betweOne or more errors were encountereden -90 and 90");
 							incomplete = true;
 						}
 					}catch(NumberFormatException e){
