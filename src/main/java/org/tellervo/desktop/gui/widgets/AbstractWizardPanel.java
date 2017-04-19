@@ -75,6 +75,16 @@ public abstract class AbstractWizardPanel extends JPanel {
 		
 	}
 	
+	/**
+	 * Override if you need to do some form validation
+	 * 
+	 * @return
+	 */
+	public boolean doPageValidation()
+	{
+		return true;
+	}
+	
 	public void finish(){
 		
 	}

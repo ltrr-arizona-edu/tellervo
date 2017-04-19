@@ -213,11 +213,13 @@ public class PopulateFromODKCommand implements ICommand {
 			      zipFile.close();
 			    }
 			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				Alert.error("Error", "Error downloading ODK data from server.  Please contact the developers");
+				return;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
+				Alert.error("Error", "Error downloading ODK data from server.  Please contact the developers");
+				return;
 			}
 		}
 		else
@@ -231,6 +233,7 @@ public class PopulateFromODKCommand implements ICommand {
 		File folder = instanceFolder.toFile();
 		if(!folder.exists()) {
 		
+			Alert.error("Error", "Error accessing ODK data.  Please contact the developers");
 			log.error("Instances folder does not exist");
 			return;
 		}
@@ -268,6 +271,8 @@ public class PopulateFromODKCommand implements ICommand {
 					FileUtils.copyFile(file, target, true);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
+					Alert.error("Error", "Error copying media files to requested folder.");
+
 					e.printStackTrace();
 				}
 				mediaFileArr[i] = target;
@@ -370,7 +375,7 @@ public class PopulateFromODKCommand implements ICommand {
 			try {
 				createCSVFile(filesProcessed, wizard.getCSVFilename());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+				Alert.error("Error", "Error creating CSV export: \n"+e.getLocalizedMessage());
 				e.printStackTrace();
 			}
 		}
@@ -434,54 +439,119 @@ public class PopulateFromODKCommand implements ICommand {
 		
 	}
 	
-	private void createCSVFile(ArrayList<ODKParser> parsers, String csvfilename ) throws IOException
+	private void createCSVFile(ArrayList<ODKParser> parsers, String csvfolder ) throws IOException
 	{
-		File file = new File(csvfilename);
-		file.createNewFile();
-		if(!file.canWrite()) throw new IOException("Cannot write to file: "+file.getAbsolutePath());
 		
-		HashSet<String> fieldNames = new HashSet<String>();
+		boolean hasObjects = false;
+		boolean hasElementSamples = false;
+		
 		for(ODKParser parser: parsers)
 		{
-			HashMap<String, String> fields = parser.getAllFields();
-		    Iterator it = fields.entrySet().iterator();
-		    while (it.hasNext()) {
-		        Map.Entry pair = (Map.Entry)it.next();
-		        fieldNames.add((String) pair.getKey());
-		    }
-		}
-		
-		String[] fieldNamesArr =fieldNames.toArray(new String[fieldNames.size()]);
-		
-		
-		String[][] table = new String[parsers.size()][fieldNames.size()];
-		
-
-		for(int r=0; r<parsers.size(); r++)
-		{
-			ODKParser parser = parsers.get(r);
-			
-			for(int c=0; c<fieldNamesArr.length; c++)
-			{	
-				table[r][c] = parser.getFieldValueAsString(fieldNamesArr[c]);
+			if(parser.getFileType().equals(ODKFileType.OBJECTS))
+			{
+				hasObjects = true;
+			}
+			else if (parser.getFileType().equals(ODKFileType.ELEMENTS_AND_SAMPLES))
+			{
+				hasElementSamples = true;
 			}
 		}
-			
-		CSVWriter writer = new CSVWriter(new FileWriter(csvfilename), '\t');
 		
-
-
-		String[] header = fieldNames.toArray(new String[fieldNames.size()]);
-		
-		writer.writeNext(header);
-		for(int r=0; r<table.length; r++)
+		if(hasObjects)
 		{
-			writer.writeNext(table[r]);
+			String filename = csvfolder+"/odk-objects.csv";
+			log.debug("Found ODK files with object data.  Exporting to : "+filename);
+
+			File fileObject = new File(filename);
+			fileObject.createNewFile();
+			if(!fileObject.canWrite()) throw new IOException("Cannot write to object file: "+fileObject.getAbsolutePath());
+			
+			HashSet<String> fieldNames = new HashSet<String>();
+			for(ODKParser parser: parsers)
+			{
+				if(parser.getFileType().equals(ODKFileType.ELEMENTS_AND_SAMPLES)) continue;
+				
+				HashMap<String, String> fields = parser.getAllFields();
+			    Iterator it = fields.entrySet().iterator();
+			    while (it.hasNext()) {
+			        Map.Entry pair = (Map.Entry)it.next();
+			        fieldNames.add((String) pair.getKey());
+			    }
+			}
+			
+			String[] fieldNamesArr =fieldNames.toArray(new String[fieldNames.size()]);
+			String[][] table = new String[parsers.size()][fieldNames.size()];
+
+			for(int r=0; r<parsers.size(); r++)
+			{
+				ODKParser parser = parsers.get(r);
+				
+				for(int c=0; c<fieldNamesArr.length; c++)
+				{	
+					table[r][c] = parser.getFieldValueAsString(fieldNamesArr[c]);
+				}
+			}
+				
+			CSVWriter writer = new CSVWriter(new FileWriter(filename), '\t');
+
+			String[] header = fieldNames.toArray(new String[fieldNames.size()]);
+			
+			writer.writeNext(header);
+			for(int r=0; r<table.length; r++)
+			{
+				writer.writeNext(table[r]);
+			}
+			
+			writer.close();
 		}
 		
-		writer.close();
+		
+		if(hasElementSamples)
+		{
+			String filename = csvfolder+"/odk-elementsandsamples.csv";
+			log.debug("Found ODK files with element/sample data.  Exporting to : "+filename);
+			File fileElementSamples = new File(filename);
+			fileElementSamples.createNewFile();
+			if(!fileElementSamples.canWrite()) throw new IOException("Cannot write to element/samples file: "+fileElementSamples.getAbsolutePath());
+			
+			HashSet<String> fieldNames = new HashSet<String>();
+			for(ODKParser parser: parsers)
+			{
+				if(parser.getFileType().equals(ODKFileType.OBJECTS)) continue;
+				
+				HashMap<String, String> fields = parser.getAllFields();
+			    Iterator it = fields.entrySet().iterator();
+			    while (it.hasNext()) {
+			        Map.Entry pair = (Map.Entry)it.next();
+			        fieldNames.add((String) pair.getKey());
+			    }
+			}
+			
+			String[] fieldNamesArr =fieldNames.toArray(new String[fieldNames.size()]);
+			String[][] table = new String[parsers.size()][fieldNames.size()];
 
+			for(int r=0; r<parsers.size(); r++)
+			{
+				ODKParser parser = parsers.get(r);
+				
+				for(int c=0; c<fieldNamesArr.length; c++)
+				{	
+					table[r][c] = parser.getFieldValueAsString(fieldNamesArr[c]);
+				}
+			}
+				
+			CSVWriter writer = new CSVWriter(new FileWriter(filename), '\t');
 
+			String[] header = fieldNames.toArray(new String[fieldNames.size()]);
+			
+			writer.writeNext(header);
+			for(int r=0; r<table.length; r++)
+			{
+				writer.writeNext(table[r]);
+			}
+			
+			writer.close();
+		}
 		
 	}
 	

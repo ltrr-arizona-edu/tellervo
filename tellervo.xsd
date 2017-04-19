@@ -15,11 +15,10 @@
 			<xs:documentation>Type of entity the client would like to search for</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
-			<xs:enumeration value="project" />
+			<xs:enumeration value="sample" />
 			<xs:enumeration value="object" />
 			<xs:enumeration value="subobject" />
 			<xs:enumeration value="element" />
-			<xs:enumeration value="sample" />
 			<xs:enumeration value="radius" />
 			<xs:enumeration value="taxon" />
 			<xs:enumeration value="measurementSeries" />
@@ -152,11 +151,6 @@
 				</xs:annotation>
 			</xs:enumeration>
 			
-
-			<xs:enumeration value="projectid"/>	
-			<xs:enumeration value="projecttitle"/>
-			<xs:enumeration value="projectcreated"/>
-			<xs:enumeration value="projectlastmodified"/>
 			<xs:enumeration value="objectdbid"/>						
 			<xs:enumeration value="objecttitle"/>
 			<xs:enumeration value="objectcreated"/>
@@ -591,7 +585,6 @@
 			<xs:choice maxOccurs="unbounded">
 				<xs:element name="sql" minOccurs="0" maxOccurs="1"/>
                                 
-                <xs:element ref="tridas:project" minOccurs="0" maxOccurs="unbounded"/>                     
                 <xs:element ref="tridas:object" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:element" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
@@ -609,8 +602,6 @@
 				<xs:element ref="odkFormInstance" minOccurs="0" maxOccurs="unbounded"/>
 				
 
-                <xs:element ref="projectTypeDictionary" minOccurs="0" maxOccurs="1"/>
-                <xs:element ref="projectCategoryDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="objectTypeDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="elementTypeDictionary" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="sampleTypeDictionary" minOccurs="0" maxOccurs="1"/>
@@ -634,8 +625,6 @@
 				<xs:element ref="wmsServerDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="sampleStatusDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="statisticalResults" minOccurs="0" maxOccurs="1"/>
-				<xs:element ref="userDefinedFieldDictionary" minOccurs="0" maxOccurs="1"/>
-				<xs:element ref="userDefinedTermDictionary" minOccurs="0" maxOccurs="1"/>
 				
 			</xs:choice>
 		</xs:complexType>
@@ -659,22 +648,6 @@
 			</xs:simpleContent>
 		</xs:complexType>
 	</xs:element>
-
-        <xs:element name="projectTypeDictionary">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="projectType" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
-                    </xs:sequence>
-                </xs:complexType>
-        </xs:element>
-        
-        <xs:element name="projectCategoryDictionary">
-                <xs:complexType>
-                    <xs:sequence>
-                        <xs:element name="projectCategory" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
-                    </xs:sequence>
-                </xs:complexType>
-        </xs:element>
 
         <xs:element name="objectTypeDictionary">
                 <xs:complexType>
@@ -853,22 +826,6 @@
                 </xs:sequence>
             </xs:complexType>
     </xs:element>
-	
-	<xs:element name="userDefinedFieldDictionary">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="userDefinedField" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
-	
-	<xs:element name="userDefinedTermDictionary">
-		<xs:complexType>
-			<xs:sequence>
-				<xs:element ref="userDefinedTerm" minOccurs="0" maxOccurs="unbounded"/>
-			</xs:sequence>
-		</xs:complexType>
-	</xs:element>
 	
 	    <xs:element name="statisticalResults">
             <xs:complexType>
@@ -1092,54 +1049,6 @@
 		</xs:complexType>
 	</xs:element>
 	
-	<!--
-		%%%%%%%%%%%%%%
-		% UserDefinedField
-		%%%%%%%%%%%%%% -->
-	
-	<xs:element name="userDefinedField" >
-		<xs:complexType>
-			<xs:attribute name="name" type="xs:string" use="required"/>
-			<xs:attribute name="longfieldname" type="xs:string" use="required"/>
-			<xs:attribute name="datatype" type="userExtendableDataType" use="required"/>
-			<xs:attribute name="dictionarykey" type="xs:string" use="optional"/>
-			<xs:attribute name="attachedto" type="userExtendableEntity" use="required"/>
-			<xs:attribute name="description" type="xs:string" use="optional"/>
-		</xs:complexType>
-	</xs:element>
-		
-	<xs:simpleType name="userExtendableDataType">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="xs:string" />
-			<xs:enumeration value="xs:int" />
-			<xs:enumeration value="xs:float" />
-			<xs:enumeration value="xs:boolean" />
-		</xs:restriction>
-	</xs:simpleType>
-	
-	<xs:simpleType name="userExtendableEntity">
-		<xs:restriction base="xs:string">
-			<xs:enumeration value="project" />
-			<xs:enumeration value="object" />
-			<xs:enumeration value="element" />
-			<xs:enumeration value="sample" />
-			<xs:enumeration value="radius" />
-			<xs:enumeration value="series" />
-		</xs:restriction>
-	</xs:simpleType>
-	
-	<!--
-		%%%%%%%%%%%%%%
-		% UserDefinedTerm
-		%%%%%%%%%%%%%% -->
-	
-	<xs:element name="userDefinedTerm" >
-		<xs:complexType>
-			<xs:attribute name="id" type="xs:string" use="required"/>
-			<xs:attribute name="term" type="xs:string" use="required"/>
-			<xs:attribute name="dictionarykey" type="xs:string" use="required"/>
-		</xs:complexType>
-	</xs:element>
 	
 		<!--
 		%%%%%%%%%%%%%%
@@ -1191,13 +1100,6 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:any processContents="skip"/>
-				<xs:element ref="tridas:identifier" minOccurs="0">
-					<xs:annotation>
-						<xs:documentation xml:lang="EN">
-							Do not use  
-						</xs:documentation>
-					</xs:annotation>
-				</xs:element>
 			</xs:sequence>
 			<xs:attribute name="id" type="xs:string" use="optional"/>
 			<xs:attribute name="name" type="xs:string" use="optional"/>

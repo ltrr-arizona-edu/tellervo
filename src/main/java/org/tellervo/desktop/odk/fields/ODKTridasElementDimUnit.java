@@ -1,14 +1,12 @@
 package org.tellervo.desktop.odk.fields;
 
 import java.util.ArrayList;
-import java.util.List;
 
-import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.odk.SelectableChoice;
 import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tridas.interfaces.ITridas;
-import org.tridas.schema.ControlledVoc;
-import org.tridas.schema.TridasObject;
+import org.tridas.schema.NormalTridasUnit;
+import org.tridas.schema.TridasElement;
 
 public class ODKTridasElementDimUnit extends AbstractODKChoiceField {
 	
@@ -17,26 +15,26 @@ public class ODKTridasElementDimUnit extends AbstractODKChoiceField {
 	
 	public ODKTridasElementDimUnit()
 	{
-		super(ODKDataType.SELECT_ONE, "tridas_object_dimensions_unit", "Element dimensions units", Documentation.getDocumentation("unit"), null);
+		super(ODKDataType.SELECT_ONE, "tridas_object_dimensions_unit", "Dimension units", Documentation.getDocumentation("unit"), null);
 		
-		@SuppressWarnings("unchecked")
-		List<ControlledVoc> dictItems = Dictionary.getMutableDictionary("objectTypeDictionary");	
 		ArrayList<Object> objects = new ArrayList<Object>();
-		for(ControlledVoc item : dictItems)
+		for(NormalTridasUnit type: NormalTridasUnit.values())
 		{
-			objects.add(item);
+			objects.add(type);
 		}
+		
+		
 		this.setPossibleChoices(SelectableChoice.makeObjectsSelectable(objects));
 	}
 	
 	@Override
 	public Boolean isFieldRequired() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public Class<? extends ITridas> getTridasClass() {
-		return TridasObject.class;
+		return TridasElement.class;
 	}
 
 }
