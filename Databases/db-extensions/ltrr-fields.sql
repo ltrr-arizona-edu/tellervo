@@ -34,5 +34,9 @@ COPY tlkpuserdefinedfield (userdefinedfieldid, fieldname, description, attachedt
 bb44223d-7f69-4f3e-b728-a878f263a825	swarch.innercode	Southwestern Dendroarchaeology code for inner date	4	xs:string	Inner ring code	\N
 87e2e372-910c-499f-9c33-b125f0014d93	swarch.outercode	Southwestern Dendroarchaeology code for outer date	4	xs:string	Outer ring code	\N
 ebeea485-76ea-456a-883e-1c2b082ff088	ltrr.pithyear	Year of the pith where measureable or can be determined with confidence	4	xs:int	Pith year \N
+a1f3a040-0296-4b57-a760-8080305023ba	ltrr.pithpresent	Whether the pith is present on the sample or not	4	xs:boolean	Pith present \N
+17310eca-36c6-46ed-a5b6-5d7a8fee6cc1	ltrr.unmeasuredinnerrings	Ring count of unmeasured rings towards the pith	4	xs:int	Unmeasured inner rings \N 
+b1c793bf-7bb6-42a3-86a5-58740d1d9962	ltrr.unmeasuredouterrings	Ring count of unmeasured rings towards the bark	4	xs:int	Unmeasured outer rings \N 
+d402b857-218c-484d-a09e-066998cb41a5	ltrr.lastringunderbark	Whether the last ring under the bark is present or not	4	xs:boolean	Last ring under bark \N 
 \.
 
