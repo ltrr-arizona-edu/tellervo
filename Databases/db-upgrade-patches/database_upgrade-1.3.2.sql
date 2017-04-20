@@ -233,4 +233,4 @@ CREATE OR REPLACE VIEW vwtblobject AS
   OWNER TO tellervo;
 
 
-
+update tblconfig set value='1.3.2' where key='wsversion';
