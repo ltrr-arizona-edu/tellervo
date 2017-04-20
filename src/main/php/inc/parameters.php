@@ -804,7 +804,7 @@ class projectParameters extends projectEntity implements IParams
 					{
 						if($child->getAttribute("normalStd")=="Tellervo")
 						{
-							$this->setType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
+							$this->addType($child->getAttribute("normalId"), $child->getAttribute("normal")); break;
 						}
 						else
 						{

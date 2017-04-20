@@ -54,7 +54,12 @@ class lookupEntity
 		{
 			$operator = " ILIKE ";
 		}
-		
+
+		if(is_object($id))
+		{
+			echo "OBJECT FOUND!";
+			print_r($id);
+		}
 		if( ($id!=NULL) && ($value==NULL) )
 		{
 			// ID but no value

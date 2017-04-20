@@ -1205,13 +1205,8 @@ class objectEntity extends UserExtendableEntity
  */
 class projectEntity extends UserExtendableEntity
 {
-	/**
-	 * Functional description: building (church, house etc) water well, painting,
-	 * musical instrucment, ship, type of forest
-	 *
-	 * @var objectType
-	 */
-	protected $type = NULL;
+
+	protected $types = NULL;
 	
 	/**
 	 * Description of this object
@@ -1241,7 +1236,7 @@ class projectEntity extends UserExtendableEntity
     {  
     	parent::__construct(1);
     	
-		$this->type = new projectType();
+		$this->types = array();
     	$this->files = array();
          	
 	}
@@ -1249,9 +1244,6 @@ class projectEntity extends UserExtendableEntity
 	/***********/
     /* SETTERS */
     /***********/   	
-
-	
-    
     
 	/**
 	 * Set an array of types
@@ -1274,9 +1266,25 @@ class projectEntity extends UserExtendableEntity
 	 */
 	function setTypesFromStrArray($pgstrarray)
 	{
-		$this->types = dbHelper::pgStrArrayToPHPArray($pgstrarray);		
+		$typeidarray = dbHelper::pgStrArrayToPHPArray($pgstrarray);
+	
+		if($typeidarray==null) return true;
+
+		
+		foreach($typeidarray as $id)
+		{
+			$this->addType($id, null);
+		}
+		
 		return true;
 	}	
+	
+	function addType($id, $value)
+	{
+		$type = new projectType();
+		$type->setProjectType($id, $value);
+		array_push($this->types, $type);
+	}
 	
 	
 	function setRequestDate($value)
@@ -1350,9 +1358,20 @@ class projectEntity extends UserExtendableEntity
 	 *
 	 * @return array
 	 */
-	function getTypes()
+	function getTypes($askeys=false)
 	{
-		return $this->types;
+		$keys= array();
+		if($askeys)
+		{
+			foreach ($this->types as $type)
+			{
+				array_push($keys, $type->getID());
+			}
+			return $keys;
+		}
+		else {
+			return $this->types;
+		}
 	}
 	
 	function getRequestDate()
@@ -1360,26 +1379,7 @@ class projectEntity extends UserExtendableEntity
 		return $this->requestDate;
 		
 	}
-	
-	
-	/**
-	 * Get the type of object
-	 *
-	 * @param Boolean $asKey
-	 * @return unknown
-	 */
-	function getType($asKey=false)
-	{
-		if($asKey)
-		{
-			return $this->type->getID();
-		}
-		else
-		{
-			return $this->type->getValue();
-		}
-	}
-	
+		
 	function getCategory($asKey=false)
 	{
 		if($asKey)

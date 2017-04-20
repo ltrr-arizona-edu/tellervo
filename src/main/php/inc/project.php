@@ -265,10 +265,9 @@ class project extends projectEntity implements IDBAccessor {
 					
 				if(($this->getTypes()!=NULL) && (count($this->getTypes())>0))
 		       	{
-		        	foreach($this->getTypes() as $type)	
+		        	foreach($this->getTypes() as $projectType)	
 		        	{
-		        		$projectType = new projectType();
-		        		$projectType->setProjectType($type, null);
+		     
 						$xml .= "<tridas:type normal=\"" . $projectType->getValue() . "\" normalId=\"" . $projectType->getID() . "\" normalStd=\"Tellervo\" />\n";
 		        	}
 		       	}
@@ -382,7 +381,7 @@ class project extends projectEntity implements IDBAccessor {
 					$sql .= "title, ";
 					$sql .= "projectid, ";
 					$sql .= "comments, ";
-					//$sql .= "projecttypeid, ";
+					$sql .= "projecttypes, ";
 					$sql .= "description, ";
 					$sql .= "file,";
 					$sql .= "requestdate,";
@@ -393,7 +392,7 @@ class project extends projectEntity implements IDBAccessor {
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getID () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					//$sql .= dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
+					$sql .=  dbHelper::phpArrayToPGStrArray ( $this->getTypes(true) ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
 					$sql .= dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->requestDate() ) . ", ";
