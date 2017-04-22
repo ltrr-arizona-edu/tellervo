@@ -38,3 +38,6 @@ a1f3a040-0296-4b57-a760-8080305023ba	ltrr.pithpresent	Whether the pith is presen
 b1c793bf-7bb6-42a3-86a5-58740d1d9962	ltrr.unmeasuredouterrings	Ring count of unmeasured rings towards the bark	4	xs:int	Unmeasured outer rings 	\N 
 d402b857-218c-484d-a09e-066998cb41a5	ltrr.lastringunderbark	Whether the last ring under the bark is present or not	4	xs:boolean	Last ring under bark 	\N 
 \.
+
+insert into tlkpuserdefinedfield (fieldname, description, attachedto, datatype, longfieldname) values ('ltrr.samplemeasured', 'Whether this sample has been measured or not.', 4, 'xs:boolean', 'Sample measured');
+

@@ -233,5 +233,8 @@ CREATE OR REPLACE VIEW vwtblobject AS
   OWNER TO tellervo;
 
 
+insert into tlkpsamplestatus (samplestatus) values ('Undated');
+
+
 update tblconfig set value='1.3.2' where key='wsversion';
 update tblsupportedclient set minversion='1.3.2' where client ='Tellervo WSI';
