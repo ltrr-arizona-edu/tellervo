@@ -127,7 +127,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.build.timestamp.format>HH:mm dd-MMM-yyyy</maven.build.timestamp.format>
 		<timestamp>${maven.build.timestamp}</timestamp>
-		<serverversion>1.3.1</serverversion>
+		<serverversion>1.3.2</serverversion>
 	</properties>
 
 	<!-- Repository to deploy to. When deploying make sure your .m2/settings.xml 
@@ -443,7 +443,7 @@
 								</mapper> </data> </dataSet> </configuration> </execution> -->
 
 							<!-- Server installer -->
-							<!-- <execution>
+							<execution>
 								<id>deb-server-build</id>
 								<phase>package</phase>
 								<goals>
@@ -451,10 +451,10 @@
 								</goals>
 								<configuration>
 									<deb>${project.build.directory}/binaries/server/${serverversion}/Linux/tellervo-server-${serverversion}.deb</deb>
-									<controlDir>${project.build.directory}/classes/LinBuild/ServerControl/</controlDir>
+									<controlDir>${project.build.directory}/classes/</controlDir>
 									<dataSet>
 										<data>
-											<src>${project.build.directory}/classes/LinBuild/tellervo-server</src>
+											<src>Native/BuildResources/LinBuild/tellervo-server</src>
 											<type>file</type>
 											<mapper>
 												<type>perm</type>
@@ -463,7 +463,7 @@
 											</mapper>
 										</data>
 										<data>
-											<src>${project.build.directory}/classes/LinBuild/create-tellervo-instance</src>
+											<src>Native/BuildResources/LinBuild/create-tellervo-instance</src>
 											<type>file</type>
 											<mapper>
 												<type>perm</type>
@@ -489,7 +489,7 @@
 											</mapper>
 										</data>
 										<data>
-											<src>${project.build.directory}/classes/LinBuild/tellervo-apache.conf</src>
+											<src>Native/BuildResources/LinBuild/tellervo-apache.conf</src>
 											<type>file</type>
 											<mapper>
 												<type>perm</type>
@@ -558,7 +558,7 @@
 										</data>
 									</dataSet>
 								</configuration>
-							</execution>-->
+							</execution>
 						</executions>
 					</plugin>
 
@@ -748,6 +748,28 @@
 				<includes>
 					<include>**/tellervo.desktop</include>
 				</includes>
+				<excludes>
+					<exclude>**/tellervo-server</exclude>
+					<exclude>**/create-tellervo-instance</exclude>		
+					<exclude>**/tellervo-apache.conf</exclude>
+					<exclude>**/pljava-pg-9.5-amd64-Linux-gpp.jar</exclude>
+					<exclude>**/pljava-pg-9.5-i386-Linux-gpp.jar</exclude>		
+							
+				</excludes>
+			</resource>
+			<resource>
+				<directory>Native/BuildResources/LinBuild</directory>
+				<filtering>false</filtering>
+				<includes>
+					<include>**/tellervo-server</include>
+					<include>**/create-tellervo-instance</include>
+					<include>**/tellervo-apache.conf</include>
+					<include>**/pljava-pg-9.5-amd64-Linux-gpp.jar</include>
+					<include>**/pljava-pg-9.5-i386-Linux-gpp.jar</include>
+				</includes>
+				<excludes>
+					<exclude>**/tellervo.desktop</exclude>
+				</excludes>
 			</resource>
 			<resource>
 				<directory>src/main/resources</directory>

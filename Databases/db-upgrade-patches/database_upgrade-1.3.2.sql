@@ -117,6 +117,7 @@ ALTER TABLE public.tlkpuserdefinedterm
 -- IMPLEMENTING PROJECTS
 -- 
 
+UPDATE tblproject SET projectid='08f7f052-580f-11e5-9ab7-fb88913ca6e1' WHERE projectid='b30edb64-5a2b-11e5-9dbb-7b3f84ef785a';
 
 
 DROP VIEW vwtblproject;
@@ -246,7 +247,7 @@ insert into tlkpsamplestatus (samplestatus) values ('Undated');
 
 ALTER TABLE tblobject ADD CONSTRAINT "fkey_object-project" FOREIGN KEY (projectid)
       REFERENCES public.tblproject (projectid) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION,
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 
 CREATE OR REPLACE FUNCTION public."enforce_object-parent"()
@@ -267,7 +268,7 @@ END;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
 ALTER FUNCTION public."enforce_object-parent"()
-  OWNER TO pbrewer;
+  OWNER TO tellervo;
 
 
 CREATE TRIGGER "enforce_object-parent"
