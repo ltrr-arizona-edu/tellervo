@@ -236,5 +236,46 @@ CREATE OR REPLACE VIEW vwtblobject AS
 insert into tlkpsamplestatus (samplestatus) values ('Undated');
 
 
+-- 
+-- Enforce that an object must have either a parentobjectid or projectid
+--
+
+
+
+
+
+ALTER TABLE tblobject ADD CONSTRAINT "fkey_object-project" FOREIGN KEY (projectid)
+      REFERENCES public.tblproject (projectid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+
+
+CREATE OR REPLACE FUNCTION public."enforce_object-parent"()
+  RETURNS trigger AS
+$BODY$
+BEGIN
+
+IF NEW.parentobjectid IS NULL AND NEW.projectid IS NULL THEN
+  RAISE EXCEPTION 'Objects must have either a project or parent object assigned';
+  RETURN NULL;
+ELSIF NEW.parentobjectid IS NOT NULL AND NEW.projectid IS NOT NULL THEN
+  RAISE NOTICE 'Sub-objects cannot be assigned to a project.  Project membership is inherited through its parent object, so requested project for this object will be ignored';
+  NEW.projectid:=NULL;
+END IF;
+
+RETURN NEW;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION public."enforce_object-parent"()
+  OWNER TO pbrewer;
+
+
+CREATE TRIGGER "enforce_object-parent"
+  BEFORE INSERT OR UPDATE
+  ON public.tblobject
+  FOR EACH ROW
+  EXECUTE PROCEDURE public."enforce_object-parent"();
+
+
 update tblconfig set value='1.3.2' where key='wsversion';
 update tblsupportedclient set minversion='1.3.2' where client ='Tellervo WSI';

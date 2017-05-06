@@ -66,6 +66,8 @@ mvn deploy:deploy-file -DgroupId=org.tridas          -DartifactId=jogl          
 mvn install:install-file -DgroupId=fr.iscpif           -DartifactId=jogl-wrapper               -Dversion=1.0	       -Dpackaging=jar -Dfile=jogl-wrapper-1.0.jar
 
 
-
+# Daniel Murphy's MVC Library
+mvn install:install-file -DgroupId=com.dmurph.mvc   -DartifactId=java-simple-mvc    -Dversion=1.4.3-SNAPSHOT  -Dpackaging=jar   -Dfile=java-simple-mvc-1.4.3-SNAPSHOT.jar
+mvn deploy:deploy-file -DgroupId=com.dmurph.mvc   -DartifactId=java-simple-mvc    -Dversion=1.4.3-SNAPSHOT  -Dpackaging=jar   -Dfile=java-simple-mvc-1.4.3-SNAPSHOT.jar  -DrepositoryId=tridas-releases   -Durl=http://maven.tridas.org/repository/tridas-releases
 
 
