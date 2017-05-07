@@ -120,8 +120,8 @@ ALTER TABLE public.tlkpuserdefinedterm
 UPDATE tblproject SET projectid='08f7f052-580f-11e5-9ab7-fb88913ca6e1' WHERE projectid='b30edb64-5a2b-11e5-9dbb-7b3f84ef785a';
 
 
-DROP VIEW vwtblproject;
-DROP VIEW vwtblobject;
+DROP VIEW IF EXISTS vwtblproject;
+DROP VIEW IF EXISTS vwtblobject;
 DROP TABLE tlkplaboratory;
 
 
@@ -147,42 +147,71 @@ grant all on tbllaboratory to tellervo;
 
 
 
+
+
 ALTER TABLE tblproject add column projecttypes character varying[];
-ALTER TABLE tblproject drop column projecttypeid;
+ALTER TABLE tblproject drop column if exists projecttypeid;
 ALTER TABLE tblproject add column laboratories character varying[];
 
 
 
-CREATE OR REPLACE VIEW vwtblproject AS 
-SELECT p.projectid,
-dom.domainid,
-dom.domain,
-p.title,
-array_to_string(p.projecttypes, '><'::text) AS types,
-p.createdtimestamp,
-p.lastmodifiedtimestamp,
-p.comments,
-p.description,
-array_to_string(p.file, '><'::text) AS file,
-p.investigator,
-p.period,
-p.requestdate,
-p.commissioner,
-p.reference,
-p.research,
-p.laboratories,
-p.projectcategoryid,
-pc.projectcategory
- FROM tblproject p
- LEFT JOIN tlkpdomain dom on p.domainid=dom.domainid
- LEFT JOIN tlkpprojectcategory pc on p.projectcategoryid=pc.projectcategoryid;
-  ALTER VIEW public.vwtblproject
+
+insert into tlkpsamplestatus (samplestatus) values ('Undated');
+
+
+-- 
+-- Enforce that an object must have either a parentobjectid or projectid
+--
+
+-- create a project that all old objects and be assigned to 
+INSERT INTO tblproject (title) values ('Rename me');
+
+-- create a dummy default project to handle old default projectid.  Deleting this later
+INSERT INTO tblproject (title, projectid) VALUES ('do not use', '08f7f052-580f-11e5-9ab7-fb88913ca6e1');
+
+-- Set projectids to the 'rename me' project
+UPDATE tblobject SET projectid=(SELECT projectid FROM tblproject WHERE title='Rename me') WHERE parentobjectid IS NULL AND projectid IS NULL;
+UPDATE tblobject SET projectid=(SELECT projectid FROM tblproject WHERE title='Rename me') WHERE projectid='08f7f052-580f-11e5-9ab7-fb88913ca6e1';
+
+-- delete any unused projects
+DELETE FROM tblproject WHERE projectid NOT IN (SELECT DISTINCT projectid FROM tblobject WHERE projectid IS NOT NULL);
+
+
+ALTER TABLE tblobject ADD CONSTRAINT "fkey_object-project" FOREIGN KEY (projectid)
+      REFERENCES public.tblproject (projectid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+
+
+CREATE OR REPLACE FUNCTION public."enforce_object-parent"()
+  RETURNS trigger AS
+$BODY$
+BEGIN
+
+IF NEW.parentobjectid IS NULL AND NEW.projectid IS NULL THEN
+  RAISE EXCEPTION 'Objects must have either a project or parent object assigned';
+  RETURN NULL;
+ELSIF NEW.parentobjectid IS NOT NULL AND NEW.projectid IS NOT NULL THEN
+  RAISE NOTICE 'Sub-objects cannot be assigned to a project.  Project membership is inherited through its parent object, so requested project for this object will be ignored';
+  NEW.projectid:=NULL;
+END IF;
+
+RETURN NEW;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION public."enforce_object-parent"()
   OWNER TO tellervo;
-  
-  
-  
-CREATE OR REPLACE VIEW vwtblobject AS   
-  SELECT cquery.countofchildvmeasurements,
+
+
+CREATE TRIGGER "enforce_object-parent"
+  BEFORE INSERT OR UPDATE
+  ON public.tblobject
+  FOR EACH ROW
+  EXECUTE PROCEDURE public."enforce_object-parent"();
+
+
+CREATE OR REPLACE VIEW public.vwtblobject AS 
+ SELECT cquery.countofchildvmeasurements,
     o.projectid,
     o.vegetationtype,
     o.comments,
@@ -230,52 +259,37 @@ CREATE OR REPLACE VIEW vwtblobject AS
              JOIN tblmeasurement m ON m.radiusid = r.radiusid
              JOIN tblvmeasurementderivedcache vc ON vc.measurementid = m.measurementid
           GROUP BY e.objectid) cquery ON cquery.masterobjectid = o.objectid;
-   ALTER VIEW public.vwtblobject
+
+ALTER TABLE public.vwtblobject
   OWNER TO tellervo;
 
 
-insert into tlkpsamplestatus (samplestatus) values ('Undated');
+CREATE OR REPLACE VIEW public.vwtblproject AS 
+ SELECT p.projectid,
+    dom.domainid,
+    dom.domain,
+    p.title,
+    array_to_string(p.projecttypes, '><'::text) AS types,
+    p.createdtimestamp,
+    p.lastmodifiedtimestamp,
+    p.comments,
+    p.description,
+    array_to_string(p.file, '><'::text) AS file,
+    p.investigator,
+    p.period,
+    p.requestdate,
+    p.commissioner,
+    p.reference,
+    p.research,
+    p.laboratories,
+    p.projectcategoryid,
+    pc.projectcategory
+   FROM tblproject p
+     LEFT JOIN tlkpdomain dom ON p.domainid = dom.domainid
+     LEFT JOIN tlkpprojectcategory pc ON p.projectcategoryid = pc.projectcategoryid;
 
-
--- 
--- Enforce that an object must have either a parentobjectid or projectid
---
-
-
-
-
-
-ALTER TABLE tblobject ADD CONSTRAINT "fkey_object-project" FOREIGN KEY (projectid)
-      REFERENCES public.tblproject (projectid) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION;
-
-
-CREATE OR REPLACE FUNCTION public."enforce_object-parent"()
-  RETURNS trigger AS
-$BODY$
-BEGIN
-
-IF NEW.parentobjectid IS NULL AND NEW.projectid IS NULL THEN
-  RAISE EXCEPTION 'Objects must have either a project or parent object assigned';
-  RETURN NULL;
-ELSIF NEW.parentobjectid IS NOT NULL AND NEW.projectid IS NOT NULL THEN
-  RAISE NOTICE 'Sub-objects cannot be assigned to a project.  Project membership is inherited through its parent object, so requested project for this object will be ignored';
-  NEW.projectid:=NULL;
-END IF;
-
-RETURN NEW;
-END;$BODY$
-  LANGUAGE plpgsql VOLATILE
-  COST 100;
-ALTER FUNCTION public."enforce_object-parent"()
+ALTER TABLE public.vwtblproject
   OWNER TO tellervo;
-
-
-CREATE TRIGGER "enforce_object-parent"
-  BEFORE INSERT OR UPDATE
-  ON public.tblobject
-  FOR EACH ROW
-  EXECUTE PROCEDURE public."enforce_object-parent"();
 
 
 update tblconfig set value='1.3.2' where key='wsversion';

@@ -847,6 +847,7 @@ function runDBUpgrades($skipbackup=false)
 		die("There was an error applying an upgrade scripts so the upgrade has been halted.\nWe will need to investigate what went wrong before we can complete the upgrade.\nPlease contact the Tellervo developers for assistance.\n\n");
 	}
 	
+	generateSystemsConfig();
 	
 	$f = getTellervoDPKGVersion();
 
@@ -870,7 +871,7 @@ function runDBUpgrades($skipbackup=false)
     }
     else
     {
-    	echo "Database upgrade complete.\n";
+   	echo "Database upgrade complete.\n";
     	echo "Database now at version ".trim($f).".\n";
     }
 	

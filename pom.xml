@@ -771,6 +771,14 @@
 					<exclude>**/tellervo.desktop</exclude>
 				</excludes>
 			</resource>
+			
+			<resource>
+				<directory>Native/BuildResources/LinBuild/ServerControl</directory>
+				<filtering>true</filtering>
+				
+			
+			</resource>
+			
 			<resource>
 				<directory>src/main/resources</directory>
 				<filtering>false</filtering>
