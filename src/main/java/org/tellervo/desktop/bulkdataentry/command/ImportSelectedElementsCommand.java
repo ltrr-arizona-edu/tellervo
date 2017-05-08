@@ -130,7 +130,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 					String attempt = som.getProperty(SingleElementModel.LATITUDE).toString().trim();
 					try{
 						Double lat = Double.parseDouble(attempt);
-						if(lat>-90 || lat<90)
+						if(lat<-90 || lat>90)
 						{
 							requiredMessages.add("Latitude must be between -90 and 90");
 							incomplete = true;
@@ -142,7 +142,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 					attempt = som.getProperty(SingleElementModel.LONGITUDE).toString().trim();
 					try{
 						Double lng = Double.parseDouble(attempt);
-						if(lng>-180 || lng<180)
+						if(lng<-180 || lng>180)
 						{
 							requiredMessages.add("Longitude must be between -180 and 180");
 							incomplete = true;

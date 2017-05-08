@@ -143,9 +143,9 @@ public class ImportSelectedObjectsCommand implements ICommand {
 					String attempt = som.getProperty(SingleObjectModel.LATITUDE).toString().trim();
 					try{
 						Double lat = Double.parseDouble(attempt);
-						if(lat>-90 || lat<90)
+						if(lat<-90 || lat>90)
 						{
-							requiredMessages.add("Latitude must be betweOne or more errors were encountereden -90 and 90");
+							requiredMessages.add("Latitude must be between -90 and 90");
 							incomplete = true;
 						}
 					}catch(NumberFormatException e){
@@ -155,7 +155,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 					attempt = som.getProperty(SingleObjectModel.LONGITUDE).toString().trim();
 					try{
 						Double lng = Double.parseDouble(attempt);
-						if(lng>-180 || lng<180)
+						if(lng<-180 || lng>180)
 						{
 							requiredMessages.add("Longitude must be between -180 and 180");
 							incomplete = true;

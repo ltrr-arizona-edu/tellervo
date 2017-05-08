@@ -43,6 +43,7 @@ import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasLocation;
 import org.tridas.schema.TridasLocationGeometry;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.spatial.GMLPointSRSHandler;
 import org.tridas.spatial.SpatialUtils;
 
@@ -80,6 +81,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	public static final String OWNER = "Owner";
 	public static final String CREATOR = "Creator";
 	public static final String VEGETATION_TYPE = "Vegetation type";
+	public static final String PROJECT = "Project";
 	private static boolean userDefinedFieldsInit = false;  // Whether user defined fields have been added to TABLE_PROPERTIES or not
 	
 	
@@ -89,7 +91,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 	
 	
 	public static String[] TABLE_PROPERTIES = {
-		PARENT_OBJECT, OBJECT_CODE, TITLE, TYPE, DESCRIPTION, FILES, COMMENTS, LATITUDE, LONGITUDE, WAYPOINT, LOCATION_PRECISION, LOCATION_TYPE, LOCATION_COMMENT,
+		PROJECT, PARENT_OBJECT, OBJECT_CODE, TITLE, TYPE, DESCRIPTION, FILES, COMMENTS, LATITUDE, LONGITUDE, WAYPOINT, LOCATION_PRECISION, LOCATION_TYPE, LOCATION_COMMENT,
 		ADDRESSLINE1, ADDRESSLINE2,	CITY_TOWN, STATE_PROVINCE_REGION, POSTCODE, COUNTRY,  OWNER, CREATOR, VEGETATION_TYPE,
 	};
 		
@@ -273,7 +275,12 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
 		for(TridasGenericField gf: argObject.getGenericFields())
 		{
-			if (gf.getName().startsWith("userDefinedField"))
+			if(gf.getName().equals("tellervo.object.projectid"))
+			{
+
+				setProperty(PROJECT, App.dictionary.getTridasProjectByID(gf.getValue()));
+			}
+			else if (gf.getName().startsWith("userDefinedField"))
 			{			
 				for(WSIUserDefinedField fld : udfdictionary)
 				{
@@ -334,6 +341,24 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		genericField.setName(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE);
 		genericField.setValue(getProperty(OBJECT_CODE)+"");
 		argObject.getGenericFields().add(genericField);
+		
+		if(getProperty(PROJECT)!=null)
+		{
+			genericField = new TridasGenericField();
+			genericField.setName("tellervo.object.projectid");
+			
+			Object proj = getProperty(PROJECT);
+			if(proj instanceof TridasProject)
+			{
+				genericField.setValue(((TridasProject) proj).getIdentifier().getValue());
+			}
+			else if (proj instanceof String)
+			{
+				genericField.setValue(App.dictionary.getTridasProjectByTitle(proj.toString()).getIdentifier().getValue());
+			}
+			
+			argObject.getGenericFields().add(genericField);
+		}
 		
 		if(getProperty(VEGETATION_TYPE)!=null)
 		{

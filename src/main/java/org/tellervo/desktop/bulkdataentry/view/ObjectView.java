@@ -36,17 +36,12 @@ import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
-import org.tellervo.desktop.bulkdataentry.control.DeleteODKDefinitionsEvent;
-import org.tellervo.desktop.bulkdataentry.control.DeleteODKInstancesEvent;
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromGeonamesEvent;
-import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
-import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
-import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
@@ -64,14 +59,15 @@ import org.tellervo.desktop.tridasv2.ui.BooleanCellRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
 import org.tellervo.desktop.tridasv2.ui.TridasFileArrayRenderer;
+import org.tellervo.desktop.tridasv2.ui.TridasProjectRenderer;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.schema.WSIObjectTypeDictionary;
 import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.util.TridasObjectEx;
 
-import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 
 
@@ -105,6 +101,28 @@ public class ObjectView extends AbstractBulkImportView{
 		
 		argTable.setDefaultEditor(TridasFileList.class, new TridasFileListEditor(new JTextField()));
 		argTable.setDefaultRenderer(TridasFileList.class, new TridasFileArrayRenderer());
+		
+		//argTable.setDefaultEditor(TridasProject.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("projectDictionary")));
+		argTable.setDefaultRenderer(TridasProject.class, new TridasProjectRenderer());
+		
+		DynamicJComboBox<TridasProject> projectCombo = new DynamicJComboBox<TridasProject>(App.tridasProjects.getMutableObjectList(),new Comparator<TridasProject>() {
+			/**
+			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+			 */
+			@Override
+			public int compare(TridasProject argO1, TridasProject argO2) {
+				if(argO1 == null){
+					return -1;
+				}
+				if(argO2 == null){
+					return 1;
+				}
+				return argO1.getTitle().compareTo(argO2.getTitle());
+			}
+		});
+		
+		projectCombo.setRenderer(new TridasProjectRenderer());
+		argTable.setDefaultEditor(TridasProject.class, new ComboBoxCellEditor(projectCombo));
 		
 		argTable.setDefaultRenderer(TridasObject.class, new DefaultTableCellRenderer(){
 			/**

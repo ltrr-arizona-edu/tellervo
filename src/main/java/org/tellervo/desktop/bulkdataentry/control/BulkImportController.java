@@ -147,7 +147,8 @@ public class BulkImportController extends FrontController {
 		// First populate an array with all the default columns in it
 		ArrayList<String> defaults = new ArrayList<String>();
 		defaults.add(SingleObjectModel.IMPORTED);
-		defaults.add(SingleObjectModel.PARENT_OBJECT);
+		//defaults.add(SingleObjectModel.PARENT_OBJECT);
+		defaults.add(SingleObjectModel.PROJECT);
 		defaults.add(SingleObjectModel.OBJECT_CODE);
 		defaults.add(SingleObjectModel.TITLE);
 		defaults.add(SingleObjectModel.TYPE);

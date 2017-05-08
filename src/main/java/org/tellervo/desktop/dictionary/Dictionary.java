@@ -222,6 +222,22 @@ public class Dictionary extends TellervoResource {
 		return null;
 	}
 	
+	public static TridasProject getTridasProjectByTitle(String title)
+	{
+		if(title==null) return null;
+
+		List<TridasProject> entities = App.tridasProjects.getMutableObjectList();
+
+		for(TridasProject p : entities)
+		{
+			if(p.getTitle().equals(title))
+			{
+				return p;
+			}
+		}
+		return null;
+	}
+	
 	public static WSIBox getBoxByCode(String code)
 	{
 		if(code==null) return null;
