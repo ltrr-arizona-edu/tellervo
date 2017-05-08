@@ -442,24 +442,26 @@ public class PopulateFromODKCommand implements ICommand {
 	private void createCSVFile(ArrayList<ODKParser> parsers, String csvfolder ) throws IOException
 	{
 		
-		boolean hasObjects = false;
-		boolean hasElementSamples = false;
+		int objectCount = 0;
+		int elementCount = 0;
+		int sampleCount = 0;
 		
 		for(ODKParser parser: parsers)
 		{
 			if(parser.getFileType().equals(ODKFileType.OBJECTS))
 			{
-				hasObjects = true;
+				objectCount++;
 			}
 			else if (parser.getFileType().equals(ODKFileType.ELEMENTS_AND_SAMPLES))
 			{
-				hasElementSamples = true;
+				elementCount++;
+				sampleCount = sampleCount + parser.getSampleCount();
 			}
 		}
-		
-		if(hasObjects)
+				
+		if(objectCount>0)
 		{
-			String filename = csvfolder+"/odk-objects.csv";
+			String filename = csvfolder+"/odk-objects.txt";
 			log.debug("Found ODK files with object data.  Exporting to : "+filename);
 
 			File fileObject = new File(filename);
@@ -480,35 +482,50 @@ public class PopulateFromODKCommand implements ICommand {
 			}
 			
 			String[] fieldNamesArr =fieldNames.toArray(new String[fieldNames.size()]);
-			String[][] table = new String[parsers.size()][fieldNames.size()];
+			String[][] table = new String[objectCount][fieldNames.size()];
 
-			for(int r=0; r<parsers.size(); r++)
+			int r = 0;
+			for(ODKParser parser : parsers)
+			{
+				if(parser.getFileType().equals(ODKFileType.ELEMENTS_AND_SAMPLES)) continue;
+
+				for(int c=0; c<fieldNamesArr.length; c++)
+				{	
+					table[r][c] = parser.getFieldValueAsString(fieldNamesArr[c]);
+				}
+				r++;
+			}
+			
+			
+			/*for(int r=0; r<parsers.size(); r++)
 			{
 				ODKParser parser = parsers.get(r);
+				
+				if(parser.getFileType().equals(ODKFileType.ELEMENTS_AND_SAMPLES)) continue;
 				
 				for(int c=0; c<fieldNamesArr.length; c++)
 				{	
 					table[r][c] = parser.getFieldValueAsString(fieldNamesArr[c]);
 				}
-			}
+			}*/
 				
 			CSVWriter writer = new CSVWriter(new FileWriter(filename), '\t');
 
 			String[] header = fieldNames.toArray(new String[fieldNames.size()]);
 			
 			writer.writeNext(header);
-			for(int r=0; r<table.length; r++)
+			for(int r2=0; r2<table.length; r2++)
 			{
-				writer.writeNext(table[r]);
+				writer.writeNext(table[r2]);
 			}
 			
 			writer.close();
 		}
 		
 		
-		if(hasElementSamples)
+		if(elementCount>0)
 		{
-			String filename = csvfolder+"/odk-elementsandsamples.csv";
+			String filename = csvfolder+"/odk-elementsandsamples.txt";
 			log.debug("Found ODK files with element/sample data.  Exporting to : "+filename);
 			File fileElementSamples = new File(filename);
 			fileElementSamples.createNewFile();
@@ -528,26 +545,58 @@ public class PopulateFromODKCommand implements ICommand {
 			}
 			
 			String[] fieldNamesArr =fieldNames.toArray(new String[fieldNames.size()]);
-			String[][] table = new String[parsers.size()][fieldNames.size()];
+			String[][] table = new String[sampleCount][fieldNames.size()];
 
-			for(int r=0; r<parsers.size(); r++)
+			int r = 0;
+			
+			
+			for(ODKParser parser : parsers)
+			{
+				if(parser.getFileType().equals(ODKFileType.OBJECTS)) continue;
+				
+				int sc = parser.getSampleCount();
+
+				for(int s=0; s<sc; s++)
+				{
+					for(int c=0; c<fieldNamesArr.length; c++)
+					{	
+						String fieldname = fieldNamesArr[c];
+						
+						if(fieldname.startsWith("tridas_sample"))
+						{
+							String val = parser.getSampleFieldValueAsString(fieldname, s);
+							table[r][c] = val;
+						}
+						else
+						{
+							table[r][c] = parser.getFieldValueAsString(fieldname);
+						}
+					}
+					r++;
+				}
+
+			}
+			
+			
+			/*for(int r=0; r<parsers.size(); r++)
 			{
 				ODKParser parser = parsers.get(r);
+				if(parser.getFileType().equals(ODKFileType.OBJECTS)) continue;
 				
 				for(int c=0; c<fieldNamesArr.length; c++)
 				{	
 					table[r][c] = parser.getFieldValueAsString(fieldNamesArr[c]);
 				}
-			}
+			}*/
 				
 			CSVWriter writer = new CSVWriter(new FileWriter(filename), '\t');
 
 			String[] header = fieldNames.toArray(new String[fieldNames.size()]);
 			
 			writer.writeNext(header);
-			for(int r=0; r<table.length; r++)
+			for(int r2=0; r2<table.length; r2++)
 			{
-				writer.writeNext(table[r]);
+				writer.writeNext(table[r2]);
 			}
 			
 			writer.close();

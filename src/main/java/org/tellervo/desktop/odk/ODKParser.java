@@ -193,6 +193,31 @@ public class ODKParser {
 		}
 		
 	}
+	
+	public String getSampleFieldValueAsString(String field, int sampleNumber)
+	{
+		if(doc.getElementsByTagName(field).getLength()==0) 
+		{
+			//log.info("Field '"+field+"' not found in ODK file");
+			return null;
+		}
+		try{
+			
+			String contents = doc.getElementsByTagName(field).item(sampleNumber).getTextContent();
+			if(contents==null || contents.length()==0) {
+				return null;
+			}
+			else
+			{
+				return contents;
+			}
+		} catch (Exception e)
+		{
+			log.warn("Error getting tag text for field: "+field);
+			return null;
+		}
+		
+	}
 		
 	public Integer getFieldValueAsInteger(String field)
 	{
@@ -457,6 +482,30 @@ public class ODKParser {
 		return "<b>"+file.getAbsoluteFile()+"</b>";	
 	}
 
+	public int getSampleCount()
+	{
+		int count = 0;
+	    NodeList nodeList = doc.getElementsByTagName("*");
+	    for (int i = 0; i < nodeList.getLength(); i++) {
+	        Node node = nodeList.item(i);
+	        if (node.getNodeType() == Node.ELEMENT_NODE) {
+	        	
+	        	try{
+		        	String name = node.getNodeName();
+		        	if(name.equals("group_sample_fields")) 
+		        	{
+		        		count++;
+		        	}
+		        	
+	        	} catch (Exception e)
+	        	{
+	        		
+	        	}
+	        }
+	    }
+	    
+	    return count;
+	}
 	
 	public HashMap<String, String> getAllFields()
 	{
@@ -469,7 +518,7 @@ public class ODKParser {
 	        	
 	        	try{
 		        	String name = node.getNodeName();
-		        	if(name.equals("meta") || name.equals("instanceName") || name.equals("data")) continue;
+		        	if(name.equals("meta") || name.equals("instanceName") || name.equals("data") || name.startsWith("group_")) continue;
 		        	String value = node.getFirstChild().getNodeValue();
 		        	
 		        	

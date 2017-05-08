@@ -291,6 +291,5 @@ CREATE OR REPLACE VIEW public.vwtblproject AS
 ALTER TABLE public.vwtblproject
   OWNER TO tellervo;
 
-
 update tblconfig set value='1.3.2' where key='wsversion';
 update tblsupportedclient set minversion='1.3.2' where client ='Tellervo WSI';
