@@ -25,6 +25,8 @@ package org.tellervo.desktop.bulkdataentry.model;
 
 import com.dmurph.mvc.model.MVCArrayList;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 /**
  * @author daniel
  *
@@ -48,6 +50,8 @@ public class ColumnChooserModel extends MVCArrayList<String> {
 				possibleColumns.add(s);
 			}
 		}
+		
+		Collections.sort(possibleColumns);
 	}
 	
 	/**

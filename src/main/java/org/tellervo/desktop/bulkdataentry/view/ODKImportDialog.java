@@ -16,7 +16,7 @@ import javax.swing.border.LineBorder;
 import java.awt.Color;
 import javax.swing.JCheckBox;
 
-public class ODKImportDIalog extends JDialog {
+public class ODKImportDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField textField;
@@ -27,7 +27,7 @@ public class ODKImportDIalog extends JDialog {
 	 */
 	public static void main(String[] args) {
 		try {
-			ODKImportDIalog dialog = new ODKImportDIalog();
+			ODKImportDialog dialog = new ODKImportDialog();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -38,7 +38,7 @@ public class ODKImportDIalog extends JDialog {
 	/**
 	 * Create the dialog.
 	 */
-	public ODKImportDIalog() {
+	public ODKImportDialog() {
 		setBounds(100, 100, 450, 434);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

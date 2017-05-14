@@ -30,6 +30,7 @@ import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasUnit;
 import org.tridas.schema.NormalTridasUnit;
@@ -176,7 +177,11 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 					TridasUnit unit = (TridasUnit) value;
 					sbf.append(unit.getNormalTridas().value());
 
-				} else if (value instanceof TridasObject) {
+				}else if (value instanceof TridasProject) {
+					TridasProject proj = (TridasProject) value;
+					sbf.append(proj.getTitle());
+				} 
+				else if (value instanceof TridasObject) {
 					TridasObjectEx obj = (TridasObjectEx) value;
 					sbf.append(obj.getLabCode());
 				} else if (value instanceof TridasElement) {
@@ -514,7 +519,24 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 								errorsEncountered = true;
 							}
 						}
+						else if (clazz.equals(TridasProject.class)) {
+							List<TridasProject> types = App.tridasProjects.getMutableObjectList();
+							Boolean match = false;
+							for (TridasProject proj : types) {
+								if (proj.getTitle().equals(value)) {
 
+									if (!simulateFirst)
+										tablemodel.setValueAt(proj, rowModelIndex,
+												colModelIndex);
+									match = true;
+								}
+							}
+							if (match == false && value!=null && value.length()>0) {
+								logPasteError(lineindex, colModelIndex, value,
+										"Only the names of existing projects can be specified");
+								errorsEncountered = true;
+							}
+						}
 						else if (clazz.equals(TridasObject.class)) {
 							List<TridasObjectEx> types = App.tridasObjects
 									.getMutableObjectList();

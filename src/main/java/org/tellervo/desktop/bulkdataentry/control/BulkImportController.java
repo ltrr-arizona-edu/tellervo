@@ -147,10 +147,10 @@ public class BulkImportController extends FrontController {
 		// First populate an array with all the default columns in it
 		ArrayList<String> defaults = new ArrayList<String>();
 		defaults.add(SingleObjectModel.IMPORTED);
-		//defaults.add(SingleObjectModel.PARENT_OBJECT);
-		defaults.add(SingleObjectModel.PROJECT);
 		defaults.add(SingleObjectModel.OBJECT_CODE);
 		defaults.add(SingleObjectModel.TITLE);
+		//defaults.add(SingleObjectModel.PARENT_OBJECT);
+		defaults.add(SingleObjectModel.PROJECT);
 		defaults.add(SingleObjectModel.TYPE);
 		defaults.add(SingleObjectModel.COMMENTS);
 		defaults.add(SingleObjectModel.DESCRIPTION);
@@ -174,22 +174,21 @@ public class BulkImportController extends FrontController {
 		ArrayList<String> fields = App.prefs.getArrayListPref(PrefKey.OBJECT_FIELD_VISIBILITY_ARRAY, defaults);
 		
 		// Actually populate model with the fields
-		// Done in stupid way to maintain logical ordering
+		// Done in stupid way to maintain preferred or logical/default ordering 
+		for(String f: fields)
+		{
+			if(defaults.contains(f))
+			{
+				ccmodel.add(f);
+			}
+		}
 		for(String f : defaults)
 		{
-			if(fields.contains(f))
+			if(!fields.contains(f))
 			{
 				ccmodel.add(f);
 			}
 		}
-		for(String f : fields)
-		{
-			if(!defaults.contains(f))
-			{
-				ccmodel.add(f);
-			}
-		}
-
 	}
 	
 	private void populateElementDefaults(ColumnChooserModel ccmodel){
@@ -236,17 +235,17 @@ public class BulkImportController extends FrontController {
 		ArrayList<String> fields = App.prefs.getArrayListPref(PrefKey.ELEMENT_FIELD_VISIBILITY_ARRAY, defaults);
 		
 		// Actually populate model with the fields
-		// Done in stupid way to maintain logical ordering
-		for(String f : defaults)
+		// Done in stupid way to maintain preferred or logical/default ordering 
+		for(String f: fields)
 		{
-			if(fields.contains(f))
+			if(defaults.contains(f))
 			{
 				ccmodel.add(f);
 			}
 		}
-		for(String f : fields)
+		for(String f : defaults)
 		{
-			if(!defaults.contains(f))
+			if(!fields.contains(f))
 			{
 				ccmodel.add(f);
 			}
@@ -276,17 +275,17 @@ public class BulkImportController extends FrontController {
 		fields = new ArrayList<String>(new HashSet<String>(fields));
 		
 		// Actually populate model with the fields
-		// Done in stupid way to maintain logical ordering
-		for(String f : defaults)
+		// Done in stupid way to maintain preferred or logical/default ordering 
+		for(String f: fields)
 		{
-			if(fields.contains(f))
+			if(defaults.contains(f))
 			{
 				ccmodel.add(f);
 			}
 		}
-		for(String f : fields)
+		for(String f : defaults)
 		{
-			if(!defaults.contains(f))
+			if(!fields.contains(f))
 			{
 				ccmodel.add(f);
 			}

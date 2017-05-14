@@ -101,6 +101,7 @@ import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasFile;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasShape;
 import org.tridas.util.TridasObjectEx;
@@ -754,6 +755,15 @@ public class PopulateFromODKCommand implements ICommand {
 			}
 		}
 		
+		String projcode = parser.getFieldValueAsString("tridas_project");
+		
+		if(projcode!=null) 
+		{
+			TridasProject proj = getTridasProjectByTitle(projcode);
+			newrow.setProperty(SingleObjectModel.PROJECT, proj);
+		}
+		
+		
 		String objectcode = parser.getFieldValueAsString("tridas_object_code");
 		newrow.setProperty(SingleObjectModel.OBJECT_CODE, objectcode);
 		newrow.setProperty(SingleObjectModel.TITLE, parser.getFieldValueAsString("tridas_object_title"));
@@ -1253,5 +1263,20 @@ public class PopulateFromODKCommand implements ICommand {
 			}
 		}
 		return null;
+	}
+	
+	private static TridasProject getTridasProjectByTitle(String title)
+	{
+		if(title==null)  return null;
+		List<TridasProject> entities = App.tridasProjects.getProjectList();
+
+		for(TridasProject p : entities)
+		{
+			if(p.getTitle().equals(title)) return p;
+		}
+		return null;
+		
+		
+		
 	}
 }
