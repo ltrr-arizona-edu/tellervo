@@ -732,6 +732,7 @@ class projectParameters extends projectEntity implements IParams
 		}
 		 
 		$this->parentID=$parentID;
+		$this->setProjectID($parentID);
 		$this->mergeWithID = $mergeWithID;
 
 		// Extract parameters from the XML request
@@ -871,6 +872,8 @@ class objectParameters extends objectEntity implements IParams
     		$this->xmlRequestDom->loadXML($xmlrequest);
         }
      		
+	
+	$this->setParentObjectID( $parentID);
         $this->parentID=$parentID;
         $this->mergeWithID = $mergeWithID;
             		

@@ -7,6 +7,7 @@ import java.util.Collection;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.NormalTridasShape;
+import org.tridas.schema.TridasProject;
 
 import com.jidesoft.swing.Selectable;
 
@@ -48,6 +49,10 @@ public class SelectableChoice implements Selectable, Serializable {
 		else if (item instanceof NormalTridasLocationType)
 		{
 			real =  ((NormalTridasLocationType)item).value();
+		}
+		else if (item instanceof TridasProject)
+		{
+			real = ((TridasProject) item).getTitle();
 		}
 		else
 		{

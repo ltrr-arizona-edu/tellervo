@@ -1,14 +1,10 @@
 package org.tellervo.desktop.odk.fields;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.odk.ODKFormDesignPanel;
 import org.tellervo.schema.UserExtendableDataType;
 import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIUserDefinedField;
@@ -30,6 +26,7 @@ public class ODKFields {
 	{
 		
 		// OBJECT FIELDS
+		fieldsList.add(new ODKTridasProject());
 		fieldsList.add(new ODKTridasParentObjectCode());
 		fieldsList.add(new ODKTridasObjectCode());
 		fieldsList.add(new ODKTridasObjectTitle());

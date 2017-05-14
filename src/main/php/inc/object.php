@@ -264,6 +264,7 @@ class object extends objectEntity implements IDBAccessor {
 	function setParamsFromParamsClass($paramsClass) {
 		global $firebug;
 		$firebug->log ( $paramsClass, "params class" );
+		ChromePhp::log("params class", $paramsClass);
 		
 		$this->setTitle ( $paramsClass->getTitle () );
 		$this->setComments ( $paramsClass->getComments () );
@@ -286,9 +287,11 @@ class object extends objectEntity implements IDBAccessor {
 		$this->location->setCountry ( $paramsClass->location->getCountry () );
 		$this->setUserDefinedFieldAndValueArray ( $paramsClass->getUserDefinedFieldAndValueArray () );
 		$this->setProjectID($paramsClass->getProjectID());
+		$this->setParentObjectID($paramsClass->getParentObjectID());
 		//$this->setProjectID($paramsClass->getParentObjectID());
 		
 		$this->setCode ( $paramsClass->getCode () );
+		
 		
 		if ($paramsClass->parentID != NULL) {
 			$parentObj = new object ();
@@ -541,6 +544,7 @@ class object extends objectEntity implements IDBAccessor {
 		
 		if($this->getProjectID()==null && $this->getParentObjectID()==null)
 		{
+			ChromePhp::log("Object ", $this);
 			$this->setErrorMessage ( "902", "Missing parameter - top level objects must have a project" );
 			return FALSE;
 		}
