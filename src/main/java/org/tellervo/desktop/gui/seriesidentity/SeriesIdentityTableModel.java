@@ -10,6 +10,7 @@ import javax.swing.table.AbstractTableModel;
 import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.io.IdentityItem;
 import org.tellervo.desktop.io.Metadata;
@@ -45,12 +46,14 @@ import org.tridas.schema.ObjectFactory;
 import org.tridas.schema.PresenceAbsence;
 import org.tridas.schema.TridasBark;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasHeartwood;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasMeasuringMethod;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasPith;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasSapwood;
@@ -719,7 +722,14 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				object.setTitle(id.getObjectItem().getCode());
 				TridasUtils.setObjectCode(object, id.getObjectItem().getCode());
 				object.setType((ControlledVoc) defaults.cboObjectType.getSelectedItem());
+					
+				TridasGenericField gf = new TridasGenericField();
+				gf.setName(TridasUtils.GENERIC_FIELD_STRING_PROJECT_ID);
+				gf.setType("xs:string");
+				gf.setValue(((TridasProject)defaults.cboProject.getSelectedItem()).getIdentifier().getValue());
+				object.getGenericFields().add(gf);
 				
+							
 				object = (TridasObjectEx) doSave(object, null);
 				
 				if(object!=null)

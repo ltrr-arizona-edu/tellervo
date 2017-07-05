@@ -383,9 +383,9 @@ class project extends projectEntity implements IDBAccessor {
 					$sql .= "comments, ";
 					$sql .= "projecttypes, ";
 					$sql .= "description, ";
-					$sql .= "file,";
-					$sql .= "requestdate,";
-					$sql .= "projectcategoryid";
+					$sql .= "file, ";
+					$sql .= "requestdate, ";
+					$sql .= "projectcategoryid, ";
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ") values (";
 					

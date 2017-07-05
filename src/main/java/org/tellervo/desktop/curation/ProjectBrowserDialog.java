@@ -158,6 +158,9 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 						btnNew.setActionCommand("New");
 						{
 							btnRemove = new JButton("Delete");
+							btnRemove.setActionCommand("Delete");
+							btnRemove.addActionListener(this);
+							
 							panel.add(btnRemove, "cell 1 0");
 							btnRemove.setIcon(Builder.getIcon("edit_remove.png", 16));
 						}
@@ -382,7 +385,14 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		}
 		
 		// take the return value and save it
-		App.tridasProjects.updateTridasProject(temporaryEditingEntity);
+		if(isNew)
+		{
+			App.tridasProjects.addTridasProject(temporaryEditingEntity);
+		}	
+		else
+		{
+			App.tridasProjects.updateTridasProject(temporaryEditingEntity);
+		}
 		isDirty = false;
 	}
 	
@@ -406,13 +416,24 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 			if(isDirty)
 			{
 				// warn
+				int response = JOptionPane.showConfirmDialog(this, 
+						"You have unsaved changes.  Are you sure you want to continue without saving?");
+				
+				if(response == JOptionPane.OK_OPTION)
+				{			
+					this.dispose();
+
+				}
 			}
 			
-			this.dispose();
 		}
 		else if (e.getActionCommand().equals("New"))
 		{
 			this.addNewProject();
+		}
+		else if (e.getActionCommand().equals("Delete"))
+		{
+			
 		}
 	}
 

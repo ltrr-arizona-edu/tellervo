@@ -1,0 +1,2 @@
+CREATE EXTENSION pljava;
+GRANT USAGE ON LANGUAGE java TO tellervo; 

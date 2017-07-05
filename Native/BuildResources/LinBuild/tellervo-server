@@ -75,6 +75,7 @@ $permsfile        = $folderbase."set_database_permission.sql";
 $permstemplate    = $folderbase."set_database_permission.template";
 $configtemplate   = $folderbase."config.php.template";
 $dbtemplate       = $folderbase."tellervo_database_template_1.3.sql";
+$pljavaexttemplate= $folderbase."pljava_extension.sql";
 $credentialsFile  = $folderbase."server_credentials";
 $upgradeScripts   = $folderbase."db-upgrade-patches";
 $configfile       = $wsbase."config.php";
@@ -1380,7 +1381,7 @@ function postgresSetup($quick=false)
       // Set pg_hba.conf file entry
       $pg_hba_str = "local        all      ".trim($user, "\n\r")."                  trust\\n".
                     "host         all      ".trim($user, "\n\r")."   samenet        md5\\n";
-      $command = "sudo -u postgres sh -c \"sed '1 i\\# ADDED BY CORINA CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
+      $command = "sudo -u postgres sh -c \"sed '1 i\\# ADDED BY TELLERVO CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
       exec($command, $resp);
 
       // Restart postgres
@@ -1454,7 +1455,11 @@ function createDatabase()
         
     }
     
+    echo "\nConfiguring PLJava extension.\n";
+    exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-1.3.0e.notransaction.sql 2>> ".$logfile."\"");
+    
     echo "\nCreating database.  This could take a while...\n";
+    exec("su - postgres -c \"createdb ".$dbname." 2>> ".$logfile."\"");
     exec("su - postgres -c \"createdb ".$dbname." 2>> ".$logfile."\"");
     exec("su - postgres -c \"pg_restore --dbname=".$dbname." $dbtemplate 2>> ".$logfile."\"");
     

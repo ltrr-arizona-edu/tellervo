@@ -167,7 +167,14 @@ insert into tlkpsamplestatus (samplestatus) values ('Undated');
 INSERT INTO tblproject (title) values ('Rename me');
 
 -- create a dummy default project to handle old default projectid.  Deleting this later
-INSERT INTO tblproject (title, projectid) VALUES ('do not use', '08f7f052-580f-11e5-9ab7-fb88913ca6e1');
+-- INSERT INTO tblproject (title, projectid) VALUES ('do not use', '08f7f052-580f-11e5-9ab7-fb88913ca6e1');
+INSERT INTO tblproject (projectid, title)
+SELECT '08f7f052-580f-11e5-9ab7-fb88913ca6e1', 'do not use'
+WHERE
+  NOT EXISTS (
+  	SELECT projectid FROM tblproject WHERE projectid='08f7f052-580f-11e5-9ab7-fb88913ca6e1'
+  );
+
 
 -- Set projectids to the 'rename me' project
 UPDATE tblobject SET projectid=(SELECT projectid FROM tblproject WHERE title='Rename me') WHERE parentobjectid IS NULL AND projectid IS NULL;

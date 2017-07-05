@@ -15,7 +15,7 @@ SELECT pg_catalog.setval('tblsecurityuser_securityuserid_seq', 1, true);
 SELECT pg_catalog.setval('tblsecurityusermembership_tblsecurityusermembershipid_seq', 1, true);
 SELECT pg_catalog.setval('tblsecuritydefault_securitydefaultid_seq', 9, true);
 
-INSERT INTO tblsecuritygroup VALUES (1, 'Administrator', 'Corina super users', true);
+INSERT INTO tblsecuritygroup VALUES (1, 'Administrator', 'Tellervo super users', true);
 INSERT INTO tblsecuritygroup VALUES (2, 'Staff', 'Dendro lab staff and faculty', true);
 INSERT INTO tblsecuritygroup VALUES (3, 'Students', 'Current students', true);
 INSERT INTO tblsecuritygroup VALUES (6, 'Read only', 'Read only userse', true);

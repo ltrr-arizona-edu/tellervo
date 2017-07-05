@@ -110,11 +110,16 @@ public class TridasProjectTypesPanel extends JPanel{
 			log.debug("Looking for "+cv.getNormal());
 			for(SelectableChoice ch : choices)
 			{
-				ControlledVoc cv2 = (ControlledVoc) ch.getItem();
-				if(cv.getNormal().equals(cv2.getNormal()) && cv.getNormalId().equals(cv2.getNormalId()))
+				try{
+					ControlledVoc cv2 = (ControlledVoc) ch.getItem();
+					if(cv.getNormal().equals(cv2.getNormal()) && cv.getNormalId().equals(cv2.getNormalId()))
+					{
+						ch.setSelected(true);
+						continue;
+					}
+				} catch (NullPointerException e)
 				{
-					ch.setSelected(true);
-					continue;
+					log.debug("Error setting selected choices");
 				}
 			}
 		}
