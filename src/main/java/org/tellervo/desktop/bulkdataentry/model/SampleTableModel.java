@@ -93,6 +93,10 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 		
 		
 		// Get data type of user defined fields
+		
+		
+		
+		
 		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
 		for(WSIUserDefinedField fld : udfdictionary)
 		{

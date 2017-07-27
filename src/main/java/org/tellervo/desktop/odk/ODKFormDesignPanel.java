@@ -1418,7 +1418,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		}
 		else if (evt.getActionCommand().equals("AddUserDefinedField"))
 		{
-			//addUserDefinedField();
+			addUserDefinedField();
 		}
 		else if (evt.getActionCommand().equals("Group"))
 		{
@@ -1536,7 +1536,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
     /**
      * Show dialog to enable user to create a user defined field
      */
-	/*private void addUserDefinedField()
+	private void addUserDefinedField()
 	{
 		boolean isObjectField = cboFormType.getSelectedIndex()==0;
 		
@@ -1551,7 +1551,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		{
 			return;
 		}
-	}*/
+	}
 	
 	
 	/**

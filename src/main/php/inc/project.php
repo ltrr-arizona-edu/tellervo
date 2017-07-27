@@ -395,7 +395,7 @@ class project extends projectEntity implements IDBAccessor {
 					$sql .=  dbHelper::phpArrayToPGStrArray ( $this->getTypes(true) ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
 					$sql .= dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->requestDate() ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getRequestDate() ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getCategory( true ) ) . ", ";
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ")";

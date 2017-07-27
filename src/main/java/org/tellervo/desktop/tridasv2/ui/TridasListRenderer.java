@@ -72,6 +72,30 @@ public class TridasListRenderer extends DefaultCellRendererEx {
 				return items.get(0).toString();
 			}
 		}
+		else if (items.size()<=3)
+		{
+			Class clazz = items.get(0).getClass();
+			
+			String str = "";
+			for(Object item : items)
+			{
+				if(clazz==TridasFile.class)
+				{
+					str+= ((TridasFile)item).getHref()+"; ";
+				}
+				else if(clazz==ControlledVoc.class)
+				{
+					str+= ((ControlledVoc)item).getNormal()+"; ";
+				}
+				else
+				{
+					str+= item.toString()+"; ";
+				}
+			}
+			
+			return str;
+
+		}
 		else
 		{
 			Class clazz = items.get(0).getClass();

@@ -103,6 +103,7 @@ public class TridasProjectTypesPanel extends JPanel{
 			c.setSelected(false);
 		}
 		
+		if(selected==null ) return;
 
 
 		for(ControlledVoc cv : selected)

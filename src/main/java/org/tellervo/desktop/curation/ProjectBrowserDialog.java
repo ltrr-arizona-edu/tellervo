@@ -38,6 +38,7 @@ import org.tellervo.desktop.tridasv2.ui.TridasPropertyEditorFactory;
 import org.tellervo.desktop.tridasv2.ui.TridasPropertyRendererFactory;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityDeriver;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
@@ -63,6 +64,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 	private TellervoPropertySheetTable propertiesTable;
 	private JButton btnNew;
 	private JButton btnRemove;
+	private JButton btnSave;
 	private TridasProject temporaryEditingEntity;
 	private boolean isDirty = false;
 	private JSplitPane splitPane;
@@ -174,7 +176,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				JButton btnSave = new JButton("Save changes");
+				btnSave = new JButton("Save changes");
 				btnSave.setActionCommand("Save");
 				btnSave.addActionListener(this);
 				buttonPane.add(btnSave);
@@ -191,6 +193,14 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		setTitle("Project Browser");
 		this.setIconImage(Builder.getApplicationIcon());
 		setProject(null);
+		
+		
+		this.btnNew.setEnabled(App.isAdmin);
+		this.btnRemove.setEnabled(App.isAdmin);
+		this.btnSave.setEnabled(App.isAdmin);
+		
+		this.propertiesTable.setEditable(App.isAdmin);
+		
 	}
 	
 	
@@ -236,12 +246,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		TridasProject p = new TridasProject();
 		p.setTitle("New Project");
 		
-		ArrayList<ControlledVoc> types = new ArrayList<ControlledVoc>();
-		ControlledVoc type = new ControlledVoc();
-		type.setValue("Unsupported");
-		types.add(type);
-		p.setTypes(types);
-		
+	
 		
 		
 		ArrayList<TridasLaboratory> laboratories = new ArrayList<TridasLaboratory>();
@@ -264,7 +269,6 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		
 		p.setLaboratories(laboratories);
 	
-		p.setCategory(type);
 		p.setInvestigator("Unknown");
 		p.setPeriod("Unknown");
 		
@@ -346,11 +350,39 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		{
 			// Nothing to do
 			return;
-		}
+		}		
 		
 		// is it new? (no identifier?)
 		boolean isNew = !temporaryEditingEntity.isSetIdentifier();
-			
+		
+		
+		// Do sanity checks
+		if(!temporaryEditingEntity.isSetTitle() || temporaryEditingEntity.getTitle().trim().isEmpty())
+		{
+			Alert.error("Missing title", "Projects must have a title.");
+			return;
+		}
+		if(!temporaryEditingEntity.isSetTypes() || temporaryEditingEntity.getTypes().size()==0 || !temporaryEditingEntity.getTypes().get(0).getValue().trim().isEmpty())
+		{
+			Alert.error("Missing type(s)", "Projects must have one or more types assigned.");
+			return;
+		}
+		if(!temporaryEditingEntity.isSetCategory() || !temporaryEditingEntity.getCategory().isSetValue() || temporaryEditingEntity.getCategory().getValue().trim().isEmpty())
+		{
+			Alert.error("Missing category", "Projects must have a category assigned.");
+			return;
+		}
+		if(!temporaryEditingEntity.isSetInvestigator() || temporaryEditingEntity.getInvestigator().trim().isEmpty())
+		{
+			Alert.error("Missing investigator", "Projects must have an investigator.");
+			return;
+		}
+		if(!temporaryEditingEntity.isSetPeriod() || temporaryEditingEntity.getPeriod().trim().isEmpty())
+		{
+			Alert.error("Missing period", "Period field is mandatory.");
+			return;
+		}
+		
 		
 		EntityResource<TridasProject> resource;
 		
@@ -394,6 +426,75 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 			App.tridasProjects.updateTridasProject(temporaryEditingEntity);
 		}
 		isDirty = false;
+		
+		this.deleteTemporaryProjects();
+	}
+	
+	private void deleteTemporaryProjects()
+	{
+		for(TridasProject p : App.tridasProjects.getMutableObjectList())
+		{
+			if(!p.isSetIdentifier() || !p.getIdentifier().isSetValue())
+			{
+				App.tridasProjects.removeTridasProject(p);
+			}
+		}
+	}
+	
+	private void deleteProject()
+	{
+
+		TridasProject proj = lstProjects.getSelectedValue();
+		
+		if(proj==null) return;
+		
+		if(!proj.isSetIdentifier() || !proj.getIdentifier().isSetValue())
+		{
+			// Temporary project can delete without worrying
+		}
+		else
+		{
+			// Project in database so warn first
+			
+			// warn
+			int response = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete the project "+proj.getTitle()+"?");
+			if(response != JOptionPane.OK_OPTION)
+			{			
+				return;
+			}
+	
+			EntityResource<TridasProject> resource = new EntityResource<TridasProject>(proj, TellervoRequestType.DELETE, TridasProject.class);
+	
+			// set up a dialog...
+			Window parentWindow = SwingUtilities.getWindowAncestor(this);
+			TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parentWindow, resource);
+	
+			// query the resource
+			resource.query();
+			dialog.setVisible(true);
+			
+			// on failure, just return
+			if(!dialog.isSuccessful()) {
+				
+				if(dialog.getFailException().getLocalizedMessage().contains("Foreign key violation"))
+				{
+					JOptionPane.showMessageDialog(this, "Unable to delete project as it still contains objects.  Reassign all objects\nto a new project and try again.",
+							I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+				}
+				else
+				{
+				
+				JOptionPane.showMessageDialog(this, I18n.getText("error.savingChanges") + System.lineSeparator() +
+						dialog.getFailException().getLocalizedMessage(),
+						I18n.getText("error"), JOptionPane.ERROR_MESSAGE);
+				}
+				return;
+			}
+		}
+		
+		App.tridasProjects.removeTridasProject(proj);
+		
+		updateProjectList();
 	}
 	
 	@Override
@@ -413,6 +514,13 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		}
 		else if (e.getActionCommand().equals("Close"))
 		{
+			// Close the dialog without worrying if user is not admin.  Only admin can make changes
+			if(!App.isAdmin) {
+				this.dispose();
+				return;
+			}
+	
+			
 			if(isDirty)
 			{
 				// warn
@@ -424,6 +532,12 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 					this.dispose();
 
 				}
+				
+				deleteTemporaryProjects();
+			}
+			else
+			{
+				this.dispose();
 			}
 			
 		}
@@ -433,7 +547,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		}
 		else if (e.getActionCommand().equals("Delete"))
 		{
-			
+			deleteProject();
 		}
 	}
 

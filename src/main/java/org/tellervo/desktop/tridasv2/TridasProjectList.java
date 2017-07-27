@@ -141,6 +141,15 @@ public class TridasProjectList extends TellervoResource {
 		}
 	}
 	
+	public void removeTridasProject(TridasProject argProject){
+		
+		synchronized (data) {
+			data.remove(argProject);
+			
+			
+		}
+	}
+	
 	/**
 	 * Adds a property change listener to the object list
 	 * @param argListener

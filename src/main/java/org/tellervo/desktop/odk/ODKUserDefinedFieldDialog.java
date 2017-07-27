@@ -366,6 +366,14 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 		}
 		
 	}
+
+	public AbstractODKField getField() {
+		ODKUserDefinedField field = new ODKUserDefinedField(this.getFieldType(), this.getFieldCode(), this.getFieldName(), this.getDescription(), null, this.getAttachedTo());
+
+		return field;
+		
+		
+	}
 	
 	/**
 	 * Get a representation of this field as an AbstractODKField

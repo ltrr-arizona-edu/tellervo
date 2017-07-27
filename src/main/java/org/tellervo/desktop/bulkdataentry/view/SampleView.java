@@ -73,7 +73,9 @@ import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIBoxDictionary;
 import org.tellervo.schema.WSISampleStatusDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
+import org.tridas.io.util.DateUtils;
 import org.tridas.schema.Date;
+import org.tridas.schema.DateTime;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
@@ -99,8 +101,7 @@ public class SampleView extends AbstractBulkImportView {
 	public SampleView(SampleModel argModel, ElementModel elementModel) {
 		super(argModel);
 		this.elementModel = elementModel;
-		table.getColumnModel().getColumn(1)
-				.setCellRenderer(new BooleanCellRenderer(true));
+		//table.getColumnModel().getColumn(1).setCellRenderer(new BooleanCellRenderer(true));
 
 	}
 
@@ -353,13 +354,36 @@ public class SampleView extends AbstractBulkImportView {
 
 					}
 				});
+		
+		/*argTable.setDefaultRenderer(Date.class,
+				new DefaultTableCellRenderer() {
+				
+					@Override
+					protected void setValue(Object argValue) {
+						if (argValue == null) {
+							super.setValue(argValue);
+							return;
+						}
+
+						Date object = null;
+						if (argValue instanceof Date) {
+							object = (Date) argValue;
+						}  else if (argValue instanceof String) {
+							object = new Date();
+							DateTime datetime = DateUtils.parseDateTimeFromNaturalString(argValue.toString());
+							object.setValue(datetime.getValue());
+						}
+
+					}
+				});*/
+				
 
 		// DatePicker datePicker = new DatePicker();
 		// datePicker.setFocusable(false);
 		// argTable.setDefaultEditor(Date.class, new DateEditor(datePicker));
-		argTable.setDefaultEditor(Date.class, new NattyDateEditor(
-				new JTextField()));
-		argTable.setDefaultRenderer(Date.class, new TridasDatingCellRenderer());
+		argTable.setDefaultRenderer(org.tridas.schema.Date.class, new TridasDatingCellRenderer());
+		argTable.setDefaultEditor(org.tridas.schema.Date.class, new NattyDateEditor(new JTextField()));
+		
 
 	}
 

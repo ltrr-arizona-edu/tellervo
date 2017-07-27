@@ -157,6 +157,7 @@ ALTER TABLE tblproject add column laboratories character varying[];
 
 
 insert into tlkpsamplestatus (samplestatus) values ('Undated');
+insert into tlkpsamplestatus (samplestatus) values ('Partially dated');
 
 
 -- 

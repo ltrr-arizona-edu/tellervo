@@ -104,11 +104,17 @@ public class TridasProjectTypesEditor extends AbstractPropertyEditor {
 	 * Remove the current list
 	 */
 	private void selectNull() {
-		ArrayList<ControlledVoc> oldList = (ArrayList<ControlledVoc>) projectTypesList.clone();
-		label.setValue(null);
-		projectTypesList = null;
-		
-		firePropertyChange(oldList, projectTypesList);
+		try{
+			ArrayList<ControlledVoc> oldList = (ArrayList<ControlledVoc>) projectTypesList.clone();
+			
+			label.setValue(null);
+			projectTypesList = null;
+			
+			firePropertyChange(oldList, projectTypesList);
+		} catch (NullPointerException e)
+		{
+			
+		}
 	}
 	
 	/**

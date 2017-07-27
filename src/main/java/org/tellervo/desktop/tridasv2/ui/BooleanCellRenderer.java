@@ -81,8 +81,16 @@ public class BooleanCellRenderer extends DefaultCellRendererEx {
 			
 			if(useImages)
 			{
+				if(value instanceof Boolean)
+				{
+				}
+				else
+				{
+					return item; 
+				}
 				
 				Boolean b = (Boolean) value;
+				
 				JLabel label = new JLabel();
 				label.setHorizontalAlignment( JLabel.CENTER );
 				if(b==null)
