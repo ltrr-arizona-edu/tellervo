@@ -34,6 +34,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+
+import org.tellervo.desktop.tridasv2.doc.Documentation;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -70,11 +74,17 @@ import org.tellervo.desktop.bulkdataentry.model.IBulkImportTableModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
+import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.JTableRowHeader;
 import org.tellervo.desktop.util.JTableSpreadsheetAdapter;
+
+import net.miginfocom.swing.MigLayout;
+
+import javax.swing.JSplitPane;
+import javax.swing.JTextPane;
 
 
 /**
@@ -115,6 +125,9 @@ public abstract class AbstractBulkImportView extends JPanel{
 	private boolean dragComplete = false;
 	private int columnValue = -1; 
 	private int columnNewValue = -1;
+	private JSplitPane splitPane;
+	private JPanel panelHelp;
+	private JTextPane txtHelpText;
 	
 	public AbstractBulkImportView(IBulkImportSectionModel argModel){
 		model = argModel;
@@ -127,10 +140,60 @@ public abstract class AbstractBulkImportView extends JPanel{
 	}
 
 	private void initComponents(){
+		
+		btnCopy = new JButton();
+		btnCopy.setIcon(Builder.getIcon("editcopy.png", 22));
+		btnCopy.setToolTipText("Copy selection");
+		btnPaste = new JButton();
+		btnPaste.setIcon(Builder.getIcon("editpaste.png", 22));
+		btnPaste.setToolTipText("Paste");
+		btnPasteAppend = new JButton();
+		btnPasteAppend.setIcon(Builder.getIcon("editpasteappend.png", 22));
+		btnPasteAppend.setToolTipText("Paste append to new rows");
+
+		btnDeleteODKInstances = new JButton("");
+		btnDeleteODKInstances.setIcon(Builder.getIcon("odk-delete.png", 22));
+		btnDeleteODKInstances.setToolTipText("Delete ODK form data from server");
+		
+		addRow = new JButton();
+		copyRow = new JButton();
+		showHideColumns = new JButton();
+		
+
+		
+	
+		
+		removeSelected = new JButton();
+		selectAll = new JButton();
+		selectNone = new JButton();
+		importSelected = new JButton();
+		populateFromDB = new JButton();
+		populateFromGeonames = new JButton();
+		btnODKImport = new JButton();
+		
+		btnODKImport.setIcon(Builder.getIcon("odk-logo.png", 22));
+		btnODKImport.setToolTipText("Import ODK data from server");
+		
+		importSelected.putClientProperty("JButton.buttonType", "bevel");
+		importSelected.setIcon(Builder.getIcon("importtodatabase.png", 22));
+		setLayout(new MigLayout("", "[450px,grow]", "[38px][107.00,grow][32px]"));
+		
+	
+		add(setupToolbar(btnCopy, btnPaste, btnPasteAppend, addRow, removeSelected, copyRow, showHideColumns, populateFromDB, populateFromGeonames, btnDeleteODKInstances, btnODKImport), "cell 0 0,growx,aligny top");
+		
+		splitPane = new JSplitPane();
+		splitPane.setOneTouchExpandable(true);
+		splitPane.setResizeWeight(0.9);
+		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
+		add(splitPane, "cell 0 1,grow");
 		table = new JXTable();
 		
 		//table.setCellSelectionEnabled(true);
 		table.setColumnControlVisible(true);
+		
+		ColumnControlButton btn = new ColumnControlButton(table);
+		table.setColumnControl(btn);
+		showHideColumns.setAction(btn.getAction());
 		
 		
 		table.getColumnModel().addColumnModelListener(new TableColumnModelListener(){
@@ -157,11 +220,13 @@ public abstract class AbstractBulkImportView extends JPanel{
 
 			@Override
 			public void columnMarginChanged(ChangeEvent e) {
-				//saveColumnWidthsToPrefs();
 			}
 
 			@Override
-			public void columnSelectionChanged(ListSelectionEvent e) {			
+			public void columnSelectionChanged(ListSelectionEvent e) {	
+				
+				setHelpText();
+				
 			}
 			
 		});
@@ -195,80 +260,46 @@ public abstract class AbstractBulkImportView extends JPanel{
 		
 		table.setShowGrid(true);
 		table.setGridColor(Color.GRAY);
-		
-		btnCopy = new JButton();
-		btnCopy.setIcon(Builder.getIcon("editcopy.png", 22));
-		btnCopy.setToolTipText("Copy selection");
-		btnPaste = new JButton();
-		btnPaste.setIcon(Builder.getIcon("editpaste.png", 22));
-		btnPaste.setToolTipText("Paste");
-		btnPasteAppend = new JButton();
-		btnPasteAppend.setIcon(Builder.getIcon("editpasteappend.png", 22));
-		btnPasteAppend.setToolTipText("Paste append to new rows");
 
-		btnDeleteODKInstances = new JButton("");
-		btnDeleteODKInstances.setIcon(Builder.getIcon("odk-delete.png", 22));
-		btnDeleteODKInstances.setToolTipText("Delete ODK form data from server");
-		
-		addRow = new JButton();
-		copyRow = new JButton();
-		showHideColumns = new JButton();
-		
-		ColumnControlButton btn = new ColumnControlButton(table);
-		table.setColumnControl(btn);
-		
-		showHideColumns.setAction(btn.getAction());
-		
-		removeSelected = new JButton();
-		selectAll = new JButton();
-		selectNone = new JButton();
-		importSelected = new JButton();
-		populateFromDB = new JButton();
-		populateFromGeonames = new JButton();
-		btnODKImport = new JButton();
-		
-		btnODKImport.setIcon(Builder.getIcon("odk-logo.png", 22));
-		btnODKImport.setToolTipText("Import ODK data from server");
-		
-		importSelected.putClientProperty("JButton.buttonType", "bevel");
-		importSelected.setIcon(Builder.getIcon("importtodatabase.png", 22));
 		
 		table.putClientProperty("terminateEditOnFocusLost", Boolean.TRUE);
-		
-		setLayout(new BorderLayout());
-		
-	
-		add(setupToolbar(btnCopy, btnPaste, btnPasteAppend, addRow, removeSelected, copyRow, showHideColumns, populateFromDB, populateFromGeonames, btnDeleteODKInstances, btnODKImport), "North");
 		
 		//add(setupToolbar(showHideColumns, selectAll, selectNone), "West");
 
 
-		JScrollPane panel = new JScrollPane(table);
-		panel.getViewport().setBackground(Color.WHITE);	
-		panel.setPreferredSize(new Dimension(500, 400));
+		JScrollPane panelTable = new JScrollPane(table);
+		splitPane.setLeftComponent(panelTable);
+		panelTable.getViewport().setBackground(Color.WHITE);	
+		panelTable.setPreferredSize(new Dimension(500, 400));
 		table.setAutoCreateRowSorter(true);
 		table.setFillsViewportHeight(true); 
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		table.setRowSelectionAllowed(true);
 		table.setCellSelectionEnabled(true);
-
 		
-		//table.setColumnSelectionAllowed(true);
+				
+				//table.setColumnSelectionAllowed(true);
+				
+				// Enable copynpaste
+				adapter = new JTableSpreadsheetAdapter(table);
+				// editors for combo box stuff
+				setupTableCells(table);
+				
+						JTable rowTable = new JTableRowHeader(table, tablePopupMenu);
+						panelTable.setRowHeaderView(rowTable);
+						panelTable.setCorner(JScrollPane.UPPER_LEFT_CORNER,
+						    rowTable.getTableHeader());
+						
+						panelHelp = new JPanel();
+						splitPane.setRightComponent(panelHelp);
+						panelHelp.setLayout(new BorderLayout(0, 0));
+						
+						txtHelpText = new JTextPane();
+						txtHelpText.setEditable(false);
+						txtHelpText.setContentType("text/html");
+						panelHelp.add(txtHelpText);
 		
-		// Enable copynpaste
-		adapter = new JTableSpreadsheetAdapter(table);
-		// editors for combo box stuff
-		setupTableCells(table);
-
-		JTable rowTable = new JTableRowHeader(table, tablePopupMenu);
-		panel.setRowHeaderView(rowTable);
-		panel.setCorner(JScrollPane.UPPER_LEFT_CORNER,
-		    rowTable.getTableHeader());
-		
-		
-		add(panel, "Center");
-		
-		add(setupFooterElements(selectAll, selectNone, importSelected), "South");
+		add(setupFooterElements(selectAll, selectNone, importSelected), "cell 0 2,growx,aligny top");
 		
 	}
 	
@@ -294,22 +325,16 @@ public abstract class AbstractBulkImportView extends JPanel{
 			sorter.setComparator(c, comparator);
 		}
 				
-		this.restoreColumnOrderFromPrefs();
-		
-		log.debug("Column count inc hidden: "+table.getColumnCount(true));
-		log.debug("Column count exc hidden: "+table.getColumnCount(false));
-		
-		if(table.getColumnCount(true)>1)
-		{
-		
-			// Ensure the first two columns cannot be hidden
-			table.getColumnExt(0).setHideable(false);
-			table.getColumnExt(1).setHideable(false);
-		}
-		
+		restoreColumnOrderFromPrefs();		
 		restoreColumnWidthsFromPrefs();
+		setUnhideableColumns();
 		
 	}
+	
+	/**
+	 * Call setHideable() for all mandatory columns 
+	 */
+	public abstract void setUnhideableColumns();
 	
 	protected void addListeners() {
 		showHideColumns.addActionListener(new ActionListener() {
@@ -892,7 +917,91 @@ public abstract class AbstractBulkImportView extends JPanel{
 
 	}
 	
-	
+	private void setHelpText()
+	{
+		log.debug("Setting help text");
+		TableColumnExt column = table.getColumnExt(table.getSelectedColumn());
+				
+		this.txtHelpText.setText("");
+		
+		HashMap<String,String> hashmap = new HashMap<String,String>();
+		hashmap.put("Imported", "Whether this row has been imported into the database yet or not.  Note this <i>doesn't</i> indicate whether there are unsaved edits to a row or not.");
+		hashmap.put("Selected", "Checkbox that allows you to select which rows are selected ready to be imported into the database.");
+		
+		
+		hashmap.put("Object code", "Short code name for object, traditionally three letters");
+		hashmap.put("Object Code", "Short code name for object, traditionally three letters");
+		hashmap.put("Element code", "Short code name for this element, traditionally this is a numerical identifier");
+		hashmap.put("Sample Code", "Short code name for this sample, traditionally this is a alphabetical identifier");
+		hashmap.put("File references", "Array of references to files that contain information about this entity");
+		hashmap.put("Waypoint", "Pick list of GPS waypoints.  You need to specify a GPX data file using the button on the toolbar to populate this list.");
+		hashmap.put("Latitude", "Latitude in digital decimal degrees for the location of this entity.  If present, then Longitude must also be filled in.  Latitude must be between -90 and 90.");
+		hashmap.put("Longitude", "Longitude in digital decimal degrees for the location of this entity.  If present, then Latitude must also be filled in.  Longitude must be between -180 and 180.");
+		hashmap.put("City/Town", "City/Town where this entity was collected");
+		hashmap.put("State/Province/Region", "State, Province or Region where this entity was collected");
+		hashmap.put("Postal Code", "Postal or Zip code where this entity was collected");
+		hashmap.put("Country", "Country where this entity was collected");
+		hashmap.put("Parent Object", "When the current object is a sub-object, specify the object to which it belongs.  ");
+		hashmap.put("Box", "Name of the box to which this sample belongs");
+		hashmap.put("Unit", "Pick list of measurement units used for the dimensions fields");
 
-	
+		
+		hashmap.put("Project", Documentation.getDocumentation("project"));
+		hashmap.put("Location type", Documentation.getDocumentation("locationType"));
+		hashmap.put("Location precision", Documentation.getDocumentation("locationPrecision"));
+		hashmap.put("Location comment", Documentation.getDocumentation("locationComment"));
+		hashmap.put("Address 1", Documentation.getDocumentation("address"));
+		hashmap.put("Address 2", Documentation.getDocumentation("address"));
+		hashmap.put("Owner", Documentation.getDocumentation("owner"));
+		hashmap.put("Creator", Documentation.getDocumentation("creator"));
+
+		hashmap.put("Type", Documentation.getDocumentation("type"));
+		hashmap.put("Title", Documentation.getDocumentation("title"));
+		hashmap.put("Comments", Documentation.getDocumentation("comments"));
+		hashmap.put("Description", Documentation.getDocumentation("description"));
+		
+		hashmap.put("Shape", Documentation.getDocumentation("shape"));
+		hashmap.put("Shape", Documentation.getDocumentation("shape"));
+		hashmap.put("Height", Documentation.getDocumentation("height"));
+		hashmap.put("Width", Documentation.getDocumentation("width"));
+		hashmap.put("Depth", Documentation.getDocumentation("depth"));
+		hashmap.put("Diameter", Documentation.getDocumentation("diameter"));
+		hashmap.put("Authenticity", Documentation.getDocumentation("authenticity"));
+		hashmap.put("Marks", Documentation.getDocumentation("marks"));
+		hashmap.put("Altitude", Documentation.getDocumentation("altitude"));
+		hashmap.put("Slope Angle", Documentation.getDocumentation("slope.angle"));
+		hashmap.put("Slope Azimuth", Documentation.getDocumentation("slope.azimuth"));
+		hashmap.put("Soil Depth", Documentation.getDocumentation("soil.depth"));
+		hashmap.put("Soil Description", Documentation.getDocumentation("soil.description"));
+		hashmap.put("Bedrock Description", Documentation.getDocumentation("bedrock.description"));
+		hashmap.put("Sampling Date", Documentation.getDocumentation("samplingDate"));
+		hashmap.put("Knots", Documentation.getDocumentation("knots"));
+		hashmap.put("State", Documentation.getDocumentation("state"));
+		hashmap.put("Position", Documentation.getDocumentation("position"));
+		
+		
+		
+
+
+		
+		
+		hashmap.put("Taxon", Documentation.getDocumentation("element.taxon"));
+		
+		try{
+			String doc = hashmap.get(column.getHeaderValue().toString());
+			
+			if(doc!=null)
+			{
+				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>"+doc);
+			} else
+			{
+				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>No documentation available");
+			}
+
+		} catch (Exception e)
+		{
+			this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>No documentation available");
+
+		}
+	}
 }

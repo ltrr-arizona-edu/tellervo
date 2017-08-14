@@ -27,11 +27,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
-import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.mvc.model.HashModel.PropertyType;
+import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.mvc.support.MVCPropertiesAddedEvent;
 import com.dmurph.mvc.support.MVCPropertiesRemovedEvent;
 import com.dmurph.mvc.support.MVCPropertyRemovedEvent;

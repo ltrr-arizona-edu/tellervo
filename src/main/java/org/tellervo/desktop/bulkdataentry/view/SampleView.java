@@ -35,6 +35,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 
 import org.jdesktop.swingx.table.TableColumnExt;
 import org.slf4j.Logger;
@@ -108,7 +109,7 @@ public class SampleView extends AbstractBulkImportView {
 	public SampleView(SampleModel argModel, ElementModel elementModel) {
 		super(argModel);
 		this.elementModel = elementModel;
-		//table.getColumnModel().getColumn(1).setCellRenderer(new BooleanCellRenderer(true));
+		table.getColumnModel().getColumn(1).setCellRenderer(new BooleanCellRenderer(true));
 
 	}
 
@@ -581,6 +582,37 @@ public class SampleView extends AbstractBulkImportView {
 			i++;
 		}
 		
+	}
+	
+	@Override
+	public void setUnhideableColumns() {
+		
+		ArrayList<String> unhideableColumns = new ArrayList<String>();
+		unhideableColumns.add("Selected");
+		unhideableColumns.add("Imported");
+		unhideableColumns.add("Object code");
+		unhideableColumns.add("Element code");
+		unhideableColumns.add("Sample code");
+		unhideableColumns.add("Type");
+		
+		for(int i=0; i<table.getColumnCount(true); i++)
+		{
+			TableColumn col = table.getColumns(true).get(i);
+			TableColumnExt colext = table.getColumnExt(col.getIdentifier());
+			
+			String colname = colext.getHeaderValue().toString();
+			
+			if(unhideableColumns.contains(colname))
+			{
+				colext.setHideable(false);
+			}
+			else
+			{
+				colext.setHideable(true);
+			}
+			
+		}
+
 	}
 
 }

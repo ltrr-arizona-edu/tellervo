@@ -205,20 +205,20 @@ public class BulkImportController extends FrontController {
 		// First populate an array with all the default columns in it
 		ArrayList<String> defaults = new ArrayList<String>();
 		defaults.add(SingleObjectModel.IMPORTED);
+		defaults.add(SingleObjectModel.PROJECT);
+		defaults.add(SingleObjectModel.PARENT_OBJECT);
 		defaults.add(SingleObjectModel.OBJECT_CODE);
 		defaults.add(SingleObjectModel.TITLE);
-		defaults.add(SingleObjectModel.PARENT_OBJECT);
-		defaults.add(SingleObjectModel.PROJECT);
 		defaults.add(SingleObjectModel.TYPE);
 		defaults.add(SingleObjectModel.COMMENTS);
 		defaults.add(SingleObjectModel.DESCRIPTION);
 		defaults.add(SingleObjectModel.FILES);
+		defaults.add(SingleObjectModel.WAYPOINT);
 		defaults.add(SingleObjectModel.LATITUDE);
 		defaults.add(SingleObjectModel.LONGITUDE);
 		defaults.add(SingleObjectModel.LOCATION_TYPE);
 		defaults.add(SingleObjectModel.LOCATION_PRECISION);
 		defaults.add(SingleObjectModel.LOCATION_COMMENT);
-		defaults.add(SingleObjectModel.WAYPOINT);
 		defaults.add(SingleObjectModel.ADDRESSLINE1);
 		defaults.add(SingleObjectModel.ADDRESSLINE2);
 		defaults.add(SingleObjectModel.CITY_TOWN);

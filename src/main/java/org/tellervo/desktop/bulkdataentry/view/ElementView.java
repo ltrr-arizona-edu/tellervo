@@ -414,6 +414,7 @@ public class ElementView extends AbstractBulkImportView{
 			prefs.add("Object code");
 			prefs.add("Element code");
 			prefs.add("Type");
+			prefs.add("Taxon");
 		}
 
 		restoreColumnOrderFromArray(prefs);
@@ -478,6 +479,48 @@ public class ElementView extends AbstractBulkImportView{
 			
 			i++;
 		}
+		
+	}
+	
+	@Override
+	public void setUnhideableColumns() {
+		
+		ArrayList<String> unhideableColumns = new ArrayList<String>();
+		unhideableColumns.add("Selected");
+		unhideableColumns.add("Imported");
+		unhideableColumns.add("Object code");
+		unhideableColumns.add("Element code");
+		unhideableColumns.add("Type");
+		unhideableColumns.add("Taxon");
+		
+		
+		for(int i=0; i<table.getColumnCount(true); i++)
+		{
+			TableColumn col = table.getColumns(true).get(i);
+			TableColumnExt colext = table.getColumnExt(col.getIdentifier());
+			
+			String colname = colext.getHeaderValue().toString();
+			
+			if(unhideableColumns.contains(colname))
+			{
+				colext.setHideable(false);
+			}
+			else
+			{
+				colext.setHideable(true);
+			}
+			
+		}
+		
+		/*if(table.getColumnCount(true)>1)
+		{
+		
+			// Ensure the first two columns cannot be hidden
+			table.getColumnExt(0).setHideable(false);
+			table.getColumnExt(1).setHideable(false);
+			
+			
+		}*/
 		
 	}
 }

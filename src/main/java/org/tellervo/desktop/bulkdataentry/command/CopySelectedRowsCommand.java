@@ -66,7 +66,7 @@ public class CopySelectedRowsCommand implements ICommand {
 			newRow.cloneFrom(hm);
 			
 			AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
-			otm.setSelected(newRow, false);
+			//otm.setSelected(newRow, false);
 			
 			cloned.add(newRow);
 		}
