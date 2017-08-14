@@ -24,6 +24,13 @@ import org.tellervo.desktop.bulkdataentry.view.BulkDataEntryWindow;
 import org.tellervo.desktop.bulkdataentry.view.ColumnChooserView;
 
 /**
+ * Top level model that contains:
+ *  - ObjectModel 
+ *  - ElementModel
+ *  - SampleModel
+ *  - ColumnChooserView
+ *  - BulkDataEntryWindow
+ * 
  * @author daniel
  *
  */
@@ -33,8 +40,8 @@ public class BulkImportModel {
 	private final ObjectModel objectModel;
 	private final ElementModel elementModel;
 	private final SampleModel sampleModel;
-	private volatile ColumnChooserView currColumnChooser = null;
-	private BulkDataEntryWindow mainView;
+	private volatile ColumnChooserView currentColumnChooserView = null;
+	private BulkDataEntryWindow bulkDataEntryWindow;
 	
 	private BulkImportModel(){
 		objectModel = new ObjectModel();
@@ -55,19 +62,19 @@ public class BulkImportModel {
 	}
 
 	public void setCurrColumnChooser(ColumnChooserView currColumnChooser) {
-		this.currColumnChooser = currColumnChooser;
+		this.currentColumnChooserView = currColumnChooser;
 	}
 
 	public ColumnChooserView getCurrColumnChooser() {
-		return currColumnChooser;
+		return currentColumnChooserView;
 	}
 
 	public void setMainView(BulkDataEntryWindow mainView) {
-		this.mainView = mainView;
+		this.bulkDataEntryWindow = mainView;
 	}
 
 	public BulkDataEntryWindow getMainView() {
-		return mainView;
+		return bulkDataEntryWindow;
 	}
 
 	public static BulkImportModel getInstance(){

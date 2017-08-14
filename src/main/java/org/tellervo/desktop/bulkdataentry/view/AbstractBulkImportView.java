@@ -30,8 +30,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -41,8 +43,16 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableRowSorter;
 
+import org.jdesktop.swingx.JXTable;
+import org.jdesktop.swingx.table.ColumnControlButton;
+import org.jdesktop.swingx.table.TableColumnExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.AddRowEvent;
@@ -60,6 +70,7 @@ import org.tellervo.desktop.bulkdataentry.model.IBulkImportTableModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.JTableRowHeader;
@@ -75,7 +86,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 	private final static Logger log = LoggerFactory.getLogger(AbstractBulkImportView.class);
 
 	protected IBulkImportSectionModel model;
-	protected JTable table;
+	protected JXTable table;
 	private JButton addRow;
 	protected JButton showHideColumns;
 	private JButton removeSelected;
@@ -100,6 +111,11 @@ public abstract class AbstractBulkImportView extends JPanel{
 	private JMenuItem pasteAppend;
 	private JTableSpreadsheetAdapter adapter;
 	
+	// Used to track column reordering
+	private boolean dragComplete = false;
+	private int columnValue = -1; 
+	private int columnNewValue = -1;
+	
 	public AbstractBulkImportView(IBulkImportSectionModel argModel){
 		model = argModel;
 		initPopupMenu();
@@ -111,9 +127,72 @@ public abstract class AbstractBulkImportView extends JPanel{
 	}
 
 	private void initComponents(){
-		table = new JTable();
-	
+		table = new JXTable();
+		
 		//table.setCellSelectionEnabled(true);
+		table.setColumnControlVisible(true);
+		
+		
+		table.getColumnModel().addColumnModelListener(new TableColumnModelListener(){
+
+			@Override
+			public void columnAdded(TableColumnModelEvent e) {
+	
+
+			}
+
+			@Override
+			public void columnRemoved(TableColumnModelEvent e) {
+				
+			}
+
+			@Override
+			public void columnMoved(TableColumnModelEvent e) {
+				if (columnValue == -1) 
+		            columnValue = e.getFromIndex(); 
+
+		        columnNewValue = e.getToIndex(); 
+		        dragComplete = true;
+		   	}
+
+			@Override
+			public void columnMarginChanged(ChangeEvent e) {
+				//saveColumnWidthsToPrefs();
+			}
+
+			@Override
+			public void columnSelectionChanged(ListSelectionEvent e) {			
+			}
+			
+		});
+		
+		table.getTableHeader().addMouseListener(new MouseAdapter(){
+			
+			@Override
+            public void mouseReleased(MouseEvent e) {
+                	
+				
+				// Make sure the first two columns are not moved		
+				if (columnValue != -1 && (columnValue <=1 || columnNewValue <=1)){ 
+					table.moveColumn(columnNewValue, columnValue); 
+					Alert.error("Error", "The selected and imported columns must be the first columns in the table");
+				}
+				columnValue = -1; 
+				columnNewValue = -1; 
+			
+				// Save order of columns when column order changes
+				if (dragComplete) {                  
+                    saveColumnOrderToPrefs();
+                    saveColumnWidthsToPrefs();
+                }
+				
+				dragComplete=false;
+
+            }
+		});
+		
+		
+		
 		table.setShowGrid(true);
 		table.setGridColor(Color.GRAY);
 		
@@ -134,6 +213,12 @@ public abstract class AbstractBulkImportView extends JPanel{
 		addRow = new JButton();
 		copyRow = new JButton();
 		showHideColumns = new JButton();
+		
+		ColumnControlButton btn = new ColumnControlButton(table);
+		table.setColumnControl(btn);
+		
+		showHideColumns.setAction(btn.getAction());
+		
 		removeSelected = new JButton();
 		selectAll = new JButton();
 		selectNone = new JButton();
@@ -187,6 +272,14 @@ public abstract class AbstractBulkImportView extends JPanel{
 		
 	}
 	
+	protected abstract void saveColumnWidthsToPrefs();
+	
+	protected abstract void saveColumnOrderToPrefs();
+	
+	protected abstract void restoreColumnOrderFromPrefs();
+	
+	protected abstract void restoreColumnWidthsFromPrefs();
+	
 	private void linkModel() {
 		table.setModel(model.getTableModel());
 		
@@ -200,13 +293,28 @@ public abstract class AbstractBulkImportView extends JPanel{
 		{
 			sorter.setComparator(c, comparator);
 		}
+				
+		this.restoreColumnOrderFromPrefs();
+		
+		log.debug("Column count inc hidden: "+table.getColumnCount(true));
+		log.debug("Column count exc hidden: "+table.getColumnCount(false));
+		
+		if(table.getColumnCount(true)>1)
+		{
+		
+			// Ensure the first two columns cannot be hidden
+			table.getColumnExt(0).setHideable(false);
+			table.getColumnExt(1).setHideable(false);
+		}
+		
+		restoreColumnWidthsFromPrefs();
 		
 	}
 	
 	protected void addListeners() {
 		showHideColumns.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				showHideColumnsPressed();
+				//showHideColumnsPressed();
 			}
 		});
 		
@@ -656,6 +764,134 @@ public abstract class AbstractBulkImportView extends JPanel{
 		
 		
 	}
+	
+	protected void restoreColumnOrderFromArray(ArrayList<String> prefs)
+	{
+		int i=2;
+		int colsmoved=0;
+		
+		if(prefs==null || prefs.size()==0)
+		{
+			return;
+		}
+		
+		for(String pref : prefs)
+		{
+			if(pref.equals("Imported") || pref.equals("Selected")) continue;
+			
+			
+			log.debug("Current column (n="+table.getColumnCount(true)+") order is:");
+			for(int k=0; k<table.getColumnCount(true); k++)
+			{
+				TableColumn columnplain = table.getColumns(true).get(k);
+				TableColumnExt column = table.getColumnExt(columnplain.getIdentifier());
+				
+				/*if(column.isVisible())
+				{
+					log.debug(k+" - "+table.getColumnExt(k).getIdentifier().toString());
+				}
+				else
+				{
+					log.debug(k+" - "+table.getColumnExt(k).getIdentifier().toString()+" [hidden]");
+				}*/			
+			}
+			
+			TableColumnExt columnext = table.getColumnExt(pref);
+			
+			if(columnext==null)
+			{
+				log.error("Column specified in prefs does not exist.  Ignoring");
+			}
+			else
+			{
+			
+				columnext.setVisible(true);
+				
+				int currentIndex = columnext.getModelIndex()+colsmoved;
+				
+				//log.debug("Column name   = "+pref);
+				//log.debug("Current index = "+currentIndex);
+				//log.debug("New index     = "+i);
+				
+				
+				if(currentIndex!=i) {
+					
+					//log.debug("Moving column from "+currentIndex+" to "+i);
+
+					if(currentIndex>table.getColumnCount())
+					{
+						//log.debug("Index out of range.  Not moving");
+					
+					}
+					else
+					{
+						
+						try{
+							table.moveColumn(currentIndex, i);
+							colsmoved++;
+						} catch (Exception e)
+						{
+							log.error("Error moving column position");
+						}
+					}
+				}
+				i++;
+			}
+			
+		}
+		
+
+		
+		//log.debug("Column status before hiding others (n="+table.getColumnCount()+") order is:");
+		for(int k=0; k<table.getColumns(true).size(); k++)
+		{
+			TableColumn c = table.getColumns(true).get(k);
+		
+			/*if(table.getColumnExt(c.getIdentifier()).isVisible())
+			{
+				log.debug(k+" - "+c.getIdentifier().toString());
+			}
+			else
+			{
+				log.debug(k+" - "+c.getIdentifier().toString()+" [hidden]");
+			}*/
+		}
+		
+		
+		// Hide any other columns
+		for(int k=2; k<table.getColumns(true).size(); k++)
+		{
+			TableColumn c = table.getColumns(true).get(k);
+			
+			TableColumnExt column = table.getColumnExt(c.getIdentifier());
+			
+			if(!prefs.contains(column.getIdentifier()))
+			{
+				//log.debug("Hiding column "+column.getHeaderValue());
+				column.setVisible(false);
+			}
+		}
+		
+
+		
+		/*log.debug("Columns after restoring prefs and hiding remainder (n="+table.getColumnCount()+") order is:");
+		for(int k=0; k<table.getColumns(true).size(); k++)
+		{
+			TableColumn c = table.getColumns(true).get(k);
+		
+			if(table.getColumnExt(c.getIdentifier()).isVisible())
+			{
+				log.debug(k+" - "+c.getIdentifier().toString());
+			}
+			else
+			{
+				log.debug(k+" - "+c.getIdentifier().toString()+" [hidden]");
+			}
+		}*/
+		
+
+	}
+	
 	
 
 	

@@ -20,7 +20,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.bulkdataentry.control;
 
-import org.tellervo.desktop.bulkdataentry.model.ColumnChooserModel;
+import org.tellervo.desktop.bulkdataentry.model.ColumnListModel;
 
 import com.dmurph.mvc.StringEvent;
 import com.dmurph.mvc.tracking.ITrackable;
@@ -33,9 +33,9 @@ import com.dmurph.mvc.tracking.ITrackable;
 public class ColumnsModifiedEvent extends StringEvent implements ITrackable{
 	private static final long serialVersionUID = 2L;
 	
-	public final ColumnChooserModel model;
+	public final ColumnListModel model;
 	
-	public ColumnsModifiedEvent(String argKey, String argValue, ColumnChooserModel argModel) {
+	public ColumnsModifiedEvent(String argKey, String argValue, ColumnListModel argModel) {
 		super(argKey, argValue);
 		model = argModel;
 	}

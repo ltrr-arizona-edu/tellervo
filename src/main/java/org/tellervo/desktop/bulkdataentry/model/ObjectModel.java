@@ -39,6 +39,8 @@ import com.dmurph.mvc.model.MVCArrayList;
 
 
 /**
+ * 
+ * 
  * @author Daniel Murphy
  *
  */
@@ -48,21 +50,21 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 	
 	public ObjectModel(){
 		registerProperty(ROWS, PropertyType.FINAL, new MVCArrayList<SingleObjectModel>());
-		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel());
+		registerProperty(COLUMN_CHOOSER_MODEL, PropertyType.FINAL, new ColumnListModel());
 		registerProperty(TABLE_MODEL, PropertyType.FINAL, new ObjectTableModel(this));
 		registerProperty(IMPORTED_LIST, PropertyType.FINAL, new MVCArrayList<TridasObjectEx>());
 		registerProperty(WAYPOINT_LIST, PropertyType.FINAL, new MVCArrayList<GPXWaypoint>());
-		getColumnModel().populatePossibleColumns(getModelTableProperties());
+		getColumnModel().populatePossibleColumns(getPossibleColumns());
 		
 		
-		getColumnModel().addPropertyChangeListener(new PropertyChangeListener(){
+		/*getColumnModel().addPropertyChangeListener(new PropertyChangeListener(){
 
 			@Override
 			public void propertyChange(PropertyChangeEvent evt) {
 				App.prefs.setArrayListPref(PrefKey.OBJECT_FIELD_VISIBILITY_ARRAY, getColumnModel());	
 			}
 			
-		});
+		});*/
 
 	}
 	
@@ -70,8 +72,8 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 		return (MVCArrayList<SingleObjectModel>) getProperty(ROWS);
 	}
 	
-	public ColumnChooserModel getColumnModel(){
-		return (ColumnChooserModel) getProperty(COLUMN_MODEL);
+	public ColumnListModel getColumnModel(){
+		return (ColumnListModel) getProperty(COLUMN_CHOOSER_MODEL);
 	}
 	
 	public ObjectTableModel getTableModel(){
@@ -145,10 +147,10 @@ public class ObjectModel extends HashModel implements IBulkImportSectionModel{
 	}
 
 	/**
-	 * @see org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel#getModelTableProperties()
+	 * @see org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel#getPossibleColumns()
 	 */
 	@Override
-	public String[] getModelTableProperties() {
+	public String[] getPossibleColumns() {
 		return SingleObjectModel.TABLE_PROPERTIES;
 	}
 }

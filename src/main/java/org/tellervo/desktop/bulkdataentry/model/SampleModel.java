@@ -49,11 +49,11 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 	
 	public SampleModel(){
 		registerProperty(ROWS, PropertyType.FINAL, new MVCArrayList<SingleSampleModel>());
-		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel());
+		registerProperty(COLUMN_CHOOSER_MODEL, PropertyType.FINAL, new ColumnListModel());
 		registerProperty(TABLE_MODEL, PropertyType.FINAL, new SampleTableModel(this));
 		registerProperty(RADIUS_WITH_SAMPLE, PropertyType.READ_WRITE, false);
 		registerProperty(IMPORTED_LIST, PropertyType.FINAL, new MVCArrayList<TridasSample>());
-		getColumnModel().populatePossibleColumns(getModelTableProperties());
+		getColumnModel().populatePossibleColumns(getPossibleColumns());
 		
 		getColumnModel().addPropertyChangeListener(new PropertyChangeListener(){
 
@@ -69,8 +69,8 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 		return (MVCArrayList<SingleSampleModel>) getProperty(ROWS);
 	}
 	
-	public ColumnChooserModel getColumnModel(){
-		return (ColumnChooserModel) getProperty(COLUMN_MODEL);
+	public ColumnListModel getColumnModel(){
+		return (ColumnListModel) getProperty(COLUMN_CHOOSER_MODEL);
 	}
 	
 	public SampleTableModel getTableModel(){
@@ -158,10 +158,10 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 	}
 
 	/**
-	 * @see org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel#getModelTableProperties()
+	 * @see org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel#getPossibleColumns()
 	 */
 	@Override
-	public String[] getModelTableProperties() {
+	public String[] getPossibleColumns() {
 		if(isRadiusWithSample()){	
 			// modified a bit so imported is at the end
 			String[] ret = new String[SingleSampleModel.TABLE_PROPERTIES.length - 1 + SingleRadiusModel.PROPERTIES.length ];

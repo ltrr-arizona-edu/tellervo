@@ -37,6 +37,8 @@ import com.dmurph.mvc.support.MVCPropertiesRemovedEvent;
 import com.dmurph.mvc.support.MVCPropertyRemovedEvent;
 
 /**
+ * A specialist type of TableModel used by the BulkDataEntry 
+ * 
  * @author Daniel Murphy
  */
 public abstract class AbstractBulkImportTableModel extends AbstractTableModel implements PropertyChangeListener, IBulkImportTableModel {
@@ -53,6 +55,11 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		setModel(argModel);
 	}
 	
+	/**
+	 * Get a list of all the columns regardless of whether they are enabled or not
+	 * 
+	 * @return
+	 */
 	public ArrayList<String> getColumns(){
 		return columns;
 	}

@@ -47,12 +47,15 @@ import javax.swing.table.DefaultTableCellRenderer;
 import org.tellervo.desktop.bulkdataentry.control.ColumnChooserController;
 import org.tellervo.desktop.bulkdataentry.control.ColumnsModifiedEvent;
 import org.tellervo.desktop.bulkdataentry.control.HideColumnChooserEvent;
-import org.tellervo.desktop.bulkdataentry.model.ColumnChooserModel;
+import org.tellervo.desktop.bulkdataentry.model.ColumnListModel;
 
 import com.dmurph.mvc.model.MVCArrayList;
 
 
 /**
+ * Frameless window storing a simple two column table.  First column is a checkbox indicating whether
+ * the table column name list in column 2 is enabled or not in the BDE screen. 
+ * 
  * @author daniel
  *
  */
@@ -63,13 +66,13 @@ public class ColumnChooserView extends JWindow{
 	private JButton okButton;
 	private final TableModel tableModel;
 	
-	private final ColumnChooserModel model;
+	private final ColumnListModel columnChooserModel;
 	private final MVCArrayList<String> columns;
 	
-	public ColumnChooserView(ColumnChooserModel argModel, JFrame argParent, Component argLocationComponent){
+	public ColumnChooserView(ColumnListModel argModel, JFrame argParent, Component argLocationComponent){
 		super(argParent);
 
-		model = argModel;
+		columnChooserModel = argModel;
 		tableModel = new TableModel();
 		this.setMinimumSize(new Dimension(200,200));
 		
@@ -144,11 +147,11 @@ public class ColumnChooserView extends JWindow{
 		checkboxList.setModel(tableModel);
 		checkboxList.getColumnModel().getColumn(0).setPreferredWidth(20);
 		checkboxList.getColumnModel().getColumn(0).setMaxWidth(20);
-		model.addPropertyChangeListener(pclistener);
+		columnChooserModel.addPropertyChangeListener(pclistener);
 	}
 	
 	private void unlinkModel(){
-		model.removePropertyChangeListener(pclistener);
+		columnChooserModel.removePropertyChangeListener(pclistener);
 	}
 	
 	private void addListeners() {
@@ -221,7 +224,7 @@ public class ColumnChooserView extends JWindow{
 		@Override
 		public Object getValueAt(int argRowIndex, int argColumnIndex) {
 			if(argColumnIndex == 0){
-				return model.contains(columns.get(argRowIndex));
+				return columnChooserModel.contains(columns.get(argRowIndex));
 			}
 			return columns.get(argRowIndex);
 		}
@@ -236,14 +239,14 @@ public class ColumnChooserView extends JWindow{
 				System.out.println("false");
 				ColumnsModifiedEvent event = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_REMOVED,
 						columns.get(argRowIndex),
-						  model);
+						  columnChooserModel);
 				event.dispatch();
 
 			}else{
 				System.out.println("true");
 				ColumnsModifiedEvent event = new ColumnsModifiedEvent(ColumnChooserController.COLUMN_ADDED,
 						columns.get(argRowIndex),
-									model);
+									columnChooserModel);
 				event.dispatch();
 			}
 		}

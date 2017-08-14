@@ -28,15 +28,18 @@ import com.dmurph.mvc.model.MVCArrayList;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
+ * ColumnListModel contains the list of possible column names associated with a TRiDaS entity.  The
+ * model doesn't store information about whether the column is enabled or not.
+ * 
  * @author daniel
  *
  */
-public class ColumnChooserModel extends MVCArrayList<String> {	
+public class ColumnListModel extends MVCArrayList<String> {	
 	private static final long serialVersionUID = 1L;
 	
 	private final MVCArrayList<String> possibleColumns;
 	
-	public ColumnChooserModel(){
+	public ColumnListModel(){
 		possibleColumns = new MVCArrayList<String>();
 //		for(String s: argPossibleProperties){
 //			possibleColumns.add(s);
@@ -55,7 +58,7 @@ public class ColumnChooserModel extends MVCArrayList<String> {
 	}
 	
 	/**
-	 * Note that this property doesn't get affected by any mvc operations on the {@link ColumnChooserModel} 
+	 * Note that this property doesn't get affected by any mvc operations on the {@link ColumnListModel} 
 	 * object.
 	 * @return
 	 */

@@ -119,6 +119,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	private JSpinner spnTimeout;
 	private JLabel lblSecs;
 	private JPanel panel_2;
+	private JCheckBox chkDisableTimeout;
 
 	
 	
@@ -136,7 +137,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Measuring Platform", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
 		add(panel, "cell 0 0,grow, hidemode 2");
-		panel.setLayout(new MigLayout("", "[75.00][grow][][grow]", "[grow][][][][][][][][]"));
+		panel.setLayout(new MigLayout("", "[75.00][grow][120.00][grow]", "[grow][][][][][][][][]"));
 		
 		panelWarn = new JPanel();
 		panelWarn.setBorder(new LineBorder(new Color(221,221,225)));
@@ -167,7 +168,7 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		
 		panel_2 = new JPanel();
 		panel.add(panel_2, "cell 1 1 3 1,grow");
-		panel_2.setLayout(new MigLayout("fill, insets 0", "[grow]", "[]"));
+		panel_2.setLayout(new MigLayout("fill, insets 0", "[143.00][]", "[]"));
 		
 		spnTimeout = new JSpinner();
 		panel_2.add(spnTimeout, "flowx,cell 0 0");
@@ -179,6 +180,21 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 		
 		lblSecs = new JLabel("secs");
 		panel_2.add(lblSecs, "cell 0 0");
+		
+		chkDisableTimeout = new JCheckBox("Disable");
+		new CheckBoxWrapper(chkDisableTimeout, PrefKey.SERIAL_PORT_TIMEOUT_DISABLE, false );
+		
+		chkDisableTimeout.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setTimeoutGUI();
+				
+			}
+			
+		});
+		
+				panel_2.add(chkDisableTimeout, "cell 0 0");
 		
 		lblPlatformType = new JLabel("Type:");
 		panel.add(lblPlatformType, "cell 0 2,alignx trailing");	
@@ -616,8 +632,15 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 			
 		}
 		
+		setTimeoutGUI();
+		
 		
 
+	}
+	
+	private void setTimeoutGUI()
+	{
+		this.spnTimeout.setEnabled(!chkDisableTimeout.isSelected());
 	}
 	
 	public void setTestVisible(Boolean b)
@@ -644,4 +667,5 @@ public class HardwarePrefsPanel extends AbstractPreferencesPanel{
 	public JSpinner getSpnTimeout() {
 		return spnTimeout;
 	}
+
 }

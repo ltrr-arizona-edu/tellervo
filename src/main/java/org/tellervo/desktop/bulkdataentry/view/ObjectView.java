@@ -26,6 +26,7 @@ package org.tellervo.desktop.bulkdataentry.view;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Comparator;
 
 import javax.swing.JButton;
@@ -34,7 +35,12 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 
+import org.jdesktop.swingx.table.TableColumnExt;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.bulkdataentry.control.GPXBrowse;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
@@ -55,6 +61,7 @@ import org.tellervo.desktop.components.table.TridasFileListEditor;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gis.GPXParser.GPXWaypoint;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.tridasv2.ui.BooleanCellRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
@@ -77,7 +84,8 @@ import com.dmurph.mvc.model.MVCArrayList;
  */
 public class ObjectView extends AbstractBulkImportView{
 	private static final long serialVersionUID = 1L;
-	
+	private final static Logger log = LoggerFactory.getLogger(ObjectView.class);
+
 	private JButton browseGPX;
 	
 	public ObjectView(ObjectModel argModel){
@@ -338,6 +346,101 @@ public class ObjectView extends AbstractBulkImportView{
 		PopulateFromGeonamesEvent event = new PopulateFromGeonamesEvent(model);
 		
 		event.dispatch();
+		
+	}
+
+	@Override
+	protected void saveColumnOrderToPrefs() {
+
+			log.debug("Saving column order to prefs");
+			ArrayList<String> defaults = new ArrayList<String>();
+					
+			for(int i=0; i<table.getColumnCount(false); i++)
+			{
+				String s = (String) table.getColumnExt(i).getHeaderValue();
+				log.debug(" - "+s);
+				defaults.add(s);
+			}
+			
+			App.prefs.setArrayListPref(PrefKey.OBJECT_FIELD_VISIBILITY_ARRAY, defaults);
+	}
+
+	@Override
+	protected void restoreColumnOrderFromPrefs() {
+				
+		ArrayList<String> prefs = App.prefs.getArrayListPref(PrefKey.OBJECT_FIELD_VISIBILITY_ARRAY, null);
+		
+		if(prefs==null){
+			log.info("No prefs set for order of object columns, so using default order");
+			prefs = new ArrayList<String>();
+			prefs.add("Project");
+			prefs.add("Object Code");
+			prefs.add("Title");
+			prefs.add("Type");
+		}
+
+		restoreColumnOrderFromArray(prefs);
+		
+	}
+
+	@Override
+	protected void saveColumnWidthsToPrefs() {
+		log.debug("Saving column widths to preferences");
+		
+		//this.saveColumnOrderToPrefs();
+		
+		ArrayList<String> widths = new ArrayList<String>();
+		
+		for(int i=0; i<table.getColumnCount(); i++)
+		{
+			TableColumnExt col = table.getColumnExt(i);
+			widths.add(col.getWidth()+"");
+			
+		}
+		
+		App.prefs.setArrayListPref(PrefKey.OBJECT_FIELD_COLUMN_WIDTH_ARRAY, widths);
+
+		
+	}
+
+	@Override
+	protected void restoreColumnWidthsFromPrefs() {
+		
+		log.debug("Restoring column widths from preferences");
+		
+		table.setHorizontalScrollEnabled(false);
+		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		ArrayList<String> widths = App.prefs.getArrayListPref(PrefKey.OBJECT_FIELD_COLUMN_WIDTH_ARRAY, null);
+		
+		if(widths==null) {
+			
+			table.packAll();
+			return;
+		}
+		
+		if(widths.size()!=table.getColumnCount())
+		{
+			return;
+		}
+		
+		int i=0;
+		for(String width : widths)
+		{
+			try{
+				Integer value = Integer.valueOf(width);
+				
+				log.debug("Setting column "+i+" to width "+value);
+				table.getColumnExt(i).setPreferredWidth(value);
+
+				
+			} catch (NumberFormatException e)
+			{
+				e.printStackTrace();
+				return;
+			}
+			
+			i++;
+		}
 		
 	}
 }

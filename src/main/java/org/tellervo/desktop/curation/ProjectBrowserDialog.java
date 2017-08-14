@@ -367,7 +367,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 			Alert.error("Missing type(s)", "Projects must have one or more types assigned.");
 			return;
 		}
-		if(!temporaryEditingEntity.isSetCategory() || !temporaryEditingEntity.getCategory().isSetValue() || temporaryEditingEntity.getCategory().getValue().trim().isEmpty())
+		if(!temporaryEditingEntity.isSetCategory() || !temporaryEditingEntity.getCategory().isSetNormal() || temporaryEditingEntity.getCategory().getNormal().trim().isEmpty())
 		{
 			Alert.error("Missing category", "Projects must have a category assigned.");
 			return;

@@ -44,19 +44,19 @@ public class ElementModel extends HashModel implements IBulkImportSectionModel{
 	
 	public ElementModel(){
 		registerProperty(ROWS, PropertyType.FINAL, new MVCArrayList<SingleElementModel>());
-		registerProperty(COLUMN_MODEL, PropertyType.FINAL, new ColumnChooserModel());
+		registerProperty(COLUMN_CHOOSER_MODEL, PropertyType.FINAL, new ColumnListModel());
 		registerProperty(TABLE_MODEL, PropertyType.FINAL, new ElementTableModel(this));
 		registerProperty(IMPORTED_LIST, PropertyType.FINAL, new MVCArrayList<TridasElement>());
 		registerProperty(WAYPOINT_LIST, PropertyType.FINAL, new MVCArrayList<GPXWaypoint>());
-		getColumnModel().populatePossibleColumns(getModelTableProperties());
+		getColumnModel().populatePossibleColumns(getPossibleColumns());
 	}
 	
 	public MVCArrayList<SingleElementModel> getRows(){
 		return (MVCArrayList<SingleElementModel>) getProperty(ROWS);
 	}
 	
-	public ColumnChooserModel getColumnModel(){
-		return (ColumnChooserModel) getProperty(COLUMN_MODEL);
+	public ColumnListModel getColumnModel(){
+		return (ColumnListModel) getProperty(COLUMN_CHOOSER_MODEL);
 	}
 	
 	public ElementTableModel getTableModel(){
@@ -131,10 +131,10 @@ public class ElementModel extends HashModel implements IBulkImportSectionModel{
 	}
 
 	/**
-	 * @see org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel#getModelTableProperties()
+	 * @see org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel#getPossibleColumns()
 	 */
 	@Override
-	public String[] getModelTableProperties() {
+	public String[] getPossibleColumns() {
 		return SingleElementModel.TABLE_PROPERTIES;
 	}
 }

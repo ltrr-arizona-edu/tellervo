@@ -33,7 +33,7 @@ import com.dmurph.mvc.model.MVCArrayList;
  *
  */
 public interface IBulkImportSectionModel extends IModel{
-	public static final String COLUMN_MODEL = "columnModel";
+	public static final String COLUMN_CHOOSER_MODEL = "columnModel";
 	public static final String ROWS = "rows";
 	public static final String TABLE_MODEL = "tableModel";
 	public static final String IMPORTED_LIST = "importedList";
@@ -55,13 +55,13 @@ public interface IBulkImportSectionModel extends IModel{
 	 * Gets the table properties
 	 * @return
 	 */
-	public String[] getModelTableProperties();
+	public String[] getPossibleColumns();
 	
 	/**
 	 * Gets the column model
 	 * @return
 	 */
-	public ColumnChooserModel getColumnModel();
+	public ColumnListModel getColumnModel();
 	
 	/**
 	 * Gets the table model.

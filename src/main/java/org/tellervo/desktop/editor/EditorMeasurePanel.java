@@ -118,6 +118,11 @@ public class EditorMeasurePanel extends MeasurePanel implements MeasurementRecei
 	{
 		if(task!=null) task.cancel();
 		
+		if(App.prefs.getBooleanPref(PrefKey.SERIAL_PORT_TIMEOUT_DISABLE, false))
+		{
+			return;
+		}
+		
 		java.util.Timer timer = new java.util.Timer();
 		task = new TimeoutTask(this, App.prefs.getIntPref(PrefKey.SERIAL_PORT_TIMEOUT_LENGTH, 300));
 		timer.scheduleAtFixedRate(task, 0, 1000);

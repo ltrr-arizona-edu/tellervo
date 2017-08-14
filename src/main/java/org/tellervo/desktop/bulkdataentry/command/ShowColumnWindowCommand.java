@@ -22,7 +22,7 @@ package org.tellervo.desktop.bulkdataentry.command;
 
 import org.tellervo.desktop.bulkdataentry.control.DisplayColumnChooserEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
-import org.tellervo.desktop.bulkdataentry.model.ColumnChooserModel;
+import org.tellervo.desktop.bulkdataentry.model.ColumnListModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkdataentry.view.ColumnChooserView;
 
@@ -73,8 +73,8 @@ public class ShowColumnWindowCommand implements ICommand {
 		}
 	
 		// give it the possible columns
-		ColumnChooserModel model = event.model.getColumnModel();
-		model.populatePossibleColumns(event.model.getModelTableProperties());
+		ColumnListModel model = event.model.getColumnModel();
+		model.populatePossibleColumns(event.model.getPossibleColumns());
 		
 		
 		// remove any columns in the model that aren't possible columns
