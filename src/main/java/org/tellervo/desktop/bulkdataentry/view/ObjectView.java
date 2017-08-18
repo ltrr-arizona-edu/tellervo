@@ -352,13 +352,13 @@ public class ObjectView extends AbstractBulkImportView{
 	@Override
 	protected void saveColumnOrderToPrefs() {
 
-			log.debug("Saving column order to prefs");
+			//log.debug("Saving column order to prefs");
 			ArrayList<String> defaults = new ArrayList<String>();
 					
 			for(int i=0; i<table.getColumnCount(false); i++)
 			{
 				String s = (String) table.getColumnExt(i).getHeaderValue();
-				log.debug(" - "+s);
+				//log.debug(" - "+s);
 				defaults.add(s);
 			}
 			
@@ -385,7 +385,7 @@ public class ObjectView extends AbstractBulkImportView{
 
 	@Override
 	protected void saveColumnWidthsToPrefs() {
-		log.debug("Saving column widths to preferences");
+		//log.debug("Saving column widths to preferences");
 		
 		//this.saveColumnOrderToPrefs();
 		
@@ -406,7 +406,7 @@ public class ObjectView extends AbstractBulkImportView{
 	@Override
 	protected void restoreColumnWidthsFromPrefs() {
 		
-		log.debug("Restoring column widths from preferences");
+		//log.debug("Restoring column widths from preferences");
 		
 		table.setHorizontalScrollEnabled(false);
 		table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -429,7 +429,7 @@ public class ObjectView extends AbstractBulkImportView{
 			try{
 				Integer value = Integer.valueOf(width);
 				
-				log.debug("Setting column "+i+" to width "+value);
+				//log.debug("Setting column "+i+" to width "+value);
 				table.getColumnExt(i).setPreferredWidth(value);
 
 				
@@ -453,7 +453,7 @@ public class ObjectView extends AbstractBulkImportView{
 		unhideableColumns.add("Object Code");
 		unhideableColumns.add("Type");
 		unhideableColumns.add("Title");
-		unhideableColumns.add("Project");
+		
 		
 		
 		for(int i=0; i<table.getColumnCount(true); i++)
@@ -473,16 +473,6 @@ public class ObjectView extends AbstractBulkImportView{
 			}
 			
 		}
-		
-		/*if(table.getColumnCount(true)>1)
-		{
-		
-			// Ensure the first two columns cannot be hidden
-			table.getColumnExt(0).setHideable(false);
-			table.getColumnExt(1).setHideable(false);
-			
-			
-		}*/
 		
 	}
 }

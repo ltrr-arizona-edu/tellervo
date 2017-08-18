@@ -122,6 +122,9 @@ public class BooleanCellRenderer extends DefaultCellRendererEx {
 					}
 					 
 				}
+				
+				label.setBackground(item.getBackground());
+				label.setForeground(item.getForeground());
 				return label;
 			}
 			

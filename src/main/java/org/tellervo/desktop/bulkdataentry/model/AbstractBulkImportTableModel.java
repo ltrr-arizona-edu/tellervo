@@ -29,6 +29,10 @@ import java.util.Iterator;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.bulkdataentry.command.ImportSelectedObjectsCommand;
+
 import com.dmurph.mvc.model.HashModel.PropertyType;
 import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.mvc.support.MVCPropertiesAddedEvent;
@@ -42,7 +46,8 @@ import com.dmurph.mvc.support.MVCPropertyRemovedEvent;
  */
 public abstract class AbstractBulkImportTableModel extends AbstractTableModel implements PropertyChangeListener, IBulkImportTableModel {
 	private static final long serialVersionUID = 1L;
-	
+	private static final Logger log = LoggerFactory.getLogger(AbstractBulkImportTableModel.class);
+
 	private IBulkImportSectionModel model;
 	private MVCArrayList<IBulkImportSingleRowModel> models;
 	
@@ -187,12 +192,17 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 	public int getSelectedCount(){
 		int count = 0;
 		
-		Iterator<IBulkImportSingleRowModel> it = selected.keySet().iterator();
-		while(it.hasNext()){
-			IBulkImportSingleRowModel som = it.next();
-			if(selected.get(som)){
-				count++;
+		try{
+			Iterator<IBulkImportSingleRowModel> it = selected.keySet().iterator();
+			while(it.hasNext()){
+				IBulkImportSingleRowModel som = it.next();
+				if(selected.get(som)){
+					count++;
+				}
 			}
+		} catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 		
 		return count;
@@ -305,6 +315,19 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		}
 		
 		setValueAt(argAValue, column, som, argRowIndex);
+		
+		if(som instanceof SingleObjectModel)
+		{
+			if(((SingleObjectModel) som).isDirty())
+			{
+				log.debug("Dirty");
+			}
+			else
+			{
+				log.debug("Clean");
+			}
+		}
+		
 	}
 	
 	public abstract void setValueAt(Object argAValue, String argColumn, IBulkImportSingleRowModel argModel, int argRowIndex);

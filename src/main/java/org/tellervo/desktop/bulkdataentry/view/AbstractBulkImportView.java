@@ -123,8 +123,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 	
 	// Used to track column reordering
 	private boolean dragComplete = false;
-	private int columnValue = -1; 
-	private int columnNewValue = -1;
+	private Integer columnValue = -1; 
+	private Integer columnNewValue = -1;
 	private JSplitPane splitPane;
 	private JPanel panelHelp;
 	private JTextPane txtHelpText;
@@ -236,11 +236,16 @@ public abstract class AbstractBulkImportView extends JPanel{
 			@Override
             public void mouseReleased(MouseEvent e) {
                 	
+				log.debug("columnValue="+columnValue);
+				log.debug("columnNewValue="+columnNewValue);
 				
 				// Make sure the first two columns are not moved		
 				if (columnValue != -1 && (columnValue <=1 || columnNewValue <=1)){ 
+
+												
 					table.moveColumn(columnNewValue, columnValue); 
-					Alert.error("Error", "The selected and imported columns must be the first columns in the table");
+
+					
 				}
 				columnValue = -1; 
 				columnNewValue = -1; 
@@ -328,6 +333,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 		setUnhideableColumns();
 		restoreColumnOrderFromPrefs();		
 		restoreColumnWidthsFromPrefs();
+		
+		
 		
 	}
 	
@@ -517,7 +524,16 @@ public abstract class AbstractBulkImportView extends JPanel{
 				{					
 					if(e.getKeyCode()==KeyEvent.VK_DELETE || e.getKeyCode()==KeyEvent.VK_BACK_SPACE)
 					{
-						table.getModel().setValueAt(null, table.getSelectedRow(), table.getSelectedColumn());						
+						int[] rows = table.getSelectedRows();
+						int[] cols = table.getSelectedColumns();
+						for(int i=0;i<rows.length;i++){
+							for(int j=0; j<cols.length; j++)
+							{
+								table.getModel().setValueAt(null, rows[i], table.getColumn(cols[j]).getModelIndex());
+							}			
+						}
+						
+						//table.getModel().setValueAt(null, table.getSelectedRow(), table.getColumn(table.getSelectedColumn()).getModelIndex());						
 					}
 				}
 			}
@@ -917,14 +933,34 @@ public abstract class AbstractBulkImportView extends JPanel{
 			}
 		}*/
 		
+		
+		columnValue = -1;
+		columnNewValue = -1;
 
 	}
 	
 	private void setHelpText()
 	{
-		log.debug("Setting help text");
-		TableColumnExt column = table.getColumnExt(table.getSelectedColumn());
+		//log.debug("Setting help text");
+		TableColumnExt column = null;
+		try{
+			column = table.getColumnExt(table.getSelectedColumn());
+		}
+		catch (ArrayIndexOutOfBoundsException e2)
+		{
+			return;
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return;
+		}
 				
+		if(column==null) {
+			log.debug("No column so cannot set help text");
+			return;
+		}
+		
 		this.txtHelpText.setText("");
 		
 		HashMap<String,String> hashmap = new HashMap<String,String>();

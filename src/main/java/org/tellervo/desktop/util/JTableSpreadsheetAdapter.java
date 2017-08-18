@@ -311,10 +311,26 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 					.getTransferData(DataFlavor.stringFlavor));
 			log.debug("Clipboard string is: " + trstring);
 			String[] lines = trstring.split("\n");
-
+			
 			Boolean firstRun = true;
 			int rowsignored = 0;
 			int lineindex = -1;
+			
+			
+			if(lines.length==1 && 
+					//lines[0].split("\t").length==1 && 
+					mainTable.getSelectedColumnCount()==1 && 
+					mainTable.getSelectedRowCount()>1)
+			{
+				String strline = lines[0];
+				lines = new String[mainTable.getSelectedRowCount()];
+				for(int p=0; p<mainTable.getSelectedRowCount(); p++)
+				{
+					lines[p] = strline;
+				}
+			}
+			
+			
 			for (String rowstring : lines) {
 				lineindex++;
 				// rowstring=st1.nextToken();

@@ -20,7 +20,18 @@
  ******************************************************************************/
 package org.tellervo.desktop.bulkdataentry.command;
 
+import javax.swing.JOptionPane;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.DeleteRowEvent;
+import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
+import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
+import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
+import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
+import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.util.JTableRowHeader;
 
 import com.dmurph.mvc.IllegalThreadException;
 import com.dmurph.mvc.IncorrectThreadException;
@@ -31,6 +42,7 @@ import com.dmurph.mvc.model.MVCArrayList;
 
 
 public class DeleteRowCommand implements ICommand {
+	private final static Logger log = LoggerFactory.getLogger(DeleteRowCommand.class);
 
 	@Override
 	public void execute(MVCEvent argEvent) {
@@ -49,11 +61,50 @@ public class DeleteRowCommand implements ICommand {
 		
 		MVCArrayList rowsToDelete = new MVCArrayList();
 		
+		boolean dirtyflag = false;
+		
 		for(int i : event.getValue())
 		{
+			IBulkImportSingleRowModel item =  (IBulkImportSingleRowModel) event.model.getRows().get(i);
+			
+			if(item instanceof SingleObjectModel)
+			{
+				if(((SingleObjectModel) item).isDirty())
+				{
+					dirtyflag=true;
+				}
+			}
+			
+			else if(item instanceof SingleElementModel)
+			{
+				if(((SingleElementModel) item).isDirty())
+				{
+					dirtyflag=true;
+				}
+			}
+			
+			else if(item instanceof SingleSampleModel)
+			{
+				if(((SingleSampleModel) item).isDirty())
+				{
+					dirtyflag=true;
+				}
+			}
+			
 			rowsToDelete.add(event.model.getRows().get(i));
 		}
 		
-		event.model.getRows().removeAll(rowsToDelete);
+		if(dirtyflag)
+		{
+			
+			int response = JOptionPane.showConfirmDialog(BulkImportModel.getInstance().getMainView(), "Any unsaved changes will be lost.  Are you sure you want to continue?");
+			
+			if(response==JOptionPane.YES_OPTION)
+			{
+				event.model.getRows().removeAll(rowsToDelete);
+
+			}
+		}
+		
 	}
 }
