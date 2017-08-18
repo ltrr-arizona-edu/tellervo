@@ -324,10 +324,10 @@ public abstract class AbstractBulkImportView extends JPanel{
 		{
 			sorter.setComparator(c, comparator);
 		}
-				
+
+		setUnhideableColumns();
 		restoreColumnOrderFromPrefs();		
 		restoreColumnWidthsFromPrefs();
-		setUnhideableColumns();
 		
 	}
 	
@@ -800,26 +800,28 @@ public abstract class AbstractBulkImportView extends JPanel{
 			return;
 		}
 		
+		
+		
 		for(String pref : prefs)
 		{
 			if(pref.equals("Imported") || pref.equals("Selected")) continue;
 			
 			
-			log.debug("Current column (n="+table.getColumnCount(true)+") order is:");
+			/*log.debug("Current column (n="+table.getColumnCount(true)+") order is:");
 			for(int k=0; k<table.getColumnCount(true); k++)
 			{
 				TableColumn columnplain = table.getColumns(true).get(k);
 				TableColumnExt column = table.getColumnExt(columnplain.getIdentifier());
 				
-				/*if(column.isVisible())
+				if(column.isVisible())
 				{
 					log.debug(k+" - "+table.getColumnExt(k).getIdentifier().toString());
 				}
 				else
 				{
 					log.debug(k+" - "+table.getColumnExt(k).getIdentifier().toString()+" [hidden]");
-				}*/			
-			}
+				}			
+			}*/
 			
 			TableColumnExt columnext = table.getColumnExt(pref);
 			
@@ -856,6 +858,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 							colsmoved++;
 						} catch (Exception e)
 						{
+							e.printStackTrace();
 							log.error("Error moving column position");
 						}
 					}
