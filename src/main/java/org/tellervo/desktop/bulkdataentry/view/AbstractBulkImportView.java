@@ -73,6 +73,7 @@ import org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportTableModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
 import org.tellervo.desktop.tridasv2.doc.Documentation;
 import org.tellervo.desktop.ui.Alert;
@@ -80,6 +81,10 @@ import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.JTableRowHeader;
 import org.tellervo.desktop.util.JTableSpreadsheetAdapter;
+import org.tellervo.schema.UserExtendableEntity;
+import org.tellervo.schema.WSIUserDefinedField;
+
+import com.dmurph.mvc.model.MVCArrayList;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -966,10 +971,10 @@ public abstract class AbstractBulkImportView extends JPanel{
 		this.txtHelpText.setText("");
 		
 		HashMap<String,String> hashmap = new HashMap<String,String>();
+		
+		// Hard coded help strings
 		hashmap.put("Imported", "Whether this row has been imported into the database yet or not.  Note this <i>doesn't</i> indicate whether there are unsaved edits to a row or not.");
 		hashmap.put("Selected", "Checkbox that allows you to select which rows are selected ready to be imported into the database.");
-		
-		
 		hashmap.put("Object code", "Short code name for object, traditionally three letters");
 		hashmap.put("Object Code", "Short code name for object, traditionally three letters");
 		hashmap.put("Element code", "Short code name for this element, traditionally this is a numerical identifier");
@@ -986,7 +991,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		hashmap.put("Box", "Name of the box to which this sample belongs");
 		hashmap.put("Unit", "Pick list of measurement units used for the dimensions fields");
 
-		
+		// Soft coded help strings taken from XML documentation
 		hashmap.put("Project", Documentation.getDocumentation("project"));
 		hashmap.put("Location type", Documentation.getDocumentation("locationType"));
 		hashmap.put("Location precision", Documentation.getDocumentation("locationPrecision"));
@@ -995,12 +1000,10 @@ public abstract class AbstractBulkImportView extends JPanel{
 		hashmap.put("Address 2", Documentation.getDocumentation("address"));
 		hashmap.put("Owner", Documentation.getDocumentation("owner"));
 		hashmap.put("Creator", Documentation.getDocumentation("creator"));
-
 		hashmap.put("Type", Documentation.getDocumentation("type"));
 		hashmap.put("Title", Documentation.getDocumentation("title"));
 		hashmap.put("Comments", Documentation.getDocumentation("comments"));
 		hashmap.put("Description", Documentation.getDocumentation("description"));
-		
 		hashmap.put("Shape", Documentation.getDocumentation("shape"));
 		hashmap.put("Shape", Documentation.getDocumentation("shape"));
 		hashmap.put("Height", Documentation.getDocumentation("height"));
@@ -1019,14 +1022,14 @@ public abstract class AbstractBulkImportView extends JPanel{
 		hashmap.put("Knots", Documentation.getDocumentation("knots"));
 		hashmap.put("State", Documentation.getDocumentation("state"));
 		hashmap.put("Position", Documentation.getDocumentation("position"));
-		
-		
-		
-
-
-		
-		
 		hashmap.put("Taxon", Documentation.getDocumentation("element.taxon"));
+		
+		// Handle all user defined fields
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			hashmap.put(fld.getLongfieldname(), fld.getDescription());
+		}
 		
 		try{
 			String doc = hashmap.get(column.getHeaderValue().toString());

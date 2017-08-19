@@ -315,18 +315,7 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		}
 		
 		setValueAt(argAValue, column, som, argRowIndex);
-		
-		if(som instanceof SingleObjectModel)
-		{
-			if(((SingleObjectModel) som).isDirty())
-			{
-				log.debug("Dirty");
-			}
-			else
-			{
-				log.debug("Clean");
-			}
-		}
+
 		
 	}
 	

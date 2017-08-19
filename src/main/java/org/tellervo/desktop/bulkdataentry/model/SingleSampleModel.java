@@ -269,6 +269,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 				}
 				if(field == null){
 					field = new TridasGenericField();
+					argSample.getGenericFields().add(field);
 				}
 				
 				if(fld.isSetName() && fld.isSetDatatype() && fld.isSetLongfieldname())
