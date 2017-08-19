@@ -28,6 +28,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -49,6 +51,8 @@ import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
+import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
+import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasElementOrPlaceholder;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
@@ -91,6 +95,8 @@ import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 import com.michaelbaranov.microba.calendar.DatePicker;
 import com.michaelbaranov.microba.calendar.DatePickerCellEditor;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * @author Daniel
@@ -509,8 +515,20 @@ public class SampleView extends AbstractBulkImportView {
 
 	@Override
 	protected void restoreColumnOrderFromPrefs() {
+			
+		ArrayList<String> prefs = App.prefs.getArrayListPref(PrefKey.OBJECT_FIELD_VISIBILITY_ARRAY, null);
+		List<String> all = Arrays.asList(SingleSampleModel.TABLE_PROPERTIES);
+		Iterator<String> iterator = prefs.iterator();
+		while (iterator.hasNext()) {
+			String item = iterator.next();
+			if(!all.contains(item))
+			{
+				log.debug("Removing unknown field from list: "+item);
+				iterator.remove();
+			}
+
+		}
 		
-		ArrayList<String> prefs = App.prefs.getArrayListPref(PrefKey.SAMPLE_FIELD_VISIBILITY_ARRAY, null);
 		
 		if(prefs==null){
 			log.info("No prefs set for order of sample columns, so using default order");

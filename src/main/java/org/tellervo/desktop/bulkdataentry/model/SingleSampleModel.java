@@ -80,8 +80,8 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	
 
 	public static String[] TABLE_PROPERTIES = {
-		OBJECT, ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION, FILES,
-		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, EXTERNAL_ID, SAMPLE_STATUS, IMPORTED
+		IMPORTED, OBJECT, ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION, FILES,
+		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, EXTERNAL_ID, SAMPLE_STATUS 
 	};
 	private static boolean isUserDefinedFieldsInit = false;
 	

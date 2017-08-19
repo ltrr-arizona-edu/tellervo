@@ -823,6 +823,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 			if(pref.equals("Imported") || pref.equals("Selected")) continue;
 			
 			
+			
+			
 			/*log.debug("Current column (n="+table.getColumnCount(true)+") order is:");
 			for(int k=0; k<table.getColumnCount(true); k++)
 			{

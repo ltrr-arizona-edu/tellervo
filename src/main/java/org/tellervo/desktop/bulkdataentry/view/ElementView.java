@@ -30,6 +30,8 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -55,6 +57,8 @@ import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
+import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
+import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
@@ -89,6 +93,8 @@ import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 
 /**
@@ -407,6 +413,18 @@ public class ElementView extends AbstractBulkImportView{
 	protected void restoreColumnOrderFromPrefs() {
 				
 		ArrayList<String> prefs = App.prefs.getArrayListPref(PrefKey.ELEMENT_FIELD_VISIBILITY_ARRAY, null);
+		
+		List<String> all = Arrays.asList(SingleElementModel.TABLE_PROPERTIES);
+		Iterator<String> iterator = prefs.iterator();
+		while (iterator.hasNext()) {
+			String item = iterator.next();
+			if(!all.contains(item))
+			{
+				log.debug("Removing unknown field from list: "+item);
+				iterator.remove();
+			}
+
+		}
 		
 		if(prefs==null){
 			log.info("No prefs set for order of element columns, so using default order");

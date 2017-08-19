@@ -28,6 +28,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -48,6 +50,7 @@ import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromGeonamesEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
+import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
@@ -76,6 +79,8 @@ import org.tridas.schema.TridasProject;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.MVCArrayList;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 
 /**
@@ -369,6 +374,18 @@ public class ObjectView extends AbstractBulkImportView{
 	protected void restoreColumnOrderFromPrefs() {
 				
 		ArrayList<String> prefs = App.prefs.getArrayListPref(PrefKey.OBJECT_FIELD_VISIBILITY_ARRAY, null);
+		List<String> all = Arrays.asList(SingleObjectModel.TABLE_PROPERTIES);
+		Iterator<String> iterator = prefs.iterator();
+		while (iterator.hasNext()) {
+			String item = iterator.next();
+			if(!all.contains(item))
+			{
+				log.debug("Removing unknown field from list: "+item);
+				iterator.remove();
+			}
+
+		}
+		
 		
 		if(prefs==null){
 			log.info("No prefs set for order of object columns, so using default order");

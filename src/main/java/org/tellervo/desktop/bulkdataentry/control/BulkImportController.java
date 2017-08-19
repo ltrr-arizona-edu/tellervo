@@ -49,10 +49,14 @@ import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.view.BulkDataEntryWindow;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
+import org.tellervo.schema.UserExtendableEntity;
+import org.tellervo.schema.WSIUserDefinedField;
 
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.FrontController;
+import com.dmurph.mvc.model.MVCArrayList;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 
@@ -204,7 +208,7 @@ public class BulkImportController extends FrontController {
 		
 		// First populate an array with all the default columns in it
 		ArrayList<String> defaults = new ArrayList<String>();
-		defaults.add(SingleObjectModel.IMPORTED);
+		/*defaults.add(SingleObjectModel.IMPORTED);
 		defaults.add(SingleObjectModel.PROJECT);
 		defaults.add(SingleObjectModel.PARENT_OBJECT);
 		defaults.add(SingleObjectModel.OBJECT_CODE);
@@ -228,7 +232,26 @@ public class BulkImportController extends FrontController {
 		defaults.add(SingleObjectModel.OWNER);
 		defaults.add(SingleObjectModel.CREATOR);
 		
+		//ccmodel.addAll(defaults);
+		ccmodel.addAll(Arrays.asList(SingleObjectModel.TABLE_PROPERTIES));*/
+		
+		defaults.addAll(Arrays.asList(SingleObjectModel.TABLE_PROPERTIES));
+
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+	
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			if(fld.getAttachedto().equals(UserExtendableEntity.OBJECT))
+			{
+				defaults.add(fld.getLongfieldname());
+			}
+		}
+		
 		ccmodel.addAll(defaults);
+		
+		
+		
+
 
 		/*
 		// Grab preferred fields from preferences, falling back to default if not specified
@@ -257,7 +280,7 @@ public class BulkImportController extends FrontController {
 		// First populate an array with all the default columns in it
 		ArrayList<String> defaults = new ArrayList<String>();	
 		
-		defaults.add(SingleElementModel.IMPORTED);
+		/*defaults.add(SingleElementModel.IMPORTED);
 		defaults.add(SingleElementModel.OBJECT);
 		defaults.add(SingleElementModel.TITLE);
 		defaults.add(SingleElementModel.TYPE);
@@ -293,6 +316,20 @@ public class BulkImportController extends FrontController {
 		defaults.add(SingleElementModel.BEDROCK_DESCRIPTION);
 		
 		//Collections.sort(defaults);
+		ccmodel.addAll(defaults);*/
+		
+		defaults.addAll(Arrays.asList(SingleElementModel.TABLE_PROPERTIES));
+
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+	
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			if(fld.getAttachedto().equals(UserExtendableEntity.ELEMENT))
+			{
+				defaults.add(fld.getLongfieldname());
+			}
+		}
+		
 		ccmodel.addAll(defaults);
 
 		/*
@@ -321,7 +358,7 @@ public class BulkImportController extends FrontController {
 		
 		// First populate an array with all the default columns in it
 		ArrayList<String> defaults = new ArrayList<String>();		
-		defaults.add(SingleSampleModel.IMPORTED);
+		/*defaults.add(SingleSampleModel.IMPORTED);
 		defaults.add(SingleSampleModel.OBJECT);
 		defaults.add(SingleSampleModel.ELEMENT);
 		defaults.add(SingleSampleModel.TITLE);
@@ -333,10 +370,23 @@ public class BulkImportController extends FrontController {
 		defaults.add(SingleSampleModel.SAMPLING_DATE);
 		defaults.add(SingleSampleModel.POSITION);
 		defaults.add(SingleSampleModel.STATE);
-		defaults.add(SingleSampleModel.KNOTS);
+		defaults.add(SingleSampleModel.KNOTS);*/
 
 		
 		//Collections.sort(defaults);
+		//ccmodel.addAll(defaults);
+		defaults.addAll(Arrays.asList(SingleSampleModel.TABLE_PROPERTIES));
+
+		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
+	
+		for(WSIUserDefinedField fld : udfdictionary)
+		{
+			if(fld.getAttachedto().equals(UserExtendableEntity.SAMPLE))
+			{
+				defaults.add(fld.getLongfieldname());
+			}
+		}
+		
 		ccmodel.addAll(defaults);
 		
 		/*
