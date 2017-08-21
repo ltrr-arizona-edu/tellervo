@@ -54,15 +54,7 @@ public class SampleModel extends HashModel implements IBulkImportSectionModel{
 		registerProperty(RADIUS_WITH_SAMPLE, PropertyType.READ_WRITE, false);
 		registerProperty(IMPORTED_LIST, PropertyType.FINAL, new MVCArrayList<TridasSample>());
 		getColumnModel().populatePossibleColumns(getPossibleColumns());
-		
-		getColumnModel().addPropertyChangeListener(new PropertyChangeListener(){
 
-			@Override
-			public void propertyChange(PropertyChangeEvent evt) {
-				App.prefs.setArrayListPref(PrefKey.SAMPLE_FIELD_VISIBILITY_ARRAY, getColumnModel());	
-			}
-			
-		});
 	}
 	
 	public MVCArrayList<SingleSampleModel> getRows(){

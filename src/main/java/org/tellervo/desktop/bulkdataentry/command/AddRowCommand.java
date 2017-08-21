@@ -58,9 +58,14 @@ public class AddRowCommand implements ICommand {
 		for(int i=0; i<event.rowCountToAdd; i++)
 		{
 			IBulkImportSingleRowModel newrow = event.model.createRowInstance();
-			try{AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
-			otm.setSelected(newrow, false);
-			} catch (Exception e){}
+			try{
+				AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
+				otm.setSelected(newrow, false);
+			} catch (Exception e)
+			{
+				
+			}
+			
 			rows.add(newrow);
 		}
 		

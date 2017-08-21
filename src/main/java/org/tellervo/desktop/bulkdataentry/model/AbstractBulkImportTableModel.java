@@ -334,6 +334,13 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		
 		String column = columns.get(columnIndex);
 		IBulkImportSingleRowModel som = models.get(rowIndex);
+		
+		log.debug("-----");
+		log.debug("Column name : "+column);
+		log.debug("Property : " +som.getProperty(column));
+		log.debug("PropetyType : " + som.getPropertyType(column));
+		log.debug("-----");
+		
 		if(som.getPropertyType(column) == PropertyType.READ_WRITE){
 			return true;
 		}

@@ -95,7 +95,7 @@ public class ObjectView extends AbstractBulkImportView{
 	
 	public ObjectView(ObjectModel argModel){
 		super(argModel);
-		table.getColumnModel().getColumn(1).setCellRenderer(new BooleanCellRenderer(true));
+		table.getColumn("Imported").setCellRenderer(new BooleanCellRenderer(true));
 	}
 	
 	/**
@@ -374,17 +374,6 @@ public class ObjectView extends AbstractBulkImportView{
 	protected void restoreColumnOrderFromPrefs() {
 				
 		ArrayList<String> prefs = App.prefs.getArrayListPref(PrefKey.OBJECT_FIELD_VISIBILITY_ARRAY, null);
-		List<String> all = Arrays.asList(SingleObjectModel.TABLE_PROPERTIES);
-		Iterator<String> iterator = prefs.iterator();
-		while (iterator.hasNext()) {
-			String item = iterator.next();
-			if(!all.contains(item))
-			{
-				log.debug("Removing unknown field from list: "+item);
-				iterator.remove();
-			}
-
-		}
 		
 		
 		if(prefs==null){
@@ -395,6 +384,21 @@ public class ObjectView extends AbstractBulkImportView{
 			prefs.add("Title");
 			prefs.add("Type");
 		}
+		else
+		{
+			List<String> all = Arrays.asList(SingleObjectModel.TABLE_PROPERTIES);
+			Iterator<String> iterator = prefs.iterator();
+			while (iterator.hasNext()) {
+				String item = iterator.next();
+				if(!all.contains(item))
+				{
+					log.debug("Removing unknown field from list: "+item);
+					iterator.remove();
+				}
+	
+			}
+		}
+		
 
 		restoreColumnOrderFromArray(prefs);
 		

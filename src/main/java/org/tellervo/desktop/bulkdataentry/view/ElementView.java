@@ -113,8 +113,9 @@ public class ElementView extends AbstractBulkImportView{
     
 	public ElementView(ElementModel argModel){
 		super(argModel);
-		table.getColumnModel().getColumn(1).setCellRenderer(new BooleanCellRenderer(true));
-
+		
+		table.getColumn("Imported").setCellRenderer(new BooleanCellRenderer(true));
+		
 	}
 
 	/**
@@ -414,18 +415,6 @@ public class ElementView extends AbstractBulkImportView{
 				
 		ArrayList<String> prefs = App.prefs.getArrayListPref(PrefKey.ELEMENT_FIELD_VISIBILITY_ARRAY, null);
 		
-		List<String> all = Arrays.asList(SingleElementModel.TABLE_PROPERTIES);
-		Iterator<String> iterator = prefs.iterator();
-		while (iterator.hasNext()) {
-			String item = iterator.next();
-			if(!all.contains(item))
-			{
-				log.debug("Removing unknown field from list: "+item);
-				iterator.remove();
-			}
-
-		}
-		
 		if(prefs==null){
 			log.info("No prefs set for order of element columns, so using default order");
 			prefs = new ArrayList<String>();
@@ -434,6 +423,21 @@ public class ElementView extends AbstractBulkImportView{
 			prefs.add("Type");
 			prefs.add("Taxon");
 		}
+		else
+		{
+			List<String> all = Arrays.asList(SingleElementModel.TABLE_PROPERTIES);
+			Iterator<String> iterator = prefs.iterator();
+			while (iterator.hasNext()) {
+				String item = iterator.next();
+				if(!all.contains(item))
+				{
+					log.debug("Removing unknown field from list: "+item);
+					iterator.remove();
+				}
+	
+			}
+		}
+
 
 		restoreColumnOrderFromArray(prefs);
 

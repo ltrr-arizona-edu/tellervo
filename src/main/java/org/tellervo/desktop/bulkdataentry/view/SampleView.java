@@ -24,8 +24,11 @@
 package org.tellervo.desktop.bulkdataentry.view;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -115,8 +118,60 @@ public class SampleView extends AbstractBulkImportView {
 	public SampleView(SampleModel argModel, ElementModel elementModel) {
 		super(argModel);
 		this.elementModel = elementModel;
-		table.getColumnModel().getColumn(1).setCellRenderer(new BooleanCellRenderer(true));
+		table.getColumn("Imported").setCellRenderer(new BooleanCellRenderer(true));
 
+		table.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				int col = table.getColumnModel().getColumnIndexAtX(e.getX());
+				int row = table.rowAtPoint(e.getPoint());
+				//int row = table.getEditingRow();
+				//int row = 1;
+				
+				try{
+					log.debug("Is "+row+","+col+", editable? "+table.isCellEditable(row, col));
+					
+					if( !table.isCellEditable(row, col))
+					{
+						
+					}
+				} catch (Exception ex)
+				{
+					log.debug(ex.getLocalizedMessage());
+				}
+				
+				
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
+		
 	}
 
 	/**
@@ -516,7 +571,17 @@ public class SampleView extends AbstractBulkImportView {
 	@Override
 	protected void restoreColumnOrderFromPrefs() {
 			
-		ArrayList<String> prefs = App.prefs.getArrayListPref(PrefKey.OBJECT_FIELD_VISIBILITY_ARRAY, null);
+		ArrayList<String> prefs = App.prefs.getArrayListPref(PrefKey.SAMPLE_FIELD_VISIBILITY_ARRAY, null);
+		
+		if(prefs==null){
+			log.info("No prefs set for order of sample columns, so using default order");
+			prefs = new ArrayList<String>();
+			prefs.add("Project");
+			prefs.add("Object Code");
+			prefs.add("Title");
+			prefs.add("Type");
+		}
+		
 		List<String> all = Arrays.asList(SingleSampleModel.TABLE_PROPERTIES);
 		Iterator<String> iterator = prefs.iterator();
 		while (iterator.hasNext()) {
@@ -528,17 +593,7 @@ public class SampleView extends AbstractBulkImportView {
 			}
 
 		}
-		
-		
-		if(prefs==null){
-			log.info("No prefs set for order of sample columns, so using default order");
-			prefs = new ArrayList<String>();
-			prefs.add("Project");
-			prefs.add("Object Code");
-			prefs.add("Title");
-			prefs.add("Type");
-		}
-		
+
 		restoreColumnOrderFromArray(prefs);
 		
 	}

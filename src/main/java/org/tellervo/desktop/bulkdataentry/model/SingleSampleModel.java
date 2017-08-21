@@ -43,6 +43,7 @@ import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
+import com.dmurph.mvc.model.HashModel.PropertyType;
 
 
 /**
@@ -109,10 +110,12 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			for(String s : TABLE_PROPERTIES){
 				registerProperty(s, PropertyType.READ_WRITE);
 			}
+			
 		}
 		
 		
-
+		log.debug("Number of columns is : "+TABLE_PROPERTIES.length);
+		registerProperty(TABLE_PROPERTIES, PropertyType.READ_WRITE);
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, null);
 		registerProperty(RADIUS_MODEL, PropertyType.READ_ONLY, null);
 		registerProperty(POSSIBLE_ELEMENTS, PropertyType.READ_WRITE, new MVCArrayList<TridasElement>());
