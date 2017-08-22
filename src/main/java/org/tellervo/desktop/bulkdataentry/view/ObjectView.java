@@ -95,7 +95,7 @@ public class ObjectView extends AbstractBulkImportView{
 	
 	public ObjectView(ObjectModel argModel){
 		super(argModel);
-		table.getColumn("Imported").setCellRenderer(new BooleanCellRenderer(true));
+		//table.getColumn("Imported").setCellRenderer(new BooleanCellRenderer(true));
 	}
 	
 	/**

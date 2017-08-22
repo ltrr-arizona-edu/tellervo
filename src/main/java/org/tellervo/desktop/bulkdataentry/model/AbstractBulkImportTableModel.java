@@ -291,7 +291,46 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		
 		// make imported t/f
 		if(column.equals(IBulkImportSingleRowModel.IMPORTED)){
-			return som.getProperty(column) != null;
+			//return som.getProperty(column) != null;
+			Object val = som.getProperty(column);
+			if(val instanceof ImportStatus)
+			{
+				return val;
+			}
+			else if (val==null)
+			{
+				return ImportStatus.LOCAL;
+			}
+			else 
+			{
+				if(som instanceof SingleObjectModel)
+				{
+					if(((SingleObjectModel) som).isDirty())
+					{
+						return ImportStatus.IMPORTED_WITH_LOCAL_EDITS;
+					}
+				}
+				if(som instanceof SingleElementModel)
+				{
+					if(((SingleElementModel) som).isDirty())
+					{
+						return ImportStatus.IMPORTED_WITH_LOCAL_EDITS;
+					}
+				}
+				if(som instanceof SingleSampleModel)
+				{
+					if(((SingleSampleModel) som).isDirty())
+					{
+						return ImportStatus.IMPORTED_WITH_LOCAL_EDITS;
+					}
+				}
+				
+				return ImportStatus.IMPORTED;
+
+			}
+
+			
+			
 		}
 		return som.getProperty(column);
 	}

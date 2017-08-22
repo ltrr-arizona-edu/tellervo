@@ -950,8 +950,11 @@ public abstract class AbstractBulkImportView extends JPanel{
 	{
 		//log.debug("Setting help text");
 		TableColumnExt column = null;
+		String s = null;
+		
 		try{
 			column = table.getColumnExt(table.getSelectedColumn());
+			//s = table.getModel().getValueAt(table.getSelectedRow(), table.getSelectedColumn()).toString();
 		}
 		catch (ArrayIndexOutOfBoundsException e2)
 		{
@@ -968,6 +971,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 			return;
 		}
 		
+		if(s==null) s= "";
 		this.txtHelpText.setText("");
 		
 		HashMap<String,String> hashmap = new HashMap<String,String>();
@@ -1036,15 +1040,15 @@ public abstract class AbstractBulkImportView extends JPanel{
 			
 			if(doc!=null)
 			{
-				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>"+doc);
+				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b> - "+doc+"<p>"+s+"</p>");
 			} else
 			{
-				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>No documentation available");
+				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b> - No documentation available"+"<p>"+s+"</p>");
 			}
 
 		} catch (Exception e)
 		{
-			this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>No documentation available");
+			this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b> - No documentation available"+"<p>"+s+"</p>");
 
 		}
 	}

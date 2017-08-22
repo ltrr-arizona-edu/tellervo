@@ -47,6 +47,7 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 	private JMenuItem miDesignODKForm;
 	private JMenuItem miDeleteODKDefinitions;
 	private JMenuItem miDeleteODKInstances;
+	private JMenuItem miODKManager;
 	
 	private JMenu mnImportMetadata;
 	private JMenu mnExportMetadata;
@@ -150,6 +151,8 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		
 		miDesignODKForm = new JMenuItem(actions.fileDesignODKFormAction);
 		mnODK.add(miDesignODKForm);
+		//miODKManager = new JMenuItem(actions.fileODKManagerAction);
+		//mnODK.add(miODKManager);
 		mnODK.addSeparator();
 		miDeleteODKDefinitions = new JMenuItem(actions.fileDeleteODKDefinitionsAction);
 		mnODK.add(miDeleteODKDefinitions);

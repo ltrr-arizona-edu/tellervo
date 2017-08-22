@@ -37,6 +37,7 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
+import com.dmurph.mvc.IDirtyable;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 import com.dmurph.mvc.model.MVCArrayList;
@@ -179,6 +180,8 @@ public class PopulateFromDatabaseCommand implements ICommand {
 							newrow.populateFromTridasSample(s);
 							newrow.setProperty(SingleSampleModel.OBJECT, o);
 							newrow.setProperty(SingleSampleModel.ELEMENT, e);
+							newrow.setDirty(false);
+
 							
 							try{AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
 								otm.setSelected(newrow, false);
@@ -331,7 +334,8 @@ public class PopulateFromDatabaseCommand implements ICommand {
 				SingleElementModel newrow = (SingleElementModel) event.model.createRowInstance();
 				newrow.populateFromTridasElement(e);
 				newrow.setProperty(SingleElementModel.OBJECT, o);
-		
+				newrow.setDirty(false);
+
 
 				try{AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
 				
@@ -440,11 +444,15 @@ public class PopulateFromDatabaseCommand implements ICommand {
 			TridasObjectOrPlaceholder toph = new TridasObjectOrPlaceholder(parentObject);
 			newrow.setProperty(SingleObjectModel.PARENT_OBJECT, parentObject);
 		}
+
 		
+		newrow.setDirty(false);
+
 		try{
 			AbstractBulkImportTableModel otm = (AbstractBulkImportTableModel) event.model.getTableModel();
 			model.getObjectModel().getImportedList().add((TridasObjectEx) o);
 			otm.setSelected(newrow, false);
+			((IDirtyable) otm).setDirty(false);
 		
 		} catch (Exception e){
 			

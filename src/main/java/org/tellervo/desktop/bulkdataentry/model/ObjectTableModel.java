@@ -50,7 +50,7 @@ public class ObjectTableModel extends AbstractBulkImportTableModel {
 		if(argColumn.equals(SingleObjectModel.TYPE)){
 			return WSIObjectTypeDictionary.class;
 		}else if(argColumn.equals(SingleObjectModel.IMPORTED)){
-			return Boolean.class;
+			return ImportStatus.class;
 		}else if(argColumn.equals(SingleObjectModel.LATITUDE)){
 			return Double.class;
 		}else if(argColumn.equals(SingleObjectModel.LONGITUDE)){

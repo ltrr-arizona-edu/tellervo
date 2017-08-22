@@ -251,6 +251,8 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				App.tridasObjects.addTridasObject(resource.getAssociatedResult());
 			}
 			
+			som.setDirty(false);
+			
 			i++;
 		}
 		
