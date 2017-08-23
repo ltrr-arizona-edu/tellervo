@@ -7,13 +7,13 @@ public enum ImportStatus {
 	IMPORTED_WITH_LOCAL_EDITS ("In database, but with local unsaved edits");
 	
 	
-	private String strname;
-    private ImportStatus(String strname) {
-        this.strname = strname;
+	private String longdesc;
+    private ImportStatus(String longdesc) {
+        this.longdesc = longdesc;
     }
    
     @Override
     public String toString(){
-        return strname;
+        return longdesc;
     } 
 }

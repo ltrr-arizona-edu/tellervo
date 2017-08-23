@@ -52,7 +52,7 @@ public class ElementTableModel extends AbstractBulkImportTableModel {
 		if(argColumn.equals(SingleElementModel.TYPE)){
 			return WSIElementTypeDictionary.class;
 		}else if(argColumn.equals(SingleElementModel.IMPORTED)){
-			return Boolean.class;
+			return ImportStatus.class;
 		}else if(argColumn.equals(SingleElementModel.OBJECT)){
 			return TridasObjectOrPlaceholder.class;
 		}else if(argColumn.equals(SingleElementModel.DEPTH)){

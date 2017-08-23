@@ -71,8 +71,10 @@ import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportSectionModel;
 import org.tellervo.desktop.bulkdataentry.model.IBulkImportTableModel;
+import org.tellervo.desktop.bulkdataentry.model.ImportStatus;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
+import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
 import org.tellervo.desktop.tridasv2.doc.Documentation;
@@ -83,6 +85,9 @@ import org.tellervo.desktop.util.JTableRowHeader;
 import org.tellervo.desktop.util.JTableSpreadsheetAdapter;
 import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIUserDefinedField;
+import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.Date;
+import org.tridas.schema.TridasProject;
 
 import com.dmurph.mvc.model.MVCArrayList;
 
@@ -200,6 +205,40 @@ public abstract class AbstractBulkImportView extends JPanel{
 		table.setColumnControl(btn);
 		showHideColumns.setAction(btn.getAction());
 		
+		table.addMouseListener(new MouseListener(){
+
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				setHelpText();
+
+				
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseExited(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+		});
 		
 		table.getColumnModel().addColumnModelListener(new TableColumnModelListener(){
 
@@ -230,7 +269,6 @@ public abstract class AbstractBulkImportView extends JPanel{
 			@Override
 			public void columnSelectionChanged(ListSelectionEvent e) {	
 				
-				setHelpText();
 				
 			}
 			
@@ -950,11 +988,16 @@ public abstract class AbstractBulkImportView extends JPanel{
 	{
 		//log.debug("Setting help text");
 		TableColumnExt column = null;
+		Object o = null;
 		String s = null;
 		
 		try{
+			
+			int rowindx = table.getSelectedRow();
 			column = table.getColumnExt(table.getSelectedColumn());
-			//s = table.getModel().getValueAt(table.getSelectedRow(), table.getSelectedColumn()).toString();
+			int colindx = column.getModelIndex();
+			
+			if(colindx>-1 && rowindx>-1) o = table.getModel().getValueAt(rowindx, colindx);
 		}
 		catch (ArrayIndexOutOfBoundsException e2)
 		{
@@ -971,13 +1014,38 @@ public abstract class AbstractBulkImportView extends JPanel{
 			return;
 		}
 		
-		if(s==null) s= "";
+		if(o==null) {
+			s= "";
+		}
+		else if (o instanceof String || o instanceof Double || o instanceof Integer || o instanceof ImportStatus || o instanceof Date)
+		{
+			s = o.toString();
+		}
+		else if (o instanceof TridasProject )
+		{
+			s = ((TridasProject) o).getTitle();
+		}
+		else if (o instanceof ControlledVoc)
+		{
+			s = ((ControlledVoc) o).getNormal();
+		}
+		else if (o instanceof TridasFileList)
+		{
+			s = "List of "+((TridasFileList) o).size()+ " file(s)";
+		}
+		else
+		{
+			s = o.getClass().getName();
+			log.debug("Cell is "+o.getClass().getSimpleName());
+		}
+			
+		
 		this.txtHelpText.setText("");
 		
 		HashMap<String,String> hashmap = new HashMap<String,String>();
 		
 		// Hard coded help strings
-		hashmap.put("Imported", "Whether this row has been imported into the database yet or not.  Note this <i>doesn't</i> indicate whether there are unsaved edits to a row or not.");
+		hashmap.put("Imported", "Whether this row is: a new (unsaved) record; a record already imported into the database; or a record that has been imported into the database but which has unsaved local changes.");
 		hashmap.put("Selected", "Checkbox that allows you to select which rows are selected ready to be imported into the database.");
 		hashmap.put("Object code", "Short code name for object, traditionally three letters");
 		hashmap.put("Object Code", "Short code name for object, traditionally three letters");
@@ -1040,15 +1108,15 @@ public abstract class AbstractBulkImportView extends JPanel{
 			
 			if(doc!=null)
 			{
-				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b> - "+doc+"<p>"+s+"</p>");
+				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>"+doc+"<p>"+s+"</p>");
 			} else
 			{
-				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b> - No documentation available"+"<p>"+s+"</p>");
+				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>No documentation available"+"<p>"+s+"</p>");
 			}
 
 		} catch (Exception e)
 		{
-			this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b> - No documentation available"+"<p>"+s+"</p>");
+			this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>No documentation available"+"<p>"+s+"</p>");
 
 		}
 	}

@@ -49,6 +49,7 @@ import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromGeonamesEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
+import org.tellervo.desktop.bulkdataentry.model.ImportStatus;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
@@ -95,7 +96,6 @@ public class ObjectView extends AbstractBulkImportView{
 	
 	public ObjectView(ObjectModel argModel){
 		super(argModel);
-		//table.getColumn("Imported").setCellRenderer(new BooleanCellRenderer(true));
 	}
 	
 	/**
@@ -117,6 +117,9 @@ public class ObjectView extends AbstractBulkImportView{
 		
 		//argTable.setDefaultEditor(TridasProject.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("projectDictionary")));
 		argTable.setDefaultRenderer(TridasProject.class, new TridasProjectRenderer());
+		
+		argTable.setDefaultRenderer(ImportStatus.class, new ImportStatusRenderer());
+		
 		
 		DynamicJComboBox<TridasProject> projectCombo = new DynamicJComboBox<TridasProject>(App.tridasProjects.getMutableObjectList(),new Comparator<TridasProject>() {
 			/**

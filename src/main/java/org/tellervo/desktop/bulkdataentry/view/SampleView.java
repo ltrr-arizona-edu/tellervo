@@ -52,6 +52,7 @@ import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.control.PrintSampleBarcodesEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
+import org.tellervo.desktop.bulkdataentry.model.ImportStatus;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
@@ -118,7 +119,6 @@ public class SampleView extends AbstractBulkImportView {
 	public SampleView(SampleModel argModel, ElementModel elementModel) {
 		super(argModel);
 		this.elementModel = elementModel;
-		table.getColumn("Imported").setCellRenderer(new BooleanCellRenderer(true));
 
 		table.addMouseListener(new MouseListener(){
 
@@ -193,6 +193,9 @@ public class SampleView extends AbstractBulkImportView {
 				new TridasFileListEditor(new JTextField()));
 		argTable.setDefaultRenderer(TridasFileList.class,
 				new TridasFileArrayRenderer());
+		
+		argTable.setDefaultRenderer(ImportStatus.class, new ImportStatusRenderer());
+
 
 		/*
 		 * MVCJComboBox<TridasElement> cboElement = new

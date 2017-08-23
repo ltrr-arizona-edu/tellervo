@@ -55,6 +55,7 @@ import org.tellervo.desktop.bulkdataentry.control.PopulateFromGeonamesEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
+import org.tellervo.desktop.bulkdataentry.model.ImportStatus;
 import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
@@ -113,9 +114,7 @@ public class ElementView extends AbstractBulkImportView{
     
 	public ElementView(ElementModel argModel){
 		super(argModel);
-		
-		table.getColumn("Imported").setCellRenderer(new BooleanCellRenderer(true));
-		
+				
 	}
 
 	/**
@@ -131,7 +130,8 @@ public class ElementView extends AbstractBulkImportView{
 		
 		argTable.setDefaultEditor(TridasFileList.class, new TridasFileListEditor(new JTextField()));
 		argTable.setDefaultRenderer(TridasFileList.class, new TridasFileArrayRenderer());
-		
+		argTable.setDefaultRenderer(ImportStatus.class, new ImportStatusRenderer());
+
 		argTable.setDefaultEditor(TridasUnit.class, new ComboBoxCellEditor(new TridasUnitComboBox()));
 		argTable.setDefaultRenderer(TridasUnit.class, new TridasUnitRenderer());
 		argTable.setDefaultEditor(WSITaxonDictionary.class, new ComboBoxCellEditor(new ControlledVocDictionaryComboBox("taxonDictionary")));

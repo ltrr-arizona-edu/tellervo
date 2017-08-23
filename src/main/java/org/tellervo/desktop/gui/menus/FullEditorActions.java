@@ -38,7 +38,6 @@ import org.tellervo.desktop.gui.menus.actions.MapUTMGraticuleLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapWMSLayerAction;
 import org.tellervo.desktop.gui.menus.actions.MapWorldMapLayerToggleAction;
 import org.tellervo.desktop.gui.menus.actions.MapZoomToSampleAction;
-import org.tellervo.desktop.gui.menus.actions.ODKManagerAction;
 import org.tellervo.desktop.gui.menus.actions.TagSeriesAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateAction;
 import org.tellervo.desktop.gui.menus.actions.ToolsCrossdateWorkspaceAction;
@@ -118,7 +117,7 @@ public class FullEditorActions extends AbstractEditorActions implements IEventLi
 		fileImportICMSAction = new FileICMSImportAction(editor);
 		fileImportICMSAction.setEnabled(false);
 		
-		fileODKManagerAction = new ODKManagerAction();
+		//fileODKManagerAction = new ODKManagerAction();
 		fileExportICMSAction = new FileICMSExportAction();
 		fileExportICMSAction.setEnabled(false);
 		

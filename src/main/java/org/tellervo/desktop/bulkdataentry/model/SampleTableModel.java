@@ -71,7 +71,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 		if(argColumn.equals(SingleSampleModel.TYPE)){
 			return WSISampleTypeDictionary.class;
 		}else if(argColumn.equals(SingleSampleModel.IMPORTED)){
-			return Boolean.class;
+			return ImportStatus.class;
 		}else if(argColumn.equals(SingleSampleModel.SAMPLING_DATE)){
 			return Date.class;
 		}else if(argColumn.equals(SingleSampleModel.KNOTS)){
