@@ -28,6 +28,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -47,8 +49,10 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JToolBar;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableColumnModelEvent;
 import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.TableColumn;
@@ -204,41 +208,26 @@ public abstract class AbstractBulkImportView extends JPanel{
 		ColumnControlButton btn = new ColumnControlButton(table);
 		table.setColumnControl(btn);
 		showHideColumns.setAction(btn.getAction());
-		
-		table.addMouseListener(new MouseListener(){
+	
+		table.getColumnModel().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
+			public void valueChanged(ListSelectionEvent arg0) {
 				setHelpText();
-
 				
 			}
-
-			@Override
-			public void mouseEntered(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
+        	
+        });
+		
+		table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 
 			@Override
-			public void mouseExited(MouseEvent arg0) {
-				// TODO Auto-generated method stub
+			public void valueChanged(ListSelectionEvent arg0) {
+				setHelpText();
 				
 			}
-
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void mouseReleased(MouseEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		});
+        	
+        });
 		
 		table.getColumnModel().addColumnModelListener(new TableColumnModelListener(){
 
@@ -1108,15 +1097,15 @@ public abstract class AbstractBulkImportView extends JPanel{
 			
 			if(doc!=null)
 			{
-				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>"+doc+"<p>"+s+"</p>");
+				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>"+doc+"<p>Selected cell value:<i>"+s+"<i></p>");
 			} else
 			{
-				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>No documentation available"+"<p>"+s+"</p>");
+				this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>No documentation available"+"<p>Selected cell value:<i>"+s+"<i></p>");
 			}
 
 		} catch (Exception e)
 		{
-			this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>No documentation available"+"<p>"+s+"</p>");
+			this.txtHelpText.setText("<html><b>"+column.getHeaderValue().toString()+"</b><br/>No documentation available"+"<p>Selected cell value:<i>"+s+"<i></p>");
 
 		}
 	}
