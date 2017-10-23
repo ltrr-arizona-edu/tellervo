@@ -283,7 +283,7 @@ public class ICMSExporter {
 				
 				if(loc.isSetLocationComment()) rec.setWithinSite(e.getLocation().getLocationComment());
 				
-				if(loc.getLocationGeometry().isSetPoint())
+				if(loc.isSetLocationGeometry() && loc.getLocationGeometry().isSetPoint())
 				{			
 					GMLPointSRSHandler tph = new GMLPointSRSHandler(loc.getLocationGeometry().getPoint());
 					if(tph.getWGS84LatCoord()!=null && tph.getWGS84LongCoord()!=null)

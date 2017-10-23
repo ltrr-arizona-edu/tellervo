@@ -76,10 +76,10 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.Center;
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfWriter;
 
 
 /**
@@ -225,7 +225,7 @@ public class GraphPrintDialog extends JPanel {
 				Rectangle rect = new Rectangle(0, 0,
 						(pinfo.getDrawBounds().getSpan() * pinfo.getYearWidth()),
 						(pinfo.getPrintHeight()));
-				com.lowagie.text.Rectangle pageSize = new com.lowagie.text.Rectangle(
+				com.itextpdf.text.Rectangle pageSize = new com.itextpdf.text.Rectangle(
 						rect.width, rect.height);
 				Document document = new Document(pageSize);
 

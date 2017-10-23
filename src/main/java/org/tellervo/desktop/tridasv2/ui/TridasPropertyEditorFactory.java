@@ -28,6 +28,11 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.List;
 
+import org.jfree.util.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.curation.ProjectBrowserDialog;
+import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.desktop.tridasv2.ui.support.TridasProjectDictionaryProperty;
 import org.tellervo.schema.WSICuration;
@@ -47,6 +52,9 @@ import com.l2fprod.common.util.converter.ConverterRegistry;
  *
  */
 public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
+	private final static Logger log = LoggerFactory.getLogger(ProjectBrowserDialog.class);
+
+	
 	public TridasPropertyEditorFactory() {
 		super();
 		
@@ -67,7 +75,6 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		registerEditor(org.tridas.schema.Date.class, TridasDateEditor.class);
 		
 		registerEditor(TridasFile.class, TridasFileEditor.class);
-		registerEditor(List.class, TridasProjectTypesEditor.class);
 		
 		
 		registerEditor(WSICuration.class, WSICurationEditor.class);
@@ -75,7 +82,11 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 	
 	public synchronized PropertyEditor getEditor(Property property) {
 		if(property instanceof TridasEntityProperty) {
+
 			TridasEntityProperty ep = (TridasEntityProperty) property;
+			
+			log.debug("Lname: "+ep.lname);
+			log.debug("Qname: "+ep.qname);
 			
 			// Whew, it's an enum! Easy!
 			if(ep.representsEnumType())
@@ -91,7 +102,17 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 			
 			if(ep.qname.equals("project.types"))
 			{
-				return new TridasProjectTypesEditor();
+				return new TridasDictionaryItemSelectEditor(Dictionary.getMutableDictionary("projectTypeDictionary"), true);
+			}
+			
+			if(ep.qname.equals("project.references"))
+			{
+				return new TridasReferencesEditor();
+			}
+			
+			if(ep.qname.equals("project.category"))
+			{
+				return new TridasDictionaryItemSelectEditor(Dictionary.getMutableDictionary("projectCategoryDictionary"), false);
 			}
 		}
 		

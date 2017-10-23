@@ -10,13 +10,13 @@
   <xs:element name="RediscoveryExport">
     <xs:complexType>
       <xs:sequence>
+        <xs:element ref="Catalog_x0020__x0023_"/>
         <xs:element ref="Ctrl_x0020_Prop"/>
         <xs:element ref="Class_x0020_1"/>
         <xs:element ref="Class_x0020_2"/>
         <xs:element ref="Class_x0020_3"/>
         <xs:element ref="Class_x0020_4"/>
         <xs:element ref="Object_x0028_NOM_x0029_"/>
-        <xs:element ref="Catalog_x0020__x0023_"/>
         <xs:element ref="Parts"/>
         <xs:element ref="Accession_x0020__x0023_"/>
         <xs:element ref="Location"/>
@@ -66,7 +66,13 @@
   <xs:element name="Class_x0020_3" type="normalClass3" nillable="true"/>
   <xs:element name="Class_x0020_4" type="normalClass4" nillable="true"/>
   <xs:element name="Object_x0028_NOM_x0029_" type="normalDendroSample" nillable="true"/>
-  <xs:element name="Catalog_x0020__x0023_" type="xs:string" nillable="true"/>
+  <xs:element name="Catalog_x0020__x0023_" nillable="true">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:whiteSpace value="preserve"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:element>
   <xs:element name="Parts" type="xs:string" nillable="true"/>
   <xs:element name="Accession_x0020__x0023_" type="xs:NCName" nillable="true"/>
   <xs:element name="Location" type="xs:string" nillable="true"/>
@@ -74,7 +80,13 @@
   <xs:element name="Status_x0020_Date" type="xs:integer" nillable="true"/>
   <xs:element name="Item_x0020_Count" type="xs:decimal" nillable="true"/>
   <xs:element name="Storage_x0020_Unit" type="normalStorageUnit" nillable="true"/>
-  <xs:element name="Description" type="xs:string" nillable="true"/>
+  <xs:element name="Description" nillable="true">
+    <xs:simpleType>
+    <xs:restriction base="xs:string">
+      <xs:whiteSpace value="preserve"/>
+    </xs:restriction>
+  </xs:simpleType>
+  </xs:element>
   <xs:element name="Measurements" type="xs:string" nillable="true"/>
   <xs:element name="Other_x0020_Numbers" type="xs:string" nillable="true"/>
   <xs:element name="Condition" type="normalCondition" nillable="true"/>

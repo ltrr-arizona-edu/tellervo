@@ -37,6 +37,7 @@ import org.tellervo.desktop.bulkdataentry.model.SingleElementModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.tridasv2.TridasObjectList;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
@@ -192,7 +193,12 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				System.out.println("Object isn't dirty, not saving/updating: "+som.getProperty(SingleObjectModel.OBJECT_CODE).toString());
 			}
 			
-			som.populateTridasObject(origObject);
+			try {
+				som.populateTridasObject(origObject);
+			} catch (Exception e1) {
+				new BugDialog(e1);
+
+			}
 
 			TridasObject parentObject = null;
 			try{

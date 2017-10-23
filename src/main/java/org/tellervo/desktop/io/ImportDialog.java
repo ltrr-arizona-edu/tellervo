@@ -83,7 +83,7 @@ import org.tridas.util.TridasObjectEx;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetPanel;
-import com.lowagie.text.Font;
+import com.itextpdf.text.Font;
 
 
 public class ImportDialog extends JDialog implements PropertyChangeListener, TridasSelectListener{

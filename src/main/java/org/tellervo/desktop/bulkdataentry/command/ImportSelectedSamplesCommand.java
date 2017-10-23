@@ -43,6 +43,7 @@ import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasElementOrPlaceholder;
 import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
@@ -180,7 +181,11 @@ public class ImportSelectedSamplesCommand implements ICommand {
 				System.out.println("Object isn't dirty, not saving/updating: "+ssm.getProperty(SingleSampleModel.TITLE).toString());
 			}
 			
-			ssm.populateToTridasSample(origSample);
+			try {
+				ssm.populateToTridasSample(origSample);
+			} catch (Exception e1) {
+				new BugDialog(e1);
+			}
 			
 			Object e = ssm.getProperty(SingleSampleModel.ELEMENT);
 			TridasElement parentElement = null;
@@ -244,7 +249,13 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			if(ssm.getRadiusModel() != null){
 				// now lets do the radius
 				TridasRadius origRadius = new TridasRadius();
-				ssm.getRadiusModel().populateToTridasRadius(origRadius);
+				
+				try {
+					ssm.getRadiusModel().populateToTridasRadius(origRadius);
+				} catch (Exception e1) {
+					new BugDialog(e1);
+
+				}
 				
 				TridasSample parentSample = sampleResource.getAssociatedResult();
 				
@@ -417,7 +428,12 @@ public class ImportSelectedSamplesCommand implements ICommand {
 					// This element must be the right one so go ahead and set it in the sample model
 					
 					TridasElement element = new TridasElement();
-					elemrow.populateToTridasElement(element);
+					try {
+						elemrow.populateToTridasElement(element);
+					} catch (Exception e1) {
+						
+						e1.printStackTrace();
+					}
 					
 					som.setProperty(SingleSampleModel.ELEMENT, new TridasElementOrPlaceholder(element));
 					return true;

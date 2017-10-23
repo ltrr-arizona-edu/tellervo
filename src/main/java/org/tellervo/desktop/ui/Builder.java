@@ -49,7 +49,7 @@ import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.platform.Platform;
 
 import com.dmurph.mvc.MVCEvent;
-import com.lowagie.text.BadElementException;
+import com.itextpdf.text.BadElementException;
 
 
 // TODO: if on 1.4, use setDisplayedMnemonicIndex() so "Save &As..."
@@ -306,13 +306,13 @@ public class Builder {
 	}
 	
 	
-	public static com.lowagie.text.Image getITextImageIcon(String name){
+	public static com.itextpdf.text.Image getITextImageIcon(String name){
 		
 		java.net.URL url = cl.getResource(getIconURL(name, ICONS, 48));
 		
 		if (url != null){
 			try {
-				return com.lowagie.text.Image.getInstance(url);
+				return com.itextpdf.text.Image.getInstance(url);
 			} catch (BadElementException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -329,13 +329,13 @@ public class Builder {
 		
 	}
 	
-	public static com.lowagie.text.Image getITextImageMissingIcon(){
+	public static com.itextpdf.text.Image getITextImageMissingIcon(){
 		
 		java.net.URL url = cl.getResource(getIconURL("missingicon.png", ICONS, 48));
 		
 		if (url != null){
 			try {
-				return com.lowagie.text.Image.getInstance(url);
+				return com.itextpdf.text.Image.getInstance(url);
 			} catch (BadElementException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

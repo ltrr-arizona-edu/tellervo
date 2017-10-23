@@ -95,7 +95,7 @@ import com.l2fprod.common.propertysheet.PropertySheet;
 import com.l2fprod.common.propertysheet.PropertySheetTableModel;
 import com.l2fprod.common.swing.JButtonBar;
 import com.l2fprod.common.swing.plaf.blue.BlueishButtonBarUI;
-import com.lowagie.text.Font;
+import com.itextpdf.text.Font;
 
 
 @SuppressWarnings("serial")

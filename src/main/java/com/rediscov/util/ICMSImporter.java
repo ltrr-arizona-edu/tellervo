@@ -8,6 +8,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,7 +43,10 @@ import org.tellervo.desktop.wsi.ResourceEvent;
 import org.tellervo.desktop.wsi.ResourceEventListener;
 import org.tellervo.desktop.wsi.tellervo.FriendlyExceptionTranslator;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.TellervoAssociatedResource;
+import org.tellervo.desktop.wsi.tellervo.TellervoEntityAssociatedResource;
 import org.tellervo.desktop.wsi.tellervo.TellervoMultiResourceAccessPanel;
+import org.tellervo.desktop.wsi.tellervo.TellervoResource;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
@@ -81,6 +88,7 @@ public class ICMSImporter implements PropertyChangeListener{
 	ControlledVoc defaultTaxon;
 	TellervoMultiResourceAccessPanel progress;
 	JDialog d;
+	
 
 	private String filename;
 	
@@ -251,6 +259,7 @@ public class ICMSImporter implements PropertyChangeListener{
     	int successfulCount = 0;
     	int i = 0;
     	Exception failException = null;
+    	String importErrorLog = "";
     	
     	/*
          * Main task. Executed in background thread.
@@ -293,19 +302,21 @@ public class ICMSImporter implements PropertyChangeListener{
     			
     			RediscoveryExportEx rec = new RediscoveryExportEx(record);
     			
-    			if(!rec.isImportable())
+    			if(rec.getUnImportableReason()!=null)
     			{
-    				log.debug("Ignoring record '"+rec.getCatalogCode()+"' because it is not importable.");
+    				String error = "Ignoring record '"+rec.getCatalogCode()+"' because it is not importable: "+rec.getUnImportableReason();
+    				log.debug(error);
+    				importErrorLog += error+System.lineSeparator(); 
     				continue;
     			}
     			else
     			{
-    				log.debug("Importing record '"+rec.getCatalogCode()+"'");
+    				//log.debug("Importing record '"+rec.getCatalogCode()+"'");
     				publish("Importing:  '"+rec.getCatalogCode()+"'");
     			}
 
     			try {
-    				
+    				TridasProject project = Dictionary.getTridasProjectByID("b30edb64-5a2b-11e5-9dbb-7b3f84ef785a");
     				TridasObjectEx park = Dictionary.getTridasObjectByCode(rec.getObjectCode());
     				if(park==null)
     				{
@@ -315,7 +326,10 @@ public class ICMSImporter implements PropertyChangeListener{
     					// Object not known so create
     					park = new TridasObjectEx();
     					park.setTitle(rec.getObjectCode());
+    					
+    					
     					TridasUtils.setObjectCode(park, rec.getObjectCode());
+    					TridasUtils.setProject(park, project);
     					park.setType(defaultObjectType);
 		
     					EntityResource<TridasObjectEx> resource = new EntityResource<TridasObjectEx>(park, TellervoRequestType.CREATE, TridasObjectEx.class);
@@ -329,13 +343,88 @@ public class ICMSImporter implements PropertyChangeListener{
     					
     					resource.query();
     					resource.queryThread.join();
-    					if(failException!=null)	throw failException;
+    					EntitySearchResource<TridasObjectEx> resource2 = null;
+    					if(failException!=null)	{
+    						resource = null;
+    						
+    						if(failException.getLocalizedMessage().contains("unique_parent-title"))
+    						{
+        						// Creation of object failed due to duplicate record constraint.
+        						// Try searching for the existing record instead
+    							
+    							failException = null;
+    							SearchParameters param = new SearchParameters(SearchReturnObject.OBJECT);
+    					    	param.addSearchConstraint(SearchParameterName.TOPOBJECTCODE, SearchOperator.EQUALS, TridasUtils.getGenericFieldValueByName(park, TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE));
+    							resource2 = new EntitySearchResource<TridasObjectEx>(param, TridasObjectEx.class);
+    		 					    												
+    							resource2.addResourceEventListener(new ResourceEventListener(){
+    								@Override
+    								public void resourceChanged(ResourceEvent re) {
+    									if(re.getEventType()==ResourceEvent.RESOURCE_QUERY_FAILED) failException = re.getAttachedException();
+    								}
+    	    					});
+    	    					
+    							resource2.query();
+    							resource2.queryThread.join();
+    	    					if(failException!=null)	{
+    	    						String error =  "Error located object "+rec.getObjectCode()+System.lineSeparator();
+    	    						error += failException.getLocalizedMessage()+System.lineSeparator();
+    	    						error += "Skipping record"+System.lineSeparator();
+    	    						log.debug(error);
+    	    						importErrorLog += error;
+    	    						continue;
+    	    					}
+    						}
+    						else
+    						{
+    						
+	    						String error =  "Error creating object "+rec.getObjectCode()+System.lineSeparator();
+	    						error += failException.getLocalizedMessage()+System.lineSeparator();
+	    						error += "Skipping record"+System.lineSeparator();
+	    						log.debug(error);
+	    						importErrorLog += error;
+	    						continue;
+    						}
+    					}
 
 						try{
-							park = resource.getAssociatedResult();
+							if(resource !=null)
+							{
+								park = resource.getAssociatedResult();
+							}
+							else if (resource2 !=null)
+							{
+								if(resource2.getAssociatedResult().size()==0)
+								{
+	   	    						String error =  "Error located object "+rec.getObjectCode()+System.lineSeparator();
+    	    						error += failException.getLocalizedMessage()+System.lineSeparator();
+    	    						error += "Skipping record"+System.lineSeparator();
+    	    						log.debug(error);
+    	    						importErrorLog += error;
+    	    						continue;
+								}
+								else if(resource2.getAssociatedResult().size()>1)
+								{
+	   	    						String error =  "Error located object "+rec.getObjectCode()+".  Multiple matches found."+System.lineSeparator();
+    	    						error += failException.getLocalizedMessage()+System.lineSeparator();
+    	    						error += "Skipping record"+System.lineSeparator();
+    	    						log.debug(error);
+    	    						importErrorLog += error;
+    	    						continue;
+								}
+								else
+								{
+									park=  resource2.getAssociatedResult().get(0);
+								}
+							}
 						} catch (Exception e)
 						{
-							throw new Exception("Object not found.");
+							String error =  "Object "+rec.getObjectCode()+" not found"+System.lineSeparator();
+    						error += e.getLocalizedMessage()+System.lineSeparator();
+    						error += "Skipping record";
+    						log.debug(error);
+    						importErrorLog += error;
+							continue;
 						}
 						App.tridasObjects.addTridasObject(park);
    
@@ -383,13 +472,89 @@ public class ICMSImporter implements PropertyChangeListener{
     					
     					resource.query();
     					resource.queryThread.join();
-    					if(failException!=null)	throw failException;
+    					EntitySearchResource<TridasObjectEx> resource2 = null;
+    					if(failException!=null)	{
+    						
+    						// Creation of object failed due to duplicate record constraint.
+    						// Try searching for the existing record instead
+    						resource = null;
+    						
+    						if(failException.getLocalizedMessage().contains("unique_parent-title"))
+    						{
+    							failException = null;
+    							SearchParameters param = new SearchParameters(SearchReturnObject.OBJECT);
+    					    	param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, TridasUtils.getGenericFieldValueByName(site, TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE));
+    					    	param.addSearchConstraint(SearchParameterName.PARENTOBJECTID, SearchOperator.EQUALS, park.getIdentifier().getValue());
+    							resource2 = new EntitySearchResource<TridasObjectEx>(param, TridasObjectEx.class);
+    		 					    												
+    							resource2.addResourceEventListener(new ResourceEventListener(){
+    								@Override
+    								public void resourceChanged(ResourceEvent re) {
+    									if(re.getEventType()==ResourceEvent.RESOURCE_QUERY_FAILED) failException = re.getAttachedException();
+    								}
+    	    					});
+    	    					
+    							resource2.query();
+    							resource2.queryThread.join();
+    	    					if(failException!=null)	{
+    	    						String error =  "Error located object "+rec.getObjectCode()+System.lineSeparator();
+    	    						error += failException.getLocalizedMessage()+System.lineSeparator();
+    	    						error += "Skipping record"+System.lineSeparator();
+    	    						log.debug(error);
+    	    						importErrorLog += error;
+    	    						continue;
+    	    					}
+    						}
+    						else
+    						{
+    						
+	    						String error =  "Error creating object "+rec.getObjectCode()+System.lineSeparator();
+	    						error += failException.getLocalizedMessage()+System.lineSeparator();
+	    						error += "Skipping record"+System.lineSeparator();
+	    						log.debug(error);
+	    						importErrorLog += error;
+	    						continue;
+    						}
+    					}
  
     					try{
-    						site = resource.getAssociatedResult();
+    						if(resource !=null)
+							{
+    							site = resource.getAssociatedResult();
+							}
+							else if (resource2 !=null)
+							{
+								if(resource2.getAssociatedResult().size()==0)
+								{
+	   	    						String error =  "Error located object "+rec.getObjectCode()+System.lineSeparator();
+    	    						error += failException.getLocalizedMessage()+System.lineSeparator();
+    	    						error += "Skipping record"+System.lineSeparator();
+    	    						log.debug(error);
+    	    						importErrorLog += error;
+    	    						continue;
+								}
+								else if(resource2.getAssociatedResult().size()>1)
+								{
+	   	    						String error =  "Error located object "+rec.getObjectCode()+".  Multiple matches found."+System.lineSeparator();
+    	    						error += failException.getLocalizedMessage()+System.lineSeparator();
+    	    						error += "Skipping record"+System.lineSeparator();
+    	    						log.debug(error);
+    	    						importErrorLog += error;
+    	    						continue;
+								}
+								else
+								{
+									site=  resource2.getAssociatedResult().get(0);
+								}
+							}
 						} catch (Exception e)
 						{
-							throw new Exception("Object not found.");
+							String error =  "Object "+rec.getObjectCode()+" not found"+System.lineSeparator();
+    						error += e.getLocalizedMessage()+System.lineSeparator();
+    						error += "Skipping record";
+    						log.debug(error);
+    						importErrorLog += error;
+							continue;
 						}
 
         				park.getObjects().add(site);
@@ -426,14 +591,89 @@ public class ICMSImporter implements PropertyChangeListener{
     				
 					resource.query();
 					resource.queryThread.join();
-					if(failException!=null)	throw failException;
+					EntitySearchResource<TridasElement> resource2 = null;
+					if(failException!=null)	{
+						
+						// Creation of element failed due to duplicate record constraint.
+						// Try searching for the existing record instead
+						resource = null;
+						
+						if(failException.getLocalizedMessage().contains("unique_parentobject-code"))
+						{
+							failException = null;
+							SearchParameters param = new SearchParameters(SearchReturnObject.ELEMENT);
+					    	param.addSearchConstraint(SearchParameterName.OBJECTCODE, SearchOperator.EQUALS, TridasUtils.getGenericFieldValueByName(site, TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE));
+					    	param.addSearchConstraint(SearchParameterName.ELEMENTCODE, SearchOperator.EQUALS, element.getTitle());
+							resource2 = new EntitySearchResource<TridasElement>(param, TridasElement.class);
+		 					    												
+							resource2.addResourceEventListener(new ResourceEventListener(){
+								@Override
+								public void resourceChanged(ResourceEvent re) {
+									if(re.getEventType()==ResourceEvent.RESOURCE_QUERY_FAILED) failException = re.getAttachedException();
+								}
+	    					});
+	    					
+							resource2.query();
+							resource2.queryThread.join();
+	    					if(failException!=null)	{
+	    						String error =  "Error located element "+rec.getCatalogCodeNumber()+System.lineSeparator();
+	    						error += failException.getLocalizedMessage()+System.lineSeparator();
+	    						error += "Skipping record"+System.lineSeparator();
+	    						log.debug(error);
+	    						importErrorLog += error;
+	    						continue;
+	    					}
+						}
+						else
+						{
+							String error =  "Error creating element "+rec.getCatalogCodeNumber()+System.lineSeparator();
+							error += failException.getLocalizedMessage()+System.lineSeparator();
+							error += "Skipping record";
+							log.debug(error);
+							importErrorLog += error;
+							continue;
+						}
+					}
 					
 					 
 					try{
-						element = resource.getAssociatedResult();
+						if(resource !=null)
+						{
+							element = resource.getAssociatedResult();
+						}
+						else if (resource2 !=null)
+						{
+							if(resource2.getAssociatedResult().size()==0)
+							{
+   	    						String error =  "Error located element "+rec.getCatalogCodeNumber()+System.lineSeparator();
+	    						error += failException.getLocalizedMessage()+System.lineSeparator();
+	    						error += "Skipping record"+System.lineSeparator();
+	    						log.debug(error);
+	    						importErrorLog += error;
+	    						continue;
+							}
+							else if(resource2.getAssociatedResult().size()>1)
+							{
+   	    						String error =  "Error located element "+rec.getCatalogCodeNumber()+".  Multiple matches found."+System.lineSeparator();
+	    						error += failException.getLocalizedMessage()+System.lineSeparator();
+	    						error += "Skipping record"+System.lineSeparator();
+	    						log.debug(error);
+	    						importErrorLog += error;
+	    						continue;
+							}
+							else
+							{
+								element =  resource2.getAssociatedResult().get(0);
+							}
+						}
 					} catch (Exception e)
 					{
-						throw new Exception("Error writing element to database");
+						String error =  "Element "+rec.getCatalogCodeNumber()+" not found"+System.lineSeparator();
+						error += e.getLocalizedMessage()+System.lineSeparator();
+						error += "Skipping record";
+						log.debug(error);
+						importErrorLog += error;
+						continue;
 					}
 
     				//***********************************
@@ -519,14 +759,27 @@ public class ICMSImporter implements PropertyChangeListener{
     						resource3.query();
         					resource3.queryThread.join();
         					
-        					if(failException!=null)	throw failException;
+        					if(failException!=null)	{
+        						String error =  "Error creating box "+rec.getCleanBoxName()+System.lineSeparator();
+        						error += failException.getLocalizedMessage()+System.lineSeparator();
+        						error += "Skipping record";
+        						log.debug(error);
+        						importErrorLog += error;
+        						continue;
+        						
+        					}
         					
         					try{
         						box = resource3.getAssociatedResult();
         					}
     						catch (Exception e)
     						{
-    							throw new Exception("Error writing box to database");
+    							String error =  "Box "+rec.getCleanBoxName()+" not found"+System.lineSeparator();
+    							error += e.getLocalizedMessage()+System.lineSeparator();
+    							error += "Skipping record";
+    							log.debug(error);
+    							importErrorLog += error;
+    							continue;
     						}
 
     						
@@ -536,26 +789,38 @@ public class ICMSImporter implements PropertyChangeListener{
      					
     					sample.getGenericFields().add(TridasManipUtil.createGenericField("tellervo.boxID", box.getIdentifier().getValue(), "xs:string"));
     					
-    					EntityResource<TridasSample> resource2 = new EntityResource<TridasSample>(sample, element, TridasSample.class);
+    					EntityResource<TridasSample> resource4 = new EntityResource<TridasSample>(sample, element, TridasSample.class);
     					
-    					resource2.addResourceEventListener(new ResourceEventListener(){
+    					resource4.addResourceEventListener(new ResourceEventListener(){
 							@Override
 							public void resourceChanged(ResourceEvent re) {
 								if(re.getEventType()==ResourceEvent.RESOURCE_QUERY_FAILED) failException = re.getAttachedException();
 							}
     					});
     					
-    					resource2.query();
-    					resource2.queryThread.join();
-    					if(failException!=null)	throw failException;
+    					resource4.query();
+    					resource4.queryThread.join();
+    					if(failException!=null){
+    						String error =  "Error creating sample "+sample.getTitle()+System.lineSeparator();
+    						error += failException.getLocalizedMessage()+System.lineSeparator();
+    						error += "Skipping record";
+    						log.debug(error);
+    						importErrorLog += error;
+    						continue;
+    					}
     				
     					
     					try{
-    						sample = resource2.getAssociatedResult();
+    						sample = resource4.getAssociatedResult();
     					}catch (Exception e)
     					{
-    						throw new Exception("Error writing sample to database");
-    					}
+							String error =  "Sample "+sample.getTitle()+" not found"+System.lineSeparator();
+							error += e.getLocalizedMessage()+System.lineSeparator();
+							error += "Skipping record";
+							log.debug(error);
+							importErrorLog += error;
+							continue;    				
+						}
 
 
     				}
@@ -588,7 +853,29 @@ public class ICMSImporter implements PropertyChangeListener{
          */
         @Override
         public void done() {
-           
+
+        	BufferedWriter writer = null;
+        	try
+        	{
+        	    writer = new BufferedWriter( new FileWriter( "/tmp/import.log"));
+        	    writer.write(this.importErrorLog);
+
+        	}
+        	catch ( IOException e)
+        	{
+        	}
+        	finally
+        	{
+        	    try
+        	    {
+        	        if ( writer != null)
+        	        writer.close( );
+        	    }
+        	    catch ( IOException e)
+        	    {
+        	    }
+        	}
+        	
         	d.setVisible(false);
         	
         	try {

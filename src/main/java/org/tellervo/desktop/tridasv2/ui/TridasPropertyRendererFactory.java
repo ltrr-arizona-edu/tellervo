@@ -20,7 +20,6 @@
  ******************************************************************************/
 package org.tellervo.desktop.tridasv2.ui;
 
-import java.awt.Color;
 import java.util.List;
 
 import javax.swing.table.DefaultTableCellRenderer;
@@ -28,7 +27,6 @@ import javax.swing.table.TableCellRenderer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.desktop.tridasv2.ui.support.TridasProjectDictionaryProperty;
 import org.tridas.schema.ControlledVoc;
@@ -86,6 +84,8 @@ public class TridasPropertyRendererFactory extends PropertyRendererRegistry {
 		super.registerRenderer(TridasGenericField.class, new TridasGenericFieldRenderer());
 		
 		super.registerRenderer(TridasProject.class, new TridasProjectRenderer());
+		
+		
 	}
 	
 	public synchronized TableCellRenderer getRenderer(Property property) {

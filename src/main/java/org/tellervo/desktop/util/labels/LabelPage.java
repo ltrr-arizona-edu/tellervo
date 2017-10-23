@@ -20,7 +20,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.util.labels;
 
-import com.lowagie.text.Rectangle;
+import com.itextpdf.text.Rectangle;
 
 public interface LabelPage {
 	public float getLabelHeight();

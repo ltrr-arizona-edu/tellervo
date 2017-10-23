@@ -41,6 +41,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JEditorPane;
 import javax.swing.JFrame;
@@ -63,6 +64,7 @@ import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 
 import jsyntaxpane.DefaultSyntaxKit;
+import net.miginfocom.swing.MigLayout;
 
 import org.netbeans.swing.outline.DefaultOutlineModel;
 import org.netbeans.swing.outline.Outline;
@@ -71,9 +73,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
-import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel;
-import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
+import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;
 import org.tellervo.desktop.io.ConversionWarningTableModel;
 import org.tellervo.desktop.io.LineHighlighter;
 import org.tellervo.desktop.io.control.ExpandImportTreeEvent;
@@ -86,8 +87,8 @@ import org.tellervo.desktop.io.control.ReplaceHierarchyEvent;
 import org.tellervo.desktop.io.model.ImportEntityListComboBox;
 import org.tellervo.desktop.io.model.ImportModel;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow;
-import org.tellervo.desktop.io.model.TridasRepresentationTreeModel;
 import org.tellervo.desktop.io.model.TridasRepresentationTableTreeRow.ImportStatus;
+import org.tellervo.desktop.io.model.TridasRepresentationTreeModel;
 import org.tellervo.desktop.model.TellervoModelLocator;
 import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel;
 import org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetTable;
@@ -110,7 +111,6 @@ import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
-import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasValue;
 import org.tridas.schema.TridasValues;
@@ -118,13 +118,9 @@ import org.tridas.schema.TridasVariable;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.MVC;
+import com.itextpdf.text.Font;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
-import com.l2fprod.common.propertysheet.PropertySheetPanel;
-import com.lowagie.text.Font;
-
-import net.miginfocom.swing.MigLayout;
-import javax.swing.JComboBox;
 
 public class ImportView extends JFrame{
 

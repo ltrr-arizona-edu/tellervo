@@ -21,10 +21,10 @@ import com.dmurph.mvc.model.MVCArrayList;
 import com.jidesoft.swing.CheckBoxList;
 import com.jidesoft.swing.SearchableUtils;
 
-public class TridasProjectTypesPanel extends JPanel{
+public class TridasDictionaryItemSelectPanel extends JPanel{
 
 	private static final long serialVersionUID = 1L;
-	private final static Logger log = LoggerFactory.getLogger(TridasProjectTypesPanel.class);
+	private final static Logger log = LoggerFactory.getLogger(TridasDictionaryItemSelectPanel.class);
     private CheckBoxList cbxlstChoices;
     private JScrollPane choicesScrollPane;
 	private Boolean hasResults;
@@ -34,11 +34,10 @@ public class TridasProjectTypesPanel extends JPanel{
 	/**
 	 * Create the dialog.
 	 */
-	public TridasProjectTypesPanel(ArrayList<ControlledVoc> selectedItems) {	
+	public TridasDictionaryItemSelectPanel(ArrayList<Object>dictionary, boolean allowMultiple, ArrayList<ControlledVoc> selectedItems) {	
 		
 		
-		
-		setupGUI(selectedItems);
+		setupGUI(dictionary, allowMultiple, selectedItems);
 		
 	}
 	
@@ -48,15 +47,24 @@ public class TridasProjectTypesPanel extends JPanel{
 	}
 	
 	
-	private void setupGUI(ArrayList<ControlledVoc> selectedlist)
+	private void setupGUI(ArrayList<Object>dictionary, boolean allowMultiple, ArrayList<ControlledVoc> selectedlist)
 	{
-		ArrayList<Object> dictionary = Dictionary.getMutableDictionary("projectTypeDictionary");
+		//ArrayList<Object> dictionary = Dictionary.getMutableDictionary("projectTypeDictionary");
 		choices = SelectableChoice.makeObjectsSelectable(dictionary, false);
 		setSelectedChoices(selectedlist);
 		
 		cbxlstChoices = new CheckBoxList(choices.toArray(new SelectableChoice[choices.size()]));
         SearchableUtils.installSearchable(cbxlstChoices);
-		cbxlstChoices.getCheckBoxListSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        
+        if(allowMultiple)
+        {
+        	cbxlstChoices.getCheckBoxListSelectionModel().setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        }
+        else
+        {
+        	cbxlstChoices.getCheckBoxListSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+
+        }
 		cbxlstChoices.getCheckBoxListSelectionModel().addListSelectionListener(new ListSelectionListener() {
 	            public void valueChanged(ListSelectionEvent e) {
 	                if (!e.getValueIsAdjusting()) {

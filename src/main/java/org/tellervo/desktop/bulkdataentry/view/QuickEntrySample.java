@@ -173,7 +173,12 @@ public class QuickEntrySample extends JDialog implements ActionListener, Propert
     		{
     			TridasElement element = new TridasElement();
     			SingleElementModel elementRow = (SingleElementModel) row;
-    			elementRow.populateToTridasElement(element);
+    			try {
+					elementRow.populateToTridasElement(element);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
     			
     			String[] codes = {"A", "B", "C", "D", "E", "F", "G", "H", "I", "J"};
     			for(int i=0; i<((Integer)spnSampleNumber.getValue()); i++)

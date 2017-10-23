@@ -306,7 +306,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 		}
 
 		try {
-			log.debug("Clipboard contents: " + system.getName());
+			log.debug("Clipboard contents: " + system.getName()); 
 			String trstring = (String) (system.getContents(this)
 					.getTransferData(DataFlavor.stringFlavor));
 			log.debug("Clipboard string is: " + trstring);
@@ -388,8 +388,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 									+ "' so setting cell to null");
 
 							if (!simulateFirst)
-								tablemodel.setValueAt(null, rowModelIndex, startCol
-										+ colViewIndex);
+								tablemodel.setValueAt(null, rowModelIndex,colModelIndex);
 						} else if (clazz.equals(WSIProjectTypeDictionary.class)) {
 							List<ControlledVoc> types = Dictionary
 									.getMutableDictionary("projectTypeDictionary");
@@ -536,7 +535,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 							}
 						}
 						else if (clazz.equals(TridasProject.class)) {
-							List<TridasProject> types = App.tridasProjects.getMutableObjectList();
+							List<TridasProject> types = App.tridasProjects.getMutableProjectList();
 							Boolean match = false;
 							for (TridasProject proj : types) {
 								if (proj.getTitle().equals(value)) {

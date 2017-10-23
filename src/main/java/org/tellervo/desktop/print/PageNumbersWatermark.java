@@ -3,7 +3,7 @@
  *
  * This code is part of the 'iText Tutorial'.
  * You can find the complete tutorial at the following address:
- * http://itextdocs.lowagie.com/tutorial/
+ * http://itextdocs.itextpdf.com/tutorial/
  *
  * This code is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -17,23 +17,24 @@ package org.tellervo.desktop.print;
 import java.awt.Color;
 import java.io.FileOutputStream;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.Element;
-import com.lowagie.text.ExceptionConverter;
-import com.lowagie.text.Font;
-import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfGState;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfPageEventHelper;
-import com.lowagie.text.pdf.PdfTemplate;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.ExceptionConverter;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfGState;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfPageEventHelper;
+import com.itextpdf.text.pdf.PdfTemplate;
+import com.itextpdf.text.pdf.PdfWriter;
 /**
  * Demonstrates the use of templates to add Watermarks and Pagenumbers.
  */
@@ -78,7 +79,7 @@ public class PageNumbersWatermark extends PdfPageEventHelper {
     }
     
     /**
-     * @see com.lowagie.text.pdf.PdfPageEventHelper#onOpenDocument(com.lowagie.text.pdf.PdfWriter, com.lowagie.text.Document)
+     * @see com.itextpdf.text.pdf.PdfPageEventHelper#onOpenDocument(com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
      */
     public void onOpenDocument(PdfWriter writer, Document document) {
         try {
@@ -86,11 +87,11 @@ public class PageNumbersWatermark extends PdfPageEventHelper {
             headerImage = Image.getInstance("logo.gif");
             table = new PdfPTable(2);
             Phrase p = new Phrase();
-            Chunk ck = new Chunk("lowagie.com\n", new Font(Font.TIMES_ROMAN, 16, Font.BOLDITALIC, Color.blue));
+            Chunk ck = new Chunk("itextpdf.com\n", new Font(Font.FontFamily.TIMES_ROMAN, 16, Font.BOLDITALIC, BaseColor.BLUE));
             p.add(ck);
-            ck = new Chunk("Ghent\nBelgium", new Font(Font.HELVETICA, 12, Font.NORMAL, Color.darkGray));
+            ck = new Chunk("Ghent\nBelgium", new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL, BaseColor.DARK_GRAY));
             p.add(ck);
-            table.getDefaultCell().setBackgroundColor(Color.yellow);
+            table.getDefaultCell().setBackgroundColor(BaseColor.YELLOW);
             table.getDefaultCell().setBorderWidth(0);
             table.addCell(p);
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -111,7 +112,7 @@ public class PageNumbersWatermark extends PdfPageEventHelper {
     }    
     
     /**
-     * @see com.lowagie.text.pdf.PdfPageEventHelper#onEndPage(com.lowagie.text.pdf.PdfWriter, com.lowagie.text.Document)
+     * @see com.itextpdf.text.pdf.PdfPageEventHelper#onEndPage(com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
      */
     public void onEndPage(PdfWriter writer, Document document) {
         PdfContentByte cb = writer.getDirectContent();
@@ -142,7 +143,7 @@ public class PageNumbersWatermark extends PdfPageEventHelper {
         }
         cb.saveState();
         // draw a Rectangle around the page
-        cb.setColorStroke(Color.orange);
+        cb.setColorStroke(BaseColor.ORANGE);
         cb.setLineWidth(2);
         cb.rectangle(20, 20, document.getPageSize().getWidth() - 40, document.getPageSize().getHeight() - 40);
         cb.stroke();
@@ -150,7 +151,7 @@ public class PageNumbersWatermark extends PdfPageEventHelper {
         // starting on page 3, a watermark with an Image that is made transparent
         if (writer.getPageNumber() >= 3) {
             cb.setGState(gstate);
-            cb.setColorFill(Color.red);
+            cb.setColorFill(BaseColor.RED);
             cb.beginText();
             cb.setFontAndSize(helv, 48);
             cb.showTextAligned(Element.ALIGN_CENTER, "Watermark Opacity " + writer.getPageNumber(), document.getPageSize().getWidth() / 2, document.getPageSize().getHeight() / 2, 45);
@@ -167,13 +168,13 @@ public class PageNumbersWatermark extends PdfPageEventHelper {
     }
     
     /**
-     * @see com.lowagie.text.pdf.PdfPageEventHelper#onStartPage(com.lowagie.text.pdf.PdfWriter, com.lowagie.text.Document)
+     * @see com.itextpdf.text.pdf.PdfPageEventHelper#onStartPage(com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
      */
     public void onStartPage(PdfWriter writer, Document document) {
         if (writer.getPageNumber() < 3) {
             PdfContentByte cb = writer.getDirectContentUnder();
             cb.saveState();
-            cb.setColorFill(Color.pink);
+            cb.setColorFill(BaseColor.PINK);
             cb.beginText();
             cb.setFontAndSize(helv, 48);
             cb.showTextAligned(Element.ALIGN_CENTER, "My Watermark Under " + writer.getPageNumber(), document.getPageSize().getWidth() / 2, document.getPageSize().getHeight() / 2, 45);
@@ -183,7 +184,7 @@ public class PageNumbersWatermark extends PdfPageEventHelper {
     }
     
     /**
-     * @see com.lowagie.text.pdf.PdfPageEventHelper#onCloseDocument(com.lowagie.text.pdf.PdfWriter, com.lowagie.text.Document)
+     * @see com.itextpdf.text.pdf.PdfPageEventHelper#onCloseDocument(com.itextpdf.text.pdf.PdfWriter, com.itextpdf.text.Document)
      */
     public void onCloseDocument(PdfWriter writer, Document document) {
        tpl.beginText();

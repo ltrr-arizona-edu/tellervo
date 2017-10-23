@@ -19,37 +19,37 @@
  ******************************************************************************/
 package org.tellervo.desktop.print;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.Font;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.pdf.PdfContentByte;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfContentByte;
 
 public class ReportBase {
 	
 	// Title fonts
-	Font docTypeFont = new Font(Font.HELVETICA, 20f, Font.BOLD);
-	Font titleFont = new Font(Font.HELVETICA, 20f, Font.BOLD);
-	Font labelTitleFont = new Font(Font.HELVETICA, 28f, Font.BOLD);
-	Font monsterFont = new Font(Font.HELVETICA, 38f, Font.BOLD);
-	Font subTitleFont = new Font(Font.HELVETICA, 14f);
+	Font docTypeFont = new Font(Font.FontFamily.HELVETICA, 20f, Font.BOLD);
+	Font titleFont = new Font(Font.FontFamily.HELVETICA, 20f, Font.BOLD);
+	Font labelTitleFont = new Font(Font.FontFamily.HELVETICA, 28f, Font.BOLD);
+	Font monsterFont = new Font(Font.FontFamily.HELVETICA, 38f, Font.BOLD);
+	Font subTitleFont = new Font(Font.FontFamily.HELVETICA, 14f);
 	
 	// Section fonts
-	Font sectionFont = new Font(Font.HELVETICA, 14f, Font.BOLD);
-	Font subSectionFont = new Font(Font.HELVETICA, 14f, Font.BOLD);
-	Font subSubSectionFont = new Font(Font.HELVETICA, 10f, Font.BOLD);
+	Font sectionFont = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);
+	Font subSectionFont = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);
+	Font subSubSectionFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
 	
 	// General body fonts
-	Font bodyFontLarge = new Font(Font.HELVETICA, 14f);
-	Font bodyFont = new Font(Font.HELVETICA, 10f);
-	Font bodyFontItalic = new Font(Font.HELVETICA, 10f, Font.ITALIC);
-	Font commentFont = new Font(Font.HELVETICA, 9f, Font.ITALIC);
-	Font superBodyFont = new Font(Font.HELVETICA, 6f);
+	Font bodyFontLarge = new Font(Font.FontFamily.HELVETICA, 14f);
+	Font bodyFont = new Font(Font.FontFamily.HELVETICA, 10f);
+	Font bodyFontItalic = new Font(Font.FontFamily.HELVETICA, 10f, Font.ITALIC);
+	Font commentFont = new Font(Font.FontFamily.HELVETICA, 9f, Font.ITALIC);
+	Font superBodyFont = new Font(Font.FontFamily.HELVETICA, 6f);
 	
 	// Table fonts
-	Font tableHeaderFont = new Font(Font.HELVETICA, 10f, Font.BOLD);
-	Font tableHeaderFontLarge = new Font(Font.HELVETICA, 14f, Font.BOLD);
-	Font tableBodyFont = new Font(Font.HELVETICA, 8f);
+	Font tableHeaderFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
+	Font tableHeaderFontLarge = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);
+	Font tableBodyFont = new Font(Font.FontFamily.HELVETICA, 8f);
 	
 	// Line widths
 	Float lineWidth = new Float(0.05);

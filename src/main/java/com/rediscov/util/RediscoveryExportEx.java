@@ -470,6 +470,76 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	}
 	
 	/**
+	 * Get the reason why this record is unimportable.  If it IS importable then this returns null
+	 * 
+	 * @return
+	 */
+	public String getUnImportableReason()
+	{
+		String reason = "";
+		if(this.getSiteName()==null || this.getSiteName().trim().length()==0)
+		{
+			reason+="null site name";
+			if(this.getLocation()!=null)
+			{
+				reason+= "    ---- "+getLocation();
+			}
+			
+			return reason;
+		}
+		
+		try {
+			if(this.getSubObjectCode()==null)
+			{				
+				reason+="null subobject code";
+				if(this.getLocation()!=null)
+				{
+					reason+= "    ---- "+getLocation();
+				}
+				
+				return reason;
+				
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			
+			reason+="Exception " + e.getLocalizedMessage();
+			if(this.getLocation()!=null)
+			{
+				reason+= "    ---- "+getLocation();
+			}
+			
+			return reason;
+
+		}
+		
+		try {
+			if(this.getObjectCode()==null)
+			{
+				reason+="null object code";
+				if(this.getLocation()!=null)
+				{
+					reason+= "    ---- "+getLocation();
+				}
+				
+				return reason;
+			}
+		} catch (Exception e) {
+			reason+="Exception " + e.getLocalizedMessage();
+			if(this.getLocation()!=null)
+			{
+				reason+= "    ---- "+getLocation();
+			}
+			
+			return reason;
+
+		}
+		
+		
+		return null;
+	}
+	
+	/**
 	 * Check whether this record is complete enough to be imported 
 	 * 
 	 * @return
@@ -1031,7 +1101,7 @@ public class RediscoveryExportEx extends RediscoveryExport {
 	
 		if(subsamples.size()>1)
 		{
-			log.debug("Multiple subsamples in this record: "+this.catalogCode);
+			//log.debug("Multiple subsamples in this record: "+this.catalogCode);
 		}
 		
 		return subsamples;

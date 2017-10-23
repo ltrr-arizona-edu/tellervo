@@ -38,20 +38,21 @@ import org.tellervo.desktop.util.pdf.PrintablePDF;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasSample;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Font;
-import com.lowagie.text.Image;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.Barcode128;
-import com.lowagie.text.pdf.ColumnText;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.Barcode128;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 
 public class PDFLabelMaker {
@@ -62,8 +63,8 @@ public class PDFLabelMaker {
 	private Document document;
 	private PdfContentByte contentb;
 	private PdfPTable table;
-	private Font labelfont = new Font(Font.HELVETICA, 15f, Font.BOLD);
-	private Font tinyfont = new Font(Font.HELVETICA, 9f);
+	private Font labelfont = new Font(Font.FontFamily.HELVETICA, 15f, Font.BOLD);
+	private Font tinyfont = new Font(Font.FontFamily.HELVETICA, 9f);
 	private Integer borderwidth = 1;
     private final static Logger log = LoggerFactory.getLogger(PDFLabelMaker.class);
 
@@ -232,7 +233,7 @@ public class PDFLabelMaker {
 			//p.add(new Chunk(s.getIdentifier().getValue().toString(), uuidfont));
 			
 			//barcode.setFont(null);
-			Image img = barcode.createImageWithBarcode(contentb, Color.black, Color.gray);
+			Image img = barcode.createImageWithBarcode(contentb, BaseColor.BLACK, BaseColor.GRAY);
 					
 			PdfPCell labcell = new PdfPCell(); 
 			

@@ -48,10 +48,12 @@ import org.tridas.interfaces.NormalTridasVoc;
 import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasLaboratory;
 import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasResearch;
 import org.tridas.schema.TridasSample;
 
 import com.dmurph.mvc.model.MVCArrayList;
@@ -71,6 +73,8 @@ public class TridasEntityDeriver {
 		ignoreClasses.add(TridasMeasurementSeries.class);
 		ignoreClasses.add(TridasDerivedSeries.class);
 		ignoreClasses.add(BaseSeries.class);
+		ignoreClasses.add(TridasResearch.class);
+		ignoreClasses.add(TridasLaboratory.class);
 	}
 
 	
@@ -197,14 +201,20 @@ public class TridasEntityDeriver {
 				}
 
 				Class<?> entType = pd.getType();
-								
+							
+				if(pd.getDisplayName().equals("References"))
+				{
+					continue;
+				}
+				
 				// shouldn't happen...
 				if (entType == null)
 					throw new NullPointerException();
 
 				// skip things we ignore
 				if (ignoreClasses.contains(entType))
-					continue;			
+					continue;		
+
 
 				TridasEditProperties classprops = entType.getAnnotation(TridasEditProperties.class);
 

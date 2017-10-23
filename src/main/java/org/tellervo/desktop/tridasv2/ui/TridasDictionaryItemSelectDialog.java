@@ -52,6 +52,7 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -61,24 +62,25 @@ import org.tridas.schema.TridasFile;
 import javax.swing.JEditorPane;
 import javax.swing.JTextPane;
 import javax.swing.JTextArea;
-import org.tellervo.desktop.tridasv2.ui.TridasProjectTypesPanel;
+
+import org.tellervo.desktop.tridasv2.ui.TridasDictionaryItemSelectPanel;
 
 
-public class TridasProjectTypesDialog extends JDialog implements ActionListener{
+public class TridasDictionaryItemSelectDialog extends JDialog implements ActionListener{
 
 	private static final long serialVersionUID = 1L;
-	private final static Logger log = LoggerFactory.getLogger(TridasProjectTypesDialog.class);
+	private final static Logger log = LoggerFactory.getLogger(TridasDictionaryItemSelectDialog.class);
 
-	private final TridasProjectTypesPanel contentPanel;
+	private final TridasDictionaryItemSelectPanel contentPanel;
 
 	
 	/**
 	 * Create the dialog.
 	 */
-	public TridasProjectTypesDialog(Component parent, ArrayList<ControlledVoc> lsst) {
+	public TridasDictionaryItemSelectDialog(ArrayList<Object> dictionary, boolean allowMultiple, Component parent, ArrayList<ControlledVoc> lsst) {
 		
-		contentPanel = new TridasProjectTypesPanel(lsst);
-		
+		contentPanel = new TridasDictionaryItemSelectPanel(dictionary, allowMultiple, lsst);
+
 		
 		getContentPane().add(contentPanel);
 		

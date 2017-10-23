@@ -30,6 +30,7 @@ import javax.swing.UIManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.AbstractSubsystem;
+import org.tellervo.desktop.ui.Alert;
 
 
 /**
@@ -151,7 +152,7 @@ public class Platform extends AbstractSubsystem {
 		try {
 			desktop.open(file);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			Alert.error("Error", "Error opening file "+file.getPath());
 			e.printStackTrace();
 		}
 	}

@@ -33,7 +33,7 @@ import org.tellervo.desktop.print.ProSheet;
 import org.tellervo.desktop.util.labels.PDFLabelMaker;
 import org.tridas.schema.TridasObject;
 
-import com.lowagie.text.DocumentException;
+import com.itextpdf.text.DocumentException;
 
 
 public class PrintSettings extends PrintSettingsUI implements ActionListener{

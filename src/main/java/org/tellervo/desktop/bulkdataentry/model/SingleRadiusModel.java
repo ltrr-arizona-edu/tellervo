@@ -65,7 +65,7 @@ public class SingleRadiusModel extends HashModel implements IBulkImportSingleRow
 		return super.cloneImpl(argProperty, argO);
 	}
 	
-	public void populateToTridasRadius(TridasRadius argTridasRadius){
+	public void populateToTridasRadius(TridasRadius argTridasRadius) throws Exception{
 		argTridasRadius.setTitle((String) getProperty(TITLE));
 		argTridasRadius.setAzimuth((BigDecimal) getProperty(AZIMUTH));
 		argTridasRadius.setComments((String) getProperty(COMMENTS));

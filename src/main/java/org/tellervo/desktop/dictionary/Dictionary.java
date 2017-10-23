@@ -210,7 +210,7 @@ public class Dictionary extends TellervoResource {
 	{
 		if(id==null) return null;
 
-		List<TridasProject> entities = App.tridasProjects.getMutableObjectList();
+		List<TridasProject> entities = App.tridasProjects.getMutableProjectList();
 
 		for(TridasProject p : entities)
 		{
@@ -226,7 +226,7 @@ public class Dictionary extends TellervoResource {
 	{
 		if(title==null) return null;
 
-		List<TridasProject> entities = App.tridasProjects.getMutableObjectList();
+		List<TridasProject> entities = App.tridasProjects.getMutableProjectList();
 
 		for(TridasProject p : entities)
 		{

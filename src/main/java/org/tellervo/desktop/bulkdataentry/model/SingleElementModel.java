@@ -25,17 +25,12 @@ package org.tellervo.desktop.bulkdataentry.model;
 
 import java.math.BigDecimal;
 
-import net.opengis.gml.schema.PointType;
-import net.opengis.gml.schema.Pos;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.bulkdataentry.command.ImportSelectedElementsCommand;
 import org.tellervo.desktop.core.App;
 import org.tellervo.schema.UserExtendableDataType;
 import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIUserDefinedField;
-import org.tridas.io.formats.heidelberg.HeidelbergToTridasDefaults.DefaultFields;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasAddress;
@@ -133,8 +128,10 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		return super.cloneImpl(argProperty, argO);
 	}
 	
-	public void populateToTridasElement(TridasElement argElement){
+	public void populateToTridasElement(TridasElement argElement) throws Exception{
 
+		
+		
 		argElement.setIdentifier((TridasIdentifier) getProperty(IMPORTED));
 		argElement.setTitle( (String) getProperty(TITLE));
 		argElement.setComments( (String) getProperty(COMMENTS));
@@ -152,11 +149,11 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		
 		
 		TridasDimensions d = new TridasDimensions();
-
-		d.setWidth((BigDecimal)getProperty(WIDTH));
-		d.setHeight((BigDecimal)getProperty(HEIGHT));
-		d.setDiameter((BigDecimal)getProperty(DIAMETER));
-		d.setDepth((BigDecimal)getProperty(DEPTH));
+		
+		d.setWidth((BigDecimal) getProperty(WIDTH));
+		d.setHeight(castNumericData(getProperty(HEIGHT)));
+		d.setDiameter(castNumericData(getProperty(DIAMETER)));
+		d.setDepth(castNumericData(getProperty(DEPTH)));
 		d.setUnit((TridasUnit) getProperty(UNIT));
 		if(d.getWidth() != null || d.getHeight() != null || d.getDepth() != null || d.getDiameter() != null
 				|| d.getUnit() != null){
@@ -265,6 +262,32 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		}else{
 			argElement.setBedrock(null);
 		}
+	}
+	
+	private BigDecimal castNumericData(Object value)
+	{
+		try{
+			if(value==null)
+			{
+				return null;
+			}
+			
+			else if (value instanceof Number)
+			{
+				BigDecimal newval = new BigDecimal(value.toString());
+				return newval;
+			}
+			else
+			{
+				log.debug("Unable to cast "+value+" to BigDecimal");
+				return null;
+			}
+		} catch (NumberFormatException e)
+		{
+			log.error("Error casting number to BigDecimal");
+			return null;
+		}
+		
 	}
 	
 	public void populateFromTridasElement(TridasElement argElement){

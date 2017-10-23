@@ -349,10 +349,15 @@ more information on http://www.gnu.org/licenses/lgpl.html
 		</xs:annotation>
 	</xs:element>
 	<!-- description -->
-	<xs:element name="description" type="xs:string">
+	<xs:element name="description">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">General description of this entity.</xs:documentation>
 		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:whiteSpace value="preserve"/>
+			</xs:restriction>
+		</xs:simpleType>
 	</xs:element>
 	<!-- title -->
 	<xs:element name="title" type="xs:string">
@@ -1386,12 +1391,17 @@ themselves are stored separately as values.
 		</xs:complexType>
 	</xs:element>	
 	<!-- MEASUREMENTSERIES.comments -->
-	<xs:element name="comments" type="xs:string">
+	<xs:element name="comments">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">
 				More information about this entity.
 			</xs:documentation>
 		</xs:annotation>
+		<xs:simpleType>
+			<xs:restriction base="xs:string">
+				<xs:whiteSpace value="preserve"/>
+			</xs:restriction>
+		</xs:simpleType>
 	</xs:element>
 	<!-- MEASUREMENTSERIES.genericField (global type) -->
 	<!-- Interpretation Type -->

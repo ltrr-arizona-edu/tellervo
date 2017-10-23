@@ -54,7 +54,7 @@ public class DefaultEntityParametersDialog extends DescriptiveDialog {
 		getMainPanel().add(lblProject, "cell 0 0,alignx trailing");
 		
 		
-		MVCArrayList dic = App.tridasProjects.getMutableObjectList();
+		MVCArrayList dic = App.tridasProjects.getMutableProjectList();
 		cboProject = new JComboBox(dic.toArray());
 		cboProject.setRenderer(new TridasProjectRenderer());
 		getMainPanel().add(cboProject, "cell 1 0,growx");

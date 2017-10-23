@@ -121,7 +121,7 @@ public class ObjectView extends AbstractBulkImportView{
 		argTable.setDefaultRenderer(ImportStatus.class, new ImportStatusRenderer());
 		
 		
-		DynamicJComboBox<TridasProject> projectCombo = new DynamicJComboBox<TridasProject>(App.tridasProjects.getMutableObjectList(),new Comparator<TridasProject>() {
+		DynamicJComboBox<TridasProject> projectCombo = new DynamicJComboBox<TridasProject>(App.tridasProjects.getMutableProjectList(),new Comparator<TridasProject>() {
 			/**
 			 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 			 */

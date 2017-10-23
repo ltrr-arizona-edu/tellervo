@@ -34,7 +34,7 @@ import javax.swing.JPanel;
 import org.tellervo.desktop.ui.Builder;
 
 import com.l2fprod.common.beans.editor.AbstractPropertyEditor;
-import com.lowagie.text.Font;
+import com.itextpdf.text.Font;
 
 
 public class TridasDefaultPropertyEditor extends AbstractPropertyEditor {

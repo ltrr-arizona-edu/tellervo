@@ -337,10 +337,17 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 	
 	/**
 	 * @see javax.swing.table.AbstractTableModel#setValueAt(java.lang.Object, int, int)
+	 * 
+	 * 
+	 * NB Make sure the Column Index is the index of *ALL* columns, not just the columns in view
+	 * 
 	 */
 	@Override
-	public void setValueAt(Object argAValue, int argRowIndex, int argColumnIndex) {
- 		IBulkImportSingleRowModel som = models.get(argRowIndex);
+	public void setValueAt(Object argAValue, int argRowIndex, int argColumnIndex){
+ 		
+		
+		
+		IBulkImportSingleRowModel som = models.get(argRowIndex);
 		if(argColumnIndex == 0){
 			selected.put(som, (Boolean) argAValue);
 			return;
@@ -348,6 +355,10 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		argColumnIndex--;
 		
 		// TODO: this all should go to a command, as it's modifying the model.
+		
+		
+		
+		
 		String column = columns.get(argColumnIndex);
 		if(argAValue != null && argAValue.toString().equals("")){
 			argAValue = null;

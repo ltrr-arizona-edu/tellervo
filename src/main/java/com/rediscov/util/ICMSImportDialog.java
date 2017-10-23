@@ -40,8 +40,7 @@ public class ICMSImportDialog extends JDialog {
 		fc.setFileFilter(filter);
 		fc.setMultiSelectionEnabled(false);
 
-	    
-    	ICMSImporter importer = new ICMSImporter("/home/pbrewer/Dropbox/export4.xml");
+    	ICMSImporter importer = new ICMSImporter(fc.getSelectedFile().getAbsolutePath());
 		importer.doImport();
 		
 		

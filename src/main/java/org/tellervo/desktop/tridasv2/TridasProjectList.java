@@ -167,12 +167,12 @@ public class TridasProjectList extends TellervoResource {
 	}
 	
 	/**
-	 * Retrieves the mutable object list used to populate all other requests.
+	 * Retrieves the mutable project list used to populate all other requests.
 	 * Modifying this list will change results for other method calls in this class.
-	 * One should not add/remove objects from this list, instead us {@link #addTridasProject(TridasObjectEx)}
+	 * One should not add/remove objects from this list}
 	 * @return
 	 */
-	public synchronized MVCArrayList<TridasProject> getMutableObjectList(){
+	public synchronized MVCArrayList<TridasProject> getMutableProjectList(){
 		synchronized(data)
 		{
 			return data;

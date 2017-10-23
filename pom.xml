@@ -162,14 +162,11 @@
 			<version>1.51d</version>
 		</dependency>
 
-
 		<!-- PDF Creation library -->
 		<dependency>
-			<groupId>com.lowagie</groupId>
-			<artifactId>itext</artifactId>
-			<version>2.1.7</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<groupId>com.itextpdf</groupId>
+			<artifactId>itextpdf</artifactId>
+			<version>5.0.6</version>
 		</dependency>
 		<!-- Logger -->
 		<!-- Diverts System.out calls to logger can be removed once code has been 
@@ -369,11 +366,6 @@
 			<groupId>jfree</groupId>
 			<artifactId>jfreechart</artifactId>
 			<version>1.0.13</version>
-		</dependency>
-		<dependency>
-			<groupId>org.tridas</groupId>
-			<artifactId>tridasjlib</artifactId>
-			<version>1.22.5-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
 	<profiles>

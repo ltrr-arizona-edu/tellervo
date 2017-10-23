@@ -239,6 +239,18 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 		
 		for(Property p : prop2)
 		{
+			if(p.getDisplayName().equals("References"))
+			{
+				Object references = p.getValue();
+				
+				if(data instanceof TridasProject)
+				{
+					((TridasProject)data).setReferences((List<String>) references);
+					
+				}
+				
+			}
+			
 			// Find any properties called 'files'
 			if(p.getName().equals("files"))
 			{

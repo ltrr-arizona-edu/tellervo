@@ -336,7 +336,7 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 		setProperty(IMPORTED, argObject.getIdentifier());
 	}
 	
-	public void populateTridasObject(TridasObject argObject){
+	public void populateTridasObject(TridasObject argObject) throws Exception{
 		TridasGenericField genericField = new TridasGenericField();
 		genericField.setName(TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE);
 		genericField.setValue(getProperty(OBJECT_CODE)+"");

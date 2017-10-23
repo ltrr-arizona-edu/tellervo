@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -162,8 +163,27 @@ public class MemoEditor extends AbstractPropertyEditor {
 	public void setValue(Object value) {
 
 		String oldValue = theString;
-		theString = (String) value;
-		textField.setText((String) value);
+		
+		if(value instanceof String)
+		{
+			theString = (String) value;
+		}
+		else if (value instanceof ArrayList)
+		{
+			ArrayList<String> al = (ArrayList) value; 
+			
+			theString = "";
+			for(String s : al)
+			{
+				theString = theString+"; "+s;
+			}
+			
+		}
+		else
+		{
+			theString = "";
+		}
+		textField.setText(theString);
 		firePropertyChange(oldValue, theString);
 		
 	}

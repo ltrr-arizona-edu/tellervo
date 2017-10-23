@@ -17,19 +17,19 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Font;
-import com.lowagie.text.Image;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
-import com.lowagie.text.pdf.BaseFont;
-import com.lowagie.text.pdf.PdfContentByte;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 public class RecordCard extends ReportBase {
 
@@ -98,18 +98,18 @@ public class RecordCard extends ReportBase {
 			e1.printStackTrace();
 		}
 
-		fieldFonts[0] = new Font(Font.HELVETICA, 9, Font.NORMAL);
-		fieldFonts[1] = new Font(Font.HELVETICA, 8, Font.NORMAL);
-		fieldFonts[2] = new Font(Font.HELVETICA, 7, Font.NORMAL);
-		fieldFonts[3] = new Font(Font.HELVETICA, 6, Font.NORMAL);
+		fieldFonts[0] = new Font(Font.FontFamily.HELVETICA, 9, Font.NORMAL);
+		fieldFonts[1] = new Font(Font.FontFamily.HELVETICA, 8, Font.NORMAL);
+		fieldFonts[2] = new Font(Font.FontFamily.HELVETICA, 7, Font.NORMAL);
+		fieldFonts[3] = new Font(Font.FontFamily.HELVETICA, 6, Font.NORMAL);
 
 		
-		titleFonts[0] = new Font(Font.HELVETICA, 20, Font.BOLD);
-		titleFonts[1] = new Font(Font.HELVETICA, 18, Font.BOLD);
-		titleFonts[2] = new Font(Font.HELVETICA, 16, Font.BOLD);
-		titleFonts[3] = new Font(Font.HELVETICA, 14, Font.BOLD);
-		titleFonts[4] = new Font(Font.HELVETICA, 12, Font.BOLD);
-		titleFonts[5] = new Font(Font.HELVETICA, 10, Font.BOLD);
+		titleFonts[0] = new Font(Font.FontFamily.HELVETICA, 20, Font.BOLD);
+		titleFonts[1] = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+		titleFonts[2] = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD);
+		titleFonts[3] = new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD);
+		titleFonts[4] = new Font(Font.FontFamily.HELVETICA, 12, Font.BOLD);
+		titleFonts[5] = new Font(Font.FontFamily.HELVETICA, 10, Font.BOLD);
 		
 		headerFonts[0] = new Font(handfont, 4, Font.NORMAL);
 		headerFonts[1] = new Font(handfont, 3, Font.NORMAL);

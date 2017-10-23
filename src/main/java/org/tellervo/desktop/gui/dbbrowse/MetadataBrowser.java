@@ -69,7 +69,7 @@ import org.tridas.schema.TridasSample;
 
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
-import com.lowagie.text.Font;
+import com.itextpdf.text.Font;
 
 
 

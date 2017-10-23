@@ -48,17 +48,17 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.HeaderFooter;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.ColumnText;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+//import com.itextpdf.text.HeaderFooter;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 
 
@@ -105,15 +105,15 @@ public class ProSheet extends ReportBase {
 		    document.addAuthor("Peter Brewer"); 
 		    document.addSubject("Corina Provenience Sheet for " + o.getTitle()); 
 		    
-		    HeaderFooter footer = new HeaderFooter(new Phrase(""), new Phrase(""));
+		    /*HeaderFooter footer = new HeaderFooter(new Phrase(""), new Phrase(""));
 		    footer.setAlignment(Element.ALIGN_RIGHT);
 		    footer.setBorder(0);  
-		    document.setFooter(footer);
+		    document.setFooter(footer);*/
 		    
-		    HeaderFooter header = new HeaderFooter(new Phrase(o.getLabCode()+ " - "+o.getTitle(), bodyFont), false);
+		    /*HeaderFooter header = new HeaderFooter(new Phrase(o.getLabCode()+ " - "+o.getTitle(), bodyFont), false);
 		    header.setAlignment(Element.ALIGN_RIGHT);
 		    header.setBorder(0);
-		    document.setHeader(header);
+		    document.setHeader(header);*/
 		    			
 		    document.open();
 			cb = writer.getDirectContent();	

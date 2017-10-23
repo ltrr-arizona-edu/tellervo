@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
+import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.schema.ControlledVoc;
 
@@ -42,20 +43,26 @@ import com.l2fprod.common.swing.PercentLayout;
  * @author Peter Brewer
  *
  */
-public class TridasProjectTypesEditor extends AbstractPropertyEditor {
+public class TridasDictionaryItemSelectEditor extends AbstractPropertyEditor {
 	
 	private TridasListRenderer label;
 	private JButton cancelButton;
 	private JButton editButton;
 	private ArrayList<ControlledVoc> projectTypesList;
+	private ArrayList<Object> dictionary;
+	private final boolean allowMultiple;
 	
 	/**
 	 * 
 	 */
-	public TridasProjectTypesEditor() {
+	public TridasDictionaryItemSelectEditor(ArrayList<Object> dictionary, boolean allowMultiple) {
+		this.allowMultiple = allowMultiple;
 		editor = new JPanel(new PercentLayout(PercentLayout.HORIZONTAL, 0));
 		((JPanel) editor).add("*", label = new TridasListRenderer());
 		label.setOpaque(false);
+		
+		
+		this.dictionary = dictionary;
 		
 		editButton = ComponentFactory.Helper.getFactory().createMiniButton();
 		editButton.setText("");
@@ -81,7 +88,19 @@ public class TridasProjectTypesEditor extends AbstractPropertyEditor {
 	@Override
 	public Object getValue() {
 
-		return projectTypesList;
+		if(this.allowMultiple)
+		{
+			return projectTypesList;
+		}
+		else
+		{
+			if(projectTypesList.size()>=1)
+			{
+				return projectTypesList.get(0);
+			}
+		}
+		
+		return null;
 	}
 	
 	@Override
@@ -131,7 +150,7 @@ public class TridasProjectTypesEditor extends AbstractPropertyEditor {
 		{
 			oldList = null;
 		}
-		TridasProjectTypesDialog dialog = new TridasProjectTypesDialog(label, oldList);
+		TridasDictionaryItemSelectDialog dialog = new TridasDictionaryItemSelectDialog(dictionary, allowMultiple, label, oldList);
 		
 		// show the dialog...
 		dialog.setVisible(true);

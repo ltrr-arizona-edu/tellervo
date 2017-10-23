@@ -44,10 +44,8 @@ import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.schema.TellervoRequestType;
-import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasLaboratory;
-import org.tridas.schema.TridasLaboratory.Name;
 import org.tridas.schema.TridasProject;
 
 import com.l2fprod.common.propertysheet.Property;
@@ -114,7 +112,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 					{
 						lstProjects = new JList<TridasProject>();
 						
-						App.tridasProjects.getMutableObjectList().addPropertyChangeListener(new PropertyChangeListener(){
+						App.tridasProjects.getMutableProjectList().addPropertyChangeListener(new PropertyChangeListener(){
 
 							@Override
 							public void propertyChange(PropertyChangeEvent arg0) {
@@ -250,18 +248,14 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		
 		
 		ArrayList<TridasLaboratory> laboratories = new ArrayList<TridasLaboratory>();
+		
 		TridasLaboratory lab = new TridasLaboratory();
-		Name name = new Name();
-		name.setAcronym("Unknown");
-		name.setValue("Unknown");
-		lab.setName(name);
-		
+		TridasLaboratory.Name labName = new TridasLaboratory.Name();
+		labName.setAcronym(App.getLabAcronym());
+		labName.setValue(App.getLabName());
+		lab.setName(labName);
 		TridasAddress address = new TridasAddress();
-		address.setAddressLine1("Unknown");
-		address.setAddressLine1("Unknown");
-		
-		lab.setAddress(address);
-		
+		lab.setAddress(address);	
 		laboratories.add(lab);
 		
 		
@@ -314,7 +308,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		DefaultListModel<TridasProject> projModel = new DefaultListModel<TridasProject>();
 
 		
-		for(TridasProject p : App.tridasProjects.getMutableObjectList())
+		for(TridasProject p : App.tridasProjects.getMutableProjectList())
 		{
 			projModel.addElement(p);
 		}
@@ -432,7 +426,7 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 	
 	private void deleteTemporaryProjects()
 	{
-		for(TridasProject p : App.tridasProjects.getMutableObjectList())
+		for(TridasProject p : App.tridasProjects.getMutableProjectList())
 		{
 			if(!p.isSetIdentifier() || !p.getIdentifier().isSetValue())
 			{

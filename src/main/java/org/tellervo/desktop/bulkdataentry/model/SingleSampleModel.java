@@ -199,7 +199,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		
 	}
 	
-	public void populateToTridasSample(TridasSample argSample){
+	public void populateToTridasSample(TridasSample argSample) throws Exception{
 		argSample.setTitle((String)getProperty(TITLE));
 		argSample.setComments((String)getProperty(COMMENTS));
 		argSample.setType((ControlledVoc)getProperty(TYPE));

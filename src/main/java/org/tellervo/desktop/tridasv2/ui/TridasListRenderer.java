@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasFile;
+import org.tridas.schema.TridasLaboratory;
 
 /**
  * @author Lucas Madar
@@ -66,6 +67,10 @@ public class TridasListRenderer extends DefaultCellRendererEx {
 			else if(clazz==ControlledVoc.class)
 			{
 				return ((ControlledVoc)items.get(0)).getNormal();
+			}
+			else if (clazz==TridasLaboratory.class)
+			{
+				return ((TridasLaboratory)items.get(0)).getName().getValue();
 			}
 			else
 			{

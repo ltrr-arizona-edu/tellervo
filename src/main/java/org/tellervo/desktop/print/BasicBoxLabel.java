@@ -35,39 +35,38 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.Startup;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
-import org.tellervo.schema.TellervoRequestFormat;
-import org.tellervo.schema.SearchOperator;
-import org.tellervo.schema.SearchParameterName;
-import org.tellervo.schema.SearchReturnObject;
-import org.tellervo.schema.WSIBox;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tellervo.desktop.util.pdf.PrintablePDF;
 import org.tellervo.desktop.util.test.PrintReportFramework;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
-import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tellervo.schema.SearchOperator;
+import org.tellervo.schema.SearchParameterName;
+import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.WSIBox;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
-import com.lowagie.text.Chunk;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.ColumnText;
-import com.lowagie.text.pdf.PdfPCell;
-import com.lowagie.text.pdf.PdfPTable;
-import com.lowagie.text.pdf.PdfWriter;
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
 
 public class BasicBoxLabel extends ReportBase{
@@ -137,14 +136,14 @@ public class BasicBoxLabel extends ReportBase{
 		        PdfPCell cell = new PdfPCell(p);
 		        cell.setPaddingLeft(15f);
 		        cell.setPaddingRight(15f);
-		        cell.setBorderColor(Color.LIGHT_GRAY);
+		        cell.setBorderColor(BaseColor.LIGHT_GRAY);
 
 		        table.addCell(cell);
 
 	        }
 	
 	        PdfPCell cell = new PdfPCell(new Paragraph());
-	        cell.setBorderColor(Color.LIGHT_GRAY);
+	        cell.setBorderColor(BaseColor.LIGHT_GRAY);
 	        
 	        table.addCell(cell);
 	        document.add(table);

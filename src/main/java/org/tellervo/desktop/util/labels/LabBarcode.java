@@ -29,10 +29,10 @@ import java.util.UUID;
 
 import org.tellervo.desktop.util.Base64;
 
-import com.lowagie.text.Font;
-import com.lowagie.text.FontFactory;
-import com.lowagie.text.pdf.Barcode;
-import com.lowagie.text.pdf.Barcode128;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.pdf.Barcode;
+import com.itextpdf.text.pdf.Barcode128;
 
 
 public class LabBarcode extends Barcode128 {

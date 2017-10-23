@@ -20,8 +20,8 @@
  ******************************************************************************/
 package org.tellervo.desktop.util.labels;
 
-import com.lowagie.text.PageSize;
-import com.lowagie.text.Rectangle;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Rectangle;
 
 public class CornellSampleLabelPage implements LabelPage {
 	private final static float dpi = 72.0f;

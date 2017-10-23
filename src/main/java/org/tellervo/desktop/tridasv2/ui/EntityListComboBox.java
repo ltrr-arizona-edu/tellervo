@@ -38,7 +38,7 @@ import org.tellervo.desktop.ui.FilterableComboBoxModel;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
 
-import com.lowagie.text.Font;
+import com.itextpdf.text.Font;
 
 
 public class EntityListComboBox extends ComboBoxFilterable {

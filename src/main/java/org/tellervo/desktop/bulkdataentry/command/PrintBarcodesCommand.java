@@ -27,6 +27,7 @@ import java.util.List;
 import org.tellervo.desktop.bulkdataentry.control.PrintSampleBarcodesEvent;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.labels.PDFLabelMaker;
@@ -45,7 +46,7 @@ import org.tridas.schema.TridasSample;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 import com.dmurph.mvc.model.MVCArrayList;
-import com.lowagie.text.DocumentException;
+import com.itextpdf.text.DocumentException;
 
 
 /**
@@ -76,7 +77,12 @@ public class PrintBarcodesCommand implements ICommand {
 			if (row.getImported()!=null)
 			{
 				TridasSample sample = new TridasSample();
-				row.populateToTridasSample(sample);
+				try {
+					row.populateToTridasSample(sample);
+				} catch (Exception e) {
+					new BugDialog(e);
+
+				}
 					
 				// Find all samples for an element 
 		    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
