@@ -25,7 +25,9 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.io.Metadata;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.SeriesResource;
@@ -37,6 +39,7 @@ import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasRadius;
+import org.tellervo.desktop.wsi.tellervo.NewTridasIdentifier;
 
 
 /**
@@ -199,7 +202,14 @@ public class TellervoWSILoader extends AbstractTellervoGUIDeletableSampleLoader<
 		TridasIdentifier seriesIdentifier = s.getSeries().getIdentifier();
 				
 		if(seriesIdentifier == null)
-			throw new NullPointerException("Series identifier must not be null for save; use new or existing");
+		{
+			log.warn("Expecting the identifier to not be null.  Proceeding is if saving a new series");
+			seriesIdentifier = NewTridasIdentifier.getInstance(App.domain);
+			s.getSeries().setIdentifier(seriesIdentifier);		
+			Alert.message("Provisional Fix", "A workaround to a bug has just been applied.  Please check your series saved successfully and let the developers know if not!");
+			
+			//throw new NullPointerException("Series identifier must not be null for save; use new or existing");
+		}
 
 		// if we're creating a derived series, we have to be careful here and copy it
 		// this is because we don't want to send along any values!
