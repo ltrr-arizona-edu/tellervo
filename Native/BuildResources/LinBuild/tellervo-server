@@ -30,8 +30,8 @@ if($_SERVER['USER']=='root')
 /**
  * Grab command line arguments either using long or short options
  */
-$shortopts = "htrcnesv";
-$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "set-db-pwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info", "set-admin-pwd", "backup-db:", "restore-db:", "dbname:", "webfolder:");
+$shortopts = "htrcnesvu";
+$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "upgrade", "set-db-pwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info", "set-admin-pwd", "backup-db:", "restore-db:", "dbname:", "webfolder:", "cascade-delete:");
 $args = getopt($shortopts,$longopts);
 
 
@@ -107,6 +107,15 @@ if(isset($args["add-wms-name"]) && isset($args["add-wms-url"]) &&
 		die();
 	}
 	
+	die();
+}
+else if(isset($args["upgrade"]) || isset($args["u"]))
+{
+	requireRoot();
+	include($configfile);
+	include($dbsetupfile);
+	include($systemconfig);
+	downloadAndInstallUpgrade();
 	die();
 }
 else if(isset($args["del-wms-name"]) && $args["del-wms-name"]!=null)
@@ -211,6 +220,10 @@ else if(isset($args["deploy"]))
 	if (file_exists("/etc/update-motd.d/91-release-upgrade"))
 	{
 		exec("sudo rm /etc/update-motd.d/91-release-upgrade");
+	}
+	if (file_exists("/usr/share/tellervo-server/server_credentials"))
+	{
+		exec("sudo rm /usr/share/tellervo-server/server_credentials");
 	}
 	
 	echo "Move first run script into place...\n\n";
@@ -456,6 +469,15 @@ else if (isset($args["set-admin-pwd"]))
 	echo "\n";
 	exit(0);
 }
+if(isset($args["cascade-delete"]) && $args["cascade-delete"]!=null)
+{
+	requireRoot();
+	include($configfile);
+	include($dbsetupfile);
+	include($systemconfig);
+	setCascadeDeleteEnabled($args["cascade-delete"]);
+	exit(0);
+}
 
 
 printHelp(true);
@@ -637,6 +659,21 @@ function setAdminPwd()
 }
 
 /**
+ *  Download the latest version of Tellervo Server from the website and install
+ *  
+ */
+function downloadAndInstallUpgrade()
+{
+	$url = "http://www.tellervo.org/download/?type=server\&os=linux\&version=latest";
+	
+	exec("wget --output-document /tmp/new.deb $url");
+	passthru("sudo dpkg --install /tmp/new.deb");
+	exec("rm /tmp/new.deb");
+	passthru("tellervo-server --version");
+}
+
+
+/**
  * Delete the Web Mapping Server with the specified name from database
  *  
  * @param unknown $name
@@ -738,27 +775,29 @@ function printHelp($forced=false)
   echo "  tellervo-server --add-wms-name \"New Server\" --add-wms-url \"http://...\"\n";
   echo "  tellervo-server --del-wms-name \"Server to delete\"\n";
   echo "\nOptions:\n";
-  echo "  -h, --help           Show this help\n";
-  echo "  -v, --version        Show version of Tellervo server that is installed\n";
-  echo "  -t, --test          *Run tests on existing setup\n";
-  echo "  -c, --configure     *Configure server\n";
-  echo "  -r, --reconfigure   *Reconfigure the server overwriting existing config\n";
-  echo "  -n, --network       *Check network settings and reset if necessary\n";
-  echo "  -e, --emptylog      *Clean the log files and database tables\n";
-  echo "  -s, --sysconfig     *Generate the systems configuration file\n";
-  echo "      --set-db-pwd    *Reset the PostgreSQL database password\n";
-  echo "      --set-admin-pwd *Reset the Tellervo desktop login for the admin user\n"; 
-  echo "      --start         *Start the Tellervo server\n";
-  echo "      --stop          *Stop the Tellervo server\n"; 
-  echo "      --restart       *Restart the Tellervo server\n";   
-  echo "      --upgrade-db    *Run database upgrade scripts\n";
-  echo "      --add-wms-name  *Name of a web mapping server to add to database\n";
-  echo "      --add-wms-url   *URL of a web mapping server to add to database\n";
-  echo "      --del-wms-name  *Name of a web mapping server to delete from database\n";
-  echo "      --backup-db     *Backup database to the specified file\n";
-  echo "      --restore-db    *Restore database from specified file\n";
-  //echo "      --dbname         Specify nonstandard database name [experimental]\n";
-  //echo "      --webfolder      Specify nonstandard Apache webfolder [experimental]\n";
+  echo "  -h, --help            Show this help\n";
+  echo "  -v, --version         Show version of Tellervo server that is installed\n";
+  echo "  -t, --test           *Run tests on existing setup\n";
+  echo "  -c, --configure      *Configure server\n";
+  echo "  -r, --reconfigure    *Reconfigure the server overwriting existing config\n";
+  echo "  -u, --upgrade        *Download and install latest version of tellervo-server\n";
+  echo "  -n, --network        *Check network settings and reset if necessary\n";
+  echo "  -e, --emptylog       *Clean the log files and database tables\n";
+  echo "  -s, --sysconfig      *Generate the systems configuration file\n";
+  echo "      --set-db-pwd     *Reset the PostgreSQL database password\n";
+  echo "      --set-admin-pwd  *Reset the Tellervo desktop login for the admin user\n"; 
+  echo "      --start          *Start the Tellervo server\n";
+  echo "      --stop           *Stop the Tellervo server\n"; 
+  echo "      --restart        *Restart the Tellervo server\n";   
+  echo "      --upgrade-db     *Run database upgrade scripts\n";
+  echo "      --add-wms-name   *Name of a web mapping server to add to database\n";
+  echo "      --add-wms-url    *URL of a web mapping server to add to database\n";
+  echo "      --del-wms-name   *Name of a web mapping server to delete from database\n";
+  echo "      --backup-db      *Backup database to the specified file\n";
+  echo "      --restore-db     *Restore database from specified file\n";
+  echo "      --cascade-delete *Either true or false to enabled/disable cascade delete\n";
+  //echo "      --dbname          Specify nonstandard database name [experimental]\n";
+  //echo "      --webfolder       Specify nonstandard Apache webfolder [experimental]\n";
   echo "\n";
   echo "  * Root or sudo privileges are required to run these commands\n";
   echo "\n";
@@ -790,6 +829,7 @@ function runDBUpgrades($skipbackup=false)
     global $systemconfig;
 	global $dbsetupfile;
 	global $dbconn;
+	global $dbname;
 		
 	require($configfile);
 	require($dbsetupfile);
@@ -928,6 +968,50 @@ function getTellervoDBVersion()
 }
 
 
+function runSQLFile($filename, $helptext)
+{
+	global $configfile;
+    global $systemconfig;
+	global $dbsetupfile;
+	global $dbconn;
+	global $logfile;
+	global $upgradeScripts;
+	global $dbname;
+	$colors = new Colors();
+	
+	// Running standard SQL patch in a transaction
+    		pg_query($dbconn, "BEGIN WORK");
+    	
+    	    echoTruncatedString("    - ".$helptext);
+    	    $sql = file_get_contents($filename);
+    	    	
+	    	$result = pg_query($dbconn, $sql);
+	    	
+	    	if(!$result)
+	    	{
+		    	echo $colors->getColoredString("FAILED", "red");
+	    		echo "\n";
+	
+	    		writeLogMsg("Error running script '".escapeshellcmd($filename)."'" );
+
+    			// Only run in transaction if safe
+    			pg_query($dbconn, "ROLLBACK");
+
+	    		return false;
+	    	}
+	    	else
+	    	{
+	 
+	
+				// All is well so go ahead and commit the entire thing to the database
+	    		pg_query($dbconn, "COMMIT");
+		    	echo $colors->getColoredString("SUCCESS", "green");
+	    		echo "\n";   
+			    return true; 	
+	    	}
+
+}
+
 /**
  * Run the SQL filename provided to upgrade the database
  *
@@ -960,10 +1044,9 @@ function runSQLUpgradeFile($filename)
     {
     	die("Unable to connect to PostgreSQL database to run upgrade.\n\n");
     }
-		
-		
+
 	$sql = file_get_contents($upgradeScripts."/".$filename);
-	
+
 	writeLogMsg("Upgrading database with SQL \n ".escapeshellcmd($sql));
 	
     $dbconnstatus = pg_connection_status($dbconn);
@@ -1112,10 +1195,10 @@ function emptyLog()
  */
 function requireRoot()
 {
-	if($_SERVER['USER']!='root')
+	if($_SERVER['USER']!='root' && 0 != posix_getuid())
 	{
 		$colors = new Colors();
-		echo $colors->getColoredString("\nRoot or sudo privileges are required to run this script.\n\n", "red");
+		echo $colors->getColoredString("\nRoot or sudo privileges are required to run this script.  Currently running as ".$_SERVER['USER']." \n\n", "red");
 		die();
 	}
 }
@@ -2689,6 +2772,27 @@ function removeNetworkPersistence()
 	if (file_exists("/etc/udev/rules.d/70-persistent-net.rules"))
 	{
 		exec("sudo rm /etc/udev/rules.d/70-persistent-net.rules");
+	}
+
+}
+
+function setCascadeDeleteEnabled($enabled)
+{
+	$enabled = trim(strtolower($enabled));
+
+	if($enabled=='t' || $enabled=='true' || $enabled=='enable' || $enabled=='enabled')
+	{
+		runSQLFile("/usr/share/tellervo-server/db-options/enable_cascade_delete.sql", "Enabling cascade delete...");
+	}
+	else if ($enabled=='f' || $enabled=='false' || $enabled=='disable' || $enabled=='disabled')
+	{
+		runSQLFile("/usr/share/tellervo-server/db-options/disable_cascade_delete.sql", "Disabling cascade delete...");
+	} 
+	else
+	{
+		echo "\nInvalid option for enabling/disabling cascade delete.  Must be true or false.\n";
+		printHelp(true);
+  		exit(1);
 	}
 
 }
