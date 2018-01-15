@@ -97,7 +97,10 @@ if [ $1 = 'configure' ]; then
 		      
 		  else
 		  	  ## No config file present, so configure as new installation
-		  	  /usr/bin/tellervo-server --configure
+		  	  #/usr/bin/tellervo-server --configure
+		  	  
+		  	  echo "You need to configure your Tellervo Server by running as root/sudo: "
+		  	  echo "tellervo-server --configure"
 	   	  fi
   
   
@@ -129,7 +132,9 @@ if [ $1 = 'configure' ]; then
 	        fi
             
             
-     		/usr/bin/tellervo-server --configure
+     		#/usr/bin/tellervo-server --configure
+     		echo "You need to configure your Tellervo Server by running as root/sudo: "
+		  	echo "tellervo-server --configure"
       fi
       
       

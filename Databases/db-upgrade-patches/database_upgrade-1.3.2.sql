@@ -300,7 +300,7 @@ ALTER TABLE public.vwtblproject
   OWNER TO tellervo;
 
   
-  
+ALTER SEQUENCE tlkpelementtype_elementtypeid_seq RESTART WITH 6;
 INSERT INTO tlkpelementtype (vocabularyid, elementtype) VALUES (5, '(tree-)trunk');
 INSERT INTO tlkpelementtype (vocabularyid, elementtype) VALUES (5, 'abbey');
 INSERT INTO tlkpelementtype (vocabularyid, elementtype) VALUES (5, 'abbey church');
