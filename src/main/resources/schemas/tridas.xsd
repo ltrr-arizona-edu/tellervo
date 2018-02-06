@@ -644,7 +644,7 @@ Therefore, a project can have one or more objects associated with it.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
-	<!-- PROJECT.reference -->
+		<!-- PROJECT.reference -->
 	<xs:element name="reference" type="xs:string">
 		<xs:annotation>
 			<xs:documentation xml:lang="EN">

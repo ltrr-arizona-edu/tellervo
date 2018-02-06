@@ -129,7 +129,10 @@ public class BasicBoxLabel extends ReportBase{
 		        Paragraph p = new Paragraph();
 		        
 		        p.add(new Chunk(b.getTitle()+Chunk.NEWLINE, labelTitleFont));
-		        p.add(new Chunk(Chunk.NEWLINE+b.getComments()+Chunk.NEWLINE, bodyFont));
+		        
+		        p.add(new Chunk(Chunk.NEWLINE+" ", bodyFont));
+
+		        //p.add(new Chunk(Chunk.NEWLINE+b.getComments()+Chunk.NEWLINE, bodyFont));
 		        p.add(new Chunk(App.getLabName()+Chunk.NEWLINE+Chunk.NEWLINE, bodyFont));
 		        p.add(new Chunk(this.getBarCode(b), 0, 0, true));
 		        

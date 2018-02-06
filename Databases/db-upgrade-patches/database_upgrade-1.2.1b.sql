@@ -41,10 +41,10 @@ CREATE TABLE IF NOT EXISTS tblodkdefinition
   ownerid uuid NOT NULL,
   ispublic boolean DEFAULT false,
   version integer NOT NULL DEFAULT 1,
-  CONSTRAINT pkey_odkdefinition PRIMARY KEY (odkdefinitionid),
-  CONSTRAINT "fkey_odkdefinition-securityuser" FOREIGN KEY (ownerid)
-      REFERENCES tblsecurityuser (securityuserid) MATCH SIMPLE
-      ON UPDATE NO ACTION ON DELETE NO ACTION
+  CONSTRAINT pkey_odkdefinition PRIMARY KEY (odkdefinitionid)
+--,CONSTRAINT "fkey_odkdefinition-securityuser" FOREIGN KEY (ownerid)
+--    REFERENCES tblsecurityuser (securityuserid) MATCH SIMPLE
+--      ON UPDATE NO ACTION ON DELETE NO ACTION
 )
 WITH (
   OIDS=FALSE

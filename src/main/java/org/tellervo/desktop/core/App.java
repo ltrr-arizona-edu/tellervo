@@ -600,7 +600,10 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
 					
 			for(WSIConfiguration conf : configDic )
 			{
-				if(conf.getKey().equals("lab.name")) return conf.getValue();
+				if(conf.getKey().equals("lab.name")) 
+				{	
+					if(conf.getValue()!=null  && !conf.getValue().equals("null")) return conf.getValue();
+				}
 			}
 		} catch (Exception e){ }
 		

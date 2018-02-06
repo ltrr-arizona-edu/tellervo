@@ -775,8 +775,11 @@
 			<resource>
 				<directory>Native/BuildResources/LinBuild/ServerControl</directory>
 				<filtering>true</filtering>
-				
+			</resource>
 			
+			<resource>
+				<directory>Native/BuildResources/Docker</directory>
+				<filtering>false</filtering>
 			</resource>
 			
 			<resource>

@@ -735,6 +735,7 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 				if(object!=null)
 				{
 					tridasCache.put(id.getObjectItem().getCode()+ codeDelimiter+"NULL", object);
+					App.tridasObjects.addTridasObject(object);
 				}
 				
 				searchForMatches(true);
@@ -759,6 +760,8 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 					if(object!=null)
 					{
 						tridasCache.put(thisCode, object);
+						App.tridasObjects.addTridasObject(object);
+
 					}
 
 					searchForMatches(true);
@@ -903,6 +906,9 @@ public class SeriesIdentityTableModel extends AbstractTableModel {
 			}
 
 		}
+		
+		
+		
 	}
 	
 	/**

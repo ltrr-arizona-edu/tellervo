@@ -16,7 +16,7 @@ set_error_handler("myErrorHandler");
 
 // Set up logging
 $logfile = "/var/log/tellervo-installation.log";
-if($_SERVER['USER']=='root')
+if(hasRootPrivileges())
 {
 	// Make sure log file exists and make sure it is read and writeable
 	exec("touch $logfile > /dev/null");
@@ -31,7 +31,7 @@ if($_SERVER['USER']=='root')
  * Grab command line arguments either using long or short options
  */
 $shortopts = "htrcnesvu";
-$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "upgrade", "set-db-pwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info", "set-admin-pwd", "backup-db:", "restore-db:", "dbname:", "webfolder:", "cascade-delete:");
+$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "upgrade", "set-db-pwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info", "set-admin-pwd", "backup-db:", "restore-db:", "dbname:", "webfolder:", "cascade-delete:", "auto-configure");
 $args = getopt($shortopts,$longopts);
 
 
@@ -84,10 +84,48 @@ $systemconfig     = $wsbase."systemconfig.php";
 $postgisfolder    = "/usr/share/postgresql/".$postgresversion."/contrib/postgis-".$postgisversion."/";
 /*******************************************************************/;
 
-
-
 // Depending on command line arguments run different functions
-if(isset($args["add-wms-name"]) && isset($args["add-wms-url"]) &&
+
+if(isset($args["auto-configure"]))
+{
+    echo "Configuring Tellervo Server with default settings";
+	requireRoot();
+	
+	exec("chown -R www-data:www-data /usr/share/tellervo-server/mediastore");
+	
+	// Check if the server is already configured
+	if( (file_exists($configfile)) && (file_exists($dbsetupfile)) )
+	{
+		// Include config files as they already exist
+		include($configfile);
+		include($dbsetupfile);
+			
+		// Verify if the configuration is already ok
+		if(verifySetup(TRUE)===TRUE)
+		{
+			// setup already done so display and close 
+			echo "Configuration complete\n\n";
+			verifySetup();
+			printComplete();
+			exit(0);
+		}	
+	}
+	
+	// Setup not yet ok so configure from scratch
+	createScriptsFromTemplates(TRUE);
+	postgresSetup(TRUE);	
+	include($configfile);
+	include($dbsetupfile);
+	generateSystemsConfig();
+	include($systemconfig);
+	runDBUpgrades(true);
+	apacheSetup(true);
+	verifySetup();
+	printComplete();
+	exit(0);
+    
+}
+else if(isset($args["add-wms-name"]) && isset($args["add-wms-url"]) &&
    $args["add-wms-name"]!=null && $args["add-wms-url"]!=null)
 {
 	requireRoot();
@@ -189,7 +227,7 @@ else if(isset($args["firstrun"]))
 	echo $colors->getColoredString("\n\nStep 6 - Verifying setup...\n\n", "light_purple");
 	verifySetup();
 	printComplete();
-	exec("sudo $folderbase/firstrun");
+	exec("$folderbase/firstrun");
 	exit(0);
 }
 else if(isset($args["deploy"]))
@@ -199,37 +237,37 @@ else if(isset($args["deploy"]))
 	echo "Deleting any existing config files...\n\n";
 	if (file_exists("$folderbase/firstrun"))
 	{
-		exec("sudo rm $folderbase/firstrun");
+		exec("rm $folderbase/firstrun");
 	}
 	if (file_exists("$wsbase/config.php"))
 	{
-		exec("sudo rm $wsbase/config.php");
+		exec("rm $wsbase/config.php");
 	}
 	if (file_exists("$wsbase/systemconfig.php"))
 	{
-		exec("sudo rm $wsbase/systemconfig.php");
+		exec("rm $wsbase/systemconfig.php");
 	}
 	if (file_exists("/etc/update-motd.d/50-landscape-sysinfo"))
 	{
-		exec("sudo rm /etc/update-motd.d/50-landscape-sysinfo");
+		exec("rm /etc/update-motd.d/50-landscape-sysinfo");
 	}
 	if (file_exists("/etc/update-motd.d/10-help-text"))
 	{
-		exec("sudo rm /etc/update-motd.d/10-help-text");
+		exec("rm /etc/update-motd.d/10-help-text");
 	}
 	if (file_exists("/etc/update-motd.d/91-release-upgrade"))
 	{
-		exec("sudo rm /etc/update-motd.d/91-release-upgrade");
+		exec("rm /etc/update-motd.d/91-release-upgrade");
 	}
 	if (file_exists("/usr/share/tellervo-server/server_credentials"))
 	{
-		exec("sudo rm /usr/share/tellervo-server/server_credentials");
+		exec("rm /usr/share/tellervo-server/server_credentials");
 	}
 	
 	echo "Move first run script into place...\n\n";
 	if (file_exists("/usr/share/tellervo-server/firstrun.template"))
 	{
-		exec("sudo cp /usr/share/tellervo-server/firstrun.template /usr/share/tellervo-server/firstrun");
+		exec("cp /usr/share/tellervo-server/firstrun.template /usr/share/tellervo-server/firstrun");
 	}
 	
 	echo "Installing power interface stuff for clean shutdowns...\n\n";
@@ -265,15 +303,15 @@ else if(isset($args["reconfigure"]) || isset($args["r"]))
 	// Delete existing config files
 	if (file_exists("$folderbase/firstrun"))
 	{
-		exec("sudo rm -f $folderbase/firstrun");
+		exec("rm -f $folderbase/firstrun");
 	}
 	if (file_exists("$wsbase/config.php"))
 	{
-		exec("sudo rm -f $wsbase/config.php");
+		exec("rm -f $wsbase/config.php");
 	}
 	if (file_exists("$wsbase/systemconfig.php"))
 	{
-		exec("sudo rm -f $wsbase/systemconfig.php");
+		exec("rm -f $wsbase/systemconfig.php");
 	}
 	
 	createScriptsFromTemplates();
@@ -667,7 +705,7 @@ function downloadAndInstallUpgrade()
 	$url = "http://www.tellervo.org/download/?type=server\&os=linux\&version=latest";
 	
 	exec("wget --output-document /tmp/new.deb $url");
-	passthru("sudo dpkg --install /tmp/new.deb");
+	passthru("dpkg --install /tmp/new.deb");
 	exec("rm /tmp/new.deb");
 	passthru("tellervo-server --version");
 }
@@ -1191,11 +1229,26 @@ function emptyLog()
 
 
 /**
+ * Does current user have root privileges?
+ */
+function hasRootPrivileges()
+{
+        $userinfo = posix_getpwuid(posix_geteuid());
+
+        if($userinfo["name"]=='root')
+        {
+                return true;
+        }
+
+        return false;
+}
+
+/**
  * Check the user running this script is a superuser
  */
 function requireRoot()
 {
-	if($_SERVER['USER']!='root' && 0 != posix_getuid())
+	if(!hasRootPrivileges())
 	{
 		$colors = new Colors();
 		echo $colors->getColoredString("\nRoot or sudo privileges are required to run this script.  Currently running as ".$_SERVER['USER']." \n\n", "red");
@@ -1289,7 +1342,7 @@ function checkServiceIsRunning($service)
 /**
  * Create script files by copying from templates and alter basic info
  */
-function createScriptsFromTemplates()
+function createScriptsFromTemplates($auto=false)
 {
   global $permsfile;
   global $permstemplate;
@@ -1309,18 +1362,42 @@ function createScriptsFromTemplates()
   exec("cp $configtemplate $configfile >> $logfile" );
   setConfigVariable("%%IP%%", getIP());   
 
-  echo "\nPlease enter the name of your laboratory : ";
-  $response = fgets(STDIN);
+
+  if($auto===TRUE)
+  {
+  	  $response = "Dev Server";
+  }
+  else
+  {
+	  echo "\nPlease enter the name of your laboratory : ";
+	  $response = fgets(STDIN);
+  }
   setConfigVariable("%%LABNAME%%", trim($response, "\n\r"));   
 
-  echo "\nPlease enter a code/acronym for your lab e.g. C for Cornell : ";
-  $response = fgets(STDIN);
+
+  if($auto===TRUE)
+  {
+    $response = "";
+  }
+  else
+  {
+  	echo "\nPlease enter a code/acronym for your lab e.g. C for Cornell : ";
+  	$response = fgets(STDIN);
+  }
   setConfigVariable("%%LABACRONYM%%", trim($response, "\n\r"));   
   
-  echo "\nPlease enter a unique 'domain' for your database.  This should normally be the\n"; 
-  echo   "domain name of your lab's website (e.g. dendro.cornell.edu), but can be any\n";
-  echo   "name as long as it is unique and doesn't contain spaces : ";
-  $response = fgets(STDIN);
+  
+  if($auto===TRUE)
+  {
+     $response = "devserver";
+  }
+  else
+  {
+	  echo "\nPlease enter a unique 'domain' for your database.  This should normally be the\n"; 
+	  echo   "domain name of your lab's website (e.g. dendro.cornell.edu), but can be any\n";
+	  echo   "name as long as it is unique and doesn't contain spaces : ";
+	  $response = fgets(STDIN);
+  }
   setConfigVariable("%%DOMAIN%%", trim($response, "\n\r"));   
  
   // Set timezone from system
@@ -1341,7 +1418,9 @@ function createScriptsFromTemplates()
   // Back up pg_hba file if it hasn't been already 
   if(!file_exists($pg_hba_file_orig))
   {
-     exec("sudo -u postgres sh -c \"cp $pg_hba_file $pg_hba_file_orig >> $logfile\"" );
+     //exec("sudo -u postgres sh -c \"cp $pg_hba_file $pg_hba_file_orig >> $logfile\"" );
+     exec("su - postgres -c \"cp $pg_hba_file $pg_hba_file_orig >> $logfile\"" );
+     
   }
 
 }
@@ -1351,7 +1430,8 @@ function createScriptsFromTemplates()
  */
 function getIP()
 {
-  exec("ifconfig $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
+  //exec("ifconfig $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
+  exec("ip -o route get 8.8.8.8 | sed -e 's/^.* src \([^ ]*\) .*$/\1/'", $response);
   return $response[0];
 }
 
@@ -1421,7 +1501,7 @@ function postgresSetup($quick=false)
        $dbname = $response; 
       
        // Create a new user or get details of an existing one
-       setDBUser();
+       setDBUser($quick);
 
        // Create credentials file
        exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile"); 
@@ -1459,12 +1539,14 @@ function postgresSetup($quick=false)
       setConfigVariable("%%DBNAME%%", $dbname);   
       
       // Create the database and populate from the database template
-      createDatabase();
+      createDatabase($quick);
       
       // Set pg_hba.conf file entry
       $pg_hba_str = "local        all      ".trim($user, "\n\r")."                  trust\\n".
                     "host         all      ".trim($user, "\n\r")."   samenet        md5\\n";
-      $command = "sudo -u postgres sh -c \"sed '1 i\\# ADDED BY TELLERVO CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
+      //$command = "sudo -u postgres sh -c \"sed '1 i\\# ADDED BY TELLERVO CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
+      $command = "su - postgres -c \"sed '1 i\\# ADDED BY TELLERVO CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
+      
       exec($command, $resp);
 
       // Restart postgres
@@ -1499,20 +1581,30 @@ function doesTellervoDBExist()
 /**
  *  Create the Postgres Tellervo database 
  */
-function createDatabase()
+function createDatabase($auto=false)
 {	
     global $logfile;
     global $dbtemplate;
     global $dbconn;
     global $dbname;
+    global $upgradeScripts;
 
     if(doesTellervoDBExist() === false)
     {
         // Tellervo database doesn't currently exist
     }
     else
-    {
-   		// Tellervo database DOES exist     
+    {   
+   		// Tellervo database DOES exist
+   		
+   		if($auto===TRUE)
+   		{
+   			echo "\n";
+   			$colors = new Colors();
+			echo $colors->getColoredString("ERROR - Tellervo database already exists.", "red");
+   			echo "\nDelete database and try again.\nAuto configure Tellervo Server failed!\n\n";
+   			exit(1);
+   		}     
 
     		  // Find out if the user wants drop the existing database
 	 		  echo "\nWarning - there is an existing Tellervo database. Would you like to delete it\nand create a new one?\n";
@@ -1538,12 +1630,13 @@ function createDatabase()
         
     }
     
+    // Create the empty database
+    exec("su - postgres -c \"createdb ".$dbname." 2>> ".$logfile."\"");
+    
     echo "\nConfiguring PLJava extension.\n";
     exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-1.3.0e.notransaction.sql 2>> ".$logfile."\"");
     
     echo "\nCreating database.  This could take a while...\n";
-    exec("su - postgres -c \"createdb ".$dbname." 2>> ".$logfile."\"");
-    exec("su - postgres -c \"createdb ".$dbname." 2>> ".$logfile."\"");
     exec("su - postgres -c \"pg_restore --dbname=".$dbname." $dbtemplate 2>> ".$logfile."\"");
     
     //runDBUpgrades();
@@ -1580,11 +1673,19 @@ function setDBUser($quick=false)
   else
   {
       $user = "tellervo";              
-      echo "\nCreate a PostgreSQL password.  This password is used internally within the\n";
-      echo   "server and is only required again if you want to access the Tellervo database\n";
-      echo   "directly. The password should be 8-20 characters, and include numbers, letters,\n";
-      echo   "and capitals but no spaces.\n";
-      $pwd = promptForPwd();
+
+      if($quick===TRUE)
+      {
+      	$pwd = random_str(20);
+      }
+      else
+      {
+        echo "\nCreate a PostgreSQL password.  This password is used internally within the\n";
+        echo   "server and is only required again if you want to access the Tellervo database\n";
+        echo   "directly. The password should be 8-20 characters, and include numbers, letters,\n";
+        echo   "and capitals but no spaces.\n";
+      	$pwd = promptForPwd();
+      }
   }
 }
 
@@ -1625,12 +1726,21 @@ function promptForPwd($isCreating=TRUE)
 /**
  * Interactive script for setting up Apache 2 webserver
  */
-function apacheSetup()
+function apacheSetup($auto=false)
 {
   global $logfile;
-  echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
-  echo "    [Y]/n  ";
-  $response = fgets(STDIN); 
+  
+  
+  if ($auto===TRUE)
+  {
+  	  $response = "y";
+  }
+  else
+  {
+	  echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
+	  echo "    [Y]/n  ";
+	  $response = fgets(STDIN);
+  } 
 
   if(trim(strtolower($response))=='n')
   {
@@ -1713,7 +1823,7 @@ function verifySetup($silent=false)
   include($configfile);
   include($systemconfig);
   
-  global $ip;
+  $ip = getIP();
   global $baseFolder;
   global $securehttp;
 
@@ -2771,7 +2881,7 @@ function removeNetworkPersistence()
 	echo "Remove persistence rules so MAC address reinit doesn't break network...\n\n";
 	if (file_exists("/etc/udev/rules.d/70-persistent-net.rules"))
 	{
-		exec("sudo rm /etc/udev/rules.d/70-persistent-net.rules");
+		exec("rm /etc/udev/rules.d/70-persistent-net.rules");
 	}
 
 }
@@ -2797,5 +2907,26 @@ function setCascadeDeleteEnabled($enabled)
 
 }
 
+/**
+ * Generate a random string, using a cryptographically secure 
+ * pseudorandom number generator (random_int)
+ * 
+ * For PHP 7, random_int is a PHP core function
+ * For PHP 5.x, depends on https://github.com/paragonie/random_compat
+ * 
+ * @param int $length      How many characters do we want?
+ * @param string $keyspace A string of all possible characters
+ *                         to select from
+ * @return string
+ */
+function random_str($length, $keyspace = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ')
+{
+    $str = '';
+    $max = mb_strlen($keyspace, '8bit') - 1;
+    for ($i = 0; $i < $length; ++$i) {
+        $str .= $keyspace[random_int(0, $max)];
+    }
+    return $str;
+}
 
 ?>

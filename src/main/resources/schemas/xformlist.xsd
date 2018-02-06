@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://openrosa.org/xforms/xformsList" xmlns:xformslist="http://openrosa.org/xforms/xformsList">
+  <xs:element name="xforms">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="xformslist:xform"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="xform">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="xformslist:formID"/>
+        <xs:element ref="xformslist:name"/>
+        <xs:element ref="xformslist:hash"/>
+        <xs:element ref="xformslist:downloadUrl"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="formID" type="xs:string"/>
+  <xs:element name="name" type="xs:NCName"/>
+  <xs:element name="hash" type="xs:anyURI"/>
+  <xs:element name="downloadUrl" type="xs:anyURI"/>
+</xs:schema>
