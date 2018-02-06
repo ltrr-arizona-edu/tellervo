@@ -1375,11 +1375,7 @@ function checkServiceIsRunning($service)
 /**
  * Create script files by copying from templates and alter basic info
  */
-<<<<<<< HEAD
 function createScriptsFromTemplates($auto=false)
-=======
-function createScriptsFromTemplates($quick=false)
->>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
 {
   global $permsfile;
   global $permstemplate;
@@ -1398,8 +1394,6 @@ function createScriptsFromTemplates($quick=false)
   exec("cp $configtemplate $configfile >> $logfile" );
   setConfigVariable("%%IP%%", getIP());   
 
-<<<<<<< HEAD
-
   if($auto===TRUE)
   {
   	  $response = "Dev Server";
@@ -1408,21 +1402,9 @@ function createScriptsFromTemplates($quick=false)
   {
 	  echo "\nPlease enter the name of your laboratory : ";
 	  $response = fgets(STDIN);
-=======
-  if($quick==true)
-  {
-    $response = "Development";
-  }
-  else
-  {
-    echo "\nPlease enter the name of your laboratory : ";
-    $response = fgets(STDIN);
->>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
   }
   setConfigVariable("%%LABNAME%%", trim($response, "\n\r"));   
-
-<<<<<<< HEAD
-
+  
   if($auto===TRUE)
   {
     $response = "";
@@ -1431,20 +1413,9 @@ function createScriptsFromTemplates($quick=false)
   {
   	echo "\nPlease enter a code/acronym for your lab e.g. C for Cornell : ";
   	$response = fgets(STDIN);
-=======
-  if($quick==true)
-  {
-    $response = "";
-  }
-  else
-  {
-    echo "\nPlease enter a code/acronym for your lab e.g. C for Cornell : ";
-    $response = fgets(STDIN);
->>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
   }
   setConfigVariable("%%LABACRONYM%%", trim($response, "\n\r"));   
   
-<<<<<<< HEAD
   
   if($auto===TRUE)
   {
@@ -1456,18 +1427,6 @@ function createScriptsFromTemplates($quick=false)
 	  echo   "domain name of your lab's website (e.g. dendro.cornell.edu), but can be any\n";
 	  echo   "name as long as it is unique and doesn't contain spaces : ";
 	  $response = fgets(STDIN);
-=======
-  if($quick==true)
-  {
-    $response = "Development";
-  }
-  else
-  {
-  	echo "\nPlease enter a unique 'domain' for your database.  This should normally be the\n"; 
-  	echo   "domain name of your lab's website (e.g. dendro.cornell.edu), but can be any\n";
-  	echo   "name as long as it is unique and doesn't contain spaces : ";
-  	$response = fgets(STDIN);
->>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
   }
   setConfigVariable("%%DOMAIN%%", trim($response, "\n\r"));   
  
