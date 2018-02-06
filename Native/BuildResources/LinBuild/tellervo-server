@@ -326,6 +326,39 @@ else if(isset($args["reconfigure"]) || isset($args["r"]))
 	printComplete();
 	exit(0);
 }
+else if(isset($args["dockerconfigure"]))
+{
+	// Reconfigure server
+	requireRoot();
+	
+	exec("chown -R www-data:www-data /usr/share/tellervo-server/mediastore");
+		
+	// Delete existing config files
+	if (file_exists("$folderbase/firstrun"))
+	{
+		exec("sudo rm -f $folderbase/firstrun");
+	}
+	if (file_exists("$wsbase/config.php"))
+	{
+		exec("sudo rm -f $wsbase/config.php");
+	}
+	if (file_exists("$wsbase/systemconfig.php"))
+	{
+		exec("sudo rm -f $wsbase/systemconfig.php");
+	}
+	
+	createScriptsFromTemplates(true);
+	postgresSetup(true);
+	include($configfile);
+	include($dbsetupfile);
+	generateSystemsConfig();
+	include($systemconfig);
+	runDBUpgrades(true);	
+	apacheSetup(true);
+	verifySetup(true);
+	printComplete();
+	exit(0);
+}
 else if(isset($args["sysconfig"]) || isset($args["s"]))
 {
 	requireRoot();
@@ -1342,7 +1375,11 @@ function checkServiceIsRunning($service)
 /**
  * Create script files by copying from templates and alter basic info
  */
+<<<<<<< HEAD
 function createScriptsFromTemplates($auto=false)
+=======
+function createScriptsFromTemplates($quick=false)
+>>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
 {
   global $permsfile;
   global $permstemplate;
@@ -1355,13 +1392,13 @@ function createScriptsFromTemplates($auto=false)
   global $wsbase;
   global $postgresversion;
 
-
   if(!file_exists($wsbase)) mkdir($wsbase);
 
   exec("cp $permstemplate $permsfile >> $logfile" );
   exec("cp $configtemplate $configfile >> $logfile" );
   setConfigVariable("%%IP%%", getIP());   
 
+<<<<<<< HEAD
 
   if($auto===TRUE)
   {
@@ -1371,9 +1408,20 @@ function createScriptsFromTemplates($auto=false)
   {
 	  echo "\nPlease enter the name of your laboratory : ";
 	  $response = fgets(STDIN);
+=======
+  if($quick==true)
+  {
+    $response = "Development";
+  }
+  else
+  {
+    echo "\nPlease enter the name of your laboratory : ";
+    $response = fgets(STDIN);
+>>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
   }
   setConfigVariable("%%LABNAME%%", trim($response, "\n\r"));   
 
+<<<<<<< HEAD
 
   if($auto===TRUE)
   {
@@ -1383,9 +1431,20 @@ function createScriptsFromTemplates($auto=false)
   {
   	echo "\nPlease enter a code/acronym for your lab e.g. C for Cornell : ";
   	$response = fgets(STDIN);
+=======
+  if($quick==true)
+  {
+    $response = "";
+  }
+  else
+  {
+    echo "\nPlease enter a code/acronym for your lab e.g. C for Cornell : ";
+    $response = fgets(STDIN);
+>>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
   }
   setConfigVariable("%%LABACRONYM%%", trim($response, "\n\r"));   
   
+<<<<<<< HEAD
   
   if($auto===TRUE)
   {
@@ -1397,6 +1456,18 @@ function createScriptsFromTemplates($auto=false)
 	  echo   "domain name of your lab's website (e.g. dendro.cornell.edu), but can be any\n";
 	  echo   "name as long as it is unique and doesn't contain spaces : ";
 	  $response = fgets(STDIN);
+=======
+  if($quick==true)
+  {
+    $response = "Development";
+  }
+  else
+  {
+  	echo "\nPlease enter a unique 'domain' for your database.  This should normally be the\n"; 
+  	echo   "domain name of your lab's website (e.g. dendro.cornell.edu), but can be any\n";
+  	echo   "name as long as it is unique and doesn't contain spaces : ";
+  	$response = fgets(STDIN);
+>>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
   }
   setConfigVariable("%%DOMAIN%%", trim($response, "\n\r"));   
  
@@ -1726,10 +1797,15 @@ function promptForPwd($isCreating=TRUE)
 /**
  * Interactive script for setting up Apache 2 webserver
  */
+<<<<<<< HEAD
 function apacheSetup($auto=false)
+=======
+function apacheSetup($quick=false)
+>>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
 {
   global $logfile;
   
+<<<<<<< HEAD
   
   if ($auto===TRUE)
   {
@@ -1740,6 +1816,17 @@ function apacheSetup($auto=false)
 	  echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
 	  echo "    [Y]/n  ";
 	  $response = fgets(STDIN);
+=======
+  if($quick)
+  {
+    $response="Y";
+  }
+  else
+  {
+  	echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
+  	echo "    [Y]/n  ";
+  	$response = fgets(STDIN);
+>>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
   } 
 
   if(trim(strtolower($response))=='n')
