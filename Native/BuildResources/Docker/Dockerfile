@@ -1,4 +1,5 @@
-FROM ubuntu:16.04 
+#FROM ubuntu:16.04
+FROM FROM mmunro/bloatstack:0.1.2-xenial 
 MAINTAINER p.brewer@ltrr.arizona.edu
 LABEL org.tridas.version="1.3.3"
 LABEL org.tridas.release-date="2017-02-01"
@@ -8,15 +9,15 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 
 # Download and install dependencies
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-apt-utils \
-expect \
-supervisor \ 
+#RUN apt-get update && apt-get install -y --no-install-recommends \
+#apt-utils \
+#expect \
+#supervisor \ 
 wget \
-iputils-ping \
-iproute2 \
-sudo \
-&& rm -r /var/lib/apt/lists/*
+#iputils-ping \
+#iproute2 \
+#sudo \
+#&& rm -r /var/lib/apt/lists/*
 
 
 RUN adduser --disabled-password --gecos '' tellervo

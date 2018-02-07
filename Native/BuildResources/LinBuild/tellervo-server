@@ -21,8 +21,8 @@ if(hasRootPrivileges())
 	// Make sure log file exists and make sure it is read and writeable
 	exec("touch $logfile > /dev/null");
 	exec("chmod a+rw $logfile > /dev/null");
-	
-	// Log 
+
+	// Log
 	exec("echo \"\n******* Running tellervo-server ********\n\" >> $logfile");
 }
 
@@ -90,30 +90,30 @@ if(isset($args["auto-configure"]))
 {
     echo "Configuring Tellervo Server with default settings";
 	requireRoot();
-	
+
 	exec("chown -R www-data:www-data /usr/share/tellervo-server/mediastore");
-	
+
 	// Check if the server is already configured
 	if( (file_exists($configfile)) && (file_exists($dbsetupfile)) )
 	{
 		// Include config files as they already exist
 		include($configfile);
 		include($dbsetupfile);
-			
+
 		// Verify if the configuration is already ok
 		if(verifySetup(TRUE)===TRUE)
 		{
-			// setup already done so display and close 
+			// setup already done so display and close
 			echo "Configuration complete\n\n";
 			verifySetup();
 			printComplete();
 			exit(0);
-		}	
+		}
 	}
-	
+
 	// Setup not yet ok so configure from scratch
 	createScriptsFromTemplates(TRUE);
-	postgresSetup(TRUE);	
+	postgresSetup(TRUE);
 	include($configfile);
 	include($dbsetupfile);
 	generateSystemsConfig();
@@ -123,7 +123,7 @@ if(isset($args["auto-configure"]))
 	verifySetup();
 	printComplete();
 	exit(0);
-    
+
 }
 else if(isset($args["add-wms-name"]) && isset($args["add-wms-url"]) &&
    $args["add-wms-name"]!=null && $args["add-wms-url"]!=null)
@@ -134,7 +134,7 @@ else if(isset($args["add-wms-name"]) && isset($args["add-wms-url"]) &&
 	include($configfile);
 	include($dbsetupfile);
 	include($systemconfig);
-	
+
 	if(file_exists($url))
 	{
 		addWMS($name, $url);
@@ -144,7 +144,7 @@ else if(isset($args["add-wms-name"]) && isset($args["add-wms-url"]) &&
 		echo "The WMS server URL you supplied is not valid";
 		die();
 	}
-	
+
 	die();
 }
 else if(isset($args["upgrade"]) || isset($args["u"]))
@@ -180,15 +180,15 @@ else if(isset($args["restore-db"]) && $args["restore-db"]!=null)
 	include($configfile);
 	include($dbsetupfile);
 	$dbfilename = $args["restore-db"];
-	
+
 	// If filename doesn't include path, then add current folder
 	if(substr($dbfilename, 0, 1)!="/")
 	{
 		$dbfilename = getcwd()."/".$dbfilename;
 	}
-	
+
 	restoreDB($dbfilename);
-	
+
 	echo "Database restore complete\n";
 	verifySetup();
 	printComplete();
@@ -208,11 +208,11 @@ else if(isset($args["firstrun"]))
 {
 	// Configure server for first run
 	$colors = new Colors();
-	
+
 	echo $colors->getColoredString("\n\nStep 4 - Setting up the Tellervo database...\n\n", "light_purple");
 	requireRoot();
 	// Make sure media store is accessible to www-data
-	
+
 	createScriptsFromTemplates();
 	postgresSetup(true);
 	include($configfile);
@@ -233,7 +233,7 @@ else if(isset($args["firstrun"]))
 else if(isset($args["deploy"]))
 {
 	requireRoot();
-	
+
 	echo "Deleting any existing config files...\n\n";
 	if (file_exists("$folderbase/firstrun"))
 	{
@@ -263,18 +263,18 @@ else if(isset($args["deploy"]))
 	{
 		exec("rm /usr/share/tellervo-server/server_credentials");
 	}
-	
+
 	echo "Move first run script into place...\n\n";
 	if (file_exists("/usr/share/tellervo-server/firstrun.template"))
 	{
 		exec("cp /usr/share/tellervo-server/firstrun.template /usr/share/tellervo-server/firstrun");
 	}
-	
+
 	echo "Installing power interface stuff for clean shutdowns...\n\n";
 	exec("apt-get -q -y install acpid");
-	
+
 	removeNetworkPersistence();
-	
+
 	echo "Make sure firstrun gets run on next login...\n\n";
 	exec("echo \"\n# Run Tellervo firstrun script if required\nif [ -f /usr/share/tellervo-server/firstrun ]\nthen\n   /usr/share/tellervo-server/firstrun\nfi\" >> ~/.bashrc");
 	//exec("su - tellervo -c `history -c`");
@@ -288,18 +288,18 @@ else if(isset($args["reconfigure"]) || isset($args["r"]))
 {
 	// Reconfigure server
 	requireRoot();
-	
+
 	exec("chown -R www-data:www-data /usr/share/tellervo-server/mediastore");
-	
-	// Confirm the user wants to scrub and start from scratch  
+
+	// Confirm the user wants to scrub and start from scratch
 	echo "\nIf you continue, your existing Tellervo configuration and database will be\n";
 	echo "deleted.  Are you sure you want to proceed?  (y/N): ";
     $response = trim(fgets(STDIN));
     if($response!="Y" && $response !="y")
     {
     	exit(0);
-    }      
-	
+    }
+
 	// Delete existing config files
 	if (file_exists("$folderbase/firstrun"))
 	{
@@ -313,14 +313,14 @@ else if(isset($args["reconfigure"]) || isset($args["r"]))
 	{
 		exec("rm -f $wsbase/systemconfig.php");
 	}
-	
+
 	createScriptsFromTemplates();
 	postgresSetup(true);
 	include($configfile);
 	include($dbsetupfile);
 	generateSystemsConfig();
 	include($systemconfig);
-	runDBUpgrades(true);	
+	runDBUpgrades(true);
 	apacheSetup();
 	verifySetup();
 	printComplete();
@@ -330,9 +330,9 @@ else if(isset($args["dockerconfigure"]))
 {
 	// Reconfigure server
 	requireRoot();
-	
+
 	exec("chown -R www-data:www-data /usr/share/tellervo-server/mediastore");
-		
+
 	// Delete existing config files
 	if (file_exists("$folderbase/firstrun"))
 	{
@@ -346,14 +346,14 @@ else if(isset($args["dockerconfigure"]))
 	{
 		exec("sudo rm -f $wsbase/systemconfig.php");
 	}
-	
+
 	createScriptsFromTemplates(true);
 	postgresSetup(true);
 	include($configfile);
 	include($dbsetupfile);
 	generateSystemsConfig();
 	include($systemconfig);
-	runDBUpgrades(true);	
+	runDBUpgrades(true);
 	apacheSetup(true);
 	verifySetup(true);
 	printComplete();
@@ -417,7 +417,7 @@ else if(isset($args["emptylog"]) || isset($args["e"]))
 	include($dbsetupfile);
 	emptyLog();
 	exit(0);
-	
+
 }
 else if(isset($args["upgrade-db"]))
 {
@@ -431,30 +431,30 @@ else if (isset($args["configure"]) || isset($args["c"]))
 {
 	// Configure
 	requireRoot();
-	
+
 	exec("chown -R www-data:www-data /usr/share/tellervo-server/mediastore");
-	
+
 	// Check if the server is already configured
 	if( (file_exists($configfile)) && (file_exists($dbsetupfile)) )
 	{
 		// Include config files as they already exist
 		include($configfile);
 		include($dbsetupfile);
-			
+
 		// Verify if the configuration is already ok
 		if(verifySetup(TRUE)===TRUE)
 		{
-			// setup already done so display and close 
+			// setup already done so display and close
 			echo "Configuration complete\n\n";
 			verifySetup();
 			printComplete();
 			exit(0);
-		}	
+		}
 	}
-	
+
 	// Setup not yet ok so configure from scratch
 	createScriptsFromTemplates();
-	postgresSetup();	
+	postgresSetup();
 	include($configfile);
 	include($dbsetupfile);
 	generateSystemsConfig();
@@ -488,14 +488,14 @@ else if (isset($args["info"]))
 else if (isset($args["network"]) || isset($args["n"]))
 {
 	requireRoot();
-	
+
 	writeLogMsg("Checking network is configured correctly...");
 	require("$configfile");
-	
+
 	$thisip = getIP();
-	
+
 	echo "\n";
-	
+
 	if($ip=="$thisip")
 	{
 		echo " Network settings appear to require no changes...\n";
@@ -512,18 +512,18 @@ else if (isset($args["network"]) || isset($args["n"]))
                               		'', // directorie(s) to search
                               		false) ;
         $snr->doSearch();
-        
+
         removeNetworkPersistence();
-        
+
 	}
-	
-	
+
+
 	require("$configfile");
 	require("$dbsetupfile");
 	require("$systemconfig");
 	verifySetup();
 	printComplete();
-	
+
 	if($setupsuccessful)
 	{
 	 	exit(0);
@@ -563,7 +563,7 @@ exit(1);
 function backupDB($dbfilename)
 {
 	global $dbname;
-	
+
 	echo "Backing up database...\n";
 	exec("pg_dump -Fc -U tellervo ".$dbname." > ".$dbfilename, $output, $returnvar);
 	if($returnvar>=2)
@@ -575,15 +575,15 @@ function backupDB($dbfilename)
 	{
 		echo "Database successfully backed up to '".$dbfilename."'\n";
 	}
-	
+
 	return true;
 }
 
 /**
- * Restore a previously created database dump.  File needs to have been created with 'pg_dump -Fc'.  
- * PostGIS, PLJava and any database upgrade patches will be applied to bring the database up to 
- * the current version.  
- *  
+ * Restore a previously created database dump.  File needs to have been created with 'pg_dump -Fc'.
+ * PostGIS, PLJava and any database upgrade patches will be applied to bring the database up to
+ * the current version.
+ *
  * @param unknown $dbfilename
  */
 function restoreDB($dbfilename)
@@ -595,18 +595,18 @@ function restoreDB($dbfilename)
 	global $upgradeScripts;
 	global $dbname;
 	global $systemconfig;
-	
+
 	if(!is_readable($dbfilename)) {
 		echo "Specified database backup file '$dbfilename' does not exist\n";
 		exit(0);
 	}
-	
+
 	if(!is_writeable($dbfilename)) {
 		echo "Database backup file is not in a writeable folder.\n";
 		echo "Try copying into '/tmp/' and try again.\n";
 		exit(0);
 	}
-	
+
 	echo "\nThis procedure will overwrite any existing Tellervo database.\nAre you sure you want to continue?\n";
 	echo "   (y/N): ";
 	$response = trim(fgets(STDIN));
@@ -615,13 +615,13 @@ function restoreDB($dbfilename)
 		exit(0);
 	}
 
-	
+
 	$postgisrestore = $postgisfolder."postgis_restore.pl";
 	$postgissql = $postgisfolder."postgis.sql";
 	$postgisspatialrefsys = $postgisfolder."spatial_ref_sys.sql";
 	$postgislegacy = $postgisfolder."legacy.sql";
-	
-	if(!file_exists($postgisfolder) || !file_exists($postgisrestore) || !file_exists($postgissql) 
+
+	if(!file_exists($postgisfolder) || !file_exists($postgisrestore) || !file_exists($postgissql)
 			|| !file_exists($postgisspatialrefsys) || !file_exists($postgislegacy)){
 		echo "Unable to find PostGIS upgrade files\n";
 		exit(0);
@@ -637,15 +637,15 @@ function restoreDB($dbfilename)
 		// Tellervo database DOES exist
 		pg_close($dbconn);
 		echo"\nDeleting existing database...\n";
-		exec("su - postgres -c \"dropdb ".$dbname."\"", $output, $returnvar);		
+		exec("su - postgres -c \"dropdb ".$dbname."\"", $output, $returnvar);
 		if($returnvar>=1) {
 			echo "\nUnable to restore database until existing database is removed.\n";
 			echo "Please ensure all database connections are closed, then try again.\n";
 			die();
 		}
 	}
-	
-	
+
+
 	echo "\nCreating database...\n";
 	exec("su - postgres -c \"createdb ".$dbname." 2>> ".$logfile."\"");
 	echo "\nApplying PostGIS upgrade patches...\n";
@@ -657,12 +657,12 @@ function restoreDB($dbfilename)
     echo "\nApplying PostGIS upgrade patches.  This could take some time on larger databases...\n";
     shell_exec("su - postgres -c \"".$postgisrestore." ".$dbfilename." | psql ".$dbname." 2>> ".$logfile."\"");
     echo "\nFinalising PLJava extension configuration...\n";
-	
+
 	include($dbsetupfile);
     echo "\nRegenerating systems config file\n";
     generateSystemsConfig();
 	include($systemconfig);
-	
+
 	// Now insert record into upgradelog so patch that was already run won't be re-run
 	$sql = "INSERT into tblupgradelog (filename) VALUES ('database_upgrade-1.3.0e.notransaction.sql');";
 	$result = pg_query($dbconn, $sql);
@@ -674,18 +674,18 @@ function restoreDB($dbfilename)
 	// Run remaining upgrade patches
     runDBUpgrades(true);
    	return;
-	
+
 }
 
 /**
  * Set the password for the default Tellervo desktop admin user.
- *  
+ *
  * @return boolean
  */
 function setAdminPwd()
 {
 	//include '$systemconfig';
-	
+
 	// Confirm the user wants to reset the admin user pwd
 	echo "\nAre you sure you want to reset the admin user password?\n";
 	echo "   (y/N): ";
@@ -693,14 +693,14 @@ function setAdminPwd()
     if($response!="Y" && $response !="y")
     {
     	exit(0);
-    }        
-    
-              
+    }
+
+
       echo "\nPlease create a password for the admin user to use when logging in with the \n";
       echo   "Tellervo desktop application. The password should be 8-20 characters, and \n";
       echo   "include numbers, letters, and capitals but no spaces.\n";
       $pwd = promptForPwd();
-      
+
       $sql = "UPDATE tblsecurityuser set password=digest('$pwd', 'sha512') where username='admin'";
 
 	    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -712,31 +712,31 @@ function setAdminPwd()
 			{
 				echo "Failed to reset admin users password\n";
 				echo $error."\n";
-		
+
 			}
 			else
 			{
 	    		echo "Admin password successfully reset\n";
 	    		return true;
-	    	}   	
+	    	}
 	    }
 	    else
 	    {
 	    	die("Unable to connect to PostgreSQL database.\n\n");
 	    }
-	    
+
 	    return false;
 
 }
 
 /**
  *  Download the latest version of Tellervo Server from the website and install
- *  
+ *
  */
 function downloadAndInstallUpgrade()
 {
 	$url = "http://www.tellervo.org/download/?type=server\&os=linux\&version=latest";
-	
+
 	exec("wget --output-document /tmp/new.deb $url");
 	passthru("dpkg --install /tmp/new.deb");
 	exec("rm /tmp/new.deb");
@@ -746,7 +746,7 @@ function downloadAndInstallUpgrade()
 
 /**
  * Delete the Web Mapping Server with the specified name from database
- *  
+ *
  * @param unknown $name
  * @return boolean
  */
@@ -754,7 +754,7 @@ function delWMS($name)
 {
 
 	global $dbconn;
-		
+
 	$sql = "DELETE FROM tlkpwmsserver where name='$name';";
 	$dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -771,20 +771,20 @@ function delWMS($name)
 	else
 	{
     		echo "WMS server deleted from database\n";
-    	}   	
+    	}
     }
     else
     {
     	die("Unable to connect to PostgreSQL database.\n\n");
     }
-    
+
     return false;
 }
-	
+
 
 /**
  * Add a Web Mapping Server to the database.
- * 
+ *
  * @param String $name - human readable name for server
  * @param String $url  - WMS URL
  * @return boolean
@@ -792,7 +792,7 @@ function delWMS($name)
 function addWMS($name, $url)
 {
 	global $dbconn;
-		
+
 	$sql = "INSERT INTO tlkpwmsserver (name, url) VALUES ('$name', '$url');";
 	$dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -809,13 +809,13 @@ function addWMS($name, $url)
 	else
 	{
     		echo "WMS server added to database\n";
-    	}   	
+    	}
     }
     else
     {
     	die("Unable to connect to PostgreSQL database.\n\n");
     }
-    
+
     return false;
 }
 
@@ -829,9 +829,9 @@ function printTitle()
 }
 
 /**
- * Print the standard help information to the console.  If forced is true then the script exists with an error.  
+ * Print the standard help information to the console.  If forced is true then the script exists with an error.
  * This is used to show a user they have given incorrect parameters.
- * 
+ *
  * @param string $forced
  */
 function printHelp($forced=false)
@@ -856,10 +856,10 @@ function printHelp($forced=false)
   echo "  -e, --emptylog       *Clean the log files and database tables\n";
   echo "  -s, --sysconfig      *Generate the systems configuration file\n";
   echo "      --set-db-pwd     *Reset the PostgreSQL database password\n";
-  echo "      --set-admin-pwd  *Reset the Tellervo desktop login for the admin user\n"; 
+  echo "      --set-admin-pwd  *Reset the Tellervo desktop login for the admin user\n";
   echo "      --start          *Start the Tellervo server\n";
-  echo "      --stop           *Stop the Tellervo server\n"; 
-  echo "      --restart        *Restart the Tellervo server\n";   
+  echo "      --stop           *Stop the Tellervo server\n";
+  echo "      --restart        *Restart the Tellervo server\n";
   echo "      --upgrade-db     *Run database upgrade scripts\n";
   echo "      --add-wms-name   *Name of a web mapping server to add to database\n";
   echo "      --add-wms-url    *URL of a web mapping server to add to database\n";
@@ -872,9 +872,9 @@ function printHelp($forced=false)
   echo "\n";
   echo "  * Root or sudo privileges are required to run these commands\n";
   echo "\n";
-  
+
   if(forced) exit(1);
-  
+
   exit(0);
 
 }
@@ -893,7 +893,7 @@ function writeLogMsg($message, $errType="INFO")
 * Run any applicable upgrade scripts
 */
 function runDBUpgrades($skipbackup=false)
-{	
+{
 	global $upgradeScripts;
 	global $logfile;
 	global $configfile;
@@ -901,15 +901,15 @@ function runDBUpgrades($skipbackup=false)
 	global $dbsetupfile;
 	global $dbconn;
 	global $dbname;
-		
+
 	require($configfile);
 	require($dbsetupfile);
 	require($systemconfig);
-		
+
 	$scriptsRun = 0;
 
 	echo "Upgrading existing Tellervo database to latest version...\n";
-	
+
 	// Backup db
 	if($skipbackup!=TRUE) {
 		echo "\nWould you like to backup your database before upgrading?\n";
@@ -920,27 +920,27 @@ function runDBUpgrades($skipbackup=false)
 			backupDB("/usr/share/tellervo-server/".$dbname."-".date('Ymd')."-preupgrade.backup");
 		}
 	}
-	
+
 	writeLogMsg("*******************");
     writeLogMsg("Upgrading existing Tellervo database to latest version...");
-    writeLogMsg("*******************");	
-	
-	// Loop through all upgrade scripts and run any that haven't 
+    writeLogMsg("*******************");
+
+	// Loop through all upgrade scripts and run any that haven't
 	// already been run
 
 	$upgradeScriptFailed = false;
 
-	if (is_dir($upgradeScripts)) 
+	if (is_dir($upgradeScripts))
 	{
 		$files = scandir($upgradeScripts);
-		
+
 		// This is how you sort an array, see http://php.net/sort
 		natsort($files);
-		
+
 		// There's no need to use a directory handler, just loop through your $files array.
 		foreach ($files as $file) {
 			// Ignore directories and hidden files
-	        if ($file != "." && $file != ".." && strpos($file, ".")!=0) 
+	        if ($file != "." && $file != ".." && strpos($file, ".")!=0)
 		    {
 		      	$result = runSQLUpgradeFile($file);
 		      	if($result){
@@ -949,34 +949,34 @@ function runDBUpgrades($skipbackup=false)
 		      		$upgradeScriptFailed = true;
 		      		break;
 		      	}
-		      	
+
 	        }
 		}
 	}
-	
+
 	if($upgradeScriptFailed===TRUE)
 	{
 		die("There was an error applying an upgrade scripts so the upgrade has been halted.\nWe will need to investigate what went wrong before we can complete the upgrade.\nPlease contact the Tellervo developers for assistance.\n\n");
 	}
-	
+
 	generateSystemsConfig();
-	
+
 	$f = getTellervoDPKGVersion();
 
 	// Remove +SNAPSHOT from end
 	$f = str_replace("+SNAPSHOT", "", $f);
-	
+
 	$sql = "UPDATE tblconfig SET value='$f' where key='wsversion'";
         $dbconnstatus = pg_connection_status($dbconn);
 	if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
-	    $result = pg_query($dbconn, $sql);    	
+	    $result = pg_query($dbconn, $sql);
     }
     else
     {
 	    die("Unable to connect to PostgreSQL database to update the version information\n\n");
     }
-    
+
     if($scriptsRun==0)
     {
     	echo "Database was up-to-date.  No upgrade scripts were run\n";
@@ -986,28 +986,28 @@ function runDBUpgrades($skipbackup=false)
    	echo "Database upgrade complete.\n";
     	echo "Database now at version ".trim($f).".\n";
     }
-	
+
 	generateSystemsConfig();
 	include($systemconfig);
 }
 
 /**
- * Get the version of Tellervo according to dpkg.  
+ * Get the version of Tellervo according to dpkg.
  *
  * @return version
- */ 
+ */
 function getTellervoDPKGVersion()
 {
 	$f = exec("dpkg-query -W tellervo-server");
-	
+
 	if(strpos($f, "No packages found")===TRUE)
 	{
 	 return false;
-	}  
-	
+	}
+
 	// Trim off the 'tellervo-server' from the beginning
 	$f = str_replace("tellervo-server", "", $f);
-	
+
 	return trim($f);
 }
 
@@ -1020,19 +1020,19 @@ function getTellervoDBVersion()
 	global $configfile;
     global $systemconfig;
 	global $dbsetupfile;
-	global $dbconn;	
-		
+	global $dbconn;
+
 	include($systemconfig);
-		
+
 	$sql = "SELECT value FROM tblconfig WHERE key='wsversion'";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
-    	$result = pg_query($dbconn, $sql);    	
+    	$result = pg_query($dbconn, $sql);
         while ($row = pg_fetch_array($result))
 	  	{
-	     	   return trim($row['value']); 		
-	  	} 	
+	     	   return trim($row['value']);
+	  	}
     }
 
 	return "Unknown";
@@ -1049,20 +1049,20 @@ function runSQLFile($filename, $helptext)
 	global $upgradeScripts;
 	global $dbname;
 	$colors = new Colors();
-	
+
 	// Running standard SQL patch in a transaction
     		pg_query($dbconn, "BEGIN WORK");
-    	
+
     	    echoTruncatedString("    - ".$helptext);
     	    $sql = file_get_contents($filename);
-    	    	
+
 	    	$result = pg_query($dbconn, $sql);
-	    	
+
 	    	if(!$result)
 	    	{
 		    	echo $colors->getColoredString("FAILED", "red");
 	    		echo "\n";
-	
+
 	    		writeLogMsg("Error running script '".escapeshellcmd($filename)."'" );
 
     			// Only run in transaction if safe
@@ -1072,13 +1072,13 @@ function runSQLFile($filename, $helptext)
 	    	}
 	    	else
 	    	{
-	 
-	
+
+
 				// All is well so go ahead and commit the entire thing to the database
 	    		pg_query($dbconn, "COMMIT");
 		    	echo $colors->getColoredString("SUCCESS", "green");
-	    		echo "\n";   
-			    return true; 	
+	    		echo "\n";
+			    return true;
 	    	}
 
 }
@@ -1089,7 +1089,7 @@ function runSQLFile($filename, $helptext)
  * Returns true if file was run successfully (or has already been installed) and false if it failed.
  * The entire thing is performed as a transaction so if there is any trouble (including writing
  * to the upgrade log) then the entire upgrade file is rolled back.
- * 
+ *
  * @param unknown $filename
  * @return boolean
  */
@@ -1103,13 +1103,13 @@ function runSQLUpgradeFile($filename)
 	global $upgradeScripts;
 	global $dbname;
 	$colors = new Colors();
-		
+
 	$sql = "SELECT * FROM tblupgradelog WHERE filename = '$filename'";
 	$dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
     	$result = pg_query($dbconn, $sql);
-    	if(pg_num_rows($result)>=1) return true;    	
+    	if(pg_num_rows($result)>=1) return true;
     }
     else
     {
@@ -1119,25 +1119,25 @@ function runSQLUpgradeFile($filename)
 	$sql = file_get_contents($upgradeScripts."/".$filename);
 
 	writeLogMsg("Upgrading database with SQL \n ".escapeshellcmd($sql));
-	
+
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
     	if(strpos($filename, ".notransaction.")===FALSE)
     	{
     		echoTruncatedString("    - Applying patch: $filename...");
-    		    		
+
     		// Running standard SQL patch in a transaction
     		pg_query($dbconn, "BEGIN WORK");
-    	
-    	    	
+
+
 	    	$result = pg_query($dbconn, $sql);
-	    	
+
 	    	if(!$result)
 	    	{
 		    	echo $colors->getColoredString("FAILED", "red");
 	    		echo "\n";
-	
+
 	    		writeLogMsg("Error running upgrade script '".escapeshellcmd($filename)."'" );
 
     			// Only run in transaction if safe
@@ -1147,44 +1147,44 @@ function runSQLUpgradeFile($filename)
 	    	}
 	    	else
 	    	{
-	    		// Database patched successfully    	    		
+	    		// Database patched successfully
 	    		// Now insert record into upgradelog
 	    		$sql = "INSERT into tblupgradelog (filename) VALUES ('$filename');";
 			    $result = pg_query($dbconn, $sql);
-			    
+
 			    if(!$result)
 		    	{
 		    	    echo $colors->getColoredString("WARNING", "yellow");
 	    			echo "\n\n";
-	
+
 		    		writeLogMsg("Unable to add patch name to upgradelog" );
 		    		//writeLogMsg(escapeshellcmd($error));
-		    		
+
 		    		if(strpos($filename, ".notransaction.")!==FALSE)
 		    		{
 		    			// Only run in transaction if safe
 		    			pg_query($dbconn, "ROLLBACK");
-		    		} 
+		    		}
 		    		return false;
-		    	}	
-	
+		    	}
+
 				// All is well so go ahead and commit the entire thing to the database
 	    		pg_query($dbconn, "COMMIT");
 		    	echo $colors->getColoredString("PASSED", "green");
-	    		echo "\n";   
-			    return true; 	
+	    		echo "\n";
+			    return true;
 	    	}
     	}
     	else
     	{
     		echoTruncatedString("    - Applying patch: $filename...");
-    		
+
 			// This file cannot be run in a transaction or multi-line command
 			// File needs to be run from command line instead
-    		 
+
     		$cmd = "su - postgres -c \" psql $dbname -f ".$upgradeScripts."/".$filename." 2>> ".$logfile."\"";
     		exec($cmd, $resp, $return);
-    		
+
     		if($return!=0)
     		{
     			echo $colors->getColoredString("FAILED", "red");
@@ -1198,16 +1198,16 @@ function runSQLUpgradeFile($filename)
     			// Now insert record into upgradelog
     			$sql = "INSERT into tblupgradelog (filename) VALUES ('$filename');";
     			$result = pg_query($dbconn, $sql);
-    			
+
     			if(!$result)
     			{
     				echo $colors->getColoredString("WARNING", "yellow");
     				echo "\n\n";
-    			
+
     				writeLogMsg("Unable to add patch name to upgradelog" );
     				return false;
     			}
-    			
+
     			echo $colors->getColoredString("PASSED", "green");
     			echo "\n";
     			return true;
@@ -1234,30 +1234,30 @@ function emptyLog()
 	global $dbsetupfile;
 	global $dbconn;
 	global $logfile;
-	
-	
-	
-	
+
+
+
+
 	echo "\nDeleting database log entries prior to the last 7 days...\n";
-	
+
 	$sql = "DELETE FROM tbliptracking where timestamp > (CURRENT_DATE - INTERVAL '1 week');
 	        DELETE FROM tblrequestlog where createdtimestamp > (CURRENT_DATE - INTERVAL '1 week');";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
-    	$result = pg_query($dbconn, $sql);    	
+    	$result = pg_query($dbconn, $sql);
     }
     else
     {
     	die("Unable to connect to PostgreSQL database.\n\n");
     }
-    
+
     echo "\nCleaning server log file...\n";
-    unlink($logfile); 	
-    
+    unlink($logfile);
+
     echo "\nAll Done\n";
-    
-	
+
+
 }
 
 
@@ -1301,56 +1301,56 @@ function generateSystemsConfig()
 	global $dbconn;
 	require($configfile);
 	require($dbsetupfile);
-	
+
 	echo "\nGenerating systems config file...\n";
-	
+
 	// Create the file
 	$fh = fopen($systemconfig, 'w') or exit("Can't create system configuration file\n\n");
 	fwrite($fh, "<?php
 /**
-* This configuration file is automatically generated by the tellervo-server 
+* This configuration file is automatically generated by the tellervo-server
 * configure script.  Do not make changes to this file!
 * Generated : ".date(DATE_RFC822)."
 */\n\n");
-	
+
 	$sql = "SELECT * FROM tblconfig";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
-    	$result = pg_query($dbconn, $sql);    	
+    	$result = pg_query($dbconn, $sql);
         while ($row = pg_fetch_array($result))
         {
 			fwrite($fh, "// ".$row['description']."\n");
 			fwrite($fh, "$".$row['key']." = \"".$row['value']."\";\n\n");
-        } 
+        }
     }
     else
-    {   
-    	global $conn_string; 
+    {
+    	global $conn_string;
     	echo "Failed to connect to PG\n";
     	echo $conn_string."\n";
     	exit("Unable to connect to PostgreSQL database.\n\n");
     }
-    
+
 	$sql = "SELECT * FROM tblsupportedclient";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
-    	$xstr = "";  	 
-    	$result = pg_query($dbconn, $sql);    	
+    	$xstr = "";
+    	$result = pg_query($dbconn, $sql);
         while ($row = pg_fetch_array($result))
         {
 			$xstr.="\n   array(\"name\" => \"".$row['client']."\", \"minVersion\" => \"".$row['minversion']."\"),";
-        } 
-        $xstr = substr($xstr, 0, -1); 
-        fwrite($fh, "// Array of known clients and the minimum version that can be used when accessing this webservice\n");  
+        }
+        $xstr = substr($xstr, 0, -1);
+        fwrite($fh, "// Array of known clients and the minimum version that can be used when accessing this webservice\n");
         fwrite($fh, "$"."tellervoClientIdentifiers = array( $xstr \n);\n\n");
     }
     else
     {
     	exit("Unable to connect to PostgreSQL database.\n\n");
     }
-	
+
 	fwrite($fh, "\n\n//END OF FILE\n?>");
 	fclose($fh);
 }
@@ -1392,7 +1392,7 @@ function createScriptsFromTemplates($auto=false)
 
   exec("cp $permstemplate $permsfile >> $logfile" );
   exec("cp $configtemplate $configfile >> $logfile" );
-  setConfigVariable("%%IP%%", getIP());   
+  setConfigVariable("%%IP%%", getIP());
 
   if($auto===TRUE)
   {
@@ -1403,8 +1403,8 @@ function createScriptsFromTemplates($auto=false)
 	  echo "\nPlease enter the name of your laboratory : ";
 	  $response = fgets(STDIN);
   }
-  setConfigVariable("%%LABNAME%%", trim($response, "\n\r"));   
-  
+  setConfigVariable("%%LABNAME%%", trim($response, "\n\r"));
+
   if($auto===TRUE)
   {
     $response = "";
@@ -1414,27 +1414,27 @@ function createScriptsFromTemplates($auto=false)
   	echo "\nPlease enter a code/acronym for your lab e.g. C for Cornell : ";
   	$response = fgets(STDIN);
   }
-  setConfigVariable("%%LABACRONYM%%", trim($response, "\n\r"));   
-  
-  
+  setConfigVariable("%%LABACRONYM%%", trim($response, "\n\r"));
+
+
   if($auto===TRUE)
   {
      $response = "devserver";
   }
   else
   {
-	  echo "\nPlease enter a unique 'domain' for your database.  This should normally be the\n"; 
+	  echo "\nPlease enter a unique 'domain' for your database.  This should normally be the\n";
 	  echo   "domain name of your lab's website (e.g. dendro.cornell.edu), but can be any\n";
 	  echo   "name as long as it is unique and doesn't contain spaces : ";
 	  $response = fgets(STDIN);
   }
-  setConfigVariable("%%DOMAIN%%", trim($response, "\n\r"));   
- 
+  setConfigVariable("%%DOMAIN%%", trim($response, "\n\r"));
+
   // Set timezone from system
-  setConfigVariable("%%TIMEZONE%%", trim(file_get_contents('/etc/timezone'))); 
- 
-  // Set web folder base 
-  setConfigVariable("%%WSBASE%%", $wsbase); 
+  setConfigVariable("%%TIMEZONE%%", trim(file_get_contents('/etc/timezone')));
+
+  // Set web folder base
+  setConfigVariable("%%WSBASE%%", $wsbase);
 
   // Set the pg_hba location
   if (file_exists("/etc/postgresql/".$postgresversion."/main/pg_hba.conf"))
@@ -1442,15 +1442,15 @@ function createScriptsFromTemplates($auto=false)
   	$pg_hba_file = "/etc/postgresql/".$postgresversion."/main/pg_hba.conf";
   	$pg_hba_file_orig = "/etc/postgresql/".$postgresversion."/main/pg_hba.conf.bak";
   }
-  
- 
+
+
   echo "\n";
-  // Back up pg_hba file if it hasn't been already 
+  // Back up pg_hba file if it hasn't been already
   if(!file_exists($pg_hba_file_orig))
   {
      //exec("sudo -u postgres sh -c \"cp $pg_hba_file $pg_hba_file_orig >> $logfile\"" );
      exec("su - postgres -c \"cp $pg_hba_file $pg_hba_file_orig >> $logfile\"" );
-     
+
   }
 
 }
@@ -1461,13 +1461,13 @@ function createScriptsFromTemplates($auto=false)
 function getIP()
 {
   //exec("ifconfig $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
-  exec("ip -o route get 8.8.8.8 | sed -e 's/^.* src \([^ ]*\) .*$/\1/'", $response);
+  exec('ip -o route get 8.8.8.8 | sed -e "s/^.* src \([^ ]*\) .*$/\1/"', $response);
   return $response[0];
 }
 
 /**
  * Helper function for altering variables in the webservice config.php file
- * 
+ *
  * @param $var - variable to replace
  * @param $value - value to replace it with
  */
@@ -1476,7 +1476,7 @@ function setConfigVariable($var, $value)
   global $configfile;
 
   $files_to_search = array($configfile);
-  
+
   // Search and Replace Arrays
   $snr = new File_SearchReplace($var,
                               $value,
@@ -1492,7 +1492,7 @@ function setConfigVariable($var, $value)
 function postgresSetup($quick=false)
 {
   global $logfile;
-  global $permsfile; 
+  global $permsfile;
   global $pg_hba_file;
   global $pg_hba_file_orig;
   global $user;
@@ -1511,7 +1511,7 @@ function postgresSetup($quick=false)
 	  echo "Would you like the installer to set up a new Tellervo database?\n";
 	  echo "    [Y]/n  ";
 	  $response = fgets(STDIN);
-  } 
+  }
 
    if((trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
    {
@@ -1527,26 +1527,26 @@ function postgresSetup($quick=false)
      else
      {
        // Set db name in config file
-       setConfigVariable("%%DBNAME%%", trim($response, "\n\r"));  
-       $dbname = $response; 
-      
+       setConfigVariable("%%DBNAME%%", trim($response, "\n\r"));
+       $dbname = $response;
+
        // Create a new user or get details of an existing one
        setDBUser($quick);
 
        // Create credentials file
-       exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile"); 
+       exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile");
        exec("chown www-data $credentialsFile");
        exec("chmod o-rwx $credentialsFile");
        exec("chmod g-rwx $credentialsFile");
       }
    }
    else
-   {  
+   {
       // Create a new user or get details of an existing one
       setDBUser($quick);
 
       // Write to credentials file
-      exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile"); 
+      exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile");
       exec("chown www-data $credentialsFile");
       exec("chmod o-rwx $credentialsFile");
       exec("chmod g-rwx $credentialsFile");
@@ -1566,53 +1566,53 @@ function postgresSetup($quick=false)
                               false) ;
       $snr->doSearch();
       exec("su - postgres -c \"psql --file=/usr/share/tellervo-server/set_database_permission.sql 2>> ".$logfile."\"");
-      setConfigVariable("%%DBNAME%%", $dbname);   
-      
+      setConfigVariable("%%DBNAME%%", $dbname);
+
       // Create the database and populate from the database template
       createDatabase($quick);
-      
+
       // Set pg_hba.conf file entry
       $pg_hba_str = "local        all      ".trim($user, "\n\r")."                  trust\\n".
                     "host         all      ".trim($user, "\n\r")."   samenet        md5\\n";
       //$command = "sudo -u postgres sh -c \"sed '1 i\\# ADDED BY TELLERVO CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
       $command = "su - postgres -c \"sed '1 i\\# ADDED BY TELLERVO CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
-      
+
       exec($command, $resp);
 
       // Restart postgres
       echo "\nRestarting PostgreSQL...\n";
       exec("/etc/init.d/postgresql restart\n");
    }
-}  
+}
 
 
 function doesTellervoDBExist()
 {
-	
+
 	global $logfile;
 	global $dbtemplate;
 	global $dbconn;
 	global $dbname;
-	 
+
 	$sql = "SELECT 1 AS result FROM pg_database where datname='".$dbname."'";
 	$cmd = "su - postgres -c \" psql -c \\\"$sql\\\" \"";
-	
+
 	exec($cmd, $resp);
-	
+
 	if(strpos($resp[2], "1") === false)
 	{
 		return false;
 	}
-	
+
 	return true;
-	
+
 }
 
 /**
- *  Create the Postgres Tellervo database 
+ *  Create the Postgres Tellervo database
  */
 function createDatabase($auto=false)
-{	
+{
     global $logfile;
     global $dbtemplate;
     global $dbconn;
@@ -1624,9 +1624,9 @@ function createDatabase($auto=false)
         // Tellervo database doesn't currently exist
     }
     else
-    {   
+    {
    		// Tellervo database DOES exist
-   		
+
    		if($auto===TRUE)
    		{
    			echo "\n";
@@ -1634,19 +1634,19 @@ function createDatabase($auto=false)
 			echo $colors->getColoredString("ERROR - Tellervo database already exists.", "red");
    			echo "\nDelete database and try again.\nAuto configure Tellervo Server failed!\n\n";
    			exit(1);
-   		}     
+   		}
 
     		  // Find out if the user wants drop the existing database
 	 		  echo "\nWarning - there is an existing Tellervo database. Would you like to delete it\nand create a new one?\n";
 			  echo "    y/[N]  ";
 	          $response = fgets(STDIN);
-	          
+
 	          if((trim(strtolower($response))=='y') || (trim(strtolower($response))=='yes'))
               {
               		// Drop Database
               		pg_close($dbconn);
-              		echo"\nDeleting existing database...\n";             		
-              		exec("su - postgres -c \"dropdb ".$dbname."\"", $output, $returnvar);		
+              		echo"\nDeleting existing database...\n";
+              		exec("su - postgres -c \"dropdb ".$dbname."\"", $output, $returnvar);
 					if($returnvar>=1) {
 						echo "\nUnable to delete existing database.\n";
 						echo "Database creation failed.\n";
@@ -1657,20 +1657,20 @@ function createDatabase($auto=false)
     	      {
     	      		return;
     	      }
-        
+
     }
-    
+
     // Create the empty database
     exec("su - postgres -c \"createdb ".$dbname." 2>> ".$logfile."\"");
-    
+
     echo "\nConfiguring PLJava extension.\n";
     exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-1.3.0e.notransaction.sql 2>> ".$logfile."\"");
-    
+
     echo "\nCreating database.  This could take a while...\n";
     exec("su - postgres -c \"pg_restore --dbname=".$dbname." $dbtemplate 2>> ".$logfile."\"");
-    
+
     //runDBUpgrades();
-    
+
 }
 
 /**
@@ -1690,19 +1690,19 @@ function setDBUser($quick=false)
   {
 	  echo "\n\nWould you like to create a new database user?\n";
 	  echo "    [Y]/n  ";
-	  $response = fgets(STDIN); 
+	  $response = fgets(STDIN);
   }
-  
+
   if((trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
   {
        echo "\nPlease provide details of a PostgreSQL user with full access to this database...\n";
        echo "    Username : ";
-       $user = fgets(STDIN); 
+       $user = fgets(STDIN);
        $pwd = promptForPwd(FALSE);
   }
   else
   {
-      $user = "tellervo";              
+      $user = "tellervo";
 
       if($quick===TRUE)
       {
@@ -1722,25 +1722,25 @@ function setDBUser($quick=false)
 /**
  * Interactive script for getting a password.  Checks that the password
  * is strong and asks for it twice to check for typos.
- * 
+ *
  * @param $isCreating - if true then prompts are tailored to a new password
  *                      otherwise they are for getting existing password
  */
 function promptForPwd($isCreating=TRUE)
 {
    $pwd1 = prompt_silent("    Password : ");
-   
+
    if ((!preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$#", $pwd1) || strpos($pwd1, " ")))
    {
      echo "Your password is invalid.  Please try again.\n";
      return promptForPwd();
    }
-	
+
    if($isCreating===TRUE)
    {
-	   
+
 	   $pwd2 = prompt_silent("    Repeat   : ");
-	
+
 	   if($pwd1!=$pwd2)
 	   {
 	      echo "\nPasswords do not match.  Try again!\n";
@@ -1756,16 +1756,10 @@ function promptForPwd($isCreating=TRUE)
 /**
  * Interactive script for setting up Apache 2 webserver
  */
-<<<<<<< HEAD
 function apacheSetup($auto=false)
-=======
-function apacheSetup($quick=false)
->>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
 {
   global $logfile;
-  
-<<<<<<< HEAD
-  
+
   if ($auto===TRUE)
   {
   	  $response = "y";
@@ -1775,28 +1769,17 @@ function apacheSetup($quick=false)
 	  echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
 	  echo "    [Y]/n  ";
 	  $response = fgets(STDIN);
-=======
-  if($quick)
-  {
-    $response="Y";
   }
-  else
-  {
-  	echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
-  	echo "    [Y]/n  ";
-  	$response = fgets(STDIN);
->>>>>>> branch 'master' of https://github.com/ltrr-arizona-edu/tellervo.git
-  } 
 
   if(trim(strtolower($response))=='n')
   {
      return;
   }
-  
+
   echo "\nSetting up webservice...\n";
   exec("a2ensite tellervo-apache.conf 2>> $logfile", $response);
   exec("a2dissite 000-default.conf 2>> $logfile", $response);
-  
+
   echo "\nRestarting webserver...\n";
   exec("service apache2 reload");
 
@@ -1808,8 +1791,8 @@ function apacheSetup($quick=false)
 function isConfigPhpValid()
 {
 	global $configfile;
-	if(fopen($configfile, "r")) 
-	{ 
+	if(fopen($configfile, "r"))
+	{
 	  // If file contains a % then the search/replace hasn't worked
  	  $contents = file_get_contents($configfile);
 	  if(strpos($contents, "%")===false)
@@ -1820,11 +1803,11 @@ function isConfigPhpValid()
 	  {
 	  	return FALSE;
 	  }
-	} 
-	else 
-	{ 
-	  return FALSE; 
-	} 
+	}
+	else
+	{
+	  return FALSE;
+	}
 
 }
 
@@ -1835,9 +1818,9 @@ function isSysConfigValid()
 {
   global $systemconfig;
 
-		if(fopen($systemconfig, "r")) 
-		{ 
-		  // If file is less than 10 lines long it hasn't been filled 
+		if(fopen($systemconfig, "r"))
+		{
+		  // If file is less than 10 lines long it hasn't been filled
 	 	  $lines = count(file($systemconfig));
 		  if($lines>10)
 		  {
@@ -1847,11 +1830,11 @@ function isSysConfigValid()
 		  {
 		  	return FALSE;
 		  }
-		} 
-		else 
-		{ 
-		  return FALSE; 
-		} 
+		}
+		else
+		{
+		  return FALSE;
+		}
 }
 
 /**
@@ -1862,18 +1845,18 @@ function verifySetup($silent=false)
   global $wsurl;
   global $systemconfig;
   global $configfile;
-  
-  
+
+
   $runningresult = TRUE;
-  
+
   include($configfile);
   include($systemconfig);
-  
+
   $ip = getIP();
   global $baseFolder;
   global $securehttp;
 
-  // Compile webservice URL 
+  // Compile webservice URL
   if($securehttp===TRUE)
   {
     $wsurl = "https://$ip/";
@@ -1899,43 +1882,43 @@ function verifySetup($silent=false)
 		echoTruncatedString("    - Checking Apache is running:");
 		printResult(checkServiceIsRunning("apache2"));
 		if(checkServiceIsRunning("apache2")===FALSE) $runningresult = FALSE;
-		
+
 		echoTruncatedString("    - Checking PostgreSQL is running:");
 		printResult(checkServiceIsRunning("postgres"));
 		if(checkServiceIsRunning("postgres")===FALSE) $runningresult = FALSE;
-		
-		echoTruncatedString("    - Checking database credentials file is valid:"); 
-		if(fopen($cdbCredentialsFile, "r")) 
-		{ 
-		  printResult(TRUE); 
-		} 
-		else 
-		{ 
-		  printResult(FALSE); 
+
+		echoTruncatedString("    - Checking database credentials file is valid:");
+		if(fopen($cdbCredentialsFile, "r"))
+		{
+		  printResult(TRUE);
+		}
+		else
+		{
+		  printResult(FALSE);
 		  $runningresult = FALSE;
-		} 
-		
-		echoTruncatedString("    - Checking systems configuration file is valid:"); 
-		printResult(isSysConfigValid()); 
+		}
+
+		echoTruncatedString("    - Checking systems configuration file is valid:");
+		printResult(isSysConfigValid());
 		if(isSysConfigValid()===FALSE) $runningresult = FALSE;
-		
-		echoTruncatedString("    - Checking webservice configuration file is valid:"); 
+
+		echoTruncatedString("    - Checking webservice configuration file is valid:");
 		printResult(isConfigPhpValid());
 		if(isConfigPhpValid()===FALSE) $runningresult = FALSE;
-		
+
 	}
-	
-	if($silent!=TRUE) echoTruncatedString("    - Checking connection to PostgreSQL database:"); 
-	
+
+	if($silent!=TRUE) echoTruncatedString("    - Checking connection to PostgreSQL database:");
+
 	$contents = str_replace("\n", "=", file_get_contents($cdbCredentialsFile));
 	$myarray = explode("=", $contents, 5);
 	$username = $myarray[1];
 	$password = $myarray[3];
-	
+
 	//Set up database connection
 	$conn_string = "dbname=$dbName user=".$username." password=".$password;
 	$dbconn = pg_connect ($conn_string);
-	
+
 	//Date format
 	$sql = "set datestyle to 'ISO'";
 	pg_query($dbconn, $sql);
@@ -1943,13 +1926,13 @@ function verifySetup($silent=false)
 	if($silent!=TRUE)
 	{
 		printResult(!$dbconn===FALSE);
-		$runningresult = FALSE;	
+		$runningresult = FALSE;
 	}
 	else
 	{
 		if($dbconn===FALSE) return FALSE;
 	}
-	
+
 	if($silent!=TRUE)	echoTruncatedString("    - Checking webservice is accessible:");
 		if(fopen($wsurl, "r"))
 		{
@@ -1968,15 +1951,15 @@ function verifySetup($silent=false)
 		    if($silent!=TRUE) printResult(FALSE);
 		    $runningresult = FALSE;
 		}
-		
-	
+
+
 	// Check that webservice and database versions are in sync
-	if($silent!=TRUE) echoTruncatedString("    - Checking webservice and database versions are in sync:"); 
+	if($silent!=TRUE) echoTruncatedString("    - Checking webservice and database versions are in sync:");
 	if($silent!=TRUE)
 	{
 		printResult(getTellervoDPKGVersion()==getTellervoDBVersion());
 		if(getTellervoDPKGVersion()!=getTellervoDBVersion())
-		{		
+		{
 			//echo "DPKGVersion ='".getTellervoDPKGVersion()."'\n";
 			//echo "DBVersion   ='".getTellervoDBVersion()."'\n";
 			$runningresult = FALSE;
@@ -1986,14 +1969,14 @@ function verifySetup($silent=false)
 	{
 		if(getTellervoDPKGVersion()!=getTellervoDBVersion()) return FALSE;
 	}
-	
+
 	$colors = new Colors();
-	
-	if($silent!=TRUE) 
+
+	if($silent!=TRUE)
 	{
 		echoTruncatedString("    - Checking server can access the Internet:");
 		$connected = haveNetworkConnectivity();
-		if($connected===FALSE) 
+		if($connected===FALSE)
 		{
 			echo $colors->getColoredString("WARNING", "yellow");
 		}
@@ -2002,8 +1985,8 @@ function verifySetup($silent=false)
 			printResult(TRUE);
 		}
 	}
-	
-	return $runningresult;  
+
+	return $runningresult;
 }
 
 /**
@@ -2045,7 +2028,7 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
         // This error code is not included in error_reporting
         return;
     }
-    $errType = "MISC PHP ERROR";    
+    $errType = "MISC PHP ERROR";
 
     switch ($errno)
     {
@@ -2073,21 +2056,21 @@ function printDefaultLoginWarning()
 	global $configfile;
     global $systemconfig;
 	global $dbsetupfile;
-	global $dbconn;	
-				
+	global $dbconn;
+
 	$sql = "SELECT * FROM tblsecurityuser WHERE username='admin' and password='bd38976c388a4f04381b82a7d6c62ae5'";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
-    	$result = pg_query($dbconn, $sql);    	
+    	$result = pg_query($dbconn, $sql);
         while ($row = pg_fetch_array($result))
 	  	{
 	  		  echo "    Usr - admin\n";
-	     	  echo "    Pwd - qu3rcu5\n\n";   
+	     	  echo "    Pwd - qu3rcu5\n\n";
 	     	  echo "The default administrator login shown above should be changed the first time you\n";
 	     	  echo "log in with your Tellervo desktop client.\n";
-	
-	  	} 	
+
+	  	}
     }
 
 	echo "\n";
@@ -2096,10 +2079,10 @@ function printDefaultLoginWarning()
 function printLocalServerWarning()
 {
 
-	if(substr(getIP(), 0, 3)=="10.") 
+	if(substr(getIP(), 0, 3)=="10.")
 	{
 		$colors = new Colors();
-		
+
 
 		echo "*******************************************************************************\n";
 		echo " NB : Your server has a private network address.  This means that access will  \n";
@@ -2118,10 +2101,10 @@ function printComplete($forceSuccess=null)
   global $errorsFound;
   global $wsurl;
   global $ip;
-  
+
   $colors = new Colors();
   echo "\n\n";
-  
+
   if($forceSuccess===TRUE)
   {
   	echo "Your Tellervo server configuration is valid.  Your webservice is accessible at:\n";
@@ -2135,17 +2118,17 @@ function printComplete($forceSuccess=null)
         echo $colors->getColoredString("Errors occurred during configuration. Check the error log and try again.", "white", "red");
         echo "\n\n";
         exit(2);
-  } 	
+  }
   else if($errorsFound===FALSE)
   {
   	echo "Your Tellervo server configuration is valid.  Your webservice is accessible at:\n";
   	echo "    URL - $wsurl\n";
-	printDefaultLoginWarning();  	
+	printDefaultLoginWarning();
 	printLocalServerWarning();
   	exit(0);
   }
   else
-  { 
+  {
         echo $colors->getColoredString("Errors occurred during configuration. Check the error log and try again.", "white", "red");
         echo "\n\n";
         exit(1);
@@ -2170,16 +2153,16 @@ function printResult($res)
     $errorsFound = TRUE;
   }
 
-} 
+}
 
 /**
- * Echo a string to the console truncated if longer than $length   
+ * Echo a string to the console truncated if longer than $length
  */
 function echoTruncatedString($str, $length=70)
 {
 	echo truncateString($str, $length);
 }
- 
+
 /**
 *  Truncate a string
 */
@@ -2216,15 +2199,15 @@ function haveNetworkConnectivity()
 	$command = "ping -c1 google.com";
 	exec($command, $result, $returncode);
 	if($returncode==0) return true;
-	
+
 	$command = "ping -c1 yahoo.com";
 	exec($command, $result, $returncode);
 	if($returncode==0) return true;
-	
+
 	$command = "ping -c1 bbc.co.uk";
 	exec($command, $result, $returncode);
 	if($returncode==0) return true;
-	
+
 	return false;
 
 }
@@ -2857,7 +2840,7 @@ class File_SearchReplace
 	class Colors {
 		private $foreground_colors = array();
 		private $background_colors = array();
- 
+
 		public function __construct() {
 		// Set up shell colors
 		$this->foreground_colors['black'] = '0;30';
@@ -2876,7 +2859,7 @@ class File_SearchReplace
 		$this->foreground_colors['yellow'] = '1;33';
 		$this->foreground_colors['light_gray'] = '0;37';
 		$this->foreground_colors['white'] = '1;37';
- 
+
 		$this->background_colors['black'] = '40';
 		$this->background_colors['red'] = '41';
 		$this->background_colors['green'] = '42';
@@ -2886,11 +2869,11 @@ class File_SearchReplace
 		$this->background_colors['cyan'] = '46';
 		$this->background_colors['light_gray'] = '47';
 		}
- 
+
 		// Returns colored string
 	public function getColoredString($string, $foreground_color = null, $background_color = null) {
 		$colored_string = "";
- 
+
 			// Check if given foreground color found
 		if (isset($this->foreground_colors[$foreground_color])) {
 			$colored_string .= "\033[" . $this->foreground_colors[$foreground_color] . "m";
@@ -2899,26 +2882,26 @@ class File_SearchReplace
 		if (isset($this->background_colors[$background_color])) {
 			$colored_string .= "\033[" . $this->background_colors[$background_color] . "m";
 			}
- 
+
 			// Add string and end coloring
 		$colored_string .=  $string . "\033[0m";
- 
+
 			return $colored_string;
 		}
- 
+
 		// Returns all foreground color names
 		public function getForegroundColors() {
 			return array_keys($this->foreground_colors);
 		}
- 
+
 		// Returns all background color names
 	public function getBackgroundColors() {
 		return array_keys($this->background_colors);
 	}
-	
-	
 
-	
+
+
+
 }
 
 
@@ -2943,7 +2926,7 @@ function setCascadeDeleteEnabled($enabled)
 	else if ($enabled=='f' || $enabled=='false' || $enabled=='disable' || $enabled=='disabled')
 	{
 		runSQLFile("/usr/share/tellervo-server/db-options/disable_cascade_delete.sql", "Disabling cascade delete...");
-	} 
+	}
 	else
 	{
 		echo "\nInvalid option for enabling/disabling cascade delete.  Must be true or false.\n";
@@ -2954,12 +2937,12 @@ function setCascadeDeleteEnabled($enabled)
 }
 
 /**
- * Generate a random string, using a cryptographically secure 
+ * Generate a random string, using a cryptographically secure
  * pseudorandom number generator (random_int)
- * 
+ *
  * For PHP 7, random_int is a PHP core function
  * For PHP 5.x, depends on https://github.com/paragonie/random_compat
- * 
+ *
  * @param int $length      How many characters do we want?
  * @param string $keyspace A string of all possible characters
  *                         to select from

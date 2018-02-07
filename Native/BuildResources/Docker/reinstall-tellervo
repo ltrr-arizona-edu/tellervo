@@ -1,9 +1,0 @@
-#!/bin/bash
-
-dropdb tellervo 
-sudo apt-get remove -y postgis
-sudo apt-get update 
-sudo apt-get install -y --allow-unauthenticated postgis 
-#wget --directory-prefix=/tmp/ http://www.tellervo.org/tmp/tellervo-server-1.3.3.deb
-sudo dpkg --install /tmp/tellervo-server-1.3.3.deb 
-sudo tellervo-server --auto-configure
