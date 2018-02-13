@@ -460,13 +460,13 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 								errorsEncountered = true;
 							}
 						} else if (clazz.equals(WSIBoxDictionary.class)) {
-							List<ControlledVoc> types = Dictionary
+							List<WSIBox> types = Dictionary
 									.getMutableDictionary("boxDictionary");
 							Boolean match = false;
-							for (ControlledVoc cvoc : types) {
-								if (cvoc.getNormal().equals(value)) {
+							for (WSIBox bx : types) {
+								if (bx.getTitle().equals(value)) {
 									if (!simulateFirst)
-										tablemodel.setValueAt(cvoc, rowModelIndex,
+										tablemodel.setValueAt(bx, rowModelIndex,
 												colModelIndex);
 									match = true;
 								}
