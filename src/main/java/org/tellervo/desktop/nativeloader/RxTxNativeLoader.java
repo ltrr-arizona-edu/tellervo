@@ -24,7 +24,7 @@ public class RxTxNativeLoader {
 			{
 				lib = "/Libraries/windows-i586/rxtxSerial.dll";
 			}
-			else if (arch.equals("x86-64"))
+			else if (arch.equals("x86-64") || arch.equals("amd64"))
 			{
 				lib = "/Libraries/windows-amd64/rxtxSerial.dll";
 			}
