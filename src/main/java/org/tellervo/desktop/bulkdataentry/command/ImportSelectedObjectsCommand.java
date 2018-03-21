@@ -95,10 +95,10 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				incomplete = true;
 			} else{
 				String code = som.getProperty(SingleObjectModel.OBJECT_CODE).toString();
-				if(code.length() < 3){
+				/*if(code.length() < 3){
 					requiredMessages.add("Object code must be at least 3 characters");
 					incomplete = true;
-				}
+				}*/
 				if(code.contains(" ")){
 					requiredMessages.add("Object code cannot contain whitespace.");
 					incomplete = true;

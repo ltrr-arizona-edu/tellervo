@@ -1,0 +1,1 @@
+insert into tlkpobjecttype (objecttype, objecttypeid, vocabularyid) values ('plot', 1000, 2);

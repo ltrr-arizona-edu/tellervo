@@ -504,12 +504,12 @@ public class FullEditor extends AbstractEditor {
 					dependentHolder.add(dependentsPanel, BorderLayout.CENTER);
 
 					// References tab
-					referencesHolder.removeAll();
+ 					referencesHolder.removeAll();
 					refFilePanel = new ReferencedFilePanel(sample);
 					referencesHolder.add(refFilePanel, BorderLayout.CENTER);
 					
 					// Highlight map pin
-					if(OpenGLTestCapabilities.isOpenGLCapable()) wwMapPanel.highlightMarkerForSample(getSample());
+					if(OpenGLTestCapabilities.isOpenGLCapable()) wwMapPanel.highlightMarkerForSample(sample);
 					
 					this.revalidate();
 				} catch (Exception e)

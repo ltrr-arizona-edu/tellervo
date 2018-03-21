@@ -23,8 +23,11 @@
  */
 package org.tellervo.desktop.bulkdataentry.model;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,8 +37,12 @@ import org.tellervo.schema.UserExtendableDataType;
 import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIUserDefinedField;
+import org.tridas.io.util.DateUtils;
+import org.tridas.io.util.DateUtils.DatePrecision;
+import org.tridas.schema.Certainty;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.Date;
+import org.tridas.schema.DateTime;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
@@ -205,11 +212,46 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		argSample.setType((ControlledVoc)getProperty(TYPE));
 		argSample.setDescription((String)getProperty(DESCRIPTION));
 		argSample.setFiles((TridasFileList) getProperty(FILES));
-		argSample.setSamplingDate((Date) getProperty(SAMPLING_DATE));
 		argSample.setPosition((String)getProperty(POSITION));
 		argSample.setState((String)getProperty(STATE));
 		argSample.setKnots((Boolean)getProperty(KNOTS));
 
+		if(getProperty(SAMPLING_DATE)!=null)
+		{
+		
+			DateTime mydatetime = DateUtils.parseDateTimeFromNaturalString((String) getProperty(SAMPLING_DATE));
+			DatePrecision prec = DateUtils.getDatePrecision((String) getProperty(SAMPLING_DATE));
+			
+			Date mydate = DateUtils.dateTimeToDate(mydatetime);
+			
+			if(prec!=DatePrecision.DAY)
+			{
+				mydate.setCertainty(Certainty.APPROXIMATELY);
+			}
+			else
+			{
+				mydate.setCertainty(Certainty.EXACT);
+			}
+			
+			argSample.setSamplingDate(mydate);
+			
+			TridasGenericField field = null;
+			for(TridasGenericField gf: argSample.getGenericFields()){
+				if(gf.getName().equals("tellervo.samplingDatePrecision")){
+					field = gf;
+				}
+			}
+			if(field == null){
+				field = new TridasGenericField();
+				argSample.getGenericFields().add(field);
+			}
+			field.setName("tellervo.samplingDatePrecision");
+			field.setType("xs:string");
+			field.setValue(prec.toString());
+		}
+		
+		
+		
 		if(getProperty(BOX) != null){
 			TridasGenericField field = null;
 			for(TridasGenericField gf: argSample.getGenericFields()){
@@ -306,11 +348,14 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		setProperty(COMMENTS, argSample.getComments());
 		setProperty(TYPE, argSample.getType());
 		setProperty(DESCRIPTION, argSample.getDescription());
-		setProperty(SAMPLING_DATE, argSample.getSamplingDate());
 		setProperty(POSITION, argSample.getPosition());
 		setProperty(STATE, argSample.getState());
 		setProperty(KNOTS, argSample.isKnots());
 		setImported(argSample.getIdentifier());
+		
+		
+
+		
 		
 		// Set box to null initially
 		setProperty(BOX, null);
@@ -318,11 +363,43 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		// Files
 		setProperty(FILES, new TridasFileList(argSample.getFiles()));
 			
+		boolean samplingDatePrecSet = false;
+		
 		// Handle Generic Fields
 		TridasGenericField field = null;
 		for(TridasGenericField gf: argSample.getGenericFields()){
 			if(gf.getName().equals("tellervo.boxID")){
 				field = gf;
+			}
+			else if(gf.getName().equals("tellervo.samplingDatePrecision")){
+				if(argSample.isSetSamplingDate())
+				{			
+					samplingDatePrecSet = true;
+					Date samplingdate = argSample.getSamplingDate();
+					
+					if(gf.getValue().toLowerCase().equals("day"))
+					{
+						setProperty(SAMPLING_DATE, DateUtils.getFormattedDate(samplingdate, new SimpleDateFormat("yyyy-MM-dd")));
+
+					}
+					else if(gf.getValue().toLowerCase().equals("month"))
+					{
+						setProperty(SAMPLING_DATE, DateUtils.getFormattedDate(samplingdate, new SimpleDateFormat("yyyy-MM")));
+
+					}
+					else if(gf.getValue().toLowerCase().equals("year"))
+					{
+						setProperty(SAMPLING_DATE, DateUtils.getFormattedDate(samplingdate, new SimpleDateFormat("yyyy")));
+
+					}
+					else
+					{
+						log.debug("Unknown sampling date precision.  Defaulting to 'day'");
+						setProperty(SAMPLING_DATE, DateUtils.getFormattedDate(samplingdate, new SimpleDateFormat("yyyy-MM-dd")));
+
+					}
+					
+				}
 			}
 			else if(gf.getName().equals("tellervo.externalID")){
 				
@@ -384,6 +461,14 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 					}
 				}
 			}
+		}
+		
+		if(samplingDatePrecSet== false && argSample.isSetSamplingDate())
+		{
+			// Sampling date precision not set, but sampling date has been
+			// Default to day precision and set value accordingly
+			Date samplingdate = argSample.getSamplingDate();
+			setProperty(SAMPLING_DATE, DateUtils.getFormattedDate(samplingdate, new SimpleDateFormat("yyyy-MM-dd")));
 		}
 			
 		if(field != null){

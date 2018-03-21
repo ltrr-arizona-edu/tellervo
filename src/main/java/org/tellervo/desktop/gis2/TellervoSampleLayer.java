@@ -190,6 +190,11 @@ public class TellervoSampleLayer extends MarkerLayer implements TellervoPointDat
 				markermap.put(s, marker);
 				updateSuperMarkers();
 			}
+			else
+			{
+				markermap.put(s, null);
+				updateSuperMarkers();
+			}
 		}
 	}
 

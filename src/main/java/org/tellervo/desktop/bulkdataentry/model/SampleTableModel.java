@@ -73,7 +73,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 		}else if(argColumn.equals(SingleSampleModel.IMPORTED)){
 			return ImportStatus.class;
 		}else if(argColumn.equals(SingleSampleModel.SAMPLING_DATE)){
-			return Date.class;
+			return String.class;
 		}else if(argColumn.equals(SingleSampleModel.KNOTS)){
 			return Boolean.class;
 		}else if(argColumn.equals(SingleRadiusModel.AZIMUTH)){
