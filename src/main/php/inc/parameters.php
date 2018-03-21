@@ -1411,7 +1411,10 @@ class sampleParameters extends sampleEntity implements IParams
 		   				break; 			
 		   			case "tellervo.sampleStatus":
 		   				$this->setSampleStatus(null, $value);
-		   				break; 			
+		   				break; 		
+		   			case "tellervo.samplingDatePrecision":
+		   				$this->setSamplingDatePrecision($value);
+		   				break;		   				
 		   			default:
 		   				
 		   				if(substr($name, 0, strlen("userDefinedField"))==="userDefinedField")

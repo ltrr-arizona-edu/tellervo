@@ -252,6 +252,8 @@ class project extends projectEntity implements IDBAccessor {
 	
 	private function _asXML($format = 'standard', $parts = 'all') {
 		global $firebug;
+		global $labname;
+		global $labacronym;
 		$xml = NULL;
 		
 		// Return a string containing the current object in XML format
@@ -283,7 +285,7 @@ class project extends projectEntity implements IDBAccessor {
 				
 				// Laboratory
 				$xml.= "<tridas:laboratory>
-						          <tridas:name acronym=\"unsupported\">Unsupported</tridas:name>
+						          <tridas:name acronym=\"{$labacronym}\">{$labname}</tridas:name>
             					<tridas:address>
             					</tridas:address>
         					</tridas:laboratory>";

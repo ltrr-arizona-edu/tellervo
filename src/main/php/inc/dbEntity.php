@@ -1382,6 +1382,8 @@ class projectEntity extends UserExtendableEntity
 		
 	function getCategory($asKey=false)
 	{
+		if($this->category==null) return null;
+
 		if($asKey)
 		{
 			return $this->category->getID();
@@ -2110,6 +2112,11 @@ class sampleEntity extends UserExtendableEntity
 	 * @var ISODate
 	 */
 	protected $samplingDate = NULL;
+	
+	
+	protected $sampleDatePrecision = NULL;
+	
+	
 	/**
 	 * Associated file URL
 	 *
@@ -2222,16 +2229,26 @@ class sampleEntity extends UserExtendableEntity
 		return $this->samplestatus->setSampleStatus($id, $value);
 	}
 	
-	
 	/**
 	 * Set the date that this sample was taken on
-	 * 
+	 *
 	 * @param String $date
 	 * @return Boolean
 	 */
 	function setSamplingDate($date)
 	{
 		$this->samplingDate=$date;
+		return true;
+	}
+		
+	function setSamplingDatePrecision($precision)
+	{
+		if($precision==NULL)
+		{
+			$precision = "day";
+		}
+		
+		$this->sampleDatePrecision = $precision;
 		return true;
 	}
 	
@@ -2371,6 +2388,11 @@ class sampleEntity extends UserExtendableEntity
 	function getSamplingDate()
 	{
 		return $this->samplingDate;	
+	}
+	
+	function getSamplingDatePrecision()
+	{
+		return $this->sampleDatePrecision;
 	}
 	
 	/**

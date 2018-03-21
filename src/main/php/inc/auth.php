@@ -446,7 +446,13 @@ class auth
 
         if($theObjectType=='project')
         {
-        	// Only admins can edit projects
+        	// Everyone has read access to projects
+        	if($thePermissionType=='read')
+        	{
+        		return true;
+        	}
+        	
+        	// ...but only admins can edit projects
         	return false;
         }    
         

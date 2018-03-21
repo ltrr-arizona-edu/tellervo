@@ -14,6 +14,7 @@ require_once ('dbhelper.php');
 require_once ('inc/note.php');
 require_once ('inc/sample.php');
 require_once ('inc/taxon.php');
+require_once ('inc/dbEntity.php');
 class element extends elementEntity implements IDBAccessor {
 	protected $sampleArray = array ();
 	protected $elementNoteArray = array ();

@@ -120,7 +120,7 @@ class userDefinedFieldAndValue
 		if($this->userdefinedfieldid==null)
 		{
 			$sql = "SELECT userdefinedfieldid AS id, fieldname AS nme FROM tlkpuserdefinedfield WHERE fieldname='".strtolower($this->name)."' AND attachedto=".$this->attachedto;
-			$firebug->log($sql, "SQL");
+			//$firebug->log($sql, "SQL");
 			$result = pg_query($dbconn, $sql);
 			if(pg_num_rows($result)==0)
 			{
@@ -138,7 +138,7 @@ class userDefinedFieldAndValue
 		if($this->userdefinedfieldvalueid==null)
 		{
 			$sql = "SELECT userdefinedfieldvalueid AS id FROM tbluserdefinedfieldvalue WHERE userdefinedfieldid='".$this->userdefinedfieldid."' AND entityid='".$this->entityid."'";
-			$firebug->log($sql, "SQL");
+			//$firebug->log($sql, "SQL");
 			$result = pg_query($dbconn, $sql);
 			if(pg_num_rows($result)==0)
 			{

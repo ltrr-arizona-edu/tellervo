@@ -785,13 +785,19 @@ class measurement extends measurementEntity implements IDBAccessor {
 		$firebug->log($projid, "ProjID");
 		$proj = $all['project'][$projid];
 		
-		$node = $this->textAsNode ( $proj->asXML (), $dom );
-		$curNode->appendChild ( $node );
-		
-		$firebug->log($all, "All now in outputDerivationTreeFromProject");
+		if($proj==null)
+		{
+			$this->outputDerivationTree($dom, $node, $objectTree, $elementTree, $objectToElementMap, $all, $format);
+		}
+		else
+		{
+			$node = $this->textAsNode ( $proj->asXML (), $dom );
+			$curNode->appendChild ( $node );
 			
-		$this->outputDerivationTree($dom, $node, $objectTree, $elementTree, $objectToElementMap, $all, $format);
-		
+			$firebug->log($all, "All now in outputDerivationTreeFromProject");
+				
+			$this->outputDerivationTree($dom, $node, $objectTree, $elementTree, $objectToElementMap, $all, $format);
+		}
 	
 	}
 	

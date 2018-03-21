@@ -50,7 +50,8 @@ class sample extends sampleEntity implements IDBAccessor {
 		$this->setType ( $row ['sampletypeid'], $row ['sampletype'] );
 		$this->setDescription ( $row ['description'] );
 		$this->setFilesFromStrArray ( $row ['file'] );
-		$this->setSamplingDate ( $row ['samplingdate'] );
+		$this->setSamplingDate ( $row ['samplingdate']);
+		$this->setSamplingDatePrecision($row['samplingdateprec'] );
 		$this->setPosition ( $row ['position'] );
 		$this->setState ( $row ['state'] );
 		$this->setKnots ( $row ['knots'] );
@@ -165,6 +166,7 @@ class sample extends sampleEntity implements IDBAccessor {
 		$this->setDescription ( $paramsClass->getDescription () );
 		$this->setFiles ( $paramsClass->getFiles () );
 		$this->setSamplingDate ( $paramsClass->getSamplingDate () );
+		$this->setSamplingDatePrecision( $paramsClass->getSamplingDatePrecision () );
 		$this->setPosition ( $paramsClass->getPosition () );
 		$this->setState ( $paramsClass->getState () );
 		$this->setExternalID ( $paramsClass->getExternalID () );
@@ -338,6 +340,7 @@ class sample extends sampleEntity implements IDBAccessor {
 				// Grab the XML representation of the immediate parent using the 'comprehensive'
 				// attribute so that we get all the object ancestors formatted correctly
 				$xml = new DomDocument ();
+				$xml->preserveWhiteSpace = true;
 				$xml->loadXML ( "<root xmlns=\"$tellervoNS\" xmlns:xlink=\"$xlinkNS\"  xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">" . $this->parentEntityArray [0]->asXML ( 'comprehensive' ) . "</root>" );
 				
 				// We need to locate the leaf tridas:element (one with no child tridas:objects)
@@ -349,6 +352,7 @@ class sample extends sampleEntity implements IDBAccessor {
 				
 				// Create a temporary DOM document to store our element XML
 				$tempdom = new DomDocument ();
+				$tempdom->preserveWhiteSpace = true;
 				$tempdom->loadXML ( "<root xmlns=\"$tellervoNS\"  xmlns:xlink=\"$xlinkNS\" xmlns:tridas=\"$tridasNS\" xmlns:gml=\"$gmlNS\">" . $this->asXML () . "</root>" );
 				
 				// Import and append the sample XML node into the main XML DomDocument
@@ -422,6 +426,8 @@ class sample extends sampleEntity implements IDBAccessor {
 			
 			$xml .= "<tridas:genericField name=\"tellervo.curationStatus\" type=\"xs:string\">" . $this->getCurationStatus () . "</tridas:genericField>\n";
 			$xml .= "<tridas:genericField name=\"tellervo.sampleStatus\" type=\"xs:string\">" . $this->getSampleStatus () . "</tridas:genericField>\n";
+			$xml .= "<tridas:genericField name=\"tellervo.samplingDatePrecision\" type=\"xs:string\">" . $this->getSamplingDatePrecision() . "</tridas:genericField>\n";
+				
 			
 			if ($this->getUserDefinedFieldAndValueArray () != null && count ( $this->getUserDefinedFieldAndValueArray () > 0 )) {
 				foreach ( $this->getUserDefinedFieldAndValueArray () as $field ) {
@@ -494,6 +500,7 @@ class sample extends sampleEntity implements IDBAccessor {
 					$sql .= "description, ";
 					$sql .= "file, ";
 					$sql .= "samplingdate, ";
+					$sql .= "samplingdateprec, ";
 					$sql .= "position, ";
 					$sql .= "state, ";
 					$sql .= "knots, ";
@@ -513,6 +520,7 @@ class sample extends sampleEntity implements IDBAccessor {
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
 					$sql .= dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getSamplingDate () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string ( strtolower($this->getSamplingDatePrecision()) ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getPosition () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getState () ) . ", ";
 					$sql .= dbHelper::formatBool ( $this->getKnots (), "pg" ) . ", ";
@@ -535,6 +543,7 @@ class sample extends sampleEntity implements IDBAccessor {
 					$sql .= "description=" . dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
 					$sql .= "file=" . dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
 					$sql .= "samplingdate=" . dbHelper::tellervo_pg_escape_string ( $this->getSamplingDate () ) . ", ";
+					$sql .= "samplingdateprec=" . dbHelper::tellervo_pg_escape_string ( strtolower($this->getSamplingDatePrecision ()) ) . ", ";
 					$sql .= "position=" . dbHelper::tellervo_pg_escape_string ( $this->getPosition () ) . ", ";
 					$sql .= "state=" . dbHelper::tellervo_pg_escape_string ( $this->getState () ) . ", ";
 					$sql .= "knots=" . dbHelper::formatBool ( $this->getKnots (), "pg" ) . ", ";
