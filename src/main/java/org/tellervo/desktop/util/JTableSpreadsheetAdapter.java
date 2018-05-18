@@ -293,7 +293,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 		      // because we'll be called from the
 		      // event dispatch thread
 		      //statusLabel.setText("Query: " + queryNo);
-		    	progDialog.setProgress(val);
+		    	//progDialog.setProgress(val);
 		    }
 		  });
 	}
@@ -302,7 +302,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 	{
 		SwingUtilities.invokeLater(new Runnable() {
 		    public void run() {
-		    		progDialog.setVisible(false);
+		    		//progDialog.setVisible(false);
 		    	
 		    }
 		});
