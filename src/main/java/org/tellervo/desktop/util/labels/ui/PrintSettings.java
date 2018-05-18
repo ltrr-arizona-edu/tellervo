@@ -28,6 +28,7 @@ import java.io.IOException;
 import javax.swing.JDialog;
 
 import org.tellervo.desktop.print.BasicBoxLabel;
+import org.tellervo.desktop.print.BoxBarcodeLabel;
 import org.tellervo.desktop.print.CompleteBoxLabel;
 import org.tellervo.desktop.print.ProSheet;
 import org.tellervo.desktop.util.labels.PDFLabelMaker;
@@ -68,14 +69,9 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 		
 		// Add content panel to tab
 		this.tabContent.setLayout(new BorderLayout());
-		if(printtype==PrintSettings.PrintType.BOX_WITH_CONTENTS)
+		if(printtype==PrintSettings.PrintType.BOX_WITH_CONTENTS || printtype==PrintSettings.PrintType.BOX_BASIC || printtype==PrintSettings.PrintType.BOX_BARCODE)
 		{
-			boxlabelpanel = new BoxLabelPrintingUI(printtype);
-			this.tabContent.add(boxlabelpanel, BorderLayout.CENTER);
-		}
-		else if(printtype==PrintSettings.PrintType.BOX_BASIC)
-		{
-			boxlabelpanel = new BoxLabelPrintingUI(printtype);
+			boxlabelpanel = new BoxLabelPrintingUI();
 			this.tabContent.add(boxlabelpanel, BorderLayout.CENTER);
 		}
 		else if (printtype==PrintSettings.PrintType.SAMPLE)
@@ -88,6 +84,10 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 			prosheetpanel = new ProSheetPrintingUI();
 			this.tabContent.add(prosheetpanel, BorderLayout.CENTER);
 			
+		}
+		else
+		{
+			System.err.println("Unknown label type");
 		}
 
 	}
@@ -128,6 +128,17 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 					this.parent.dispose();
 				}
 			}
+			else if(printtype == PrintType.BOX_BARCODE)
+			{		
+				if(boxlabelpanel.selModel.getSize()>0)
+				{
+					System.out.println("Print box label");
+					BoxBarcodeLabel label = new BoxBarcodeLabel(boxlabelpanel.selModel);
+					
+					label.getLabel(true);
+					this.parent.dispose();
+				}
+			}
 			else if(printtype == PrintType.SAMPLE)
 			{			
 				try {
@@ -143,6 +154,10 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 			else if(printtype == PrintType.PROSHEET)
 			{
 				
+			}
+			else 
+			{
+				System.err.println("Unknown label type");
 			}
 			
 		}
@@ -172,6 +187,17 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 					label.getLabel(false);
 				}	
 			}
+			else if(printtype == PrintType.BOX_BARCODE)
+			{	
+				if(boxlabelpanel.selModel.getSize()>0)
+				{
+					
+					System.out.println("Preview box label");
+					BoxBarcodeLabel label = new BoxBarcodeLabel(boxlabelpanel.selModel);
+					
+					label.getLabel(false);
+				}	
+			}			
 			else if(printtype == PrintType.SAMPLE)
 			{
 				if(samplelabelpanel.selModel.getSize()>0)
@@ -200,6 +226,10 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 				}					
 				
 			}
+			else
+			{
+				System.out.println("Unknown label type");
+			}
 
 			
 			
@@ -209,7 +239,7 @@ public class PrintSettings extends PrintSettingsUI implements ActionListener{
 	
 	
 	public enum PrintType {
-		BOX_WITH_CONTENTS, SAMPLE, PROSHEET, BOX_BASIC
+		BOX_WITH_CONTENTS, SAMPLE, PROSHEET, BOX_BASIC, BOX_BARCODE
 	}
 	
 

@@ -55,6 +55,8 @@ public class ColumnListModel extends MVCArrayList<String> {
 		}
 		
 		Collections.sort(possibleColumns);
+		
+		System.out.println("Sorted columns");
 	}
 	
 	/**

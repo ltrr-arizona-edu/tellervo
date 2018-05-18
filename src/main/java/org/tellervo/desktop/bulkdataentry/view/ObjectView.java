@@ -383,17 +383,18 @@ public class ObjectView extends AbstractBulkImportView{
 			log.info("No prefs set for order of object columns, so using default order");
 			prefs = new ArrayList<String>();
 			prefs.add("Project");
-			prefs.add("Object Code");
+			prefs.add("Object code");
 			prefs.add("Title");
 			prefs.add("Type");
 		}
 		else
 		{
-			List<String> all = Arrays.asList(SingleObjectModel.TABLE_PROPERTIES);
+			SingleObjectModel som = new SingleObjectModel();
+			List<String> all = Arrays.asList(som.TABLE_PROPERTIES);
 			Iterator<String> iterator = prefs.iterator();
 			while (iterator.hasNext()) {
 				String item = iterator.next();
-				if(!all.contains(item))
+				if(!all.contains(item) && !item.equals("Selected"))
 				{
 					log.debug("Removing unknown field from list: "+item);
 					iterator.remove();
@@ -404,7 +405,7 @@ public class ObjectView extends AbstractBulkImportView{
 		
 
 		restoreColumnOrderFromArray(prefs);
-		
+
 	}
 
 	@Override

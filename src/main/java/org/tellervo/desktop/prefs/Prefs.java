@@ -203,6 +203,8 @@ public class Prefs extends AbstractSubsystem {
 		SOUND_LAST_FOLDER("tellervo.sound.lastfolder"),
 		
 		CHECK_FOR_UPDATES("tellervo.checkforupdates"),
+		USE_DEFAULT_PDF_VIEWER("tellervo.usedefaultpdfviewer"),
+		PDF_VIEWER_EXECUTABLE("tellervo.pdfviewer.executable"),
 		
 		OBJECT_FIELD_VISIBILITY_ARRAY("tellervo.object.field.visibility.array"),
 		OBJECT_FIELD_COLUMN_WIDTH_ARRAY("tellervo.object.field.column.width.array"),

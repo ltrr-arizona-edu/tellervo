@@ -1,17 +1,35 @@
 package org.tellervo.desktop.util;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JProgressBar;
+import javax.swing.JTable;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.model.AbstractBulkImportTableModel;
-import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
-import org.tellervo.desktop.bulkdataentry.view.AbstractBulkImportView;
 import org.tellervo.desktop.bulkdataentry.view.DateEditor;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
@@ -27,25 +45,18 @@ import org.tellervo.schema.WSITaxonDictionary;
 import org.tridas.io.util.DateUtils;
 import org.tridas.schema.Certainty;
 import org.tridas.schema.ControlledVoc;
+import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.NormalTridasShape;
+import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasShape;
 import org.tridas.schema.TridasUnit;
-import org.tridas.schema.NormalTridasUnit;
 import org.tridas.util.TridasObjectEx;
 
-import com.dmurph.mvc.model.MVCArrayList;
 import com.joestelmach.natty.DateGroup;
 import com.joestelmach.natty.Parser;
-
-import java.awt.datatransfer.*;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.List;
 
 /**
  * ExcelAdapter enables Copy-Paste Clipboard functionality on JTables. The
@@ -60,7 +71,11 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 	private Clipboard system;
 	private StringSelection stsel;
 	private JTable mainTable;
+	private TellervoProgressDialog progDialog;
 
+	  private static JProgressBar PROGRESS_BAR;
+	  private static JLabel OUTPUT_LABEL;
+	
 	private List<ControlledVoc> taxonDictionary = Dictionary
 			.getMutableDictionary("taxonDictionary");
 
@@ -192,7 +207,11 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 					if (cvoc.isSetNormal()) {
 						sbf.append(cvoc.getNormal());
 					}
-				} else if (value instanceof WSIBox) {
+				} else if (value instanceof NormalTridasLocationType){
+					NormalTridasLocationType v = (NormalTridasLocationType) value;
+					sbf.append(v.value());
+				}
+				else if (value instanceof WSIBox) {
 					WSIBox box = (WSIBox) value;
 					sbf.append(box.getTitle());
 				} else if (value instanceof org.tridas.schema.Date) {
@@ -255,12 +274,56 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 
 	}
 
+	private void initProgress(final int max)
+	{
+		/*SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		    		progDialog = new TellervoProgressDialog();
+		    		progDialog.initProgress(max);
+		    		progDialog.setVisible(true);
+		    	
+		    }
+		});*/
+	}
+	
+	private void updateProgress(final int val) {
+		  SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		      // Here, we can safely update the GUI
+		      // because we'll be called from the
+		      // event dispatch thread
+		      //statusLabel.setText("Query: " + queryNo);
+		    	progDialog.setProgress(val);
+		    }
+		  });
+	}
+	
+	private void finishProgress()
+	{
+		SwingUtilities.invokeLater(new Runnable() {
+		    public void run() {
+		    		progDialog.setVisible(false);
+		    	
+		    }
+		});
+	}
+	
+	
 	public void doPaste() {
 		this.doPaste(true, false);
 	}
 
+	
+	
+	
 	private void doPaste(Boolean simulateFirst, Boolean pasteAppend) {
+		
 
+		//progDialog = new TellervoProgressDialog();
+		
+		
+		
+		
 		if (simulateFirst == false && pasteAppend == true) {
 			int previousRowCount = mainTable.getRowCount();
 			int rows = getRowCountFromClipboard();
@@ -312,7 +375,6 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 			log.debug("Clipboard string is: " + trstring);
 			String[] lines = trstring.split("\n");
 			
-			Boolean firstRun = true;
 			int rowsignored = 0;
 			int lineindex = -1;
 			
@@ -329,9 +391,13 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 					lines[p] = strline;
 				}
 			}
-			
+						
+			initProgress(lines.length);
 			
 			for (String rowstring : lines) {
+				
+				updateProgress(lineindex);
+				
 				lineindex++;
 				// rowstring=st1.nextToken();
 				String[] cells = rowstring.split("\t");
@@ -357,6 +423,9 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 
 				int colViewIndex = -1;
 				for (String value : cells) {
+					
+					value = value.trim();
+					
 					colViewIndex++;
 					// value=(String)st2.nextToken();
 
@@ -412,6 +481,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 									.getMutableDictionary("objectTypeDictionary");
 							Boolean match = false;
 							for (ControlledVoc cvoc : types) {
+															
 								if (cvoc.getNormal().equals(value)) {
 									if (!simulateFirst)
 										tablemodel.setValueAt(cvoc, rowModelIndex,
@@ -513,7 +583,27 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 										"Only items from the shape dictionary can be used.");
 								errorsEncountered = true;
 							}
-						} else if (clazz.equals(TridasUnit.class)) {
+							
+						}else if (clazz.equals(NormalTridasLocationType.class)) {
+							NormalTridasLocationType[] types = NormalTridasLocationType.values();
+							Boolean match = false;
+							for (NormalTridasLocationType item : types) {
+								if (item.value().equals(value)) {
+
+
+									if (!simulateFirst)
+										tablemodel.setValueAt(item, rowModelIndex,
+												colModelIndex);
+									match = true;
+								}
+							}
+							if (match == false) {
+								logPasteError(lineindex, colModelIndex, value,
+										"Only standard TRiDaS location types can be used.");
+								errorsEncountered = true;
+							} 
+						}						
+						else if (clazz.equals(TridasUnit.class)) {
 							NormalTridasUnit[] types = NormalTridasUnit
 									.values();
 							Boolean match = false;
@@ -712,6 +802,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 							Alert.error(
 									"Too much data",
 									"You attempted to paste more data into the table than there were cells. The remaining data has been discarded.");
+							finishProgress();
 							return;
 						}
 					}
@@ -719,8 +810,10 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
+			finishProgress();
 		}
-
+		
+		finishProgress();
 		mainTable.repaint();
 		if (errorsEncountered && simulateFirst == true) {
 			PasteErrorReportDialog dialog = new PasteErrorReportDialog(
@@ -741,6 +834,10 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 		} else if (errorsEncountered == false && simulateFirst == true) {
 			doPaste(false, pasteAppend);
 		}
+		
+		
+		
+
 
 	}
 
@@ -787,4 +884,5 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 			doPasteAppend();
 		}
 	}
+	
 }

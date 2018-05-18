@@ -673,7 +673,7 @@ public class CompleteBoxLabel extends ReportBase{
 		Sample samp = null;
 		
 		try {
-			samp = PrintReportFramework.getCorinaSampleFromVMID(domain, vmid);
+			samp = PrintReportFramework.getTellervoSampleFromVMID(domain, vmid);
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();

@@ -112,7 +112,10 @@ public class SingleObjectModel extends HashModel implements IBulkImportSingleRow
 			
 			userDefinedFieldsInit = true;
 			
-			TABLE_PROPERTIES = arr.toArray(new String[arr.size()]);
+			String[] tp = arr.toArray(new String[arr.size()]);
+			
+			Arrays.sort(tp);
+			TABLE_PROPERTIES = tp;
 		}
 		
 		

@@ -41,7 +41,7 @@ import org.tridas.schema.TridasSample;
 
 public class PrintReportFramework {
 
-	public static Sample getCorinaSampleFromVMID(String domain, String id) throws IOException {
+	public static Sample getTellervoSampleFromVMID(String domain, String id) throws IOException {
 		// make tridas identifier
 		TridasIdentifier identifier = new TridasIdentifier();
 		identifier.setDomain(domain);
@@ -100,7 +100,7 @@ public class PrintReportFramework {
 		Sample s;
 		
 		try {
-			s = getCorinaSampleFromVMID(domain, measurementID);
+			s = getTellervoSampleFromVMID(domain, measurementID);
 		}
 		catch (IOException ioe) {
 			ioe.printStackTrace();

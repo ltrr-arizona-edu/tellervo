@@ -19,7 +19,6 @@
  ******************************************************************************/
 package org.tellervo.desktop.print;
 
-import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -31,6 +30,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
+import javax.net.ssl.SSLEngineResult.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,25 +57,26 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Image;
-import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.draw.VerticalPositionMark;
 
 
-public class BasicBoxLabel extends ReportBase{
+public class BoxBarcodeLabel extends ReportBase{
 	
 	private ArrayList<WSIBox> boxlist = new ArrayList<WSIBox>();
-	private final static Logger log = LoggerFactory.getLogger(BasicBoxLabel.class);
+	private final static Logger log = LoggerFactory.getLogger(BoxBarcodeLabel.class);
 
-	public BasicBoxLabel(Sample s){
+	public BoxBarcodeLabel(Sample s){
 		
 		if(s==null)
 		{
@@ -90,7 +92,7 @@ public class BasicBoxLabel extends ReportBase{
 		boxlist.add(s.getMeta(Metadata.BOX, WSIBox.class));
 	}
 	
-	public BasicBoxLabel(WSIBox b){
+	public BoxBarcodeLabel(WSIBox b){
 		if (b==null)
 		{
 			System.out.println("Error - box is null");
@@ -99,7 +101,7 @@ public class BasicBoxLabel extends ReportBase{
 		boxlist.add(b);
 	}
 		
-	public BasicBoxLabel(ArrayList<WSIBox> bl)
+	public BoxBarcodeLabel(ArrayList<WSIBox> bl)
 	{
 		boxlist = bl;
 	}
@@ -110,7 +112,8 @@ public class BasicBoxLabel extends ReportBase{
 		
 			PdfWriter writer = PdfWriter.getInstance(document, output);
 			
-			document.setPageSize(PageSize.LETTER);
+			document.setPageSize(new Rectangle(252, 108));
+			document.setMargins(5, 5, 5 ,0);
 
 			document.open();
 		
@@ -118,40 +121,102 @@ public class BasicBoxLabel extends ReportBase{
 			
 			// Set basic metadata
 		    document.addAuthor("Tellervo"); 
-		    document.addSubject("Tellervo Box Labels"); 
-				
-		    PdfPTable table = new PdfPTable(2);
-	        table.setTotalWidth(495f);
-	        table.setLockedWidth(true);
-	        
+		    document.addSubject("Tellervo Box Barcodes"); 
+				        
 	        for(WSIBox b : boxlist)
 	        {
+	        	ColumnText ct = new ColumnText(cb);
+	        	ct.setSimpleColumn(5, this.document.getPageSize().getHeight()/2, this.document.getPageSize().getWidth() - 5, this.document.getPageSize().getHeight() - 5, 16, Element.ALIGN_CENTER);
+	        	ct.addText(new Phrase(b.getTitle(), sectionFont));
+	        	ct.go();
+	        	
+	        	//System.out.println("Yline = "+ct.getYLine());
+	        	float barheight = ct.getYLine();
+	        	
+	        	ct = new ColumnText(cb);
+	        	
+	        	
+	        	if(barheight>50)
+	        	{
+	        		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 10, barheight - 10, 16, Element.ALIGN_CENTER);
+
+	        		ct.addText(new Chunk(this.getBarCode(b, barheight-15), 0, 0, true));
+	        	}
+	        	else
+	        	{
+	        		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 5, barheight - 10, 16, Element.ALIGN_CENTER);
+	        		ct.addText(new Chunk(this.getBarCode(b, barheight-15), 0, 0, true));
+
+	        	}
+	        	ct.go();
+	        
+	        	document.newPage();
+
+
+		     /*   Chunk glue = new Chunk(new VerticalPositionMark());
+	        	Phrase ph = new Phrase();
+		        
+		        ph.add(glue);
+		        ph.add(new Chunk(this.getBarCode(b), 0, 0, true));
+		        ph.add(glue);
+		        
+		        ct.addText(ph);
+		        
+	        	ct.setSimpleColumn(
+	        			0, 5, 
+	        			this.document.getPageSize().getWidth() - 5,
+	        			this.document.getPageSize().getHeight() - 5, 
+	        			16, Element.ALIGN_CENTER);
+		        status = ColumnText.START_COLUMN;
+	        	
+	        	while(ColumnText.hasMoreText(status)){
+	        		if(ct.getLinesWritten()>1) break;
+	        		
+	        		status = ct.go();
+	        		ct.setYLine(this.document.getPageSize().getHeight() -5);
+	        	
+	        	}
+		       
+	        	document.newPage();
+
+	        	
+	        	
 		        Paragraph p = new Paragraph();
 		        
-		        p.add(new Chunk(b.getTitle()+Chunk.NEWLINE, labelTitleFont));
+		        p.add(new Chunk(b.getTitle(), sectionFont));
+		        p.setAlignment(Paragraph.ALIGN_CENTER);
 		        
-		        p.add(new Chunk(Chunk.NEWLINE+" ", bodyFont));
-
-		        //p.add(new Chunk(Chunk.NEWLINE+b.getComments()+Chunk.NEWLINE, bodyFont));
-		        p.add(new Chunk(App.getLabName()+Chunk.NEWLINE+Chunk.NEWLINE, bodyFont));
-		        p.add(new Chunk(this.getBarCode(b), 0, 0, true));
+		        p.add(new Chunk(Chunk.NEWLINE+" "+Chunk.NEWLINE, superBodyFont));
 		        
-		        PdfPCell cell = new PdfPCell(p);
-		        cell.setPaddingLeft(15f);
-		        cell.setPaddingRight(15f);
-		        cell.setBorderColor(BaseColor.LIGHT_GRAY);
-
+		        
+		        
+		        
+		        Chunk glue = new Chunk(new VerticalPositionMark());
+		        
+		        PdfPTable table = new PdfPTable(1);
+		        
+		        table.setWidthPercentage(100f);
+		        Phrase ph = new Phrase();
+		        
+		        ph.add(glue);
+		        ph.add(new Chunk(this.getBarCode(b), 0, 0, true));
+		        ph.add(glue);
+		        PdfPCell cell = new PdfPCell(ph);
+		        cell.setBorder(0);
+		        
 		        table.addCell(cell);
-
+		     
+		        
+		        
+		        //p.add(new Chunk(App.getLabName()+Chunk.NEWLINE+Chunk.NEWLINE, bodyFont));
+		        //p.add(new Chunk(this.getBarCode(b), 0, 0, true));
+		        
+		        document.add(p);
+		        document.add(table);
+		        document.newPage();*/
 	        }
 	
-	        PdfPCell cell = new PdfPCell(new Paragraph());
-	        cell.setBorderColor(BaseColor.LIGHT_GRAY);
-	        
-	        table.addCell(cell);
-	        document.add(table);
-	        document.close();
-	        
+	             
 	        
 		    
 		    
@@ -313,16 +378,18 @@ public class BasicBoxLabel extends ReportBase{
 	 * 
 	 * @return Image 
 	 */
-	private Image getBarCode(WSIBox b)
+	private Image getBarCode(WSIBox b, float barheight)
 	{
 		UUID uuid = UUID.fromString(b.getIdentifier().getValue());
 		LabBarcode barcode = new LabBarcode(LabBarcode.Type.BOX, uuid);
 
+		
+		barcode.setFont(null);
 		barcode.setX(0.7f);
 		//barcode.setN(0.5f);
 		barcode.setSize(6f);
 		barcode.setBaseline(8f);
-		barcode.setBarHeight(50f);
+		barcode.setBarHeight(barheight);
 		
 		Image image = barcode.createImageWithBarcode(cb, null, null);
 	
@@ -778,7 +845,7 @@ public class BasicBoxLabel extends ReportBase{
 		}
 
 		// create the box label
-		BasicBoxLabel label = new BasicBoxLabel(samp);		
+		BoxBarcodeLabel label = new BoxBarcodeLabel(samp);		
 		
 		if(printReport) {
 			ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -812,6 +879,8 @@ public class BasicBoxLabel extends ReportBase{
 		}
 		
 	}
+	
+	
 	
 
 	

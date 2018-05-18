@@ -429,7 +429,7 @@ public class ElementView extends AbstractBulkImportView{
 			Iterator<String> iterator = prefs.iterator();
 			while (iterator.hasNext()) {
 				String item = iterator.next();
-				if(!all.contains(item))
+				if(!all.contains(item)&& !item.equals("Selected"))
 				{
 					log.debug("Removing unknown field from list: "+item);
 					iterator.remove();
@@ -459,7 +459,7 @@ public class ElementView extends AbstractBulkImportView{
 			
 		}
 		
-		App.prefs.setArrayListPref(PrefKey.SAMPLE_FIELD_COLUMN_WIDTH_ARRAY, widths);
+		App.prefs.setArrayListPref(PrefKey.ELEMENT_FIELD_COLUMN_WIDTH_ARRAY, widths);
 		
 	}
 

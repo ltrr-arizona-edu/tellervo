@@ -160,6 +160,46 @@
         </classPath>
         <nativeLibraryDirectories>
           <directory name="." />
+        </nativeLibraryDirectories>
+      </java>
+      <includedFiles />
+      <unextractableFiles />
+      <vmOptionsFile mode="template" overwriteMode="0" fileMode="644">
+        <content />
+      </vmOptionsFile>
+      <customScript mode="1" file="">
+        <content />
+      </customScript>
+      <infoPlist mode="1" file="">
+        <content />
+      </infoPlist>
+      <iconImageFiles>
+        <file path="${project.build.directory}/classes/Icons/16x16/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/22x22/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/32x32/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/48x48/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/64x64/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/128x128/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/256x256/tellervo-application.png" />
+        <file path="${project.build.directory}/classes/Icons/512x512/tellervo-application.png" />
+      </iconImageFiles>
+    </launcher>
+    <launcher name="Tellervo for OSX" id="593" customizedId="" external="false" excludeFromMenu="true" unixMode="755" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="">
+      <executable name="tellervo" type="1" iconSet="true" iconFile="" executableDir="." redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="false" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="true" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
+        <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
+      </executable>
+      <splashScreen show="false" width="0" height="0" bitmapFile="" windowsNative="false" textOverlay="false">
+        <text>
+          <statusLine x="20" y="20" text="" fontSize="8" fontColor="0,0,0" bold="false" />
+          <versionLine x="20" y="40" text="version ${compiler:sys.version}" fontSize="8" fontColor="0,0,0" bold="false" />
+        </text>
+      </splashScreen>
+      <java mainClass="org.tellervo.desktop.gui.Startup" vmParameters="" arguments="" allowVMPassthroughParameters="true" preferredVM="" bundleRuntime="true">
+        <classPath>
+          <archive location="tellervo-${compiler:sys.version}.jar" failOnError="false" />
+        </classPath>
+        <nativeLibraryDirectories>
+          <directory name="." />
           <directory name="/Library/Java/Extensions" />
         </nativeLibraryDirectories>
       </java>
@@ -185,7 +225,7 @@
         <file path="${project.build.directory}/classes/Icons/512x512/tellervo-application.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="Copy of Tellervo" id="593" customizedId="" external="false" excludeFromMenu="true" unixMode="755" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="">
+    <launcher name="Tellervo for Linux" id="722" customizedId="" external="false" excludeFromMenu="true" unixMode="755" menuName="" icnsFile="" customMacBundleIdentifier="false" macBundleIdentifier="" swtApp="false" fileset="" macBundleBinary="JavaApplicationStub" addMacEntitlements="false" macEntitlementsFile="" useCustomMacosExecutableName="false" customMacosExecutableName="">
       <executable name="tellervo" type="1" iconSet="true" iconFile="" executableDir="." redirectStderr="true" stderrFile="error.log" stderrMode="overwrite" redirectStdout="false" stdoutFile="output.log" stdoutMode="overwrite" failOnStderrOutput="true" executableMode="1" changeWorkingDirectory="false" workingDirectory="." singleInstance="true" serviceStartType="2" serviceDependencies="" serviceDescription="" jreLocation="" executionLevel="asInvoker" checkConsoleParameter="true" globalSingleInstance="false" singleInstanceActivate="true" dpiAware="false">
         <versionInfo include="false" fileVersion="" fileDescription="" legalCopyright="" internalName="" productName="" />
       </executable>
@@ -201,7 +241,7 @@
         </classPath>
         <nativeLibraryDirectories>
           <directory name="." />
-          <directory name="/Library/Java/Extensions" />
+          <directory name="/usr/lib/jni" />
         </nativeLibraryDirectories>
       </java>
       <includedFiles />
@@ -691,6 +731,7 @@
   <mediaSets>
     <unixInstaller name="Unix Installer" id="81" customizedId="" mediaFileName="" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="">
       <excludedLaunchers>
+        <launcher id="22" />
         <launcher id="593" />
       </excludedLaunchers>
       <excludedBeans />
@@ -721,7 +762,8 @@
     </unixInstaller>
     <windows name="Windows" id="93" customizedId="" mediaFileName="tellervo-${compiler:sys.version}-${compiler:sys.platform}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="windows-x86-1.8.0_144" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="true" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" downloadURL="" verifyIntegrity="true">
       <excludedLaunchers>
-        <launcher id="471" />
+        <launcher id="593" />
+        <launcher id="722" />
       </excludedLaunchers>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
@@ -745,7 +787,7 @@
       </excludedComponents>
       <includedDownloadableComponents />
     </windows>
-    <macos name="Mac OS X Single Bundle" id="171" customizedId="" mediaFileName="" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="macosx-amd64-1.8.0_31" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" downloadURL="" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" launcherId="22">
+    <macos name="Mac OS X Single Bundle" id="171" customizedId="" mediaFileName="" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="macosx-amd64-1.8.0_31" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" appleJre="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" downloadURL="" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" launcherId="593">
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />
       <exclude>
@@ -753,7 +795,6 @@
         <entry location=".i4j_fileset_25" fileType="regular" />
         <entry location=".i4j_fileset_27" fileType="regular" />
         <entry location=".i4j_fileset_29" fileType="regular" />
-        <entry location=".i4j_fileset_450" fileType="regular" />
       </exclude>
       <variables>
         <variable name="platformtype" value="MacOSX" description="" category="" />
@@ -775,6 +816,7 @@
     <linuxDeb name="Linux Deb Archive" id="646" customizedId="" mediaFileName="" installDir="/opt/tellervo" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" includedJRE="" manualJREEntry="false" bzip="false" description="Application for measuring, managing and curating dendrochronology samples" dependencies="default-jre | openjdk-7-jre | openjdk-8-jre | openjdk-9-jre, libjogl | libjogl2-java, librxtx-java" maintainerEmail="Peter Brewer &lt;p.brewer@ltrr.arizona.edu&gt;" architectureSet="false" architecture="">
       <excludedLaunchers>
         <launcher id="22" />
+        <launcher id="593" />
       </excludedLaunchers>
       <excludedBeans />
       <overriddenPrincipalLanguage id="en" customLocalizationFile="" />

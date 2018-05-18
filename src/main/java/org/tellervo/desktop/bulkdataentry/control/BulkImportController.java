@@ -21,6 +21,7 @@
 package org.tellervo.desktop.bulkdataentry.control;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
@@ -246,7 +247,19 @@ public class BulkImportController extends FrontController {
 				defaults.add(fld.getLongfieldname());
 			}
 		}
-		
+		Collections.sort(defaults, new Comparator<String>() {
+		    @Override
+		    public int compare(String o1, String  o2) {
+		    	
+		    	if(o1.equals("Selected")) return -1;
+		    	if(o2.equals("Selected")) return 1;
+		    	if(o1.equals("Imported")) return -1;
+		    	if(o2.equals("Imported")) return 1;
+		    	
+		    	return o1.compareTo(o2);
+		    }
+		});
+
 		ccmodel.addAll(defaults);
 		
 		
@@ -330,7 +343,26 @@ public class BulkImportController extends FrontController {
 			}
 		}
 		
+		Collections.sort(defaults, new Comparator<String>() {
+		    @Override
+		    public int compare(String o1, String  o2) {
+		    	
+		    	if(o1.equals("Selected")) return -1;
+		    	if(o2.equals("Selected")) return 1;
+		    	if(o1.equals("Imported")) return -1;
+		    	if(o2.equals("Imported")) return 1;
+
+		        return o1.compareTo(o2);
+		    }
+		});
+		
+		
+		//Collections.sort(defaults);
+		
+
 		ccmodel.addAll(defaults);
+		
+		
 
 		/*
 		// Grab preferred fields from preferences, falling back to default if not specified
@@ -386,7 +418,19 @@ public class BulkImportController extends FrontController {
 				defaults.add(fld.getLongfieldname());
 			}
 		}
-		
+		Collections.sort(defaults, new Comparator<String>() {
+		    @Override
+		    public int compare(String o1, String  o2) {
+		    	
+		    	if(o1.equals("Selected")) return -1;
+		    	if(o2.equals("Selected")) return 1;
+		    	if(o1.equals("Imported")) return -1;
+		    	if(o2.equals("Imported")) return 1;
+		    	
+		    	return o1.compareTo(o2);
+		    }
+		});
+
 		ccmodel.addAll(defaults);
 		
 		/*

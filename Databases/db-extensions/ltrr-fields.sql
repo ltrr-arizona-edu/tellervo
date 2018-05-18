@@ -36,7 +36,9 @@ ebeea485-76ea-456a-883e-1c2b082ff088	ltrr.pithyear	Year of the pith where measur
 a1f3a040-0296-4b57-a760-8080305023ba	ltrr.pithpresent	Whether the pith is present on the sample or not	4	xs:boolean	Pith present 	\N
 17310eca-36c6-46ed-a5b6-5d7a8fee6cc1	ltrr.unmeasuredinnerrings	Ring count of unmeasured rings towards the pith	4	xs:int	Unmeasured inner rings 	\N 
 b1c793bf-7bb6-42a3-86a5-58740d1d9962	ltrr.unmeasuredouterrings	Ring count of unmeasured rings towards the bark	4	xs:int	Unmeasured outer rings 	\N 
-d402b857-218c-484d-a09e-066998cb41a5	ltrr.lastringunderbark	Whether the last ring under the bark is present or not	4	xs:boolean	Last ring under bark 	\N 
+d402b857-218c-484d-a09e-066998cb41a5	ltrr.lastringunderbark	Whether the last ring under the bark is present or not	4	xs:boolean	Last ring under bark 	\N
+1f67c0f0-5665-4212-b550-a89bf1c2c2d3	ltrr.sampledby	Name of person who did the sampling	4	xs:string	Sampled by	\N
+ea9552fe-d353-4aec-80f5-9cbd43b1c65d	ltrr.samplemeasured	Whether this sample has been measured or not.	4	xs:boolean	Sample measured	\N
 \.
 
 insert into tlkpuserdefinedfield (fieldname, description, attachedto, datatype, longfieldname) values ('ltrr.samplemeasured', 'Whether this sample has been measured or not.', 4, 'xs:boolean', 'Sample measured');

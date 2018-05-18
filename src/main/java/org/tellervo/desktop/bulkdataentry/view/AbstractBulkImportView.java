@@ -645,6 +645,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				log.debug("about to call adapter.doPaste");
+				
 				adapter.doPaste();	
 			}
 			
@@ -840,14 +841,46 @@ public abstract class AbstractBulkImportView extends JPanel{
 	
 	protected void restoreColumnOrderFromArray(ArrayList<String> prefs)
 	{
-		int i=2;
+ 		int i=2;
 		int colsmoved=0;
+		
 		
 		if(prefs==null || prefs.size()==0)
 		{
 			return;
 		}
 		
+		int j = 0;
+		log.debug("---ORDER OF COLUMNS IN PREFS");
+		for(String pref : prefs)
+		{
+			log.debug(j+" = "+pref);
+			j++;
+		}
+		
+		log.debug("---ORDER OF COLUMNS IN MODEL");
+		for(j=0; j<table.getModel().getColumnCount(); j++)
+		{
+			log.debug(j+" = "+table.getModel().getColumnName(j));
+		}
+		
+		
+		
+		for(String pref : prefs)
+		{
+			if(pref.equals("Imported") || pref.equals("Selected")) continue;
+			
+			TableColumnExt columnext = table.getColumnExt(pref);
+			
+			if(columnext==null)
+			{
+				log.error("Column specified in prefs does not exist.  Ignoring");
+			}
+			else
+			{
+				columnext.setVisible(true);
+			}
+		}
 		
 		
 		for(String pref : prefs)
@@ -881,23 +914,31 @@ public abstract class AbstractBulkImportView extends JPanel{
 			}
 			else
 			{
-			
-				columnext.setVisible(true);
+							
 				
-				int currentIndex = columnext.getModelIndex()+colsmoved;
+				int currentIndex = table.convertColumnIndexToView(columnext.getModelIndex());
 				
-				//log.debug("Column name   = "+pref);
+				log.debug("Column '"+pref+"'");
+				log.debug("   Should be in column "+ i);
+				log.debug("   Currently in column "+ currentIndex);
+				log.debug("   Columns moved       "+ colsmoved);
+				//log.debug("Model index   = "+columnext.getModelIndex());
 				//log.debug("Current index = "+currentIndex);
+				//log.debug("Name of column at current index = "+table.getColumnName(currentIndex));
 				//log.debug("New index     = "+i);
 				
 				
 				if(currentIndex!=i) {
 					
-					//log.debug("Moving column from "+currentIndex+" to "+i);
+					log.debug("Moving column from "+currentIndex+" to "+i);
 
-					if(currentIndex>table.getColumnCount())
+					if(currentIndex==-1)
 					{
-						//log.debug("Index out of range.  Not moving");
+						log.debug("Column is not displayed?  Ignoring");
+					}
+					else if(currentIndex>table.getColumnCount())
+					{
+						log.debug("Index out of range.  Not moving.  Current index = "+currentIndex+" whereas column count = "+table.getColumnCount());
 					
 					}
 					else

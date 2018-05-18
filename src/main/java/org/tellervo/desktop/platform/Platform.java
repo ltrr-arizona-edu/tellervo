@@ -27,9 +27,12 @@ import java.net.URI;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.AbstractSubsystem;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 
 
@@ -149,12 +152,44 @@ public class Platform extends AbstractSubsystem {
 	 */
 	public void openFile(File file) {
 		
+		String ext = FilenameUtils.getExtension(file.getAbsolutePath());
+		if(ext.toLowerCase().equals("pdf") && !App.prefs.getBooleanPref(PrefKey.USE_DEFAULT_PDF_VIEWER, true))
+		{
+			
+			if(App.prefs.getPref(PrefKey.PDF_VIEWER_EXECUTABLE, null)!=null)
+			{
+				try {
+				    Runtime runTime = Runtime.getRuntime();
+				    // Don't forget that '\' needs to be escaped with another '\'
+				    // Also, there may be spaces in the name(s). Use quotes (with their own escapes!)
+				    runTime.exec(App.prefs.getPref(PrefKey.PDF_VIEWER_EXECUTABLE, null)+
+				                                   " " +    // Separate argument with space
+				                                   file.getName(), null, file.getParentFile());
+							    
+				    return;
+				    
+				} // try
+				catch (IOException e) {
+				    e.printStackTrace();
+				    log.debug("Failed to open PDF viewer");
+				    log.debug("File was: "+file.getAbsolutePath());
+				} // catch				
+				
+			}
+			
+			
+		}
+
+		
+		
 		try {
+			log.debug("Attempting to open "+file.getAbsolutePath()+" with default viewer");
 			desktop.open(file);
 		} catch (IOException e) {
 			Alert.error("Error", "Error opening file "+file.getPath());
 			e.printStackTrace();
 		}
+		
 	}
 	
 	/**

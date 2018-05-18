@@ -47,7 +47,8 @@ public class LabelPrintingDialog extends JDialog{
 	
 	public static void boxBasicLabelDialog()
 	{
-		LabelPrintingDialog.main(PrintSettings.PrintType.BOX_BASIC);
+		//LabelPrintingDialog.main(PrintSettings.PrintType.BOX_BASIC);
+		LabelPrintingDialog.main(PrintSettings.PrintType.BOX_BARCODE);
 	}
 	
 	public static void sampleLabelDialog()

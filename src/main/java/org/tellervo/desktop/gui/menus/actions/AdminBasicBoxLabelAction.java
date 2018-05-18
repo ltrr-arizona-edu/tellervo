@@ -18,8 +18,8 @@ public class AdminBasicBoxLabelAction extends AbstractAction {
 	private static final long serialVersionUID = 1L;
 	
 	public AdminBasicBoxLabelAction() {
-        super("Basic Box Labels", Builder.getIcon("box.png", 22));
-		putValue(SHORT_DESCRIPTION, "Basic Box Labels");
+        super("Box Barcode Labels", Builder.getIcon("box.png", 22));
+		putValue(SHORT_DESCRIPTION, "Box Barcode Labels");
         //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.new")); 
         //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.new"));
 

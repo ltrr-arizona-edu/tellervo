@@ -41,6 +41,7 @@ d576088a-c18b-4623-8ffe-16101249178f	icms.fieldspecimen	Original code given to t
 dc142808-e5d3-4dc1-8457-c2e1f0badf5e	icms.culturalid	Cultural affiliation of the material or the person associated with this sample	4	xs:string	Cultural ID	icms.culturalid
 8a9911c4-a1b5-4f6e-99e5-0bbf4dc945d9	icms.histcultper	Historic/Cultural period this sample is from	4	xs:string	Historic cultural period	icms.histcultper
 2897f42a-86a0-4478-bd71-0cdbf20c536d	icms.identifiedby	Enter the name of person, last name first, who identified the object	4	xs:string	Identified by	\N
+
 \.
 
 

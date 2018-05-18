@@ -28,6 +28,8 @@ import org.tellervo.desktop.util.ExtensionFileFilter;
 import org.tellervo.desktop.util.SoundUtil;
 import org.tellervo.desktop.util.SoundUtil.SystemSound;
 import org.tellervo.desktop.versioning.UpdateChecker;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
 
 public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 
@@ -55,6 +57,10 @@ public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 	private JCheckBox chkAutoUpdate;
 	private JLabel lblAutomaticallyCheckFor;
 	private JButton btnCheckForUpdates;
+	private JPanel panel_1;
+	private JCheckBox chkUseDefaultPDFViewer;
+	private JTextField txtPDFViewer;
+	private JLabel lblPdfProgram;
 	
 	
 	public GeneralPrefsPanel(final JDialog parent) {
@@ -62,7 +68,7 @@ public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 				"home.png", 
 				"Configure sounds and other miscellaneous settings within Tellervo",
 				parent);
-		setLayout(new MigLayout("", "[186px,grow]", "[15px][grow][grow]"));
+		setLayout(new MigLayout("", "[186px,grow]", "[15px][][grow][grow]"));
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Sound system", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -229,7 +235,7 @@ public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 		panelPrivacy = new JPanel();
 		panelPrivacy.setBorder(new TitledBorder(null, "Privacy and Updates", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		add(panelPrivacy, "cell 0 1,grow");
-		panelPrivacy.setLayout(new MigLayout("", "[][21px][]", "[21px][][grow,fill]"));
+		panelPrivacy.setLayout(new MigLayout("", "[][21px][]", "[21px][grow,fill]"));
 		
 		lblAutomaticallyCheckFor = new JLabel("Check for updates on startup:");
 		panelPrivacy.add(lblAutomaticallyCheckFor, "cell 0 0");
@@ -250,6 +256,33 @@ public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 		});
 		
 		panelPrivacy.add(btnCheckForUpdates, "cell 2 0");
+		
+		panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Helper programs", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+		add(panel_1, "cell 0 2,grow");
+		panel_1.setLayout(new MigLayout("", "[][grow]", "[][]"));
+		
+		chkUseDefaultPDFViewer = new JCheckBox("Use default PDF program");
+		chkUseDefaultPDFViewer.setSelected(true);
+		
+		chkUseDefaultPDFViewer.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				setGuiFromPref();
+			}
+			
+		});
+		
+		panel_1.add(chkUseDefaultPDFViewer, "cell 1 0");
+		
+		lblPdfProgram = new JLabel("PDF Viewer:");
+		panel_1.add(lblPdfProgram, "cell 0 1,alignx trailing");
+		
+		txtPDFViewer = new JTextField();
+		txtPDFViewer.setEnabled(false);
+		panel_1.add(txtPDFViewer, "cell 1 1,growx");
+		txtPDFViewer.setColumns(10);
 		btnBrowseBarcodeScanned.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -310,6 +343,8 @@ public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 		btnBrowsePlatformInit.setEnabled(!chkUseSystemDefaults.isSelected());
 		btnBrowseMeasurementError.setEnabled(!chkUseSystemDefaults.isSelected());
 		btnBrowseBarcodeScanned.setEnabled(!chkUseSystemDefaults.isSelected());
+		
+		txtPDFViewer.setEnabled(!chkUseDefaultPDFViewer.isSelected());
 	}
 	
 	@Override
@@ -327,6 +362,8 @@ public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 		new TextComponentWrapper(txtMeasurementError, PrefKey.SOUND_MEASURE_ERROR_FILE, null);
 		new TextComponentWrapper(txtBarcodeScanned, PrefKey.SOUND_BARCODE_FILE, null);
 		new CheckBoxWrapper(chkAutoUpdate, PrefKey.CHECK_FOR_UPDATES, true);
+		new CheckBoxWrapper(chkUseDefaultPDFViewer, PrefKey.USE_DEFAULT_PDF_VIEWER, true);
+		new TextComponentWrapper(txtPDFViewer, PrefKey.PDF_VIEWER_EXECUTABLE, null);
 
 	}
 }

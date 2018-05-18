@@ -99,7 +99,10 @@ ALTER FUNCTION cpgdb.getdatestring(date, date_prec)
   
 
 
+  
+
 ALTER TABLE tblsample ADD samplingdateprec date_prec NOT NULL DEFAULT 'day';
+ALTER TABLE tblsample ADD userdefinedfielddata varchar[];
 
 DROP VIEW vwtblsample;
 
@@ -139,3 +142,5 @@ CREATE OR REPLACE VIEW public.vwtblsample AS
      LEFT JOIN vwtblcurationmostrecent c ON s.sampleid = c.sampleid
      LEFT JOIN tlkpcurationstatus cl ON c.curationstatusid = cl.curationstatusid
      LEFT JOIN vwlabcodesforsamples lc ON s.sampleid = lc.sampleid;
+     
+  

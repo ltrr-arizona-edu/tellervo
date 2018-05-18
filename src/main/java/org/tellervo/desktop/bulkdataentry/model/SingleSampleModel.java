@@ -52,6 +52,8 @@ import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
 import com.dmurph.mvc.model.HashModel.PropertyType;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 
 /**
  * @author Daniel Murphy
@@ -111,7 +113,12 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 				}
 			}
 			
+			Collections.sort(arr);
+			
 			TABLE_PROPERTIES = arr.toArray(new String[arr.size()]);
+			
+			Arrays.sort(TABLE_PROPERTIES);
+			
 			isUserDefinedFieldsInit = true;
 			
 			for(String s : TABLE_PROPERTIES){
@@ -224,6 +231,8 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			
 			Date mydate = DateUtils.dateTimeToDate(mydatetime);
 			
+			if(mydate==null) throw new Exception ("Unable to parse the sampling date from the information given.");
+			
 			if(prec!=DatePrecision.DAY)
 			{
 				mydate.setCertainty(Certainty.APPROXIMATELY);
@@ -323,7 +332,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 					field.setType(fld.getDatatype().value());
 					Object prop = getProperty(fld.getLongfieldname());
 					if(prop!=null){
-						field.setValue(prop.toString());
+						field.setValue(prop.toString().replace("&", "&amp;"));
 					}
 					else
 					{

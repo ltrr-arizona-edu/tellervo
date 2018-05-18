@@ -21,6 +21,7 @@
 package org.tellervo.desktop.bulkdataentry.command;
 
 import org.tellervo.desktop.bulkdataentry.control.ColumnsModifiedEvent;
+import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ColumnListModel;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -55,11 +56,11 @@ public class ColumnAddedCommand implements ICommand{
 		
 		ColumnsModifiedEvent event = (ColumnsModifiedEvent) argEvent;
 		ColumnListModel model = event.model;
-				
 		int i=0;
 		for(String s: model.getPossibleColumns()){
 			if(s.equals(event.getValue())){
 				model.add(i, event.getValue());
+				
 				
 				
  				return;
