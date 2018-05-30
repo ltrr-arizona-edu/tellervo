@@ -304,16 +304,17 @@ public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 		panel_2.setLayout(new MigLayout("", "[][grow]", "[grow][]"));
 		
 		txtLabCodeInstructions = new JTextPane();
+		txtLabCodeInstructions.setContentType("text/html");
 		txtLabCodeInstructions.setEditable(false);
-		txtLabCodeInstructions.setText("Define how your series codes are presented by choosing from the redefined styles or by crafting your own using the following special tags:\n   %LABACRONYM% = Acronym for your lab\n   %OBJECTS% - Hierarchical list of objects delimited with /\n   %OBJECT% - Top level object\n   %BLOBJECT% - Object immediately attached to element\n   %ELEMENT% - Element code\n   %SAMPLE% - Sample code\n   %RADIUS% - Radius code\n   %SERIES% - Series code");
-		panel_2.add(txtLabCodeInstructions, "cell 1 0,grow");
+		txtLabCodeInstructions.setText("<p>Define how your series codes are presented by choosing from the predefined styles or by crafting your own using the following special tags:</p>\n<ul>\n<li>%LABACRONYM% = Acronym for your lab</li>\n<li>%OBJECTS% - Hierarchical list of objects delimited with /</li>\n<li>%OBJECT% - Top level object</li>\n<li>%BLOBJECT% - Object immediately attached to element</li>\n<li>%ELEMENT% - Element code</li>\n<li>%SAMPLE% - Sample code</li>\n<li>%RADIUS% - Radius code</li>\n<li>%SERIES% - Series code</li>\n</ul>");
+		panel_2.add(txtLabCodeInstructions, "cell 0 0 2 1,grow");
 		
 		lblLabCodeStyle = new JLabel("Lab code style:");
 		panel_2.add(lblLabCodeStyle, "cell 0 1,alignx trailing");
 		
 		cboLabCodeStyle = new JComboBox();
 		cboLabCodeStyle.setEditable(true);
-		cboLabCodeStyle.setModel(new DefaultComboBoxModel(new String[] {"%OBJECTS%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%", "%OBJECT%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%", "%BLOBJECT%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%"}));
+		cboLabCodeStyle.setModel(new DefaultComboBoxModel(LabCodeFormatter.standardStyles));
 		panel_2.add(cboLabCodeStyle, "cell 1 1,growx");
 		btnBrowseBarcodeScanned.addActionListener(new ActionListener(){
 			@Override

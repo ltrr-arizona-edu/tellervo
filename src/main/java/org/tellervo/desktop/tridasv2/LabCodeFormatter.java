@@ -50,15 +50,13 @@ public class LabCodeFormatter {
 	private String unavailableValue;
 	private String codeFormat;
 	
+	public static String[] standardStyles = {"%OBJECT%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%",
+			"%OBJECTS%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%", 
+			"%BLOBJECT%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%",
+			"%LABACRONYM%-%OBJECT%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%"
+			};
 
-	private final static LabCodeFormatter subsitesLabCodeFormatter = new LabCodeFormatter("%LABACRONYM%-%OBJECTS%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%");
-	private final static LabCodeFormatter immediateParentObjectLabCodeFormatter = new LabCodeFormatter("%BLOBJECT%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%");
-	private final static LabCodeFormatter cornellLabCodeFormatter = new LabCodeFormatter("%LABACRONYM%-%OBJECT%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%");
-	private final static LabCodeFormatter cornellSeriesPrefixFormatter = new LabCodeFormatter("%LABACRONYM%-%OBJECTS%-%ELEMENT%-%SAMPLE%-%RADIUS%");
-	private final static LabCodeFormatter cornellRadiusPrefixFormatter = new LabCodeFormatter("%LABACRONYM%-%OBJECTS%-%ELEMENT%-%SAMPLE%");
-	private final static LabCodeFormatter cornellSamplePrefixFormatter = new LabCodeFormatter("%LABACRONYM%-%OBJECTS%-%ELEMENT%");
-	private final static LabCodeFormatter cornellElementPrefixFormatter = new LabCodeFormatter("%LABACRONYM%-%OBJECTS%");
-	private final static LabCodeFormatter defaultLabCodeFormatter = immediateParentObjectLabCodeFormatter;
+	private final static LabCodeFormatter defaultLabCodeFormatter = new LabCodeFormatter(standardStyles[0]);
 
 	
 	public static LabCodeFormatter getDefaultFormatter() {
@@ -80,36 +78,30 @@ public class LabCodeFormatter {
 		return defaultLabCodeFormatter;
 	}
 	
-	public static LabCodeFormatter getSubSitesLabCodeFormatter(){
-		return subsitesLabCodeFormatter;
-	}
-	
-	public static LabCodeFormatter getCornellLabCodeFormatter(){
-		return cornellLabCodeFormatter;	
-	}
-	
-	public static LabCodeFormatter getimmediateParentObjectLabCodeFormatter(){
-		return immediateParentObjectLabCodeFormatter;
-	}
-	
 	public static LabCodeFormatter getSeriesPrefixFormatter(){
-		return cornellSeriesPrefixFormatter;
+		String format = getDefaultFormatter().codeFormat.replace("-%SERIES%", "");
+		return new LabCodeFormatter(format);
 	}
 	
 	public static LabCodeFormatter getRadiusPrefixFormatter(){
-		return cornellRadiusPrefixFormatter;
+		String format = getDefaultFormatter().codeFormat.replace("-%SERIES%", "");
+		format = format.replace("-%RADIUS%", "");
+		return new LabCodeFormatter(format);
 	}
 	
 	public static LabCodeFormatter getSamplePrefixFormatter(){
-		return cornellSamplePrefixFormatter;
+		String format = getDefaultFormatter().codeFormat.replace("-%SERIES%", "");
+		format = format.replace("-%RADIUS%", "");
+		format = format.replace("-%SAMPLE%", "");
+		return new LabCodeFormatter(format);
 	}
 	
 	public static LabCodeFormatter getElementPrefixFormatter(){
-		return cornellElementPrefixFormatter;
-	}
-
-	public static LabCodeFormatter getSubSitesFormatter(){
-		return subsitesLabCodeFormatter;
+		String format = getDefaultFormatter().codeFormat.replace("-%SERIES%", "");
+		format = format.replace("-%RADIUS%", "");
+		format = format.replace("-%SAMPLE%", "");
+		format = format.replace("-%ELEMENT%", "");
+		return new LabCodeFormatter(format);
 	}
 	
 	public String getCodeFormat()
@@ -145,7 +137,8 @@ public class LabCodeFormatter {
 		List<String> objects = labCode.getSiteCodes();
 		String val;
 				
-		replace(format, "%LABACRONYM%", App.prefs.getPref(PrefKey.LABCODE_STYLE, ""));
+	
+		replace(format, "%LABACRONYM%", App.getLabAcronym());
 
 		// handle completely empty lab codes
 		if(labCode.isEmptyCode()) {
