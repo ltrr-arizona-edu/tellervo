@@ -39,6 +39,7 @@ import org.tellervo.desktop.Weiserjahre;
 import org.tellervo.desktop.Year;
 import org.tellervo.desktop.graph.Graphable;
 import org.tellervo.desktop.gui.BugDialog;
+import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.tridasv2.support.TridasWeiserjahreWrapper;
 import org.tellervo.desktop.tridasv2.support.TridasWidthValueWrapper;
 import org.tellervo.desktop.ui.I18n;
@@ -135,11 +136,11 @@ public class Sample extends BaseSample implements Graphable, Indexable, Serializ
 		initialize();
 		
 		// initialize empty metadata with defaults?
-		setMeta("title", I18n.getText("general.untitled"));
+		setMeta(Metadata.TITLE, I18n.getText("general.untitled"));
 
 		// store username, if known
 		if (System.getProperty("user.name") != null)
-			setMeta("author", System.getProperty("user.name"));
+			setMeta(Metadata.AUTHOR, System.getProperty("user.name"));
 		
 		setSeries(getSeries(), false);
 

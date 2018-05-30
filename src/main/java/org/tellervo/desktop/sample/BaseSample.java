@@ -25,11 +25,19 @@ import java.util.TreeMap;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.gui.BugDialog;
+import org.tellervo.desktop.io.Metadata;
+import org.tellervo.desktop.tridasv2.LabCode;
+import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
 import org.tridas.interfaces.TridasIdentifiable;
+import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
+import org.tridas.util.TridasObjectEx;
 
 
 public class BaseSample implements TridasIdentifiable {
@@ -270,7 +278,50 @@ public class BaseSample implements TridasIdentifiable {
 	 * @return a String, probably lab code
 	 */
 	public String getDisplayTitle() {
-		return getMeta("title", String.class);
+		//return getMeta("title", String.class);
+		
+		
+		
+		LabCode labcode = new LabCode();
+		TridasObject object = getMeta(Metadata.OBJECT, TridasObject.class);
+		TridasObject[] objectArray = getMeta(Metadata.OBJECT_ARRAY, TridasObject[].class);
+		TridasElement element = getMeta(Metadata.ELEMENT, TridasElement.class);
+		TridasSample sample = getMeta(Metadata.SAMPLE, TridasSample.class);
+		TridasRadius radius = getMeta(Metadata.RADIUS, TridasRadius.class);
+		String seriestitle = getSeries().getTitle();
+		
+		
+		if(object==null && element==null) return getMeta(Metadata.TITLE, String.class);
+		
+		
+		if(object != null) {		
+			for(TridasObject obj : objectArray) {
+				if(obj instanceof TridasObjectEx)				
+					labcode.appendSiteCode(((TridasObjectEx)obj).getLabCode());
+				else
+					labcode.appendSiteCode(obj.getTitle());
+				
+				labcode.appendSiteTitle(obj.getTitle());
+			}
+		}
+		
+		if(element != null) {
+			labcode.setElementCode(element.getTitle());
+		}
+		
+		if(sample != null) {
+			labcode.setSampleCode(sample.getTitle());
+		}
+		if(radius !=null){
+			labcode.setRadiusCode(radius.getTitle());
+		}
+
+		// title, if one is set...
+		if(seriestitle!=null)
+			labcode.setSeriesCode(seriestitle);
+		
+		return LabCodeFormatter.getDefaultFormatter().format(labcode);	
+		
 	}	
 
 	// loader

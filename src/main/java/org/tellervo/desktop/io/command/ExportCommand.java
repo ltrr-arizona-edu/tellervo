@@ -120,7 +120,11 @@ public class ExportCommand implements ICommand {
 			project.unsetLaboratories();
 			project.getLaboratories().add(lab);
 			
+			
+			//TridasProject tproj = (TridasProject) s.getMeta(Metadata.PROJECT, TridasProject.class);
 			TridasObject tobj = (TridasObject) s.getMeta(Metadata.OBJECT, TridasObject.class);
+			TridasObject[] tobjarr = s.getMeta(Metadata.OBJECT_ARRAY, TridasObject[].class);
+			
 			TridasElement telem = s.getMeta(Metadata.ELEMENT, TridasElement.class);
 			TridasSample tsamp = s.getMeta(Metadata.SAMPLE, TridasSample.class);
 			TridasRadius trad = s.getMeta(Metadata.RADIUS, TridasRadius.class);
@@ -151,8 +155,26 @@ public class ExportCommand implements ICommand {
 				tsamp.getRadiuses().add(trad);				
 				telem.getSamples().clear();
 				telem.getSamples().add(tsamp);
-				tobj.getElements().clear();
-				tobj.getElements().add(telem);
+				
+				if(tobjarr.length>1)
+				{
+					tobj = tobjarr[0];
+					tobj.getObjects().clear();
+					tobj.getElements().clear();
+					
+					TridasObject tobj2 = tobjarr[1];
+					tobj2.getElements().clear();
+					tobj2.getElements().add(telem);
+					
+					tobj.getObjects().add(tobj2);
+					
+				}
+				else
+				{
+					// Top level obj
+					tobj.getElements().clear();
+					tobj.getElements().add(telem);
+				}
 				project.getObjects().add(tobj);
 			}
 			else

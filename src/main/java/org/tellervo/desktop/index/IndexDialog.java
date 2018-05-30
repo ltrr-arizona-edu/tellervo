@@ -66,6 +66,7 @@ import org.tellervo.desktop.gui.Help;
 import org.tellervo.desktop.gui.Layout;
 import org.tellervo.desktop.gui.NameVersionJustificationPanel;
 import org.tellervo.desktop.gui.UserCancelledException;
+import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.sample.SampleLoader;
 import org.tellervo.desktop.sample.SampleType;
@@ -196,7 +197,7 @@ public class IndexDialog extends JDialog {
 		}
 
 		// title
-		String title = sample.getMeta("title").toString();
+		String title = sample.getMeta(Metadata.TITLE).toString();
 		if (title == null) // (DESIGN: can i do better than "untitled"?)
 			title = I18n.getText("general.untitled");
 		setTitle(MessageFormat.format(I18n.getText("index.indexing"), new Object[] { title }));

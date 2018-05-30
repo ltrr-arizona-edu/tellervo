@@ -34,6 +34,7 @@ import java.util.regex.Pattern;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.editor.EditorFactory.BarcodeDialogResult;
+import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
@@ -385,8 +386,8 @@ public class LegacySampleExtractor {
 
 		// comments are a little more complicated...
 		StringBuffer sb = new StringBuffer();
-		if(s.hasMeta("title"))
-			sb.append(s.getMetaString("title"));
+		if(s.hasMeta(Metadata.TITLE))
+			sb.append(s.getMetaString(Metadata.TITLE));
 		
 		if(sb.length() > 0)
 			sb.append("; ");
