@@ -450,7 +450,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 
 						// Replace various representations of 'null' with a real
 						// null
-						if (value == null || value.toLowerCase().equals("null")
+						if (value == null || value.equalsIgnoreCase("null")
 								|| value.equals(" ") || value.equals("")
 								|| value.replace(" ", "").length() == 0) {
 							log.debug("Value for cell was '" + value
@@ -463,7 +463,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 									.getMutableDictionary("projectTypeDictionary");
 							Boolean match = false;
 							for (ControlledVoc cvoc : types) {
-								if (cvoc.getNormal().equals(value)) {
+								if (cvoc.getNormal().equalsIgnoreCase(value)) {
 									if (!simulateFirst)
 										tablemodel.setValueAt(cvoc, rowModelIndex,
 												colModelIndex);
@@ -482,7 +482,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 							Boolean match = false;
 							for (ControlledVoc cvoc : types) {
 															
-								if (cvoc.getNormal().equals(value)) {
+								if (cvoc.getNormal().equalsIgnoreCase(value)) {
 									if (!simulateFirst)
 										tablemodel.setValueAt(cvoc, rowModelIndex,
 												colModelIndex);
@@ -500,7 +500,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 									.getMutableDictionary("elementTypeDictionary");
 							Boolean match = false;
 							for (ControlledVoc cvoc : types) {
-								if (cvoc.getNormal().equals(value)) {
+								if (cvoc.getNormal().equalsIgnoreCase(value)) {
 									if (!simulateFirst)
 										tablemodel.setValueAt(cvoc, rowModelIndex,
 												colModelIndex);
@@ -534,7 +534,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 									.getMutableDictionary("boxDictionary");
 							Boolean match = false;
 							for (WSIBox bx : types) {
-								if (bx.getTitle().equals(value)) {
+								if (bx.getTitle().equalsIgnoreCase(value)) {
 									if (!simulateFirst)
 										tablemodel.setValueAt(bx, rowModelIndex,
 												colModelIndex);
@@ -550,7 +550,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 
 							Boolean match = false;
 							for (ControlledVoc cvoc : taxonDictionary) {
-								if (cvoc.getNormal().equals(value)) {
+								if (cvoc.getNormal().equalsIgnoreCase(value)) {
 									if (!simulateFirst)
 										tablemodel.setValueAt(cvoc, rowModelIndex,
 												colModelIndex);
@@ -568,7 +568,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 									.values();
 							Boolean match = false;
 							for (NormalTridasShape item : types) {
-								if (item.value().equals(value)) {
+								if (item.value().equalsIgnoreCase(value)) {
 
 									TridasShape shape = new TridasShape();
 									shape.setNormalTridas(item);
@@ -588,8 +588,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 							NormalTridasLocationType[] types = NormalTridasLocationType.values();
 							Boolean match = false;
 							for (NormalTridasLocationType item : types) {
-								if (item.value().equals(value)) {
-
+								if (item.value().equalsIgnoreCase(value)) {
 
 									if (!simulateFirst)
 										tablemodel.setValueAt(item, rowModelIndex,
@@ -608,7 +607,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 									.values();
 							Boolean match = false;
 							for (NormalTridasUnit item : types) {
-								if (item.value().equals(value)) {
+								if (item.value().equalsIgnoreCase(value)) {
 
 									TridasUnit unit = new TridasUnit();
 									unit.setNormalTridas(item);
