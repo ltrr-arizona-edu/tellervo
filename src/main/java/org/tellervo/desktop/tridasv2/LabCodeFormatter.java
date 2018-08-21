@@ -22,7 +22,9 @@
 
 import java.util.List;
 
+import org.jfree.util.Log;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 
 
@@ -30,8 +32,10 @@ import org.tellervo.desktop.tridasv2.LabCodeFormatter;
  * Lab code formatter
  * 
  * Pass a format string; replaces the following tokens
- * %SITES% a siteDelimiter separated list of site codes (see constructor to change this, defaults to /)
- * %SITE% the last site code
+ * %LABACRONYM% acronym of lab
+ * %OBJECTS% a siteDelimiter separated list of site codes (see constructor to change this, defaults to /)
+ * %OBJECT% the top level site code
+ * %BLOBJECT% the bottom level site code (i.e. site immediately attached to element)
  * %ELEMENT% the element code
  * %SAMPLE% the sample code
  * %RADIUS% the radius code
@@ -42,38 +46,68 @@ import org.tellervo.desktop.tridasv2.LabCodeFormatter;
  */
 
 public class LabCodeFormatter {
-	@SuppressWarnings("unused")
 	private String siteDelimiter;
 	private String unavailableValue;
 	private String codeFormat;
 	
-	private final static LabCodeFormatter cornellLabCodeFormatter = new LabCodeFormatter(App.getLabCodePrefix()+"%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%");
-	private final static LabCodeFormatter cornellSeriesPrefixFormatter = new LabCodeFormatter(App.getLabCodePrefix()+"%SITES%-%ELEMENT%-%SAMPLE%-%RADIUS%");
-	private final static LabCodeFormatter cornellRadiusPrefixFormatter = new LabCodeFormatter(App.getLabCodePrefix()+"%SITE%-%ELEMENT%-%SAMPLE%");
-	private final static LabCodeFormatter cornellSamplePrefixFormatter = new LabCodeFormatter(App.getLabCodePrefix()+"%SITES%-%ELEMENT%");
-	private final static LabCodeFormatter cornellElementPrefixFormatter = new LabCodeFormatter(App.getLabCodePrefix()+"%SITES%");
+	public static String[] standardStyles = {"%OBJECT%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%",
+			"%OBJECTS%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%", 
+			"%BLOBJECT%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%",
+			"%LABACRONYM%-%OBJECT%-%ELEMENT%-%SAMPLE%-%RADIUS%-%SERIES%"
+			};
+
+	private final static LabCodeFormatter defaultLabCodeFormatter = new LabCodeFormatter(standardStyles[0]);
 
 	
 	public static LabCodeFormatter getDefaultFormatter() {
-		return cornellLabCodeFormatter;
-	}
 		
+		String style = App.prefs.getPref(PrefKey.LABCODE_STYLE, null);
+		
+		if(style==null)
+		{
+			return defaultLabCodeFormatter;
+		}
+		
+		try{
+			LabCodeFormatter lcf = new LabCodeFormatter(style);
+			if(lcf!=null) return lcf;
+		} catch (Exception e)
+		{
+		}
+		
+		return defaultLabCodeFormatter;
+	}
+	
 	public static LabCodeFormatter getSeriesPrefixFormatter(){
-		return cornellSeriesPrefixFormatter;
+		String format = getDefaultFormatter().codeFormat.replace("-%SERIES%", "");
+		return new LabCodeFormatter(format);
 	}
 	
 	public static LabCodeFormatter getRadiusPrefixFormatter(){
-		return cornellRadiusPrefixFormatter;
+		String format = getDefaultFormatter().codeFormat.replace("-%SERIES%", "");
+		format = format.replace("-%RADIUS%", "");
+		return new LabCodeFormatter(format);
 	}
 	
 	public static LabCodeFormatter getSamplePrefixFormatter(){
-		return cornellSamplePrefixFormatter;
+		String format = getDefaultFormatter().codeFormat.replace("-%SERIES%", "");
+		format = format.replace("-%RADIUS%", "");
+		format = format.replace("-%SAMPLE%", "");
+		return new LabCodeFormatter(format);
 	}
 	
 	public static LabCodeFormatter getElementPrefixFormatter(){
-		return cornellElementPrefixFormatter;
+		String format = getDefaultFormatter().codeFormat.replace("-%SERIES%", "");
+		format = format.replace("-%RADIUS%", "");
+		format = format.replace("-%SAMPLE%", "");
+		format = format.replace("-%ELEMENT%", "");
+		return new LabCodeFormatter(format);
 	}
 	
+	public String getCodeFormat()
+	{
+		return this.codeFormat;
+	}
 	
 	public LabCodeFormatter(String format) {
 		this(format, "/", "*NA*");
@@ -102,7 +136,10 @@ public class LabCodeFormatter {
 		StringBuffer format = new StringBuffer(codeFormat);
 		List<String> objects = labCode.getSiteCodes();
 		String val;
-		
+				
+	
+		replace(format, "%LABACRONYM%", App.getLabAcronym());
+
 		// handle completely empty lab codes
 		if(labCode.isEmptyCode()) {
 			if((val = labCode.getSeriesCode()) != null)
@@ -114,24 +151,21 @@ public class LabCodeFormatter {
 		if(objects.size() > 0) {
 			StringBuffer objectList = new StringBuffer();
 			
-			// PWB - Ignoring subobjects in lab code
-			// So that style is always the C-ABC-1-A-A-A 
-			// that is expected.
-			/*
+
 			for(String s : objects) {
 				if(objectList.length() > 0)
 					objectList.append(siteDelimiter);
 				objectList.append(s);
-			}*/	
-			objectList.append(objects.get(0));
+			}
 			
-			
-			replace(format, "%SITES%", objectList.toString());
-			replace(format, "%SITE%", objects.get(objects.size() - 1));
+			replace(format, "%OBJECTS%", objectList.toString());
+			replace(format, "%OBJECT%", objects.get(0));
+			replace(format, "%BLOBJECT%", objects.get(objects.size()-1));
 		}
 		else {
-			replace(format, "%SITES%", unavailableValue);
-			replace(format, "%SITE%", unavailableValue);
+			replace(format, "%OBJECTS%", unavailableValue);
+			replace(format, "%OBJECT%", unavailableValue);
+			replace(format, "%BLOBJECT%", unavailableValue);
 		}
 		
 		if((val = labCode.getElementCode()) != null)

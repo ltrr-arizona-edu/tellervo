@@ -503,7 +503,7 @@ public class EditorFactory {
 		}
 				
 		//sample.setMeta("filename", series.getTitle());
-		sample.setMeta("title", series.getTitle());
+		sample.setMeta(Metadata.TITLE, series.getTitle());
 
 		if(file!=null && file.getName()!=null)
 		{

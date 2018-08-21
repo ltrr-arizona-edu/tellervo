@@ -2,8 +2,13 @@ package org.tellervo.desktop.prefs.panels;
 
 import java.awt.Component;
 import java.awt.Insets;
+import java.awt.TextComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.File;
 
 import javax.swing.JButton;
@@ -21,7 +26,9 @@ import net.miginfocom.swing.MigLayout;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
+import org.tellervo.desktop.prefs.wrappers.EditableComboBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
+import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.ExtensionFileFilter;
@@ -30,6 +37,9 @@ import org.tellervo.desktop.util.SoundUtil.SystemSound;
 import org.tellervo.desktop.versioning.UpdateChecker;
 import javax.swing.border.LineBorder;
 import java.awt.Color;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JTextPane;
 
 public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 
@@ -61,6 +71,10 @@ public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 	private JCheckBox chkUseDefaultPDFViewer;
 	private JTextField txtPDFViewer;
 	private JLabel lblPdfProgram;
+	private JPanel panel_2;
+	private JComboBox cboLabCodeStyle;
+	private JLabel lblLabCodeStyle;
+	private JTextPane txtLabCodeInstructions;
 	
 	
 	public GeneralPrefsPanel(final JDialog parent) {
@@ -68,7 +82,7 @@ public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 				"home.png", 
 				"Configure sounds and other miscellaneous settings within Tellervo",
 				parent);
-		setLayout(new MigLayout("", "[186px,grow]", "[15px][][grow][grow]"));
+		setLayout(new MigLayout("", "[186px,grow]", "[15px][][][][grow]"));
 		
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Sound system", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -283,6 +297,25 @@ public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 		txtPDFViewer.setEnabled(false);
 		panel_1.add(txtPDFViewer, "cell 1 1,growx");
 		txtPDFViewer.setColumns(10);
+		
+		panel_2 = new JPanel();
+		panel_2.setBorder(new TitledBorder(new LineBorder(new Color(184, 207, 229)), "Series Labeling", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(51, 51, 51)));
+		add(panel_2, "cell 0 3,grow");
+		panel_2.setLayout(new MigLayout("", "[][grow]", "[grow][]"));
+		
+		txtLabCodeInstructions = new JTextPane();
+		txtLabCodeInstructions.setContentType("text/html");
+		txtLabCodeInstructions.setEditable(false);
+		txtLabCodeInstructions.setText("<p>Define how your series codes are presented by choosing from the predefined styles or by crafting your own using the following special tags:</p>\n<ul>\n<li>%LABACRONYM% = Acronym for your lab</li>\n<li>%OBJECTS% - Hierarchical list of objects delimited with /</li>\n<li>%OBJECT% - Top level object</li>\n<li>%BLOBJECT% - Object immediately attached to element</li>\n<li>%ELEMENT% - Element code</li>\n<li>%SAMPLE% - Sample code</li>\n<li>%RADIUS% - Radius code</li>\n<li>%SERIES% - Series code</li>\n</ul>");
+		panel_2.add(txtLabCodeInstructions, "cell 0 0 2 1,grow");
+		
+		lblLabCodeStyle = new JLabel("Lab code style:");
+		panel_2.add(lblLabCodeStyle, "cell 0 1,alignx trailing");
+		
+		cboLabCodeStyle = new JComboBox();
+		cboLabCodeStyle.setEditable(true);
+		cboLabCodeStyle.setModel(new DefaultComboBoxModel(LabCodeFormatter.standardStyles));
+		panel_2.add(cboLabCodeStyle, "cell 1 1,growx");
 		btnBrowseBarcodeScanned.addActionListener(new ActionListener(){
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
@@ -364,6 +397,38 @@ public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 		new CheckBoxWrapper(chkAutoUpdate, PrefKey.CHECK_FOR_UPDATES, true);
 		new CheckBoxWrapper(chkUseDefaultPDFViewer, PrefKey.USE_DEFAULT_PDF_VIEWER, true);
 		new TextComponentWrapper(txtPDFViewer, PrefKey.PDF_VIEWER_EXECUTABLE, null);
+		
+		
+		cboLabCodeStyle.addItemListener(new ItemListener(){
+
+			@Override
+			public void itemStateChanged(ItemEvent e) {
+				System.out.println("Item changed");
+				App.prefs.setPref(PrefKey.LABCODE_STYLE, cboLabCodeStyle.getEditor().getItem().toString());
+			}
+			
+		});
+		
+		cboLabCodeStyle.setEditable(true);
+		cboLabCodeStyle.getEditor().getEditorComponent().addFocusListener(new FocusListener(){
+
+			@Override
+			public void focusGained(FocusEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void focusLost(FocusEvent arg0) {
+				// TODO Auto-generated method stub
+				System.out.println("Focus lost");
+				App.prefs.setPref(PrefKey.LABCODE_STYLE, cboLabCodeStyle.getEditor().getItem().toString());
+			}
+			
+		});
+
+		
+		//new EditableComboBoxWrapper(cboLabCodeStyle, PrefKey.LABCODE_STYLE, LabCodeFormatter.getDefaultFormatter().getCodeFormat());
 
 	}
 }

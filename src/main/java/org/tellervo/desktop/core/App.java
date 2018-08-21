@@ -615,13 +615,17 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
 	
 	public static String getLabCodePrefix(){
 		
-		String acronym = App.getLabAcronym();
-		
-		if(acronym!=null)
+		if(App.prefs.getBooleanPref(PrefKey.LABCODE_INCLUDE_LABPREFIX, true))
 		{
-			if(acronym.length()>0) 
+		
+			String acronym = App.getLabAcronym();
+			
+			if(acronym!=null)
 			{
-				return acronym+"-";
+				if(acronym.length()>0) 
+				{
+					return acronym+"-";
+				}
 			}
 		}
 		

@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.tellervo.desktop.index.Index;
+import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.sample.Element;
 import org.tellervo.desktop.sample.ElementList;
 import org.tellervo.desktop.sample.Sample;
@@ -285,7 +286,7 @@ public class Scripts {
 	    index.apply();
 
 	    // add "(indexed)" to the title, so they know later
-	    s.setMeta("title", s.getMeta("title") + " (indexed)");
+	    s.setMeta(Metadata.TITLE, s.getMeta(Metadata.TITLE) + " (indexed)");
 
 	    // take the filename, and make it end in .IND.
 	    String name = new File((String) s.getMeta("filename")).getPath();

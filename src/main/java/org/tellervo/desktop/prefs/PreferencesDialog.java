@@ -36,8 +36,10 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JToggleButton;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EmptyBorder;
 
@@ -105,8 +107,14 @@ public class PreferencesDialog extends JDialog {
 			contentPanel.add(toolbarPanel, BorderLayout.WEST);
 		}
 		{
+
+			
 			JPanel panel = new JPanel();
-			contentPanel.add(panel, BorderLayout.CENTER);
+			panel.setLayout(new BorderLayout());
+		    JScrollPane scrollPane = new JScrollPane(panel,   
+		    		ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		    
+			contentPanel.add(scrollPane, BorderLayout.CENTER);
 			panel.setLayout(new BorderLayout(10, 10));
 			{
 				mainPanel = new JLayeredPane();
@@ -280,7 +288,8 @@ public class PreferencesDialog extends JDialog {
 		pack();
 
 		setLocationRelativeTo(null); 
-		setSize(new Dimension(769, 620));
+		this.setMinimumSize(new Dimension(510, 460));
+		
 	}
 	
 	private void hideAllPages()

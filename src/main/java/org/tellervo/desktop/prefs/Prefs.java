@@ -252,6 +252,9 @@ public class Prefs extends AbstractSubsystem {
 		ODK_CSV_FILENAME("tellervo.odk.csvoutput"), 
 		ODK_CREATE_CSV("tellervo.odk.createcsv"),
 		
+		LABCODE_INCLUDE_LABPREFIX("tellervo.labcode.includelabprefix"),
+		LABCODE_STYLE("tellervo.labcode.style"),
+		
 		
 		;
 		
