@@ -178,11 +178,19 @@ WHERE
 
 
 -- Set projectids to the 'rename me' project
-	UPDATE tblobject SET projectid=(SELECT projectid FROM tblproject WHERE title='Rename me') WHERE parentobjectid IS NULL AND projectid IS NULL;
+DROP TRIGGER update_object_rebuildmetacache ON public.tblobject;
+UPDATE tblobject SET projectid=(SELECT projectid FROM tblproject WHERE title='Rename me') WHERE parentobjectid IS NULL AND projectid IS NULL;
 UPDATE tblobject SET projectid=(SELECT projectid FROM tblproject WHERE title='Rename me') WHERE projectid='08f7f052-580f-11e5-9ab7-fb88913ca6e1';
+
 
 -- delete any unused projects
 DELETE FROM tblproject WHERE projectid NOT IN (SELECT DISTINCT projectid FROM tblobject WHERE projectid IS NOT NULL);
+
+CREATE TRIGGER update_object_rebuildmetacache                                                                                                                  
+  AFTER INSERT OR UPDATE                                                                                                                                       
+  ON public.tblobject                                                                                                                                          
+  FOR EACH ROW                                                                                                                                                 
+  EXECUTE PROCEDURE cpgdb.rebuildmetacacheforobject();
 
 
 ALTER TABLE tblobject ADD CONSTRAINT "fkey_object-project" FOREIGN KEY (projectid)

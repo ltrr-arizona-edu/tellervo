@@ -26,13 +26,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.io.Metadata;
+import org.tellervo.desktop.labelgen.LabBarcode;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.SearchOperator;
@@ -41,7 +44,6 @@ import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.ui.Alert;
-import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tellervo.desktop.util.pdf.PrintablePDF;
 import org.tellervo.desktop.util.test.PrintReportFramework;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
@@ -49,6 +51,7 @@ import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
@@ -181,7 +184,7 @@ public class CompleteBoxLabel extends ReportBase{
 	{
 		Paragraph p = new Paragraph();
 		
-		p.add(new Chunk(b.getTitle()+"\n", monsterFont));
+		p.add(new Chunk(b.getTitle()+"\n", titleFont));
 		p.add(new Chunk(App.getLabName(), subTitleFont));
 	
 		//p.add(new Chunk(b.getCurationLocation(), bodyFontLarge));
@@ -222,7 +225,7 @@ public class CompleteBoxLabel extends ReportBase{
 	 */
 	private void addTable(WSIBox b) throws DocumentException
 	{
-		float[] widths = {0.15f, 0.75f, 0.2f};
+		float[] widths = {0.25f, 0.65f, 0.2f};
 		PdfPTable tbl = new PdfPTable(widths);
 		PdfPCell headerCell = new PdfPCell();
 
@@ -283,19 +286,25 @@ public class CompleteBoxLabel extends ReportBase{
 		Integer sampleCountInBox = 0; 
 		
 		// Loop through objects
-		List<TridasObject> objlist = new ArrayList<TridasObject>(); // Array of top level objects that have already been dealt with
+		HashMap<TridasIdentifier, TridasObject> objmap = new HashMap<TridasIdentifier, TridasObject>(); // Array of top level objects that have already been dealt with
 		
 		for(TridasObject myobj : obj)
 		{
-			objlist.add(myobj);
+			
 			if(myobj.isSetObjects())
 			{
+				objmap.put(myobj.getIdentifier(), myobj);
+				
 				for(TridasObject obj2 : myobj.getObjects())
 				{
-					objlist.add(obj2);
+					objmap.put(obj2.getIdentifier(), obj2);
 				}
+				
 			}
 		}
+		
+		Collection<TridasObject> col = objmap.values();
+		ArrayList<TridasObject> objlist = new ArrayList<TridasObject>(col);
 		
 		Collections.sort(objlist, sorter);
 		
@@ -351,7 +360,7 @@ public class CompleteBoxLabel extends ReportBase{
 			dialog2.setVisible(true);
 			if(!dialog2.isSuccessful()) 
 			{ 	
-				System.out.println("oopsey doopsey.  Error getting elements");
+				System.out.println("Error getting elements");
 				return;
 			}
 			//XMLDebugView.showDialog();
@@ -468,18 +477,22 @@ public class CompleteBoxLabel extends ReportBase{
 				{
 					if(inSeq==true)
 					{
-						if(cnt==numOfElements)
+	
+						if(isNextInSeq(lastnum, Integer.valueOf(item)))
 						{
-							// This is the last one in the list!
-							returnStr += "-" + item;
-							continue;
-						}
-						else if(isNextInSeq(lastnum, Integer.valueOf(item)))
-						{
-							// Keep going!
-							inSeq = true;
-							lastnum = Integer.valueOf(item);
-							continue;
+							if(cnt==numOfElements)
+							{
+								// This is the last one in the list!
+								returnStr += "-" + item;
+								continue;
+							}
+							else
+							{
+								// Keep going!
+								inSeq = true;
+								lastnum = Integer.valueOf(item);
+								continue;
+							}
 						}
 						else
 						{

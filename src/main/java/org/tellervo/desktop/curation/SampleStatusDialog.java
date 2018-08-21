@@ -18,6 +18,7 @@ import org.jdesktop.swingx.JXTable;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.JDialog;
+
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.BorderFactory;
@@ -34,10 +35,10 @@ import javax.swing.border.EmptyBorder;
 import org.slf4j.Logger;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerDialog;
 import org.tellervo.desktop.gui.widgets.TridasEntityPickerPanel.EntitiesAccepted;
+import org.tellervo.desktop.labelgen.LabBarcode;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tellervo.desktop.util.labels.ui.SampleLabelPrintingUI;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
@@ -56,7 +57,6 @@ import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasSample;
-
 
 import javax.swing.JToolBar;
 

@@ -183,7 +183,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 						@Override
 						public void run() {
 							SearchParameters param = new SearchParameters(SearchReturnObject.ELEMENT);
-					    	param.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, o.getIdentifier().getValue().toString());
+					    	param.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, o.getIdentifier().getValue().toString());
 	
 					    	EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(param, TridasElement.class);
 							resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.MINIMAL);

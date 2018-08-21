@@ -18,13 +18,10 @@ import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.dictionary.DictionaryRegisteredEvent;
 import org.tellervo.desktop.editor.FullEditor;
 import org.tellervo.desktop.gui.menus.actions.FileImportLegacyFile;
-import org.tellervo.desktop.gui.seriesidentity.IdentifySeriesPanel;
 import org.tellervo.desktop.io.view.ImportView;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.openrecent.OpenRecent;
-import org.tridas.io.AbstractDendroCollectionWriter;
 import org.tridas.io.AbstractDendroFileReader;
 import org.tridas.io.DendroFileFilter;
 import org.tridas.io.TridasIO;
@@ -67,6 +64,7 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 	private JMenuItem miReports;
 	private JMenu miLabels;
 	private JMenuItem miBoxLabel;
+	private JMenuItem miLabelGen;
 	private JMenuItem miBasicBoxLabel;
 	private JMenuItem miSampleBoxLabel;
 	private JMenuItem miRecordCard;
@@ -305,6 +303,10 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		
 		miReports = new JMenuItem(actions.adminReportsAction);
 		mnAdministration.add(miReports);
+		
+		miLabelGen = new JMenuItem(actions.adminLabelGenAction);
+		mnAdministration.add(miLabelGen);
+		
 		
 		miLabels = new JMenu(actions.adminLabelAction);
 		miBoxLabel = new JMenuItem(actions.adminBoxLabelAction);

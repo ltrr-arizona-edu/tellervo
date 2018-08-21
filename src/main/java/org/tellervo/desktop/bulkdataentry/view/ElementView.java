@@ -159,9 +159,12 @@ public class ElementView extends AbstractBulkImportView{
 				TridasObjectEx o = (TridasObjectEx) argO;
 				return o.getLabCode();
 			}
-		});
+		})*/;
+		//box.setRenderer(new TridasObjectExRenderer());
+		
+		argTable.setDefaultRenderer(TridasObjectOrPlaceholder.class, new TridasObjectExRenderer());
+		
 
-		box.setRenderer(new TridasObjectExRenderer());*/
 		
 		objlist = App.tridasObjects.getMutableObjectList();
 		

@@ -465,13 +465,13 @@ class element extends elementEntity implements IDBAccessor {
 					$xml .= "<tridas:unit normalTridas=\"" . $this->getDimensionUnits () . "\" />";
 					if ($this->getDimension ( 'width' ) != NULL) {
 						// Doing height, width, depth
-						$xml .= "<tridas:height>" . dbhelper::escapeXMLChars ( $this->getDimension ( 'height' ) ) . "</tridas:height>\n";
-						$xml .= "<tridas:width>" . dbhelper::escapeXMLChars ( $this->getDimension ( 'width' ) ) . "</tridas:width>\n";
-						$xml .= "<tridas:depth>" . dbhelper::escapeXMLChars ( $this->getDimension ( 'depth' ) ) . "</tridas:depth>\n";
+						$xml .= "<tridas:height>" . dbhelper::formatDouble ( $this->getDimension ( 'height' ) ) . "</tridas:height>\n";
+						$xml .= "<tridas:width>" . dbhelper::formatDouble ( $this->getDimension ( 'width' ) ) . "</tridas:width>\n";
+						$xml .= "<tridas:depth>" . dbhelper::formatDouble ( $this->getDimension ( 'depth' ) ) . "</tridas:depth>\n";
 					} else {
 						// Doing height and diameter
-						$xml .= "<tridas:height>" . dbhelper::escapeXMLChars ( $this->getDimension ( 'height' ) ) . "</tridas:height>\n";
-						$xml .= "<tridas:diameter>" . dbhelper::escapeXMLChars ( $this->getDimension ( 'diameter' ) ) . "</tridas:diameter>\n";
+						$xml .= "<tridas:height>" . dbhelper::formatDouble ( $this->getDimension ( 'height' ) ) . "</tridas:height>\n";
+						$xml .= "<tridas:diameter>" . dbhelper::formatDouble ( $this->getDimension ( 'diameter' ) ) . "</tridas:diameter>\n";
 					}
 					
 					$xml .= "</tridas:dimensions>";

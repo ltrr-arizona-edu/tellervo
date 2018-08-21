@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.util.labels.LabBarcode;
+import org.tellervo.desktop.labelgen.LabBarcode;
 
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;

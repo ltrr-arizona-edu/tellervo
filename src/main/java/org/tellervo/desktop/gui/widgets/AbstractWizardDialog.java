@@ -204,7 +204,7 @@ public class AbstractWizardDialog extends JDialog implements ActionListener {
 		pagePanel.repaint();
 
 	}
-
+	
 	private Boolean isIgnoredPageClass(AbstractWizardPanel page) {
 		for (Class<? extends AbstractWizardPanel> clazz : ignoredPages) {
 			if (page.getClass().equals(clazz)) {

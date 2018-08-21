@@ -33,7 +33,17 @@ public class TridasObjectOrPlaceholder {
 		{
 			if(obj instanceof TridasObjectEx)
 			{
-				return ((TridasObjectEx) obj).getLabCode();
+				TridasObjectEx o = (TridasObjectEx) obj;
+				TridasObjectEx parent = o.getParent();
+				
+				if(parent!=null)
+				{
+					return parent.getLabCode()+">"+o.getLabCode();
+				}
+				else
+				{
+					return o.getLabCode();
+				}
 			}
 			else
 			{
@@ -52,6 +62,25 @@ public class TridasObjectOrPlaceholder {
 	public String toString()
 	{
 		return getCode();
+	}
+	
+	public String getTitle()
+	{
+		if(obj!=null)
+		{
+			if(obj instanceof TridasObjectEx)
+			{
+				return ((TridasObjectEx) obj).getTitle();
+			}
+			else if (obj instanceof TridasObject)
+			{
+				return ((TridasObject) obj).getTitle();
+
+			}
+		}
+
+		return "";
+		
 	}
 	
 }

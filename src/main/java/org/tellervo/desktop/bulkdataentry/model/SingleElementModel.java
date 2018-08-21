@@ -150,7 +150,7 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		
 		TridasDimensions d = new TridasDimensions();
 		
-		d.setWidth((BigDecimal) getProperty(WIDTH));
+		d.setWidth(castNumericData(getProperty(WIDTH)));
 		d.setHeight(castNumericData(getProperty(HEIGHT)));
 		d.setDiameter(castNumericData(getProperty(DIAMETER)));
 		d.setDepth(castNumericData(getProperty(DEPTH)));

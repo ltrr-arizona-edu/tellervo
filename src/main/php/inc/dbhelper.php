@@ -18,6 +18,17 @@
 class dbHelper
 {
 	
+    /**
+     * Format a double with no scientific notation
+    */
+    public static function formatDouble($double)
+    {
+
+            return sprintf('%f', $double);
+    }
+
+	
+	
 	/**
 	 * Translates a value into a db pkey for one of the standard lookup tables
 	 *

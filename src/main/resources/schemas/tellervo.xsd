@@ -135,6 +135,8 @@
 			<xs:enumeration value="Unprepped"/>
 			<xs:enumeration value="Undateable"/>
 			<xs:enumeration value="Dated"/>
+			<xs:enumeration value="Partially dated"/>
+			<xs:enumeration value="Undated"/>
 			<xs:enumeration value="Measured"/>
 			<xs:enumeration value="Too few rings"/>
 		</xs:restriction>

@@ -204,7 +204,7 @@ public class FullEditorActions extends AbstractEditorActions implements IEventLi
 		adminDatabaseStatisticsAction.setEnabled(App.isLoggedIn());
 		adminEditViewPermissionsAction.setEnabled(App.isLoggedIn());
 		adminForgetPasswordAction.setEnabled(App.isLoggedIn());
-		adminLabelAction.setEnabled(App.isLoggedIn());
+		adminLabelGenAction.setEnabled(App.isLoggedIn());
 		adminMetaDBAction.setEnabled(App.isLoggedIn());
 		adminReportsAction.setEnabled(App.isLoggedIn());
 		adminSampleLabelAction.setEnabled(App.isLoggedIn());

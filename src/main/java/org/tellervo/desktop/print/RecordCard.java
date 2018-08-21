@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.UUID;
 
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.labelgen.LabBarcode;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.FontUtil;
-import org.tellervo.desktop.util.labels.LabBarcode;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;

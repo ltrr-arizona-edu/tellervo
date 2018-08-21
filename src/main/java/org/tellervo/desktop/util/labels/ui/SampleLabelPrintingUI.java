@@ -256,14 +256,14 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
 					// Cornell only wants top level object in lab code. 
 					// Make this client selectable before releasing to the world
 					
-					/*for(TridasObject obj2 : currentObjects) {
+					for(TridasObject obj2 : currentObjects) {
 						if(obj2 instanceof TridasObjectEx)
 							labcode.appendSiteCode(((TridasObjectEx) obj2).getLabCode());
 						else
 							labcode.appendSiteCode(obj2.getTitle());
 						labcode.appendSiteTitle(obj2.getTitle());
 					}
-					*/
+					
 					
 					labcode.setElementCode(ele.getTitle());
 					labcode.setSampleCode(samp.getTitle());
@@ -290,7 +290,7 @@ public class SampleLabelPrintingUI extends javax.swing.JPanel implements ActionL
     	
 		// Find all samples for an object 
     	SearchParameters sampparam = new SearchParameters(SearchReturnObject.SAMPLE);
-    	sampparam.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
+    	sampparam.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, obj.getIdentifier().getValue().toString());
 
     	// we want an object return here, so we get a list of object->elements->samples when we use comprehensive
 		EntitySearchResource<TridasObject> sampresource = new EntitySearchResource<TridasObject>(sampparam, TridasObject.class);

@@ -32,6 +32,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.labelgen.LabBarcode;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.util.pdf.PrintablePDF;

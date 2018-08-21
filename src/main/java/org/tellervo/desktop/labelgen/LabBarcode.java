@@ -18,7 +18,7 @@
  *     Lucas Madar
  *     Peter Brewer
  ******************************************************************************/
-package org.tellervo.desktop.util.labels;
+package org.tellervo.desktop.labelgen;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,11 +28,14 @@ import java.io.IOException;
 import java.util.UUID;
 
 import org.tellervo.desktop.util.Base64;
+import org.tellervo.schema.WSIBox;
 
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.pdf.Barcode;
 import com.itextpdf.text.pdf.Barcode128;
+import com.itextpdf.text.pdf.PdfContentByte;
 
 
 public class LabBarcode extends Barcode128 {
@@ -163,5 +166,35 @@ public class LabBarcode extends Barcode128 {
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Barcode is not a Tellervo barcode");
 		}
+	}
+	
+	/**
+	 * Create a bar code for this box
+	 * 
+	 * @return Image 
+	 */
+	public static Image getBarCode(WSIBox b, PdfContentByte cb)
+	{
+	
+		return getBarCode(b, cb, 50f);
+	
+	}
+	
+	public static Image getBarCode(WSIBox b, PdfContentByte cb, float barheight)
+	{
+		UUID uuid = UUID.fromString(b.getIdentifier().getValue());
+		LabBarcode barcode = new LabBarcode(LabBarcode.Type.BOX, uuid);
+
+		
+		barcode.setFont(null);
+		barcode.setX(0.7f);
+		barcode.setSize(6f);
+		barcode.setBaseline(8f);
+		barcode.setBarHeight(barheight);
+		
+		Image image = barcode.createImageWithBarcode(cb, null, null);
+	
+		return image;
+	
 	}
 }

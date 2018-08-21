@@ -25,8 +25,19 @@ public class TridasObjectExRenderer extends DefaultCellRendererEx{
 		
 		if(argValue instanceof TridasObjectEx)
 		{
-			TridasObjectEx o = (TridasObjectEx) argValue;			
-			return o.getLabCode();
+			TridasObjectEx o = (TridasObjectEx) argValue;		
+			TridasObjectEx parent = o.getParent();
+			
+			if(parent!=null)
+			{
+				return parent.getLabCode()+">"+o.getLabCode();
+			}
+			else
+			{
+				return o.getLabCode();
+			}
+			
+			
 		}
 		else if (argValue instanceof TridasObjectOrPlaceholder)
 		{
