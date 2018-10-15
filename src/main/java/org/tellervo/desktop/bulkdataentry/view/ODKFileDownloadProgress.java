@@ -72,6 +72,7 @@ public class ODKFileDownloadProgress extends JDialog implements ActionListener {
 		this.url = url;
 		try {
 			filePath = File.createTempFile("odk-", ".zip");
+			filePath.deleteOnExit();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

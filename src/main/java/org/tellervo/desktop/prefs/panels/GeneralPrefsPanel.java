@@ -1,8 +1,8 @@
 package org.tellervo.desktop.prefs.panels;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Insets;
-import java.awt.TextComponent;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -11,13 +11,17 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileFilter;
 
@@ -26,7 +30,6 @@ import net.miginfocom.swing.MigLayout;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.prefs.wrappers.CheckBoxWrapper;
-import org.tellervo.desktop.prefs.wrappers.EditableComboBoxWrapper;
 import org.tellervo.desktop.prefs.wrappers.TextComponentWrapper;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.ui.Builder;
@@ -35,11 +38,6 @@ import org.tellervo.desktop.util.ExtensionFileFilter;
 import org.tellervo.desktop.util.SoundUtil;
 import org.tellervo.desktop.util.SoundUtil.SystemSound;
 import org.tellervo.desktop.versioning.UpdateChecker;
-import javax.swing.border.LineBorder;
-import java.awt.Color;
-import javax.swing.JComboBox;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JTextPane;
 
 public class GeneralPrefsPanel extends AbstractPreferencesPanel {
 

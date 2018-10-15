@@ -29,15 +29,15 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 
 public class ComboByIndexWrapper extends ItemWrapper<Integer> {
 	
-	String[] options;
+	Object[] options;
 	
 	
-	public ComboByIndexWrapper(JComboBox cbo, PrefKey key, Object defaultValue, String[]values) {
+	public ComboByIndexWrapper(JComboBox cbo, PrefKey key, Object defaultValue, Object[]values) {
 		super(key, defaultValue, Integer.class);
 		initGeneric(cbo, values);
 	}
 			
-	private void initGeneric(JComboBox cbo, String[] values)
+	private void initGeneric(JComboBox cbo, Object[] values)
 	{
 		// show a sample for each format thingy...
 		options = values;

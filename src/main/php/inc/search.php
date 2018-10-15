@@ -835,7 +835,8 @@ class search Implements IDBAccessor
 		{
 		    if($withinJoin)
 		    {
-			$fromSQL .= $this->tableName("object")." \n";
+			//$fromSQL .= $this->tableName("object")." \n";
+			$fromSQL .= "INNER JOIN ".$this->tableName("object")." ON ".$this->tableName("project").".projectid = ".$this->tableName("object").".projectid \n";
 		    }
 		    else
 		    {

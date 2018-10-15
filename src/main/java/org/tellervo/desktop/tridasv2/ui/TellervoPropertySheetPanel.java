@@ -256,7 +256,11 @@ public class TellervoPropertySheetPanel extends PropertySheetPanel {
 			{
 				Object files = p.getValue();
 				
-				if(data instanceof TridasObject)
+				if(data instanceof TridasProject)
+				{
+					((TridasProject)data).setFiles((List<TridasFile>) files);
+				}
+				else if(data instanceof TridasObject)
 				{
 					((TridasObject)data).setFiles((List<TridasFile>) files);
 				}

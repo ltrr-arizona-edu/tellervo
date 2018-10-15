@@ -135,8 +135,6 @@
 			<xs:enumeration value="Unprepped"/>
 			<xs:enumeration value="Undateable"/>
 			<xs:enumeration value="Dated"/>
-			<xs:enumeration value="Partially dated"/>
-			<xs:enumeration value="Undated"/>
 			<xs:enumeration value="Measured"/>
 			<xs:enumeration value="Too few rings"/>
 		</xs:restriction>
@@ -154,8 +152,7 @@
 				</xs:annotation>
 			</xs:enumeration>
 			
-
-			<xs:enumeration value="projectid"/>	
+			<xs:enumeration value="projectid"/>						
 			<xs:enumeration value="projecttitle"/>
 			<xs:enumeration value="projectcreated"/>
 			<xs:enumeration value="projectlastmodified"/>
@@ -331,6 +328,13 @@
 		</xs:restriction>
 	</xs:simpleType>
 	
+	<xs:simpleType name="joinOperator">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="AND"/>
+			<xs:enumeration value="OR"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
 	<xs:simpleType name="idList">
  		<xs:list itemType="xs:token"/>
 	</xs:simpleType>
@@ -386,6 +390,13 @@
 				</xs:annotation>
 			</xs:attribute>
 			<xs:attribute name="includeChildren" type="xs:boolean" />
+			
+			<xs:attribute name="joinOperator" type="joinOperator">
+				<xs:annotation>
+					<xs:documentation>The join operator (AND or OR) to use between parameters</xs:documentation>
+				</xs:annotation>
+			</xs:attribute>
+			
 		</xs:complexType>
 	</xs:element>
 	<!--

@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import org.tellervo.desktop.util.Base64;
 import org.tellervo.schema.WSIBox;
+import org.tridas.schema.TridasSample;
 
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
@@ -173,17 +174,40 @@ public class LabBarcode extends Barcode128 {
 	 * 
 	 * @return Image 
 	 */
-	public static Image getBarCode(WSIBox b, PdfContentByte cb)
+	public static Image getBoxBarcode(WSIBox b, PdfContentByte cb)
 	{
 	
-		return getBarCode(b, cb, 50f);
+		return getBoxBarcode(b, cb, 50f);
 	
 	}
 	
-	public static Image getBarCode(WSIBox b, PdfContentByte cb, float barheight)
+	public static Image getBoxBarcode(WSIBox b, PdfContentByte cb, float barheight)
 	{
 		UUID uuid = UUID.fromString(b.getIdentifier().getValue());
 		LabBarcode barcode = new LabBarcode(LabBarcode.Type.BOX, uuid);
+
+		
+		barcode.setFont(null);
+		barcode.setX(0.7f);
+		barcode.setSize(6f);
+		barcode.setBaseline(8f);
+		barcode.setBarHeight(barheight);
+		
+		Image image = barcode.createImageWithBarcode(cb, null, null);
+	
+		return image;
+	
+	}
+	
+	public static Image getSampleBarcode(TridasSample b, PdfContentByte cb)
+	{
+		return getSampleBarcode(b, cb, 10f);
+	}
+	
+	public static Image getSampleBarcode(TridasSample b, PdfContentByte cb, float barheight)
+	{
+		UUID uuid = UUID.fromString(b.getIdentifier().getValue());
+		LabBarcode barcode = new LabBarcode(LabBarcode.Type.SAMPLE, uuid);
 
 		
 		barcode.setFont(null);

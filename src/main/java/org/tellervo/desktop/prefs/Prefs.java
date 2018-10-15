@@ -255,6 +255,8 @@ public class Prefs extends AbstractSubsystem {
 		LABCODE_INCLUDE_LABPREFIX("tellervo.labcode.includelabprefix"),
 		LABCODE_STYLE("tellervo.labcode.style"),
 		
+		LABEL_WIZARD_HIDE_INTRO("tellervo.label.wizard.hideintro"),
+		LABEL_WIZARD_STYLE("tellervo.label.wizard.style"),
 		
 		;
 		

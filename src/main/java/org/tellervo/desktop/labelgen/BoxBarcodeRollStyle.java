@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import org.tellervo.schema.WSIBox;
 
 import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
@@ -34,11 +35,11 @@ public class BoxBarcodeRollStyle extends AbstractTellervoLabelStyle {
 	@Override
 	public void outputPDFToStream(java.io.OutputStream output, ArrayList items) throws Exception {
 		try {
-			
+			document = new Document();
 			PdfWriter writer = PdfWriter.getInstance(document, output);
 			
 			document.setPageSize(this.pageSize);
-			document.setMargins(5, 5, 5 ,0);
+			document.setMargins(2, 2, 0 ,0);
 
 			document.open();
 		
@@ -76,12 +77,12 @@ public class BoxBarcodeRollStyle extends AbstractTellervoLabelStyle {
 	        	{
 	        		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 10, barheight - 10, 16, Element.ALIGN_CENTER);
 
-	        		ct.addText(new Chunk(LabBarcode.getBarCode(b, cb, barheight-15), 0, 0, true));
+	        		ct.addText(new Chunk(LabBarcode.getBoxBarcode(b, cb, barheight-15), 0, 0, true));
 	        	}
 	        	else
 	        	{
 	        		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 5, barheight - 10, 16, Element.ALIGN_CENTER);
-	        		ct.addText(new Chunk(LabBarcode.getBarCode(b, cb, barheight-15), 0, 0, true));
+	        		ct.addText(new Chunk(LabBarcode.getBoxBarcode(b, cb, barheight-15), 0, 0, true));
 
 	        	}
 	        	ct.go();

@@ -14,10 +14,17 @@ public class LabelStyleFactory {
 	
 	// Array of label style classes
 	private final static AbstractTellervoLabelStyle[] availableStyles = new AbstractTellervoLabelStyle[]{
-		new BoxBarcode10UpLabelStyle(), 
+		new BoxBarcode12UpLabelStyle(), 
 		new BoxBarcodeRollStyle(),
 		new BoxBarcodeRoll3Point5x1Style(),
-		new BoxBarcodeRoll3Point5xPoint75Style()
+		new BoxBarcodeRoll3Point5xPoint75Style(),
+		new BoxBarcodeRoll4xPoint375Style(),
+		new BoxLabel1Style(),
+		new BoxLabel2Style(),
+		new SampleLabel1Style(),
+		new SampleLabelRoll4xPoint375AllInStyle(),
+		new SampleLabelRoll4xPoint375TwoLabelStyle(),
+		
 		};
 
 	

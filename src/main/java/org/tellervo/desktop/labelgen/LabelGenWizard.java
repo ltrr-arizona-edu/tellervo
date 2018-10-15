@@ -13,6 +13,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.widgets.AbstractWizardDialog;
 import org.tellervo.desktop.gui.widgets.AbstractWizardPanel;
 import org.tellervo.desktop.labelgen.AbstractTellervoLabelStyle.ItemType;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Builder;
 
 public class LabelGenWizard extends AbstractWizardDialog {
@@ -41,7 +42,12 @@ public class LabelGenWizard extends AbstractWizardDialog {
 		page3b = new LGWizardSamplePicker();
 		finalpage = new LGWizardSummary();
 		
-		pages.add(page1);
+		if(App.prefs.getBooleanPref(PrefKey.LABEL_WIZARD_HIDE_INTRO, false)==false)
+		{
+			// Only show intro if not asked to hide
+			pages.add(page1);	
+		}
+		
 		pages.add(page2);
 		pages.add(page3);
 		pages.add(page3b);
@@ -95,6 +101,7 @@ public class LabelGenWizard extends AbstractWizardDialog {
 		File outputFile;
 		try {
 			outputFile = File.createTempFile("boxlabel", ".pdf");
+			outputFile.deleteOnExit();
 			FileOutputStream output = new FileOutputStream(outputFile);
 			
 			if(itemType.equals(ItemType.BOX))

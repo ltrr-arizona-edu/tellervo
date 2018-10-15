@@ -54,6 +54,9 @@ public class AbstractWizardDialog extends JDialog implements ActionListener {
 		FORWARD, BACKWARD;
 	}
 
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public AbstractWizardDialog(String title, Icon sideImage) {
 
 		this.title = title;
