@@ -288,6 +288,14 @@ public class LGWizardSamplePicker extends AbstractWizardPanel implements ActionL
 					GenericFieldUtils.setField(samp, "tellervo.internal.labcodeText", 
 							LabCodeFormatter.getRadiusPrefixFormatter().format(labcode));
 					
+					// Also copy across the project ID
+					GenericFieldUtils.setField(samp, "tellervo.internal.projectID", 
+							GenericFieldUtils.findField(obj, "tellervo.object.projectid").getValue());
+					
+					// And the object name
+					GenericFieldUtils.setField(samp, "tellervo.internal.objectID", 
+							obj.getIdentifier().getValue());
+					
 					// add the sample to the returns list
 					returns.add(samp);
 				}

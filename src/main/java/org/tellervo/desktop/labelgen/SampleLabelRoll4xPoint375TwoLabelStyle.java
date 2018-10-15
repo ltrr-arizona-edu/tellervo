@@ -22,10 +22,12 @@ import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.WSIBox;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
@@ -103,13 +105,18 @@ public class SampleLabelRoll4xPoint375TwoLabelStyle extends AbstractTellervoLabe
 			
 	        	// Compile data to go on label
 	        	String sampleLabelText;
-	        	String siteNameText = "The site name fda dsfa sd fad fasd fds sf ghert hrt yrte rt wer dfgs rty wertyrd sy sret ysrt st rghsrtyh sr65 hrsthj srth srth srth srth srthsr shr tstr";
-	        	String projectText  = "Peter Brewer : The name of the project af asdfasd fasd fsad fasd fads fasd fasd fasd fasd fasd fdsa fas dfads fas dfasdf asdf asd fads fasd fads fasd ";
+	        	TridasProject project = App.dictionary.getTridasProjectByID(TridasUtils.getGenericFieldValueByName((TridasSample) item, "tellervo.internal.projectID"));
+	        	TridasObject object = App.dictionary.getTridasObjectByID(TridasUtils.getGenericFieldValueByName((TridasSample) item, "tellervo.internal.objectID"));
+				String siteNameText = object.getTitle();
+	        			
+	        	
+	        	//String projectText  = "Peter Brewer : The name of the project af asdfasd fasd fsad fasd fads fasd fasd fasd fasd fasd fdsa fas dfads fas dfasdf asdf asd fads fasd fads fasd ";
+	        	String projectText  = project.getInvestigator()+" : "+project.getTitle();
+
 	        	TridasSample s = (TridasSample) item;
 				TridasGenericField labcodeField = GenericFieldUtils.findField(s, "tellervo.internal.labcodeText");
-				sampleLabelText = labcodeField.getValue()+ "-dfadsf-fdadfa-fdasdsfds-fdafdasdsa-acvvcvcvcvvvvvv";
+				sampleLabelText = labcodeField.getValue();
 	        	
-				
 				
 				// Top left text
 				

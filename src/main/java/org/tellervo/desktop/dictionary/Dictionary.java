@@ -206,6 +206,22 @@ public class Dictionary extends TellervoResource {
 		return null;
 	}
 	
+	public static TridasObjectEx getTridasObjectByID(String id)
+	{
+		if(id==null) return null;
+
+		List<TridasObjectEx> entities = App.tridasObjects.getMutableObjectList();
+
+		for(TridasObjectEx obj : entities)
+		{
+			if(obj.getIdentifier().getValue().equals(id))
+			{
+				return obj;
+			}
+		}
+		return null;
+	}
+	
 	public static TridasProject getTridasProjectByID(String id)
 	{
 		if(id==null) return null;
