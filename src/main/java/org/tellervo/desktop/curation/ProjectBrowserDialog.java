@@ -8,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.swing.DefaultListModel;
@@ -48,8 +49,11 @@ import org.tridas.schema.TridasAddress;
 import org.tridas.schema.TridasLaboratory;
 import org.tridas.schema.TridasProject;
 
+import com.dmurph.mvc.model.MVCArrayList;
 import com.l2fprod.common.propertysheet.Property;
 import com.l2fprod.common.propertysheet.PropertySheet;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 public class ProjectBrowserDialog extends JDialog implements PropertyChangeListener, ActionListener{
 	private final static Logger log = LoggerFactory.getLogger(ProjectBrowserDialog.class);
@@ -241,12 +245,16 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 	
 	private void addNewProject()
 	{
+	    String name = JOptionPane.showInputDialog(this, "Title for project");
+
+		if(name==null || name.trim().length()==0)
+		{
+			return;
+		}
+		
 		TridasProject p = new TridasProject();
-		p.setTitle("New Project");
-		
-	
-		
-		
+		p.setTitle(name);
+
 		ArrayList<TridasLaboratory> laboratories = new ArrayList<TridasLaboratory>();
 		
 		TridasLaboratory lab = new TridasLaboratory();
@@ -257,28 +265,24 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		TridasAddress address = new TridasAddress();
 		lab.setAddress(address);	
 		laboratories.add(lab);
-		
-		
-		
-		
+
 		p.setLaboratories(laboratories);
 	
-		p.setInvestigator("Unknown");
-		p.setPeriod("Unknown");
-		
-		
-		
 		App.tridasProjects.addTridasProject(p);
 		
 		updateProjectList();
 		
 		lstProjects.setSelectedValue(p, true);
+		//temporaryEditingEntity = p;
+		setProject(p);
 		isDirty = true;
 	}
 	
 	
 	private void setProject(TridasProject entity)
 	{
+		this.temporaryEditingEntity = entity;
+		
 		
 		if(isDirty)
 		{
@@ -298,7 +302,6 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 			//editEntity.setVisible(false);
 		}
 		
-		this.temporaryEditingEntity = entity;
 		isDirty = false;
 		
 	}
@@ -307,11 +310,23 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 	{
 		DefaultListModel<TridasProject> projModel = new DefaultListModel<TridasProject>();
 
+		MVCArrayList<TridasProject> list = App.tridasProjects.getMutableProjectList();
 		
-		for(TridasProject p : App.tridasProjects.getMutableProjectList())
+		Collections.sort(list, new Comparator<TridasProject>(){
+
+			@Override
+			public int compare(TridasProject o1, TridasProject o2) {
+				return o1.getTitle().compareTo(o2.getTitle());
+			}
+			
+		});
+		
+		for(TridasProject p : list)
 		{
 			projModel.addElement(p);
 		}
+		
+		
 		
 		lstProjects.setModel(projModel);
 		lstProjects.requestFocus();

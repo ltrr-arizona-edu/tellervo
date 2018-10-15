@@ -387,6 +387,9 @@ class project extends projectEntity implements IDBAccessor {
 					$sql .= "description, ";
 					$sql .= "file, ";
 					$sql .= "requestdate, ";
+					$sql .= "investigator, ";
+					$sql .= "period, ";
+					$sql .= "commissioner, ";
 					$sql .= "projectcategoryid, ";
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ") values (";
@@ -394,10 +397,13 @@ class project extends projectEntity implements IDBAccessor {
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getID () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					$sql .=  dbHelper::phpArrayToPGStrArray ( $this->getTypes(true) ) . ", ";
+					$sql .= dbHelper::phpArrayToPGStrArray ( $this->getTypes(true) ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
 					$sql .= dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getRequestDate() ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getInvestigator () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getPeriod () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getCommissioner () ) . ", ";
 					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getCategory( true ) ) . ", ";
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ")";
@@ -411,6 +417,9 @@ class project extends projectEntity implements IDBAccessor {
 					$sql .= "description=" . dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
 					$sql .= "file=" . dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
 					$sql .= "requestdate=" . dbHelper::tellervo_pg_escape_string ( $this->getRequestDate () ) . ", ";
+					$sql .= "investigator=" . dbHelper::tellervo_pg_escape_string ( $this->getInvestigator () ) . ", ";
+					$sql .= "period=" . dbHelper::tellervo_pg_escape_string ( $this->getPeriod () ) . ", ";
+					$sql .= "commissioner=" . dbHelper::tellervo_pg_escape_string ( $this->getCommissioner () ) . ", ";
 					$sql .= "projectcategoryid=" . dbHelper::tellervo_pg_escape_string ( $this->getCategory ( true ) ) . ", ";
 						
 					$sql = substr ( $sql, 0, - 2 );
