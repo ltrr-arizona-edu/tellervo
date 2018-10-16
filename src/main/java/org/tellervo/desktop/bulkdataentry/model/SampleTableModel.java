@@ -44,6 +44,7 @@ import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.Date;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
@@ -159,7 +160,9 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 				MVCArrayList<TridasObjectEx> objectList = App.tridasObjects.getMutableObjectList();
 				for(TridasObjectEx obj: objectList)
 				{
-					if(obj.getLabCode().equals(argAValue))
+					String multicode = TridasUtils.getObjectCodeMulti(obj);
+					
+					if(multicode.equals(argAValue))
 					{
 						toph = new TridasObjectOrPlaceholder(obj);
 						break;
@@ -175,8 +178,17 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 				
 				if(toph.getTridasObject()!=null)
 				{
-					argModel.setProperty(argColumn, argAValue);
-					final TridasObject o = toph.getTridasObject();
+					
+					//final TridasObject o = toph.getTridasObject();
+					final TridasObjectEx o = toph.getTridasObjectEx();
+					if(o!=null)
+					{
+						argModel.setProperty(argColumn, o);
+					} 
+					else
+					{
+						argModel.setProperty(argColumn, argAValue);
+					}
 					
 					Thread t = new Thread(new Runnable() {
 						

@@ -43,6 +43,7 @@ import org.tellervo.schema.WSIProjectTypeDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
 import org.tellervo.schema.WSITaxonDictionary;
 import org.tridas.io.util.DateUtils;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.Certainty;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
@@ -198,7 +199,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 				} 
 				else if (value instanceof TridasObject) {
 					TridasObjectEx obj = (TridasObjectEx) value;
-					sbf.append(obj.getLabCode());
+					sbf.append(obj.getMultiLevelLabCode());
 				} else if (value instanceof TridasElement) {
 					TridasElement elem = (TridasElement) value;
 					sbf.append(elem.getTitle());
@@ -646,13 +647,17 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 									.getMutableObjectList();
 							Boolean match = false;
 							for (TridasObjectEx obj : types) {
-								if (obj.getLabCode().equals(value)) {
+
+								String multicode = TridasUtils.getObjectCodeMulti(obj);
+		
+								if (multicode.equals(value)) {
 
 									if (!simulateFirst)
 										tablemodel.setValueAt(obj, rowModelIndex,
 												colModelIndex);
 									match = true;
-								}
+								}					
+								
 							}
 							if (match == false) {
 								logPasteError(lineindex, colModelIndex, value,

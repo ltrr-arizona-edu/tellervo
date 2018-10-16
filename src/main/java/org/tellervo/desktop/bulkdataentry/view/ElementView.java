@@ -250,7 +250,7 @@ public class ElementView extends AbstractBulkImportView{
 					return;
 				}
 				TridasObjectEx object = (TridasObjectEx) argValue;
-				super.setValue(object.getLabCode());
+				super.setValue(object.getMultiLevelLabCode());
 			}
 		});
 		

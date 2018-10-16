@@ -254,7 +254,10 @@ public class ImportSelectedObjectsCommand implements ICommand {
 			}
 			else{
 				model.getObjectModel().getImportedList().add(resource.getAssociatedResult());
+				
+
 				App.tridasObjects.addTridasObject(resource.getAssociatedResult());
+				
 			}
 			
 			som.setDirty(false);
@@ -266,7 +269,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		//DynamicJComboBoxEvent event = new DynamicJComboBoxEvent(model.getObjectModel().getImportedDynamicComboBoxKey(), model.getObjectModel().getImportedListStrings());
 		//event.dispatch();
 		
-		// FIXME this should be removed once other lists listen for changes in the object list
+		// FIXME this should be removed once other lists listen for changes in the object list	
 		//App.updateTridasObjectList();
 
 	}

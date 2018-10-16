@@ -16,6 +16,11 @@ public class TridasObjectOrPlaceholder {
 		this.obj = obj;
 	}
 	
+	public TridasObjectOrPlaceholder(TridasObjectEx obj)
+	{
+		this.obj = obj;
+	}
+	
 	public TridasObjectOrPlaceholder(String code)
 	{
 		this.code = code;
@@ -25,6 +30,16 @@ public class TridasObjectOrPlaceholder {
 	public TridasObject getTridasObject()
 	{
 		return obj;
+	}
+	
+	public TridasObjectEx getTridasObjectEx()
+	{
+		if(obj instanceof TridasObjectEx)
+		{
+			return (TridasObjectEx) obj;
+		}
+		
+		return null;
 	}
 	
 	public String getCode()

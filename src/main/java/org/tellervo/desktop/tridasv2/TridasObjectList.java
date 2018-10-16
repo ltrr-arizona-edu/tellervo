@@ -249,17 +249,42 @@ public class TridasObjectList extends TellervoResource {
 	 */
 	public void addTridasObject(TridasObjectEx argObject){
 		synchronized (data) {
-			data.allObjects.add(argObject);
 			
-			for(TridasObjectEx  o: data.allObjects)
+			TridasObjectEx parent = argObject.getParent();
+			
+			if(parent==null)
 			{
-				if(o.getLabCode().equals(argObject.getLabCode()))
-				{
-					System.out.println("Found it!");
-				}
-			}
+				// Top level object so add to lists as normal
 			
-			data.bySiteCode.put(argObject.getLabCode(), argObject);
+				data.allObjects.add(argObject);
+				
+				for(TridasObjectEx  o: data.allObjects)
+				{
+					if(o.getLabCode().equals(argObject.getLabCode()))
+					{
+						System.out.println("Found it!");
+					}
+				}
+				
+				data.bySiteCode.put(argObject.getLabCode(), argObject);
+			}
+			else
+			{
+				// This is a sub-object so adding is more complicated
+				
+				TridasObjectEx foundparent = null;
+				
+				for(TridasObjectEx o : getMutableObjectList())
+				{
+					if(o.getIdentifier().equals(parent.getIdentifier()))
+					{
+						o.getObjects().add(argObject);
+					}
+				}
+				
+				
+				
+			}
 		}
 	}
 	
