@@ -28,7 +28,7 @@ public class LabelGenWizard extends AbstractWizardDialog {
 	
 	
 	public LabelGenWizard(JFrame parent) {
-		super("ODK Import Wizard", Builder.getImageAsIcon("sidebar.png"));
+		super("ODK Import Wizard", Builder.getImageAsIcon("sidebar-label.png"));
 		App.init();
 		
 

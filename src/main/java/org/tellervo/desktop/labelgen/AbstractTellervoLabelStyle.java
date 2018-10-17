@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.tellervo.desktop.ui.Builder;
+
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfContentByte;
 
@@ -45,7 +47,13 @@ public abstract class AbstractTellervoLabelStyle {
 	 */
 	public Icon getPageImage()
 	{
-		return null;
+		
+		try{
+			return Builder.getImageAsIcon("/LabelStyles/"+this.getClass().getSimpleName()+"-page.png");
+		} catch (Exception e)
+		{
+			return null;
+		}
 	}
 	
 	/**
@@ -55,7 +63,12 @@ public abstract class AbstractTellervoLabelStyle {
 	 */
 	public Icon getLabelImage()
 	{
-		return null;
+		try{
+			return Builder.getImageAsIcon("/LabelStyles/"+this.getClass().getSimpleName()+"-label.png");
+		} catch (Exception e)
+		{
+			return null;
+		}
 	}
 	
 	
