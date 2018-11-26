@@ -25,6 +25,7 @@ import org.tellervo.desktop.gui.widgets.AbstractWizardPanel;
 import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
+import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.labels.ui.TridasListCellRenderer;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
@@ -37,9 +38,13 @@ import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 
 public class LGWizardSamplePicker extends AbstractWizardPanel implements ActionListener{
@@ -219,12 +224,64 @@ public class LGWizardSamplePicker extends AbstractWizardPanel implements ActionL
 		}
 		
 		List<TridasObject> objList = sampresource.getAssociatedResult();
-		List<TridasSample> sampList = getSamplesList(objList, null, null);
+		List<TridasSample> sampList = getSamplesList2(objList, null, null);
 		
 		availModel.addAll(sampList);
 		
 		
 	}
+	
+    public static List<TridasSample> getSamplesList2(List<TridasObject> objects, 
+    		TridasObject[] objsThisLevel, List<TridasSample> returns) {
+    	
+       	
+    	// create this on the fly
+    	if(returns == null)
+    		returns = new ArrayList<TridasSample>();
+    	
+    	for(TridasObject obj : objects) {
+    		
+    		// handle stupid recursive objects
+    		List<TridasObject> currentObjects;    		
+    		if(objsThisLevel == null)
+    			currentObjects = new ArrayList<TridasObject>();
+    		else 
+    			currentObjects = new ArrayList<TridasObject>(Arrays.asList(objsThisLevel));
+    		
+			currentObjects.add(obj);
+			
+			// grar...
+			for(@SuppressWarnings("unused") TridasObject obj2 : obj.getObjects()) {
+				getSamplesList2(obj.getObjects(), currentObjects.toArray(new TridasObject[0]), returns);
+			}
+			
+			
+			for(TridasElement ele : obj.getElements()) {
+				for(TridasSample samp : ele.getSamples()) {
+					
+					// Set labcode generic field based on preferred style
+					String thelabcode = LabCodeFormatter.getDefaultFormattedLabCode(currentObjects, ele, samp, null, null);
+					GenericFieldUtils.setField(samp, "tellervo.internal.labcodeText", thelabcode);	
+					
+					// Also copy across the project ID					
+					GenericFieldUtils.setField(samp, "tellervo.internal.projectID", 
+							GenericFieldUtils.findField(currentObjects.get(0), "tellervo.object.projectid").getValue());
+					
+					// And the object name
+					GenericFieldUtils.setField(samp, "tellervo.internal.objectID", 
+							obj.getIdentifier().getValue());
+					
+					// add the sample to the returns list
+					returns.add(samp);
+					
+				}
+			}
+    	}
+    	
+    	return returns;
+    	
+    }
+	
 	
 	/**
      * Stupid function to get a list of samples from a list of objects
@@ -301,6 +358,11 @@ public class LGWizardSamplePicker extends AbstractWizardPanel implements ActionL
 				}
 			}
     	}
+    	
+    	TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+    	Collections.sort(returns, numSorter);
     	
     	return returns;
     }

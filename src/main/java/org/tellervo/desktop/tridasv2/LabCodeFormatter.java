@@ -20,12 +20,19 @@
  ******************************************************************************/
 	package org.tellervo.desktop.tridasv2;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.jfree.util.Log;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
+import org.tridas.interfaces.ITridasSeries;
+import org.tridas.io.util.TridasUtils;
+import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasSample;
 
 
 /**
@@ -77,6 +84,72 @@ public class LabCodeFormatter {
 		
 		return defaultLabCodeFormatter;
 	}
+	
+
+	public static String getDefaultFormattedLabCode(TridasObject object,
+			TridasElement element, TridasSample sample, 
+			TridasRadius radius, ITridasSeries series) {
+		
+		ArrayList<TridasObject> objects = new ArrayList<TridasObject>();
+		objects.add(object);
+		
+		return getDefaultFormattedLabCode(objects, element, sample, radius, series);
+		
+	}
+	
+	
+	public static String getDefaultFormattedLabCode(List<TridasObject> objects,
+			TridasElement element, TridasSample sample, 
+			TridasRadius radius, ITridasSeries series) {
+
+		
+		LabCodeFormatter lf = LabCodeFormatter.getDefaultFormatter();
+		LabCode lc = new LabCode();
+		
+		// Limit code based on depth given
+		if(series==null)  lf = LabCodeFormatter.getSeriesPrefixFormatter();
+		if(radius==null)  lf = LabCodeFormatter.getRadiusPrefixFormatter();
+		if(sample==null)  lf = LabCodeFormatter.getSamplePrefixFormatter();
+		if(element==null) lf = LabCodeFormatter.getElementPrefixFormatter();		
+		
+		if(objects==null || objects.size()==0)
+		{
+			return null;
+		}
+		else
+		{
+			for(TridasObject o : objects)
+			{
+				lc.appendSiteCode(TridasUtils.getGenericFieldValueByName(o,  TridasUtils.GENERIC_FIELD_STRING_OBJECTCODE));
+				lc.appendSiteTitle(o.getTitle());
+			}
+		}
+		
+		if(element!=null)
+		{
+			lc.setElementCode(element.getTitle());
+		}
+		
+		if(sample!=null)
+		{
+			lc.setSampleCode(sample.getTitle());
+		}
+		
+		if(radius!=null)
+		{
+			lc.setRadiusCode(radius.getTitle());
+		}
+		
+		if(series!=null)
+		{
+			lc.setSeriesCode(series.getTitle());
+		}
+		
+		return lf.format(lc);
+		
+		
+	}
+	
 	
 	public static LabCodeFormatter getSeriesPrefixFormatter(){
 		String format = getDefaultFormatter().codeFormat.replace("-%SERIES%", "");
