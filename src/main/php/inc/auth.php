@@ -242,7 +242,7 @@ class auth
       if($method=="login")
       {
           // Add entry to IP tracking table
-          $sql.= "insert into tbliptracking (ipaddr, securityuserid) values ('".$_SERVER['REMOTE_ADDR']."', ".$this->getID().")";
+          $sql.= "insert into tbliptracking (ipaddr, securityuserid) values ('".$_SERVER['REMOTE_ADDR']."', '".$this->getID()."')";
       }
 
       pg_send_query($dbconn, $sql);

@@ -1286,6 +1286,7 @@
 				</xs:element>
 				<xs:element name="notes" minOccurs="0" maxOccurs="1" type="xs:string"/>
 				<xs:element ref="tridas:sample" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 		</xs:complexType>
 		</xs:element>

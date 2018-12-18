@@ -14,6 +14,7 @@ import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.core.AppModel;
 import org.tellervo.desktop.editor.AbstractEditor;
 import org.tellervo.desktop.gui.menus.actions.AddSeriesToWorkspaceAction;
+import org.tellervo.desktop.gui.menus.actions.AdminAssignPermanentLocationAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBasicBoxLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminBoxLabelAction;
 import org.tellervo.desktop.gui.menus.actions.AdminChangePasswordAction;
@@ -147,6 +148,7 @@ public abstract class AbstractEditorActions{
 	public Action adminCurationMenuSampleStatusAction;
 	public Action adminSiteMapAction;
 	public Action adminProjectBrowserAction;
+	public Action adminAssignPermanentLocationAction;
 
 	// View menu actions
 
@@ -249,6 +251,8 @@ public abstract class AbstractEditorActions{
 		adminMetaDBAction = new AdminMetadatabaseBrowserAction();
 		adminProjectBrowserAction = new AdminProjectBrowser(editor);
 		adminSiteMapAction = new AdminSiteMapAction();
+		
+		adminAssignPermanentLocationAction = new AdminAssignPermanentLocationAction();
 
 		toolsTruncateAction = new ToolsTruncateAction(editor);
 		toolsReverseAction = new ToolsReverseAction(editor);

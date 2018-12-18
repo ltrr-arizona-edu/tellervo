@@ -89,7 +89,7 @@ public class ReconcileDataView extends SeriesDataMatrix implements SampleListene
 		reconcileInfo = new JEditorPane();
 		reconcileInfo.setContentType("text/html");
 		reconcileInfo.setEditable(false);
-		reconcileInfo.setPreferredSize(new Dimension(140, 400));
+		reconcileInfo.setPreferredSize(new Dimension(170, 400));
 		reconcileInfo.setMinimumSize(new Dimension(140, 40));		
 		reconcileInfo.setMaximumSize(new Dimension(140, 99999));
 		reconcileInfo.setText(reconcileIntro);

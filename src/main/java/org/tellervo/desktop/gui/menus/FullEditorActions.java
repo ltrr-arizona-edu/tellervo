@@ -16,6 +16,7 @@ import org.tellervo.desktop.gui.menus.actions.FileICMSExportAction;
 import org.tellervo.desktop.gui.menus.actions.FileICMSImportAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogoffAction;
 import org.tellervo.desktop.gui.menus.actions.FileLogonAction;
+import org.tellervo.desktop.gui.menus.actions.FileMetadataExportAction;
 import org.tellervo.desktop.gui.menus.actions.FilePrintAction;
 import org.tellervo.desktop.gui.menus.actions.FileSaveAllAction;
 import org.tellervo.desktop.gui.menus.actions.MapAddLayersAction;
@@ -63,6 +64,7 @@ public class FullEditorActions extends AbstractEditorActions implements IEventLi
 	public Action fileDeleteODKInstancesAction;
 	public Action fileImportICMSAction;
 	public Action fileExportICMSAction;
+	public Action fileMetadataExportAction;
 	public Action fileExportDWCAction;
 	public Action fileODKManagerAction;
 		
@@ -99,6 +101,8 @@ public class FullEditorActions extends AbstractEditorActions implements IEventLi
 	
 	
 	
+	
+	
 	public FullEditorActions(FullEditor editor)
 	{
 		super(editor);
@@ -120,6 +124,9 @@ public class FullEditorActions extends AbstractEditorActions implements IEventLi
 		//fileODKManagerAction = new ODKManagerAction();
 		fileExportICMSAction = new FileICMSExportAction();
 		fileExportICMSAction.setEnabled(false);
+		
+		fileMetadataExportAction = new FileMetadataExportAction();
+		
 		
 
 		MVC.addEventListener(Dictionary.DICTIONARY_REGISTERED, this);

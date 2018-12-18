@@ -51,6 +51,7 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 
 	private JMenuItem miICMSImport;
 	private JMenuItem miICMSExport;
+	private JMenuItem miMetadataExport;
 	private JMenuItem miDWCExport;
 
 	private Window parent;
@@ -91,6 +92,7 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 	private JMenu openrecent;
 	private JMenuItem miSave;
 	private JMenuItem miPrint;
+	private JMenuItem miAdminAssignPermanentLocationAction;
 	
 	private JMenuItem miProjectBrowser;
 	
@@ -168,6 +170,9 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		
 		miICMSExport = new JMenuItem(actions.fileExportICMSAction);
 		miICMSExport.setVisible(false);
+		
+		miMetadataExport =new JMenuItem(actions.fileMetadataExportAction);
+		mnExportMetadata.add(miMetadataExport);
 		mnExportMetadata.add(miICMSExport);
 		
 		miDWCExport = new JMenuItem(actions.fileExportDWCAction);
@@ -332,11 +337,14 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		miCurationMenuBoxDetails = new JMenuItem(actions.adminCurationMenuBoxDetailsAction);
 		miCurationMenuLoanDialog = new JMenuItem(actions.adminCurationMenuLoanDialogAction);
 		miCurationMenuNewLoan = new JMenuItem(actions.adminCurationMenuNewLoanAction);
+		miAdminAssignPermanentLocationAction = new JMenuItem(actions.adminAssignPermanentLocationAction);
 		miCurationMenu.add(miCurationMenuFindSample);
 		miCurationMenu.add(miCurationMenuSampleStatus);
 		miCurationMenu.add(miCurationMenuBoxDetails);
 		miCurationMenu.add(miCurationMenuLoanDialog);
 		miCurationMenu.add(miCurationMenuNewLoan);
+		miCurationMenu.add(miAdminAssignPermanentLocationAction);
+		
 		mnAdministration.add(miCurationMenu);
 		
 		mnAdministration.addSeparator();

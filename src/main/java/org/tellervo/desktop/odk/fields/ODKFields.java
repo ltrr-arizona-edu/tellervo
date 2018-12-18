@@ -34,7 +34,7 @@ public class ODKFields {
 		fieldsList.add(new ODKTridasObjectComments());
 		fieldsList.add(new ODKTridasObjectDescription());
 		fieldsList.add(new ODKTridasObjectPhoto());
-		//fieldsList.add(new ODKTridasObjectSound());
+		fieldsList.add(new ODKTridasObjectSound());
 		fieldsList.add(new ODKTridasObjectVideo());
 		fieldsList.add(new ODKTridasObjectLocation());
 		fieldsList.add(new ODKTridasObjectLocationType());
@@ -57,7 +57,7 @@ public class ODKFields {
 		fieldsList.add(new ODKTridasElementType());
 		fieldsList.add(new ODKTridasElementDescription());
 		fieldsList.add(new ODKTridasElementPhoto());
-		//fieldsList.add(new ODKTridasElementSound());
+		fieldsList.add(new ODKTridasElementSound());
 		fieldsList.add(new ODKTridasElementVideo());
 		fieldsList.add(new ODKTridasElementTaxon());
 		fieldsList.add(new ODKTridasElementShape());

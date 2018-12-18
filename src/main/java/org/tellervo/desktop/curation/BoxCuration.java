@@ -116,8 +116,8 @@ implements KeyListener, ActionListener, TableModelListener{
 	 * @param modal
 	 * @wbp.parser.constructor
 	 */
-	public BoxCuration(java.awt.Frame parent, boolean modal) {
-		super(parent, modal);
+	public BoxCuration(java.awt.Frame parent) {
+		super(parent);
 		initComponents();
 		setupGui();
 
@@ -127,11 +127,10 @@ implements KeyListener, ActionListener, TableModelListener{
 	 * Constructor for creating a GUI with a box pre-selected 
 	 * 
 	 * @param parent
-	 * @param modal
 	 * @param box
 	 */
-	public BoxCuration(java.awt.Frame parent, boolean modal, WSIBox box) {
-		super(parent, modal);
+	public BoxCuration(java.awt.Frame parent, WSIBox box) {
+		super(parent);
 		initComponents();
 		setupGui();
 		this.box = box;
@@ -573,7 +572,7 @@ implements KeyListener, ActionListener, TableModelListener{
 		}
 
 
-		this.setModal(true);
+		//this.setModal(true);
 	}
 
 	/**
@@ -891,7 +890,7 @@ implements KeyListener, ActionListener, TableModelListener{
 	 * Show the actual dialog empty ready for user to pick a box
 	 */
 	public static void showDialog(boolean createNewBox) {
-		BoxCuration dialog = new BoxCuration(new javax.swing.JFrame(), false);
+		BoxCuration dialog = new BoxCuration(new javax.swing.JFrame());
 		dialog.setLocationRelativeTo(null);		
 		
 		
@@ -920,7 +919,7 @@ implements KeyListener, ActionListener, TableModelListener{
 	 * Show the actual dialog pre-populated with a box
 	 */
 	public static void showDialog(final BoxCurationType type) {
-		BoxCuration dialog = new BoxCuration(new javax.swing.JFrame(), false);
+		BoxCuration dialog = new BoxCuration(new javax.swing.JFrame());
 		dialog.setCurationType(type);
 		dialog.setLocationRelativeTo(null);
 		dialog.setVisible(true);
