@@ -96,8 +96,8 @@
 			</ai:interfaces>
 		</jaxb:bindings>
 		
-		<!-- Add ITridas interface to curation (kludge) -->
-		<jaxb:bindings node="//xs:element[@name='curation']/xs:complexType">
+		<!-- Add ITridas interface to curationEvent (kludge) -->
+		<jaxb:bindings node="//xs:element[@name='curationEvent']/xs:complexType">
 			<ai:interfaces check="false">
 				org.tridas.interfaces.ICoreTridas
 			</ai:interfaces>

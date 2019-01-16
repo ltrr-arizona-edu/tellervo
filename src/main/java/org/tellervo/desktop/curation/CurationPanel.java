@@ -40,7 +40,7 @@ import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.WSIBox;
-import org.tellervo.schema.WSICuration;
+import org.tellervo.schema.WSICurationEvent;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
@@ -165,9 +165,9 @@ public class CurationPanel extends JPanel {
 		}
 		
 		
-		SearchParameters param3 = new SearchParameters(SearchReturnObject.CURATION);
+		SearchParameters param3 = new SearchParameters(SearchReturnObject.CURATION_EVENT);
     	param3.addSearchConstraint(SearchParameterName.SAMPLEDBID, SearchOperator.EQUALS, sample.getIdentifier().getValue());
-		EntitySearchResource<WSICuration> resource3 = new EntitySearchResource<WSICuration>(param3, WSICuration.class);
+		EntitySearchResource<WSICurationEvent> resource3 = new EntitySearchResource<WSICurationEvent>(param3, WSICurationEvent.class);
 		TellervoResourceAccessDialog dialog3 = new TellervoResourceAccessDialog(resource3);
 		resource3.query();	
 		dialog3.setVisible(true);
@@ -178,10 +178,10 @@ public class CurationPanel extends JPanel {
 			return;
 		}
 		
-		java.util.List<WSICuration> curationHistory = resource3.getAssociatedResult();
+		java.util.List<WSICurationEvent> curationHistory = resource3.getAssociatedResult();
 		curationTableModel = new CurationTableModel();
 		tblCurationHistory.setModel(curationTableModel);
-		for(WSICuration curation : curationHistory)
+		for(WSICurationEvent curation : curationHistory)
 		{
 			curationTableModel.addCurationEvent(curation);
 		}
@@ -261,7 +261,7 @@ public class CurationPanel extends JPanel {
 			public void mouseClicked(MouseEvent evt) {
 				if(evt.getClickCount()>1)
 				{
-					WSICuration curationEvent = ((CurationTableModel)tblCurationHistory.getModel()).getRowAsWSICuration(tblCurationHistory.getSelectedRow());
+					WSICurationEvent curationEvent = ((CurationTableModel)tblCurationHistory.getModel()).getRowAsWSICurationEvent(tblCurationHistory.getSelectedRow());
 					log.debug("Curation event loan"+curationEvent.getLoan());
 					if(curationEvent!=null && curationEvent.isSetLoan())
 					{
@@ -274,7 +274,7 @@ public class CurationPanel extends JPanel {
 				}
 				else
 				{
-					WSICuration curationEvent = ((CurationTableModel)tblCurationHistory.getModel()).getRowAsWSICuration(tblCurationHistory.getSelectedRow());
+					WSICurationEvent curationEvent = ((CurationTableModel)tblCurationHistory.getModel()).getRowAsWSICurationEvent(tblCurationHistory.getSelectedRow());
 					log.debug("Curation event loan: "+curationEvent.getLoan());
 
 				}

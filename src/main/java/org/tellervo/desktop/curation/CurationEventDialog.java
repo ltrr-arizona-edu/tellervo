@@ -30,7 +30,7 @@ import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.schema.CurationStatus;
 import org.tellervo.schema.TellervoRequestType;
-import org.tellervo.schema.WSICuration;
+import org.tellervo.schema.WSICurationEvent;
 import org.tridas.schema.TridasSample;
 
 public class CurationEventDialog extends JDialog implements ActionListener{
@@ -188,14 +188,14 @@ public class CurationEventDialog extends JDialog implements ActionListener{
 		}
 		
 		
-		WSICuration curationEvent = new WSICuration();
+		WSICurationEvent curationEvent = new WSICurationEvent();
 		curationEvent.setNotes(txtNotes.getText());
 		curationEvent.setStatus(cs);
 		curationEvent.setSample(sampleList.get(0));
 		
 		// Create resource
-		EntityResource<WSICuration> resource;
-		resource = new EntityResource<WSICuration>(curationEvent, TellervoRequestType.CREATE, WSICuration.class);
+		EntityResource<WSICurationEvent> resource;
+		resource = new EntityResource<WSICurationEvent>(curationEvent, TellervoRequestType.CREATE, WSICurationEvent.class);
 
 		// set up a dialog...
 		Window parentWindow = SwingUtilities.getWindowAncestor(getParent());

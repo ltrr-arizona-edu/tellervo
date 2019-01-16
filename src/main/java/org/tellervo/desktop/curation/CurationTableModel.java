@@ -14,13 +14,13 @@ import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.ui.I18n.TellervoLocale;
 import org.tellervo.schema.CurationStatus;
-import org.tellervo.schema.WSICuration;
+import org.tellervo.schema.WSICurationEvent;
 import org.tridas.schema.DateTime;
 
 public class CurationTableModel extends AbstractTableModel {
 	public static final String[] columns = {"Date", "Curation status", "Curator", "Notes"};
 	
-	private ArrayList<WSICuration> events = new ArrayList<WSICuration>();
+	private ArrayList<WSICurationEvent> events = new ArrayList<WSICurationEvent>();
 	
 	private static final long serialVersionUID = 1L;
 
@@ -30,17 +30,17 @@ public class CurationTableModel extends AbstractTableModel {
 		
 	}
 	
-	public CurationTableModel(ArrayList<WSICuration> list)
+	public CurationTableModel(ArrayList<WSICurationEvent> list)
 	{
 		setCurationEvents(list);
 	}
 	
-	public void setCurationEvents(ArrayList<WSICuration> list)
+	public void setCurationEvents(ArrayList<WSICurationEvent> list)
 	{
 		events = list;
 	}
 	
-	public void addCurationEvent(WSICuration curation)
+	public void addCurationEvent(WSICurationEvent curation)
 	{
 		events.add(curation);
 	}
@@ -64,7 +64,7 @@ public class CurationTableModel extends AbstractTableModel {
 		return events.size();
 	}
 
-	public WSICuration getRowAsWSICuration(int row)
+	public WSICurationEvent getRowAsWSICurationEvent(int row)
 	{
 		try{
 			return events.get(row);
@@ -77,7 +77,7 @@ public class CurationTableModel extends AbstractTableModel {
 	@Override
 	public Object getValueAt(int row, int col) {
 		
-		WSICuration event = null;
+		WSICurationEvent event = null;
 		
 		try{
 			event = events.get(row);	

@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.tellervo.schema.EntityType;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIBox;
-import org.tellervo.schema.WSICuration;
+import org.tellervo.schema.WSICurationEvent;
 import org.tellervo.schema.WSIEntity;
 import org.tellervo.schema.WSILoan;
 import org.tellervo.schema.WSIOdkFormDefinition;
@@ -182,7 +182,7 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 					|| entity instanceof TridasObject 
 				    || entity instanceof WSIBox 
 				    || entity instanceof WSILoan 
-				    || entity instanceof WSICuration 
+				    || entity instanceof WSICurationEvent 
 				    || entity instanceof WSITag
 				    || entity instanceof WSIOdkFormDefinition))
 				throw new IllegalArgumentException("CREATE called with ParentObjectID == null!");
@@ -282,8 +282,8 @@ public abstract class TellervoEntityAssociatedResource<T> extends
 			request.getBoxes().add((WSIBox) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof WSILoan)
 			request.getLoen().add((WSILoan) createOrUpdateEntity);
-		else if(createOrUpdateEntity instanceof WSICuration)
-			request.getCurations().add((WSICuration) createOrUpdateEntity);
+		else if(createOrUpdateEntity instanceof WSICurationEvent)
+			request.getCurationEvents().add((WSICurationEvent) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof WSITag)
 			request.getTags().add((WSITag) createOrUpdateEntity);
 		else if(createOrUpdateEntity instanceof WSIOdkFormDefinition)

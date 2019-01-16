@@ -6,7 +6,7 @@ import java.util.Iterator;
 
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.schema.SampleStatus;
-import org.tellervo.schema.WSICuration;
+import org.tellervo.schema.WSICurationEvent;
 import org.tellervo.schema.WSIUserDefinedTerm;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasEntity;
@@ -164,7 +164,7 @@ public class TellervoGenericFieldProperty extends TridasEntityProperty {
 	public static TellervoGenericFieldProperty getSampleCurationStatusProperty()
 	{
 		TellervoGenericFieldProperty tgf = new TellervoGenericFieldProperty("sample.curationStatus", "curationStatus", "tellervo.curationStatus", 
-				WSICuration.class, TridasSample.class, false, false);
+				WSICurationEvent.class, TridasSample.class, false, false);
 		return tgf;
 	}
 	

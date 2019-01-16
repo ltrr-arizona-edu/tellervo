@@ -248,7 +248,7 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		
 		TridasSoil soil = new TridasSoil();
 		soil.setDepth((Double) getProperty(SOIL_DEPTH));
-		soil.setDescription((String) getProperty(DESCRIPTION));
+		soil.setDescription((String) getProperty(SOIL_DESCRIPTION));
 		if(soil.getDepth() != null || soil.getDescription() != null){
 			argElement.setSoil(soil);
 		}else{

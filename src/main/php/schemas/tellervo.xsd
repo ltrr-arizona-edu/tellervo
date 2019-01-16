@@ -25,7 +25,7 @@
 			<xs:enumeration value="measurementSeries" />
 			<xs:enumeration value="derivedSeries" />
 			<xs:enumeration value="box"/>
-			<xs:enumeration value="curation"/>
+			<xs:enumeration value="curationEvent"/>
 			<xs:enumeration value="loan"/>
 			<xs:enumeration value="tag"/>
 			<xs:enumeration value="odkFormDefinition"/>
@@ -48,7 +48,7 @@
 			<xs:enumeration value="box"/>
 			<xs:enumeration value="securityUser"/>
 			<xs:enumeration value="securityGroup"/>
-			<xs:enumeration value="curation"/>
+			<xs:enumeration value="curationEvent"/>
 			<xs:enumeration value="loan"/>
 			<xs:enumeration value="tag"/>
 			<xs:enumeration value="odkFormDefinition"/>
@@ -478,7 +478,7 @@
 					<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 					<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded"/>
-					<xs:element ref="curation" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element ref="curationEvent" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="loan" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
 					<xs:element ref="odkFormDefinition" minOccurs="0" maxOccurs="unbounded"/>
@@ -613,7 +613,7 @@
 				<xs:element ref="tridas:derivedSeries" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="box" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="loan" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="curation" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="curationEvent" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="securityUser" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="securityGroup" minOccurs="0" maxOccurs="unbounded" />
 				<xs:element ref="permission" minOccurs="0" maxOccurs="unbounded" />
@@ -1239,10 +1239,10 @@
 	
 	<!--
 		%%%%%%%%%%%%%%
-		% CURATION
+		% CURATION EVENT
 		%%%%%%%%%%%%%% -->
 	
-	<xs:element name="curation">
+	<xs:element name="curationEvent">
 		<xs:annotation>
 			<xs:documentation>
 				Details of a curation event, such as making a loan, archiving, logging a missing sample etc

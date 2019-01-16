@@ -7,6 +7,7 @@ import java.util.ArrayList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.curation.BoxCuration;
 import org.tellervo.desktop.curation.BoxCuration.BoxCurationType;
 import org.tellervo.desktop.gui.widgets.AbstractWizardPanel;
@@ -16,12 +17,14 @@ import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResource;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
+import org.tellervo.schema.CurationStatus;
 import org.tellervo.schema.EntityType;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestType;
 import org.tellervo.schema.WSIBox;
+import org.tellervo.schema.WSICurationEvent;
 import org.tridas.schema.TridasIdentifier;
 
 import javax.swing.JTextArea;
@@ -33,7 +36,16 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
 
+/**
+ * Simple dialog to set 
+ * 
+ * @author pbrewer
+ *
+ */
 public class AssignPermanentLocationPanel extends AbstractWizardPanel implements ActionListener{
+
+	private static final long serialVersionUID = 1L;
+
 	private final static Logger log = LoggerFactory.getLogger(BoxCuration.class);
 
 	private JButton btnApply;
@@ -106,6 +118,29 @@ public class AssignPermanentLocationPanel extends AbstractWizardPanel implements
 			}
 
 			box = resource.getAssociatedResult();			
+			
+			// Log curation event
+			WSICurationEvent curationEvent = new WSICurationEvent();
+			curationEvent.setSecurityUser(App.currentUser);
+			curationEvent.setStatus(CurationStatus.ARCHIVED);
+			curationEvent.setNotes("Assigned to permanent location: "+newLocation);
+			curationEvent.setBox(box);
+			
+			// Create resource
+			EntityResource<WSICurationEvent> resource2 = new EntityResource<WSICurationEvent>(curationEvent, TellervoRequestType.CREATE, WSICurationEvent.class);
+			TellervoResourceAccessDialog dialog2 = TellervoResourceAccessDialog.forWindow(parentWindow, resource2);
+
+			resource2.query();
+			dialog2.setVisible(true);
+
+			if(!dialog2.isSuccessful()) 
+			{ 
+				Alert.error("Error", dialog.getFailException().getMessage());
+				continue;
+			}			
+			
+			dialog2.dispose();
+			
 		}
 		
 		

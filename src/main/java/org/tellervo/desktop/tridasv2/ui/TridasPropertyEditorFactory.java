@@ -26,16 +26,14 @@ package org.tellervo.desktop.tridasv2.ui;
 import java.beans.PropertyEditor;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.List;
 
-import org.jfree.util.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.curation.ProjectBrowserDialog;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.desktop.tridasv2.ui.support.TridasProjectDictionaryProperty;
-import org.tellervo.schema.WSICuration;
+import org.tellervo.schema.WSICurationEvent;
 import org.tridas.io.formats.tridas.TridasFile;
 import org.tridas.schema.SeriesLink;
 import org.tridas.schema.TridasDatingReference;
@@ -77,7 +75,7 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 		registerEditor(TridasFile.class, TridasFileEditor.class);
 		
 		
-		registerEditor(WSICuration.class, WSICurationEditor.class);
+		registerEditor(WSICurationEvent.class, WSICurationEditor.class);
 	}
 	
 	public synchronized PropertyEditor getEditor(Property property) {
