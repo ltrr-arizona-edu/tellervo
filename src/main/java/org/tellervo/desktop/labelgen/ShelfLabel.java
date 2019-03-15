@@ -19,7 +19,7 @@ public class ShelfLabel {
 		
 
 		  try {
-			  File file = new File("/home/pbrewer/shelflabels2.txt"); 
+			  File file = new File("/home/pbrewer/shelflabels4.txt"); 
 			  //File file = new File("/home/pbrewer/shelfendlabels.txt"); 
 
 			  BufferedReader br = new BufferedReader(new FileReader(file)); 

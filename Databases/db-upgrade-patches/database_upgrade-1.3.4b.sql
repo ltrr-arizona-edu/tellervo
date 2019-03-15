@@ -3,6 +3,12 @@ DROP VIEW vwtblcuration;
 
 ALTER TABLE tblcurationevent RENAME COLUMN curationid TO curationeventid;
 
+ALTER TABLE tblcurationevent ADD COLUMN boxid uuid;
+
+ALTER TABLE tblcurationevent ADD CONSTRAINT "fkey_tblcuration-tblbox" FOREIGN KEY (boxid)
+      REFERENCES public.tblbox (boxid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION;
+
 CREATE OR REPLACE VIEW public.vwtblcurationevent AS 
  SELECT c.curationeventid,
     c.curationstatusid,
@@ -86,6 +92,7 @@ CREATE OR REPLACE VIEW public.vwtblsample AS
 ALTER TABLE public.vwtblsample
   OWNER TO pbrewer;
 
+DROP VIEW vwtblbox;
 
   CREATE OR REPLACE VIEW public.vwtblbox AS 
  SELECT b.boxid,
@@ -107,5 +114,111 @@ ALTER TABLE public.vwtblbox
 GRANT ALL ON TABLE public.vwtblbox TO postgres;
 GRANT ALL ON TABLE public.vwtblbox TO "Webgroup";
 
+
+CREATE OR REPLACE FUNCTION cpgdb.getloanfromboxid(boxid uuid)
+  RETURNS tblloan AS
+$BODY$
+SELECT * from tblloan where loanid=(SELECT loanid FROM tblcurationevent WHERE boxid=$1 AND loanid IS NOT NULL ORDER BY createdtimestamp DESC LIMIT 1);
+$BODY$
+  LANGUAGE sql VOLATILE
+  COST 100;
+ALTER FUNCTION cpgdb.getloanfromboxid(uuid)
+  OWNER TO tellervo;
   
   
+  
+  
+CREATE OR REPLACE FUNCTION cpgdb.loanhasoutstandingitems(theloanid uuid)
+  RETURNS boolean AS
+$BODY$DECLARE
+  totalboxcount integer;
+  returnedboxcount integer;
+ 
+
+BEGIN
+
+SELECT count(boxid) INTO totalboxcount FROM tblcurationevent WHERE loanid=$1 AND curationstatusid=2;
+SELECT count(boxid) INTO returnedboxcount FROM tblcurationevent WHERE loanid=$1 AND curationstatusid=10;
+
+RAISE NOTICE 'Total box count = %', totalboxcount;
+RAISE NOTICE 'Returned box count = %', returnedboxcount;
+
+IF totalboxcount <= returnedboxcount THEN
+	RETURN FALSE;
+ELSE 
+	RETURN TRUE;
+END IF;
+
+END;
+
+$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION cpgdb.loanhasoutstandingitems(uuid)
+  OWNER TO tellervo;
+  
+ INSERT INTO tlkpcurationstatus (curationstatusid, curationstatus) VALUES (10, 'Returned from loan');
+  
+ 
+CREATE OR REPLACE FUNCTION enforce_no_loan_when_on_loan()
+  RETURNS trigger AS
+$BODY$DECLARE
+
+prevcurationstatusid integer; 
+
+BEGIN
+
+-- If we're not trying to loan the sample then all is fine
+IF NEW.curationstatusid<>2 AND NEW.curationstatusid<>3 THEN
+	RETURN NEW;
+END IF;
+
+-- Otherwise we need to check it's previous status is not incompatable with loaning
+FOR prevcurationstatusid IN SELECT curationstatusid FROM tblcurationevent WHERE sampleid = NEW.sampleid ORDER BY createdtimestamp desc LIMIT 1 LOOP
+
+	IF prevcurationstatusid = 2 THEN
+		RAISE EXCEPTION 'Cannot loan a sample that is already on loan';
+		RETURN NULL;
+	END IF;
+
+	IF prevcurationstatusid = 6 THEN
+		RAISE EXCEPTION 'Cannot loan a sample that has been destroyed';
+		RETURN NULL;
+	END IF;
+
+	IF prevcurationstatusid = 7 THEN
+		RAISE EXCEPTION 'Cannot loan a sample that has been returned to its owner';
+		RETURN NULL;
+	END IF;
+	
+END LOOP;
+
+RETURN NEW;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+  
+alter table tblcurationevent alter column sampleid drop not null;
+
+CREATE OR REPLACE FUNCTION public.check_tblcuration_loanid_is_not_null_when_loaned()
+  RETURNS trigger AS
+$BODY$DECLARE
+BEGIN
+IF NEW.curationstatusid=2 OR NEW.curationstatusid=10 THEN
+  IF NEW.loanid IS NULL THEN
+	RAISE EXCEPTION 'Loan information not specified for loan curation record';
+	RETURN NULL;
+  END IF;
+ELSE
+  IF NEW.loanid IS NOT NULL THEN
+	RAISE EXCEPTION 'Loan information can only be provided when loaning a sample/box';
+	RETURN NULL;
+  END IF;
+END IF;
+RETURN NEW;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+ALTER FUNCTION public.check_tblcuration_loanid_is_not_null_when_loaned()
+  OWNER TO tellervo;
+
