@@ -22,6 +22,7 @@ package org.tellervo.desktop.maventests;
 import junit.framework.TestCase;
 
 import java.util.List;
+
 import java.util.ArrayList;
 
 import org.tellervo.indexing.*;

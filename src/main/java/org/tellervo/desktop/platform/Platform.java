@@ -26,6 +26,7 @@ import java.net.URI;
 
 import javax.swing.JFrame;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -96,8 +97,12 @@ public class Platform extends AbstractSubsystem {
 			try {
 				if(isUnix)
 				{
-					UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
-
+					 for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+					        if ("Nimbus".equals(info.getName())) {
+					            UIManager.setLookAndFeel(info.getClassName());
+					            break;
+					        }
+					    }
 				}
 				else
 				{

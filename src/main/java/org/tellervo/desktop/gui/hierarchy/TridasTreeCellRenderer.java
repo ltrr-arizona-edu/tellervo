@@ -40,7 +40,7 @@ import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
-import sun.swing.DefaultLookup;
+//import sun.swing.DefaultLookup;
 
 public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 
@@ -114,8 +114,8 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 		  && dropLocation.getChildIndex() == -1
 		  && tree.getRowForPath(dropLocation.getPath()) == row) 
 		{
-		
-			Color col = DefaultLookup.getColor(this, ui, "Tree.dropCellForeground");
+					
+			/*Color col = DefaultLookup.getColor(this, ui, "Tree.dropCellForeground");
 			if (col != null) 
 			{
 			  fg = col;
@@ -123,7 +123,7 @@ public class TridasTreeCellRenderer extends DefaultTreeCellRenderer{
 			else 
 			{
 			  fg = getTextSelectionColor();
-			}
+			}*/
 		
 			isDropCell = true;
 		} 
