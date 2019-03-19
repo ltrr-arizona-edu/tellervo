@@ -1265,14 +1265,14 @@
 
 	<pluginRepositories>
 		<pluginRepository>
-			<id>tridas-releases</id>
-			<name>TRiDaS Maven Releases Repository</name>
-			<url>http://maven.tridas.org/repository/tridas-releases/</url>
+			<id>ltrr-releases</id>
+			<name>LTRR Maven Releases Repository</name>
+			<url>https://repo.ltrr.arizona.edu/ltrr-releases/</url>
 		</pluginRepository>
 		<pluginRepository>
-			<id>tridas-snapshots</id>
-			<name>TRiDaS Maven Snapshots Repository</name>
-			<url>http://maven.tridas.org/repository/tridas-snapshots/</url>
+			<id>ltrr-snapshots</id>
+			<name>LTRR Maven Snapshots Repository</name>
+			<url>https://repo.ltrr.arizona.edu/ltrr-snapshots/</url>
 		</pluginRepository>
 	</pluginRepositories>
 
