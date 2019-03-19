@@ -27,13 +27,13 @@
 				<role>Lead Developer</role>
 			</roles>
 			<organization>Laboratory of Tree-Ring Research, University of Arizona</organization>
-			<organizationUrl>http://ltrr.arizona.edu</organizationUrl>
+			<organizationUrl>https://ltrr.arizona.edu</organizationUrl>
 		</developer>
 		<developer>
 			<name>Martin Munro</name>
 			<email>mmunro@ltrr.arizona.edu</email>
 			<organization>Laboratory of Tree-Ring Research, University of Arizona</organization>
-			<organizationUrl>http://ltrr.arizona.edu</organizationUrl>
+			<organizationUrl>https://ltrr.arizona.edu</organizationUrl>
 		</developer>
 		<developer>
 			<name>Chris Dunham</name>
@@ -46,7 +46,7 @@
 			<name>Dan Girshovich</name>
 			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern
 				Dendrochronology</organization>
-			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+			<organizationUrl>https://dendro.cornell.edu</organizationUrl>
 			<roles>
 				<role>Inactive developer</role>
 			</roles>
@@ -76,7 +76,7 @@
 			<name>Rocky Li</name>
 			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern
 				Dendrochronology</organization>
-			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+			<organizationUrl>https://dendro.cornell.edu</organizationUrl>
 			<roles>
 				<role>Inactive developer</role>
 			</roles>
@@ -93,7 +93,7 @@
 			<email>daniel@dmurph.com</email>
 			<organization>The Malcolm and Carolyn Wiener Laboratory for Aegean and Near Eastern
 				Dendrochronology</organization>
-			<organizationUrl>http://dendro.cornell.edu</organizationUrl>
+			<organizationUrl>https://dendro.cornell.edu</organizationUrl>
 			<roles>
 				<role>Inactive developer</role>
 			</roles>
@@ -114,8 +114,10 @@
 		</developer>
 		<developer>
 			<name>Pavithra Lakshminarayanan</name>
-			<email>pavithral@email.arizona.edu</email>
 			<organization>University of Arizona</organization>
+			<roles>
+				<role>Inactive developer</role>
+			</roles>			
 		</developer>
 	</developers>
 	<scm>
@@ -898,7 +900,7 @@
 					<dependency>
 						<groupId>org.tridas</groupId>
 						<artifactId>tridasjlib</artifactId>
-						<version>1.22.5-SNAPSHOT</version>
+						<version>1.22.6</version>
 					</dependency>
 				</dependencies>
 			</plugin>
