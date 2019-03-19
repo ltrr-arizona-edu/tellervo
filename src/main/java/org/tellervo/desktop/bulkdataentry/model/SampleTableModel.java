@@ -29,12 +29,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.CurationStatus;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.UserExtendableDataType;
 import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIBoxDictionary;
+import org.tellervo.schema.WSICurationStatusDictionary;
 import org.tellervo.schema.WSISampleStatusDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
 import org.tellervo.schema.WSIUserDefinedField;
@@ -69,27 +71,31 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 	 * @see org.tellervo.desktop.bulkdataentry.model.AbstractBulkImportTableModel#getColumnClass(java.lang.String)
 	 */
 	public Class<?> getColumnClass(String argColumn){
+		Class clazz = null;
+		
+		
 		if(argColumn.equals(SingleSampleModel.TYPE)){
-			return WSISampleTypeDictionary.class;
+			clazz= WSISampleTypeDictionary.class;
 		}else if(argColumn.equals(SingleSampleModel.IMPORTED)){
-			return ImportStatus.class;
+			clazz= ImportStatus.class;
 		}else if(argColumn.equals(SingleSampleModel.SAMPLING_DATE)){
-			return String.class;
+			clazz= String.class;
 		}else if(argColumn.equals(SingleSampleModel.KNOTS)){
-			return Boolean.class;
+			clazz= Boolean.class;
 		}else if(argColumn.equals(SingleRadiusModel.AZIMUTH)){
-			return BigDecimal.class;
+			clazz= BigDecimal.class;
 		}else if(argColumn.equals(SingleSampleModel.ELEMENT)){
-			return TridasElementOrPlaceholder.class;
+			clazz= TridasElementOrPlaceholder.class;
 		}else if(argColumn.equals(SingleSampleModel.BOX)){
-			return WSIBoxDictionary.class;
+			clazz= WSIBoxDictionary.class;
 		}else if(argColumn.equals(SingleSampleModel.OBJECT)){
-			return TridasObjectOrPlaceholder.class;
+			clazz= TridasObjectOrPlaceholder.class;
 		}else if (argColumn.equals(SingleSampleModel.FILES)){
-			return TridasFileList.class;
-		}else if (argColumn.equals(SingleSampleModel.SAMPLE_STATUS))
-		{
-			return WSISampleStatusDictionary.class;
+			clazz= TridasFileList.class;
+		}else if (argColumn.equals(SingleSampleModel.SAMPLE_STATUS)){
+			clazz= WSISampleStatusDictionary.class;
+		}else if (argColumn.equals(SingleSampleModel.CURATION_STATUS)){
+			clazz= WSICurationStatusDictionary.class;
 		}
 		
 		
@@ -108,19 +114,19 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 					UserExtendableDataType dt = fld.getDatatype();
 					if(dt.equals(UserExtendableDataType.XS___STRING))
 					{
-						return String.class;
+						clazz= String.class;
 					}
 					else if(dt.equals(UserExtendableDataType.XS___BOOLEAN))
 					{
-						return Boolean.class;
+						clazz= Boolean.class;
 					}
 					else if(dt.equals(UserExtendableDataType.XS___FLOAT))
 					{
-						return Float.class;
+						clazz= Float.class;
 					}
 					else if(dt.equals(UserExtendableDataType.XS___INT))
 					{
-						return Integer.class;
+						clazz= Integer.class;
 					}
 				}
 			}
@@ -128,7 +134,16 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 		
 		//log.debug("Looking for data type of field "+argColumn);
 
-		return String.class;
+		if(clazz==null)
+		{
+			log.debug("Class is defaulting to string");
+			return String.class;
+		}
+		else
+		{
+			log.debug("Class is : "+clazz.getSimpleName());
+			return clazz;
+		}
 	}
 	
 	/**
@@ -301,6 +316,32 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 				
 				
 			}
+		}
+		else if (argColumn.equals(SingleSampleModel.CURATION_STATUS))
+		{
+			if(argAValue==null)
+			{
+				argModel.setProperty(argColumn, argAValue);
+				return;
+			}
+			
+			if(argAValue instanceof String)
+			{
+				try {
+					CurationStatus cs = CurationStatus.fromValue((String) argAValue);
+					argModel.setProperty(argColumn, cs);
+				} catch (IllegalArgumentException e)
+				{
+					e.printStackTrace();
+				}
+				
+				
+				TridasElementOrPlaceholder teop = new TridasElementOrPlaceholder((String) argAValue);
+				argAValue = teop;
+				
+			}
+			
+			return;
 		}
 		
 		argModel.setProperty(argColumn, argAValue);

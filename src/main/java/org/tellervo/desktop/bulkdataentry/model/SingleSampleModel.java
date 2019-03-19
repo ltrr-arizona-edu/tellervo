@@ -79,6 +79,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	public static final String IMPORTED = "Imported";
 	public static final String EXTERNAL_ID = "External ID";
 	public static final String SAMPLE_STATUS = "Sample Status";
+	public static final String CURATION_STATUS = "Curation Status";
 	
 	
 	// radius stuff
@@ -91,7 +92,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 
 	public static String[] TABLE_PROPERTIES = {
 		IMPORTED, OBJECT, ELEMENT, TITLE, COMMENTS, TYPE, DESCRIPTION, FILES,
-		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, EXTERNAL_ID, SAMPLE_STATUS 
+		SAMPLING_DATE, POSITION, STATE, KNOTS, BOX, EXTERNAL_ID, SAMPLE_STATUS, CURATION_STATUS
 	};
 	private static boolean isUserDefinedFieldsInit = false;
 	
@@ -307,6 +308,24 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			field.setType("xs:string");
 			field.setValue(getProperty(SAMPLE_STATUS).toString());
 		}
+		
+		if(getProperty(CURATION_STATUS) != null){
+			TridasGenericField field = null;
+			for(TridasGenericField gf: argSample.getGenericFields()){
+				if(gf.getName().equals("tellervo.curationStatus")){
+					field = gf;
+				}
+			}
+			if(field == null){
+				field = new TridasGenericField();
+				argSample.getGenericFields().add(field);
+			}
+			field.setName("tellervo.curationStatus");
+			field.setType("xs:string");
+			field.setValue(getProperty(CURATION_STATUS).toString());
+		}
+		
+		
 
 		// Handle all user defined fields
 		MVCArrayList<WSIUserDefinedField> udfdictionary = App.dictionary.getMutableDictionary("userDefinedFieldDictionary");
@@ -416,6 +435,9 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			}
 			else if(gf.getName().equals("tellervo.sampleStatus")){
 				setProperty(SAMPLE_STATUS, gf.getValue());
+			}
+			else if(gf.getName().equals("tellervo.curationStatus")){
+				setProperty(CURATION_STATUS, gf.getValue());
 			}
 			else if (gf.getName().startsWith("userDefinedField"))
 			{

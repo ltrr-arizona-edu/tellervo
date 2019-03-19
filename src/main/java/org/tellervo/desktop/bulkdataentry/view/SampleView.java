@@ -24,7 +24,6 @@
 package org.tellervo.desktop.bulkdataentry.view;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -48,14 +47,11 @@ import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.bulkdataentry.control.ImportSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
-import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
 import org.tellervo.desktop.bulkdataentry.control.PrintSampleBarcodesEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
 import org.tellervo.desktop.bulkdataentry.model.ImportStatus;
-import org.tellervo.desktop.bulkdataentry.model.ObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
-import org.tellervo.desktop.bulkdataentry.model.SingleObjectModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasElementOrPlaceholder;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
@@ -70,35 +66,31 @@ import org.tellervo.desktop.components.table.TridasElementRenderer;
 import org.tellervo.desktop.components.table.TridasFileListEditor;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.components.table.WSIBoxRenderer;
+import org.tellervo.desktop.components.table.WSICurationStatusRenderer;
 import org.tellervo.desktop.components.table.WSISampleStatusRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
-import org.tellervo.desktop.tridasv2.ui.BooleanCellRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
-import org.tellervo.desktop.tridasv2.ui.TridasFileArrayRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
 import org.tellervo.desktop.tridasv2.ui.TridasDatingCellRenderer;
+import org.tellervo.desktop.tridasv2.ui.TridasFileArrayRenderer;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.schema.CurationStatus;
 import org.tellervo.schema.SampleStatus;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIBoxDictionary;
+import org.tellervo.schema.WSICurationStatusDictionary;
 import org.tellervo.schema.WSISampleStatusDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
-import org.tridas.io.util.DateUtils;
-import org.tridas.schema.Date;
-import org.tridas.schema.DateTime;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.gui.combo.MVCJComboBox;
-import com.dmurph.mvc.model.HashModel;
 import com.dmurph.mvc.model.MVCArrayList;
-import com.michaelbaranov.microba.calendar.DatePicker;
-import com.michaelbaranov.microba.calendar.DatePickerCellEditor;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
 
@@ -196,7 +188,25 @@ public class SampleView extends AbstractBulkImportView {
 		
 		argTable.setDefaultRenderer(ImportStatus.class, new ImportStatusRenderer());
 
+		JComboBox<CurationStatus> cboCurationStatus = new JComboBox<CurationStatus>(CurationStatus.values());
+		cboCurationStatus.setRenderer(new WSICurationStatusRenderer());
+		cboCurationStatus.setKeySelectionManager(new DynamicKeySelectionManager() {
 
+			@Override
+			public String convertToString(Object argO) {
+				if (argO == null) {
+					return "";
+				}
+				return ((CurationStatus) argO).value();
+			}
+		});
+		
+		argTable.setDefaultEditor(WSICurationStatusDictionary.class,
+				new ComboBoxCellEditor(cboCurationStatus));
+		argTable.setDefaultRenderer(WSICurationStatusDictionary.class,
+				new WSICurationStatusRenderer());
+		
+		
 		/*
 		 * MVCJComboBox<TridasElement> cboElement = new
 		 * MVCJComboBox<TridasElement>(null, new Comparator<TridasElement>(){
@@ -312,6 +322,7 @@ public class SampleView extends AbstractBulkImportView {
 				new ComboBoxCellEditor(cboSampleStatus));
 		argTable.setDefaultRenderer(WSISampleStatusDictionary.class,
 				new WSISampleStatusRenderer());
+		
 		
 		
 

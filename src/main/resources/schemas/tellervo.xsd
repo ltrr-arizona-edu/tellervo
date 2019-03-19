@@ -646,6 +646,7 @@
 				<xs:element ref="domainDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="wmsServerDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="sampleStatusDictionary" minOccurs="0" maxOccurs="1"/>
+				<xs:element ref="curationStatusDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="statisticalResults" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="userDefinedFieldDictionary" minOccurs="0" maxOccurs="1"/>
 				<xs:element ref="userDefinedTermDictionary" minOccurs="0" maxOccurs="1"/>
@@ -863,6 +864,14 @@
             <xs:complexType>
                 <xs:sequence>
                     <xs:element name="sampleStatus" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="curationStatusDictionary">
+            <xs:complexType>
+                <xs:sequence>
+                    <xs:element name="curationStatus" type="tridas:controlledVoc" minOccurs="0" maxOccurs="unbounded"/>
                 </xs:sequence>
             </xs:complexType>
     </xs:element>
