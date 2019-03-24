@@ -788,6 +788,7 @@
 				<filtering>false</filtering>
 				<includes>
 					<include>**/log4j.xml</include>
+					<include>**/WWJCacheConfig.xml</include>
 					<include>**/*.wav</include>
 					<include>**/*.ttf</include>
 					<include>**/*.dll</include>

@@ -54,13 +54,14 @@ import org.tellervo.desktop.setupwizard.SetupWizard;
 import org.tellervo.desktop.tridasv2.TridasObjectList;
 import org.tellervo.desktop.tridasv2.TridasProjectList;
 import org.tellervo.desktop.ui.Alert;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.versioning.UpdateChecker;
 import org.tellervo.desktop.wsi.tellervo.TellervoWsiAccessor;
 import org.tellervo.schema.WSIConfiguration;
 import org.tellervo.schema.WSISecurityUser;
 import org.tridas.io.TridasIO;
-
+import gov.nasa.worldwind.Configuration;
 
 /**
  * Contextual state of the app; holds references to all "subsystems".
@@ -152,6 +153,36 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
     // throwing an error instead of simply ignoring it
     // will point out bad design and/or bugs
 	if (initialized) throw new IllegalStateException("AppContext already initialized.");
+	
+	// Configure World Wind Java
+	File wwjconfig = new File("src/main/resources/WWJCacheConfig.xml");
+	System.out.println("Looking for config file: "+wwjconfig.getAbsolutePath());
+	if(!wwjconfig.exists())
+	{
+		wwjconfig = new File("/opt/tellervo/WWJCacheConfig.xml");
+		System.out.println("Looking for config file: "+wwjconfig.getAbsolutePath());
+	}
+	if(!wwjconfig.exists())
+	{
+		wwjconfig = new File("C:/Program Files/Tellervo/WWJCacheConfig.xml");
+		System.out.println("Looking for config file: "+wwjconfig.getAbsolutePath());
+	}
+	if(!wwjconfig.exists())
+	{
+		wwjconfig = new File("./WWJCacheConfig.xml");
+		System.out.println("Looking for config file: "+wwjconfig.getAbsolutePath());
+	}
+	if(wwjconfig.exists()) {
+		System.out.println("Set WorldWindJava cache location...");
+		Configuration.setValue(
+            "gov.nasa.worldwind.avkey.DataFileStoreConfigurationFileName",
+            "/home/pbrewer/git/tellervo/src/main/resources/WWJCacheConfig.xml");
+	}
+	else
+	{
+		System.out.println("Can't find WorldWindJava cache configuration file.  Sticking with defaults.");
+	}
+	
 	
     if (meter != null) {
       meter.setMaximum(11);

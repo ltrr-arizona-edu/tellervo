@@ -82,7 +82,7 @@ public class Platform extends AbstractSubsystem {
 
 			// this sets the "about..." name only -- not "hide", "quit", or in the dock.
 			// have to use -X args for those, anyway, so this is useless.
-			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Corina");
+			System.setProperty("com.apple.mrj.application.apple.menu.about.name", "Tellervo");
 			// System.setProperty("com.apple.mrj.application.live-resize", "true");
 
 			// also, treat apps as files, not folders (duh -- why's this not default, steve?)

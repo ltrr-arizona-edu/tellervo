@@ -407,7 +407,13 @@ public class Prefs extends AbstractSubsystem {
 			File basedir = new File(prefsFolder);
 			if (!basedir.exists())
 				basedir.mkdirs();
+			
 		}
+		
+		// Create the default World Wind Java map cache if it doesn't exist
+		File wwjcache = new File(prefsFolder+"mapdatacache");
+		if (!wwjcache.exists())
+			wwjcache.mkdirs();
 	}
 	
 	/**
