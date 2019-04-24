@@ -169,14 +169,19 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
 	}
 	if(!wwjconfig.exists())
 	{
+		wwjconfig = new File("C:/Program Files (x86)/Tellervo/WWJCacheConfig.xml");
+		System.out.println("Looking for config file: "+wwjconfig.getAbsolutePath());
+	}
+	if(!wwjconfig.exists())
+	{
 		wwjconfig = new File("./WWJCacheConfig.xml");
 		System.out.println("Looking for config file: "+wwjconfig.getAbsolutePath());
 	}
 	if(wwjconfig.exists()) {
-		System.out.println("Set WorldWindJava cache location...");
+		System.out.println("Set WorldWindJava cache location to: "+wwjconfig.getAbsolutePath());
 		Configuration.setValue(
             "gov.nasa.worldwind.avkey.DataFileStoreConfigurationFileName",
-            "/home/pbrewer/git/tellervo/src/main/resources/WWJCacheConfig.xml");
+            wwjconfig.getAbsoluteFile());
 	}
 	else
 	{
