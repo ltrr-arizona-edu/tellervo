@@ -81,6 +81,9 @@ public class ImportSelectedObjectsCommand implements ICommand {
 		HashSet<String> objectCodeSet = new HashSet<String>();
 		for(IBulkImportSingleRowModel som : selected){
 			
+			String currentIdentifier =  som.getProperty(SingleObjectModel.OBJECT_CODE)+"";
+
+			
 			definedProps.clear();
 			for(String s : SingleObjectModel.TABLE_PROPERTIES){
 				if(som.getProperty(s) != null){
@@ -100,7 +103,7 @@ public class ImportSelectedObjectsCommand implements ICommand {
 					incomplete = true;
 				}*/
 				if(code.contains(" ")){
-					requiredMessages.add("Object code cannot contain whitespace.");
+					requiredMessages.add("Cannot import '"+currentIdentifier+"'. Object code cannot contain whitespace.");
 					incomplete = true;
 				}
 				if(objectCodeSet.contains(code)){
@@ -118,27 +121,27 @@ public class ImportSelectedObjectsCommand implements ICommand {
 				}
 				else
 				{
-					requiredMessages.add("Cannot import as parent object has not been created yet");
+					requiredMessages.add("Cannot import '"+currentIdentifier+"'. Parent object has not been created yet");
 					incomplete = true;
 				}
 			}
 			
 			// type
 			if(!definedProps.contains(SingleObjectModel.TYPE)){
-				requiredMessages.add("Object must contain type.");
+				requiredMessages.add("Cannot import '"+currentIdentifier+"'. Object must contain type.");
 				incomplete = true;
 			}
 			
 			// title
 			if(!definedProps.contains(SingleObjectModel.TITLE)){
-				requiredMessages.add("Object must have a title");
+				requiredMessages.add("Cannot import '\"+currentIdentifier+\"'. Object must have a title");
 				incomplete = true;
 			}
 						
 			// lat/long
 			if(definedProps.contains(SingleObjectModel.LATITUDE) || definedProps.contains(SingleObjectModel.LONGITUDE)){
 				if(!definedProps.contains(SingleObjectModel.LATITUDE) || !definedProps.contains(SingleObjectModel.LONGITUDE)){
-					requiredMessages.add("If coordinates are specified then both latitude and longitude are required");
+					requiredMessages.add("Cannot import '\"+currentIdentifier+\"'. If coordinates are specified then both latitude and longitude are required");
 					incomplete = true;
 				}else{
 					String attempt = som.getProperty(SingleObjectModel.LATITUDE).toString().trim();
@@ -146,11 +149,11 @@ public class ImportSelectedObjectsCommand implements ICommand {
 						Double lat = Double.parseDouble(attempt);
 						if(lat<-90 || lat>90)
 						{
-							requiredMessages.add("Latitude must be between -90 and 90");
+							requiredMessages.add("Cannot import '\"+currentIdentifier+\"'. Latitude must be between -90 and 90");
 							incomplete = true;
 						}
 					}catch(NumberFormatException e){
-						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
+						requiredMessages.add("Cannot import '\"+currentIdentifier+\"'. Cannot parse latitude '"+attempt+"' into a number.");
 						incomplete = true;
 					}
 					attempt = som.getProperty(SingleObjectModel.LONGITUDE).toString().trim();
@@ -158,11 +161,11 @@ public class ImportSelectedObjectsCommand implements ICommand {
 						Double lng = Double.parseDouble(attempt);
 						if(lng<-180 || lng>180)
 						{
-							requiredMessages.add("Longitude must be between -180 and 180");
+							requiredMessages.add("Cannot import '\"+currentIdentifier+\"'. Longitude must be between -180 and 180");
 							incomplete = true;
 						}
 					}catch(NumberFormatException e){
-						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
+						requiredMessages.add("Cannot import '\"+currentIdentifier+\"'. Cannot parse longitude '"+attempt+"' into a number.");
 						incomplete = true;
 					}
 				}

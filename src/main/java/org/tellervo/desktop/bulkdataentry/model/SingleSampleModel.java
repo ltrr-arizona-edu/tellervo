@@ -357,7 +357,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 					{
 						field.setValue(null);
 						log.debug(fld.getName() + " was empty when writing to XML");
-						argSample.getGenericFields().add(field);
+						//argSample.getGenericFields().add(field);
 					}
 				}
 				else

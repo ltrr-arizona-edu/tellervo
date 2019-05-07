@@ -1,23 +1,24 @@
 package org.tellervo.desktop.odk;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasSample;
 
-public class ODKTreeModel extends DefaultTreeModel {
+public class ODKTreeModel extends DefaultTreeModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
-	private static final Logger log = LoggerFactory.getLogger(ODKFormDesignPanel.class);
+
+	//private static final Logger log = LoggerFactory.getLogger(ODKFormDesignPanel.class);
 	
 	private DefaultMutableTreeNode sampleGroup ;
 	private final Class<? extends ITridas> classType;
@@ -45,7 +46,7 @@ public class ODKTreeModel extends DefaultTreeModel {
 	{
 		if(index==-1) index = 0;
 		
-		log.debug("Inserting new child in parent node at index "+index);
+		//log.debug("Inserting new child in parent node at index "+index);
 		
 		try{
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode) newChild;
@@ -59,7 +60,7 @@ public class ODKTreeModel extends DefaultTreeModel {
 			}
 		} catch (Exception e)
 		{
-			log.debug("exception caught");
+			//log.debug("exception caught");
 			
 		}
 		
@@ -78,7 +79,7 @@ public class ODKTreeModel extends DefaultTreeModel {
 	{
 		if(!(newChild instanceof AbstractODKTreeNode))
 		{
-			log.error("ODKTreeModel only supports ODKTreeNodeInterface nodes");
+			//log.error("ODKTreeModel only supports ODKTreeNodeInterface nodes");
 			return;
 		}
 		
@@ -147,11 +148,11 @@ public class ODKTreeModel extends DefaultTreeModel {
 	{
 		ArrayList<ODKFieldInterface> fields = new ArrayList<ODKFieldInterface>();
 		
-		Enumeration<DefaultMutableTreeNode> e = getRootAsDMTN().preorderEnumeration();
+		Enumeration<TreeNode> e = getRootAsDMTN().preorderEnumeration();
 		
 		while(e.hasMoreElements())
 		{
-			DefaultMutableTreeNode node = e.nextElement();
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
 			
 			if(node instanceof ODKFieldNode)
 			{

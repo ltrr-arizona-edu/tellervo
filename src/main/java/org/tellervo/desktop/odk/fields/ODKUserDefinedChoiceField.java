@@ -21,7 +21,7 @@ public class ODKUserDefinedChoiceField extends AbstractODKChoiceField {
 		this.setPossibleChoices(SelectableChoice.makeObjectsSelectable(choices));
 		
 	}
-
+	
 	@Override
 	public Boolean isFieldRequired() {
 		return false;

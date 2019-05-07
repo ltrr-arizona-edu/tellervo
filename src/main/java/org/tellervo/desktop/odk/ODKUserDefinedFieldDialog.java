@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -27,10 +29,15 @@ import net.miginfocom.swing.MigLayout;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.ODKDataType;
+import org.tellervo.desktop.odk.fields.ODKUserDefinedAudioField;
 import org.tellervo.desktop.odk.fields.ODKUserDefinedChoiceField;
 import org.tellervo.desktop.odk.fields.ODKUserDefinedDecimalField;
 import org.tellervo.desktop.odk.fields.ODKUserDefinedField;
+import org.tellervo.desktop.odk.fields.ODKUserDefinedImageField;
 import org.tellervo.desktop.odk.fields.ODKUserDefinedIntegerField;
+import org.tellervo.desktop.odk.fields.ODKUserDefinedLocationField;
+import org.tellervo.desktop.odk.fields.ODKUserDefinedStringField;
+import org.tellervo.desktop.odk.fields.ODKUserDefinedVideoField;
 import org.tellervo.desktop.ui.Builder;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasElement;
@@ -368,9 +375,58 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 	}
 
 	public AbstractODKField getField() {
-		ODKUserDefinedField field = new ODKUserDefinedField(this.getFieldType(), this.getFieldCode(), this.getFieldName(), this.getDescription(), null, this.getAttachedTo());
+		
+		if(this.getFieldType().equals(ODKDataType.STRING))
+		{
+			return new ODKUserDefinedStringField(this.getFieldCode(), this.getFieldName(), this.getDescription(), null, this.getAttachedTo());
 
-		return field;
+		}
+		else if(this.getFieldType().equals(ODKDataType.SELECT_ONE))
+		{	
+			ArrayList<Object> objList = new ArrayList<Object>();
+
+			objList.addAll( Collections.list(optionChoices.elements()) );
+					
+			return new ODKUserDefinedChoiceField(this.getFieldCode(), this.getFieldName(), this.getDescription(), null, this.getAttachedTo(), objList);
+
+			
+		}
+		else if(this.getFieldType().equals(ODKDataType.INTEGER))
+		{
+			return new ODKUserDefinedIntegerField(this.getFieldCode(), this.getFieldName(), this.getDescription(), null, this.getAttachedTo());
+
+		}
+		else if(this.getFieldType().equals(ODKDataType.DECIMAL))
+		{
+			return new ODKUserDefinedDecimalField(this.getFieldCode(), this.getFieldName(), this.getDescription(), null, this.getAttachedTo());
+
+		}			
+		else if(this.getFieldType().equals(ODKDataType.LOCATION))
+		{
+			return new ODKUserDefinedLocationField(this.getFieldCode(), this.getFieldName(), this.getDescription(), null, this.getAttachedTo());
+
+		}	
+		else if(this.getFieldType().equals(ODKDataType.IMAGE))
+		{
+			return new ODKUserDefinedImageField(this.getFieldCode(), this.getFieldName(), this.getDescription(), null, this.getAttachedTo());
+
+		}	
+		else if(this.getFieldType().equals(ODKDataType.AUDIO))
+		{
+			return new ODKUserDefinedAudioField(this.getFieldCode(), this.getFieldName(), this.getDescription(), null, this.getAttachedTo());
+
+		}	
+		else if(this.getFieldType().equals(ODKDataType.VIDEO))
+		{
+			return new ODKUserDefinedVideoField(this.getFieldCode(), this.getFieldName(), this.getDescription(), null, this.getAttachedTo());
+
+		}
+		else
+		{
+			System.out.println("Unsupported user defined field type");
+			return null;
+		}
+		
 		
 		
 	}

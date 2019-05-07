@@ -79,7 +79,9 @@ public class ImportSelectedElementsCommand implements ICommand {
 		
 		HashSet<String> definedProps = new HashSet<String>();
 		for(IBulkImportSingleRowModel som : selected){
-						
+					
+			String currentIdentifier =  som.getProperty(SingleElementModel.OBJECT)+"-"+som.getProperty(SingleElementModel.TITLE);
+					
 			definedProps.clear();
 			for(String s : SingleElementModel.TABLE_PROPERTIES){
 				if(som.getProperty(s) != null){
@@ -90,7 +92,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 			
 			// object 
 			if(!definedProps.contains(SingleElementModel.OBJECT)){
-				requiredMessages.add("Cannot import without a parent object.");
+				requiredMessages.add("All rows must have a parent object.");
 				incomplete = true;
 			}
 			else if (fixTempObjectCode(som))
@@ -99,33 +101,33 @@ public class ImportSelectedElementsCommand implements ICommand {
 			}
 			else
 			{
-				requiredMessages.add("Cannot import as parent object has not been created yet");
+				requiredMessages.add("Cannot import record "+currentIdentifier+" as parent object '"+ som.getProperty(SingleElementModel.OBJECT)+"' has not been created yet");
 				incomplete = true;
 			}
 		
 			
 			// type
 			if(!definedProps.contains(SingleElementModel.TYPE)){
-				requiredMessages.add("Element must contain a type.");
+				requiredMessages.add("Cannot import record "+currentIdentifier+" as it is missing a 'type'.");
 				incomplete = true;
 			}
 			
 			// taxon
 			if(!definedProps.contains(SingleElementModel.TAXON)){
-				requiredMessages.add("Element must contain a taxon.");
+				requiredMessages.add("Cannot import record "+currentIdentifier+" as it is missing a taxon.");
 				incomplete = true;
 			}
 			
 			// title
 			if(!definedProps.contains(SingleElementModel.TITLE)){
-				requiredMessages.add("Element must have a title");
+				requiredMessages.add("Cannot import record "+currentIdentifier+" as it is missing an title");
 				incomplete = true;
 			}
 			
 			// lat/long
 			if(definedProps.contains(SingleElementModel.LATITUDE) || definedProps.contains(SingleElementModel.LONGITUDE)){
 				if(!definedProps.contains(SingleElementModel.LATITUDE) || !definedProps.contains(SingleElementModel.LONGITUDE)){
-					requiredMessages.add("If coordinates are specified then both latitude and longitude are required");
+					requiredMessages.add("Cannot import record "+currentIdentifier+" because if coordinates are specified then both latitude and longitude are required");
 					incomplete = true;
 				}else{
 					String attempt = som.getProperty(SingleElementModel.LATITUDE).toString().trim();
@@ -133,11 +135,11 @@ public class ImportSelectedElementsCommand implements ICommand {
 						Double lat = Double.parseDouble(attempt);
 						if(lat<-90 || lat>90)
 						{
-							requiredMessages.add("Latitude must be between -90 and 90");
+							requiredMessages.add("Cannot import record "+currentIdentifier+" as latitude must be between -90 and 90");
 							incomplete = true;
 						}
 					}catch(NumberFormatException e){
-						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
+						requiredMessages.add("Cannot import record "+currentIdentifier+" as the latitude '"+attempt+"' isn't a valid number.");
 						incomplete = true;
 					}
 					attempt = som.getProperty(SingleElementModel.LONGITUDE).toString().trim();
@@ -145,11 +147,11 @@ public class ImportSelectedElementsCommand implements ICommand {
 						Double lng = Double.parseDouble(attempt);
 						if(lng<-180 || lng>180)
 						{
-							requiredMessages.add("Longitude must be between -180 and 180");
+							requiredMessages.add("Cannot import record "+currentIdentifier+" as longitude must be between -180 and 180");
 							incomplete = true;
 						}
 					}catch(NumberFormatException e){
-						requiredMessages.add("Cannot parse '"+attempt+"' into a number.");
+						requiredMessages.add("Cannot import record "+currentIdentifier+" as longitude '"+attempt+"' isn't a valid number.");
 						incomplete = true;
 					}
 				}
@@ -162,7 +164,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 			{
 				if (!definedProps.contains(SingleElementModel.UNIT))
 				{
-					requiredMessages.add("Units must be specified when dimensions are included");
+					requiredMessages.add("Cannot import record "+currentIdentifier+" as units must be specified when dimensions are included");
 					incomplete = true;
 				}
 				
@@ -182,7 +184,7 @@ public class ImportSelectedElementsCommand implements ICommand {
 				}
 				else
 				{
-					requiredMessages.add("When dimensions are included they must be: height/width/depth or height/diameter.");
+					requiredMessages.add("Cannot import record "+currentIdentifier+" because when dimensions are included they must be: height/width/depth or height/diameter.");
 					incomplete = true;
 				}
 				

@@ -23,6 +23,7 @@ package org.tellervo.desktop.bulkdataentry.command;
 import java.awt.Window;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JOptionPane;
@@ -56,6 +57,7 @@ import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
@@ -116,15 +118,48 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			}
 			boolean incomplete = false;
 			
+			String currentIdentifier = "";
+			
+			if(som.getProperty(SingleSampleModel.OBJECT)!=null)
+			{
+				Object tempob = som.getProperty(SingleSampleModel.OBJECT);
+				
+				if(tempob instanceof TridasObjectEx)
+				{
+					currentIdentifier+=TridasUtils.getObjectCodeMulti((TridasObjectEx) som.getProperty(SingleSampleModel.OBJECT))+"-";
+				}
+				else
+				{
+					currentIdentifier+=som.getProperty(SingleSampleModel.OBJECT)+"-";
+				}
+				
+				if(som.getProperty(SingleSampleModel.ELEMENT)!=null)
+				{
+					Object tempel = som.getProperty(SingleSampleModel.ELEMENT);
+					if(tempel instanceof TridasElement)
+					{
+						currentIdentifier+=((TridasElement)som.getProperty(SingleSampleModel.ELEMENT)).getTitle()+"-"+som.getProperty(SingleSampleModel.TITLE);
+
+					}
+					else
+					{
+						currentIdentifier+=som.getProperty(SingleSampleModel.ELEMENT)+"-"+som.getProperty(SingleSampleModel.TITLE);
+
+					}
+					
+				}
+			}
+	
+			
 			// object
 			if(!definedProps.contains(SingleSampleModel.OBJECT)){
-				requiredMessages.add("Cannot import without a parent object.");
+				requiredMessages.add("Cannot import '"+currentIdentifier+"'. Parent object is missing.");
 				incomplete = true;
 			}
 			
 			// element 
 			if(!definedProps.contains(SingleSampleModel.ELEMENT)){
-				requiredMessages.add("Cannot import without a parent element.");
+				requiredMessages.add("Cannot import '"+currentIdentifier+"'. Parent element is missing.");
 				incomplete = true;
 			}
 			else if (fixTempParentCodes(som, emodel))
@@ -133,25 +168,25 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			}
 			else
 			{
-				requiredMessages.add("Cannot import as parent element has not been created yet");
+				requiredMessages.add("Cannot import '"+currentIdentifier+"'. Parent element has not been created yet");
 				incomplete = true;
 			}
 		
 			// type
 			if(!definedProps.contains(SingleSampleModel.TYPE)){
-				requiredMessages.add("Sample must contain a type.");
+				requiredMessages.add("Cannot import '"+currentIdentifier+"'. Sample must contain a type.");
 				incomplete = true;
 			}
 			
 			// title
 			if(!definedProps.contains(SingleSampleModel.TITLE)){
-				requiredMessages.add("Sample must have a title.");
+				requiredMessages.add("Cannot import '"+currentIdentifier+"'. Sample must have a title.");
 				incomplete = true;
 			}
 			
 			if(smodel.isRadiusWithSample()){
 				if(!definedProps.contains(SingleRadiusModel.TITLE)){
-					requiredMessages.add("Radius title must be populated.");
+					requiredMessages.add("Cannot import '"+currentIdentifier+"'. Radius title must be populated.");
 					incomplete = true;
 				}
 			}
@@ -164,8 +199,28 @@ public class ImportSelectedSamplesCommand implements ICommand {
 		
 		if(!incompleteModels.isEmpty()){
 			StringBuilder message = new StringBuilder();
-			message.append("Please correct the following errors:\n");
-			message.append(StringUtils.join(requiredMessages.toArray(), "\n"));
+			if(requiredMessages.size()>5)
+			{
+				message.append("There were "+requiredMessages.size()+" rows that failed to import, including:\n");
+				
+				Iterator<String> value = requiredMessages.iterator(); 
+				int i=0;
+		        // Displaying the values after iterating through the set 
+		        System.out.println("The iterator values are: "); 
+		        while (value.hasNext()) {
+		        	i++;
+		        	if(i>5) break;
+		        	message.append(value.next()+"\n");
+		        } 
+				
+			}
+			else
+			{
+				message.append("There were "+requiredMessages.size()+" rows that failed to import:\n");
+				message.append(StringUtils.join(requiredMessages.toArray(), "\n"));
+			}
+			
+			
 			Alert.message(model.getMainView(), "Importing Errors", message.toString());
 			return;
 		}

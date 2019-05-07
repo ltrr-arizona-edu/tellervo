@@ -313,9 +313,6 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 	public void doPaste() {
 		this.doPaste(true, false);
 	}
-
-	
-	
 	
 	private void doPaste(Boolean simulateFirst, Boolean pasteAppend) {
 		
@@ -375,6 +372,23 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 					.getTransferData(DataFlavor.stringFlavor));
 			log.debug("Clipboard string is: " + trstring);
 			String[] lines = trstring.split("\n");
+			
+			// Check we have the correct number of columns 
+			int correctColCount = mainTable.getColumnCount()-2;
+			
+			for(String rowstring : lines)
+			{
+				String[] cells = rowstring.split("\t");
+				
+				if(cells.length>correctColCount)
+				{
+					Alert.error(
+							"Incorrect column count",
+							"There are more columns in the clipboard than there are columns in the table. Please check your columns and try again.");
+					return;
+				}
+			}
+			
 			
 			int rowsignored = 0;
 			int lineindex = -1;

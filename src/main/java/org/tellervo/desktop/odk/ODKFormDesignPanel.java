@@ -75,6 +75,8 @@ import org.tellervo.desktop.odk.fields.ODKDataType;
 import org.tellervo.desktop.odk.fields.ODKFieldComparator;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 import org.tellervo.desktop.odk.fields.ODKFields;
+import org.tellervo.desktop.odk.fields.ODKUserDefinedChoiceField;
+import org.tellervo.desktop.odk.fields.ODKUserDefinedField;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
@@ -635,6 +637,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 				log.debug("Number of available fields left="+newavail.size());
 				availableFieldsModel.addAllFields(newavail);
 				this.lstAvailableFields.setModel(availableFieldsModel);
+				
 			}
 		}
 		catch(InvalidClassException e)
@@ -672,7 +675,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 				ObjectOutputStream (f_out);
 		
 			// Write object out to disk
-			obj_out.writeObject ( new ODKSerializedForm(selectedFieldsTreeModel, txtFormName.getText()) );
+			ODKSerializedForm formtosave = new ODKSerializedForm(selectedFieldsTreeModel, txtFormName.getText());
+			obj_out.writeObject(formtosave);
 		
 			obj_out.close();
 			
@@ -960,7 +964,22 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		if(selectedField.getFieldType().equals(ODKDataType.SELECT_ONE))
 		{
 			lblIcon.setIcon(Builder.getIcon("list.png", 64));
-			ArrayList<SelectableChoice> choices = ((AbstractODKChoiceField)selectedField).getAvailableChoices();
+			
+			ArrayList<SelectableChoice> choices = null;
+			if(selectedField instanceof AbstractODKChoiceField)
+			{
+				choices = ((AbstractODKChoiceField)selectedField).getAvailableChoices();
+			}
+			else if (selectedField instanceof ODKUserDefinedChoiceField)
+			{
+				choices = ((ODKUserDefinedChoiceField)selectedField).getAvailableChoices();
+			}
+			else
+			{
+				
+			}
+			
+			
 			this.cbxlstChoices = new CheckBoxList(choices.toArray(new SelectableChoice[choices.size()]));
 			this.choicesScrollPane.setViewportView(cbxlstChoices);
 			cbxlstChoices.setCheckBoxListSelectedIndices(((AbstractODKChoiceField)selectedField).getSelectedChoicesIndices());

@@ -485,6 +485,8 @@ public class ODKFormGenerator {
 		}
 		data.append("</text>");
 		
+		
+		log.debug("Building field: "+field.getFieldName());
 			
 		if (field.getFieldType().equals(ODKDataType.SELECT_ONE))
 		{

@@ -155,7 +155,7 @@ public class ODKFields {
 			}
 			else if(fld.getDatatype().equals(UserExtendableDataType.XS___STRING))
 			{
-				field = new ODKUserDefinedField(ODKDataType.STRING, fld.getName(), fld.getLongfieldname(), fld.getDescription(), null, attachedto);
+				field = new ODKUserDefinedStringField(fld.getName(), fld.getLongfieldname(), fld.getDescription(), null, attachedto);
 			}
 			else if(fld.getDatatype().equals(UserExtendableDataType.XS___BOOLEAN))
 			{

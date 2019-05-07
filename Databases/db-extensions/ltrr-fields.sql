@@ -40,6 +40,8 @@ d402b857-218c-484d-a09e-066998cb41a5	ltrr.lastringunderbark	Whether the last rin
 1f67c0f0-5665-4212-b550-a89bf1c2c2d3	ltrr.sampledby	Name of person who did the sampling	4	xs:string	Sampled by	\N
 ea9552fe-d353-4aec-80f5-9cbd43b1c65d	ltrr.samplemeasured	Whether this sample has been measured or not.	4	xs:boolean	Sample measured	\N
 \.
+\q
 
 insert into tlkpuserdefinedfield (fieldname, description, attachedto, datatype, longfieldname) values ('ltrr.samplemeasured', 'Whether this sample has been measured or not.', 4, 'xs:boolean', 'Sample measured');
+insert into tlkpuserdefinedfield (fieldname, description, attachedto, datatype, longfieldname) values ('ltrr.temp.curationstatus', 'Curation status of this sample.  Should be one of: Archived; Missing; On display; Destroyed; Returned to owner; Active research; On loan.', 4, 'xs:string', 'Temporary curation status');
 

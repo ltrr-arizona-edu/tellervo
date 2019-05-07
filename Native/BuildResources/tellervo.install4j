@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <install4j version="7.0.10" transformSequenceNumber="7">
-  <directoryPresets config="${project.build.directory}/classes/fixportpermissions.sh" />
+  <directoryPresets config="../../src/main/resources/WWJCacheConfig.xml" />
   <application name="Tellervo" distributionSourceDir="" applicationId="3241-8043-2524-6669" mediaDir="${project.build.directory}/binaries/desktop/${compiler:sys.version}/${compiler:platformtype}" mediaFilePattern="tellervo-${compiler:sys.version}-${compiler:sys.platform}" compression="6" lzmaCompression="false" pack200Compression="false" excludeSignedFromPacking="true" commonExternalFiles="false" createMd5Sums="false" shrinkRuntime="true" shortName="Tellervo" publisher="University of Arizona" publisherWeb="http://www.tellervo.org" version="${version}" allPathsRelative="true" backupOnSave="true" autoSave="true" convertDotsToUnderscores="false" macSignature="????" macVolumeId="add89b377a765064" javaMinVersion="1.7" javaMaxVersion="" allowBetaVM="true" jdkMode="runtimeJre" jdkName="">
     <languages skipLanguageSelection="false" languageSelectionInPrincipalLanguage="false">
       <principalLanguage id="en" customLocalizationFile="" />
@@ -56,13 +56,14 @@
         <exclude />
       </dirEntry>
       <fileEntry mountPoint="40" file="${project.build.directory}/tellervo-${compiler:sys.version}.jar" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="40" file="${project.build.directory}/classes/WWJCacheConfig.xml" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="299" file="${project.build.directory}/classes/Libraries/windows-i586/rxtxSerial.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="42" file="${project.build.directory}/classes/Libraries/windows-amd64/rxtxSerial.dll" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="43" file="${project.build.directory}/classes/Libraries/linux-i586/librxtxSerial.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="44" file="${project.build.directory}/classes/Libraries/linux-amd64/librxtxSerial.so" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="651" file="${project.build.directory}/classes/fixportpermissions.sh" overwriteMode="4" shared="false" fileMode="555" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="232" file="${project.build.directory}/classes/Libraries/macosx-universal/librxtxSerial.jnilib" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
-      <fileEntry mountPoint="67" file="../Documentation/tellervo-manual.pdf" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
+      <fileEntry mountPoint="67" file="../../Documentation/tellervo-manual.pdf" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="519" file="${project.build.directory}/classes/tellervo.desktop" overwriteMode="4" shared="false" fileMode="644" uninstallMode="0" overrideFileMode="false" overrideOverwriteMode="false" overrideUninstallMode="false" />
       <fileEntry mountPoint="519" file="${project.build.directory}/classes/Icons/512x512/tellervo-application.png" overwriteMode="4" shared="false" fileMode="655" uninstallMode="0" overrideFileMode="true" overrideOverwriteMode="false" overrideUninstallMode="false" />
     </entries>
@@ -1242,7 +1243,7 @@ return console.askYesNo(message, true);
               <group name="" id="816" customizedId="" beanClass="com.install4j.runtime.beans.groups.VerticalFormComponentGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit" useExternalParametrization="true" externalParametrizationName="Customize title bar" externalParametrizationMode="include">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.groups.VerticalFormComponentGroup">
+                    <object class="com.install4j.runtime.beans.groups.VerticalFormComponentGroup" id="VerticalFormComponentGroup0">
                       <void property="backgroundColor">
                         <object class="java.awt.Color">
                           <int>255</int>
@@ -1272,19 +1273,21 @@ return console.askYesNo(message, true);
                           <string>icon:${installer:sys.installerApplicationMode}_header.png</string>
                         </object>
                       </void>
+                      <void id="Integer0" property="cellSpacing" />
+                      <void id="Integer1" property="borderWidth" />
                       <void property="imageInsets">
                         <object class="java.awt.Insets">
-                          <int>0</int>
+                          <object idref="Integer0" />
                           <int>5</int>
-                          <int>1</int>
-                          <int>1</int>
+                          <object idref="Integer1" />
+                          <object idref="Integer1" />
                         </object>
                       </void>
                       <void property="insets">
                         <object class="java.awt.Insets">
-                          <int>0</int>
+                          <object idref="Integer0" />
                           <int>20</int>
-                          <int>0</int>
+                          <object idref="Integer0" />
                           <int>10</int>
                         </object>
                       </void>
@@ -1366,16 +1369,17 @@ return console.askYesNo(message, true);
               <group name="" id="820" customizedId="" beanClass="com.install4j.runtime.beans.groups.HorizontalFormComponentGroup" enabled="true" commentSet="false" comment="" actionElevationType="inherit" useExternalParametrization="false" externalParametrizationName="" externalParametrizationMode="all">
                 <serializedBean>
                   <java class="java.beans.XMLDecoder">
-                    <object class="com.install4j.runtime.beans.groups.HorizontalFormComponentGroup">
+                    <object class="com.install4j.runtime.beans.groups.HorizontalFormComponentGroup" id="HorizontalFormComponentGroup0">
                       <void property="alignFirstLabel">
                         <boolean>false</boolean>
                       </void>
+                      <void id="Integer0" property="cellSpacing" />
                       <void property="insets">
                         <object class="java.awt.Insets">
                           <int>3</int>
-                          <int>5</int>
+                          <object idref="Integer0" />
                           <int>8</int>
-                          <int>5</int>
+                          <object idref="Integer0" />
                         </object>
                       </void>
                     </object>
@@ -1493,7 +1497,7 @@ return console.askYesNo(message, true);
         <content />
       </installerScript>
     </unixInstaller>
-    <windows name="Windows" id="93" customizedId="" mediaFileName="tellervo-${compiler:sys.version}-${compiler:sys.platform}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-x86-1.8.0_144" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="true" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
+    <windows name="Windows" id="93" customizedId="" mediaFileName="tellervo-${compiler:sys.version}-${compiler:sys.platform}" installDir="${compiler:sys.shortName}" overridePrincipalLanguage="false" jreBitType="32" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="windows-x86-1.8.0_202" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="true" installOnlyIfNecessary="false" customInstallBaseDir="" contentFilesType="1" verifyIntegrity="true">
       <excludedComponents>
         <component id="58" />
         <component id="51" />
@@ -1520,7 +1524,7 @@ return console.askYesNo(message, true);
         <customAttributes />
       </autoUpdate>
     </windows>
-    <macos name="Mac OS X Single Bundle" id="171" customizedId="" mediaFileName="" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="macosx-amd64-1.8.0_31" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" launcherId="593">
+    <!--<macos name="Mac OS X Single Bundle" id="171" customizedId="" mediaFileName="" installDir="${compiler:sys.fullName}" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="false" includedJRE="macosx-amd64-1.8.0_202" manualJREEntry="false" bundleType="1" jreURL="" jreShared="false" directDownload="false" installOnlyIfNecessary="false" requiredVmIdPrefix="" customInstallBaseDir="" contentFilesType="1" installerName="${i18n:InstallerName(${compiler:sys.fullName})}" volumeName="${compiler:sys.shortName}" compressDmg="false" launcherId="593">
       <excludedComponents>
         <component id="50" />
         <component id="51" />
@@ -1545,7 +1549,7 @@ return console.askYesNo(message, true);
         <customAttributes />
       </autoUpdate>
       <topLevelFiles />
-    </macos>
+    </macos>-->
     <linuxDeb name="Linux Deb Archive" id="646" customizedId="" mediaFileName="" installDir="/opt/tellervo" overridePrincipalLanguage="false" jreBitType="all" runPostProcessor="false" postProcessor="" failOnPostProcessorError="false" useLegacyMediaFileIds="false" legacyMediaFileIds="" downloadURL="" includeAllDownloadableComponents="true" includedJRE="" manualJREEntry="false" overwriteNeverAsConfigFiles="false" dependencies="default-jre | openjdk-7-jre | openjdk-8-jre | openjdk-9-jre, libjogl | libjogl2-java, librxtx-java" bzip="false" description="Application for measuring, managing and curating dendrochronology samples" maintainerEmail="Peter Brewer &lt;p.brewer@ltrr.arizona.edu&gt;" architectureSet="false" architecture="">
       <excludedComponents />
       <includedDownloadableComponents />
@@ -1586,7 +1590,7 @@ rm -f /usr/share/pixmaps/tellervo-application.png</content>
     </linuxDeb>
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="171" />
+    <mediaSet refId="646" />
   </buildIds>
   <buildOptions verbose="false" faster="false" disableSigning="false" disableJreBundling="false" debug="false" />
 </install4j>

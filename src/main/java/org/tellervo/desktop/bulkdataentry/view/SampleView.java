@@ -261,9 +261,9 @@ public class SampleView extends AbstractBulkImportView {
 
 						super.setValue(element.getCode());
 						if (element.getTridasElement() == null) {
-							super.setForeground(Color.GRAY);
+							super.setForeground(Color.BLUE);
 						} else {
-							super.setForeground(Color.BLACK);
+							super.setForeground(Color.GREEN);
 						}
 
 					}

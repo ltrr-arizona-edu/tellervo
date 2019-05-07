@@ -28,11 +28,16 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.wsi.tellervo.SearchParameters;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
+import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
+import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tellervo.schema.CurationStatus;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
+import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.UserExtendableDataType;
 import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIBoxDictionary;
@@ -40,16 +45,8 @@ import org.tellervo.schema.WSICurationStatusDictionary;
 import org.tellervo.schema.WSISampleStatusDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
 import org.tellervo.schema.WSIUserDefinedField;
-import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.odk.ODKParser;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
-import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
-import org.tellervo.desktop.wsi.tellervo.SearchParameters;
-import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
 import org.tridas.io.util.TridasUtils;
-import org.tridas.schema.Date;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.model.MVCArrayList;
@@ -205,6 +202,8 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 						argModel.setProperty(argColumn, argAValue);
 					}
 					
+					ssm.setProperty(SingleSampleModel.POPULATING_ELEMENT_LIST, true);
+										
 					Thread t = new Thread(new Runnable() {
 						
 						@Override
@@ -227,6 +226,8 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 							
 							List<TridasElement> elList = resource.getAssociatedResult();
 							ssm.getPossibleElements().addAll(elList);
+							ssm.setProperty(SingleSampleModel.POPULATING_ELEMENT_LIST, false);
+
 						}
 					}, "Elements Fetch Thread");
 					
