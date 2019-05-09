@@ -16,6 +16,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
@@ -34,9 +35,10 @@ import org.xml.sax.SAXException;
 import com.ibm.icu.text.DateFormat;
 import com.ibm.icu.text.SimpleDateFormat;
 
-public class ODKParser {
+public class ODKParser implements Comparable<ODKParser>{
 
 	private boolean failedParse = false;
+	private String formID = null; 
 	private String errorMessage = "";
 	private Document doc;
 	private File file;
@@ -49,6 +51,16 @@ public class ODKParser {
 	{
 		file = f;
 
+		String ext = FilenameUtils.getExtension(f.getAbsolutePath());
+		String filename = FilenameUtils.getName(f.getAbsolutePath());
+		
+		if(ext.toLowerCase().equals("xml"))
+		{
+			filename = filename.replace(".xml", "");
+		}
+		
+		formID = filename;
+		
 		
 		try {
 
@@ -161,6 +173,11 @@ public class ODKParser {
 		
 	}
 
+	public String getFormID()
+	{
+		return formID;
+	}
+	
 	public String getParseErrorMessage()
 	{
 		return errorMessage;
@@ -585,6 +602,12 @@ public class ODKParser {
 
 		return mediaFileList;
 		    
+	}
+
+	@Override
+	public int compareTo(ODKParser o2) {
+		
+		return this.getFormID().compareTo(o2.getFormID());
 	}
 	
 

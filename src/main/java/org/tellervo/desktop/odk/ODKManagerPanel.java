@@ -2,31 +2,42 @@ package org.tellervo.desktop.odk;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
+import javax.swing.AbstractListModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListCellRenderer;
-import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.border.TitledBorder;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -35,114 +46,149 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import net.miginfocom.swing.MigLayout;
-
-import org.apache.http.HttpResponse;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.ContentEncodingHttpClient;
-import org.jdom.Document;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.openrosa.xforms.xformslist.Xform;
 import org.openrosa.xforms.xformslist.Xforms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.bulkdataentry.command.PopulateFromODKCommand;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
-import org.tellervo.desktop.versioning.Build;
-import org.tellervo.desktop.wsi.WebJaxbAccessor;
-import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
+import org.tellervo.desktop.ui.Alert;
+import org.tellervo.desktop.ui.Builder;
 import org.tridas.io.I18n;
-import org.tridas.io.TridasIO;
-import org.tridas.io.util.FileHelper;
 import org.tridas.io.util.IOUtils;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import edu.emory.mathcs.backport.java.util.Collections;
+import net.miginfocom.swing.MigLayout;
 
-public class ODKManagerPanel extends JPanel {
+public class ODKManagerPanel extends JPanel implements ActionListener {
 	private JList<Xform> lstDesign;
 	protected final static Logger log = LoggerFactory
 			.getLogger(ODKManagerPanel.class);
+	private JButton btnDeleteDesign;
+	private JList lstInstances;
 
 	/**
 	 * Create the panel.
 	 */
 	public ODKManagerPanel() {
-		setLayout(new BorderLayout(0, 0));
 
-		JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-		add(tabbedPane);
-
-		JPanel panelFormDesign = new JPanel();
-		tabbedPane.addTab("Form Designs", null, panelFormDesign, null);
-		panelFormDesign.setLayout(new BorderLayout(0, 0));
-
-		lstDesign = new JList<Xform>();
-		populateList();
-		lstDesign.setCellRenderer(new XformRenderer());
-
-		panelFormDesign.add(lstDesign);
-
-		JPanel panelButtons = new JPanel();
-		panelFormDesign.add(panelButtons, BorderLayout.SOUTH);
-		panelButtons.setLayout(new MigLayout("", "[grow][]", "[]"));
-
-		JButton btnDeleteDesign = new JButton("Delete Selected");
-		panelButtons.add(btnDeleteDesign, "cell 1 0");
-
-		JPanel panelFormInstances = new JPanel();
-		tabbedPane.addTab("Form Data", null, panelFormInstances, null);
+		setupGUI();
 
 	}
+	
+	public void setupGUI()
+	{
 
-	private void populateList() {
+			setLayout(new BorderLayout(0, 0));
+
+			JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
+			add(tabbedPane);
+
+			JPanel panelFormDesign = new JPanel();
+			tabbedPane.addTab("Form Designs", null, panelFormDesign, null);
+			panelFormDesign.setLayout(new BorderLayout(0, 0));
+
+			lstDesign = new JList<Xform>();	
+			
+			lstDesign.setCellRenderer(new XformRenderer());
+	
+			panelFormDesign.add(lstDesign);
+	
+			JPanel panelButtons = new JPanel();
+			panelFormDesign.add(panelButtons, BorderLayout.SOUTH);
+			panelButtons.setLayout(new MigLayout("", "[grow][]", "[]"));
+	
+			btnDeleteDesign = new JButton("Delete Selected");
+			btnDeleteDesign.setActionCommand("DeleteFormDefinition");
+			btnDeleteDesign.addActionListener(this);
+			panelButtons.add(btnDeleteDesign, "cell 1 0");
+	
+			JPanel panelFormInstances = new JPanel();
+			tabbedPane.addTab("Form Data", null, panelFormInstances, null);
+			panelFormInstances.setLayout(new BorderLayout(0, 0));
+			
+			JScrollPane scrollPane = new JScrollPane();
+			panelFormInstances.add(scrollPane, BorderLayout.CENTER);
+			
+			lstInstances = new JList<ODKParser>();	
+			scrollPane.setViewportView(lstInstances);
+			lstInstances.setCellRenderer(new ODKParserRenderer());
+
+			JPanel instancesPanel = new JPanel();
+			panelFormInstances.add(instancesPanel, BorderLayout.SOUTH);
+			instancesPanel.setLayout(new MigLayout("", "[grow][]", "[]"));
+			
+			JButton btnDeleteSelectedInstance = new JButton("Delete selected");
+			btnDeleteSelectedInstance.setActionCommand("deleteInstance");
+			btnDeleteSelectedInstance.addActionListener(this);
+			instancesPanel.add(btnDeleteSelectedInstance, "cell 1 0");
 		
+	}
+
+	public boolean populateDefinitionsList() {
+		
+		return populateDefinitionsList(false);
+	}
+	
+	private boolean populateDefinitionsList(boolean forceNewCredentials) {
+		
+				
 		URI url;
 		try {
 			url = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/formList.php");
-
-			HttpClient client = new ContentEncodingHttpClient();
-			HttpUriRequest req;
-			HttpGet httpget = new HttpGet(url);
-			Document outDocument = null;
-			HttpResponse response;
-
-
-			req = new HttpGet(url);
-
-			// load cookies
-			((AbstractHttpClient) client).setCookieStore(WSCookieStoreHandler
-					.getCookieStore().toCookieStore());
-
-			String clientModuleVersion = "1.0";
-			req.setHeader(
-					"User-Agent",
-					"Tellervo WSI " + Build.getUTF8Version() + " ("
-							+ clientModuleVersion + "; ts "
-							+ Build.getCompleteVersionNumber() + ")");
-
-			if (App.prefs.getBooleanPref(
-					PrefKey.WEBSERVICE_USE_STRICT_SECURITY, false)) {
-				// Using strict security so don't allow self signed certificates
-				// for SSL
-			} else {
-				// Not using strict security so allow self signed certificates
-				// for SSL
-				if (url.getScheme().equals("https"))
-					WebJaxbAccessor.setSelfSignableHTTPSScheme(client);
-			}
-
-			response = client.execute(httpget);
+	
+			
+			  CredentialsProvider credsProvider = App.getODKCredentialsProvider(forceNewCredentials);
+			  
+		        CloseableHttpClient httpclient = HttpClients.custom()
+		                .setDefaultCredentialsProvider(credsProvider)
+		                .build();
 		
+		            HttpGet httpget = new HttpGet(url);
 
+		            System.out.println("Executing request " + httpget.getRequestLine());
+		            CloseableHttpResponse response = httpclient.execute(httpget);
+		        
+		                System.out.println("----------------------------------------");
+		                System.out.println(response.getStatusLine());
+		                
+		                if(response.getStatusLine().toString().contains("401 Unauthorized"))
+		                {
+		                	Alert.error("Error", "Invalid password");
+		                	return populateDefinitionsList(true);
+		                	
+		                }
+		                
+		                String body = EntityUtils.toString(response.getEntity());
+		            	
+		                List<Xform> xforms = this.getXformsFromXMLFile(body, true);
+
+		        		DefaultListModel model = new DefaultListModel();
+
+		    			for (Xform form : xforms) {
+		    				model.addElement(form);
+
+		    			}
+		    			this.lstDesign.setModel(model);
+		    			return true;
+	
 		} catch (UnknownHostException e) {
 			log.error("The URL of the server you have specified is unknown");
-			return;
+			return false;
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -152,45 +198,17 @@ public class ODKManagerPanel extends JPanel {
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-			
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		URI uri;
-		try {
-			//uri = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!") + "/" + "odk/formList.php");
-			uri = new URI("https://tellervo.ltrr.arizona.edu/dev/odk/formList.php");
-
-			List<Xform> xforms = this
-					.getXformsFromXMLFile("https://tellervo.ltrr.arizona.edu/dev/odk/formList.php", false);
-
-			DefaultListModel model = new DefaultListModel();
-
-			for (Xform form : xforms) {
-				model.addElement(form);
-
-			}
-			this.lstDesign.setModel(model);
-
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if(e.getMessage().contentEquals("Cancelled"))
+			{
+				return false;
+			}
 		}
+		
+		return false;
+
+		
 	}
 
 	/**
@@ -202,38 +220,15 @@ public class ODKManagerPanel extends JPanel {
 	 *            - if false then throw exceptions if true just log errors
 	 * @return
 	 */
-	public static List<Xform> getXformsFromXMLFile(String filename,
+	public static List<Xform> getXformsFromXMLFile(String body,
 			boolean logErrors) throws Exception {
-		StringBuilder fileString = new StringBuilder();
-		StringReader reader;
-		FileHelper fileHelper = new FileHelper();
 
-		String[] argFileString = null;
-		if (TridasIO.getReadingCharset() != null) {
-			try {
-				argFileString = fileHelper.loadStrings(filename,
-						TridasIO.getReadingCharset());
-			} catch (UnsupportedEncodingException e) {
-
-				if (logErrors) {
-					e.printStackTrace();
-				} else {
-					throw e;
-				}
-			}
-		} else {
-			if (TridasIO.isCharsetDetection()) {
-				argFileString = fileHelper
-						.loadStringsFromDetectedCharset(filename);
-			} else {
-				argFileString = fileHelper.loadStrings(filename);
-			}
-		}
-
+		
 		SchemaFactory factory = SchemaFactory
 				.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		URL file = IOUtils.getFileInJarURL("schemas/xformlist.xsd");
 		Schema schema = null;
+		StringReader reader;
 		if (file == null) {
 			log.error(I18n.getText("Schema missing"));
 			return null;
@@ -253,18 +248,7 @@ public class ODKManagerPanel extends JPanel {
 				return null;
 			}
 
-			// Build the string array into a FileReader
-			Boolean firstLine = true;
-
-			for (String s : argFileString) {
-				if (firstLine) {
-					fileString.append(s.replaceFirst("^[^<]*", "") + "\n");
-					firstLine = false;
-				} else {
-					fileString.append(s + "\n");
-				}
-			}
-			reader = new StringReader(fileString.toString());
+			reader = new StringReader(body);
 
 			// Do the validation
 			Validator validator = schema.newValidator();
@@ -315,7 +299,7 @@ public class ODKManagerPanel extends JPanel {
 
 		// All should be ok so now unmarshall to Java classes
 		JAXBContext jc;
-		reader = new StringReader(fileString.toString());
+		reader = new StringReader(body);
 		try {
 			jc = JAXBContext.newInstance("org.openrosa.xforms.xformslist");
 			Unmarshaller u = jc.createUnmarshaller();
@@ -347,15 +331,27 @@ public class ODKManagerPanel extends JPanel {
 		return null;
 	}
 	
-	public static void showDialog()
+	public static void showDialog(Component parent)
 	{
 		JDialog dialog= new JDialog();
 		ODKManagerPanel panel = new ODKManagerPanel();
 		
-		dialog.setLayout(new BorderLayout());
-		dialog.add(panel, BorderLayout.CENTER);
-		dialog.setVisible(true);
-		
+		if(panel.populateDefinitionsList())
+		{
+			dialog.setTitle("Tellervo ODK Form Manager");
+			dialog.setIconImage(Builder.getApplicationIcon());
+			dialog.getContentPane().setLayout(new BorderLayout());
+			dialog.getContentPane().add(panel, BorderLayout.CENTER);
+			dialog.setModal(true);
+			dialog.pack();
+			dialog.setLocationRelativeTo(parent);
+			
+			
+			panel.populateInstancesList();
+			
+			
+			dialog.setVisible(true);
+		}		
 	}
 
 	private static class MyErrorHandler extends DefaultHandler {
@@ -408,6 +404,8 @@ public class ODKManagerPanel extends JPanel {
 		}
 	}
 
+
+	
 	class XformRenderer implements ListCellRenderer {
 
 		protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
@@ -428,5 +426,337 @@ public class ODKManagerPanel extends JPanel {
 			return renderer;
 		}
 	}
+
+	class ODKParserListModel extends AbstractListModel{
+		
+		ArrayList<ODKParser> items = new ArrayList<ODKParser>();
+		
+		public ODKParserListModel()
+		{
+			
+		}
+		
+		public void addItem(ODKParser parser)
+		{
+			items.add(parser);
+			fireContentsChanged(this, 0, items.size());
+		}
+		
+		
+		@Override
+		public Object getElementAt(int index) {
+			return items.get(index);
+		}
+		
+		public void remove(int index)
+		{
+			items.remove(index);
+		}
+
+		@Override
+		public int getSize() {
+			
+			return items.size();
+		}
+		
+		public void sort(){
+		    Collections.sort(items);
+		    fireContentsChanged(this, 0, items.size());
+		}
+		
+	}
+	
+	class ODKParserRenderer implements ListCellRenderer {
+
+		protected DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+
+		public Component getListCellRendererComponent(JList list, Object value,
+				int index, boolean isSelected, boolean cellHasFocus) {
+			
+			JLabel renderer = (JLabel) defaultRenderer
+					.getListCellRendererComponent(list, value, index,
+							isSelected, cellHasFocus);
+			
+			if(value instanceof ODKParser)
+			{
+				 renderer.setText(((ODKParser)value).getFieldValueAsString("instanceName"));
+			}
+			
+	
+			return renderer;
+		}
+	}
+
+
+	@Override
+	public void actionPerformed(ActionEvent evt) {
+
+		if(evt.getActionCommand().contentEquals("deleteInstance"))
+		{
+			int r = JOptionPane.showConfirmDialog(App.mainWindow, 
+					"Are you sure you want to delete this ODK form data from the server?",
+					"Are you sure", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if(r!=JOptionPane.YES_OPTION) return;
+			
+			ODKParser parser = (ODKParser) lstInstances.getSelectedValue();
+			
+			String formid = parser.getFormID();
+			UUID uuid = UUID.fromString(formid);
+			
+			if(deleteFormInstance(uuid))
+			{
+				((ODKParserListModel)lstInstances.getModel()).remove(lstInstances.getSelectedIndex());
+			}
+			
+			
+		}
+		
+		if(evt.getActionCommand().contentEquals("DeleteFormDefinition"))
+		{
+			int r = JOptionPane.showConfirmDialog(App.mainWindow, 
+					"Are you sure you want to delete this ODK form definition from the server?",
+					"Are you sure", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			if(r!=JOptionPane.YES_OPTION) return;
+			
+			
+				Xform selected = lstDesign.getSelectedValue();
+				
+				String formid = selected.getFormID();
+				UUID uuid = UUID.fromString(formid);
+				
+				if(deleteFormDefinition(uuid))
+				{
+					((DefaultListModel)lstDesign.getModel()).remove(lstDesign.getSelectedIndex());
+				}
+				
+		}
+	}
+	
+	public boolean deleteFormInstance(UUID formid)
+	{
+		URI url;
+		try {
+			url = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/deleteSpecificFormInstance.php?id="+formid);
+	
+			
+			  CredentialsProvider credsProvider = App.getODKCredentialsProvider();
+			  
+		        CloseableHttpClient httpclient = HttpClients.custom()
+		                .setDefaultCredentialsProvider(credsProvider)
+		                .build();
+		
+		            HttpGet httpget = new HttpGet(url);
+
+		            System.out.println("Executing request " + httpget.getRequestLine());
+		            CloseableHttpResponse response = httpclient.execute(httpget);
+		        
+		                System.out.println("----------------------------------------");
+		                System.out.println(response.getStatusLine());
+		                
+		                if(response.getStatusLine().toString().contains("401 Unauthorized"))
+		                {
+		                	Alert.error("Error", "Invalid password");
+		                	return false;
+		                	
+		                }
+		                
+		                
+		               return true;
+
+		} catch (UnknownHostException e) {
+			log.error("The URL of the server you have specified is unknown");
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(e.getMessage().contentEquals("Cancelled"))
+			{
+				return false;
+			}
+		}
+		
+		return false;
+
+	}
+	
+	public boolean deleteFormDefinition(UUID formid)
+	{
+		
+		
+		URI url;
+		try {
+			url = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/deleteSpecificFormDefinition.php?id="+formid);
+	
+			
+			  CredentialsProvider credsProvider = App.getODKCredentialsProvider();
+			  
+		        CloseableHttpClient httpclient = HttpClients.custom()
+		                .setDefaultCredentialsProvider(credsProvider)
+		                .build();
+		
+		            HttpGet httpget = new HttpGet(url);
+
+		            System.out.println("Executing request " + httpget.getRequestLine());
+		            CloseableHttpResponse response = httpclient.execute(httpget);
+		        
+		                System.out.println("----------------------------------------");
+		                System.out.println(response.getStatusLine());
+		                
+		                if(response.getStatusLine().toString().contains("401 Unauthorized"))
+		                {
+		                	Alert.error("Error", "Invalid password");
+		                	return false;
+		                	
+		                }
+		                
+		                
+		               return true;
+
+		} catch (UnknownHostException e) {
+			log.error("The URL of the server you have specified is unknown");
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			if(e.getMessage().contentEquals("Cancelled"))
+			{
+				return false;
+			}
+		}
+		
+		return false;
+		
+		
+	}
+
+	
+	public boolean populateInstancesList()
+	{
+		Path instanceFolder = null;
+		
+		// Doing remote server download of ODK files
+		try {
+			
+			// Request a zip file of ODK files from the server ensuring the temp file is deleted on exit
+			URI uri;
+			uri = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/fetchInstances.php");
+			String file = PopulateFromODKCommand.getRemoteODKFiles(uri);
+			
+			if(file==null) {
+				// Download was cancelled
+				return false;
+			}
+			
+			new File(file).deleteOnExit();
+			
+			// Unzip to a temporary folder, again ensuring it is deleted on exit 
+			instanceFolder = Files.createTempDirectory("odk-unzip");
+			instanceFolder.toFile().deleteOnExit();
+			
+			log.debug("Attempting to open zip file: '"+file+"'");
+			
+			ZipFile zipFile = new ZipFile(file);
+		    try {
+		      Enumeration<? extends ZipEntry> entries = zipFile.entries();
+		      while (entries.hasMoreElements()) {
+		        ZipEntry entry = entries.nextElement();
+		        File entryDestination = new File(instanceFolder.toFile(),  entry.getName());
+		        entryDestination.deleteOnExit();
+		        if (entry.isDirectory()) {
+		            entryDestination.mkdirs();
+		        } else {
+		            entryDestination.getParentFile().mkdirs();
+		            InputStream in = zipFile.getInputStream(entry);
+		            OutputStream out = new FileOutputStream(entryDestination);
+		            org.apache.commons.io.IOUtils.copy(in, out);
+		            org.apache.commons.io.IOUtils.closeQuietly(in);
+		            out.close();
+		        }
+		      }
+		    } finally {
+		      zipFile.close();
+		    }
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			Alert.error("Error", "Error downloading ODK data from server.  Please contact the developers");
+			return false;
+		} catch (IOException e) {
+			e.printStackTrace();
+			Alert.error("Error", "Error downloading ODK data from server.  Please contact the developers");
+			return false;
+		}
+
+		// Check the instance folder specified exists
+		File folder = instanceFolder.toFile();
+		int filesFound = 0;
+		ArrayList<ODKParser> filesProcessed = new ArrayList<ODKParser>();
+		ArrayList<ODKParser> filesFailed = new ArrayList<ODKParser>();
+		
+		if(!folder.exists()) {
+		
+			Alert.error("Error", "Error accessing ODK data.  Please contact the developers");
+			log.error("Instances folder does not exist");
+			return false;
+		}
+
+		
+		// Compile a hash set of all media files in the instance folder and subfolders
+		File file = null;
+		SuffixFileFilter fileFilter = new SuffixFileFilter(".xml");
+		Iterator<File> iterator = FileUtils.iterateFiles(folder, fileFilter, TrueFileFilter.INSTANCE);
+		ODKParserListModel model = new ODKParserListModel();
+		while(iterator.hasNext())
+		{
+			file = iterator.next();
+			filesFound++;
+
+			try {
+
+				ODKParser parser = new ODKParser(file);
+				filesProcessed.add(parser);
+								
+				if(!parser.isValidODKFile()) {
+					filesFailed.add(parser);
+					continue;
+				}
+				else if(parser.getFileType()==null)
+				{
+					filesFailed.add(parser);
+					continue;
+				}
+				else if (parser.getFieldValueAsString("instanceName")!=null)
+				{
+					model.addItem(parser);
+   			
+	    			
+					continue;
+				}
+
+			} catch (Exception e) {
+				e.printStackTrace();		
+			}    
+
+		}
+		
+		model.sort();
+		lstInstances.setModel(model);
+		
+		return true;
+	}
+	
 
 }

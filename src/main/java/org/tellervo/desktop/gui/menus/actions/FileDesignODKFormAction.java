@@ -20,7 +20,7 @@ public class FileDesignODKFormAction extends AbstractAction{
 	private Window parent;
 	
 	public FileDesignODKFormAction(Window parent) {
-        super("Design ODK form", Builder.getIcon("odk-logo.png", 22));
+        super("ODK form designer", Builder.getIcon("odk-logo.png", 22));
 		putValue(SHORT_DESCRIPTION, "Design ODK form");
         //putValue(MNEMONIC_KEY,I18n.getMnemonic("menus.file.open")); 
         //putValue(ACCELERATOR_KEY, I18n.getKeyStroke("menus.file.open"));

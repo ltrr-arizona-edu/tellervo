@@ -31,9 +31,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.media.opengl.GLException;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
+import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;
@@ -90,6 +100,7 @@ public class App{
   public static Window mainWindow = null;
   public static DBBrowserSettings dbBrowserSettings;
   
+  public static CredentialsProvider odkCredentialsProvider = null;
   
   public static Boolean isFirstRun = false;
   
@@ -145,6 +156,47 @@ public static boolean isTellervoLiteMode()
 {
 	return App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false);
 }
+
+
+
+public static CredentialsProvider getODKCredentialsProvider() throws Exception
+{
+	return App.getODKCredentialsProvider(false);
+}
+
+
+public static CredentialsProvider getODKCredentialsProvider(boolean forceCreate) throws Exception
+{
+	  if (App.odkCredentialsProvider==null || forceCreate)
+	  {
+			JPanel panel = new JPanel();
+			JLabel label = new JLabel("Enter your ODK server password:");
+			JPasswordField pass = new JPasswordField(10);
+			panel.add(label);
+			panel.add(pass);
+			String[] options = new String[]{"OK", "Cancel"};
+			int option = JOptionPane.showOptionDialog(App.mainWindow, panel, "Password",
+			                         JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE,
+			                         null, options, options[0]);
+			if (option == JOptionPane.CANCEL_OPTION || option == JOptionPane.NO_OPTION )
+			{
+				throw new Exception("Cancelled");
+			}
+			String password = new String(pass.getPassword());
+
+		  
+			odkCredentialsProvider = new BasicCredentialsProvider();
+			odkCredentialsProvider.setCredentials(
+	              AuthScope.ANY,
+	              new UsernamePasswordCredentials(App.currentUser.getUsername(), password));
+
+	  }
+	  
+	  return odkCredentialsProvider;
+	
+}
+
+
 
 public static synchronized void init(ProgressMeter meter, Splash splash) 
 {

@@ -1,6 +1,6 @@
 <?php
 require_once('../config.php');
-require_once('inc/odkhelper.php');
+require_once('odkhelper.php');
 require_once('../inc/errors.php');
 require_once('../inc/output.php');
 require_once('../inc/dbhelper.php');
@@ -39,7 +39,6 @@ else
         die();
 }
 
-//file_put_contents('/tmp/headers.txt', "Getting form instances...\n", FILE_APPEND);
 
 $zipfile = createZipFile();
 
@@ -47,6 +46,7 @@ getFile($zipfile);
 
 function createZipFile()
 {
+
     global $dbconn;
     global $firebug;
     global $domain;
@@ -77,6 +77,7 @@ function createZipFile()
         if (pg_num_rows($result)==0)
         {
             echo "";
+            //file_put_contents('/tmp/headers.txt', "No forms\n", FILE_APPEND);
 	    $firebug->log("no forms");
 	    return;
         }

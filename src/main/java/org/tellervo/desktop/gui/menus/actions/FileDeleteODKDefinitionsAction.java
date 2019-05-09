@@ -18,7 +18,7 @@ public class FileDeleteODKDefinitionsAction extends AbstractAction{
 	 */
 	
 	public FileDeleteODKDefinitionsAction() {
-        super("Delete form designs from server", Builder.getIcon("odk-delete.png", 22));
+        super("Delete all form designs from server", Builder.getIcon("odk-delete.png", 22));
 		putValue(SHORT_DESCRIPTION, "Delete form designs from server");
 
     }

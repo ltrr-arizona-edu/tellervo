@@ -1,7 +1,8 @@
 <?php
 
-include('inc/odkauth.php');
-include('inc/odkhelper.php');
+include_once('../systemconfig.php');
+include('odkauth.php');
+include('odkhelper.php');
 $odkauth = new ODKAuth();
 
 if($odkauth->doAuthentication()===TRUE)

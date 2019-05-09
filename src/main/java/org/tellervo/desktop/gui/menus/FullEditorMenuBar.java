@@ -151,8 +151,8 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		
 		miDesignODKForm = new JMenuItem(actions.fileDesignODKFormAction);
 		mnODK.add(miDesignODKForm);
-		//miODKManager = new JMenuItem(actions.fileODKManagerAction);
-		//mnODK.add(miODKManager);
+		miODKManager = new JMenuItem(actions.fileODKManagerAction);
+		mnODK.add(miODKManager);
 		mnODK.addSeparator();
 		miDeleteODKDefinitions = new JMenuItem(actions.fileDeleteODKDefinitionsAction);
 		mnODK.add(miDeleteODKDefinitions);

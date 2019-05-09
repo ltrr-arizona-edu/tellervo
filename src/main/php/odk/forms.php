@@ -1,8 +1,8 @@
 <?php
 
 
-include('inc/odkauth.php');
-include('inc/odkhelper.php');
+include('odkauth.php');
+include('odkhelper.php');
 $odkauth = new ODKAuth();
 
 

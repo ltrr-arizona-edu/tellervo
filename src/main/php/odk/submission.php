@@ -1,7 +1,7 @@
 <?php
 //nfile_put_contents('/tmp/headers.txt', "\n\n Submission.php called \n", FILE_APPEND);
-include('inc/odkauth.php');
-include('inc/odkhelper.php');
+include('odkauth.php');
+include('odkhelper.php');
 require_once('../inc/dbhelper.php');
 $odkauth = new ODKAuth();
 $mediaStoreFolder = "/usr/share/tellervo-server/mediastore/";

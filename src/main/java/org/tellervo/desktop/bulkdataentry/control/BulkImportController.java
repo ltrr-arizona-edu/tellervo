@@ -31,6 +31,7 @@ import org.tellervo.desktop.bulkdataentry.command.CopySelectedRowsCommand;
 import org.tellervo.desktop.bulkdataentry.command.DeleteODKFormDefinitionsCommand;
 import org.tellervo.desktop.bulkdataentry.command.DeleteODKFormInstancesCommand;
 import org.tellervo.desktop.bulkdataentry.command.DeleteRowCommand;
+import org.tellervo.desktop.bulkdataentry.command.DeleteSpecificODKFormDefinitionCommand;
 import org.tellervo.desktop.bulkdataentry.command.GPXBrowseCommand;
 import org.tellervo.desktop.bulkdataentry.command.HideColumnWindowCommand;
 import org.tellervo.desktop.bulkdataentry.command.ImportSelectedElementsCommand;
@@ -90,6 +91,7 @@ public class BulkImportController extends FrontController {
 	public static final String POPULATE_FROM_ODK_FILE = "BULK_IMPORT_POPULATE_FROM_ODK_FILE";
 	public static final String DELETE_ODK_DEFINITIONS = "BULK_IMPORT_DELETE_ODK_DEFINITIONS";
 	public static final String DELETE_ODK_INSTANCES = "BULK_IMPORT_DELETE_ODK_INSTANCES";
+	public static final String DELETE_SPECIFIC_ODK_DEFINITION = "BULK_IMPORT_DELETE_SPECIFIC_ODK_INSTANCE";
 	
 
 	
@@ -111,6 +113,8 @@ public class BulkImportController extends FrontController {
 		registerCommand(POPULATE_FROM_GEONAMES, PopulateFromGeonamesCommand.class);
 		registerCommand(POPULATE_FROM_ODK_FILE, PopulateFromODKCommand.class);
 		registerCommand(DELETE_ODK_DEFINITIONS, DeleteODKFormDefinitionsCommand.class);
+		registerCommand(DELETE_SPECIFIC_ODK_DEFINITION, DeleteSpecificODKFormDefinitionCommand.class);
+
 		registerCommand(DELETE_ODK_INSTANCES, DeleteODKFormInstancesCommand.class);
 
 

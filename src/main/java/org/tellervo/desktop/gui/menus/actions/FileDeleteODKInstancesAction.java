@@ -18,7 +18,7 @@ public class FileDeleteODKInstancesAction extends AbstractAction{
 	 */
 	
 	public FileDeleteODKInstancesAction() {
-        super("Delete field data from server", Builder.getIcon("odk-delete.png", 22));
+        super("Delete all field data from server", Builder.getIcon("odk-delete.png", 22));
 		putValue(SHORT_DESCRIPTION, "Delete field data from server");
 
     }

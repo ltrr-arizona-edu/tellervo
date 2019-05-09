@@ -21,6 +21,7 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.DefaultComboBoxModel;
@@ -67,7 +68,9 @@ import org.codehaus.plexus.util.FileUtils;
 import org.jdesktop.swingx.JXList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.bulkdataentry.control.CopyRowEvent;
 import org.tellervo.desktop.bulkdataentry.control.DeleteODKDefinitionsEvent;
+import org.tellervo.desktop.bulkdataentry.control.DeleteSpecificODKDefinitionEvent;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.odk.fields.AbstractODKChoiceField;
 import org.tellervo.desktop.odk.fields.AbstractODKField;
@@ -163,6 +166,12 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		miSaveFormDesign.setIcon(Builder.getIcon("filesave.png", 22));
 		miSaveFormDesign.addActionListener(this);
 		mnFile.add(miSaveFormDesign);
+		
+		JMenuItem miFormManager = new JMenuItem("Form manager");
+		miFormManager.setActionCommand("FormManager");
+		miFormManager.setIcon(Builder.getIcon("filesave.png", 22));
+		miFormManager.addActionListener(this);
+		mnFile.add(miFormManager);
 		
 		JSeparator separator = new JSeparator();
 		mnFile.add(separator);
@@ -1479,6 +1488,10 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		{
 			deleteFormDefinitions();
 		}
+		else if (evt.getActionCommand().equals("FormManager"))
+		{
+			ODKManagerPanel.showDialog(this);
+		}
 	}
 	
 	/**
@@ -1489,7 +1502,7 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		DeleteODKDefinitionsEvent event = new DeleteODKDefinitionsEvent();
 		event.dispatch();
 	}
-	
+		
 	/**
 	 * Handle change of form type
 	 */

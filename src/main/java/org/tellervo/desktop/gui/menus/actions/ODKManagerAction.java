@@ -1,5 +1,6 @@
 package org.tellervo.desktop.gui.menus.actions;
 
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
@@ -15,18 +16,19 @@ public class ODKManagerAction extends AbstractAction{
 
 	private static final long serialVersionUID = 1L;
 
-
-	
-	public ODKManagerAction() {
-        super("ODK form manager", Builder.getIcon("odk.png", 16));
-		putValue(SHORT_DESCRIPTION, "Open ODK form manager");
+	private Window parent;
 		
+	public ODKManagerAction( Window parent ){
+        super("ODK form manager", Builder.getIcon("odk-logo.png", 22));
+		putValue(SHORT_DESCRIPTION, "Open ODK form manager");
+        this.parent = parent;
+
     }
 			
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		
-		ODKManagerPanel.showDialog();
+		ODKManagerPanel.showDialog(parent);
 		
 	}
 	

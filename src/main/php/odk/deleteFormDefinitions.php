@@ -1,6 +1,7 @@
 <?php
 
 require_once('../config.php');
+require_once('../systemconfig.php');
 require_once("../inc/errors.php");
 require_once("../inc/auth.php");
 require_once("../inc/meta.php");
