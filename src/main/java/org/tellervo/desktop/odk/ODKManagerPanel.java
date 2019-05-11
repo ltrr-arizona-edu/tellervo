@@ -134,12 +134,18 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 
 			JPanel instancesPanel = new JPanel();
 			panelFormInstances.add(instancesPanel, BorderLayout.SOUTH);
-			instancesPanel.setLayout(new MigLayout("", "[grow][]", "[]"));
+			instancesPanel.setLayout(new MigLayout("", "[grow][][]", "[]"));
+			
+			JButton btnPopulateInstance = new JButton("Populate");
+			btnPopulateInstance.setActionCommand("populateInstance");
+			btnPopulateInstance.addActionListener(this);
+			instancesPanel.add(btnPopulateInstance, "cell 1 0");
+			
 			
 			JButton btnDeleteSelectedInstance = new JButton("Delete Selected");
 			btnDeleteSelectedInstance.setActionCommand("deleteInstance");
 			btnDeleteSelectedInstance.addActionListener(this);
-			instancesPanel.add(btnDeleteSelectedInstance, "cell 1 0");
+			instancesPanel.add(btnDeleteSelectedInstance, "cell 2 0");
 		
 	}
 
@@ -351,7 +357,7 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 			dialog.setLocationRelativeTo(parent);
 			
 			
-			panel.populateInstancesList();
+			//panel.populateInstancesList();
 			
 			
 			dialog.setVisible(true);
@@ -509,7 +515,6 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 			fireContentsChanged(this, 0, items.size());
 		}
 		
-		
 		@Override
 		public Object getElementAt(int index) {
 			return items.get(index);
@@ -599,6 +604,11 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 			}
 			
 			
+		}
+		
+		if(evt.getActionCommand().contentEquals("populateInstance"))
+		{
+			this.populateInstancesList();
 		}
 		
 		if(evt.getActionCommand().contentEquals("DeleteFormDefinition"))
