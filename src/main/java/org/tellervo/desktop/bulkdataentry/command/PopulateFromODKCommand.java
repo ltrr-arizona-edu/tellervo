@@ -1179,7 +1179,9 @@ public class PopulateFromODKCommand implements ICommand {
 			newrow.setProperty(SingleSampleModel.COMMENTS, parser.getFieldValueAsStringFromNodeList("tridas_sample_comments", node.getChildNodes()));
 			newrow.setProperty(SingleSampleModel.DESCRIPTION, parser.getFieldValueAsStringFromNodeList("tridas_sample_description", node.getChildNodes()));
 			try{
-				newrow.setProperty(SingleSampleModel.SAMPLING_DATE, parser.getDate());
+				//newrow.setProperty(SingleSampleModel.SAMPLING_DATE, parser.getDate());
+				newrow.setProperty(SingleSampleModel.SAMPLING_DATE, parser.getFieldValueAsString("tridas_sample_samplingdate"));
+				
 			} catch (Exception e)
 			{
 				log.debug("Failed to get sampling date");

@@ -159,7 +159,7 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 				
 		URI url;
 		try {
-			url = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/formList.php");
+			url = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/formList.php?nopublic=t");
 	
 			
 			  CredentialsProvider credsProvider = App.getODKCredentialsProvider(forceNewCredentials);

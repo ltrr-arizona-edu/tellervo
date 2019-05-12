@@ -84,7 +84,10 @@ public class WizardMediaFiles extends AbstractWizardPanel {
 				
 				int returnVal = fc.showOpenDialog(getParent());
 				
-				if (returnVal == JFileChooser.APPROVE_OPTION) txtCopyTo.setText(fc.getSelectedFile().getAbsolutePath());			
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					txtCopyTo.setText(fc.getSelectedFile().getAbsolutePath());
+					App.prefs.setPref(PrefKey.ODK_COPY_TO, fc.getSelectedFile().getAbsolutePath());
+				}
 			}
 			
 		});
