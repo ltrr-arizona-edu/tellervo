@@ -176,7 +176,15 @@ public class PopulateFromODKCommand implements ICommand {
 				
 				// Request a zip file of ODK files from the server ensuring the temp file is deleted on exit
 				URI uri;
-				uri = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/fetchInstances.php");
+			
+				// Tell server to skip media files from download if they are not needed
+				String incmedia = "";
+				if(!wizard.isIncludeMediaFilesSelected())
+				{
+					incmedia = "?excludeMedia=true";
+				}
+				
+				uri = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/fetchInstances.php"+incmedia);
 				String file = getRemoteODKFiles(uri);
 				
 				if(file==null) {

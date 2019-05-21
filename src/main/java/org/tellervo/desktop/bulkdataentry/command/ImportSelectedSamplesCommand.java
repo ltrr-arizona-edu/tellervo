@@ -128,6 +128,11 @@ public class ImportSelectedSamplesCommand implements ICommand {
 				{
 					currentIdentifier+=TridasUtils.getObjectCodeMulti((TridasObjectEx) som.getProperty(SingleSampleModel.OBJECT))+"-";
 				}
+				else if (tempob instanceof TridasObjectOrPlaceholder)
+				{
+					TridasObjectOrPlaceholder temptoop = (TridasObjectOrPlaceholder) tempob;
+					currentIdentifier+=temptoop.getCode()+"-";
+				}
 				else
 				{
 					currentIdentifier+=som.getProperty(SingleSampleModel.OBJECT)+"-";
@@ -141,6 +146,11 @@ public class ImportSelectedSamplesCommand implements ICommand {
 						currentIdentifier+=((TridasElement)som.getProperty(SingleSampleModel.ELEMENT)).getTitle()+"-"+som.getProperty(SingleSampleModel.TITLE);
 
 					}
+					else if (tempel instanceof TridasElementOrPlaceholder)
+					{
+						TridasElementOrPlaceholder teop = (TridasElementOrPlaceholder) tempel;
+						currentIdentifier+=teop.getCode()+"-"+som.getProperty(SingleSampleModel.TITLE);
+					}
 					else
 					{
 						currentIdentifier+=som.getProperty(SingleSampleModel.ELEMENT)+"-"+som.getProperty(SingleSampleModel.TITLE);
@@ -149,6 +159,8 @@ public class ImportSelectedSamplesCommand implements ICommand {
 					
 				}
 			}
+			
+			log.debug("Current identifier: "+currentIdentifier);
 	
 			
 			// object

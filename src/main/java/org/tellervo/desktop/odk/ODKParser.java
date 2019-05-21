@@ -187,6 +187,22 @@ public class ODKParser implements Comparable<ODKParser>{
 		return !failedParse;
 	}
 	
+	public static String makeValueCSVFriendly(String value)
+	{
+		if(value==null) return null;
+		
+		if(value.contains("EMS"))
+		{
+			log.debug("Found!!");
+		}
+		
+		value = value.replace("\r\n","; ");
+    	value = value.replace("\n","; ");
+    	value = value.replace("\"", "'");
+		
+		return value;
+	}
+	
 	public String getFieldValueAsString(String field)
 	{
 		if(doc.getElementsByTagName(field).getLength()==0) 
@@ -201,7 +217,7 @@ public class ODKParser implements Comparable<ODKParser>{
 			}
 			else
 			{
-				return contents;
+				return makeValueCSVFriendly(contents);
 			}
 		} catch (Exception e)
 		{
@@ -226,7 +242,7 @@ public class ODKParser implements Comparable<ODKParser>{
 			}
 			else
 			{
-				return contents;
+				return makeValueCSVFriendly(contents);
 			}
 		} catch (Exception e)
 		{
@@ -322,7 +338,7 @@ public class ODKParser implements Comparable<ODKParser>{
 		        	if(subnode.getNodeName().equals(field))
 		        	{
 		        		String val = eElement.getTextContent();
-		        		if(val!=null) return val;
+		        		if(val!=null) return makeValueCSVFriendly(val);
 		        	}
 		        	
 		        }
@@ -536,10 +552,11 @@ public class ODKParser implements Comparable<ODKParser>{
 	        	try{
 		        	String name = node.getNodeName();
 		        	if(name.equals("meta") || name.equals("instanceName") || name.equals("data") || name.startsWith("group_")) continue;
-		        	String value = node.getFirstChild().getNodeValue();
+		        	String value = makeValueCSVFriendly(node.getFirstChild().getNodeValue());
 		        	
 		        	
 		        	
+		     
 		        	//if(name.startsWith("tridas_")) name = name.substring(7);
 		        	//if(name.startsWith("tellervo.user.")) name = name.substring(14);
 		        	

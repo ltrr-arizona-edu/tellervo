@@ -133,12 +133,12 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 
 		if(clazz==null)
 		{
-			log.debug("Class is defaulting to string");
+			//log.debug("Class is defaulting to string");
 			return String.class;
 		}
 		else
 		{
-			log.debug("Class is : "+clazz.getSimpleName());
+			//log.debug("Class is : "+clazz.getSimpleName());
 			return clazz;
 		}
 	}
