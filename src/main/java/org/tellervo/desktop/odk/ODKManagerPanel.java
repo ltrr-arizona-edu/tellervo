@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.swing.AbstractListModel;
@@ -38,6 +39,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -103,8 +105,9 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 			panelFormDesign.setLayout(new BorderLayout(0, 0));
 
 			lstDesign = new JList<Xform>();	
-			
+			//lstDesign.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			lstDesign.setCellRenderer(new XformRenderer());
+			
 	
 			panelFormDesign.add(lstDesign);
 	
@@ -125,17 +128,24 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 			panelFormInstances.add(scrollPane, BorderLayout.CENTER);
 			
 			lstInstances = new JList<ODKParser>();	
+			lstInstances.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 			scrollPane.setViewportView(lstInstances);
 			lstInstances.setCellRenderer(new ODKParserRenderer());
 
 			JPanel instancesPanel = new JPanel();
 			panelFormInstances.add(instancesPanel, BorderLayout.SOUTH);
-			instancesPanel.setLayout(new MigLayout("", "[grow][]", "[]"));
+			instancesPanel.setLayout(new MigLayout("", "[grow][][]", "[]"));
 			
-			JButton btnDeleteSelectedInstance = new JButton("Delete selected");
+			JButton btnPopulateInstance = new JButton("Populate");
+			btnPopulateInstance.setActionCommand("populateInstance");
+			btnPopulateInstance.addActionListener(this);
+			instancesPanel.add(btnPopulateInstance, "cell 1 0");
+			
+			
+			JButton btnDeleteSelectedInstance = new JButton("Delete Selected");
 			btnDeleteSelectedInstance.setActionCommand("deleteInstance");
 			btnDeleteSelectedInstance.addActionListener(this);
-			instancesPanel.add(btnDeleteSelectedInstance, "cell 1 0");
+			instancesPanel.add(btnDeleteSelectedInstance, "cell 2 0");
 		
 	}
 
@@ -149,7 +159,7 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 				
 		URI url;
 		try {
-			url = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/formList.php");
+			url = new URI(App.prefs.getPref(PrefKey.WEBSERVICE_URL, "invalid url!")+"/"+"odk/formList.php?nopublic=t");
 	
 			
 			  CredentialsProvider credsProvider = App.getODKCredentialsProvider(forceNewCredentials);
@@ -177,10 +187,10 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 		            	
 		                List<Xform> xforms = this.getXformsFromXMLFile(body, true);
 
-		        		DefaultListModel model = new DefaultListModel();
+		        		XformListModel model = new XformListModel();
 
 		    			for (Xform form : xforms) {
-		    				model.addElement(form);
+		    				model.addItem(form);
 
 		    			}
 		    			this.lstDesign.setModel(model);
@@ -347,7 +357,7 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 			dialog.setLocationRelativeTo(parent);
 			
 			
-			panel.populateInstancesList();
+			//panel.populateInstancesList();
 			
 			
 			dialog.setVisible(true);
@@ -451,6 +461,29 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 		public void remove(int index)
 		{
 			items.remove(index);
+			this.fireIntervalRemoved(this, 0, items.size());
+		}
+		
+		public void removeMultiple(int[] indexes)
+		{
+			ArrayList<Integer> ind = new ArrayList<Integer>();
+			for(int i : indexes)
+			{
+				ind.add(i);
+			}
+
+			Collections.sort(ind, Collections.reverseOrder());
+			for (int i : ind)
+			    this.remove(i);
+			
+			
+		}
+		
+		public void removeMultiple(ArrayList<Integer> ind)
+		{
+			Collections.sort(ind, Collections.reverseOrder());
+			for (int i : ind)
+			    this.remove(i);	
 		}
 
 		@Override
@@ -463,6 +496,68 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 		    Collections.sort(items);
 		    fireContentsChanged(this, 0, items.size());
 		}
+		
+	}
+	
+
+	class XformListModel extends AbstractListModel{
+		
+		ArrayList<Xform> items = new ArrayList<Xform>();
+		
+		public XformListModel()
+		{
+			
+		}
+		
+		public void addItem(Xform form)
+		{
+			items.add(form);
+			fireContentsChanged(this, 0, items.size());
+		}
+		
+		@Override
+		public Object getElementAt(int index) {
+			return items.get(index);
+		}
+		
+		public void remove(int index)
+		{
+			items.remove(index);
+			this.fireIntervalRemoved(this, 0, items.size());
+		}
+		
+		public void removeMultiple(int[] indexes)
+		{
+			ArrayList<Integer> ind = new ArrayList<Integer>();
+			for(int i : indexes)
+			{
+				ind.add(i);
+			}
+
+			Collections.sort(ind, Collections.reverseOrder());
+			for (int i : ind)
+			    this.remove(i);
+			
+			
+		}
+		
+		public void removeMultiple(ArrayList<Integer> ind)
+		{
+			Collections.sort(ind, Collections.reverseOrder());
+			for (int i : ind)
+			    this.remove(i);	
+		}
+
+		@Override
+		public int getSize() {
+			
+			return items.size();
+		}
+		
+		/*public void sort(){
+		    Collections.sort(items);
+		    fireContentsChanged(this, 0, items.size());
+		}*/
 		
 	}
 	
@@ -511,6 +606,11 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 			
 		}
 		
+		if(evt.getActionCommand().contentEquals("populateInstance"))
+		{
+			this.populateInstancesList();
+		}
+		
 		if(evt.getActionCommand().contentEquals("DeleteFormDefinition"))
 		{
 			int r = JOptionPane.showConfirmDialog(App.mainWindow, 
@@ -519,15 +619,30 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 			if(r!=JOptionPane.YES_OPTION) return;
 			
 			
-				Xform selected = lstDesign.getSelectedValue();
+				int[] indices = lstDesign.getSelectedIndices();
 				
-				String formid = selected.getFormID();
-				UUID uuid = UUID.fromString(formid);
+				ArrayList<Integer> successfullyDeleted = new ArrayList<Integer>();
 				
-				if(deleteFormDefinition(uuid))
+				for (int i : indices)
 				{
-					((DefaultListModel)lstDesign.getModel()).remove(lstDesign.getSelectedIndex());
+					Xform selected = lstDesign.getModel().getElementAt(i);
+					
+					String formid = selected.getFormID();
+					UUID uuid = UUID.fromString(formid);
+					if(deleteFormDefinition(uuid))
+					{
+						successfullyDeleted.add(i);
+					}
+
 				}
+					
+				if(indices.length!=successfullyDeleted.size())
+				{
+					Alert.error("Error", "There was a problem deleting a form");
+				}
+				
+				((XformListModel)lstDesign.getModel()).removeMultiple(successfullyDeleted);
+				
 				
 		}
 	}
@@ -669,8 +784,10 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 			
 			log.debug("Attempting to open zip file: '"+file+"'");
 			
-			ZipFile zipFile = new ZipFile(file);
+			ZipFile zipFile =null;
+
 		    try {
+		    	zipFile= new ZipFile(file);
 		      Enumeration<? extends ZipEntry> entries = zipFile.entries();
 		      while (entries.hasMoreElements()) {
 		        ZipEntry entry = entries.nextElement();
@@ -688,9 +805,15 @@ public class ODKManagerPanel extends JPanel implements ActionListener {
 		        }
 		      }
 		    } finally {
-		      zipFile.close();
+		    	
+		    	if(zipFile!=null) zipFile.close();
 		    }
-		} catch (URISyntaxException e) {
+		} catch (ZipException e)
+		{
+			log.debug(e.getLocalizedMessage());
+			return false;
+		}
+		  catch (URISyntaxException e) {
 			e.printStackTrace();
 			Alert.error("Error", "Error downloading ODK data from server.  Please contact the developers");
 			return false;

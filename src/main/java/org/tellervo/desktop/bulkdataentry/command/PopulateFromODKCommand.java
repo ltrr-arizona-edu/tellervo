@@ -43,6 +43,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
@@ -200,8 +201,9 @@ public class PopulateFromODKCommand implements ICommand {
 				
 				log.debug("Attempting to open zip file: '"+file+"'");
 				
-				ZipFile zipFile = new ZipFile(file);
+				ZipFile zipFile = null;
 			    try {
+			    	zipFile = new ZipFile(file);
 			      Enumeration<? extends ZipEntry> entries = zipFile.entries();
 			      while (entries.hasMoreElements()) {
 			        ZipEntry entry = entries.nextElement();
@@ -219,9 +221,14 @@ public class PopulateFromODKCommand implements ICommand {
 			        }
 			      }
 			    } finally {
-			      zipFile.close();
+			      if(zipFile!=null) zipFile.close();
 			    }
-			} catch (URISyntaxException e) {
+			}  catch (ZipException e)
+			{
+				Alert.error("Error", e.getMessage());		
+				return;
+			}
+			catch (URISyntaxException e) {
 				e.printStackTrace();
 				Alert.error("Error", "Error downloading ODK data from server.  Please contact the developers");
 				return;
@@ -1180,7 +1187,9 @@ public class PopulateFromODKCommand implements ICommand {
 			newrow.setProperty(SingleSampleModel.COMMENTS, parser.getFieldValueAsStringFromNodeList("tridas_sample_comments", node.getChildNodes()));
 			newrow.setProperty(SingleSampleModel.DESCRIPTION, parser.getFieldValueAsStringFromNodeList("tridas_sample_description", node.getChildNodes()));
 			try{
-				newrow.setProperty(SingleSampleModel.SAMPLING_DATE, parser.getDate());
+				//newrow.setProperty(SingleSampleModel.SAMPLING_DATE, parser.getDate());
+				newrow.setProperty(SingleSampleModel.SAMPLING_DATE, parser.getFieldValueAsString("tridas_sample_samplingdate"));
+				
 			} catch (Exception e)
 			{
 				log.debug("Failed to get sampling date");

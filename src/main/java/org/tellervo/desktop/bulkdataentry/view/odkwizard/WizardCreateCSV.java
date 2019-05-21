@@ -109,6 +109,7 @@ public class WizardCreateCSV extends AbstractWizardPanel {
 			if(f.exists() && f.isDirectory())
 			{
 				// Great
+				App.prefs.setPref(PrefKey.ODK_CSV_FILENAME, fc.getSelectedFile().getAbsolutePath());
 			}
 			else if (f.exists()==false)
 			{
