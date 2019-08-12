@@ -224,41 +224,7 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 		argSample.setState((String)getProperty(STATE));
 		argSample.setKnots((Boolean)getProperty(KNOTS));
 
-		if(getProperty(SAMPLING_DATE)!=null)
-		{
 		
-			DateTime mydatetime = DateUtils.parseDateTimeFromNaturalString((String) getProperty(SAMPLING_DATE));
-			DatePrecision prec = DateUtils.getDatePrecision((String) getProperty(SAMPLING_DATE));
-			
-			Date mydate = DateUtils.dateTimeToDate(mydatetime);
-			
-			if(mydate==null) throw new Exception ("Unable to parse the sampling date from the information given.");
-			
-			if(prec!=DatePrecision.DAY)
-			{
-				mydate.setCertainty(Certainty.APPROXIMATELY);
-			}
-			else
-			{
-				mydate.setCertainty(Certainty.EXACT);
-			}
-			
-			argSample.setSamplingDate(mydate);
-			
-			TridasGenericField field = null;
-			for(TridasGenericField gf: argSample.getGenericFields()){
-				if(gf.getName().equals("tellervo.samplingDatePrecision")){
-					field = gf;
-				}
-			}
-			if(field == null){
-				field = new TridasGenericField();
-				argSample.getGenericFields().add(field);
-			}
-			field.setName("tellervo.samplingDatePrecision");
-			field.setType("xs:string");
-			field.setValue(prec.toString());
-		}
 		
 		
 		
@@ -368,7 +334,45 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 			}
 		}
 		
+		
+		
 		argSample.setIdentifier((TridasIdentifier) getProperty(IMPORTED));
+		
+		if(getProperty(SAMPLING_DATE)!=null)
+		{
+		
+			DateTime mydatetime = DateUtils.parseDateTimeFromNaturalString((String) getProperty(SAMPLING_DATE));
+			DatePrecision prec = DateUtils.getDatePrecision((String) getProperty(SAMPLING_DATE));
+			
+			Date mydate = DateUtils.dateTimeToDate(mydatetime);
+			
+			if(mydate==null) throw new Exception ("Unable to parse the sampling date from the information given.");
+			
+			if(prec!=DatePrecision.DAY)
+			{
+				mydate.setCertainty(Certainty.APPROXIMATELY);
+			}
+			else
+			{
+				mydate.setCertainty(Certainty.EXACT);
+			}
+			
+			argSample.setSamplingDate(mydate);
+			
+			TridasGenericField field = null;
+			for(TridasGenericField gf: argSample.getGenericFields()){
+				if(gf.getName().equals("tellervo.samplingDatePrecision")){
+					field = gf;
+				}
+			}
+			if(field == null){
+				field = new TridasGenericField();
+				argSample.getGenericFields().add(field);
+			}
+			field.setName("tellervo.samplingDatePrecision");
+			field.setType("xs:string");
+			field.setValue(prec.toString());
+		}
 	}
 	
 	public void populateFromTridasSample(TridasSample argSample){
