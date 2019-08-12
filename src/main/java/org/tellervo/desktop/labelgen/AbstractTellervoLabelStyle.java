@@ -31,7 +31,9 @@ public abstract class AbstractTellervoLabelStyle {
 		BOX, SAMPLE, GENERIC
 	}
 	
+	float barcodeSize = 0.7f;
 	
+
 	
 	public AbstractTellervoLabelStyle(String name, String description, ItemType itemType)
 	{
@@ -39,6 +41,18 @@ public abstract class AbstractTellervoLabelStyle {
 		this.description = description;
 		this.itemType = itemType;
 	}
+	
+	/**
+	 * Set the minimum bar size for barcode.  Default is 0.7f
+	 * 
+	 * 
+	 * @param size
+	 */
+	public void setBarcodeSize(float size)
+	{
+		barcodeSize = size;
+	}
+	
 	
 	/**
 	 * Get image of full page of labels

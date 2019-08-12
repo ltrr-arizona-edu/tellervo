@@ -183,12 +183,20 @@ public class LabBarcode extends Barcode128 {
 	
 	public static Image getBoxBarcode(WSIBox b, PdfContentByte cb, float barheight)
 	{
+		return getBoxBarcode(b, cb, barheight, 0.7f);
+	}
+	
+	public static Image getBoxBarcode(WSIBox b, PdfContentByte cb, float barheight, float size)
+	{
 		UUID uuid = UUID.fromString(b.getIdentifier().getValue());
 		LabBarcode barcode = new LabBarcode(LabBarcode.Type.BOX, uuid);
 
 		
 		barcode.setFont(null);
-		barcode.setX(0.7f);
+		
+		// Original works for 4" labels
+		//barcode.setX(0.7f);
+		barcode.setX(size);
 		barcode.setSize(6f);
 		barcode.setBaseline(8f);
 		barcode.setBarHeight(barheight);
@@ -201,18 +209,26 @@ public class LabBarcode extends Barcode128 {
 	
 	public static Image getSampleBarcode(TridasSample b, PdfContentByte cb)
 	{
-		return getSampleBarcode(b, cb, 10f);
+		return getSampleBarcode(b, cb, 10f, 0.7f);
 	}
 	
-	public static Image getSampleBarcode(TridasSample b, PdfContentByte cb, float barheight)
+	public static Image getSampleBarcode(TridasSample b, PdfContentByte cb, float barcodesize)
+	{
+		return getSampleBarcode(b, cb, 10f, barcodesize);
+	}
+		
+	public static Image getSampleBarcode(TridasSample b, PdfContentByte cb, float barheight, float size)
 	{
 		UUID uuid = UUID.fromString(b.getIdentifier().getValue());
 		LabBarcode barcode = new LabBarcode(LabBarcode.Type.SAMPLE, uuid);
 
 		
 		barcode.setFont(null);
-		barcode.setX(0.7f);
-		barcode.setSize(6f);
+		
+		// ORiginal
+		//barcode.setX(0.7f);
+		barcode.setX(0.65f);
+		barcode.setSize(size);
 		barcode.setBaseline(8f);
 		barcode.setBarHeight(barheight);
 		

@@ -129,7 +129,7 @@ public class SampleLabel1Style extends AbstractTellervoLabelStyle {
 					
 					//barcode.setFont(null);
 					
-					Image img = LabBarcode.getSampleBarcode(s, cb, 20);
+					Image img = LabBarcode.getSampleBarcode(s, cb, 20, barcodeSize);
 							
 					PdfPCell labcell = new PdfPCell(); 
 					

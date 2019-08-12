@@ -155,7 +155,7 @@ public class SampleLabelRoll4xPoint375StyleB extends AbstractTellervoLabelStyle 
         		ct.setSimpleColumn(llx,lly ,urx , ury , leading,  Element.ALIGN_LEFT);
         		ct.setUseAscender(true);
         		//ct.addText(new Chunk(LabBarcode.getSampleBarcode(s, cb, barheight-10), 0, 0, true));
-        		ct.addText(new Chunk(LabBarcode.getSampleBarcode(s, cb, barheight-4), 0, 0, true));
+        		ct.addText(new Chunk(LabBarcode.getSampleBarcode(s, cb, barheight-4, this.barcodeSize), 0, 0, true));
 
 	        	
 	        	ct.go();

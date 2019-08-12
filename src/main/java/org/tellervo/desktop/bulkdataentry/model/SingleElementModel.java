@@ -238,8 +238,25 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 		}
 		
 		TridasSlope slope = new TridasSlope();
-		slope.setAngle((Integer)getProperty(SLOPE_ANGLE));
-		slope.setAzimuth((Integer) getProperty(SLOPE_AZIMUTH));
+		try {
+			slope.setAngle(Integer.valueOf(getProperty(SLOPE_ANGLE).toString()));
+		} catch (NumberFormatException ex)
+		{
+			log.error("Failed to parse slope angle");
+		}catch (NullPointerException ex)
+		{
+			
+		}
+		try {
+			slope.setAzimuth(Integer.valueOf(getProperty(SLOPE_AZIMUTH).toString()));
+		} catch (NumberFormatException ex)
+		{
+			log.error("Failed to parse slope azimuth");
+
+		}catch (NullPointerException ex)
+		{
+			
+		}
 		if(slope.getAngle() != null || slope.getAzimuth() != null){
 			argElement.setSlope(slope);
 		}else{

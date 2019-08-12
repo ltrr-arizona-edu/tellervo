@@ -18,6 +18,7 @@ public class LabelStyleFactory {
 		new BoxBarcodeRollStyle(),
 		new BoxBarcodeRoll3Point5x1Style(),
 		new BoxBarcodeRoll3Point5xPoint75Style(),
+		new BoxBarcodeRoll3x1Point75Style(),
 		new BoxBarcodeRoll4xPoint375Style(),
 		new BoxLabel1Style(),
 		new BoxLabel2Style(),

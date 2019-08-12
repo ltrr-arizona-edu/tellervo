@@ -73,6 +73,7 @@ public class SampleLabelRoll4xPoint375AllInStyle extends AbstractTellervoLabelSt
 	
 	public SampleLabelRoll4xPoint375AllInStyle() {
 		super("Sample Label - All-in-one - 4 x 0.375\"", "Barcode labels for samples printed on a roll of 4 x 0.375\" label s. Designed to fit on core mounts and includes barcode, site name, project name, PI, and sample codes.", ItemType.SAMPLE);
+		
 	}
 
 	@Override
@@ -195,7 +196,7 @@ public class SampleLabelRoll4xPoint375AllInStyle extends AbstractTellervoLabelSt
         		ct.setSimpleColumn(llx,lly ,urx , ury , leading,  Element.ALIGN_LEFT);
         		ct.setUseAscender(true);
         		//ct.addText(new Chunk(LabBarcode.getSampleBarcode(s, cb, barheight-10), 0, 0, true));
-        		ct.addText(new Chunk(LabBarcode.getSampleBarcode(s, cb, barheight-4), 0, 0, true));
+        		ct.addText(new Chunk(LabBarcode.getSampleBarcode(s, cb, barheight-4, barcodeSize), 0, 0, true));
 	        	ct.go();
 	        	
 	        	

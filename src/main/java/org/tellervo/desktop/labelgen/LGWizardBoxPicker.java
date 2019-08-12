@@ -26,6 +26,8 @@ import javax.swing.JButton;
 import javax.swing.ListSelectionModel;
 
 import java.awt.Color;
+import javax.swing.JComboBox;
+import javax.swing.DefaultComboBoxModel;
 
 
 public class LGWizardBoxPicker extends AbstractWizardPanel implements ActionListener{
@@ -40,6 +42,36 @@ public class LGWizardBoxPicker extends AbstractWizardPanel implements ActionList
 	private JButton btnAddOne;
 	private JButton btnRemoveOne;
 	private JButton btnRemoveAll;
+	private JPanel panel_1;
+	private JLabel lblSortLabelsBy;
+	private JComboBox cboSort;
+	
+	public enum BoxSortType{
+		
+		NO_SORT("No sort (print as listed)"),
+		TITLE("Title"),
+		LOCATION("Location"),
+		CREATED_TIMESTAMP("Created timestamp"),
+		LAST_MODIFIED_TIMESTAMP("Last modified timestamp");
+		
+		private String fullname;
+		
+		BoxSortType(String fullname){
+			this.fullname = fullname;
+		}
+		
+		public String getDescription()
+		{
+			return fullname;
+		}
+		
+		public String toString()
+		{
+			return fullname;
+		}
+		
+	}
+	
 	
 	/**
 	 * Create the panel.
@@ -47,7 +79,7 @@ public class LGWizardBoxPicker extends AbstractWizardPanel implements ActionList
 	public LGWizardBoxPicker() {
 		super("Step 2 - Which boxes?", 
 				"The next step is to define which boxes you would like labels for.");
-		setLayout(new MigLayout("", "[grow][45.00,center][grow]", "[][grow][53.00,top][grow]"));
+		setLayout(new MigLayout("", "[grow][45.00,center][grow]", "[][grow][53.00,top][grow][]"));
 		
 		JLabel lblAvailable = new JLabel("Available:");
 		add(lblAvailable, "cell 0 0");
@@ -91,6 +123,19 @@ public class LGWizardBoxPicker extends AbstractWizardPanel implements ActionList
 		
 		lstSelected = new JList();
 		scrollPane_1.setViewportView(lstSelected);
+		
+		panel_1 = new JPanel();
+		panel_1.setBackground(Color.WHITE);
+		add(panel_1, "cell 0 4 3 1,grow");
+		panel_1.setLayout(new MigLayout("", "[][grow]", "[]"));
+		
+		lblSortLabelsBy = new JLabel("Sort labels by:");
+		panel_1.add(lblSortLabelsBy, "cell 0 0,alignx trailing");
+		
+		cboSort = new JComboBox<BoxSortType>();
+		cboSort.setModel(new DefaultComboBoxModel(BoxSortType.values()));
+		cboSort.setBackground(Color.WHITE);
+		panel_1.add(cboSort, "cell 1 0,growx");
 		
 		populateBoxList();
 		
@@ -209,6 +254,11 @@ public class LGWizardBoxPicker extends AbstractWizardPanel implements ActionList
 		Collections.sort(availModel, numSorter);
 		
 
+    }
+    
+    public BoxSortType getSortType()
+    {
+    	return (BoxSortType) this.cboSort.getSelectedItem();
     }
 	
     @Override

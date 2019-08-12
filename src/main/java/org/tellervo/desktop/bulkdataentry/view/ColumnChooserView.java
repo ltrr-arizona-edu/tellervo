@@ -50,6 +50,7 @@ import org.tellervo.desktop.bulkdataentry.control.HideColumnChooserEvent;
 import org.tellervo.desktop.bulkdataentry.model.ColumnListModel;
 
 import com.dmurph.mvc.model.MVCArrayList;
+import javax.swing.JScrollPane;
 
 
 /**
@@ -107,6 +108,13 @@ public class ColumnChooserView extends JWindow{
 	}
 	
 	public void initComponents() {
+		ToolbarColorRenderer renderer = new ToolbarColorRenderer();
+		
+		okButton = new JButton();
+		getContentPane().setLayout(new BorderLayout());
+		
+		JScrollPane scrollPane = new JScrollPane();
+		getContentPane().add(scrollPane, BorderLayout.NORTH);
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createEtchedBorder());
 		panel.setLayout(new BorderLayout());
@@ -116,15 +124,12 @@ public class ColumnChooserView extends JWindow{
 		checkboxList.setTableHeader(null);
 		checkboxList.setBackground(UIManager.getColor("ToolBar.background"));
 		checkboxList.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-		ToolbarColorRenderer renderer = new ToolbarColorRenderer();
 		checkboxList.setDefaultRenderer(String.class, renderer);
 		
-		okButton = new JButton();
-		setLayout(new BorderLayout());
-
-		panel.add(checkboxList, "Center");
-		
-		add(panel, "Center");
+				panel.add(checkboxList, "Center");
+				
+				//getContentPane().add(panel, "Center");
+		scrollPane.add(panel);
 		
 		/*Box box = Box.createHorizontalBox();
 		box.add(Box.createHorizontalGlue());

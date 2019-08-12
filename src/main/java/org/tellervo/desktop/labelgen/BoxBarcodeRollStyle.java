@@ -18,6 +18,7 @@ public class BoxBarcodeRollStyle extends AbstractTellervoLabelStyle {
 
 
 		private Font sectionFont = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);
+		private Font tinyFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.ITALIC);
 		private Rectangle pageSize = new Rectangle(252, 108);
 
 	
@@ -31,6 +32,8 @@ public class BoxBarcodeRollStyle extends AbstractTellervoLabelStyle {
 		this.pageSize = pageSize;
 		
 	}
+	
+
 
 	@Override
 	public void outputPDFToStream(java.io.OutputStream output, ArrayList items) throws Exception {
@@ -65,6 +68,7 @@ public class BoxBarcodeRollStyle extends AbstractTellervoLabelStyle {
 	        	ColumnText ct = new ColumnText(cb);
 	        	ct.setSimpleColumn(5, this.document.getPageSize().getHeight()/2, this.document.getPageSize().getWidth() - 5, this.document.getPageSize().getHeight() - 5, 16, Element.ALIGN_CENTER);
 	        	ct.addText(new Phrase(b.getTitle(), sectionFont));
+	        	//ct.addText(new Phrase(b.getCurationLocation(), tinyFont));
 	        	ct.go();
 	        	
 	        	//System.out.println("Yline = "+ct.getYLine());
@@ -77,12 +81,12 @@ public class BoxBarcodeRollStyle extends AbstractTellervoLabelStyle {
 	        	{
 	        		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 10, barheight - 10, 16, Element.ALIGN_CENTER);
 
-	        		ct.addText(new Chunk(LabBarcode.getBoxBarcode(b, cb, barheight-15), 0, 0, true));
+	        		ct.addText(new Chunk(LabBarcode.getBoxBarcode(b, cb, barheight-15, barcodeSize), 0, 0, true));
 	        	}
 	        	else
 	        	{
 	        		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 5, barheight - 10, 16, Element.ALIGN_CENTER);
-	        		ct.addText(new Chunk(LabBarcode.getBoxBarcode(b, cb, barheight-15), 0, 0, true));
+	        		ct.addText(new Chunk(LabBarcode.getBoxBarcode(b, cb, barheight-15, barcodeSize), 0, 0, true));
 
 	        	}
 	        	ct.go();
