@@ -29,7 +29,7 @@ import java.math.BigInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.curation.ProjectBrowserDialog;
+import org.tellervo.desktop.curation.ProjectBrowser;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.tridasv2.ui.support.TridasEntityProperty;
 import org.tellervo.desktop.tridasv2.ui.support.TridasProjectDictionaryProperty;
@@ -50,7 +50,7 @@ import com.l2fprod.common.util.converter.ConverterRegistry;
  *
  */
 public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
-	private final static Logger log = LoggerFactory.getLogger(ProjectBrowserDialog.class);
+	private final static Logger log = LoggerFactory.getLogger(ProjectBrowser.class);
 
 	
 	public TridasPropertyEditorFactory() {

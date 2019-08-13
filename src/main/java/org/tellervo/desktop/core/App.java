@@ -31,6 +31,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.media.opengl.GLException;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -47,6 +49,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.AppModel.NetworkStatus;
+import org.tellervo.desktop.curation.ProjectBrowser;
 import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gui.Log4JViewer;
 import org.tellervo.desktop.gui.LoginDialog;
@@ -98,6 +101,9 @@ public class App{
   public static AppModel appmodel;
   private static Log4JViewer logviewer;
   public static Window mainWindow = null;
+  
+  private static ProjectBrowser projectBrowser = null;
+  
   public static DBBrowserSettings dbBrowserSettings;
   
   public static CredentialsProvider odkCredentialsProvider = null;
@@ -123,6 +129,41 @@ public class App{
 	    } catch (DatatypeConfigurationException e) {
 	        throw new RuntimeException("Init Error!", e);
 	    }
+	}
+
+	
+	public static ProjectBrowser getProjectBrowser()
+	{
+		return getProjectBrowser(false, null);
+	}
+	
+	public static ProjectBrowser getProjectBrowser(Window parent)
+	{
+		return getProjectBrowser(false, parent);
+	}
+	
+	
+	public static ProjectBrowser getProjectBrowser(Boolean createNew, Window parent)
+	{
+		if(App.projectBrowser==null)
+		{
+			App.projectBrowser = new ProjectBrowser();
+			App.projectBrowser.initGUI();
+			App.projectBrowser.pack();
+			if(parent!=null) App.projectBrowser.setLocationRelativeTo(parent);
+
+		}
+		
+		if (createNew)
+		{
+			App.projectBrowser.addNewProject();
+			App.projectBrowser.setSplitPaneDividerLocation();
+		}
+		
+		
+		App.projectBrowser.setVisible(true);
+		return App.projectBrowser;
+
 	}
 
 public static synchronized void init() {

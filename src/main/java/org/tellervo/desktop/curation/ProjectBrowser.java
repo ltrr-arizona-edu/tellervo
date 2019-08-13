@@ -14,6 +14,7 @@ import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -55,8 +56,8 @@ import com.l2fprod.common.propertysheet.PropertySheet;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
-public class ProjectBrowserDialog extends JDialog implements PropertyChangeListener, ActionListener{
-	private final static Logger log = LoggerFactory.getLogger(ProjectBrowserDialog.class);
+public class ProjectBrowser extends JFrame implements PropertyChangeListener, ActionListener{
+	private final static Logger log = LoggerFactory.getLogger(ProjectBrowser.class);
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
@@ -71,21 +72,8 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 	private boolean isDirty = false;
 	private JSplitPane splitPane;
 	
-	
-	public ProjectBrowserDialog(Boolean createNew)
-	{
-		initGUI();
-		//initFactories();
 		
-		if (createNew)
-		{
-			addNewProject();
-			splitPane.setDividerLocation(0);
-		}
-
-	}
-	
-	private void initGUI()
+	public void initGUI()
 	{
 		initPropertyPanel();
 		
@@ -203,6 +191,8 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		
 		this.propertiesTable.setEditable(App.isAdmin);
 		
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		
 	}
 	
 	
@@ -238,12 +228,13 @@ public class ProjectBrowserDialog extends JDialog implements PropertyChangeListe
 		
 	}
 	
-	private void initFactories()
+	public void setSplitPaneDividerLocation()
 	{
+		splitPane.setDividerLocation(0);
 
 	}
 	
-	private void addNewProject()
+	public void addNewProject()
 	{
 	    String name = JOptionPane.showInputDialog(this, "Title for project");
 

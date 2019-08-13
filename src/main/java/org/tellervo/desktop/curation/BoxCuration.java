@@ -32,6 +32,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.swing.JComboBox;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -90,7 +91,7 @@ import javax.swing.JButton;
  *
  * @author  peterbrewer
  */
-public class BoxCuration extends javax.swing.JDialog 
+public class BoxCuration extends JFrame 
 implements KeyListener, ActionListener, TableModelListener{
 
 	private final static Logger log = LoggerFactory.getLogger(BoxCuration.class);
@@ -117,9 +118,10 @@ implements KeyListener, ActionListener, TableModelListener{
 	 * @wbp.parser.constructor
 	 */
 	public BoxCuration(java.awt.Frame parent) {
-		super(parent);
+		
 		initComponents();
 		setupGui();
+		this.setLocationRelativeTo(parent);
 
 	}
 
@@ -130,9 +132,9 @@ implements KeyListener, ActionListener, TableModelListener{
 	 * @param box
 	 */
 	public BoxCuration(java.awt.Frame parent, WSIBox box) {
-		super(parent);
 		initComponents();
 		setupGui();
+		this.setLocationRelativeTo(parent);
 		this.box = box;
 		this.lblScanOrSelect.setVisible(false);
 		this.txtBarcode.setVisible(false);

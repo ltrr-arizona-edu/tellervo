@@ -5,7 +5,8 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
 
-import org.tellervo.desktop.curation.ProjectBrowserDialog;
+import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.curation.ProjectBrowser;
 import org.tellervo.desktop.ui.Builder;
 
 public class AdminProjectBrowser extends AbstractAction {
@@ -22,11 +23,8 @@ public class AdminProjectBrowser extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
-		ProjectBrowserDialog browser = new ProjectBrowserDialog(false);
-		browser.pack();
-		browser.setLocationRelativeTo(parent);
-		browser.setVisible(true);
+
+		App.getProjectBrowser(false, parent);
 		
 	}
 
