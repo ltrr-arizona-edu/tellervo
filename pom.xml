@@ -318,11 +318,11 @@
 			<artifactId>pljava-public</artifactId>
 			<version>1.4.2</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.swinglabs.swingx</groupId>
 			<artifactId>swingx-all</artifactId>
 			<version>1.6.5-1</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.apache.ws.commons.axiom</groupId>
 			<artifactId>axiom-jaxen-testsuite</artifactId>

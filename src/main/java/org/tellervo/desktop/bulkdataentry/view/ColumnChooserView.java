@@ -27,6 +27,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -51,6 +52,8 @@ import org.tellervo.desktop.bulkdataentry.model.ColumnListModel;
 
 import com.dmurph.mvc.model.MVCArrayList;
 import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.JLabel;
 
 
 /**
@@ -101,6 +104,9 @@ public class ColumnChooserView extends JWindow{
 		pack();
 		//setLocationRelativeTo(argLocationComponent);
 		
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		this.setMaximumSize(new Dimension(400,400));
+		
 		setBounds(argLocationComponent.getLocationOnScreen().x, 
 				argLocationComponent.getLocationOnScreen().y+argLocationComponent.getHeight(), 
 				200, 
@@ -113,8 +119,7 @@ public class ColumnChooserView extends JWindow{
 		okButton = new JButton();
 		getContentPane().setLayout(new BorderLayout());
 		
-		JScrollPane scrollPane = new JScrollPane();
-		getContentPane().add(scrollPane, BorderLayout.NORTH);
+
 		JPanel panel = new JPanel();
 		panel.setBorder(BorderFactory.createEtchedBorder());
 		panel.setLayout(new BorderLayout());
@@ -125,11 +130,18 @@ public class ColumnChooserView extends JWindow{
 		checkboxList.setBackground(UIManager.getColor("ToolBar.background"));
 		checkboxList.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 		checkboxList.setDefaultRenderer(String.class, renderer);
-		
-				panel.add(checkboxList, "Center");
-				
+					
 				//getContentPane().add(panel, "Center");
-		scrollPane.add(panel);
+				JScrollPane scrollPane = new JScrollPane(checkboxList);
+				scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+				scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+				
+				panel.add(scrollPane, "Center");
+				
+				getContentPane().add(panel, BorderLayout.CENTER);
+				
+				JLabel lblHelloWorld = new JLabel("Hello world!");
+				panel.add(lblHelloWorld, BorderLayout.NORTH);
 		
 		/*Box box = Box.createHorizontalBox();
 		box.add(Box.createHorizontalGlue());

@@ -201,7 +201,7 @@ public abstract class AbstractBulkImportView extends JPanel{
 		splitPane.setOrientation(JSplitPane.VERTICAL_SPLIT);
 		add(splitPane, "cell 0 1,grow");
 		table = new JXTable();
-		
+				
 		//table.setCellSelectionEnabled(true);
 		table.setColumnControlVisible(true);
 		
