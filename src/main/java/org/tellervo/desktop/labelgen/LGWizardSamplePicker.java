@@ -26,6 +26,7 @@ import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.LabCode;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.TridasComparator;
+import org.tellervo.desktop.tridasv2.ui.EntityListComboBox;
 import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.labels.ui.TridasListCellRenderer;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
@@ -61,7 +62,7 @@ public class LGWizardSamplePicker extends AbstractWizardPanel implements ActionL
 	private JButton btnRemoveAll;
 	private JPanel panel_1;
 	private JLabel lblObject;
-	private JComboBox cboObject;
+	private EntityListComboBox cboObject;
 	private JButton btnSearch;
     private final static Logger log = LoggerFactory.getLogger(LGWizardSamplePicker.class);
 
@@ -82,11 +83,11 @@ public class LGWizardSamplePicker extends AbstractWizardPanel implements ActionL
 		lblObject = new JLabel("Object:");
 		panel_1.add(lblObject, "cell 0 0,alignx trailing");
 		
-		cboObject = new JComboBox();	
+		
+		cboObject = new EntityListComboBox(App.tridasObjects.getObjectList());	
     	TridasObjectRenderer rend = new TridasObjectRenderer();
     	cboObject.setRenderer(rend);
-    	ArrayListModel<TridasObject> objModel = new ArrayListModel<TridasObject>(App.tridasObjects.getObjectList());
-    	cboObject.setModel(objModel); 	
+
 		panel_1.add(cboObject, "cell 1 0,growx");
 		
 		btnSearch = new JButton("Search");
@@ -112,21 +113,25 @@ public class LGWizardSamplePicker extends AbstractWizardPanel implements ActionL
 		panel.setLayout(new MigLayout("", "[fill][]", "[][][][]"));
 		
 		btnAddAll = new JButton(">>");
+		btnAddAll.setActionCommand("AddAll");
+		btnAddAll.addActionListener(this);
+
 		panel.add(btnAddAll, "cell 0 0");
 		
 		btnAddOne = new JButton(">");
+		btnAddOne.setActionCommand("AddOne");
 		btnAddOne.addActionListener(this);
 		panel.add(btnAddOne, "cell 0 1");
 		
 		btnRemoveOne = new JButton("<");
 		btnRemoveOne.addActionListener(this);
+		btnRemoveOne.setActionCommand("RemoveOne");
+
 		panel.add(btnRemoveOne, "cell 0 2");
 		
 		btnRemoveAll = new JButton("<<");
-		btnRemoveAll.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
+		btnRemoveAll.setActionCommand("RemoveAll");
+		btnRemoveAll.addActionListener(this);
 		panel.add(btnRemoveAll, "cell 0 3");
 		
 		JScrollPane scrollPane_1 = new JScrollPane();
@@ -192,6 +197,26 @@ public class LGWizardSamplePicker extends AbstractWizardPanel implements ActionL
 			}
 		}
 		
+		if(evt.getActionCommand()=="AddAll")
+		{
+			
+			for (int i=0; i<availModel.getSize(); i++) {
+				TridasSample myobj = (TridasSample) availModel.get(i);
+				selModel.add(myobj);
+			}
+			availModel.clear();
+		}
+		
+		
+		if(evt.getActionCommand()=="RemoveAll")
+		{
+			for (int i=0; i<selModel.getSize(); i++) {
+				TridasSample myobj = (TridasSample) selModel.get(i);
+				availModel.add(myobj);
+			}
+			selModel.clear();
+		}
+		
 		if(evt.getActionCommand().equals("Search"))
 		{
 			searchForSamples((TridasObject) cboObject.getSelectedItem());
@@ -225,6 +250,11 @@ public class LGWizardSamplePicker extends AbstractWizardPanel implements ActionL
 		
 		List<TridasObject> objList = sampresource.getAssociatedResult();
 		List<TridasSample> sampList = getSamplesList2(objList, null, null);
+		
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(sampList, numSorter);
 		
 		availModel.addAll(sampList);
 		
