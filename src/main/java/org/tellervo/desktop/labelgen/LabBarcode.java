@@ -115,7 +115,7 @@ public class LabBarcode extends Barcode128 {
 			// this should never happen, since it's a ByteArrayOutputStream
 			throw new RuntimeException(e);
 		}
-		
+	
 		return b64enc;
 	}
 	

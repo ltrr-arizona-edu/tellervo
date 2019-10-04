@@ -314,10 +314,10 @@ class box extends boxEntity implements IDBAccessor
             {
                 $xml.= "<box>\n";
                 $xml.= $this->getIdentifierXML();          
-                if($this->getComments()!=NULL) 					$xml.= "<tridas:comments>".$this->getComments()."</tridas:comments>\n";
+                if($this->getComments()!=NULL) 					$xml.= "<tridas:comments>".dbHelper::escapeXMLChars($this->getComments())."</tridas:comments>\n";
                 
-                if($this->getTrackingLocation()!=NULL)			$xml.= "<trackingLocation>".$this->getTrackingLocation()."</trackingLocation>\n";
-                if($this->getCurationLocation()!=NULL)			$xml.= "<curationLocation>".$this->getCurationLocation()."</curationLocation>\n";
+                if($this->getTrackingLocation()!=NULL)			$xml.= "<trackingLocation>".dbHelper::escapeXMLChars($this->getTrackingLocation())."</trackingLocation>\n";
+                if($this->getCurationLocation()!=NULL)			$xml.= "<curationLocation>".dbHelper::escapeXMLChars($this->getCurationLocation())."</curationLocation>\n";
 				if($this->getSampleCount()!=NULL)				$xml.= "<sampleCount>".$this->getSampleCount()."</sampleCount>\n";
                 
                  // Include samples if present

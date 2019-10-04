@@ -355,15 +355,16 @@ public class TridasEntityDeriver {
 			nChildren++;	
 			
 			// Curation status
+			/**
 			TellervoGenericFieldProperty pd2 =  TellervoGenericFieldProperty.getSampleCurationStatusProperty();
 			pd2.setCategoryPrefix(rootName);
 			fieldMap.put(pd2.getName(), pd2);
 			parent.addChildProperty(pd2);
-			nChildren++;	
+			nChildren++;*/	
 			
 			// Sample status
 			TellervoGenericFieldProperty pd3 =  TellervoGenericFieldProperty.getSampleStatusProperty();
-			pd2.setCategoryPrefix(rootName);
+			pd3.setCategoryPrefix(rootName);
 			fieldMap.put(pd3.getName(), pd3);
 			parent.addChildProperty(pd3);
 			nChildren++;	

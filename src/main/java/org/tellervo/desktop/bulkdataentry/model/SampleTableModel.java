@@ -91,9 +91,9 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 			clazz= TridasFileList.class;
 		}else if (argColumn.equals(SingleSampleModel.SAMPLE_STATUS)){
 			clazz= WSISampleStatusDictionary.class;
-		}else if (argColumn.equals(SingleSampleModel.CURATION_STATUS)){
-			clazz= WSICurationStatusDictionary.class;
-		}
+		}//else if (argColumn.equals(SingleSampleModel.CURATION_STATUS)){
+		//	clazz= WSICurationStatusDictionary.class;
+		//}
 		
 		
 		// Get data type of user defined fields
@@ -318,7 +318,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 				
 			}
 		}
-		else if (argColumn.equals(SingleSampleModel.CURATION_STATUS))
+		/*else if (argColumn.equals(SingleSampleModel.CURATION_STATUS))
 		{
 			if(argAValue==null)
 			{
@@ -343,7 +343,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 			}
 			
 			return;
-		}
+		}*/
 		
 		argModel.setProperty(argColumn, argAValue);
 	}

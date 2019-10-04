@@ -30,11 +30,11 @@ public class TridasObjectExRenderer extends DefaultCellRendererEx{
 			
 			if(parent!=null)
 			{
-				return parent.getLabCode()+">"+o.getLabCode();
+				return parent.getLabCode()+">"+o.getLabCode()+ " ["+o.getTitle()+"]";
 			}
 			else
 			{
-				return o.getLabCode();
+				return o.getLabCode()+ " ["+o.getTitle()+"]";
 			}
 			
 			
@@ -42,7 +42,7 @@ public class TridasObjectExRenderer extends DefaultCellRendererEx{
 		else if (argValue instanceof TridasObjectOrPlaceholder)
 		{
 			TridasObjectOrPlaceholder toph = (TridasObjectOrPlaceholder) argValue;
-			return toph.getCode();
+			return toph.getCode()+ " ["+toph.getTitle()+"]";
 			
 		}
 		else if(argValue instanceof String)

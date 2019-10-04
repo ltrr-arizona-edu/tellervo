@@ -675,7 +675,7 @@ public class ICMSImporter implements PropertyChangeListener{
     						sample.setSamplingDate(rec.getCollectorDate());
     					}
     					
-    					sample.getGenericFields().add(TridasManipUtil.createGenericField("tellervo.curationStatus", CurationStatus.ARCHIVED.value(), "xs:string"));
+    					//sample.getGenericFields().add(TridasManipUtil.createGenericField("tellervo.curationStatus", CurationStatus.ARCHIVED.value(), "xs:string"));
     					sample.getGenericFields().add(TridasManipUtil.createGenericField("tellervo.externalID", rec.getOtherNumbers(), "xs:string"));
 
     					sample.getGenericFields().add(TridasManipUtil.createGenericField(RediscoveryExportEx.ITEM_COUNT, subsample.itemCount+"", "xs:int"));

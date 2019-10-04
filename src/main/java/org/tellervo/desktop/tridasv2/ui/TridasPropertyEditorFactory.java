@@ -93,10 +93,10 @@ public class TridasPropertyEditorFactory extends PropertyEditorRegistry {
 			if(ep.isDictionaryAttached())
 				return new ListComboBoxPropertyEditor(ep.getDictionary());
 			
-			if(ep.lname.equals("curationStatus"))
+			/*if(ep.lname.equals("curationStatus"))
 			{
 				return new WSICurationEditor((TridasSample) ep.getRootObject());
-			}
+			}*/
 			
 			if(ep.qname.equals("project.types"))
 			{

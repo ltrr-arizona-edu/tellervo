@@ -87,11 +87,11 @@ public class LGWizardWhatStyle extends AbstractWizardPanel implements ActionList
 			lblLabelImage.setIcon(style.getLabelImage());
 			
 			// Enable the picker pages depending on the type of data the style uses
-			setPageClassToEnableOrDisable(LGWizardBoxPicker.class, style.getItemType().equals(ItemType.BOX));
+			setPageClassToEnableOrDisable(LGWizardBoxPicker2.class, style.getItemType().equals(ItemType.BOX));
 			setPageClassToEnableOrDisable(LGWizardSamplePicker.class, style.getItemType().equals(ItemType.SAMPLE));
 			} catch ( Exception e)
 			{
-				e.printStackTrace();
+				//e.printStackTrace();
 				
 			}
 			

@@ -1,3 +1,7 @@
+ALTER TABLE tblobject
+DROP CONSTRAINT "tblobject_parentobjectid_fkey",
+ADD CONSTRAINT "tblobject_parentobjectid_fkey" FOREIGN KEY (parentobjectid) REFERENCES tblobject(objectid) ON UPDATE CASCADE ON DELETE RESTRICT;
+
 ALTER TABLE tblelement
 DROP CONSTRAINT "tblelement_objectid_fkey",
 ADD CONSTRAINT "tblelement_objectid_fkey" FOREIGN KEY (objectid) REFERENCES tblobject(objectid) ON UPDATE CASCADE ON DELETE RESTRICT;

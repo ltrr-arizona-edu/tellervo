@@ -25,7 +25,7 @@ public class LabelGenWizard extends AbstractWizardDialog {
 	private static final long serialVersionUID = 1L;
 	private LGWizardWelcome page1;
 	private LGWizardWhatStyle page2;
-	private LGWizardBoxPicker page3;
+	private LGWizardBoxPicker2 page3;
 	private LGWizardSamplePicker page3b;
 	private LGWizardSummary finalpage;
 	private boolean cancelled = false;
@@ -42,7 +42,7 @@ public class LabelGenWizard extends AbstractWizardDialog {
 		pages = new ArrayList<AbstractWizardPanel>();
 		page1 = new LGWizardWelcome();
 		page2 = new LGWizardWhatStyle();
-		page3 = new LGWizardBoxPicker();
+		page3 = new LGWizardBoxPicker2();
 		page3b = new LGWizardSamplePicker();
 		finalpage = new LGWizardSummary();
 		
