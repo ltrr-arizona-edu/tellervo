@@ -50,57 +50,51 @@ import org.tellervo.desktop.bulkdataentry.control.PopulateFromDatabaseEvent;
 import org.tellervo.desktop.bulkdataentry.control.PrintSampleBarcodesEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
+import org.tellervo.desktop.bulkdataentry.model.IBulkImportSingleRowModel;
 import org.tellervo.desktop.bulkdataentry.model.ImportStatus;
 import org.tellervo.desktop.bulkdataentry.model.SampleModel;
+import org.tellervo.desktop.bulkdataentry.model.SampleTableModel;
 import org.tellervo.desktop.bulkdataentry.model.SingleSampleModel;
 import org.tellervo.desktop.bulkdataentry.model.TridasElementOrPlaceholder;
 import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.bulkdataentry.model.TridasObjectOrPlaceholder;
 import org.tellervo.desktop.components.table.ComboBoxCellEditor;
 import org.tellervo.desktop.components.table.ControlledVocDictionaryComboBox;
-import org.tellervo.desktop.components.table.CurationStatusComboBox;
-import org.tellervo.desktop.components.table.CurationStatusRenderer;
 import org.tellervo.desktop.components.table.DynamicJComboBox;
 import org.tellervo.desktop.components.table.DynamicKeySelectionManager;
-import org.tellervo.desktop.components.table.LocationTypeComboBox;
-import org.tellervo.desktop.components.table.LocationTypeRenderer;
 import org.tellervo.desktop.components.table.NattyDateEditor;
 import org.tellervo.desktop.components.table.StringCellEditor;
 import org.tellervo.desktop.components.table.TridasElementRenderer;
 import org.tellervo.desktop.components.table.TridasFileListEditor;
 import org.tellervo.desktop.components.table.TridasObjectExRenderer;
 import org.tellervo.desktop.components.table.WSIBoxRenderer;
-import org.tellervo.desktop.components.table.WSICurationStatusRenderer;
 import org.tellervo.desktop.components.table.WSISampleStatusRenderer;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer;
 import org.tellervo.desktop.tridasv2.ui.ControlledVocRenderer.Behavior;
 import org.tellervo.desktop.tridasv2.ui.TridasDatingCellRenderer;
 import org.tellervo.desktop.tridasv2.ui.TridasFileArrayRenderer;
+import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
-import org.tellervo.schema.CurationStatus;
 import org.tellervo.schema.SampleStatus;
-import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIBox;
 import org.tellervo.schema.WSIBoxDictionary;
-import org.tellervo.schema.WSICurationStatusDictionary;
 import org.tellervo.schema.WSISampleStatusDictionary;
 import org.tellervo.schema.WSISampleTypeDictionary;
-import org.tellervo.schema.WSIUserDefinedField;
-import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
 import com.dmurph.mvc.gui.combo.MVCJComboBox;
 import com.dmurph.mvc.model.MVCArrayList;
 
 import edu.emory.mathcs.backport.java.util.Arrays;
-import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author Daniel
@@ -113,6 +107,7 @@ public class SampleView extends AbstractBulkImportView {
 
 	private JButton printBarcodes;
 	private JButton quickFill;
+	private JButton btnSetSampleCurationStatus;
 
 	private ElementModel elementModel;
 
@@ -469,6 +464,11 @@ public class SampleView extends AbstractBulkImportView {
 		printBarcodes.setToolTipText(I18n.getText("bulkimport.printBarcodes"));
 		toolbar.add(printBarcodes);
 		toolbar.add(argShowHideColumnButton);
+		
+		btnSetSampleCurationStatus = new JButton();
+		btnSetSampleCurationStatus.setIcon(Builder.getIcon("setstatus.png", 22));
+		btnSetSampleCurationStatus.setToolTipText("Set curation status for selected samples");
+		toolbar.add(btnSetSampleCurationStatus);
 
 		return toolbar;
 	}
@@ -499,6 +499,56 @@ public class SampleView extends AbstractBulkImportView {
 				dialog.setVisible(true);
 
 			}
+		});
+		
+		btnSetSampleCurationStatus.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				try {
+					
+					ArrayList<TridasSample> samples = new ArrayList<TridasSample>();
+					
+					BulkImportModel model = BulkImportModel.getInstance();
+					SampleModel smodel = model.getSampleModel();
+					SampleTableModel tmodel = smodel.getTableModel();
+					ArrayList<IBulkImportSingleRowModel> selected = new ArrayList<IBulkImportSingleRowModel>();
+					tmodel.getSelected(selected);
+					
+					for(IBulkImportSingleRowModel srm : selected)
+					{
+						SingleSampleModel ssm = (SingleSampleModel) srm;
+						TridasSample origSample = new TridasSample();
+												
+						try {
+							ssm.populateToTridasSample(origSample);
+							
+							if(!origSample.isSetIdentifier())
+							{
+								Alert.error("Sample not saved", "Sample has not been saved.  Only imported samples can have their curation status set");
+								return;
+							}
+							
+							samples.add(origSample);
+						} catch (Exception e1) {
+							new BugDialog(e1);
+						}
+					}
+					
+					if(samples.size()>0)
+					{
+						CurationStatusSetterDialog dialog = new CurationStatusSetterDialog(samples);
+						dialog.setVisible(true);
+					}
+					
+				} catch (Exception e) {
+					
+				}
+				
+				
+				
+			}
+			
 		});
 
 	}

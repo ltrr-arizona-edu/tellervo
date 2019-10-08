@@ -31,6 +31,7 @@ class searchParameters implements IParams
 {
     var $xmlRequestDom 			 			= NULL;	
     var $returnObject            			= NULL;
+    var $joinOperator            			= NULL;
     var $limit                   			= NULL;
     var $skip                    			= NULL;
     var $allData                 			= FALSE;
@@ -75,6 +76,7 @@ class searchParameters implements IParams
         // Get main attributes
     	$searchParamsTag = $this->xmlRequestDom->getElementsByTagName("searchParams")->item(0); 	
 		$this->returnObject = $searchParamsTag->getAttribute("returnObject");
+		$this->joinOperator = $searchParamsTag->getAttribute("joinOperator");
 		$this->limit = (int) $searchParamsTag->getAttribute("limit");
 		$this->skip = (int) $searchParamsTag->getAttribute("skip");
 		$this->includeChildren = (bool) $searchParamsTag->getAttribute("includeChildren");
@@ -367,20 +369,39 @@ class loanParameters extends loanEntity implements IParams
 		   		case "duedate":				$this->setDueDate($child->nodeValue); break;
 		   		case "returndate":			$this->setReturnDate($child->nodeValue); break;
 		   		case "issuedate":			break;
-		   		case "tridas:sample":	
-		   				$firebug->log("Found a sample in a loan... looping through sample tags...");			   		
-		   				$sampleTags = $child->childNodes;
-		   				foreach($sampleTags as $tag)
-		   				{
-		   					if($tag->nodeType != XML_ELEMENT_NODE) continue;
-		   					switch ($tag->tagName)
-		   					{
-		   						case "tridas:identifier" : 
-		   							$firebug->log($tag->nodeValue, "Found sample id");
-		   							array_push($this->entityIdArray, $tag->nodeValue );
-		   					}
-		   				}
-		   				break;
+		   		
+		   		
+		   		case "tridas:sample":
+		   		    $firebug->log("Found a sample in a loan... looping through sample tags...");
+		   		    $sampleTags = $child->childNodes;
+		   		    foreach($sampleTags as $tag)
+		   		    {
+		   		        if($tag->nodeType != XML_ELEMENT_NODE) continue;
+		   		        switch ($tag->tagName)
+		   		        {
+		   		            case "tridas:identifier" :
+		   		                $firebug->log($tag->nodeValue, "Found sample id");
+		   		                array_push($this->sampleIDArray, $tag->nodeValue);
+		   		        }
+		   		    }
+		   		    break;
+		   		    
+		   		case "box":
+		   		    $firebug->log("Found a box in a loan... looping through box tags...");
+		   		    $boxTags = $child->childNodes;
+		   		    foreach($boxTags as $tag)
+		   		    {
+		   		        if($tag->nodeType != XML_ELEMENT_NODE) continue;
+		   		        switch ($tag->tagName)
+		   		        {
+		   		            case "tridas:identifier" :
+		   		                $firebug->log($tag->nodeValue, "Found box id");
+		   		                array_push($this->boxIDArray, $tag->nodeValue);
+		   		        }
+		   		    }			
+		   		    break;
+		   		
+		 
 		   		case "tridas:file" :		
 		   				if($child->hasAttribute("xlink:href"))
 						{
@@ -398,7 +419,7 @@ class loanParameters extends loanEntity implements IParams
 }
 
 
-class curationParameters extends curationEntity implements IParams
+class curationEventParameters extends curationEventEntity implements IParams
 {
 	var $xmlRequestDom = NULL;
 	var $mergeWithID = NULL;
@@ -449,9 +470,25 @@ class curationParameters extends curationEntity implements IParams
 						{
 							case "tridas:identifier" :
 								$firebug->log($tag->nodeValue, "Found sample id");
-								array_push($this->entityIdArray, $tag->nodeValue );
+								$this->sample = new sample();
+								$this->sample->setID($tag->nodeValue);
 						}
 					}
+					break;
+				case "box":
+					$firebug->log("Found a box in a loan... looping through box tags...");
+					$boxTags = $child->childNodes;
+					foreach($boxTags as $tag)
+					{
+						if($tag->nodeType != XML_ELEMENT_NODE) continue;
+						switch ($tag->tagName)
+						{
+							case "tridas:identifier" :
+								$firebug->log($tag->nodeValue, "Found box id");
+								$this->box = new box();
+								$this->box->setID($tag->nodeValue);
+						}
+					}					
 					break;
 			}
 		}

@@ -19,7 +19,7 @@ public class ShelfLabel {
 		
 
 		  try {
-			  File file = new File("/home/pbrewer/shelflabels6.txt"); 
+			  File file = new File("/home/pbrewer/Documents/shelflabels4.txt"); 
 			  //File file = new File("/home/pbrewer/shelfendlabels.txt"); 
 
 			  BufferedReader br = new BufferedReader(new FileReader(file)); 
@@ -38,7 +38,7 @@ public class ShelfLabel {
 		File outputFile;
 		try {
 			//outputFile = File.createTempFile("shelf", ".pdf");
-			outputFile = new File("/tmp/shelf.pdf");
+			outputFile = new File("/tmp/shelf2.pdf");
 			//outputFile.deleteOnExit();
 			FileOutputStream output = new FileOutputStream(outputFile);
 		
