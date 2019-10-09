@@ -455,8 +455,8 @@ class request
             		case "loan":
             			$myParamObj = new loanParameters($this->xmlRequestDom->saveXML($item));
             			break;
-            		case "curation":
-            			$myParamObj = new curationParameters($this->xmlRequestDom->saveXML($item));
+            		case "curationEvent":
+            			$myParamObj = new curationEventParameters($this->xmlRequestDom->saveXML($item));
             			break;            			
               		case "permission":
             			$myParamObj = new permissionParameters($this->xmlRequestDom->saveXML($item));

@@ -3714,7 +3714,7 @@ class loanEntity extends dbEntity
 	}
 }
 
-class curationEntity extends dbEntity
+class curationEventEntity extends dbEntity
 {
 	public $curationstatus = NULL;
 	protected $notes = NULL;
