@@ -363,9 +363,9 @@ class request
 	                		$myParamObj = new loanParameters($newxml);
                             break;		  
                             
-                        case 'curation':
-                            $newxml = "<curation xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier>".$item->getAttribute('id')."</tridas:identifier></curation>";
-                            $myParamObj = new curationParameters($newxml);
+                        case 'curationevent':
+                            $newxml = "<curationevent xmlns=\"http://www.tellervo.org/schema/1.0\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:tridas=\"http://www.tridas.org/1.2.2\"><tridas:identifier>".$item->getAttribute('id')."</tridas:identifier></curationevent>";
+                            $myParamObj = new curationEventParameters($newxml);
                             break;
                             
                         case 'tag':

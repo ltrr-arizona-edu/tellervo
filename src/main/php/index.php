@@ -11,6 +11,7 @@
  * *******************************************************************
  */
 
+
 try{
 require_once("config.php");
 } catch (Exception $e)
@@ -24,6 +25,7 @@ try{
 {
 	trigger_error('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_ERROR);
 }
+
 require_once("inc/meta.php");
 require_once("inc/auth.php");
 require_once("inc/errors.php");
@@ -37,7 +39,7 @@ require_once("inc/sample.php");
 require_once("inc/radius.php");
 require_once("inc/measurement.php");
 require_once("inc/loan.php");
-require_once("inc/curation.php");
+require_once("inc/curationEvent.php");
 require_once("inc/box.php");
 require_once("inc/permission.php");
 require_once("inc/authenticate.php");
@@ -51,7 +53,6 @@ require_once("inc/odkformdefinition.php");
 $xmldata 		= NULL;
 $myAuth         = new auth();
 $myMetaHeader   = new meta();
-
 
 if ($debugFlag===TRUE) $myMetaHeader->setTiming("Beginning request");
 
@@ -126,7 +127,7 @@ if($myMetaHeader->status != "Error")
             case "boxParameters":				$myObject = new box(); break;
             case "permissionParameters":		$myObject = new permission(); break;
             case "loanParameters":				$myObject = new loan(); break;
-            case "curationParameters":			$myObject = new curation(); break;
+            case "curationParameters":			$myObject = new curationEvent(); break;
             case "tagParameters":			$myObject = new tag(); break;
             case "statisticsParameters":			$myObject = new statistics(); break;
             case "odkFormDefinitionParameters":			$myObject = new odkFormDefinition(); break;

@@ -27,6 +27,7 @@ class search Implements IDBAccessor
     var $sqlcommand = NULL;
     var $deniedRecArray = array();
     var $returnObject= NULL;
+    var $joinOperator= NULL;
     var $format = NULL;
     var $recordHits = 0;
     var $includeLoan = false;
@@ -73,6 +74,7 @@ class search Implements IDBAccessor
                     $this->setErrorMessage("901","Invalid user parameters - you cannot request all measurements as it is computationally too expensive");
                     return false;
                 }
+		
                 
                /* if($paramsObj->returnObject=='tag')
                 {
@@ -122,6 +124,14 @@ class search Implements IDBAccessor
 		
         $this->returnObject = $paramsClass->returnObject;
         $this->format = $format;
+	if($paramsClass->joinOperator!=null)
+	{
+		$this->joinOperator = $paramsClass->joinOperator;
+	}
+	else
+	{
+		$this->joinOperator = "AND";
+	}
         
         
         $orderBySQL   = NULL;
@@ -188,9 +198,10 @@ class search Implements IDBAccessor
         pg_send_query($dbconn, $fullSQL);
         $result = pg_get_result($dbconn);
         $this->recordHits = pg_num_rows($result);
-
+	
+	file_put_contents("/tmp/php.log", $fullSQL."\n----\n", FILE_APPEND | LOCK_EX);
         $result = pg_query($dbconn, $fullSQL);
-
+	
 
         $firebug->log("Begin permissions check");
         while ($row = pg_fetch_array($result))
@@ -436,6 +447,8 @@ class search Implements IDBAccessor
 
         foreach($paramsArray as $param)
         {
+		$joinOperator = $this->joinOperator;
+
         	// Intercept special cases first
         	if($param['field']=='anyparentobjectid')
         	{
@@ -455,7 +468,7 @@ class search Implements IDBAccessor
         				return null;     				
         		}
         		$filterSQL.= $param['table'].".objectid ";
-        		$filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true))\n AND ";
+        		$filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true))\n $joinOperator ";
         	}
         	elseif($param['field']=='anyparentobjectcode')
         	{
@@ -475,7 +488,7 @@ class search Implements IDBAccessor
         				return null;     				
         		}
         		$filterSQL.= $param['table'].".code ";
-        		$filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)))\n AND ";
+        		$filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)))\n $joinOperator ";
         	}
 		elseif($param['field']=='topobjectcode')
 		{
@@ -496,7 +509,7 @@ class search Implements IDBAccessor
 			}
 			$table = $this->tableName("object");
 			$filterSQL.= $table.".code ";
-			$filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)) AND parentobjectid IS NULL) \n AND ";
+			$filterSQL.= $operator." (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)) AND parentobjectid IS NULL) \n $joinOperator ";
 		}
 		elseif($param['field']=='topobjectid')
 		{
@@ -517,7 +530,7 @@ class search Implements IDBAccessor
                         }
 			$table = $this->tableName("object");
                         $filterSQL.= $table.".objectid ";
-                        $filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true) WHERE parentobjectid IS NULL) \n AND ";
+                        $filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true) WHERE parentobjectid IS NULL) \n $joinOperator ";
 
 		}
                 elseif($param['field']=='subobjectcode')
@@ -540,7 +553,7 @@ class search Implements IDBAccessor
 			$table = $this->tableName("object");
 			if($this->includesSubObjects($paramsArray)) $table = $this->tableName("subobject");
                         $filterSQL.= $table.".objectid ";
-                        $filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)) \n AND $table.parentobjectid IS NOT NULL \n AND ";
+                        $filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode(".$value.", true)) \n AND $table.parentobjectid IS NOT NULL \n $joinOperator ";
                 }
                 elseif($param['field']=='subobjectid')
                 {
@@ -562,7 +575,7 @@ class search Implements IDBAccessor
 			$table = $this->tableName("object");
 			if($this->includesSubObjects($paramsArray)) $table = $this->tableName("subobject");
                         $filterSQL.= $table.".objectid ";
-                        $filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true) WHERE parentobjectid IS NOT NULL) \n AND ";
+                        $filterSQL.= $operator." (SELECT objectid FROM cpgdb.findobjectdescendants(".$value.", true) WHERE parentobjectid IS NOT NULL) \n $joinOperator ";
 
                 }
 
@@ -586,7 +599,7 @@ class search Implements IDBAccessor
         				return null;
         		}
         		$filterSQL.= $param['table'].".vmeasurementid ";
-        		$filterSQL.= $operator." (SELECT vmeasurementid FROM cpgdb.findvmchildren(".$value.", false))\n AND ";
+        		$filterSQL.= $operator." (SELECT vmeasurementid FROM cpgdb.findvmchildren(".$value.", false))\n $joinOperator ";
         		
         		$firebug->log($filterSQL, "seriesdependencyid filter sql");
         		
@@ -621,7 +634,7 @@ class search Implements IDBAccessor
 	                $operator = "=";
 	                $value = " '".$param['value']."'";
 	            }
-	            $filterSQL .= $param['table'].".".$param['field']." ".$operator.$value."\n AND ";
+	            $filterSQL .= $param['table'].".".$param['field']." ".$operator.$value."\n $joinOperator ";
         	}
         }
         
@@ -631,8 +644,15 @@ class search Implements IDBAccessor
 	    $filterSQL .= " (tbltag.ownerid IS NULL OR tbltag.ownerid='".$myAuth->getID()."') AND ";
         }
 
-        // Trim off last 'and'
-        $filterSQL = substr($filterSQL, 0, -5);
+        // Trim off last join operator
+	if(substr_compare($filterSQL, " AND ", strlen($filterSQL)-strlen(" AND "), strlen(" AND ")) ===0)
+	{
+        	$filterSQL = substr($filterSQL, 0, -5);
+	}
+	else if(substr_compare($filterSQL, " OR ", strlen($filterSQL)-strlen(" OR "), strlen(" OR ")) ===0)
+	{
+		$filterSQL = substr($filterSQL, 0, -4);
+	}
         
         return $filterSQL;
     }
