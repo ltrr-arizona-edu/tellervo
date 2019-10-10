@@ -1,10 +1,8 @@
 package org.tellervo.desktop.labelgen;
 
-import java.awt.Image;
 import java.util.ArrayList;
 
 import javax.swing.Icon;
-import javax.swing.ImageIcon;
 
 import org.tellervo.desktop.ui.Builder;
 
