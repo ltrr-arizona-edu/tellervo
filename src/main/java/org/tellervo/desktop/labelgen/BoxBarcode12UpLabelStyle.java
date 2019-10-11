@@ -113,7 +113,6 @@ public class BoxBarcode12UpLabelStyle extends AbstractTellervoLabelStyle {
 		document.close();
 	}
 
-
 	
 	
 

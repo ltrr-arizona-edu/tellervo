@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.swing.JComponent;
@@ -965,6 +966,36 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
 		tree.expandPath(path);
     	
     }
+    
+    /**
+     * Search for the specified entity and if found select it
+     * 
+     * @param entity
+     */
+    public void searchAndSelectEntity(ITridas entity)
+    {
+    	TreePath pathtoitem = null;
+    	Enumeration<DefaultMutableTreeNode> e = top.depthFirstEnumeration();
+        while (e.hasMoreElements()) {
+            DefaultMutableTreeNode node = e.nextElement();
+            Object userobject = node.getUserObject();
+
+            if (userobject==entity) {
+            	pathtoitem = new TreePath(node.getPath());
+            	expandEntity(node);
+            }
+            
+        }
+      
+        if(pathtoitem!=null)
+        {
+        	tree.setSelectionPath(pathtoitem);
+        	tree.scrollPathToVisible(pathtoitem);
+        }
+    	
+    	
+    }
+    
     
     /**
      * Select an entity and notify listeners

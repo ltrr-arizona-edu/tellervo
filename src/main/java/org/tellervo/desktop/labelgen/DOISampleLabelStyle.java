@@ -618,4 +618,5 @@ public class DOISampleLabelStyle extends AbstractTellervoLabelStyle {
 		p.add(new Chunk(" "));
 		return p;
 	}
+
 }

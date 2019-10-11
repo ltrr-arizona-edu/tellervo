@@ -34,35 +34,47 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.CMYKColor;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-public class BoxLabel2Style extends AbstractTellervoLabelStyle {
+public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 
 		
-    private final static Logger log = LoggerFactory.getLogger(BoxLabel2Style.class);
+    private final static Logger log = LoggerFactory.getLogger(BoxLabelTW238.class);
+	Font labelTitleFont = new Font(Font.FontFamily.HELVETICA, 28f, Font.BOLD);
+	Font bodyFont = new Font(Font.FontFamily.HELVETICA, 10f);
+	Font titleFont = new Font(Font.FontFamily.HELVETICA, 40f, Font.BOLD);
+	Font monsterFont = new Font(Font.FontFamily.HELVETICA, 60f, Font.BOLD);
 
-		
-		
-		Font labelTitleFont = new Font(Font.FontFamily.HELVETICA, 28f, Font.BOLD);
-		Font bodyFont = new Font(Font.FontFamily.HELVETICA, 10f);
-		Font titleFont = new Font(Font.FontFamily.HELVETICA, 40f, Font.BOLD);
-		Font subTitleFont = new Font(Font.FontFamily.HELVETICA, 14f);
-		Font subSubSectionFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
-		Font bodyFontLarge = new Font(Font.FontFamily.HELVETICA, 14f);
-		Font tableHeaderFontLarge = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);		
-		Float headerLineWidth = new Float(0.8);	
+	Font subTitleFont = new Font(Font.FontFamily.HELVETICA, 14f);
+	Font subSubSectionFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
+	Font bodyFontLarge = new Font(Font.FontFamily.HELVETICA, 14f);
+	Font tableHeaderFontLarge = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);
+	
+	Font siteFont = new Font(Font.FontFamily.HELVETICA, 12f, Font.BOLD);
+	Font sampleFont = new Font(Font.FontFamily.HELVETICA, 12f);
+
+	Float headerLineWidth = new Float(0.8);	
+	Integer margin = 2;
+	
 		
 	
-	public BoxLabel2Style() {
-		super("Box label - full summary style 2", "Box label with full summary of contents.  One landscape label per letter sized sheet", ItemType.BOX);
-		
+	public BoxLabelTW238() {
+		super("Box label for TW238", 
+				"Box label with full summary of contents designed for TW238 style white box", 
+				ItemType.BOX,
+				"Country",
+				"State - Type",
+				"PI",
+				"Box name");
 	}
+	
 
 	@Override
 	public void outputPDFToStream(java.io.OutputStream output, ArrayList items) throws Exception {
@@ -70,94 +82,202 @@ public class BoxLabel2Style extends AbstractTellervoLabelStyle {
 			document = new Document();
 			PdfWriter writer = PdfWriter.getInstance(document, output);
 	       
-			document.setPageSize(PageSize.LETTER.rotate());			
+			document.setPageSize(new Rectangle(720, 594));			
 			document.open();
 		
 			cb = writer.getDirectContent();			
 			
 			// Set basic metadata
-		    document.addAuthor("Peter Brewer"); 
+		    document.addAuthor("Tellervo"); 
 		    document.addSubject("Box Label"); 
 				
 		    for(Object item : items)
 		    {
 		    	WSIBox b = (WSIBox) item;
-			    
-		    	// Find all objects associated with samples in this box
-				SearchParameters objparam = new SearchParameters(SearchReturnObject.OBJECT);
-				objparam.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue().toString());
-				EntitySearchResource<TridasObject> objresource = new EntitySearchResource<TridasObject>(objparam);
-				objresource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
-				TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(objresource);
-				
-				objresource.query();	
-				dialog.setVisible(true);
-				if(!dialog.isSuccessful()) 
-				{ 
-					System.out.println("Error getting objects");
-					continue;
-				}
-				List<TridasObject> objList = objresource.getAssociatedResult();
-
-				log.debug("Object found count: "+objList.size());
-				
-				for(TridasObject o : objList)
-				{
-					log.debug("  - "+o.getTitle() + " - " +TridasUtils.getGenericFieldValueByName(o, "tellervo.objectLabCode"));
-				}
-				
-		    	
-		    	
-				// Title Left		
-				ColumnText ct = new ColumnText(cb);
-				ct.setSimpleColumn(document.left(), document.top(15)-210, 368, document.top(15), 45f, Element.ALIGN_LEFT);
-				ct.addText(getTitleParagraph(b));
-				
-				ct.go();
-				
-		        // Table
-				ColumnText ct2 = new ColumnText(cb);
-				ct2.setSimpleColumn(370, document.top(15)-100, document.right(0), document.top(0), 20, Element.ALIGN_RIGHT);
-				ct2.addElement( getTable(b, objList));
-				ct2.go();			
-					
-				ColumnText ct3 = new ColumnText(cb);
-				ct3.setSimpleColumn(500, document.bottom(0), document.right(0), document.bottom(0)+80, 20, Element.ALIGN_RIGHT);
-				ct3.addElement(LabBarcode.getBoxBarcode(b, cb));
-				ct3.go();
-				
-	
-				
-				// Pad text
-		        document.add(new Paragraph(" "));      
-		        Paragraph p2 = new Paragraph();
-		        p2.setSpacingBefore(70);
-			    p2.setSpacingAfter(10);
-			    p2.add(new Chunk(" ", bodyFontLarge));  
-		        document.add(new Paragraph(p2));
-
-		        
-		        ColumnText ct4 = new ColumnText(cb);
-				ct4.setSimpleColumn(500, document.bottom(0), document.left(0), document.bottom(0)+80, 20, Element.ALIGN_RIGHT);
-				ct4.addElement(getProjectParagraph(objList));
-				ct4.go();
-
-		        
-		        
-		        document.newPage();
-
+		    	try {
+		    		writeBoxLabel(b);	
+		    		document.newPage();
+		    	} catch (Exception e)
+		    	{
+		    		log.debug(e.getLocalizedMessage());
+		    	}
 		    }
-		    
-			
 		} catch (DocumentException de) {
 			System.err.println(de.getMessage());
 		}
 
 		// Close the document
-		document.close();
+		try {
+			document.close();
+		} catch (Exception e)
+		{
+			Alert.error("Error", "There was a problem creating your labels. \n"+ e.getLocalizedMessage());
+		}
+	}
+	
+	private Integer toPoint(float val)
+	{
+		return (int) val*72;
 	}
 
+	private void writeBoxLabel(WSIBox b) throws Exception
+	{
+    	// Find all objects associated with samples in this box
+		SearchParameters objparam = new SearchParameters(SearchReturnObject.OBJECT);
+		objparam.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue().toString());
+		EntitySearchResource<TridasObject> objresource = new EntitySearchResource<TridasObject>(objparam);
+		objresource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(objresource);
+		
+		objresource.query();	
+		dialog.setVisible(true);
+		if(!dialog.isSuccessful()) 
+		{ 
+			throw new Exception("Error getting objects");
+		}
+		List<TridasObject> objList = objresource.getAssociatedResult();
 
+		log.debug("Object found count: "+objList.size());
+		
+		if(objList.size()==0)
+		{
+			Alert.error("Problem", "Box "+b.getTitle()+" does not contain any objects");
+			return;
+		}
+		
+		// Variables
+		TridasObject firstObject = objList.get(0);
+    	TridasProject project = App.dictionary.getTridasProjectByID(TridasUtils.getGenericFieldValueByName(firstObject, "tellervo.object.projectid"));
+
+		String country = firstObject.getLocation().getAddress().getCountry();
+		if(getLine1OverrideText()!=null)
+		{
+			country = getLine1OverrideText();
+		}
+		
+		String stateType = firstObject.getLocation().getAddress().getStateProvinceRegion();
+		if(getLine2OverrideText()!=null)
+		{
+			stateType = getLine2OverrideText();
+		}
+		
+    	String pi = project.getInvestigator();
+		if(getLine3OverrideText()!=null)
+		{
+			pi = getLine3OverrideText();
+		}
+		
+    	String box = b.getTitle();
+		if(getLine4OverrideText()!=null)
+		{
+			box = getLine4OverrideText();
+		}
+		
+		
+		// PI and Box title	
+		ColumnText ct = new ColumnText(cb);
+		ct.setSimpleColumn(margin, margin, toPoint(6.75f)-margin, toPoint(3f)+margin, 40f, Element.ALIGN_LEFT);
+		ct.addText(new Phrase(pi.toUpperCase()+"\n", this.titleFont));
+		ct.addText(new Phrase("\n", this.siteFont));
+		ct.addText(new Phrase(box.toUpperCase(), this.titleFont));
+		ct.go();
+		
+		// Color tag box
+		cb.saveState();
+		cb.setColorStroke(CMYKColor.BLACK);
+		cb.rectangle(0, 0, document.getPageSize().getWidth(), document.getPageSize().getHeight());
+		cb.stroke();
+		cb.restoreState();
+		
+		// Country and State-Type
+		ct = new ColumnText(cb);
+		ct.setSimpleColumn(margin, document.getPageSize().getHeight()-toPoint(3f)-margin, toPoint(3.5f)+margin, document.getPageSize().getHeight()-margin, 60f, Element.ALIGN_LEFT);
+		ct.addText(new Phrase(country+"\n", this.monsterFont));
+		ct.addText(new Phrase(stateType, this.monsterFont));
+		ct.go();
+        
+		// Barcode
+		float barheight = 72;
+    	ct = new ColumnText(cb);   
+		int llx = toPoint(7f);
+    	int lly = 0;
+    	int urx = (int) this.document.getPageSize().getWidth();
+    	int ury = toPoint(3f);
+    	int leading = 1;
+		ct.setSimpleColumn(llx,lly ,urx , ury , leading,  Element.ALIGN_LEFT);
+		ct.setUseAscender(true);
+		ct.addText(new Chunk(LabBarcode.getBoxBarcode(b, cb, barheight, barcodeSize), 0, 0, true));
+    	ct.go();
+    	
+		// Site and sample summary
+		ct = new ColumnText(cb);
+		ct.setSimpleColumn(toPoint(4f), document.getPageSize().getHeight()-toPoint(5f), document.getPageSize().getWidth()-margin, toPoint(8f), 13f, Element.ALIGN_LEFT);
+		
+		Integer totalSampleCount = 0;
+		for(TridasObject myobj : objList)
+		{
+			String objCode = "";
+			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getMultiLevelLabCode()+" : "; 	
+
+			ct.addText(new Phrase(objCode+myobj.getTitle()+"\n", this.siteFont));
+			
+			// Search for elements associated with this object
+			System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
+			SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
+			sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
+			sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
+			EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
+			resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
+			TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(resource);
+			resource.query();
+			dialog2.setVisible(true);
+			if(!dialog2.isSuccessful()) 
+			{ 	
+				log.debug("No elements associated with "+myobj.getTitle());
+			}
+			//XMLDebugView.showDialog();
+			List<TridasElement> elements = resource.getAssociatedResult();
+			
+			if(elements==null || elements.size()==0)
+			{
+				log.error("No elements found for object "+objCode);
+			}
+			else
+			{
+				TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
+						TridasComparator.NullBehavior.NULLS_LAST, 
+						TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+				Collections.sort(elements, numSorter);	
+				
+				// Loop through elements 
+				Integer smpCnt = 0;
+				ArrayList<String> numlist = new ArrayList<String>();
+				for(TridasElement myelem : elements)
+				{
+					// Add element title to string
+					if(myelem.getTitle()!=null) 
+					{
+						String mytitle = myelem.getTitle();
+						numlist.add(mytitle);
+					}
+	
+					// Grab associated samples and add count to running total
+					List<TridasSample> samples = myelem.getSamples(); 
+					smpCnt += samples.size();
+				}
+				
+				ct.addText(new Paragraph(hyphenSummarize(numlist)+" (sample count = "+smpCnt+")\n", this.sampleFont));
+				totalSampleCount = totalSampleCount+smpCnt;
+			}
+			
+			ct.addText(new Phrase("\n", this.sampleFont));
+			
+		}
+		
+		ct.addText(new Phrase("Total samples in box: "+totalSampleCount, this.sampleFont));
+		ct.go();
+    	
+	}
 	
 
 	/**
@@ -632,5 +752,6 @@ public class BoxLabel2Style extends AbstractTellervoLabelStyle {
 		p.add(new Chunk(" "));
 		return p;
 	}
+	
 
 }

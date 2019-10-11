@@ -619,4 +619,6 @@ public class SampleLabel1Style extends AbstractTellervoLabelStyle {
 		p.add(new Chunk(" "));
 		return p;
 	}
+
+
 }

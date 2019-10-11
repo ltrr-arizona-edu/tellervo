@@ -4,7 +4,6 @@ import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,6 +26,8 @@ public class LabelGenWizard extends AbstractWizardDialog {
 	private LGWizardWhatStyle page2;
 	private LGWizardBoxPicker2 page3;
 	private LGWizardSamplePicker page3b;
+	private LGWizardOverrideText page4;
+	
 	private LGWizardSummary finalpage;
 	private boolean cancelled = false;
 	
@@ -44,6 +45,8 @@ public class LabelGenWizard extends AbstractWizardDialog {
 		page2 = new LGWizardWhatStyle();
 		page3 = new LGWizardBoxPicker2();
 		page3b = new LGWizardSamplePicker();
+		page4 = new LGWizardOverrideText(page2);
+		
 		finalpage = new LGWizardSummary();
 		
 		if(App.prefs.getBooleanPref(PrefKey.LABEL_WIZARD_HIDE_INTRO, false)==false)
@@ -55,6 +58,7 @@ public class LabelGenWizard extends AbstractWizardDialog {
 		pages.add(page2);
 		pages.add(page3);
 		pages.add(page3b);
+		pages.add(page4);
 		pages.add(finalpage);
 		
 		setupGui();
@@ -102,6 +106,38 @@ public class LabelGenWizard extends AbstractWizardDialog {
 		ItemType itemType = style.getItemType();
 		ArrayList boxes;
 		ArrayList samples;
+		
+		try {
+			if(style.hasConfigurableLine1()) {
+				if(page4.getLine1TextOverride()!=null && page4.getLine1TextOverride().length()>0)
+				{
+					style.setLine1OverrideText(page4.getLine1TextOverride());
+				}
+			}
+			if(style.hasConfigurableLine2()) {
+				if(page4.getLine2TextOverride()!=null && page4.getLine2TextOverride().length()>0)
+				{
+					style.setLine2OverrideText(page4.getLine2TextOverride());
+				}
+			}
+			if(style.hasConfigurableLine3()) {
+				
+				if(page4.getLine3TextOverride()!=null && page4.getLine3TextOverride().length()>0)
+				{
+					style.setLine3OverrideText(page4.getLine3TextOverride());
+				}
+			}
+			if(style.hasConfigurableLine4()) {
+				
+				if(page4.getLine4TextOverride()!=null && page4.getLine4TextOverride().length()>0)
+				{
+					style.setLine4OverrideText(page4.getLine4TextOverride());
+				}
+			}
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 		File outputFile;
 		try {

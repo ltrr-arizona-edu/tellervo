@@ -22,6 +22,7 @@ public class LabelStyleFactory {
 		new BoxBarcodeRoll4xPoint375Style(),
 		new BoxLabel1Style(),
 		new BoxLabel2Style(),
+		new BoxLabelTW238(),
 		new SampleLabel1Style(),
 		new SampleLabelRoll4xPoint375AllInStyle(),
 		new SampleLabelRoll4xPoint375TwoLabelStyle(),

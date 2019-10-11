@@ -89,6 +89,23 @@ public class LGWizardWhatStyle extends AbstractWizardPanel implements ActionList
 			// Enable the picker pages depending on the type of data the style uses
 			setPageClassToEnableOrDisable(LGWizardBoxPicker2.class, style.getItemType().equals(ItemType.BOX));
 			setPageClassToEnableOrDisable(LGWizardSamplePicker.class, style.getItemType().equals(ItemType.SAMPLE));
+			
+			// Enable text configuration page if the label chosen is configureable
+			if(!style.hasConfigurableLine1() && 
+					!style.hasConfigurableLine2() && 
+					!style.hasConfigurableLine3() &&
+					!style.hasConfigurableLine4() )
+			{
+				setPageClassToEnableOrDisable(LGWizardOverrideText.class, false);
+				
+			
+			}
+			else
+			{
+				setPageClassToEnableOrDisable(LGWizardOverrideText.class, true);
+			}
+			
+			
 			} catch ( Exception e)
 			{
 				//e.printStackTrace();

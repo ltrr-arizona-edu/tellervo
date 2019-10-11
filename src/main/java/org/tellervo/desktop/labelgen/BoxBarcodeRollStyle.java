@@ -105,6 +105,5 @@ public class BoxBarcodeRollStyle extends AbstractTellervoLabelStyle {
 
 
 	
-	
 
 }

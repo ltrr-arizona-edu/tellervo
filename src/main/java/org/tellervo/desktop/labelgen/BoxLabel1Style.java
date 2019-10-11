@@ -574,4 +574,5 @@ public class BoxLabel1Style extends AbstractTellervoLabelStyle {
 		p.add(new Chunk(" "));
 		return p;
 	}
+
 }

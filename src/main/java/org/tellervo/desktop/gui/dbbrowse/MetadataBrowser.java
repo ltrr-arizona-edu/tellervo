@@ -20,6 +20,7 @@
 package org.tellervo.desktop.gui.dbbrowse;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -183,7 +184,8 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 				}
 				
 			}
-		}); 	
+		});
+    	
     }
     
     /**
@@ -533,19 +535,23 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 		nodeSelected = event.getTreeNode();
 		
 		try {
-			ITridas entity = event.getEntity();
+			ITridas entity = event.getEntityList().get(0);
 			
 			if(entity instanceof TridasObject)
 			{
 				this.setEntity(entity, TridasObject.class);
+				treepanel.searchAndSelectEntity(entity);
+				
 			}
 			else if (entity instanceof TridasElement)
 			{
 				this.setEntity(entity, TridasElement.class);
+				treepanel.searchAndSelectEntity(entity);
 			}
 			else if (entity instanceof TridasSample)
 			{
 				this.setEntity(entity, TridasSample.class);
+				treepanel.searchAndSelectEntity(entity);
 			}
 			else if (entity instanceof TridasRadius)
 			{
@@ -560,9 +566,10 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 				this.setEntity(entity, TridasDerivedSeries.class);
 			}
 
-		} catch (TridasSelectException e2)
+		} catch (Exception e2)
 		{
 			// Ignore
+			e2.printStackTrace();
 		}		
 		
 	}
@@ -615,7 +622,7 @@ public class MetadataBrowser extends javax.swing.JDialog implements PropertyChan
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        splitPane.setDividerLocation(400);
+       // splitPane.setDividerLocation(400);
         splitPane.setDividerSize(10);
         splitPane.setOneTouchExpandable(true);
 

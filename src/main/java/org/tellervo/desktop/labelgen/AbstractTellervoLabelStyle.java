@@ -25,6 +25,16 @@ public abstract class AbstractTellervoLabelStyle {
 	protected Document document;
 	protected PdfContentByte cb;
 	
+	private final String configureableLine1Description;
+	private final String configureableLine2Description;
+	private final String configureableLine3Description;
+	private final String configureableLine4Description;
+	
+	protected String line1TextOverride = null;
+	protected String line2TextOverride = null;
+	protected String line3TextOverride = null;
+	protected String line4TextOverride = null;
+	
 	enum ItemType{
 		BOX, SAMPLE, GENERIC
 	}
@@ -32,12 +42,46 @@ public abstract class AbstractTellervoLabelStyle {
 	float barcodeSize = 0.7f;
 	
 
-	
+	/**
+	 * Basic label with no configureable lines 
+	 * 
+	 * @param name
+	 * @param description
+	 * @param itemType
+	 */
 	public AbstractTellervoLabelStyle(String name, String description, ItemType itemType)
 	{
 		this.name = name;
 		this.description = description;
 		this.itemType = itemType;
+		configureableLine1Description = null;
+		configureableLine2Description = null;
+		configureableLine3Description = null;
+		configureableLine4Description = null;
+	}
+	
+	/**
+	 * Constructor for a label with configureable lines of text.  If any of the lines
+	 * are not used, set the descriptions to null  
+	 *  
+	 * @param name
+	 * @param description
+	 * @param itemType
+	 * @param line1Description
+	 * @param line2Description
+	 * @param line3Description
+	 * @param line4Description
+	 */
+	public AbstractTellervoLabelStyle(String name, String description, ItemType itemType,
+			String line1Description, String line2Description, String line3Description, String line4Description)
+	{
+		this.name = name;
+		this.description = description;
+		this.itemType = itemType;
+		configureableLine1Description = line1Description;
+		configureableLine2Description = line2Description;
+		configureableLine3Description = line3Description;
+		configureableLine4Description = line4Description;
 	}
 	
 	/**
@@ -131,6 +175,114 @@ public abstract class AbstractTellervoLabelStyle {
 	}
 	
 	/**
+	 * Get the description for what line 1 is used for
+	 * 
+	 * @return
+	 */
+	public String getLine1Description()
+	{
+		if(hasConfigurableLine1())
+		{
+			return this.configureableLine1Description;
+		}
+		else
+		{
+			return "";
+		}
+	}
+	
+	/**
+	 * Get the description for what line 2 is used for
+	 * 
+	 * @return
+	 */
+	public String getLine2Description()
+	{
+		if(hasConfigurableLine2())
+		{
+			return this.configureableLine2Description;
+		}
+		else
+		{
+			return "";
+		}
+	}
+	
+	/**
+	 * Get the description for what line 3 is used for
+	 * 
+	 * @return
+	 */
+	public String getLine3Description()
+	{
+		if(hasConfigurableLine3())
+		{
+			return this.configureableLine3Description;
+		}
+		else
+		{
+			return "";
+		}
+	}
+	
+	/**
+	 * Get the description for what line 4 is used for
+	 * 
+	 * @return
+	 */
+	public String getLine4Description()
+	{
+		if(hasConfigurableLine4())
+		{
+			return this.configureableLine4Description;
+		}
+		else
+		{
+			return "";
+		}
+	}
+	
+	/**
+	 * Has a configureable line 1 in the label
+	 * 
+	 * @return
+	 */
+	public boolean hasConfigurableLine1() {
+				
+		return configureableLine1Description!=null;
+	}
+	
+	/**
+	 * Has a configureable line 2 in the label
+	 * 
+	 * @return
+	 */
+	public boolean hasConfigurableLine2() {
+		
+		return configureableLine2Description!=null;
+	}
+	
+	/**
+	 * Has a configureable line 3 in the label
+	 * 
+	 * @return
+	 */
+	public boolean hasConfigurableLine3() {
+		
+		return configureableLine3Description!=null;
+	}
+	
+	/**
+	 * Has a configureable line 4 in the label
+	 * 
+	 * @return
+	 */
+	public boolean hasConfigurableLine4() {
+		
+		return configureableLine4Description!=null;
+	}
+	
+	/**
 	 * Use style to create a PDF output stream for the list of items provided
 	 * 
 	 * @param output
@@ -139,4 +291,119 @@ public abstract class AbstractTellervoLabelStyle {
 	 */
 	public abstract void outputPDFToStream(java.io.OutputStream output, ArrayList items) throws Exception;
 
+	/**
+	 * Get the text to use for line 1 of the label
+	 * 
+	 * @return
+	 */
+	public String getLine1OverrideText()
+	{
+		return line1TextOverride;
+	}
+	
+	/**
+	 * Get the text to use for line 2 of the label
+	 * 
+	 * @return
+	 */
+	public String getLine2OverrideText()
+	{
+		return line2TextOverride;
+	}
+	
+	/**
+	 * Get the text to use for line 3 of the label
+	 * 
+	 * @return
+	 */
+	public String getLine3OverrideText()
+	{
+		return line3TextOverride;
+	}
+
+	/**
+	 * Get the text to use for line 4 of the label
+	 * 
+	 * @return
+	 */
+	public String getLine4OverrideText()
+	{
+		return line4TextOverride;
+	}
+	
+	/**
+	 * Override the value of the text in line 1 for this label.  If line 1
+	 * is not configurable then an exception is thrown 
+	 *  
+	 * @param value
+	 * @throws Exception
+	 */
+	public void setLine1OverrideText(String value) throws Exception {
+		
+		if(this.hasConfigurableLine1()==false)
+		{
+			throw new Exception("This label does not have a configureable line 1");
+		}
+		else
+		{
+			this.line1TextOverride = value;
+		}
+	}
+
+	/**
+	 * Override the value of the text in line 2 for this label.  If line 2
+	 * is not configurable then an exception is thrown 
+	 *  
+	 * @param value
+	 * @throws Exception
+	 */
+	public void setLine2OverrideText(String value) throws Exception {
+		
+		if(this.hasConfigurableLine2()==false)
+		{
+			throw new Exception("This label does not have a configureable line 2");
+		}
+		else
+		{
+			this.line2TextOverride = value;
+		}
+	}
+	
+	/**
+	 * Override the value of the text in line 3 for this label.  If line 3
+	 * is not configurable then an exception is thrown 
+	 *  
+	 * @param value
+	 * @throws Exception
+	 */
+	public void setLine3OverrideText(String value) throws Exception {
+		
+		if(this.hasConfigurableLine3()==false)
+		{
+			throw new Exception("This label does not have a configureable line 3");
+		}
+		else
+		{
+			this.line3TextOverride = value;
+		}
+	}
+	
+	/**
+	 * Override the value of the text in line 4 for this label.  If line 4
+	 * is not configurable then an exception is thrown 
+	 *  
+	 * @param value
+	 * @throws Exception
+	 */
+	public void setLine4OverrideText(String value) throws Exception {
+		
+		if(this.hasConfigurableLine4()==false)
+		{
+			throw new Exception("This label does not have a configureable line 4");
+		}
+		else
+		{
+			this.line4TextOverride = value;
+		}
+	}
 }
