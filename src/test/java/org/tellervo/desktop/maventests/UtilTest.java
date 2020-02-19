@@ -44,6 +44,7 @@ import junit.framework.TestCase;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.tellervo.desktop.nativeloader.RxTxNativeLoader;
+import org.tellervo.desktop.tridasv2.NumberThenStringComparator2;
 import org.tellervo.desktop.util.StringUtils;
 
 
@@ -62,6 +63,43 @@ public class UtilTest extends TestCase {
         
         System.out.println(sign);
         System.out.println(value);
+    	
+    }
+    
+    public void testComparator()
+    {
+    	NumberThenStringComparator2 comparator = new NumberThenStringComparator2();
+    	
+    	String a = "02-A";
+    	String b = "02-B";
+    	int result = comparator.compare(a, b);
+    	System.out.println(a +" v "+b+" = "+result);
+    	
+    	a = "02-B";
+    	b = "08-A";
+    	result = comparator.compare(a, b);
+    	System.out.println(a +" v "+b+" = "+result);
+    	
+    	a = "08-B";
+    	b = "10";
+    	result = comparator.compare(a, b);
+    	System.out.println(a +" v "+b+" = "+result);    	
+    	
+    	a = "10";
+    	b = "4-A";
+    	result = comparator.compare(a, b);
+    	System.out.println(a +" v "+b+" = "+result); 
+    	
+    	a = "4-A";
+    	b = "3";
+    	result = comparator.compare(a, b);
+    	System.out.println(a +" v "+b+" = "+result); 
+    	
+    	
+    	a = "31-A";
+    	b = "5";
+    	result = comparator.compare(a, b);
+    	System.out.println(a +" v "+b+" = "+result); 
     	
     }
     

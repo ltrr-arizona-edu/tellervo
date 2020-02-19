@@ -24,12 +24,14 @@ import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.StringTokenizer;
 
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Icon;
@@ -329,6 +331,28 @@ public class Builder {
 		
 	}
 	
+	public static com.itextpdf.text.Image getITextImage(String fullname){
+					
+		java.net.URL url = cl.getResource(fullname);
+		if (url != null){
+			try {
+				return com.itextpdf.text.Image.getInstance(url);
+			} catch (BadElementException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		return null;
+		
+	}
+	
 	public static com.itextpdf.text.Image getITextImageMissingIcon(){
 		
 		java.net.URL url = cl.getResource(getIconURL("missingicon.png", ICONS, 48));
@@ -426,6 +450,40 @@ public class Builder {
 		else
 			return null;
 	}
+	
+	public static String getImageFilename(String name)
+	{
+		//java.net.URL url = cl.getResource(IMAGES_PACKAGE_PREFIX + name);
+		
+		StringBuffer urlBuffer = new StringBuffer();	
+		urlBuffer.append(RESOURCE_PACKAGE_PREFIX);
+		urlBuffer.append(IMAGES);	
+		urlBuffer.append(name);
+		
+		java.net.URL url = cl.getResource(urlBuffer.toString());
+		
+		
+		if (url != null)
+			return url.toString();
+		else
+			return null;
+		
+	}
+	
+	public static BufferedImage loadImage(String filename)
+	{
+		
+	    BufferedImage buff = null;
+	    try {
+	        buff = ImageIO.read(org.tellervo.desktop.ui.Builder.class.getClass().getResourceAsStream(filename));
+	    } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+	        return null;
+	    }
+	    return buff;
+		
+	}
 
 	public final static String IMAGES = "Images";
 	public final static String ICONS = "Icons";
@@ -440,6 +498,13 @@ public class Builder {
 	public static URL getResourceFile(String name)
 	{
 		java.net.URL url = cl.getResource("Sounds/"+name);
+		return url;
+		
+	}
+	
+	public static URL getAgencyFile(String name)
+	{
+		java.net.URL url = cl.getResource("Agency/"+name);
 		return url;
 		
 	}

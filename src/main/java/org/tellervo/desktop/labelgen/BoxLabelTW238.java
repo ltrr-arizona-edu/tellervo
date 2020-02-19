@@ -1,21 +1,22 @@
 package org.tellervo.desktop.labelgen;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.core.App;
+import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.tridasv2.NumberThenStringComparator2;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.ui.Alert;
+import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
 import org.tellervo.desktop.wsi.tellervo.resources.EntitySearchResource;
-import org.tellervo.schema.JoinOperator;
 import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
@@ -23,7 +24,6 @@ import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.WSIBox;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
-import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasSample;
@@ -34,13 +34,12 @@ import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.CMYKColor;
 import com.itextpdf.text.pdf.ColumnText;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
@@ -57,9 +56,14 @@ public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 	Font bodyFontLarge = new Font(Font.FontFamily.HELVETICA, 14f);
 	Font tableHeaderFontLarge = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);
 	
-	Font siteFont = new Font(Font.FontFamily.HELVETICA, 12f, Font.BOLD);
-	Font sampleFont = new Font(Font.FontFamily.HELVETICA, 12f);
+	Font projectFont = new Font(Font.FontFamily.HELVETICA, 16f, Font.BOLD);
 
+	Font siteFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.BOLD);
+	Font sampleFont = new Font(Font.FontFamily.HELVETICA, 8f);
+	Boolean doHyphenSummerize = false;
+	
+	private boolean summerizeSamples = true;
+	
 	Float headerLineWidth = new Float(0.8);	
 	Integer margin = 2;
 	
@@ -71,8 +75,11 @@ public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 				ItemType.BOX,
 				"Country",
 				"State - Type",
-				"PI",
-				"Box name");
+				null,
+				"Box name",
+				"Agency");
+		
+		this.setIsLabelSummarizationTypeConfigurable(true);
 	}
 	
 
@@ -96,11 +103,12 @@ public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 		    	WSIBox b = (WSIBox) item;
 		    	try {
 		    		writeBoxLabel(b);	
-		    		document.newPage();
 		    	} catch (Exception e)
 		    	{
+		    		log.debug("Problem writing label...");
 		    		log.debug(e.getLocalizedMessage());
 		    	}
+		    	document.newPage();
 		    }
 		} catch (DocumentException de) {
 			System.err.println(de.getMessage());
@@ -115,6 +123,12 @@ public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 		}
 	}
 	
+	/**
+	 * Convert dimension in inches to points
+	 * 
+	 * @param val
+	 * @return
+	 */
 	private Integer toPoint(float val)
 	{
 		return (int) val*72;
@@ -122,7 +136,7 @@ public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 
 	private void writeBoxLabel(WSIBox b) throws Exception
 	{
-    	// Find all objects associated with samples in this box
+		// Find all objects associated with samples in this box
 		SearchParameters objparam = new SearchParameters(SearchReturnObject.OBJECT);
 		objparam.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue().toString());
 		EntitySearchResource<TridasObject> objresource = new EntitySearchResource<TridasObject>(objparam);
@@ -144,24 +158,34 @@ public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 			Alert.error("Problem", "Box "+b.getTitle()+" does not contain any objects");
 			return;
 		}
+		Collections.sort(objList, new TridasComparator());
 		
+		HashSet<TridasProject> projectSet = new HashSet<TridasProject>();
+		for(TridasObject o : objList)
+		{
+			String id = TridasUtils.getGenericFieldValueByName(o, "tellervo.object.projectid");
+			projectSet.add(Dictionary.getTridasProjectByID(id));
+		}
+			
+		ArrayList<TridasProject> projectList = new ArrayList<TridasProject>(new ArrayList<TridasProject>(projectSet));
+		Collections.sort(projectList, new TridasComparator());
+		
+		TridasProject firstProject = projectList.get(0);
 		// Variables
-		TridasObject firstObject = objList.get(0);
-    	TridasProject project = App.dictionary.getTridasProjectByID(TridasUtils.getGenericFieldValueByName(firstObject, "tellervo.object.projectid"));
-
-		String country = firstObject.getLocation().getAddress().getCountry();
+		String country = "";
 		if(getLine1OverrideText()!=null)
 		{
 			country = getLine1OverrideText();
 		}
 		
-		String stateType = firstObject.getLocation().getAddress().getStateProvinceRegion();
+		String stateType = "";
 		if(getLine2OverrideText()!=null)
 		{
 			stateType = getLine2OverrideText();
 		}
 		
-    	String pi = project.getInvestigator();
+		
+    	String pi = firstProject.getInvestigator();
 		if(getLine3OverrideText()!=null)
 		{
 			pi = getLine3OverrideText();
@@ -173,14 +197,100 @@ public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 			box = getLine4OverrideText();
 		}
 		
+		if(getLine5OverrideText()!=null)
+		{
+			float xpos = margin;
+			float logowidth = 1.95f;
+			Image image = null;
+			
+			String[] logonames = getLine5OverrideText().split(" ");
+			
+			for(String logo : logonames)
+			{
+				logo = logo.trim();
+				String filename =null;
+				
+				if(logo==null || logo.length()==0) continue;	
+				if(logo.toUpperCase().equals("NPS")
+						|| logo.toUpperCase().equals("USFS")
+						|| logo.toUpperCase().equals("BIA")
+						|| logo.toUpperCase().equals("BLM")
+						|| logo.toUpperCase().equals("BOR")
+						|| logo.toUpperCase().equals("DOI")
+						|| logo.toUpperCase().equals("FWS"))
+				{
+					
+					filename = "Images/Agencies/"+logo.toLowerCase()+".png";
+				
+						
+					image = Builder.getITextImage(filename);
+			
+					log.debug(filename);
+				}
+				else
+				{
+					// Custom one in Tellervo folder
+					filename = logo+".png";
+					
+					if(!FileUtils.fileExists(filename)) {
+						log.debug("File : "+filename+" does not exist");
+						image = null;
+					}
+					try {
+						image = com.itextpdf.text.Image.getInstance(filename);
+					} catch (Exception e)
+					{
+						log.debug("Failed to load file: "+filename);
+						image = null;
+						
+					}
+				}
+				
+				
+				if(image==null)
+				{
+					log.debug("Unrecognized logo");
+					continue;
+				}
+				
+	            float scaler = ((toPoint(logowidth) / image.getWidth())) * 100;
+	            image.scalePercent(scaler);
+	            image.setAbsolutePosition(xpos, toPoint(4f));
+	            xpos = xpos + toPoint(logowidth) + 20;
+	            cb.addImage(image);
+			}
+			
+		}
+		
 		
 		// PI and Box title	
 		ColumnText ct = new ColumnText(cb);
 		ct.setSimpleColumn(margin, margin, toPoint(6.75f)-margin, toPoint(3f)+margin, 40f, Element.ALIGN_LEFT);
-		ct.addText(new Phrase(pi.toUpperCase()+"\n", this.titleFont));
-		ct.addText(new Phrase("\n", this.siteFont));
+		//ct.addText(new Phrase(pi.toUpperCase()+"\n", this.titleFont));
+		//ct.addText(new Phrase("\n", this.siteFont));
 		ct.addText(new Phrase(box.toUpperCase(), this.titleFont));
-		ct.go();
+		int status = ct.go(true);
+		int lines = ct.getLinesWritten();
+		
+		log.debug("Number of lines required for box name: "+lines);
+		
+		if(ColumnText.hasMoreText(status))
+		{
+			log.debug("Box name too long!!!");
+			ct = null;
+		}
+		else
+		{
+			float ypos = (40f*lines)+margin+5;
+			log.debug("Original y position for box title was: "+(toPoint(3f)+margin));
+			log.debug("Setting y position for box title to "+ypos);
+			ct = new ColumnText(cb);
+			ct.setSimpleColumn(margin, margin, toPoint(6.75f)-margin, ypos, 40f, Element.ALIGN_LEFT);
+			ct.addText(new Phrase(box.toUpperCase(), this.titleFont));
+			ct.go();	
+		}
+		
+		
 		
 		// Color tag box
 		cb.saveState();
@@ -191,13 +301,13 @@ public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 		
 		// Country and State-Type
 		ct = new ColumnText(cb);
-		ct.setSimpleColumn(margin, document.getPageSize().getHeight()-toPoint(3f)-margin, toPoint(3.5f)+margin, document.getPageSize().getHeight()-margin, 60f, Element.ALIGN_LEFT);
+		ct.setSimpleColumn(margin, document.getPageSize().getHeight()-toPoint(3f)-margin, toPoint(4f)+margin, document.getPageSize().getHeight()-margin, 60f, Element.ALIGN_LEFT);
 		ct.addText(new Phrase(country+"\n", this.monsterFont));
-		ct.addText(new Phrase(stateType, this.monsterFont));
+		ct.addText(new Phrase(stateType, this.titleFont));
 		ct.go();
         
 		// Barcode
-		float barheight = 72;
+		float barheight = 60;
     	ct = new ColumnText(cb);   
 		int llx = toPoint(7f);
     	int lly = 0;
@@ -208,504 +318,295 @@ public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 		ct.setUseAscender(true);
 		ct.addText(new Chunk(LabBarcode.getBoxBarcode(b, cb, barheight, barcodeSize), 0, 0, true));
     	ct.go();
-    	
+		
 		// Site and sample summary
 		ct = new ColumnText(cb);
-		ct.setSimpleColumn(toPoint(4f), document.getPageSize().getHeight()-toPoint(5f), document.getPageSize().getWidth()-margin, toPoint(8f), 13f, Element.ALIGN_LEFT);
+		ct.setSimpleColumn(toPoint(4f), document.getPageSize().getHeight()-toPoint(5f), document.getPageSize().getWidth()-margin, toPoint(8f), 1f, Element.ALIGN_LEFT);
+		    	
+		Collections.sort(projectList, new TridasComparator());
 		
-		Integer totalSampleCount = 0;
-		for(TridasObject myobj : objList)
+		for(TridasProject project : projectList)
 		{
-			String objCode = "";
-			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getMultiLevelLabCode()+" : "; 	
+			Paragraph para = new Paragraph();
+			Phrase phrase = new Phrase();
+			
+			phrase.add(new Chunk(project.getTitle(), this.projectFont));
+			phrase.add(new Chunk("  \n\n", this.sampleFont));
+			para.add(phrase);
+			para.setAlignment(Element.ALIGN_CENTER);
+			ct.addElement(para);
+			
+			Integer totalSampleCount = 0;
 
-			ct.addText(new Phrase(objCode+myobj.getTitle()+"\n", this.siteFont));
-			
-			// Search for elements associated with this object
-			System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
-			SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
-			sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
-			sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
-			EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
-			resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
-			TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(resource);
-			resource.query();
-			dialog2.setVisible(true);
-			if(!dialog2.isSuccessful()) 
-			{ 	
-				log.debug("No elements associated with "+myobj.getTitle());
-			}
-			//XMLDebugView.showDialog();
-			List<TridasElement> elements = resource.getAssociatedResult();
-			
-			if(elements==null || elements.size()==0)
+			for(TridasObject myobj : objList)
 			{
-				log.error("No elements found for object "+objCode);
-			}
-			else
-			{
-				TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
-						TridasComparator.NullBehavior.NULLS_LAST, 
-						TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
-				Collections.sort(elements, numSorter);	
-				
-				// Loop through elements 
-				Integer smpCnt = 0;
-				ArrayList<String> numlist = new ArrayList<String>();
-				for(TridasElement myelem : elements)
+				if(!TridasUtils.getGenericFieldValueByName(myobj, "tellervo.object.projectid").equals(project.getIdentifier().getValue()))
 				{
-					// Add element title to string
-					if(myelem.getTitle()!=null) 
-					{
-						String mytitle = myelem.getTitle();
-						numlist.add(mytitle);
-					}
-	
-					// Grab associated samples and add count to running total
-					List<TridasSample> samples = myelem.getSamples(); 
-					smpCnt += samples.size();
-				}
-				
-				ct.addText(new Paragraph(hyphenSummarize(numlist)+" (sample count = "+smpCnt+")\n", this.sampleFont));
-				totalSampleCount = totalSampleCount+smpCnt;
-			}
-			
-			ct.addText(new Phrase("\n", this.sampleFont));
-			
-		}
-		
-		ct.addText(new Phrase("Total samples in box: "+totalSampleCount, this.sampleFont));
-		ct.go();
-    	
-	}
-	
-
-	/**
-	 * Get an iText Paragraph for the Title 
-	 * 
-	 * @return Paragraph
-	 */
-	private Paragraph getTitleParagraph(WSIBox b)
-	{
-		Paragraph p = new Paragraph(b.getTitle(), titleFont);
-		p.setLeading(95f);
-		//p.add(new Chunk(b.getTitle()+"\n", titleFont));
-		//p.add(new Chunk(App.getLabName(), subTitleFont));
-	
-		//p.add(new Chunk(b.getCurationLocation(), bodyFontLarge));
-				
-		return p;		
-	}
-	
-	
-	
-		
-	/**
-	 * Get PdfPTable containing the samples per object
-	 * 
-	 * @return PdfPTable
-	 * @throws DocumentException 
-	 */
-	private PdfPTable getTable(WSIBox b, List<TridasObject> objList) throws DocumentException
-	{
-		float[] widths = {0.25f, 0.65f, 0.2f};
-		PdfPTable tbl = new PdfPTable(widths);
-		PdfPCell headerCell = new PdfPCell();
-
-		tbl.setWidthPercentage(100f);
-
-		// Write header cells of table
-		headerCell.setBorderWidthBottom(headerLineWidth);
-		headerCell.setBorderWidthTop(headerLineWidth);
-		headerCell.setBorderWidthLeft(0);
-		headerCell.setBorderWidthRight(0);		
-		headerCell.setPhrase(new Phrase("Object", tableHeaderFontLarge));
-		headerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
-		tbl.addCell(headerCell);
-		headerCell.setPhrase(new Phrase("Elements", tableHeaderFontLarge));
-		headerCell.setHorizontalAlignment(Element.ALIGN_LEFT);
-		tbl.addCell(headerCell);
-		headerCell.setPhrase(new Phrase("# Samples", tableHeaderFontLarge));
-		headerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-		tbl.addCell(headerCell);
-		
-							
-	
-		
-		// Check that there are not too many objects to fit on box label
-		if(objList.size()>10) 
-		{
-			System.out.println("Warning this label has " + Integer.toString(objList.size()) + " objects associated with it so is unlikely to fit and may take some time to produce!");
-		}
-		
-		if(objList.size()==0)
-		{
-			Alert.error("No items", "This style of label includes details of contents but this box is empty!");
-		}
-		
-		if(objList.size()<4)
-		{
-			// Not many objects so add some space to the table for prettiness sake
-			headerCell.setBorder(0);
-			headerCell.setPhrase(new Phrase(" "));
-			tbl.addCell(headerCell);
-			tbl.addCell(headerCell);
-			tbl.addCell(headerCell);
-		}
-		
-		// Sort objects into alphabetically order based on labcode
-		TridasComparator sorter = new TridasComparator();
-		Collections.sort(objList, sorter);
-		
-		Integer sampleCountInBox = 0; 
-		
-		// Loop through objects
-		HashMap<TridasIdentifier, TridasObject> objmap = new HashMap<TridasIdentifier, TridasObject>(); // Array of top level objects that have already been dealt with
-		
-		for(TridasObject myobj : objList)
-		{
-			
-			if(myobj.isSetObjects())
-			{
-				objmap.put(myobj.getIdentifier(), myobj);
-				
-				for(TridasObject obj2 : myobj.getObjects())
-				{
-					objmap.put(obj2.getIdentifier(), obj2);
-				}
-				
-			}
-			else
-			{
-				objmap.put(myobj.getIdentifier(), myobj);
-			}
-		}
-		
-		Collection<TridasObject> col = objmap.values();
-		ArrayList<TridasObject> objlist = new ArrayList<TridasObject>(col);
-		
-		Collections.sort(objlist, sorter);
-		
-		for(TridasObject myobj : objlist)
-		{	
-			// Need to check if this object has already been done as there will be duplicate top level objects if there are samples 
-			// from more than one subobject in the box 
-			/*if(objdone.size()>0)
-			{
-				try{for(TridasObject tlo : objdone){
-					TridasObjectEx tloex = (TridasObjectEx) tlo;
-					TridasObjectEx myobjex = (TridasObjectEx) myobj;
-					
-					//if (tloex.getLabCode().compareTo(myobjex.getLabCode())==0){
-						// Object already been done so skip to next
-					//	continue mainobjloop;
-					//}
-					//else {
-						// Object has not been done so add to the done list and keep going
-						objdone.add(myobj);
-					//}
-				}} catch (Exception e){}
-				
-			}
-			else
-			{
-				objdone.add(myobj);
-			}*/
-
-			// Add object code to first column			
-			PdfPCell dataCell = new PdfPCell();
-			dataCell.setBorderWidthBottom(0);
-			dataCell.setBorderWidthTop(0);
-			dataCell.setBorderWidthLeft(0);
-			dataCell.setBorderWidthRight(0);
-			dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
-			String objCode = null;
-			
-		
-			
-			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getMultiLevelLabCode(); 	
-
-			// Search for elements associated with this object
-			System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
-			SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
-			sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
-			sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
-			EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
-			resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
-			TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(resource);
-			resource.query();
-			dialog2.setVisible(true);
-			if(!dialog2.isSuccessful()) 
-			{ 	
-				System.out.println("Error getting elements");
-				return null;
-			}
-			//XMLDebugView.showDialog();
-			List<TridasElement> elements = resource.getAssociatedResult();
-			
-			if(elements==null || elements.size()==0)
-			{
-				log.error("No elements found for object "+objCode);
-			}
-			else
-			{
-				
-			
-				dataCell.setColspan(3);
-				dataCell.setPhrase(new Phrase(myobj.getTitle(), bodyFont));
-				tbl.addCell(dataCell);
-				
-				
-				dataCell = new PdfPCell();
-				dataCell.setBorderWidthBottom(0);
-				dataCell.setBorderWidthTop(0);
-				dataCell.setBorderWidthLeft(0);
-				dataCell.setBorderWidthRight(0);
-				dataCell.setHorizontalAlignment(Element.ALIGN_LEFT);
-				dataCell.setPhrase(new Phrase(objCode, bodyFontLarge));
-				tbl.addCell(dataCell);
-				
-				
-				TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
-						TridasComparator.NullBehavior.NULLS_LAST, 
-						TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
-				Collections.sort(elements, numSorter);	
-				
-				// Loop through elements 
-				Integer smpCnt = 0;
-				ArrayList<String> numlist = new ArrayList<String>();
-				for(TridasElement myelem : elements)
-				{
-					// Add element title to string
-					if(myelem.getTitle()!=null) 
-					{
-						String mytitle = myelem.getTitle();
-						numlist.add(mytitle);
-					}
-	
-					// Grab associated samples and add count to running total
-					List<TridasSample> samples = myelem.getSamples(); 
-					smpCnt += samples.size();
-				}
-							
-				
-				// Add element names to second column
-				dataCell.setPhrase(new Phrase(hyphenSummarize(numlist), bodyFontLarge));
-				tbl.addCell(dataCell);
-				
-				// Add sample count to third column
-				dataCell.setPhrase(new Phrase(smpCnt.toString(), bodyFontLarge));
-				dataCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-				tbl.addCell(dataCell);
-				
-				sampleCountInBox += smpCnt;
-			}
-			
-		}
-		
-		if(objList.size()<4)
-		{
-			// Not many objects so add some space to the table for prettiness sake
-			headerCell.setBorder(0);
-			headerCell.setPhrase(new Phrase(" "));
-			tbl.addCell(headerCell);
-			tbl.addCell(headerCell);
-			tbl.addCell(headerCell);
-		}
-				
-		
-		headerCell.setBorderWidthBottom(headerLineWidth);
-		headerCell.setBorderWidthTop(headerLineWidth);
-		headerCell.setBorderWidthLeft(0);
-		headerCell.setBorderWidthRight(0);
-		
-		headerCell.setPhrase(new Phrase(" ", bodyFontLarge));
-		tbl.addCell(headerCell);	
-		headerCell.setPhrase(new Phrase("Grand Total", tableHeaderFontLarge));
-		headerCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-		tbl.addCell(headerCell);	
-		headerCell.setPhrase(new Phrase(sampleCountInBox.toString(), bodyFontLarge));
-		tbl.addCell(headerCell);
-		
-		// Add table to document
-		return tbl;		
-	}
-	
-	
-	/**
-	 * Get a PDF paragraph summerizing the project information 
-	 * 
-	 * @param objList
-	 * @return
-	 */
-	private Paragraph getProjectParagraph(List<TridasObject> objList)
-	{
-		if(objList==null || objList.size()==0) return null;
-		
-		SearchParameters sp = new SearchParameters(SearchReturnObject.PROJECT);
-		sp.setJoinOperator(JoinOperator.OR);
-		
-		for(TridasObject o : objList)
-		{
-			sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, o.getIdentifier().getValue());	
-		}
-				
-		EntitySearchResource<TridasProject> resource = new EntitySearchResource<TridasProject>(sp);
-		
-		//resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
-		TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(resource);
-		resource.query();
-		dialog2.setVisible(true);
-		if(!dialog2.isSuccessful()) 
-		{ 	
-			System.out.println("Error getting project");
-			return null;
-		}
-		//XMLDebugView.showDialog();
-		List<TridasProject> projects = resource.getAssociatedResult();
-		
-		if(projects.size()>1)
-		{
-			log.debug("Box has more than one project in it");
-		}
-		else if (projects.size()==0)
-		{
-			log.debug("No project for box");
-		}
-		else
-		{
-			log.debug("Box has just one project in it");
-		}
-		
-		
-		
-		Paragraph p = new Paragraph();
-		p.setLeading(0.0f, 1.2f);
-		
-		p.add(new Chunk(projects.get(0).getTitle()+"\n", subTitleFont));
-		p.add(new Chunk(projects.get(0).getInvestigator(), subTitleFont));
-	
-		//p.add(new Chunk(b.getCurationLocation(), bodyFontLarge));
-				
-		return p;		
-	
-		
-		
-	}
-	
-	public String hyphenSummarize(List<String> lst)
-	{
-
-		String returnStr = "";
-		
-		/*
-		if (none==true)
-		{
-			for(String item : lst)
-			{
-				returnStr += item + ", ";
-				
-			}
-			
-			if (returnStr.length()>2) returnStr = returnStr.substring(0, returnStr.length()-2);
-			return returnStr;
-		}*/
-
-
-		Integer lastnum = null; 
-		Boolean inSeq = false;
-		Integer numOfElements = lst.size();
-		Integer cnt = 0;
-		for(String item : lst)
-		{
-			cnt++;
-			if (containsOnlyNumbers(item))
-			{
-				// Contains only numbers
-				if(lastnum==null)
-				{
-					// Lastnum is null so just add item to return string and continue to the next in list
-					returnStr += ", " + item;
-					lastnum = Integer.valueOf(item);
+					log.debug("This object isn't in this project");
 					continue;
+				}
+				
+				String objCode = "";
+				if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getMultiLevelLabCode()+" : "; 	
+	
+				//ct.addText(new Phrase(objCode+myobj.getTitle()+"\n", this.siteFont));
+				
+				// Search for elements associated with this object
+				System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
+				SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
+				sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
+				sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
+				EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
+				resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
+				TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(resource);
+				resource.query();
+				dialog2.setVisible(true);
+				if(!dialog2.isSuccessful()) 
+				{ 	
+					log.debug("No elements associated with "+myobj.getTitle());
+				}
+				//XMLDebugView.showDialog();
+				List<TridasElement> elements = resource.getAssociatedResult();
+				
+				if(elements==null || elements.size()==0)
+				{
+					log.error("No elements found for object "+objCode);
 				}
 				else
 				{
-					if(inSeq==true)
+					Collections.sort(elements, new NumberThenStringComparator2());	
+					
+					// Loop through elements 
+					Integer smpCnt = 0;
+					ArrayList<String> numlist = new ArrayList<String>();
+					ArrayList<String> sampleList = new ArrayList<String>();
+					for(TridasElement myelem : elements)
 					{
-	
-						if(isNextInSeq(lastnum, Integer.valueOf(item)))
+						// Add element title to string
+						if(myelem.getTitle()!=null) 
 						{
-							if(cnt==numOfElements)
-							{
-								// This is the last one in the list!
-								returnStr += "-" + item;
+							String mytitle = myelem.getTitle();
+							numlist.add(mytitle);
+						}
+		
+						// Grab associated samples and add count to running total
+						for(TridasSample sample : myelem.getSamples())
+						{
+							// Skip samples if they aren't in this box	
+							if(!TridasUtils.getGenericFieldValueByName(sample, "tellervo.boxID").equals(b.getIdentifier().getValue())) {
+								log.debug("Skipping sample "+sample.getIdentifier().getValue()+" because it's not in this box");
 								continue;
 							}
-							else
+							smpCnt++;
+							
+							if(!this.summarizationType.equals(LabelSummarizationType.ELEMENT))
 							{
-								// Keep going!
-								inSeq = true;
-								lastnum = Integer.valueOf(item);
-								continue;
+								String extid = TridasUtils.getGenericFieldValueByName(sample, "tellervo.externalID");
+								if(extid!=null && this.summarizationType.equals(LabelSummarizationType.EXTERNALID))
+								{
+									sampleList.add(extid);			
+								}
+								else
+								{
+									sampleList.add(myelem.getTitle()+"-"+sample.getTitle());	
+								}
 							}
+						}
+						
+						
+					}
+					
+					Collections.sort(numlist, new NumberThenStringComparator2());
+					Collections.sort(sampleList, new NumberThenStringComparator2());
+					
+					Chunk siteNameChunk = new Chunk(objCode+myobj.getTitle()+": ", this.siteFont);
+					Paragraph siteParagraph = new Paragraph();
+					siteParagraph.setLeading(0, 1.2f);
+					siteParagraph.add(siteNameChunk);
+					
+					Chunk sampleListChunk;
+					if(this.summarizationType.equals(LabelSummarizationType.ELEMENT))
+					{
+						// Display as a summerized list of elements
+						sampleListChunk = new Chunk(hyphenSummarize(numlist)+" (n = "+smpCnt+")\n", this.sampleFont);
+					}
+					else
+					{
+						// Display as a summerized list of samples
+						sampleListChunk = new Chunk(hyphenSummarize(sampleList)+" (n = "+smpCnt+")\n", this.sampleFont);
+					}
+					siteParagraph.add(sampleListChunk);
+					//siteParagraph.add(Chunk.NEWLINE);
+					ct.addElement(siteParagraph);
+					
+					totalSampleCount = totalSampleCount+smpCnt;
+				}
+				
+				//ct.addText(new Phrase("\n", this.sampleFont));
+				
+			}
+			
+	
+		}
+		
+		//ct.addText(new Phrase("Total samples in box: "+totalSampleCount, this.sampleFont));
+		ct.go();
+    	
+	}
+			
+	
+	public String hyphenSummarize(List<String> lst)
+	{
+		Integer lastnum = null; 
+		Boolean inSeq = false;
+		Integer numOfElements = lst.size();
+		String returnStr = "";
+		Integer cnt = 0;
+		
+		if(doHyphenSummerize)
+		{
+		
+			try {
+				
+				/*
+				if (none==true)
+				{
+					for(String item : lst)
+					{
+						returnStr += item + ", ";
+						
+					}
+					
+					if (returnStr.length()>2) returnStr = returnStr.substring(0, returnStr.length()-2);
+					return returnStr;
+				}*/
+		
+		
+	
+			
+				for(String item : lst)
+				{
+					cnt++;
+					
+					if(item==null || item.length()==0)
+					{
+						log.debug("Title of this item is empty");
+					}
+					
+					if (containsOnlyNumbers(item))
+					{
+						// Contains only numbers
+						if(lastnum==null)
+						{
+							// Lastnum is null so just add item to return string and continue to the next in list
+							returnStr += ", " + item;
+							lastnum = Integer.valueOf(item);
+							inSeq=true;
+							continue;
 						}
 						else
 						{
-							// 
-							returnStr += "-" + lastnum.toString() + ", " + item;
-							inSeq = false;
-							lastnum = Integer.valueOf(item);
-							continue;
+							if(inSeq==true)
+							{
+			
+								if(isNextInSeq(lastnum, Integer.valueOf(item)))
+								{
+									if(cnt==numOfElements)
+									{
+										// This is the last one in the list!
+										returnStr += "-" + item;
+										continue;
+									}
+									else
+									{
+										// Keep going!
+										inSeq = true;
+										lastnum = Integer.valueOf(item);
+										continue;
+									}
+								}
+								else
+								{
+									// 
+									returnStr += "-" + lastnum.toString() + ", " + item;
+									inSeq = false;
+									lastnum = Integer.valueOf(item);
+									continue;
+									
+								}
+							}
+							else
+							{
+								// Not in sequence yet
+								
+								if(isNextInSeq(lastnum, Integer.valueOf(item)))
+								{
+									
+									if(cnt==numOfElements)
+									{
+										// This is the last one in the list!
+										returnStr += "-" + item;
+										continue;
+									}
+									else
+									{
+										// Keep going!
+										inSeq = true;
+										lastnum = Integer.valueOf(item);
+										continue;
+									}
+								}
+								else
+								{
+									returnStr += ", " + item;
+									lastnum = Integer.valueOf(item);
+									continue;
+								}
+							}
+								
 							
 						}
 					}
 					else
 					{
-						// Not in sequence yet
-						
-						if(isNextInSeq(lastnum, Integer.valueOf(item)))
-						{
-							
-							if(cnt==numOfElements)
-							{
-								// This is the last one in the list!
-								returnStr += "-" + item;
-								continue;
-							}
-							else
-							{
-								// Keep going!
-								inSeq = true;
-								lastnum = Integer.valueOf(item);
-								continue;
-							}
-						}
-						else
-						{
-							returnStr += ", " + item;
-							lastnum = Integer.valueOf(item);
-							continue;
-						}
+						// Contains some chars so just add as comma delimited string to return string
+						returnStr += ", " + item;
+						lastnum = null;
+						inSeq = null;
 					}
-						
+					
+					
+					
 					
 				}
-			}
-			else
+			} catch (Exception e)
 			{
-				// Contains some chars so just add as comma delimited string to return string
-				returnStr += ", " + item;
-				lastnum = null;
-				inSeq = null;
+				log.debug("Disaster recovery! ");
+				cnt = 0;
 			}
-			
-			
-			
-			
+		}
+		else
+		{
+			for(String item : lst)
+			{
+				cnt++;
+				if(item==null || item.length()==0)
+				{
+					log.debug("Title of this item is empty");
+				}
+				
+				returnStr += ", " + item;
+			}
 		}
 		
-		returnStr = returnStr.substring(2, returnStr.length());
+		if(returnStr.length()>3)
+		{
+			returnStr = returnStr.substring(2, returnStr.length());
+		}
+		else
+		{
+			log.debug("Return string is short? "+returnStr);
+		}
 		return returnStr;
 	}
 	

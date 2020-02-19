@@ -4,10 +4,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import org.tellervo.desktop.gui.widgets.AbstractWizardPanel;
+import org.tellervo.desktop.labelgen.AbstractTellervoLabelStyle.LabelSummarizationType;
 
 import net.miginfocom.swing.MigLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.JComboBox;
+import java.awt.Color;
 
 
 public class LGWizardOverrideText extends AbstractWizardPanel implements ActionListener{
@@ -26,6 +29,10 @@ public class LGWizardOverrideText extends AbstractWizardPanel implements ActionL
 	private JLabel lblLine4;
 	
 	private LGWizardWhatStyle stylePage;
+	private JLabel lblSummarizeType;
+	private JComboBox<LabelSummarizationType> cboLabelSummarizationType;
+	private JLabel lblLine5;
+	private JTextField txtLine5;
 
 	/**
 	 * Create the panel.
@@ -35,7 +42,7 @@ public class LGWizardOverrideText extends AbstractWizardPanel implements ActionL
 				"Here you have the option of overriding some of the text on the labels. "+
 				"If you leave these blank the default values (typically taken from the "+
 				"database) will be used ");
-		setLayout(new MigLayout("", "[right][203.00,grow,fill]", "[][][][]"));
+		setLayout(new MigLayout("", "[right][203.00,grow,fill]", "[][][][][][]"));
 		
 		this.stylePage = stylePage;
 		
@@ -62,6 +69,19 @@ public class LGWizardOverrideText extends AbstractWizardPanel implements ActionL
 		
 		txtLine4 = new JTextField();
 		add(txtLine4, "cell 1 3,growx");
+		
+		lblLine5 = new JLabel("Line 5:");
+		add(lblLine5, "cell 0 4,alignx trailing");
+		
+		txtLine5 = new JTextField();
+		add(txtLine5, "cell 1 4,growx");
+		
+		lblSummarizeType = new JLabel("Summarize labels by:");
+		add(lblSummarizeType, "cell 0 5,alignx trailing");
+		
+		cboLabelSummarizationType = new JComboBox(LabelSummarizationType.values());
+		cboLabelSummarizationType.setBackground(Color.WHITE);
+		add(cboLabelSummarizationType, "cell 1 5,growx");
 			
 	}
 		
@@ -106,6 +126,18 @@ public class LGWizardOverrideText extends AbstractWizardPanel implements ActionL
 			lblLine4.setText(style.getLine4Description());
 		}
 		
+		lblLine5.setVisible(style.hasConfigurableLine5());
+		txtLine5.setVisible(style.hasConfigurableLine5());
+		if(style.hasConfigurableLine5())
+		{
+			lblLine5.setText(style.getLine5Description());
+		}
+		
+		
+		lblSummarizeType.setVisible(style.isLabelSummarizationTypeConfigurable());
+		cboLabelSummarizationType.setVisible(style.isLabelSummarizationTypeConfigurable());
+				
+		
 	}
 	
 	@Override
@@ -135,6 +167,16 @@ public class LGWizardOverrideText extends AbstractWizardPanel implements ActionL
 	{
 		return txtLine4.getText();
 	}
+	
+	public String getLine5TextOverride()
+	{
+		return txtLine5.getText();
+	}
+	
+	public LabelSummarizationType getLabelSummarizationType()
+	{
+		return (LabelSummarizationType) this.cboLabelSummarizationType.getSelectedItem();
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -143,11 +185,4 @@ public class LGWizardOverrideText extends AbstractWizardPanel implements ActionL
 		
 	}
 	
-	
-
-
-
-	
-	
-
 }

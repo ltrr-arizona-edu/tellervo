@@ -134,6 +134,17 @@ public class LabelGenWizard extends AbstractWizardDialog {
 					style.setLine4OverrideText(page4.getLine4TextOverride());
 				}
 			}
+			if(style.hasConfigurableLine5()) {
+				
+				if(page4.getLine5TextOverride()!=null && page4.getLine5TextOverride().length()>0)
+				{
+					style.setLine5OverrideText(page4.getLine5TextOverride());
+				}
+			}
+			if(style.isLabelSummarizationTypeConfigurable())
+			{
+				style.setLabelSummarizationType(page4.getLabelSummarizationType());
+			}
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();

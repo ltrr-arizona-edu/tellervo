@@ -24,6 +24,8 @@ import com.itextpdf.text.pdf.PdfWriter;
 public class ShelfEndLabelStyle extends AbstractTellervoLabelStyle {
 
 	private Font sectionFont = new Font(Font.FontFamily.HELVETICA, 36f, Font.BOLD);
+	private Font detailFont = new Font(Font.FontFamily.HELVETICA, 12f);
+
 	//private Rectangle pageSize = new Rectangle(288, 54);
 	private Rectangle pageSize = new Rectangle(355, 212);
 	//private Rectangle pageSize = new Rectangle(3252, 2108);
@@ -91,6 +93,19 @@ public class ShelfEndLabelStyle extends AbstractTellervoLabelStyle {
 	        	rect.setBorderWidth(1);
 	        	rect.setBorderColor(BaseColor.BLACK);
 	        	document.add(rect);
+	        	
+	        	// NFC Logo
+	            String filename = "/home/pbrewer/git/tellervo/src/main/resources/Icons/512x512/nfc.png";
+	            Image image = Image.getInstance(filename);
+	            float scaler = 9f;
+	            image.scalePercent(scaler);
+	            image.setAbsolutePosition(15f, 15f);
+	            document.add(image);
+	            
+	            ct = new ColumnText(cb);
+	        	ct.setSimpleColumn(15, 0, this.document.getPageSize().getWidth() - 5, this.document.getPageSize().getHeight()-70, 10, Element.ALIGN_LEFT);
+	        	ct.addText(new Phrase("Sequoia collection", detailFont));
+	        	ct.go();
 	        	
 	        	document.newPage();
 	        }

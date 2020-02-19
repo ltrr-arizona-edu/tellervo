@@ -12,15 +12,15 @@ public class ShelfLabel {
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
-		ShelfLabelStyle ls = new ShelfLabelStyle();
-		//ShelfEndLabelStyle ls = new ShelfEndLabelStyle();
+		//ShelfLabelStyle ls = new ShelfLabelStyle();
+		ShelfEndLabelStyle ls = new ShelfEndLabelStyle();
 		
 		ArrayList<String> items = new ArrayList<String>();
 		
 
 		  try {
-			  File file = new File("/home/pbrewer/Documents/shelflabels4.txt"); 
-			  //File file = new File("/home/pbrewer/shelfendlabels.txt"); 
+			  //File file = new File("/home/pbrewer/Documents/shelflabels4.txt"); 
+			  File file = new File("/home/pbrewer/shelfendlabels2.txt"); 
 
 			  BufferedReader br = new BufferedReader(new FileReader(file)); 
 			  

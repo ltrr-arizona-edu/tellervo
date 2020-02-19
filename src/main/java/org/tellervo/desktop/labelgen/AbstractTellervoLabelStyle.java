@@ -24,23 +24,30 @@ public abstract class AbstractTellervoLabelStyle {
 	protected final ItemType itemType;
 	protected Document document;
 	protected PdfContentByte cb;
+	protected float barcodeSize = 0.7f;
+	protected LabelSummarizationType summarizationType = LabelSummarizationType.ELEMENT;
 	
 	private final String configureableLine1Description;
 	private final String configureableLine2Description;
 	private final String configureableLine3Description;
 	private final String configureableLine4Description;
+	private final String configureableLine5Description;
 	
-	protected String line1TextOverride = null;
-	protected String line2TextOverride = null;
-	protected String line3TextOverride = null;
-	protected String line4TextOverride = null;
+	private String line1TextOverride = null;
+	private String line2TextOverride = null;
+	private String line3TextOverride = null;
+	private String line4TextOverride = null;
+	private String line5TextOverride = null;
+	private boolean isLabelSummarizationTypeConfigurable = false; 
+	
+	
+	enum LabelSummarizationType {
+		ELEMENT, SAMPLE, EXTERNALID
+	}
 	
 	enum ItemType{
 		BOX, SAMPLE, GENERIC
 	}
-	
-	float barcodeSize = 0.7f;
-	
 
 	/**
 	 * Basic label with no configureable lines 
@@ -58,6 +65,7 @@ public abstract class AbstractTellervoLabelStyle {
 		configureableLine2Description = null;
 		configureableLine3Description = null;
 		configureableLine4Description = null;
+		configureableLine5Description = null;
 	}
 	
 	/**
@@ -73,7 +81,8 @@ public abstract class AbstractTellervoLabelStyle {
 	 * @param line4Description
 	 */
 	public AbstractTellervoLabelStyle(String name, String description, ItemType itemType,
-			String line1Description, String line2Description, String line3Description, String line4Description)
+			String line1Description, String line2Description, String line3Description, String line4Description, 
+			String line5Description)
 	{
 		this.name = name;
 		this.description = description;
@@ -82,6 +91,27 @@ public abstract class AbstractTellervoLabelStyle {
 		configureableLine2Description = line2Description;
 		configureableLine3Description = line3Description;
 		configureableLine4Description = line4Description;
+		configureableLine5Description = line5Description;
+	}
+	
+	/**
+	 * Set how box labels should summarize contents 
+	 * 
+	 * @param type
+	 */
+	public void setLabelSummarizationType(LabelSummarizationType type)
+	{
+		this.summarizationType = type;
+	}
+	
+	/**
+	 * Get how box labels should summarize contents
+	 * 
+	 * @return
+	 */
+	public LabelSummarizationType getLabelSummarizationType()
+	{
+		return summarizationType;
 	}
 	
 	/**
@@ -243,6 +273,24 @@ public abstract class AbstractTellervoLabelStyle {
 	}
 	
 	/**
+	 * Get the description for what line 5 is used for
+	 * 
+	 * @return
+	 */
+	public String getLine5Description()
+	{
+		if(hasConfigurableLine5())
+		{
+			return this.configureableLine5Description;
+		}
+		else
+		{
+			return "";
+		}
+	}
+	
+	
+	/**
 	 * Has a configureable line 1 in the label
 	 * 
 	 * @return
@@ -280,6 +328,16 @@ public abstract class AbstractTellervoLabelStyle {
 	public boolean hasConfigurableLine4() {
 		
 		return configureableLine4Description!=null;
+	}
+	
+	/**
+	 * Has a configureable line 5 in the label
+	 * 
+	 * @return
+	 */
+	public boolean hasConfigurableLine5() {
+		
+		return configureableLine5Description!=null;
 	}
 	
 	/**
@@ -330,6 +388,17 @@ public abstract class AbstractTellervoLabelStyle {
 	{
 		return line4TextOverride;
 	}
+	
+	/**
+	 * Get the text to use for line 5 of the label
+	 * 
+	 * @return
+	 */
+	public String getLine5OverrideText()
+	{
+		return line5TextOverride;
+	}
+	
 	
 	/**
 	 * Override the value of the text in line 1 for this label.  If line 1
@@ -406,4 +475,36 @@ public abstract class AbstractTellervoLabelStyle {
 			this.line4TextOverride = value;
 		}
 	}
+	
+	/**
+	 * Override the value of the text in line 5 for this label.  If line 4
+	 * is not configurable then an exception is thrown 
+	 *  
+	 * @param value
+	 * @throws Exception
+	 */
+	public void setLine5OverrideText(String value) throws Exception {
+		
+		if(this.hasConfigurableLine5()==false)
+		{
+			throw new Exception("This label does not have a configureable line 5");
+		}
+		else
+		{
+			this.line5TextOverride = value;
+		}
+	}
+	
+	
+	public void setIsLabelSummarizationTypeConfigurable(boolean b)
+	{
+		this.isLabelSummarizationTypeConfigurable = b;
+	}
+	
+	public boolean isLabelSummarizationTypeConfigurable()
+	{
+		return this.isLabelSummarizationTypeConfigurable;
+	}
+	
+	
 }
