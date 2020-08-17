@@ -221,7 +221,7 @@ class search Implements IDBAccessor
             elseif($this->returnObject=="object" || $this->returnObject=='subobject') 
             {
             	$firebug->log("Checking object permissions");
-                $myReturnObject = new object();
+                $myReturnObject = new tobject();
                 $hasPermission = $myAuth->getPermission("read", "object", $row['objectid']);
                 if($hasPermission===FALSE) {
                 	array_push($this->deniedRecArray, $row['objectid']);
@@ -334,7 +334,7 @@ class search Implements IDBAccessor
 
             $firebug->log("Permissions check complete");
 
-            // Set parameters on new object and return XML
+            // Set parameters on new tobject and return XML
             $firebug->log("Get current entities details from database");
             $success = $myReturnObject->setParamsFromDBRow($row, $format);
             //$success = $myReturnObject->setParamsFromDB($row['id']);

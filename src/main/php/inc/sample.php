@@ -429,7 +429,7 @@ class sample extends sampleEntity implements IDBAccessor {
 			$xml .= "<tridas:genericField name=\"tellervo.samplingDatePrecision\" type=\"xs:string\">" . $this->getSamplingDatePrecision() . "</tridas:genericField>\n";
 				
 			
-			if ($this->getUserDefinedFieldAndValueArray () != null && count ( $this->getUserDefinedFieldAndValueArray () > 0 )) {
+			if (is_countable($this->getUserDefinedFieldAndValueArray ()) && count ( $this->getUserDefinedFieldAndValueArray () > 0 )) {
 				foreach ( $this->getUserDefinedFieldAndValueArray () as $field ) {
 					$xml .= $field->getAsTridasXML ();
 				}

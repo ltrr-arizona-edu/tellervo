@@ -113,7 +113,7 @@ if($myMetaHeader->status != "Error")
         switch(get_class($paramObj))
         {
         	case "projectParameters": 			$myObject = new project(); break;
-        	case "objectParameters": 			$myObject = new object(); break;   	 
+        	case "objectParameters": 			$myObject = new tobject(); break;   	 
             case "elementParameters": 			$myObject = new element(); break;
             case "sampleParameters":  			$myObject = new sample(); break;
             case "radiusParameters": 			$myObject = new radius(); break;

@@ -11,7 +11,7 @@
  * *******************************************************************
  */
 require_once ('dbhelper.php');
-class object extends objectEntity implements IDBAccessor {
+class tobject extends objectEntity implements IDBAccessor {
 	
 	/**
 	 * ************
@@ -162,7 +162,7 @@ class object extends objectEntity implements IDBAccessor {
 			
 					// Loop through all the parents
 					while ( $row = pg_fetch_array ( $result ) ) {
-						$myObject = new object ();
+						$myObject = new tobjectt ();
 						$success = $myObject->setParamsFromDB ( $row ['objectid'] );
 						if ($success === FALSE) {
 							trigger_error ( $myObject->getLastErrorCode () . $myObject->getLastErrorMessage () );
@@ -239,7 +239,7 @@ class object extends objectEntity implements IDBAccessor {
 			if (pg_num_rows ( $result ) > 0) {
 				// Object has 'object' descendants
 				while ( $row = pg_fetch_array ( $result ) ) {
-					$entity = new object ();
+					$entity = new tobject ();
 					$entity->setParamsFromDB ( $row ['objectid'] );
 					$entity->setChildParamsFromDB ( true );
 					// print_r($entity);
@@ -293,7 +293,7 @@ class object extends objectEntity implements IDBAccessor {
 		
 		
 		if ($paramsClass->parentID != NULL) {
-			$parentObj = new object ();
+			$parentObj = new tobject ();
 			$parentObj->setParamsFromDB ( $paramsClass->parentID );
 			array_push ( $this->parentEntityArray, $parentObj );
 		}
@@ -346,7 +346,7 @@ class object extends objectEntity implements IDBAccessor {
 					$result = pg_query ( $dbconn, $sql );
 					
 					while ( $row = pg_fetch_array ( $result ) ) {
-						$myParentObject = new object ();
+						$myParentObject = new tobject ();
 						$myParentObject->setParamsFromDB ( $row ['objectid'] );
 						array_push ( $myParentObjectArray, $myParentObject );
 					}

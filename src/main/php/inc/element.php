@@ -67,7 +67,7 @@ class element extends elementEntity implements IDBAccessor {
 				
 				// Loop through all the parents
 				while ( $row = pg_fetch_array ( $result ) ) {
-					$myObject = new object ();
+					$myObject = new tobject ();
 					$success = $myObject->setParamsFromDB ( $row ['objectid'] );
 					if ($success === FALSE) {
 						trigger_error ( $myObject->getLastErrorCode () . $myObject->getLastErrorMessage () );
@@ -242,7 +242,7 @@ class element extends elementEntity implements IDBAccessor {
 		}
 		
 		if ($paramsClass->parentID != NULL) {
-			$parentObj = new object ();
+			$parentObj = new tsobject ();
 			$parentObj->setParamsFromDB ( $paramsClass->parentID );
 			array_push ( $this->parentEntityArray, $parentObj );
 		}
@@ -758,7 +758,7 @@ class element extends elementEntity implements IDBAccessor {
 				}
 				
 				// Write user defined fields to database
-				if (count ( $this->userDefinedFieldAndValueArray ) > 0) {
+				if (is_countable($this->userDefinedFieldAndValueArray) && count( $this->userDefinedFieldAndValueArray ) > 0) {
 						
 					foreach ( $this->userDefinedFieldAndValueArray as $field ) {
 						try {

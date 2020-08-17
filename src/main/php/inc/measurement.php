@@ -686,7 +686,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 			$lastobject = null;
 			foreach($myobjects as $o)
 			{
-				if($o->getProjectID()!=null && count($o->getProjectID())>0)
+				if($o->getProjectID()!=null && strlen($o->getProjectID())>0)
 				{
 					$lastobject = $o;
 				}
@@ -1727,7 +1727,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 					$this->setParamsFromDB ( $localVMID );
 					
 					// Write user defined fields to database
-					if (count ( $this->userDefinedFieldAndValueArray ) > 0) {
+					if (is_countable($this->userDefinedFieldAndValue) && count ( $this->userDefinedFieldAndValueArray ) > 0) {
 							
 						foreach ( $this->userDefinedFieldAndValueArray as $field ) {
 							try {

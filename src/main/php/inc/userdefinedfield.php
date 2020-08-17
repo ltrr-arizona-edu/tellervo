@@ -187,4 +187,11 @@ class userDefinedFieldAndValue
 		
 		
 	}
+	
+	function getName(){
+	    
+	    return $this->name;
+	    
+	    
+	}
 }

@@ -122,7 +122,7 @@ class project extends projectEntity implements IDBAccessor {
 			if (pg_num_rows ( $result ) > 0) {
 				// Object has 'object' descendants
 				while ( $row = pg_fetch_array ( $result ) ) {
-					$entity = new object ();
+					$entity = new tobject ();
 					$entity->setParamsFromDB ( $row ['objectid'] );
 					$entity->setChildParamsFromDB ( true );
 					// print_r($entity);
@@ -208,7 +208,7 @@ class project extends projectEntity implements IDBAccessor {
 					$result = pg_query ( $dbconn, $sql );
 					
 					while ( $row = pg_fetch_array ( $result ) ) {
-						$myParentObject = new object ();
+						$myParentObject = new tobject ();
 						$myParentObject->setParamsFromDB ( $row ['objectid'] );
 						array_push ( $myParentObjectArray, $myParentObject );
 					}

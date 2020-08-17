@@ -236,7 +236,7 @@ if($debugFlag) $firebug->log($sql, "Starting first loop");
 			 */
             while ($objrow = pg_fetch_array($objresult))
             {
-				$theObject = new object();
+				$theObject = new tobject();
 				$theObject->setParamsFromDB($objrow['objectid']);
 			
 				//echo "Process data for site ".$theObject->getCode()."<br>";

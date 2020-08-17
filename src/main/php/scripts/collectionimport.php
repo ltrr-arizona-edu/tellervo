@@ -200,7 +200,7 @@ $sql = "SELECT * from $elementImportTable order by id asc limit $limit offset $o
 			 */
             while ($objrow = pg_fetch_array($objresult))
             {
-				$theObject = new object();
+				$theObject = new tobject();
 				$theObject->setParamsFromDB($objrow['objectid']);
 				
 					

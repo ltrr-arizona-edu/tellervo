@@ -117,14 +117,14 @@ abstract class UserExtendableEntity extends dbEntity
 	 */
 	public function getUserDefinedFieldFromFieldname($fieldname)
 	{
-		if($this->userDefinedFieldAndValueArray==null | count($this->userDefinedFieldAndValueArray<1))
+		if($this->userDefinedFieldAndValueArray==null || !is_countable($this->userDefinedFieldAndValueArray))
 		{
 			return null;
 		}
 		
 		foreach($this->userDefinedFieldAndValueArray as $field)
 		{
-			if(strtolower($field->name)==strtolower($fieldname))
+			if(strtolower($field->getName())==strtolower($fieldname))
 			{
 				return $field;
 			}
@@ -597,7 +597,14 @@ class dbEntity
      */
     function getComments()
     {
-    	return $this->comments;
+        if(isset($this->comments))
+        {
+            return dbHelper::escapeXMLChars($this->comments);
+        }
+        else
+        {
+            return NULL;
+        }
     }
     
     /**
@@ -1382,7 +1389,7 @@ class projectEntity extends UserExtendableEntity
 		
 	function getCategory($asKey=false)
 	{
-		if($this->category==null) return null;
+		if($this->category==null || strlen($this->category)==0) return null;
 
 		if($asKey)
 		{
@@ -4204,7 +4211,7 @@ class measurementEntity extends UserExtendableEntity
         	$result = pg_query($dbconn, $sql);
             while ($row = pg_fetch_array($result))
             {
-            	$myObject = new object();
+            	$myObject = new tobject();
             	$myObject->setParamsFromDBRow($row);
                 array_push($this->summaryObjectArray, $myObject);
             }
@@ -4870,7 +4877,14 @@ class measurementEntity extends UserExtendableEntity
 	
 	function getComments()
 	{
-		return $this->comments;
+	    if(isset($this->comments))
+	    {
+	        return dbHelper::escapeXMLChars($this->comments);
+	    }
+	    else
+	    {
+	        return NULL;
+	    }
 	}
 	
 	/**
