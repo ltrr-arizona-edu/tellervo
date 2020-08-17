@@ -153,50 +153,59 @@ public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 
 		log.debug("Object found count: "+objList.size());
 		
+		
+		String country = "";
+		String stateType = "";
+		String pi ="";
+		String box ="";
+		ArrayList<TridasProject> projectList = null;
+		
 		if(objList.size()==0)
 		{
-			Alert.error("Problem", "Box "+b.getTitle()+" does not contain any objects");
-			return;
-		}
-		Collections.sort(objList, new TridasComparator());
-		
-		HashSet<TridasProject> projectSet = new HashSet<TridasProject>();
-		for(TridasObject o : objList)
-		{
-			String id = TridasUtils.getGenericFieldValueByName(o, "tellervo.object.projectid");
-			projectSet.add(Dictionary.getTridasProjectByID(id));
-		}
+			//Alert.error("Problem", "Box "+b.getTitle()+" does not contain any objects");
+			//return;
 			
-		ArrayList<TridasProject> projectList = new ArrayList<TridasProject>(new ArrayList<TridasProject>(projectSet));
-		Collections.sort(projectList, new TridasComparator());
+			
+		}
+		else
+		{
+			Collections.sort(objList, new TridasComparator());
+			
+			HashSet<TridasProject> projectSet = new HashSet<TridasProject>();
+			for(TridasObject o : objList)
+			{
+				String id = TridasUtils.getGenericFieldValueByName(o, "tellervo.object.projectid");
+				projectSet.add(Dictionary.getTridasProjectByID(id));
+			}
+				
+			projectList = new ArrayList<TridasProject>(new ArrayList<TridasProject>(projectSet));
+			Collections.sort(projectList, new TridasComparator());
+			
+			TridasProject firstProject = projectList.get(0);
+			// Variables
+	
+	    	pi = firstProject.getInvestigator();
+	    	
+		}
 		
-		TridasProject firstProject = projectList.get(0);
-		// Variables
-		String country = "";
+		// Override some lines if requested
 		if(getLine1OverrideText()!=null)
 		{
 			country = getLine1OverrideText();
 		}
-		
-		String stateType = "";
 		if(getLine2OverrideText()!=null)
 		{
 			stateType = getLine2OverrideText();
 		}
-		
-		
-    	String pi = firstProject.getInvestigator();
 		if(getLine3OverrideText()!=null)
 		{
 			pi = getLine3OverrideText();
 		}
-		
-    	String box = b.getTitle();
+		box = b.getTitle();
 		if(getLine4OverrideText()!=null)
 		{
 			box = getLine4OverrideText();
 		}
-		
 		if(getLine5OverrideText()!=null)
 		{
 			float xpos = margin;
@@ -325,128 +334,139 @@ public class BoxLabelTW238 extends AbstractTellervoLabelStyle {
 		    	
 		Collections.sort(projectList, new TridasComparator());
 		
-		for(TridasProject project : projectList)
+		if(projectList !=null)
 		{
-			Paragraph para = new Paragraph();
-			Phrase phrase = new Phrase();
-			
-			phrase.add(new Chunk(project.getTitle(), this.projectFont));
-			phrase.add(new Chunk("  \n\n", this.sampleFont));
-			para.add(phrase);
-			para.setAlignment(Element.ALIGN_CENTER);
-			ct.addElement(para);
-			
-			Integer totalSampleCount = 0;
-
-			for(TridasObject myobj : objList)
+			for(TridasProject project : projectList)
 			{
-				if(!TridasUtils.getGenericFieldValueByName(myobj, "tellervo.object.projectid").equals(project.getIdentifier().getValue()))
-				{
-					log.debug("This object isn't in this project");
-					continue;
-				}
+				Paragraph para = new Paragraph();
+				Phrase phrase = new Phrase();
 				
-				String objCode = "";
-				if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getMultiLevelLabCode()+" : "; 	
+				phrase.add(new Chunk(project.getTitle(), this.projectFont));
+				phrase.add(new Chunk("  \n\n", this.sampleFont));
+				para.add(phrase);
+				para.setAlignment(Element.ALIGN_CENTER);
+				ct.addElement(para);
+				
+				Integer totalSampleCount = 0;
 	
-				//ct.addText(new Phrase(objCode+myobj.getTitle()+"\n", this.siteFont));
-				
-				// Search for elements associated with this object
-				System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
-				SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
-				sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
-				sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
-				EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
-				resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
-				TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(resource);
-				resource.query();
-				dialog2.setVisible(true);
-				if(!dialog2.isSuccessful()) 
-				{ 	
-					log.debug("No elements associated with "+myobj.getTitle());
-				}
-				//XMLDebugView.showDialog();
-				List<TridasElement> elements = resource.getAssociatedResult();
-				
-				if(elements==null || elements.size()==0)
+				for(TridasObject myobj : objList)
 				{
-					log.error("No elements found for object "+objCode);
-				}
-				else
-				{
-					Collections.sort(elements, new NumberThenStringComparator2());	
-					
-					// Loop through elements 
-					Integer smpCnt = 0;
-					ArrayList<String> numlist = new ArrayList<String>();
-					ArrayList<String> sampleList = new ArrayList<String>();
-					for(TridasElement myelem : elements)
+					if(!TridasUtils.getGenericFieldValueByName(myobj, "tellervo.object.projectid").equals(project.getIdentifier().getValue()))
 					{
-						// Add element title to string
-						if(myelem.getTitle()!=null) 
-						{
-							String mytitle = myelem.getTitle();
-							numlist.add(mytitle);
-						}
-		
-						// Grab associated samples and add count to running total
-						for(TridasSample sample : myelem.getSamples())
-						{
-							// Skip samples if they aren't in this box	
-							if(!TridasUtils.getGenericFieldValueByName(sample, "tellervo.boxID").equals(b.getIdentifier().getValue())) {
-								log.debug("Skipping sample "+sample.getIdentifier().getValue()+" because it's not in this box");
-								continue;
-							}
-							smpCnt++;
-							
-							if(!this.summarizationType.equals(LabelSummarizationType.ELEMENT))
-							{
-								String extid = TridasUtils.getGenericFieldValueByName(sample, "tellervo.externalID");
-								if(extid!=null && this.summarizationType.equals(LabelSummarizationType.EXTERNALID))
-								{
-									sampleList.add(extid);			
-								}
-								else
-								{
-									sampleList.add(myelem.getTitle()+"-"+sample.getTitle());	
-								}
-							}
-						}
-						
-						
+						log.debug("This object isn't in this project");
+						continue;
 					}
 					
-					Collections.sort(numlist, new NumberThenStringComparator2());
-					Collections.sort(sampleList, new NumberThenStringComparator2());
+					String objCode = "";
+					if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getMultiLevelLabCode()+" : "; 	
+		
+					//ct.addText(new Phrase(objCode+myobj.getTitle()+"\n", this.siteFont));
 					
-					Chunk siteNameChunk = new Chunk(objCode+myobj.getTitle()+": ", this.siteFont);
-					Paragraph siteParagraph = new Paragraph();
-					siteParagraph.setLeading(0, 1.2f);
-					siteParagraph.add(siteNameChunk);
+					// Search for elements associated with this object
+					System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
+					SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
+					sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
+					sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
+					EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
+					resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
+					TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(resource);
+					resource.query();
+					dialog2.setVisible(true);
+					if(!dialog2.isSuccessful()) 
+					{ 	
+						log.debug("No elements associated with "+myobj.getTitle());
+					}
+					//XMLDebugView.showDialog();
+					List<TridasElement> elements = resource.getAssociatedResult();
 					
-					Chunk sampleListChunk;
-					if(this.summarizationType.equals(LabelSummarizationType.ELEMENT))
+					if(elements==null || elements.size()==0)
 					{
-						// Display as a summerized list of elements
-						sampleListChunk = new Chunk(hyphenSummarize(numlist)+" (n = "+smpCnt+")\n", this.sampleFont);
+						log.error("No elements found for object "+objCode);
 					}
 					else
 					{
-						// Display as a summerized list of samples
-						sampleListChunk = new Chunk(hyphenSummarize(sampleList)+" (n = "+smpCnt+")\n", this.sampleFont);
-					}
-					siteParagraph.add(sampleListChunk);
-					//siteParagraph.add(Chunk.NEWLINE);
-					ct.addElement(siteParagraph);
-					
-					totalSampleCount = totalSampleCount+smpCnt;
-				}
-				
-				//ct.addText(new Phrase("\n", this.sampleFont));
-				
-			}
+						Collections.sort(elements, new NumberThenStringComparator2());	
+						
+						// Loop through elements 
+						Integer smpCnt = 0;
+						ArrayList<String> numlist = new ArrayList<String>();
+						ArrayList<String> sampleList = new ArrayList<String>();
+						for(TridasElement myelem : elements)
+						{
+							// Add element title to string
+							if(myelem.getTitle()!=null) 
+							{
+								String mytitle = myelem.getTitle();
+								numlist.add(mytitle);
+							}
 			
-	
+							// Grab associated samples and add count to running total
+							for(TridasSample sample : myelem.getSamples())
+							{
+								// Skip samples if they aren't in this box	
+								if(!TridasUtils.getGenericFieldValueByName(sample, "tellervo.boxID").equals(b.getIdentifier().getValue())) {
+									log.debug("Skipping sample "+sample.getIdentifier().getValue()+" because it's not in this box");
+									continue;
+								}
+								smpCnt++;
+								
+								if(!this.summarizationType.equals(LabelSummarizationType.ELEMENT))
+								{
+									String extid = TridasUtils.getGenericFieldValueByName(sample, "tellervo.externalID");
+									if(extid!=null && this.summarizationType.equals(LabelSummarizationType.EXTERNALID))
+									{
+										sampleList.add(extid);			
+									}
+									else
+									{
+										sampleList.add(myelem.getTitle()+"-"+sample.getTitle());	
+									}
+								}
+							}
+							
+							
+						}
+						
+						Collections.sort(numlist, new NumberThenStringComparator2());
+						Collections.sort(sampleList, new NumberThenStringComparator2());
+						
+						Chunk siteNameChunk = new Chunk(objCode+myobj.getTitle()+": ", this.siteFont);
+						Paragraph siteParagraph = new Paragraph();
+						siteParagraph.setLeading(0, 1.2f);
+						siteParagraph.add(siteNameChunk);
+						
+						Chunk sampleListChunk;
+						if(this.summarizationType.equals(LabelSummarizationType.ELEMENT))
+						{
+							// Display as a summerized list of elements
+							sampleListChunk = new Chunk(hyphenSummarize(numlist)+" (n = "+smpCnt+")\n", this.sampleFont);
+						}
+						else
+						{
+							// Display as a summerized list of samples
+							sampleListChunk = new Chunk(hyphenSummarize(sampleList)+" (n = "+smpCnt+")\n", this.sampleFont);
+						}
+						siteParagraph.add(sampleListChunk);
+						//siteParagraph.add(Chunk.NEWLINE);
+						ct.addElement(siteParagraph);
+						
+						totalSampleCount = totalSampleCount+smpCnt;
+					}
+					
+					//ct.addText(new Phrase("\n", this.sampleFont));
+					
+				}
+			}
+		}			
+		else
+		{
+			// Null project - no samples assigned to box
+			Chunk siteNameChunk = new Chunk("No samples assigned to box");
+			Paragraph siteParagraph = new Paragraph();
+			siteParagraph.setLeading(0, 1.2f);
+			siteParagraph.add(siteNameChunk);
+			ct.addElement(siteParagraph);
+
 		}
 		
 		//ct.addText(new Phrase("Total samples in box: "+totalSampleCount, this.sampleFont));
