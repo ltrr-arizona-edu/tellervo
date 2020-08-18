@@ -1461,7 +1461,9 @@ function createScriptsFromTemplates($auto=false)
 function getIP()
 {
   //exec("ifconfig $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
-  exec("ip -o route get 8.8.8.8 | sed -e 's/^.* src \([^ ]*\) .*$/\1/'", $response); 
+  //exec("ip -o route get 8.8.8.8 | sed -e 's/^.* src \([^ ]*\) .*$/\1/'", $response); 
+  exec("hostname -I | awk '{print $1}'", $response);
+  
   return $response[0];
 }
 
