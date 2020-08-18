@@ -3,7 +3,7 @@ Version: ${serverversion}
 Section: misc
 Priority: optional
 Architecture: all
-Depends: apache2, postgresql-11, postgresql-contrib-11, postgresql-server-dev-11, postgresql-11-pljava, postgresql-11-postgis-3, php, libapache2-mod-php, php-pgsql, php-mbstring, php-xml, php-zip, php-curl, php-common, expect
+Depends: apache2, postgresql-11, postgresql-contrib-11, postgresql-server-dev-11, openjdk-11-jdk, postgresql-11-pljava, postgresql-11-postgis-3, php, libapache2-mod-php, php-pgsql, php-mbstring, php-xml, php-zip, php-curl, php-common, expect
 Suggests: openssh-server, pgadmin3, tellervo
 Replaces: [[name]]-server (<<${serverversion})
 Maintainer: Peter Brewer <p.brewer@ltrr.arizona.edu>
