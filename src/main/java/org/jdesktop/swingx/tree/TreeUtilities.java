@@ -270,7 +270,7 @@ public class TreeUtilities {
         }
 
         protected Enumeration<M> getChildren(M node) {
-            Enumeration<M> children = node.children();
+            Enumeration<M> children = (Enumeration<M>) node.children();
             return children;
         }
 
@@ -328,7 +328,7 @@ public class TreeUtilities {
          * @return
          */
         protected Enumeration<M> getChildren(M node) {
-            return node.children();
+            return (Enumeration<M>) node.children();
         }
         
 
@@ -374,7 +374,7 @@ public class TreeUtilities {
         }
 
         protected Enumeration<M> getChildren(M node) {
-            Enumeration<M> children = node.children();
+            Enumeration<M> children = (Enumeration<M>) node.children();
             return children;
         }
         

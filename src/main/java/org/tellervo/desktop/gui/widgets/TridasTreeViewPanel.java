@@ -39,6 +39,7 @@ import javax.swing.event.EventListenerList;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -975,9 +976,11 @@ public class TridasTreeViewPanel extends TridasTreeViewPanel_UI implements Actio
     public void searchAndSelectEntity(ITridas entity)
     {
     	TreePath pathtoitem = null;
-    	Enumeration<DefaultMutableTreeNode> e = top.depthFirstEnumeration();
+    	Enumeration<TreeNode> e = top.depthFirstEnumeration();
+    	
+    	
         while (e.hasMoreElements()) {
-            DefaultMutableTreeNode node = e.nextElement();
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) e.nextElement();
             Object userobject = node.getUserObject();
 
             if (userobject==entity) {
