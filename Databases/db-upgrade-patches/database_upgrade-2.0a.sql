@@ -1,0 +1,1 @@
+UPDATE tblconfig SET value='2.0' WHERE key='wsversion';
