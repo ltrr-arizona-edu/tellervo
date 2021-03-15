@@ -1,5 +1,3 @@
-
-
 -- New terms
 insert into tlkpobjecttype (objecttypeid, vocabularyid, objecttype) values (2000, 2, 'plot');
 insert into tlkpobjecttype (objecttypeid, vocabularyid, objecttype) values (2001, 2, 'watershed');
