@@ -91,3 +91,19 @@ INSERT INTO tlkptaxon (taxonid, colid, taxonrankid, label, parenttaxonid) VALUES
 INSERT INTO tlkptaxon (taxonid, colid, taxonrankid, label, parenttaxonid) VALUES (2004, 'X-2004', 8, 'Cassia', 42);
 INSERT INTO tlkptaxon (taxonid, colid, taxonrankid, label, parenttaxonid) VALUES (2005, 'X-2005', 9, 'Combretum collinum', 1061);
 INSERT INTO tlkptaxon (taxonid, colid, taxonrankid, label, parenttaxonid) VALUES (2006, 'X-2006', 10, 'Combretum collinum subsp. hypopilinum (Diels) Okafor', 2005);
+
+INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2016, 9, 'Pinus montezumae Lamb.', 455, 'X-2016');
+INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2017, 9, 'Abies durangensis Martínez', 6, 'X-2017');
+
+INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2018, 6, 'Berberidopsidales Doweld', 40, 'X-2018');
+INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2019, 7, 'Aextoxicaceae Engl. & Gilg', 2018, 'X-2019');
+INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2020, 8, 'Aextoxicon Ruiz & Pav.', 2017, 'X-2020');
+INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2021, 9, 'Aextoxicon punctatum Ruiz & Pav.', 2020, 'X-2021');
+
+
+
+
+
+
+
+

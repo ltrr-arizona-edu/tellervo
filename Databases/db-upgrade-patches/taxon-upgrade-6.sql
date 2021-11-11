@@ -902,14 +902,27 @@ UPDATE tlkptaxon SET colid='5D648' WHERE taxonid=1030;
 UPDATE tlkptaxon SET colid='J39' WHERE taxonid=709;
 UPDATE tlkptaxon SET colid='8BDZ' WHERE taxonid=710;
 
+UPDATE tlkptaxon SET colid='4J2CF' WHERE taxonid=2016;
+UPDATE tlkptaxon SET colid='8KC2' WHERE taxonid=2017;
+UPDATE tlkptaxon SET colid='T8' WHERE taxonid=2018;
+UPDATE tlkptaxon SET colid='649' WHERE taxonid=2019;
+UPDATE tlkptaxon SET colid='PXQ' WHERE taxonid=2020;
+UPDATE tlkptaxon SET colid='65DRF' WHERE taxonid=2021;
+
 -- Rank changes
 UPDATE tlkptaxon SET colid='JP8', taxonrankid=19 where taxonid=71;
-
-
 
 -- Update labels and parent IDs 
 UPDATE tlkptaxon SET newlabel='Milicia excelsa (Welw.) C. C. Berg', htmllabel='<i>Milicia excelsa</i> (Welw.) C. C. Berg', colparentid='5SSS' WHERE colid='43CGC';
 
+
+
+UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Pinus montezumae</i> Lamb.', colparentid='6QPY' WHERE colid='4J2CF';
+UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Abies durangensis</i> Martínez', colparentid='627WF' WHERE colid='8KC2';
+UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='Berberidopsidales Doweld', colparentid='40' WHERE colid='T8';
+UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='Aextoxicaceae Engl. & Gilg', colparentid='T8' WHERE colid='649';
+UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Aextoxicon</i> Ruiz & Pav.', colparentid='649' WHERE colid='PXQ';
+UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Aextoxicon punctatum</i> Ruiz & Pav.', colparentid='PXQ' WHERE colid='65DRF';
 
 UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='Ebenaceae', colparentid='625QY' WHERE colid='9JQ';
 UPDATE tlkptaxon SET newlabel='Hippocastanoideae Burnett', htmllabel='Hippocastanoideae Burnett', colparentid='FY3' WHERE colid='JP8';
@@ -1831,215 +1844,6 @@ ALTER TABLE tblelement RENAME COLUMN colid TO taxonid;
 ALTER TABLE public.tblelement ADD CONSTRAINT fkey_element_taxon FOREIGN KEY (taxonid) REFERENCES public.tlkptaxon (taxonid) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 
-CREATE VIEW vwportaldata1 AS 
- SELECT p.projectid,
-    p.lastmodifiedtimestamp AS projectlastmodifiedtimestamp,
-    p.title AS projecttitle,
-    p.investigator,
-    o.objectid,
-    o.lastmodifiedtimestamp AS objectlastmodifiedtimestamp,
-    o.title AS objecttitle,
-    o.code AS objectcode,
-    xmin(o.locationgeometry::box3d) AS objectlongitude,
-    ymin(o.locationgeometry::box3d) AS objectlatitude,
-    o.locationprecision AS objectlocationprecision,
-    NULL::uuid AS object2id,
-    NULL::timestamp with time zone AS object2lastmodifiedtimestamp,
-    NULL::character varying AS object2title,
-    NULL::character varying AS object2code,
-    NULL::double precision AS object2longitude,
-    NULL::double precision AS object2latitude,
-    NULL::integer AS object2locationprecision,
-    e.elementid,
-    e.lastmodifiedtimestamp AS elementlastmodifiedtimestamp,
-    e.code AS elementcode,
-    e.taxonid,
-    t.label AS taxonlabel,
-    xmin(e.locationgeometry::box3d) AS elementlongitude,
-    ymin(e.locationgeometry::box3d) AS elementlatitude,
-    e.locationprecision AS elementlocationprecision,
-    s.sampleid,
-    s.lastmodifiedtimestamp AS samplelastmodifiedtimestamp,
-    s.code AS samplecode,
-    s.externalid,
-    s.samplingdate,
-    s.samplingyear,
-    s.samplingmonth,
-    s.samplingdateprec,
-    st.sampletype,
-    fy.value AS firstyear,
-    ly.value AS lastyear,
-    s.dendrochronologist,
-    b.boxid,
-    b.title AS boxtitle,
-    b.curationlocation,
-    b.trackinglocation,
-    cpgdb.preferreddouble(xmin(e.locationgeometry::box3d), NULL::double precision, xmin(o.locationgeometry::box3d)) AS preferredlongitude,
-    cpgdb.preferreddouble(ymin(e.locationgeometry::box3d), NULL::double precision, ymin(o.locationgeometry::box3d)) AS preferredlatitude,
-    cpgdb.preferreddouble(e.locationprecision, NULL::double precision, o.locationprecision::double precision) AS preferredlocationprecision
-   FROM tblproject p
-     LEFT JOIN tblobject o ON p.projectid = o.projectid
-     LEFT JOIN tblelement e ON o.objectid = e.objectid
-     LEFT JOIN tlkptaxon t ON e.taxonid = t.taxonid
-     LEFT JOIN tblsample s ON e.elementid = s.elementid
-     LEFT JOIN tlkpsampletype st ON s.typeid = st.sampletypeid
-     LEFT JOIN tblbox b ON s.boxid = b.boxid
-     LEFT JOIN vwfirstyear fy ON s.sampleid = fy.entityid
-     LEFT JOIN vwlastyear ly ON s.sampleid = ly.entityid
-  WHERE o.parentobjectid IS NULL AND s.sampleid IS NOT NULL;
-
-CREATE VIEW vwportaldata2 AS 
- SELECT p.projectid,
-    p.lastmodifiedtimestamp AS projectlastmodifiedtimestamp,
-    p.title AS projecttitle,
-    p.investigator,
-    o.objectid,
-    o.lastmodifiedtimestamp AS objectlastmodifiedtimestamp,
-    o.title AS objecttitle,
-    o.code AS objectcode,
-    xmin(o.locationgeometry::box3d) AS objectlongitude,
-    ymin(o.locationgeometry::box3d) AS objectlatitude,
-    o.locationprecision AS objectlocationprecision,
-    o2.objectid AS object2id,
-    o2.lastmodifiedtimestamp AS object2lastmodifiedtimestamp,
-    o2.title AS object2title,
-    o2.code AS object2code,
-    xmin(o2.locationgeometry::box3d) AS object2longitude,
-    ymin(o2.locationgeometry::box3d) AS object2latitude,
-    o2.locationprecision AS object2locationprecision,
-    e.elementid,
-    e.lastmodifiedtimestamp AS elementlastmodifiedtimestamp,
-    e.code AS elementcode,
-    e.taxonid,
-    t.label AS taxonlabel,
-    xmin(e.locationgeometry::box3d) AS elementlongitude,
-    ymin(e.locationgeometry::box3d) AS elementlatitude,
-    e.locationprecision AS elementlocationprecision,
-    s.sampleid,
-    s.lastmodifiedtimestamp AS samplelastmodifiedtimestamp,
-    s.code AS samplecode,
-    s.externalid,
-    s.samplingdate,
-    s.samplingyear,
-    s.samplingmonth,
-    s.samplingdateprec,
-    st.sampletype,
-    fy.value AS firstyear,
-    ly.value AS lastyear,
-    s.dendrochronologist,
-    b.boxid,
-    b.title AS boxtitle,
-    b.curationlocation,
-    b.trackinglocation,
-    cpgdb.preferreddouble(xmin(e.locationgeometry::box3d), xmin(o2.locationgeometry::box3d), xmin(o.locationgeometry::box3d)) AS preferredlongitude,
-    cpgdb.preferreddouble(ymin(e.locationgeometry::box3d), ymin(o2.locationgeometry::box3d), ymin(o.locationgeometry::box3d)) AS preferredlatitude,
-    cpgdb.preferreddouble(e.locationprecision, o2.locationprecision::double precision, o.locationprecision::double precision) AS preferredlocationprecision
-   FROM tblproject p
-     LEFT JOIN tblobject o ON p.projectid = o.projectid
-     LEFT JOIN tblobject o2 ON o.objectid = o2.parentobjectid
-     LEFT JOIN tblelement e ON o.objectid = e.objectid
-     LEFT JOIN tlkptaxon t ON e.taxonid = t.taxonid
-     LEFT JOIN tblsample s ON e.elementid = s.elementid
-     LEFT JOIN tlkpsampletype st ON s.typeid = st.sampletypeid
-     LEFT JOIN tblbox b ON s.boxid = b.boxid
-     LEFT JOIN vwfirstyear fy ON s.sampleid = fy.entityid
-     LEFT JOIN vwlastyear ly ON s.sampleid = ly.entityid
-  WHERE o2.parentobjectid IS NOT NULL AND s.sampleid IS NOT NULL;
-
-CREATE VIEW vwportalcomb AS 
- SELECT vwportaldata1.projectid,
-    vwportaldata1.projectlastmodifiedtimestamp,
-    vwportaldata1.projecttitle,
-    vwportaldata1.investigator,
-    vwportaldata1.objectid,
-    vwportaldata1.objectlastmodifiedtimestamp,
-    vwportaldata1.objecttitle,
-    vwportaldata1.objectcode,
-    vwportaldata1.objectlongitude,
-    vwportaldata1.objectlatitude,
-    vwportaldata1.objectlocationprecision,
-    vwportaldata1.object2id,
-    vwportaldata1.object2lastmodifiedtimestamp,
-    vwportaldata1.object2title,
-    vwportaldata1.object2code,
-    vwportaldata1.object2longitude,
-    vwportaldata1.object2latitude,
-    vwportaldata1.object2locationprecision,
-    vwportaldata1.elementid,
-    vwportaldata1.elementlastmodifiedtimestamp,
-    vwportaldata1.elementcode,
-    vwportaldata1.taxonid,
-    vwportaldata1.taxonlabel,
-    vwportaldata1.elementlongitude,
-    vwportaldata1.elementlatitude,
-    vwportaldata1.elementlocationprecision,
-    vwportaldata1.sampleid,
-    vwportaldata1.samplelastmodifiedtimestamp,
-    vwportaldata1.samplecode,
-    vwportaldata1.externalid,
-    vwportaldata1.samplingdate,
-    vwportaldata1.samplingyear,
-    vwportaldata1.samplingmonth,
-    vwportaldata1.samplingdateprec,
-    vwportaldata1.sampletype,
-    vwportaldata1.firstyear,
-    vwportaldata1.lastyear,
-    vwportaldata1.dendrochronologist,
-    vwportaldata1.boxid,
-    vwportaldata1.boxtitle,
-    vwportaldata1.curationlocation,
-    vwportaldata1.trackinglocation,
-    vwportaldata1.preferredlongitude,
-    vwportaldata1.preferredlatitude,
-    vwportaldata1.preferredlocationprecision
-   FROM vwportaldata1
-UNION
- SELECT vwportaldata2.projectid,
-    vwportaldata2.projectlastmodifiedtimestamp,
-    vwportaldata2.projecttitle,
-    vwportaldata2.investigator,
-    vwportaldata2.objectid,
-    vwportaldata2.objectlastmodifiedtimestamp,
-    vwportaldata2.objecttitle,
-    vwportaldata2.objectcode,
-    vwportaldata2.objectlongitude,
-    vwportaldata2.objectlatitude,
-    vwportaldata2.objectlocationprecision,
-    vwportaldata2.object2id,
-    vwportaldata2.object2lastmodifiedtimestamp,
-    vwportaldata2.object2title,
-    vwportaldata2.object2code,
-    vwportaldata2.object2longitude,
-    vwportaldata2.object2latitude,
-    vwportaldata2.object2locationprecision,
-    vwportaldata2.elementid,
-    vwportaldata2.elementlastmodifiedtimestamp,
-    vwportaldata2.elementcode,
-    vwportaldata2.taxonid,
-    vwportaldata2.taxonlabel,
-    vwportaldata2.elementlongitude,
-    vwportaldata2.elementlatitude,
-    vwportaldata2.elementlocationprecision,
-    vwportaldata2.sampleid,
-    vwportaldata2.samplelastmodifiedtimestamp,
-    vwportaldata2.samplecode,
-    vwportaldata2.externalid,
-    vwportaldata2.samplingdate,
-    vwportaldata2.samplingyear,
-    vwportaldata2.samplingmonth,
-    vwportaldata2.samplingdateprec,
-    vwportaldata2.sampletype,
-    vwportaldata2.firstyear,
-    vwportaldata2.lastyear,
-    vwportaldata2.dendrochronologist,
-    vwportaldata2.boxid,
-    vwportaldata2.boxtitle,
-    vwportaldata2.curationlocation,
-    vwportaldata2.trackinglocation,
-    vwportaldata2.preferredlongitude,
-    vwportaldata2.preferredlatitude,
-    vwportaldata2.preferredlocationprecision
-   FROM vwportaldata2;
 
 
 CREATE VIEW vwtblelement AS 
