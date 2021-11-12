@@ -908,6 +908,8 @@ UPDATE tlkptaxon SET colid='T8' WHERE taxonid=2018;
 UPDATE tlkptaxon SET colid='649' WHERE taxonid=2019;
 UPDATE tlkptaxon SET colid='PXQ' WHERE taxonid=2020;
 UPDATE tlkptaxon SET colid='65DRF' WHERE taxonid=2021;
+UPDATE tlkptaxon SET colid='6NGHS' WHERE taxonid=2022;
+
 
 -- Rank changes
 UPDATE tlkptaxon SET colid='JP8', taxonrankid=19 where taxonid=71;
@@ -923,6 +925,7 @@ UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='Berberidopsidales Doweld',
 UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='Aextoxicaceae Engl. & Gilg', colparentid='T8' WHERE colid='649';
 UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Aextoxicon</i> Ruiz & Pav.', colparentid='649' WHERE colid='PXQ';
 UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Aextoxicon punctatum</i> Ruiz & Pav.', colparentid='PXQ' WHERE colid='65DRF';
+UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Juniperus flaccida</i> Schltdl.', colparentid='56YL' WHERE colid='6NGHS';
 
 UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='Ebenaceae', colparentid='625QY' WHERE colid='9JQ';
 UPDATE tlkptaxon SET newlabel='Hippocastanoideae Burnett', htmllabel='Hippocastanoideae Burnett', colparentid='FY3' WHERE colid='JP8';

@@ -101,8 +101,7 @@ INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values
 INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2021, 9, 'Aextoxicon punctatum Ruiz & Pav.', 2020, 'X-2021');
 
 
-
-
+INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2022, 9, 'Juniperus flaccida Schltdl.', 323, 'X-2022');
 
 
 
