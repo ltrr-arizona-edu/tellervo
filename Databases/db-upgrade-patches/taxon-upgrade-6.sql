@@ -909,6 +909,7 @@ UPDATE tlkptaxon SET colid='649' WHERE taxonid=2019;
 UPDATE tlkptaxon SET colid='PXQ' WHERE taxonid=2020;
 UPDATE tlkptaxon SET colid='65DRF' WHERE taxonid=2021;
 UPDATE tlkptaxon SET colid='6NGHS' WHERE taxonid=2022;
+UPDATE tlkptaxon SET colid='4J24S' WHERE taxonid=2023;
 
 
 -- Rank changes
@@ -916,16 +917,14 @@ UPDATE tlkptaxon SET colid='JP8', taxonrankid=19 where taxonid=71;
 
 -- Update labels and parent IDs 
 UPDATE tlkptaxon SET newlabel='Milicia excelsa (Welw.) C. C. Berg', htmllabel='<i>Milicia excelsa</i> (Welw.) C. C. Berg', colparentid='5SSS' WHERE colid='43CGC';
-
-
-
-UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Pinus montezumae</i> Lamb.', colparentid='6QPY' WHERE colid='4J2CF';
-UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Abies durangensis</i> Martínez', colparentid='627WF' WHERE colid='8KC2';
-UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='Berberidopsidales Doweld', colparentid='40' WHERE colid='T8';
-UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='Aextoxicaceae Engl. & Gilg', colparentid='T8' WHERE colid='649';
-UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Aextoxicon</i> Ruiz & Pav.', colparentid='649' WHERE colid='PXQ';
-UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Aextoxicon punctatum</i> Ruiz & Pav.', colparentid='PXQ' WHERE colid='65DRF';
-UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='<i>Juniperus flaccida</i> Schltdl.', colparentid='56YL' WHERE colid='6NGHS';
+UPDATE tlkptaxon SET newlabel='Pinus clausa (Chapm. ex Engelm.) Sarg.', htmllabel='<i>Pinus clausa</i> (Chapm. ex Engelm.) Sarg.', colparentid='6QPY' WHERE colid='4J24S';
+UPDATE tlkptaxon SET newlabel='Pinus montezumae Lamb.', htmllabel='<i>Pinus montezumae</i> Lamb.', colparentid='6QPY' WHERE colid='4J2CF';
+UPDATE tlkptaxon SET newlabel='Abies durangensis Martínez', htmllabel='<i>Abies durangensis</i> Martínez', colparentid='627WF' WHERE colid='8KC2';
+UPDATE tlkptaxon SET newlabel='Berberidopsidales Doweld', htmllabel='Berberidopsidales Doweld', colparentid='40' WHERE colid='T8';
+UPDATE tlkptaxon SET newlabel='Aextoxicaceae Engl. & Gilg', htmllabel='Aextoxicaceae Engl. & Gilg', colparentid='T8' WHERE colid='649';
+UPDATE tlkptaxon SET newlabel='Aextoxicon Ruiz & Pav.', htmllabel='<i>Aextoxicon</i> Ruiz & Pav.', colparentid='649' WHERE colid='PXQ';
+UPDATE tlkptaxon SET newlabel='Aextoxicon punctatum Ruiz & Pav.', htmllabel='<i>Aextoxicon punctatum</i> Ruiz & Pav.', colparentid='PXQ' WHERE colid='65DRF';
+UPDATE tlkptaxon SET newlabel='Juniperus flaccida Schltdl.', htmllabel='<i>Juniperus flaccida</i> Schltdl.', colparentid='56YL' WHERE colid='6NGHS';
 
 UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='Ebenaceae', colparentid='625QY' WHERE colid='9JQ';
 UPDATE tlkptaxon SET newlabel='Hippocastanoideae Burnett', htmllabel='Hippocastanoideae Burnett', colparentid='FY3' WHERE colid='JP8';

@@ -1,5 +1,5 @@
 INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (1015, 9, 'Abies grandis (Douglas ex D. Don) Lindl.', 6, 'X-1015');
-INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (1016, 9, 'Abies lasiocarpa (Hook.) Nutt.', 6, 'X-1016');
+--INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (1016, 9, 'Abies lasiocarpa (Hook.) Nutt.', 6, 'X-1016');
 INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (1017, 9, 'Juniperus occidentalis Hook.', 323, 'X-1017');
 INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (1018, 12, 'Pinus arizonica var. cooperi (C. E. Blanco) Farjon', 1008, 'X-1018');
 INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (1019, 9, 'Pinus ayacahuite Ehrenb. ex Schltdl.', 455, 'X-1019');
@@ -102,6 +102,7 @@ INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values
 
 
 INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2022, 9, 'Juniperus flaccida Schltdl.', 323, 'X-2022');
+INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2023, 9, 'Pinus clausa (Chapm. ex Engelm.) Sarg.', 455, 'X-2023');
 
 
 
