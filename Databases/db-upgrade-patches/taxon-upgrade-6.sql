@@ -911,11 +911,15 @@ UPDATE tlkptaxon SET colid='65DRF' WHERE taxonid=2021;
 UPDATE tlkptaxon SET colid='6NGHS' WHERE taxonid=2022;
 UPDATE tlkptaxon SET colid='4J24S' WHERE taxonid=2023;
 
+UPDATE tlkptaxon SET colid='4J2G5' WHERE taxonid=2024;
+
 
 -- Rank changes
 UPDATE tlkptaxon SET colid='JP8', taxonrankid=19 where taxonid=71;
 
 -- Update labels and parent IDs 
+UPDATE tlkptaxon SET newlabel='Pinus resinosa Aiton', htmllabel='<i>Pinus resinosa</i> Aiton', colparentid='6QPY' WHERE colid='4J2G5';
+
 UPDATE tlkptaxon SET newlabel='Milicia excelsa (Welw.) C. C. Berg', htmllabel='<i>Milicia excelsa</i> (Welw.) C. C. Berg', colparentid='5SSS' WHERE colid='43CGC';
 UPDATE tlkptaxon SET newlabel='Pinus clausa (Chapm. ex Engelm.) Sarg.', htmllabel='<i>Pinus clausa</i> (Chapm. ex Engelm.) Sarg.', colparentid='6QPY' WHERE colid='4J24S';
 UPDATE tlkptaxon SET newlabel='Pinus montezumae Lamb.', htmllabel='<i>Pinus montezumae</i> Lamb.', colparentid='6QPY' WHERE colid='4J2CF';

@@ -104,6 +104,7 @@ INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values
 INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2022, 9, 'Juniperus flaccida Schltdl.', 323, 'X-2022');
 INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2023, 9, 'Pinus clausa (Chapm. ex Engelm.) Sarg.', 455, 'X-2023');
 
+INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2024, 9, 'Pinus resinosa Aiton', 455, 'X-2024');
 
 
 
