@@ -659,7 +659,7 @@ public class CompleteBoxLabel extends ReportBase{
 		else {
 			// probably better to use a chooser dialog here...
 			try {
-				File outputFile = File.createTempFile("boxlabel", ".pdf");
+				File outputFile = File.createTempFile("tellervolabel", ".pdf");
 				FileOutputStream output = new FileOutputStream(outputFile);
 				
 				this.generateBoxLabel(output);
@@ -713,7 +713,7 @@ public class CompleteBoxLabel extends ReportBase{
 		else {
 			// probably better to use a chooser dialog here...
 			try {
-				File outputFile = File.createTempFile("boxlabel", ".pdf");
+				File outputFile = File.createTempFile("tellervolabel", ".pdf");
 				FileOutputStream output = new FileOutputStream(outputFile);
 				
 				label.generateBoxLabel(output);

@@ -22,14 +22,14 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 public class ShelfLabelStyle extends AbstractTellervoLabelStyle {
 
-	private Font sectionFont = new Font(Font.FontFamily.HELVETICA, 18f, Font.BOLD);
+	private Font sectionFont = new Font(Font.FontFamily.HELVETICA, 16f, Font.BOLD);
 	//private Rectangle pageSize = new Rectangle(288, 54);
-	private Rectangle pageSize = new Rectangle(288, 27);
+	private Rectangle pageSize = new Rectangle(234, 27);
 	//private Rectangle pageSize = new Rectangle(3252, 2108);
 	
 	
 	public ShelfLabelStyle() {
-		super("Box barcodes 3.5 x 1.5\"", "Simple box barcode labels for printing on a roll - 3.5 x 1.5\"", ItemType.GENERIC);
+		super("Box barcodes 3.25 x 0.375\"", "Simple box barcode labels for printing on a roll - 3.25 x 1.5\"", ItemType.GENERIC);
 		
 	}
 
@@ -57,7 +57,7 @@ public class ShelfLabelStyle extends AbstractTellervoLabelStyle {
 	        
 	        	
 	        	ColumnText ct = new ColumnText(cb);
-	        	ct.setSimpleColumn(30, 0, this.document.getPageSize().getWidth() - 5, this.document.getPageSize().getHeight()-4, 16, Element.ALIGN_LEFT);
+	        	ct.setSimpleColumn(6, 0, this.document.getPageSize().getWidth() - 5, this.document.getPageSize().getHeight()-4, 16, Element.ALIGN_LEFT);
 	        	ct.addText(new Phrase(item.toString(), sectionFont));
 	        	ct.go();
 	        	
@@ -70,13 +70,13 @@ public class ShelfLabelStyle extends AbstractTellervoLabelStyle {
 	        	
 	        	if(barheight>50)
 	        	{
-	        		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 10, barheight - 10, 16, Element.ALIGN_RIGHT);
+	        		ct.setSimpleColumn(15, 5, this.document.getPageSize().getWidth() - 5, barheight - 10, 16, Element.ALIGN_RIGHT);
 
 	        		ct.addText(new Chunk(ShelfLabelStyle.getBarcode(item.toString(), cb, barheight), 0, 0, true));
 	        	}
 	        	else
 	        	{
-	        		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 5, barheight - 10, 16, Element.ALIGN_RIGHT);
+	        		ct.setSimpleColumn(15, 5, this.document.getPageSize().getWidth() - 5, barheight - 10, 16, Element.ALIGN_RIGHT);
 	        		ct.addText(new Chunk(ShelfLabelStyle.getBarcode(item.toString(), cb, barheight-15), 0, 0, true));
 
 	        	}

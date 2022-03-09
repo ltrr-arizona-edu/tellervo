@@ -1,48 +1,18 @@
-/*******************************************************************************
- * Copyright (C) 2011 Peter Brewer.
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * Contributors:
- *     Peter Brewer
- ******************************************************************************/
-package org.tellervo.desktop.print;
+package org.tellervo.desktop.labelgen;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
-
-import javax.net.ssl.SSLEngineResult.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.io.Metadata;
-import org.tellervo.desktop.labelgen.LabBarcode;
-import org.tellervo.desktop.sample.Sample;
+import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tellervo.desktop.tridasv2.TridasComparator;
-import org.tellervo.desktop.ui.Alert;
-import org.tellervo.desktop.util.pdf.PrintablePDF;
-import org.tellervo.desktop.util.test.PrintReportFramework;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceProperties;
@@ -52,297 +22,206 @@ import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.WSIBox;
+import org.tridas.interfaces.ITridasGeneric;
+import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
+import org.tridas.schema.TridasIdentifier;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
+import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.itextpdf.text.pdf.draw.VerticalPositionMark;
 
+public class SampleLabelRoll3Point25xPoint375AllInStyle extends AbstractTellervoLabelStyle {
 
-public class BoxBarcodeLabel extends ReportBase{
-	
-	private ArrayList<WSIBox> boxlist = new ArrayList<WSIBox>();
-	private final static Logger log = LoggerFactory.getLogger(BoxBarcodeLabel.class);
+		
 
-	public BoxBarcodeLabel(Sample s){
 		
-		if(s==null)
-		{
-			System.out.println("Error - sample is null");
-			return;
-		}
 		
-		if (s.getMeta(Metadata.BOX, WSIBox.class)==null)
-		{
-			System.out.println("Error - no box associated with this series");
-			return;
-		}
-		boxlist.add(s.getMeta(Metadata.BOX, WSIBox.class));
-	}
+		Font labelTitleFont = new Font(Font.FontFamily.HELVETICA, 28f, Font.BOLD);
+		Font bodyFont = new Font(Font.FontFamily.HELVETICA, 10f);
+		Font titleFont = new Font(Font.FontFamily.HELVETICA, 20f, Font.BOLD);
+		Font subTitleFont = new Font(Font.FontFamily.HELVETICA, 14f);
+		Font subSubSectionFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
+		Font bodyFontLarge = new Font(Font.FontFamily.HELVETICA, 14f);
+		Font tableHeaderFontLarge = new Font(Font.FontFamily.HELVETICA, 14f, Font.BOLD);		
+		Float headerLineWidth = new Float(0.8);	
+		private Font labelfont = new Font(Font.FontFamily.HELVETICA, 15f, Font.BOLD);
+
+		private Font tinyfont = new Font(Font.FontFamily.HELVETICA, 8f);
+		private Font teenyfont = new Font(Font.FontFamily.HELVETICA, 6f);
+
+	    private final static Logger log = LoggerFactory.getLogger(SampleLabelRoll3Point25xPoint375AllInStyle.class);
+
 	
-	public BoxBarcodeLabel(WSIBox b){
-		if (b==null)
-		{
-			System.out.println("Error - box is null");
-			return;
-		}
-		boxlist.add(b);
-	}
+	public SampleLabelRoll3Point25xPoint375AllInStyle() {
+		super("Sample Label - All-in-one - 3.25 x 0.375\"", "Barcode labels for samples printed on a roll of 3.25 x 0.375\" label s. Designed to fit on core mounts and includes barcode, site name, project name, PI, and sample codes.", ItemType.SAMPLE);
 		
-	public BoxBarcodeLabel(ArrayList<WSIBox> bl)
-	{
-		boxlist = bl;
 	}
-	
-	public void generateBoxLabel(OutputStream output) {
-	
+
+	@Override
+	public void outputPDFToStream(java.io.OutputStream output, ArrayList items) throws Exception {
 		try {
-		
+			
+			document = new Document();
 			PdfWriter writer = PdfWriter.getInstance(document, output);
 			
-			document.setPageSize(new Rectangle(252, 108));
-			document.setMargins(5, 5, 5 ,0);
-
+			document.setPageSize(new Rectangle(234, 27));
 			document.open();
-		
+			float margin = 2;
+			float fontheight = 7;
+			document.setMargins(margin, margin, margin ,margin);
 			cb = writer.getDirectContent();			
 			
 			// Set basic metadata
 		    document.addAuthor("Tellervo"); 
-		    document.addSubject("Tellervo Box Barcodes"); 
-				        
-	        for(WSIBox b : boxlist)
+		    document.addSubject("Sample Label"); 
+						
+		    for(Object item : items)
 	        {
-	        	ColumnText ct = new ColumnText(cb);
-	        	ct.setSimpleColumn(5, this.document.getPageSize().getHeight()/2, this.document.getPageSize().getWidth() - 5, this.document.getPageSize().getHeight() - 5, 16, Element.ALIGN_CENTER);
-	        	ct.addText(new Phrase(b.getTitle(), sectionFont));
-	        	ct.go();
-	        	
-	        	//System.out.println("Yline = "+ct.getYLine());
-	        	float barheight = ct.getYLine();
-	        	
-	        	ct = new ColumnText(cb);
-	        	
-	        	
-	        	if(barheight>50)
+	        	if(item instanceof TridasSample)
 	        	{
-	        		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 10, barheight - 10, 16, Element.ALIGN_CENTER);
-
-	        		ct.addText(new Chunk(this.getBarCode(b, barheight-15), 0, 0, true));
+	        		
 	        	}
 	        	else
 	        	{
-	        		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 5, barheight - 10, 16, Element.ALIGN_CENTER);
-	        		ct.addText(new Chunk(this.getBarCode(b, barheight-15), 0, 0, true));
-
+	        		throw new Exception ("Label type not valid for this label style");
 	        	}
+			
+	        	// Compile data to go on label
+	        	String sampleLabelText;
+	        	TridasProject project = App.dictionary.getTridasProjectByID(TridasUtils.getGenericFieldValueByName((TridasSample) item, "tellervo.internal.projectID"));
+	        	TridasObject object = App.dictionary.getTridasObjectByID(TridasUtils.getGenericFieldValueByName((TridasSample) item, "tellervo.internal.objectID"));
+				String siteNameText = object.getTitle();
+	        			
+	        	
+	        	//String projectText  = "Peter Brewer : The name of the project af asdfasd fasd fsad fasd fads fasd fasd fasd fasd fasd fdsa fas dfads fas dfasdf asdf asd fads fasd fads fasd ";
+	        	String projectText  = project.getInvestigator()+" : "+project.getTitle();
+
+	        	TridasSample s = (TridasSample) item;
+				TridasGenericField labcodeField = GenericFieldUtils.findField(s, "tellervo.internal.labcodeText");
+				sampleLabelText = labcodeField.getValue();
+	        	
+				
+				
+				// Top left text
+				
+	        	ColumnText ct = new ColumnText(cb);
+	        	ct.setUseAscender(true);
+	        		        	
+	        	float llx = margin;
+	        	float lly = this.document.getPageSize().getHeight() - fontheight - fontheight - margin;
+	        	float urx = 208;
+	        	float ury = this.document.getPageSize().getHeight() - margin - fontheight;
+	        	
+	        	System.out.println("llx = "+llx);
+	        	System.out.println("lly = "+lly);
+	        	System.out.println("urx = "+urx);
+	        	System.out.println("ury = "+ury);
+	        	
+	        	// PdfContentByte cb = writer.getDirectContentUnder();
+	            // cb.rectangle(llx, lly,   urx-llx , ury - lly);
+	            //cb.stroke();
+	        	
+	        	
+	        	ct.setSimpleColumn(llx,lly ,urx , ury , 5f, Element.ALIGN_LEFT);
+	        	ct.addElement(new Paragraph(projectText, teenyfont));
 	        	ct.go();
-	        
-	        	document.newPage();
-
-
-		     /*   Chunk glue = new Chunk(new VerticalPositionMark());
-	        	Phrase ph = new Phrase();
-		        
-		        ph.add(glue);
-		        ph.add(new Chunk(this.getBarCode(b), 0, 0, true));
-		        ph.add(glue);
-		        
-		        ct.addText(ph);
-		        
-	        	ct.setSimpleColumn(
-	        			0, 5, 
-	        			this.document.getPageSize().getWidth() - 5,
-	        			this.document.getPageSize().getHeight() - 5, 
-	        			16, Element.ALIGN_CENTER);
-		        status = ColumnText.START_COLUMN;
 	        	
-	        	while(ColumnText.hasMoreText(status)){
-	        		if(ct.getLinesWritten()>1) break;
-	        		
-	        		status = ct.go();
-	        		ct.setYLine(this.document.getPageSize().getHeight() -5);
-	        	
-	        	}
-		       
-	        	document.newPage();
-
+	        	// Next text
 	        	
 	        	
-		        Paragraph p = new Paragraph();
-		        
-		        p.add(new Chunk(b.getTitle(), sectionFont));
-		        p.setAlignment(Paragraph.ALIGN_CENTER);
-		        
-		        p.add(new Chunk(Chunk.NEWLINE+" "+Chunk.NEWLINE, superBodyFont));
-		        
-		        
-		        
-		        
-		        Chunk glue = new Chunk(new VerticalPositionMark());
-		        
-		        PdfPTable table = new PdfPTable(1);
-		        
-		        table.setWidthPercentage(100f);
-		        Phrase ph = new Phrase();
-		        
-		        ph.add(glue);
-		        ph.add(new Chunk(this.getBarCode(b), 0, 0, true));
-		        ph.add(glue);
-		        PdfPCell cell = new PdfPCell(ph);
-		        cell.setBorder(0);
-		        
-		        table.addCell(cell);
-		     
-		        
-		        
-		        //p.add(new Chunk(App.getLabName()+Chunk.NEWLINE+Chunk.NEWLINE, bodyFont));
-		        //p.add(new Chunk(this.getBarCode(b), 0, 0, true));
-		        
-		        document.add(p);
-		        document.add(table);
-		        document.newPage();*/
-	        }
+	        	ct = new ColumnText(cb);
+	        	ct.setUseAscender(true);
+	        		        	
+	        	llx = margin;
+	        	lly = this.document.getPageSize().getHeight() - fontheight - margin;
+	        	urx = 178;
+	        	ury = this.document.getPageSize().getHeight() - margin ;
+	        	
+	        	System.out.println("llx = "+llx);
+	        	System.out.println("lly = "+lly);
+	        	System.out.println("urx = "+urx);
+	        	System.out.println("ury = "+ury);
+	        	
+	        	// PdfContentByte cb = writer.getDirectContentUnder();
+	            // cb.rectangle(llx, lly,   urx-llx , ury - lly);
+	            //cb.stroke();
+	        	
+	        	
+	        	ct.setSimpleColumn(llx,lly ,urx , ury , 5f, Element.ALIGN_LEFT);
+	        	ct.addElement(new Paragraph(siteNameText, teenyfont));
+	        	ct.go();
+	        	
+	        	
 	
-	             
-	        
+	        	
+	        	// Barcode bottom left 
+	        	
+	        	//System.out.println("Yline = "+ct.getYLine());
+	        	//float barheight = ct.getYLine();
+	        	float barheight = 14;
+	        	
+	        	ct = new ColumnText(cb);
+	        	
+	        	System.out.println("Bar height = "+barheight);
+	       
+        		llx = margin;
+	        	lly = margin;
+	        	urx = this.document.getPageSize().getWidth() -margin;
+	        	ury = barheight-margin;
+	        	int leading = 1;
+	        	
+	        	System.out.println("llx = "+llx);
+	        	System.out.println("lly = "+lly);
+	        	System.out.println("urx = "+urx);
+	        	System.out.println("ury = "+ury);
+        		ct.setSimpleColumn(llx,lly ,urx , ury , leading,  Element.ALIGN_LEFT);
+        		ct.setUseAscender(true);
+        		//ct.addText(new Chunk(LabBarcode.getSampleBarcode(s, cb, barheight-10), 0, 0, true));
+        		ct.addText(new Chunk(LabBarcode.getSampleBarcode(s, cb, barheight-4, barcodeSize), 0, 0, true));
+	        	ct.go();
+	        	
+	        	
+	        	// Sample Code right
+	        	int status = ColumnText.START_COLUMN;
+	        	ct.setSimpleColumn(180,2 ,this.document.getPageSize().getWidth() - margin - margin , this.document.getPageSize().getHeight() - margin , 8f, Element.ALIGN_LEFT);
+	        	ct.addText(new Phrase(sampleLabelText, tinyfont));
+	        	status = ct.go();
+	        	
+	        	if(ColumnText.hasMoreText(status))
+	        	{
+	        		log.error("OVERFULL sample code!!!");
+	        		ct = new ColumnText(cb);
+	        		ct.setSimpleColumn(280,2 ,this.document.getPageSize().getWidth() - margin - margin , 15 , 8f, Element.ALIGN_LEFT);
+		        	ct.addElement(new Paragraph("!", teenyfont));
+		        	ct.go();
+	        	}
+	      	        
+	        	document.newPage();
+	        	
+	        	
+	        	
+	        }
 		    
-		    
-		    
-		    
-		    /*float top = document.top(15);
-		    int row = 1;
-		    
-		    for(int i = 0; i< boxlist.size(); i = i+2)
-		    {
-		    	
-		    	log.debug("Document left : "+document.left());
-		    	log.debug("Document right: "+document.right());
-		    	log.debug("Top           : "+top);
-		    	
-		    	
-		    	
-		    	
-		    	
-		    	
-				// Column 1		
-				ColumnText ct1a = new ColumnText(cb);
-				ct1a.setSimpleColumn(document.left(), 
-								   top-210, 
-								   368, 
-								   top, 
-								   20, 
-								   Element.ALIGN_LEFT);
-				
-				ColumnText ct1b = new ColumnText(cb);
-				ct1b.setSimpleColumn(document.left(), 
-						   top-70, 
-						   document.left()+206, 
-						   top-150, 
-						   20, 
-						   Element.ALIGN_LEFT);
-				
-				try{
-			    	WSIBox b1 = boxlist.get(i);
-			    	ct1a.addText(getTitlePDF(b1));
-			    	ct1a.go();
-					
-			
-			    	ct1b.addElement(getBarCode(b1));
-			    	ct1b.go();
 
-				} catch (Exception e)
-				{
-					log.debug("Failed writing box label in left column where i="+i);
-				}
-				
-				
-				// Column 2		
-				ColumnText ct2a = new ColumnText(cb);
-				ct2a.setSimpleColumn(306, 
-								   top-210, 
-								   document.right(), 
-								   top, 
-								   20, 
-								   Element.ALIGN_LEFT);
-				
-				ColumnText ct2b = new ColumnText(cb);
-				ct2b.setSimpleColumn(306, 
-						   top-70, 
-						   512,  
-						   top-80, 
-						   20, 
-						   Element.ALIGN_LEFT);
-				
-				try{
-			    	WSIBox b2 = boxlist.get(i+1);
-			    	ct2a.addText(getTitlePDF(b2));
-			    	ct2a.go();
-					
-			
-			    	ct2b.addElement(getBarCode(b2));
-			    	ct2b.go();
-
-				} catch (Exception e)
-				{
-					log.debug("Failed writing box label in right column where i="+i);
-					//e.printStackTrace();
-				}
-				
-				
-				// Column 2
-			/*	ColumnText ct2 = new ColumnText(cb);
-				ct2.setSimpleColumn(370,     //llx 
-						top-100, 		     //lly	
-						document.right(0),   //urx
-						top+15, 		     //ury
-						20, 			     //leading
-						Element.ALIGN_RIGHT  //alignment
-						);
-				
-				try{
-				WSIBox b2 = boxlist.get(i+1);
-				ct2.addText(getTitlePDF(b2));
-				ct2.addElement(getBarCode(b2));
-				ct2.go();
-				} catch (Exception e)
-				{
-					log.debug("Failed writing box label where i="+i+1);
-				}
-				*/
-				/*
-				
-				top = top-160;
-				
-				if(row==5)
-				{
-					top = document.top(15);
-				    document.newPage();
-				    row=1;
-				}
-				else
-				{
-					row++;
-				}
-				
-				
-				
-				
-
-		    }*/
-		    
 			
 		} catch (DocumentException de) {
 			System.err.println(de.getMessage());
@@ -351,8 +230,10 @@ public class BoxBarcodeLabel extends ReportBase{
 		// Close the document
 		document.close();
 	}
+
+
 	
-	
+
 	/**
 	 * Get an iText Paragraph for the Title 
 	 * 
@@ -361,41 +242,15 @@ public class BoxBarcodeLabel extends ReportBase{
 	private Paragraph getTitlePDF(WSIBox b)
 	{
 		Paragraph p = new Paragraph();
-		p.setLeading(0f); 
-		p.setMultipliedLeading(1.2f);
-		p.add(new Phrase(10, b.getTitle()+"\n", monsterFont));
-		p.add(new Phrase(10, b.getComments()+" "+App.getLabName() +"fdas dfsa fds sdfalkdsf jlasdj fkljkldsa jfdsklaj fdksaj flkdsaj lkfdsalk fjdsal fjdklaj fkldsajkldsfalkjsdf asdlkj dsajlk", bodyFont));
-
+		
+		p.add(new Chunk(b.getTitle()+"\n", titleFont));
+		p.add(new Chunk(App.getLabName(), subTitleFont));
 	
 		//p.add(new Chunk(b.getCurationLocation(), bodyFontLarge));
 				
 		return p;		
 	}
 	
-	
-	/**
-	 * Create a series bar code for this series
-	 * 
-	 * @return Image 
-	 */
-	private Image getBarCode(WSIBox b, float barheight)
-	{
-		UUID uuid = UUID.fromString(b.getIdentifier().getValue());
-		LabBarcode barcode = new LabBarcode(LabBarcode.Type.BOX, uuid);
-
-		
-		barcode.setFont(null);
-		barcode.setX(0.7f);
-		//barcode.setN(0.5f);
-		barcode.setSize(6f);
-		barcode.setBaseline(8f);
-		barcode.setBarHeight(barheight);
-		
-		Image image = barcode.createImageWithBarcode(cb, null, null);
-	
-		return image;
-	
-	}
 	
 	
 		
@@ -407,7 +262,7 @@ public class BoxBarcodeLabel extends ReportBase{
 	 */
 	private void addTable(WSIBox b) throws DocumentException
 	{
-		float[] widths = {0.15f, 0.75f, 0.2f};
+		float[] widths = {0.25f, 0.65f, 0.2f};
 		PdfPTable tbl = new PdfPTable(widths);
 		PdfPCell headerCell = new PdfPCell();
 
@@ -468,34 +323,55 @@ public class BoxBarcodeLabel extends ReportBase{
 		Integer sampleCountInBox = 0; 
 		
 		// Loop through objects
-		List<TridasObject> objdone = new ArrayList<TridasObject>(); // Array of top level objects that have already been dealt with
-		mainobjloop:
+		HashMap<TridasIdentifier, TridasObject> objmap = new HashMap<TridasIdentifier, TridasObject>(); // Array of top level objects that have already been dealt with
+		
 		for(TridasObject myobj : obj)
+		{
+			
+			if(myobj.isSetObjects())
+			{
+				objmap.put(myobj.getIdentifier(), myobj);
+				
+				for(TridasObject obj2 : myobj.getObjects())
+				{
+					objmap.put(obj2.getIdentifier(), obj2);
+				}
+				
+			}
+		}
+		
+		Collection<TridasObject> col = objmap.values();
+		ArrayList<TridasObject> objlist = new ArrayList<TridasObject>(col);
+		
+		Collections.sort(objlist, sorter);
+		
+		mainobjloop:
+		for(TridasObject myobj : objlist)
 		{	
 			// Need to check if this object has already been done as there will be duplicate top level objects if there are samples 
 			// from more than one subobject in the box 
-			if(objdone.size()>0)
+			/*if(objdone.size()>0)
 			{
 				try{for(TridasObject tlo : objdone){
 					TridasObjectEx tloex = (TridasObjectEx) tlo;
 					TridasObjectEx myobjex = (TridasObjectEx) myobj;
 					
-					if (tloex.getLabCode().compareTo(myobjex.getLabCode())==0){
+					//if (tloex.getLabCode().compareTo(myobjex.getLabCode())==0){
 						// Object already been done so skip to next
-						continue mainobjloop;
-					}
-					else {
+					//	continue mainobjloop;
+					//}
+					//else {
 						// Object has not been done so add to the done list and keep going
 						objdone.add(myobj);
-					}
+					//}
 				}} catch (Exception e){}
 				
 			}
 			else
 			{
 				objdone.add(myobj);
-			}
-		
+			}*/
+
 			// Add object code to first column			
 			PdfPCell dataCell = new PdfPCell();
 			dataCell.setBorderWidthBottom(0);
@@ -507,15 +383,13 @@ public class BoxBarcodeLabel extends ReportBase{
 			
 		
 			
-			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getLabCode(); 	
-			dataCell.setPhrase(new Phrase(objCode, bodyFontLarge));
-			tbl.addCell(dataCell);
-			
+			if(myobj instanceof TridasObjectEx) objCode = ((TridasObjectEx)myobj).getMultiLevelLabCode(); 	
+
 			// Search for elements associated with this object
 			System.out.println("Starting search for elements associated with " + myobj.getTitle().toString());
 			SearchParameters sp = new SearchParameters(SearchReturnObject.ELEMENT);		
 			sp.addSearchConstraint(SearchParameterName.SAMPLEBOXID, SearchOperator.EQUALS, b.getIdentifier().getValue());
-			sp.addSearchConstraint(SearchParameterName.ANYPARENTOBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
+			sp.addSearchConstraint(SearchParameterName.OBJECTID, SearchOperator.EQUALS, myobj.getIdentifier().getValue());
 			EntitySearchResource<TridasElement> resource = new EntitySearchResource<TridasElement>(sp);
 			resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.SUMMARY);
 			TellervoResourceAccessDialog dialog2 = new TellervoResourceAccessDialog(resource);
@@ -523,11 +397,18 @@ public class BoxBarcodeLabel extends ReportBase{
 			dialog2.setVisible(true);
 			if(!dialog2.isSuccessful()) 
 			{ 	
-				System.out.println("oopsey doopsey.  Error getting elements");
+				System.out.println("Error getting elements");
 				return;
 			}
 			//XMLDebugView.showDialog();
 			List<TridasElement> elements = resource.getAssociatedResult();
+			
+			if(elements==null || elements.size()==0) continue;
+			
+			dataCell.setPhrase(new Phrase(objCode, bodyFontLarge));
+			tbl.addCell(dataCell);
+			
+			
 			TridasComparator numSorter = new TridasComparator(TridasComparator.Type.TITLES, 
 					TridasComparator.NullBehavior.NULLS_LAST, 
 					TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
@@ -633,18 +514,22 @@ public class BoxBarcodeLabel extends ReportBase{
 				{
 					if(inSeq==true)
 					{
-						if(cnt==numOfElements)
+	
+						if(isNextInSeq(lastnum, Integer.valueOf(item)))
 						{
-							// This is the last one in the list!
-							returnStr += "-" + item;
-							continue;
-						}
-						else if(isNextInSeq(lastnum, Integer.valueOf(item)))
-						{
-							// Keep going!
-							inSeq = true;
-							lastnum = Integer.valueOf(item);
-							continue;
+							if(cnt==numOfElements)
+							{
+								// This is the last one in the list!
+								returnStr += "-" + item;
+								continue;
+							}
+							else
+							{
+								// Keep going!
+								inSeq = true;
+								lastnum = Integer.valueOf(item);
+								continue;
+							}
 						}
 						else
 						{
@@ -786,103 +671,14 @@ public class BoxBarcodeLabel extends ReportBase{
 	}
 
 	/**
-	 * Function for printing or viewing series report
-	 * @param printReport Boolean
-	 * @param vmid String
+	 * Blank iText paragraph used for padding 
+	 * @return Paragraph
 	 */
-	public void getLabel(Boolean printReport)
+	protected Paragraph getParagraphSpace()
 	{
-			
-		if(printReport) {
-			ByteArrayOutputStream output = new ByteArrayOutputStream();
-			
-			this.generateBoxLabel(output);
-			
-			try {
-				PrintablePDF pdf = PrintablePDF.fromByteArray(output.toByteArray());
-
-				// true means show printer dialog, false means just print using the default printer
-				pdf.print(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-				Alert.error("Printing error", "An error occured during printing.\n  See error log for further details.");
-			}
-		}
-		else {
-			// probably better to use a chooser dialog here...
-			try {
-				File outputFile = File.createTempFile("tellervolabel", ".pdf");
-				FileOutputStream output = new FileOutputStream(outputFile);
-				
-				this.generateBoxLabel(output);
-
-				App.platform.openFile(outputFile);
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
-				Alert.error("Error", "An error occurred while generating the box label.\n  See error log for further details.");
-				return;
-			}
-		}
+		Paragraph p = new Paragraph();
 		
+		p.add(new Chunk(" "));
+		return p;
 	}
-	
-	/**
-	 * Function for printing or viewing series report
-	 * @param printReport Boolean
-	 * @param vmid String
-	 */
-	public static void getLabel(Boolean printReport, String vmid)
-	{
-		
-		String domain = App.domain;
-		Sample samp = null;
-		
-		try {
-			samp = PrintReportFramework.getTellervoSampleFromVMID(domain, vmid);
-		}
-		catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-
-		// create the box label
-		BoxBarcodeLabel label = new BoxBarcodeLabel(samp);		
-		
-		if(printReport) {
-			ByteArrayOutputStream output = new ByteArrayOutputStream();
-			
-			label.generateBoxLabel(output);
-			
-			try {
-				PrintablePDF pdf = PrintablePDF.fromByteArray(output.toByteArray());
-
-				// true means show printer dialog, false means just print using the default printer
-				pdf.print(true);
-			} catch (Exception e) {
-				e.printStackTrace();
-				Alert.error("Printing error", "An error occured during printing.\n  See error log for further details.");
-			}
-		}
-		else {
-			// probably better to use a chooser dialog here...
-			try {
-				File outputFile = File.createTempFile("tellervolabel", ".pdf");
-				FileOutputStream output = new FileOutputStream(outputFile);
-				
-				label.generateBoxLabel(output);
-
-				App.platform.openFile(outputFile);
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
-				Alert.error("Error", "An error occurred while generating the box label.\n  See error log for further details.");
-				return;
-			}
-		}
-		
-	}
-	
-	
-	
-
-	
-	
 }

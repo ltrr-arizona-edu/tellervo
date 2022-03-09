@@ -152,7 +152,7 @@ public class LabelGenWizard extends AbstractWizardDialog {
 		
 		File outputFile;
 		try {
-			outputFile = File.createTempFile("boxlabel", ".pdf");
+			outputFile = File.createTempFile("tellervolabel", ".pdf");
 			outputFile.deleteOnExit();
 			FileOutputStream output = new FileOutputStream(outputFile);
 			

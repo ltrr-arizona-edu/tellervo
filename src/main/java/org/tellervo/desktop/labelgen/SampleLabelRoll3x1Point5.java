@@ -72,7 +72,7 @@ public class SampleLabelRoll3x1Point5 extends AbstractTellervoLabelStyle {
 
 	
 	public SampleLabelRoll3x1Point5() {
-		super("Sample 3 x 1.5\" roll labels", "Designed for 3x1.5\" non-adhesive plastic roll labels from EIM Inc.", ItemType.SAMPLE);
+		super("Sample Tag - Oversize", "Designed for 3x1.5\" non-adhesive plastic roll labels from EIM Inc.", ItemType.SAMPLE);
 		
 	}
 

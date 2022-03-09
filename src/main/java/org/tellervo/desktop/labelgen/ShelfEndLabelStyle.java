@@ -57,11 +57,12 @@ public class ShelfEndLabelStyle extends AbstractTellervoLabelStyle {
 				        
 		    for(Object item : items)
 	        {
-	        
+		    	String[] pairs = item.toString().split(";");
+		    	
 	        	
 	        	ColumnText ct = new ColumnText(cb);
 	        	ct.setSimpleColumn(15, 0, this.document.getPageSize().getWidth() - 5, this.document.getPageSize().getHeight()-25, 16, Element.ALIGN_LEFT);
-	        	ct.addText(new Phrase(item.toString(), sectionFont));
+	        	ct.addText(new Phrase(pairs[0], sectionFont));
 	        	ct.go();
 	        	
 	        	//System.out.println("Yline = "+ct.getYLine());
@@ -74,12 +75,12 @@ public class ShelfEndLabelStyle extends AbstractTellervoLabelStyle {
 	        	if(barheight>50)
 	        	{
 	          		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 10, barheight - 10, 16, Element.ALIGN_RIGHT);
-	        		ct.addText(new Chunk(ShelfEndLabelStyle.getBarcode(item.toString(), cb, barheight-15), 0, 0, true));
+	        		ct.addText(new Chunk(ShelfEndLabelStyle.getBarcode(pairs[0], cb, barheight-15), 0, 0, true));
 	        	}
 	        	else
 	        	{
 	        		ct.setSimpleColumn(10, 5, this.document.getPageSize().getWidth() - 10, barheight - 10, 16, Element.ALIGN_RIGHT);
-	        		ct.addText(new Chunk(ShelfEndLabelStyle.getBarcode(item.toString(), cb, barheight-15), 0, 0, true));
+	        		ct.addText(new Chunk(ShelfEndLabelStyle.getBarcode(pairs[0], cb, barheight-15), 0, 0, true));
 
 	        	}
 	        	ct.go();
@@ -103,8 +104,26 @@ public class ShelfEndLabelStyle extends AbstractTellervoLabelStyle {
 	            document.add(image);
 	            
 	            ct = new ColumnText(cb);
-	        	ct.setSimpleColumn(15, 0, this.document.getPageSize().getWidth() - 5, this.document.getPageSize().getHeight()-70, 10, Element.ALIGN_LEFT);
-	        	ct.addText(new Phrase("Sequoia collection", detailFont));
+	        	ct.setSimpleColumn(15, 0, this.document.getPageSize().getWidth() - 5, this.document.getPageSize().getHeight()-70, 16, Element.ALIGN_LEFT);
+	        	if(pairs.length>1)
+	        	{
+	        		ct.addText(new Phrase(pairs[1].trim(), detailFont));
+
+	        	}
+	        	
+	        	if(pairs.length>2)
+	        	{
+	        		ct.addText(new Phrase("\n"+pairs[2].trim(), detailFont));
+	        	}
+	        	if(pairs.length>3)
+	        	{
+	        		ct.addText(new Phrase("\n"+pairs[3].trim(), detailFont));
+	        	}
+	        	if(pairs.length>4)
+	        	{
+	        		ct.addText(new Phrase("\n"+pairs[4].trim(), detailFont));
+	        	}	        	
+
 	        	ct.go();
 	        	
 	        	document.newPage();
