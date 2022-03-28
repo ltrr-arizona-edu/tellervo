@@ -5,10 +5,12 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.labelgen.AbstractTellervoLabelStyle.LabelSummarizationType;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator2;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.ui.Alert;
@@ -42,10 +44,10 @@ import com.itextpdf.text.pdf.CMYKColor;
 import com.itextpdf.text.pdf.ColumnText;
 import com.itextpdf.text.pdf.PdfWriter;
 
-public class BoxLabelBase extends AbstractTellervoLabelStyle {
+public class BoxLabel20By4 extends AbstractTellervoLabelStyle {
 
 		
-    private final static Logger log = LoggerFactory.getLogger(BoxLabelBase.class);
+    private final static Logger log = LoggerFactory.getLogger(BoxLabel20By4.class);
 	//Font labelTitleFont = new Font(Font.FontFamily.HELVETICA, 28f, Font.BOLD);
 	//Font bodyFont = new Font(Font.FontFamily.HELVETICA, 10f);
 	//Font subTitleFont = new Font(Font.FontFamily.HELVETICA, 14f);
@@ -55,7 +57,7 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 	
     Font titleFont = new Font(Font.FontFamily.HELVETICA, 30f, Font.BOLD);
 	Font monsterFont = new Font(Font.FontFamily.HELVETICA, 40f, Font.BOLD);
-	Font projectFont = new Font(Font.FontFamily.HELVETICA, 12f, Font.BOLD);
+	Font projectFont = new Font(Font.FontFamily.HELVETICA, 10f, Font.BOLD);
 	Font siteFont = new Font(Font.FontFamily.HELVETICA, 8f, Font.BOLD);
 	Font sampleFont = new Font(Font.FontFamily.HELVETICA, 8f);
 	
@@ -70,23 +72,21 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 	
 	Boolean showLabelBoundingBox = true;
 	
-   public BoxLabelBase(String name, String description, float labelWidth, float labelHeight) {
+   public BoxLabel20By4() {
 	  
-		super(name, description, 
+		super("Box label - 20x4\"", 
+				"Box label with full summary of contents for a box designed for use on a 20x4\" face but printing (and cut) from a letter sized label", 
 				ItemType.BOX,
 				"Country",
 				"State - Type",
-				null,
+				"Specimen label font size (4-15)",
 				"Box name",
 				"Agency");
 		
-		this.setIsLabelSummarizationTypeConfigurable(true);
-		this.pageSize = new Rectangle(toPoint(labelWidth), toPoint(labelHeight));;
+		this.setSampleLabelingTypeChooseable(true);
+		this.pageSize = new Rectangle(toPoint(10), toPoint(8));
    }
 	
-
-
-
 
 	@Override
 	public void outputPDFToStream(java.io.OutputStream output, ArrayList items) throws Exception {
@@ -202,9 +202,26 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 		{
 			stateType = getLine2OverrideText();
 		}
-		if(getLine3OverrideText()!=null)
+		if(getLine3OverrideText()!=null && getLine3OverrideText().length()>0)
 		{
-			pi = getLine3OverrideText();
+			Integer newfontsize = 8;
+			
+			try {
+				newfontsize = Integer.parseInt(getLine3OverrideText().trim());	
+			} catch (NumberFormatException e)
+			{
+				log.debug("Invalid sample font size.  Ignoring");
+			}
+			
+			if(newfontsize>=4 && newfontsize<=15)
+			{
+				this.sampleFont = new Font(Font.FontFamily.HELVETICA, newfontsize.floatValue());
+				this.siteFont= new Font(Font.FontFamily.HELVETICA, newfontsize.floatValue(), Font.BOLD);
+			}
+			else
+			{
+				log.debug("Invalid sample font size. Must be between 4 and 15. Ignoring");
+			}
 		}
 		box = b.getTitle();
 		if(getLine4OverrideText()!=null)
@@ -213,7 +230,7 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 		}
 		if(getLine5OverrideText()!=null)
 		{
-			float xpos = margin;
+			float xpos = document.getPageSize().getWidth()-margin;
 			float logowidth = 1.95f;
 			Image image = null;
 			
@@ -269,8 +286,8 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 				
 	            float scaler = ((toPoint(logowidth) / image.getWidth())) * 100;
 	            image.scalePercent(scaler);
-	            image.setAbsolutePosition(xpos, toPoint(4f));
-	            xpos = xpos + toPoint(logowidth) + 20;
+	            xpos = xpos - toPoint(logowidth) - 20;
+	            image.setAbsolutePosition(xpos, toPoint(6f));
 	            cb.addImage(image);
 			}
 			
@@ -279,7 +296,7 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 		
 		// Box title	
 		ColumnText ct = new ColumnText(cb);
-		ct.setSimpleColumn(margin, margin, document.getPageSize().getWidth()-margin-margin-toPoint(3f), toPoint(3.5f)+margin, 30f, Element.ALIGN_LEFT);
+		ct.setSimpleColumn(margin, margin, document.getPageSize().getWidth()-margin-margin, toPoint(5f)+margin, 30f, Element.ALIGN_LEFT);
 		//ct.addText(new Phrase(pi.toUpperCase()+"\n", this.titleFont));
 		//ct.addText(new Phrase("\n", this.siteFont));
 		ct.addText(new Phrase(box.toUpperCase(), this.titleFont));
@@ -299,7 +316,7 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 			log.debug("Original y position for box title was: "+(toPoint(3f)+margin));
 			log.debug("Setting y position for box title to "+ypos);
 			ct = new ColumnText(cb);
-			ct.setSimpleColumn(margin, margin, document.getPageSize().getWidth()-margin-margin-toPoint(3f), ypos, 30f, Element.ALIGN_LEFT);
+			ct.setSimpleColumn(margin, margin+toPoint(3.75f), document.getPageSize().getWidth()-margin-margin, toPoint(5.85f)+margin, 30f, Element.ALIGN_LEFT);
 			ct.addText(new Phrase(box.toUpperCase(), this.titleFont));
 			ct.go();	
 		}
@@ -310,8 +327,10 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 		if(showLabelBoundingBox)
 		{
 			cb.saveState();
-			cb.setColorStroke(CMYKColor.BLACK);
+			cb.setColorStroke(CMYKColor.LIGHT_GRAY);
+			cb.setLineDash(5f, 5f);
 			cb.rectangle(pagemargin, pagemargin, document.getPageSize().getWidth()-pagemargin-pagemargin, document.getPageSize().getHeight()-pagemargin-pagemargin);
+			cb.rectangle(pagemargin, pagemargin, document.getPageSize().getWidth()-pagemargin-pagemargin, (document.getPageSize().getHeight()-pagemargin-pagemargin)/2);
 			cb.stroke();
 			cb.restoreState();
 		}
@@ -338,12 +357,12 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 		ct.go();
         
 		// Barcode
-		float barheight = 60;
+		float barheight = 40;
     	ct = new ColumnText(cb);   
 		int llx = (int) (document.getPageSize().getWidth()-margin-toPoint(3f));
-    	int lly = 0;
+    	int lly = toPoint(1f);
     	int urx = (int) this.document.getPageSize().getWidth();
-    	int ury = toPoint(3f);
+    	int ury = toPoint(3.5f);
     	int leading = 1;
 		ct.setSimpleColumn(llx,lly ,urx , ury , leading,  Element.ALIGN_LEFT);
 		ct.setUseAscender(true);
@@ -353,10 +372,10 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 		// Site and sample summary
 		ct = new ColumnText(cb);
 		ct.setSimpleColumn(
-				toPoint(3.25f)+margin, 
-				toPoint(3f), 
-				document.getPageSize().getWidth()-margin, 
-				document.getPageSize().getHeight()-margin, 
+				margin, 
+				margin, 
+				document.getPageSize().getWidth()-margin-margin-toPoint(3f), 
+				margin+toPoint(3.95f), 
 				1f,
 				Element.ALIGN_LEFT);
 		    	
@@ -443,6 +462,9 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 									String extid = TridasUtils.getGenericFieldValueByName(sample, "tellervo.externalID");
 									if(extid!=null && this.summarizationType.equals(LabelSummarizationType.EXTERNALID))
 									{
+										// Strip objcode off the beginning if it matches
+										String plainobjcode = ((TridasObjectEx)myobj).getMultiLevelLabCode();
+										extid = StringUtils.removeStart(extid, plainobjcode).trim();										
 										sampleList.add(extid);			
 									}
 									else
@@ -466,12 +488,12 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 						Chunk sampleListChunk;
 						if(this.summarizationType.equals(LabelSummarizationType.ELEMENT))
 						{
-							// Display as a summerized list of elements
+							// Display as a summarized list of elements
 							sampleListChunk = new Chunk(hyphenSummarize(numlist)+" (n = "+smpCnt+")\n", this.sampleFont);
 						}
 						else
 						{
-							// Display as a summerized list of samples
+							// Display as a summarized list of samples
 							sampleListChunk = new Chunk(hyphenSummarize(sampleList)+" (n = "+smpCnt+")\n", this.sampleFont);
 						}
 						siteParagraph.add(sampleListChunk);

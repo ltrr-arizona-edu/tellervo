@@ -28,8 +28,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -37,9 +35,6 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
-
-import org.tellervo.desktop.tridasv2.doc.Documentation;
 
 import javax.swing.Box;
 import javax.swing.JButton;
@@ -47,9 +42,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
+import javax.swing.JTextPane;
 import javax.swing.JToolBar;
-import javax.swing.ListSelectionModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -69,7 +65,9 @@ import org.tellervo.desktop.bulkdataentry.control.CopySelectedRowsEvent;
 import org.tellervo.desktop.bulkdataentry.control.DeleteODKInstancesEvent;
 import org.tellervo.desktop.bulkdataentry.control.DeleteRowEvent;
 import org.tellervo.desktop.bulkdataentry.control.DisplayColumnChooserEvent;
+import org.tellervo.desktop.bulkdataentry.control.PopulateFromBoxEvent;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
+import org.tellervo.desktop.bulkdataentry.control.PopulateFromProjectEvent;
 import org.tellervo.desktop.bulkdataentry.control.RemoveSelectedEvent;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.bulkdataentry.model.ElementModel;
@@ -82,12 +80,10 @@ import org.tellervo.desktop.bulkdataentry.model.TridasFileList;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator;
 import org.tellervo.desktop.tridasv2.doc.Documentation;
-import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.util.JTableRowHeader;
 import org.tellervo.desktop.util.JTableSpreadsheetAdapter;
-import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.Date;
@@ -96,9 +92,6 @@ import org.tridas.schema.TridasProject;
 import com.dmurph.mvc.model.MVCArrayList;
 
 import net.miginfocom.swing.MigLayout;
-
-import javax.swing.JSplitPane;
-import javax.swing.JTextPane;
 
 
 /**
@@ -119,6 +112,9 @@ public abstract class AbstractBulkImportView extends JPanel{
 	private JButton importSelected;
 	protected JButton copyRow;
 	protected JButton populateFromDB;
+	protected JButton populateFromBox;
+	protected JButton populateFromProject;
+
 	protected JButton populateFromGeonames;
 	protected JButton btnCopy;
 	protected JButton btnPaste;
@@ -182,6 +178,9 @@ public abstract class AbstractBulkImportView extends JPanel{
 		selectNone = new JButton();
 		importSelected = new JButton();
 		populateFromDB = new JButton();
+		populateFromBox = new JButton();
+		populateFromProject = new JButton();
+
 		populateFromGeonames = new JButton();
 		btnODKImport = new JButton();
 		
@@ -445,6 +444,25 @@ public abstract class AbstractBulkImportView extends JPanel{
 				
 			}
 		});
+		
+		populateFromBox.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				populateFromBox();
+				
+			}
+		});
+		
+		populateFromProject.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				populateFromProject();
+				
+			}
+		});
+		
 		
 		populateFromGeonames.addActionListener(new ActionListener(){
 
@@ -721,6 +739,8 @@ public abstract class AbstractBulkImportView extends JPanel{
 		 toolbar.add(argDeleteODKInstances);
 		 toolbar.add(argShowHideColumnButton);
 		 toolbar.add(argPopulateFromDB);
+		 toolbar.add(populateFromBox);
+		 toolbar.add(populateFromProject);
 		 toolbar.add(argPopulateFromGeonames);
 
 		 
@@ -766,6 +786,21 @@ public abstract class AbstractBulkImportView extends JPanel{
 	protected abstract void importSelectedPressed();
 	
 	protected abstract void populateFromDatabase();
+	
+	protected void populateFromBox() {
+		
+		PopulateFromBoxEvent event = new PopulateFromBoxEvent();
+		event.dispatch();
+		
+	}
+	
+	protected void populateFromProject() {
+		
+		PopulateFromProjectEvent event = new PopulateFromProjectEvent();
+		event.dispatch();
+		
+	}
+
 	
 	protected abstract void populateFromGeonames();
 	
@@ -830,6 +865,13 @@ public abstract class AbstractBulkImportView extends JPanel{
 
 		populateFromDB.setToolTipText("Populate table from database");
 		populateFromDB.setIcon(Builder.getIcon("database.png", 22));
+		
+		populateFromBox.setToolTipText("Populate tables from box");
+		populateFromBox.setIcon(Builder.getIcon("box.png", 22));
+		//populateFromBox.setVisible(false);
+		
+		populateFromProject.setToolTipText("Populate tables from project");
+		populateFromProject.setIcon(Builder.getIcon("project.png", 22));
 		
 		populateFromGeonames.setToolTipText("Populate country and town from Geonames");
 		populateFromGeonames.setIcon(Builder.getIcon("georef.png", 22));

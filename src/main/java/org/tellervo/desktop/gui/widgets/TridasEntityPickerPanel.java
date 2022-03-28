@@ -6,26 +6,31 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.event.EventListenerList;
 
-import net.miginfocom.swing.MigLayout;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.desktop.dictionary.Dictionary;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
+import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.ui.Builder;
-import org.tellervo.desktop.gui.widgets.TridasEntityBrowsePanel;
+import org.tellervo.desktop.util.labels.ui.TridasListCellRenderer;
+import org.tellervo.schema.WSIBox;
 import org.tridas.interfaces.ITridas;
 import org.tridas.io.util.TridasUtils;
 import org.tridas.schema.TridasObject;
 import org.tridas.util.TridasObjectEx;
+
+import com.dmurph.mvc.model.MVCArrayList;
+
+import net.miginfocom.swing.MigLayout;
 
 public class TridasEntityPickerPanel extends JPanel implements ActionListener, TridasSelectListener{
 
@@ -45,7 +50,8 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 	private JLabel lblWarning;
 	private JLabel lblIcon;
 	private boolean shutdownOnSelect = true;
-	
+	private MVCArrayList<WSIBox> boxList;
+
 	public static enum EntitiesAccepted {
 		SPECIFIED_ENTITY_ONLY,
 		SPECIFIED_ENTITY_UP_TO_PROJECT,
@@ -68,13 +74,13 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 		expectedClass = clazz;
 				
 
-		setLayout(new MigLayout("hidemode 3", "[::128.00,right][10px,grow,fill]", "[][][][::100px][::100px,grow]"));
+		setLayout(new MigLayout("hidemode 3", "[::128.00,right][10px,grow,fill]", "[][][][][::100px][::100px,grow]"));
 		
 		ButtonGroup group = new ButtonGroup();
 		
 		lblIcon = new JLabel("");
 		lblIcon.setIcon(Builder.getIcon("barcodehd.png", 128));
-		add(lblIcon, "cell 0 0 1 5,alignx right,aligny top");
+		add(lblIcon, "cell 0 0 1 6,alignx right,aligny top");
 		
 		lblWarning = new JLabel("");
 		lblWarning.setForeground(Color.RED);
@@ -97,11 +103,27 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 		add(radPickByHierarchy, "cell 1 2,aligny top");
 		
 		codePanel = new TellervoCodePanel();
-		add(codePanel, "cell 1 3,growx");
+		add(codePanel, "cell 1 4,growx");
 		codePanel.addTridasSelectListener(this);
 		
+		// Set up box list model etc
+		boxList = (MVCArrayList<WSIBox>) Dictionary.getMutableDictionary("boxDictionary");
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(boxList, numSorter);
+	
+		WSIBox[] arr = new WSIBox[boxList.size()];
+		
+		for (int i=0; i<boxList.size(); i++)
+		{
+			arr[i] = boxList.get(i);
+		}
+		TridasListCellRenderer tlcr = new TridasListCellRenderer();
+		
+		
 		browsePanel = new TridasEntityBrowsePanel(clazz, acceptabletype);
-		add(browsePanel, "cell 1 4");
+		add(browsePanel, "cell 1 5");
 		browsePanel.addTridasSelectListener(this);
 
 		
@@ -187,10 +209,12 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 			codePanel.setFocus();
 			
 		}
-		else
+
+		else if (this.radPickByHierarchy.isSelected())
 		{
 			codePanel.setVisible(false);
 			browsePanel.setVisible(true);
+			codePanel.setFocus();
 		}
 		
 		parent.setMinimumSize(new Dimension(600,100));
@@ -203,7 +227,8 @@ public class TridasEntityPickerPanel extends JPanel implements ActionListener, T
 	public void actionPerformed(ActionEvent arg0) {
 		
 		if( (arg0.getActionCommand().equals("pickbycode"))       || 
-		    (arg0.getActionCommand().equals("pickbyhierarchy"))
+		    (arg0.getActionCommand().equals("pickbyhierarchy"))   || 
+		    (arg0.getActionCommand().equals("pickbybox"))
 		  )
 		{
 			showHidePanels();

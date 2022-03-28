@@ -551,7 +551,7 @@ class sample extends sampleEntity implements IDBAccessor {
 					$sql .= "externalid=" . dbHelper::tellervo_pg_escape_string ( $this->getExternalID () ) . ", ";
 					$sql .= "samplestatusid=" . dbHelper::tellervo_pg_escape_string ( $this->getSampleStatus ( true ) ) . ", ";
 					if (isset ( $this->parentEntityArray [0] ))
-						$sql .= "elementid='" . pg_escape_string ( $this->parentEntityArray [0]->getID () ) . ", ";
+						$sql .= "elementid='" . pg_escape_string ( $this->parentEntityArray [0]->getID () ) . "', ";
 					
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= " WHERE sampleid=" . dbHelper::tellervo_pg_escape_string ( $this->getID () );

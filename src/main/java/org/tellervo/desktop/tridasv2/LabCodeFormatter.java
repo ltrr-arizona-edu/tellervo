@@ -23,7 +23,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jfree.util.Log;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.tridasv2.LabCodeFormatter;

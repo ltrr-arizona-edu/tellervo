@@ -37,9 +37,11 @@ import org.tellervo.desktop.bulkdataentry.command.HideColumnWindowCommand;
 import org.tellervo.desktop.bulkdataentry.command.ImportSelectedElementsCommand;
 import org.tellervo.desktop.bulkdataentry.command.ImportSelectedObjectsCommand;
 import org.tellervo.desktop.bulkdataentry.command.ImportSelectedSamplesCommand;
+import org.tellervo.desktop.bulkdataentry.command.PopulateFromBoxCommand;
 import org.tellervo.desktop.bulkdataentry.command.PopulateFromDatabaseCommand;
 import org.tellervo.desktop.bulkdataentry.command.PopulateFromGeonamesCommand;
 import org.tellervo.desktop.bulkdataentry.command.PopulateFromODKCommand;
+import org.tellervo.desktop.bulkdataentry.command.PopulateFromProjectCommand;
 import org.tellervo.desktop.bulkdataentry.command.PrintBarcodesCommand;
 import org.tellervo.desktop.bulkdataentry.command.RemoveSelectedCommand;
 import org.tellervo.desktop.bulkdataentry.command.ShowColumnWindowCommand;
@@ -84,6 +86,9 @@ public class BulkImportController extends FrontController {
 	public static final String SET_DYNAMIC_COMBO_BOX_ELEMENTS = "BULK_IMPORT_SET_DYNAMIC_COMBO_BOX_ELEMENTS";
 	public static final String SET_DYNAMIC_COMBO_BOX_SAMPLES = "BULK_IMPORT_SET_DYNAMIC_COMBO_BOX_SAMPLES";
 	public static final String POPULATE_FROM_DATABASE = "BULK_IMPORT_POPULATE_FROM_DATABASE";
+	public static final String POPULATE_FROM_BOX = "BULK_IMPORT_POPULATE_FROM_BOX";
+	public static final String POPULATE_FROM_PROJECT = "BULK_IMPORT_POPULATE_FROM_PROJECT";
+
 	public static final String POPULATE_FROM_GEONAMES = "BULK_IMPORT_POPULATE_FROM_GEONAMES";
 
 	public static final String BROWSE_GPX_FILE = "BULK_IMPORT_BROWSE_GPX_FILE";
@@ -110,6 +115,8 @@ public class BulkImportController extends FrontController {
 		registerCommand(BROWSE_GPX_FILE, GPXBrowseCommand.class);
 		registerCommand(PRINT_SAMPLE_BARCODES, PrintBarcodesCommand.class);
 		registerCommand(POPULATE_FROM_DATABASE, PopulateFromDatabaseCommand.class);
+		registerCommand(POPULATE_FROM_BOX, PopulateFromBoxCommand.class);
+		registerCommand(POPULATE_FROM_PROJECT, PopulateFromProjectCommand.class);
 		registerCommand(POPULATE_FROM_GEONAMES, PopulateFromGeonamesCommand.class);
 		registerCommand(POPULATE_FROM_ODK_FILE, PopulateFromODKCommand.class);
 		registerCommand(DELETE_ODK_DEFINITIONS, DeleteODKFormDefinitionsCommand.class);

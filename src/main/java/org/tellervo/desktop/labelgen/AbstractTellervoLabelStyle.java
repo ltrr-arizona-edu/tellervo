@@ -38,8 +38,9 @@ public abstract class AbstractTellervoLabelStyle {
 	private String line3TextOverride = null;
 	private String line4TextOverride = null;
 	private String line5TextOverride = null;
-	private boolean isLabelSummarizationTypeConfigurable = false; 
-	
+	private boolean isSampleLabelingTypeChooseable = false; 
+	private Boolean isLabelSummarizationTypeConfigurable = false;
+
 	
 	enum LabelSummarizationType {
 		ELEMENT, SAMPLE, EXTERNALID
@@ -112,6 +113,16 @@ public abstract class AbstractTellervoLabelStyle {
 	public LabelSummarizationType getLabelSummarizationType()
 	{
 		return summarizationType;
+	}
+	
+	public void setIsLabelSummarizationTypeConfigurable(boolean b) {
+
+		this.isLabelSummarizationTypeConfigurable = b;
+		
+	}
+	
+	public Boolean isLabelSummarizationTypeConfigurable() {
+		return this.isLabelSummarizationTypeConfigurable;
 	}
 	
 	/**
@@ -496,14 +507,14 @@ public abstract class AbstractTellervoLabelStyle {
 	}
 	
 	
-	public void setIsLabelSummarizationTypeConfigurable(boolean b)
+	public void setSampleLabelingTypeChooseable(boolean b)
 	{
-		this.isLabelSummarizationTypeConfigurable = b;
+		this.isSampleLabelingTypeChooseable = b;
 	}
 	
-	public boolean isLabelSummarizationTypeConfigurable()
+	public boolean isSampleLabelingTypeChooseable()
 	{
-		return this.isLabelSummarizationTypeConfigurable;
+		return this.isSampleLabelingTypeChooseable;
 	}
 	
 	

@@ -32,6 +32,7 @@ import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasMeasurementSeries;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 
@@ -45,6 +46,18 @@ public class TridasListCellRenderer extends DefaultListCellRenderer {
 
         if(value instanceof WSIBox) {
             value = ((WSIBox) value).getTitle();
+        }
+        
+        if(value instanceof TridasProject) {
+        	
+        	TridasProject p =((TridasProject) value);
+        	String s;
+            s = p.getTitle();
+            if(p.getInvestigator()!=null){
+            	s+=" - "+p.getInvestigator();
+            }
+            
+            value = s;
         }
         
         if(value instanceof TridasMeasurementSeries){

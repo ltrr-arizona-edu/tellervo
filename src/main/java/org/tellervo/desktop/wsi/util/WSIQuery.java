@@ -1,12 +1,10 @@
 package org.tellervo.desktop.wsi.util;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tellervo.desktop.curation.BoxCuration;
 import org.tellervo.desktop.tridasv2.TridasComparator;
 import org.tellervo.desktop.wsi.tellervo.SearchParameters;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
@@ -16,8 +14,10 @@ import org.tellervo.schema.SearchOperator;
 import org.tellervo.schema.SearchParameterName;
 import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
+import org.tellervo.schema.WSIBox;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasObject;
+import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasSample;
 
 public class WSIQuery {
@@ -112,6 +112,139 @@ public class WSIQuery {
 		if(!dialog.isSuccessful()) 
 		{ 
 			log.error("Error getting samples");
+			return null;
+		}
+		
+		List<TridasObject> obList = resource.getAssociatedResult();
+		
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(obList, numSorter);
+		
+		return obList;
+	}
+	
+	
+	public static List<TridasObject> getSamplesOfBox(WSIBox box)
+	{
+		if(box==null) return null;
+		
+		if(!box.isSetIdentifier()) return null;
+		
+		// Find all samples for a box 
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
+    	param.addSearchConstraint(SearchParameterName.BOXID, SearchOperator.EQUALS, box.getIdentifier().getValue().toString());
+
+		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
+		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+		
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting samples");
+			return null;
+		}
+		
+		List<TridasObject> obList = resource.getAssociatedResult();
+		
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(obList, numSorter);
+		
+		return obList;
+	}
+	
+	public static List<TridasObject> getSamplesOfProject(TridasProject project)
+	{
+		if(project==null) return null;
+		
+		if(!project.isSetIdentifier()) return null;
+		
+		// Find all samples for a box 
+    	SearchParameters param = new SearchParameters(SearchReturnObject.SAMPLE);
+    	param.addSearchConstraint(SearchParameterName.PROJECTID, SearchOperator.EQUALS, project.getIdentifier().getValue().toString());
+
+		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
+		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+		
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting samples");
+			return null;
+		}
+		
+		List<TridasObject> obList = resource.getAssociatedResult();
+		
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(obList, numSorter);
+		
+		return obList;
+	}
+	
+	public static List<TridasObject> getObjectsOfProject(TridasProject project)
+	{
+		if(project==null) return null;
+		
+		if(!project.isSetIdentifier()) return null;
+		
+		// Find all samples for a box 
+    	SearchParameters param = new SearchParameters(SearchReturnObject.OBJECT);
+    	param.addSearchConstraint(SearchParameterName.PROJECTID, SearchOperator.EQUALS, project.getIdentifier().getValue().toString());
+
+		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
+		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+		
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting objects");
+			return null;
+		}
+		
+		List<TridasObject> obList = resource.getAssociatedResult();
+		
+		TridasComparator numSorter = new TridasComparator(TridasComparator.Type.LAB_CODE_THEN_TITLES, 
+				TridasComparator.NullBehavior.NULLS_LAST, 
+				TridasComparator.CompareBehavior.AS_NUMBERS_THEN_STRINGS);
+		Collections.sort(obList, numSorter);
+		
+		return obList;
+	}
+	
+	public static List<TridasObject> getElementsOfProject(TridasProject project)
+	{
+		if(project==null) return null;
+		
+		if(!project.isSetIdentifier()) return null;
+		
+		// Find all samples for a box 
+    	SearchParameters param = new SearchParameters(SearchReturnObject.ELEMENT);
+    	param.addSearchConstraint(SearchParameterName.PROJECTID, SearchOperator.EQUALS, project.getIdentifier().getValue().toString());
+
+		EntitySearchResource<TridasObject> resource = new EntitySearchResource<TridasObject>(param, TridasObject.class);
+		resource.setProperty(TellervoResourceProperties.ENTITY_REQUEST_FORMAT, TellervoRequestFormat.COMPREHENSIVE);
+		
+		TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(resource);
+		resource.query();	
+		dialog.setVisible(true);
+		
+		if(!dialog.isSuccessful()) 
+		{ 
+			log.error("Error getting objects");
 			return null;
 		}
 		
