@@ -20,8 +20,6 @@
  ******************************************************************************/
 package org.tellervo.desktop.bulkdataentry.command;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -31,7 +29,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -51,16 +48,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.filefilter.SuffixFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.HttpResponseException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.ContentEncodingHttpClient;
-import org.jdom.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.bulkdataentry.control.PopulateFromODKFileEvent;
@@ -78,25 +65,18 @@ import org.tellervo.desktop.bulkdataentry.view.ODKFileDownloadProgress;
 import org.tellervo.desktop.bulkdataentry.view.ODKParserLogViewer;
 import org.tellervo.desktop.bulkdataentry.view.odkwizard.ODKImportWizard;
 import org.tellervo.desktop.core.App;
-import org.tellervo.desktop.gui.BugDialog;
 import org.tellervo.desktop.odk.ODKParser;
 import org.tellervo.desktop.odk.ODKParser.ODKFileType;
 import org.tellervo.desktop.odk.fields.ODKFieldInterface;
 import org.tellervo.desktop.odk.fields.ODKFields;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.ui.Alert;
-import org.tellervo.desktop.util.BugReport;
 import org.tellervo.desktop.util.DictionaryUtil;
-import org.tellervo.desktop.versioning.Build;
-import org.tellervo.desktop.wsi.WebJaxbAccessor;
 import org.tellervo.desktop.wsi.tellervo.TridasElementTemporaryCacher;
-import org.tellervo.desktop.wsi.util.WSCookieStoreHandler;
 import org.tellervo.schema.UserExtendableEntity;
 import org.tellervo.schema.WSIUserDefinedField;
 import org.tridas.interfaces.ITridas;
-import org.tridas.io.util.ITRDBTaxonConverter;
 import org.tridas.io.util.TridasUtils;
-import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasLocationType;
 import org.tridas.schema.NormalTridasShape;
 import org.tridas.schema.TridasElement;
@@ -109,14 +89,14 @@ import org.tridas.util.TridasObjectEx;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import au.com.bytecode.opencsv.CSVWriter;
-
 import com.dmurph.mvc.IllegalThreadException;
 import com.dmurph.mvc.IncorrectThreadException;
 import com.dmurph.mvc.MVC;
 import com.dmurph.mvc.MVCEvent;
 import com.dmurph.mvc.control.ICommand;
 import com.dmurph.mvc.model.MVCArrayList;
+
+import au.com.bytecode.opencsv.CSVWriter;
 
 
 public class PopulateFromODKCommand implements ICommand {

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.plexus.util.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +77,7 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 				ItemType.BOX,
 				"Country",
 				"State - Type",
-				null,
+				"Font pt",
 				"Box name",
 				"Agency");
 		
@@ -161,7 +162,6 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 		
 		String country = "";
 		String stateType = "";
-		String pi ="";
 		String box ="";
 		ArrayList<TridasProject> projectList = null;
 		
@@ -189,7 +189,6 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 			TridasProject firstProject = projectList.get(0);
 			// Variables
 	
-	    	pi = firstProject.getInvestigator();
 	    	
 		}
 		
@@ -204,7 +203,25 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 		}
 		if(getLine3OverrideText()!=null)
 		{
-			pi = getLine3OverrideText();
+			Integer fontsize = 8;
+			try{
+				fontsize = Integer.parseInt(getLine3OverrideText());
+			} catch (NumberFormatException e) {
+				
+			}
+			
+			if(fontsize <4)
+			{
+				fontsize = 4;
+			}
+			if(fontsize >10)
+			{
+				fontsize = 10;
+			}
+			
+			sampleFont = new Font(Font.FontFamily.HELVETICA, fontsize.floatValue());
+			siteFont = new Font(Font.FontFamily.HELVETICA, fontsize.floatValue(), Font.BOLD);
+
 		}
 		box = b.getTitle();
 		if(getLine4OverrideText()!=null)
@@ -443,7 +460,15 @@ public class BoxLabelBase extends AbstractTellervoLabelStyle {
 									String extid = TridasUtils.getGenericFieldValueByName(sample, "tellervo.externalID");
 									if(extid!=null && this.summarizationType.equals(LabelSummarizationType.EXTERNALID))
 									{
-										sampleList.add(extid);			
+										if(StringUtils.startsWith(extid, ((TridasObjectEx)myobj).getMultiLevelLabCode()))
+										{
+											String id = extid.substring(((TridasObjectEx)myobj).getMultiLevelLabCode().length()).trim();
+											sampleList.add(id);
+										}
+										else
+										{
+											sampleList.add(extid);
+										}
 									}
 									else
 									{
