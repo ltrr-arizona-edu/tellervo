@@ -294,7 +294,8 @@ public class ElementView extends AbstractBulkImportView{
 	
 	@Override
 	protected JToolBar setupToolbar(JButton argCopyButton, JButton argPasteButton, JButton argPasteAppendButton, JButton argAddRowButton, JButton argDeleteRowButton, 
-			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances, JButton argODKImport){
+			JButton argCopyRowButton, JButton argShowHideColumnButton, JButton argPopulateFromDB, JButton argPopulateFromGeonames, JButton argDeleteODKInstances, 
+			JButton argODKImport){
 
 
 		JToolBar toolbar = new JToolBar();
@@ -311,6 +312,7 @@ public class ElementView extends AbstractBulkImportView{
 	    toolbar.add(argDeleteODKInstances);
 
 		toolbar.add(argPopulateFromDB);
+		toolbar.add(populateFromProject);
 		toolbar.add(argPopulateFromGeonames);
 
 		browseGPX = new JButton();

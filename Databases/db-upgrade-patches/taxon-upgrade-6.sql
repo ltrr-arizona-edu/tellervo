@@ -3,11 +3,21 @@ ALTER TABLE tlkptaxon ADD COLUMN newlabel VARCHAR;
 ALTER TABLE tlkptaxon ADD COLUMN htmllabel VARCHAR;
 INSERT INTO tlkptaxonrank (taxonrankid, taxonrank, rankorder) VALUES (19,'subfamily', 60);
 
+-- Fixes for taxa no longer represented
+UPDATE tblelement SET taxonid=1011 where taxonid=1016;
+UPDATE tblelement SET taxonid=4 where taxonid=2;
+UPDATE tblelement SET taxonid=91 WHERE taxonid=87;
+UPDATE tblelement SET taxonid=115 WHERE taxonid=259;
+UPDATE tblelement SET taxonid=469 WHERE taxonid=812;
+
 -- Higher taxa no longer used
 DELETE FROM tlkptaxon where taxonid=807;
 DELETE FROM tlkptaxon where taxonid=805;
+
+DELETE FROM tlkptaxon where taxonid=2;
 DELETE FROM tlkptaxon where taxonid=87;
 DELETE FROM tlkptaxon where taxonid=259;
+DELETE FROM tlkptaxon where taxonid=812;
 DELETE FROM tlkptaxon where taxonid=151;
 DELETE FROM tlkptaxon where taxonid=733;
 DELETE FROM tlkptaxon where taxonid=266;
@@ -17,8 +27,8 @@ DELETE FROM tlkptaxon where taxonid=129;
 DELETE FROM tlkptaxon where taxonid=39;
 DELETE FROM tlkptaxon where taxonid=1025;
 DELETE FROM tlkptaxon where taxonid=390;
-DELETE FROM tlkptaxon where taxonid=2;
-DELETE FROM tlkptaxon where taxonid=812;
+
+
 DELETE FROM tlkptaxon where taxonid=806;
 DELETE FROM tlkptaxon where taxonid=603;
 DELETE FROM tlkptaxon where taxonid=181;
@@ -40,11 +50,15 @@ DELETE FROM tlkptaxon WHERE taxonid=352;
 
 -- Clear out old CoL IDs
 ALTER TABLE tlkptaxon drop constraint colid;
+ALTER TABLE tlkptaxon drop constraint uniq_colid;
 UPDATE tlkptaxon set colid='';
 UPDATE tlkptaxon set colparentid='';
 
 
 -- Set new CoL IDs 
+
+UPDATE tlkptaxon SET colid='4QD8' WHERE taxonid=304;
+
 UPDATE tlkptaxon SET colid='627WF' WHERE taxonid=6;
 UPDATE tlkptaxon SET colid='8K9Y' WHERE taxonid=7;
 UPDATE tlkptaxon SET colid='63Z5D' WHERE taxonid=8;
@@ -369,7 +383,6 @@ UPDATE tlkptaxon SET colid='6KH48' WHERE taxonid=299;
 UPDATE tlkptaxon SET colid='4PHG' WHERE taxonid=300;
 UPDATE tlkptaxon SET colid='3GJJK' WHERE taxonid=301;
 UPDATE tlkptaxon SET colid='BZ' WHERE taxonid=267;
-UPDATE tlkptaxon SET colid='4QD8' WHERE taxonid=304;
 UPDATE tlkptaxon SET colid='3H2VN' WHERE taxonid=305;
 UPDATE tlkptaxon SET colid='4RG7' WHERE taxonid=725;
 UPDATE tlkptaxon SET colid='3HKMT' WHERE taxonid=726;
@@ -902,6 +915,9 @@ UPDATE tlkptaxon SET colid='5D648' WHERE taxonid=1030;
 UPDATE tlkptaxon SET colid='J39' WHERE taxonid=709;
 UPDATE tlkptaxon SET colid='8BDZ' WHERE taxonid=710;
 
+
+UPDATE tlkptaxon SET colid='4J2DL' WHERE taxonid=2014;
+UPDATE tlkptaxon SET colid='4J2J9' WHERE taxonid=2015;
 UPDATE tlkptaxon SET colid='4J2CF' WHERE taxonid=2016;
 UPDATE tlkptaxon SET colid='8KC2' WHERE taxonid=2017;
 UPDATE tlkptaxon SET colid='T8' WHERE taxonid=2018;
@@ -910,16 +926,19 @@ UPDATE tlkptaxon SET colid='PXQ' WHERE taxonid=2020;
 UPDATE tlkptaxon SET colid='65DRF' WHERE taxonid=2021;
 UPDATE tlkptaxon SET colid='6NGHS' WHERE taxonid=2022;
 UPDATE tlkptaxon SET colid='4J24S' WHERE taxonid=2023;
-
 UPDATE tlkptaxon SET colid='4J2G5' WHERE taxonid=2024;
+
 
 
 -- Rank changes
 UPDATE tlkptaxon SET colid='JP8', taxonrankid=19 where taxonid=71;
 
--- Update labels and parent IDs 
+-- Update labels and parent IDs
+UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='Ebenaceae', colparentid='625QY' WHERE colid='9JQ'; 
+UPDATE tlkptaxon SET newlabel='Casuarinaceae R. Br.', htmllabel='Casuarinaceae R. Br.', colparentid='384' WHERE colid='7SM';
+UPDATE tlkptaxon SET newlabel='Pinus occidentalis Sw.', htmllabel='<i>Pinus occidentalis</i> Sw.', colparentid='6QPY' WHERE colid='4J2DL';
+UPDATE tlkptaxon SET newlabel='Pinus taeda L.', htmllabel='<i>Pinus taeda/i> L.', colparentid='6QPY' WHERE colid='4J2J9';
 UPDATE tlkptaxon SET newlabel='Pinus resinosa Aiton', htmllabel='<i>Pinus resinosa</i> Aiton', colparentid='6QPY' WHERE colid='4J2G5';
-
 UPDATE tlkptaxon SET newlabel='Milicia excelsa (Welw.) C. C. Berg', htmllabel='<i>Milicia excelsa</i> (Welw.) C. C. Berg', colparentid='5SSS' WHERE colid='43CGC';
 UPDATE tlkptaxon SET newlabel='Pinus clausa (Chapm. ex Engelm.) Sarg.', htmllabel='<i>Pinus clausa</i> (Chapm. ex Engelm.) Sarg.', colparentid='6QPY' WHERE colid='4J24S';
 UPDATE tlkptaxon SET newlabel='Pinus montezumae Lamb.', htmllabel='<i>Pinus montezumae</i> Lamb.', colparentid='6QPY' WHERE colid='4J2CF';
@@ -929,7 +948,6 @@ UPDATE tlkptaxon SET newlabel='Aextoxicaceae Engl. & Gilg', htmllabel='Aextoxica
 UPDATE tlkptaxon SET newlabel='Aextoxicon Ruiz & Pav.', htmllabel='<i>Aextoxicon</i> Ruiz & Pav.', colparentid='649' WHERE colid='PXQ';
 UPDATE tlkptaxon SET newlabel='Aextoxicon punctatum Ruiz & Pav.', htmllabel='<i>Aextoxicon punctatum</i> Ruiz & Pav.', colparentid='PXQ' WHERE colid='65DRF';
 UPDATE tlkptaxon SET newlabel='Juniperus flaccida Schltdl.', htmllabel='<i>Juniperus flaccida</i> Schltdl.', colparentid='56YL' WHERE colid='6NGHS';
-
 UPDATE tlkptaxon SET newlabel='Ebenaceae', htmllabel='Ebenaceae', colparentid='625QY' WHERE colid='9JQ';
 UPDATE tlkptaxon SET newlabel='Hippocastanoideae Burnett', htmllabel='Hippocastanoideae Burnett', colparentid='FY3' WHERE colid='JP8';
 UPDATE tlkptaxon SET newlabel='Platanus racemosa Nutt. ex Audubon', htmllabel='<i>Platanus racemosa</i> Nutt. ex Audubon', colparentid='6RKR' WHERE colid='6VNXT';
@@ -1807,18 +1825,290 @@ ALTER TABLE tlkptaxon ADD CONSTRAINT "uniq_colid" UNIQUE (colid);
 -- Fix element table to include new colid
 DROP TRIGGER update_element_rebuildmetacache ON tblelement;
 ALTER TABLE tblelement ADD COLUMN colid VARCHAR;
+
+
+CREATE OR REPLACE FUNCTION cpgdb.getvmeasurementsummaryinfo(uuid) RETURNS public.typvmeasurementsummaryinfo
+    LANGUAGE plpgsql STABLE
+    AS $_$
+DECLARE
+   VMID ALIAS FOR $1;
+   numrows integer;
+   taxondepth integer;
+
+   curtf text;
+   prevtf text;
+
+   rec record;
+   curtaxa typfulltaxonomy;
+   prevtaxa typfulltaxonomy;
+
+   ret typVMeasurementSummaryInfo;   
+BEGIN
+   ret.VMeasurementID := VMID;
+   numrows := 0;
+
+   FOR rec IN SELECT s.code 
+	FROM tblVMeasurementDerivedCache d
+	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
+	INNER JOIN tblRadius r on r.radiusID = m.radiusID
+	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
+	INNER JOIN tblElement t on t.elementID = sp.elementID
+	INNER JOIN tblObject s on s.objectID = t.objectID
+	WHERE d.VMeasurementID = VMID
+	GROUP BY(s.code)   
+   LOOP
+      IF numrows = 0 THEN
+         ret.objectCode = rec.code;
+      ELSE
+         ret.objectCode = ret.objectCode || ';' || rec.code;
+      END IF;
+      numrows := numrows + 1;
+   END LOOP;
+   ret.objectCount = numrows;   
+
+   numrows := 0;
+   FOR rec IN SELECT txbasic.*, cpgdb.qryTaxonomy(txbasic.taxonID) as tx FROM
+ 	(SELECT t.taxonID::varchar FROM tblVMeasurementDerivedCache d
+	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
+	INNER JOIN tblRadius r on r.radiusID = m.radiusID
+	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
+	INNER JOIN tblElement t on t.elementID = sp.elementID
+	INNER JOIN tlkpTaxon tx on tx.taxonID = t.taxonID
+	WHERE d.VMeasurementID = VMID
+	GROUP BY(t.taxonID)) as txbasic
+   LOOP
+      curtaxa := rec.tx;
+
+      IF numrows = 0 THEN
+         taxondepth := 15;
+         LOOP
+            curtf := cpgdb._getTaxonForDepth(taxondepth, curtaxa);
+            EXIT WHEN curtf IS NOT NULL;
+            taxondepth := taxondepth - 1;
+         END LOOP;
+      ELSE
+         LOOP
+            curtf := cpgdb._getTaxonForDepth(taxondepth, curtaxa);
+            prevtf := cpgdb._getTaxonForDepth(taxondepth, prevtaxa);            
+            EXIT WHEN curtf = prevtf OR taxondepth = 1;
+            taxondepth := taxondepth - 1;
+         END LOOP;
+      END IF;
+
+      numrows := numrows + 1;
+      prevtaxa := curtaxa;
+   END LOOP;
+
+   ret.taxonCount := numrows;
+   ret.commonTaxonName := curtf;
+   
+   RETURN ret;
+END;
+$_$;
+
+
+CREATE OR REPLACE FUNCTION cpgdb.ElementLocationChangedTrigger() RETURNS trigger AS $$
+DECLARE
+   vmid tblVMeasurement.VMeasurementID%TYPE;
+   newextent geometry;
+BEGIN
+   -- no changes? don't bother!
+   IF NEW.locationgeometry = OLD.locationgeometry THEN
+      RETURN NEW;
+   END IF;
+
+   -- update all child vmeasurement extents
+   FOR vmid IN SELECT vmeasurementID FROM cpgdb.FindChildrenOf('Element', NEW.elementID) LOOP
+      -- Calculate extent of vmeasurement by looking up locations of all associated direct Measurements
+      SELECT st_setsrid(extent(tblelement.locationgeometry)::geometry,4326)
+         INTO  newextent
+         FROM  tblelement, tblsample, tblradius, tblMeasurement, tblvmeasurement
+         WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
+         AND   tblmeasurement.radiusid=tblradius.radiusid
+         AND   tblradius.sampleid=tblsample.sampleid
+         AND   tblsample.elementid=tblelement.elementid
+         AND   tblvmeasurement.vmeasurementid
+            IN (SELECT vMeasurementid
+                   FROM  cpgdb.FindVMParents(vmid, true)
+                   WHERE FindVMParents.op='Direct');
+
+      -- set the extent in the metacache
+      UPDATE tblVMeasurementMetaCache SET vmextent=newextent WHERE vMeasurementID=vmid;
+
+   END LOOP;
+
+   RETURN NEW;
+EXCEPTION
+   WHEN internal_error THEN
+      RAISE NOTICE 'WARNING: Failed to update child extents for %', NEW.elementID;
+      RETURN NEW;
+END;
+$$ LANGUAGE 'plpgsql';
+
+DROP TRIGGER update_vmeasurementcache_extents ON tblElement;
+CREATE TRIGGER update_vmeasurementcache_extents AFTER UPDATE ON tblElement
+   FOR EACH ROW EXECUTE PROCEDURE cpgdb.ElementLocationChangedTrigger();
+
+
+
+
+
+CREATE OR REPLACE FUNCTION cpgdb.createmetacache(uuid)
+  RETURNS tblvmeasurementmetacache AS
+$BODY$
+DECLARE
+   vmid ALIAS FOR $1;
+   op varchar;
+   vmresult tblVMeasurementResult%ROWTYPE;
+   ret tblVMeasurementMetaCache%ROWTYPE;
+BEGIN
+   -- RAISE NOTICE 'Creating metacache for %', vmid;
+
+   -- acquire the vMeasurementresult
+   BEGIN
+      SELECT * INTO vmresult FROM cpgdb.GetVMeasurementResult(vmid);
+   EXCEPTION WHEN OTHERS THEN
+      RAISE NOTICE 'CreateMetaCache(%) failed: VMeasurement is malformed or does not exist', vmid;
+      RETURN NULL;
+   END;
+
+   IF NOT FOUND THEN
+      RETURN NULL;
+   END IF;
+
+   ret.VMeasurementID := vmid;
+   ret.StartYear := vmresult.StartYear;
+   ret.datingTypeID := vmresult.datingTypeID;
+
+   -- Calculate number of readings
+   SELECT COUNT(*) INTO ret.ReadingCount
+      FROM tblVMeasurementReadingResult WHERE VMeasurementResultID = vmresult.VMeasurementResultID;
+
+   -- Calculate number of measurements
+   SELECT FIRST(tlkpVMeasurementOp.Name), COUNT(tblVMeasurementGroup.VMeasurementID) 
+      INTO op, ret.MeasurementCount
+      FROM tblVMeasurement 
+      INNER JOIN tlkpVMeasurementOp ON tblVMeasurement.VMeasurementOpID = tlkpVMeasurementOp.VMeasurementOpID 
+      LEFT JOIN tblVMeasurementGroup ON tblVMeasurement.VMeasurementID = tblVMeasurementGroup.VMeasurementID 
+      WHERE tblVMeasurement.VMeasurementID = vmid;
+
+   -- For a Direct VMeasurement, force 1.
+   IF op = 'Direct' THEN
+      ret.MeasurementCount := 1;
+   END IF;
+
+   -- Delete and populate the cache
+   DELETE FROM tblVMeasurementMetaCache WHERE VMeasurementID = vmid;
+   INSERT INTO tblVMeasurementMetaCache(VMeasurementID, StartYear, ReadingCount, MeasurementCount, DatingTypeID)
+      VALUES (ret.VMeasurementID, ret.StartYear, ret.ReadingCount, ret.MeasurementCount, ret.datingTypeID);
+
+   -- Clean up
+   DELETE FROM tblVMeasurementResult WHERE VMeasurementResultID = vmresult.VMeasurementResultID;
+
+   -- Clear out our tblVMeasurementDerivedCache for this VMeasurement
+   DELETE FROM tblVMeasurementDerivedCache WHERE VMeasurementID = vmid;
+   -- Then, populate it.
+   INSERT INTO tblVMeasurementDerivedCache(VMeasurementID,MeasurementID) 
+      SELECT vmid,Measurement.MeasurementID FROM cpgdb.FindVMParentMeasurements(vmid) Measurement;
+
+   -- Calculate extent of vmeasurement by looking up locations of all associated direct Measurements
+  -- SELECT st_setsrid(extent(tblelement.locationgeometry)::geometry,4326)
+   --   INTO  ret.vmextent
+    --  FROM  tblelement, tblsample, tblradius, tblMeasurement, tblvmeasurement
+    --  WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
+    --  AND   tblmeasurement.radiusid=tblradius.radiusid
+    --  AND   tblradius.sampleid=tblsample.sampleid
+    --  AND   tblsample.elementid=tblelement.elementid
+    --  AND   tblvmeasurement.vmeasurementid
+      --      IN (SELECT vMeasurementid
+      --             FROM  cpgdb.FindVMParents(vmid, true)
+       --            WHERE op='Direct');
+
+   -- Calculate extent using all associated element and object geometries
+   IF op = 'Direct' THEN
+   RAISE NOTICE 'Getting extents from element and object.  Measurement count is %', ret.MeasurementCount;
+	   SELECT st_setsrid(extent(st_collect(tblelement.locationgeometry, tblobject.locationgeometry)), 4326)
+	      INTO  ret.vmextent
+	      FROM  tblobject, tblelement, tblsample, tblradius, tblMeasurement, tblvmeasurement
+	      WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid
+	      AND   tblmeasurement.radiusid=tblradius.radiusid
+	      AND   tblradius.sampleid=tblsample.sampleid
+	      AND   tblsample.elementid=tblelement.elementid
+	      AND   tblelement.objectid=tblobject.objectid
+	      AND   tblvmeasurement.vmeasurementid
+		    IN (SELECT vMeasurementid
+			   FROM  cpgdb.FindVMParents(vmid, true)
+			   WHERE FindVMParents.op='Direct');
+   
+   -- Calculate extent of vmeasurement by looking up locations of all associated direct VMeasurements
+   ELSE 
+	RAISE NOTICE 'Getting extent from component vmeasurements';
+	RAISE NOTICE 'Find all parents of %', vmid;
+	RAISE NOTICE 'Number of measurements is %',ret.MeasurementCount;
+	   SELECT _setsrid(extent(tblvmeasurementmetacache.vmextent)::geometry, 4326)
+	   INTO  ret.vmextent
+	   FROM  tblvmeasurementmetacache
+	   WHERE tblvmeasurementmetacache.vmeasurementid
+		 IN (SELECT vMeasurementid
+		   FROM  cpgdb.FindVMParents(vmid, false));
+   END IF;
+
+
+   RAISE NOTICE 'Extent is %', ret.vmextent;
+
+   -- Store extent info
+   UPDATE tblVMeasurementMetaCache SET vmextent = ret.vmextent WHERE VMeasurementID = ret.VMeasurementID;
+
+   -- Now, get taxon and label data and update that
+   SELECT INTO ret.objectCode, ret.objectCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix 
+       s.objectCode,s.objectCount,s.commonTaxonName,s.taxonCount,cpgdb.GetVMeasurementPrefix(vmid) AS prefix
+       FROM cpgdb.getVMeasurementSummaryInfo(vmid) AS s;
+   UPDATE tblVMeasurementMetaCache SET (objectCode, objectCount, commonTaxonName, taxonCount, prefix) =
+       (ret.objectCode, ret.objectCount, ret.CommonTaxonName, ret.taxonCount, ret.prefix)
+       WHERE VMeasurementID = vmid;
+
+   -- Return result
+   RETURN ret;
+END;
+
+$BODY$
+  LANGUAGE 'plpgsql' VOLATILE
+  COST 100;
+
+CREATE OR REPLACE FUNCTION cpgdb.rebuildmetacacheforelement()
+  RETURNS trigger AS
+$BODY$DECLARE
+  uid uuid;
+BEGIN
+FOR uid IN SELECT vmeasurementid FROM cpgdb.FindChildrenOf('Element', NEW.elementid)
+  LOOP
+    PERFORM cpgdb.createmetacache(uid);
+  END LOOP;
+RETURN new;
+END;$BODY$
+  LANGUAGE plpgsql VOLATILE
+  COST 100;
+CREATE TRIGGER update_element_rebuildmetacache
+  AFTER INSERT OR UPDATE
+  ON tblelement
+  FOR EACH ROW
+  EXECUTE PROCEDURE cpgdb.rebuildmetacacheforelement();
+
+
 UPDATE tblelement SET colid = tlkptaxon.colid FROM tlkptaxon WHERE tblelement.taxonid=tlkptaxon.taxonid;
 CREATE TRIGGER update_element_rebuildmetacache AFTER INSERT OR UPDATE ON tblelement FOR EACH ROW EXECUTE PROCEDURE cpgdb.rebuildmetacacheforelement();
-
-ALTER TABLE tlkptaxon DROP CONSTRAINT "pkey_taxon";
-DROP VIEW vwtblelement;
-DROP VIEW vwtlkptaxon;
-DROP VIEW IF EXISTS vwportalcomb; 
-
-DROP VIEW IF EXISTS vwportaldata1;
-DROP VIEW IF EXISTS vwportaldata2;
-
-
+	
+	ALTER TABLE tlkptaxon DROP CONSTRAINT "pkey_taxon";
+	DROP VIEW vwtblelement;
+	DROP VIEW vwtblelement2;
+	DROP VIEW vwtlkptaxon;
+	DROP VIEW IF EXISTS vwportalcomb; 
+	DROP VIEW IF EXISTS vwportaldata1;
+	DROP VIEW IF EXISTS vwportaldata2;
+	
+	DROP VIEW IF EXISTS portal.vwportalcomb; 
+	DROP VIEW IF EXISTS portal.vwportaldata1;
+	DROP VIEW IF EXISTS portal.vwportaldata2;
 
 
 ALTER TABLE tlkptaxon DROP COLUMN taxonid;
@@ -1847,6 +2137,7 @@ DROP VIEW vw_elementtoradius;
 
 ALTER TABLE tblelement DROP COLUMN taxonid;
 ALTER TABLE tblelement RENAME COLUMN colid TO taxonid;
+UPDATE tblelement SET taxonid='P' WHERE taxonid='';
 ALTER TABLE public.tblelement ADD CONSTRAINT fkey_element_taxon FOREIGN KEY (taxonid) REFERENCES public.tlkptaxon (taxonid) ON UPDATE NO ACTION ON DELETE NO ACTION;
 
 
@@ -1866,8 +2157,8 @@ CREATE VIEW vwtblelement AS
     e.lastmodifiedtimestamp,
     e.locationgeometry,
     ( SELECT st_asgml(3, e.locationgeometry, 15, 1) AS st_asgml) AS gml,
-    xmin(e.locationgeometry::box3d) AS longitude,
-    ymin(e.locationgeometry::box3d) AS latitude,
+    st_xmin(e.locationgeometry::box3d) AS longitude,
+    st_ymin(e.locationgeometry::box3d) AS latitude,
     e.islivetree,
     e.originaltaxonname,
     e.locationtypeid,
@@ -1916,6 +2207,76 @@ CREATE VIEW vwtblelement AS
      LEFT JOIN tlkpunit unit ON e.units = unit.unitid
      LEFT JOIN vwtlkptaxon vwt ON e.taxonid = vwt.taxonid;
 
+CREATE VIEW vwtblelement2 AS 
+ SELECT ( SELECT findobjecttoplevelancestor.objectid
+           FROM cpgdb.findobjecttoplevelancestor(e.objectid) 
+           findobjecttoplevelancestor(objectid, title, code, createdtimestamp, 
+           lastmodifiedtimestamp, locationgeometry, locationtypeid, locationprecision, 
+           locationcomment, creator, owner, parentobjectid, description, objecttypeid, 
+           coveragetemporalid, coveragetemporalfoundationid, comments, coveragetemporal, 
+           coveragetemporalfoundation, locationaddressline1, locationaddressline2, 
+           locationcityortown, locationstateprovinceregion, locationpostalcode, 
+           locationcountry, locationcountry_1, vegetationtype, domainid, projectid)) AS tlobjectid,
+    e.comments,
+    dom.domainid,
+    dom.domain,
+    e.elementid,
+    e.locationprecision,
+    e.code AS title,
+    e.code,
+    e.createdtimestamp,
+    e.lastmodifiedtimestamp,
+    e.locationgeometry,
+    ( SELECT st_asgml(3, e.locationgeometry, 15, 1) AS st_asgml) AS gml,
+    st_xmin(e.locationgeometry::box3d) AS longitude,
+    st_ymin(e.locationgeometry::box3d) AS latitude,
+    e.islivetree,
+    e.originaltaxonname,
+    e.locationtypeid,
+    e.locationcomment,
+    e.locationaddressline1,
+    e.locationaddressline2,
+    e.locationcityortown,
+    e.locationstateprovinceregion,
+    e.locationpostalcode,
+    e.locationcountry,
+    array_to_string(e.file, '><'::text) AS file,
+    e.description,
+    e.processing,
+    e.marks,
+    e.diameter,
+    e.width,
+    e.height,
+    e.depth,
+    e.unsupportedxml,
+    e.objectid,
+    e.elementtypeid,
+    e.authenticity,
+    e.elementshapeid,
+    shape.elementshape,
+    tbltype.elementtype,
+    loctype.locationtype,
+    e.altitude,
+    e.slopeangle,
+    e.slopeazimuth,
+    e.soildescription,
+    e.soildepth,
+    e.bedrockdescription,
+    vwt.taxonid,
+    vwt.taxonlabel,
+    vwt.parenttaxonid,
+    vwt.colid,
+    vwt.colparentid,
+    vwt.taxonrank,
+    unit.unit AS units,
+    unit.unitid
+FROM tblelement e
+     LEFT JOIN tlkpdomain dom ON e.domainid = dom.domainid
+     LEFT JOIN tlkpelementshape shape ON e.elementshapeid = shape.elementshapeid
+     LEFT JOIN tlkpelementtype tbltype ON e.elementtypeid = tbltype.elementtypeid
+     LEFT JOIN tlkplocationtype loctype ON e.locationtypeid = loctype.locationtypeid
+     LEFT JOIN tlkpunit unit ON e.units = unit.unitid
+     LEFT JOIN vwtlkptaxon vwt ON e.taxonid = vwt.taxonid;
 
 
 CREATE VIEW vw_elementtoradius AS 
@@ -2104,4 +2465,168 @@ others.e_height,
    FROM tblobject tlo
 LEFT JOIN vw_elementtoradius others ON others.tlo_objectid = tlo.objectid;
 
+DROP FUNCTION cpgdb.qrytaxonflat1;
+DROP FUNCTION cpgdb.qrytaxonflat2;
+DROP FUNCTION cpgdb.qrytaxonomy;
+DROP FUNCTION cpgdb._gettaxonfordepth(integer, typfulltaxonomy);
 
+
+DROP TYPE typtaxonrankname;
+DROP TYPE typtaxonflat2;
+DROP TYPE typfulltaxonomy;
+
+CREATE TYPE typtaxonrankname AS (
+    taxonid varchar,
+    taxonrankid integer,
+    taxonname character varying(128)
+);
+
+
+CREATE TYPE typtaxonflat2 AS (
+	taxonid varchar,
+	taxonrankid integer,
+	taxonname character varying(128),
+	taxonrank character varying(30),
+	rankorder double precision
+);
+
+CREATE TYPE typfulltaxonomy AS (
+	taxonid varchar,
+	kingdom character varying(128),
+	subkingdom character varying(128),
+	phylum character varying(128),
+	division character varying(128),
+	class character varying(128),
+	txorder character varying(128),
+	family character varying(128),
+	subfamily character varying(128),
+	genus character varying(128),
+	subgenus character varying(128),
+	section character varying(128),
+	subsection character varying(128),
+	species character varying(128),
+	subspecies character varying(128),
+	race character varying(128),
+	variety character varying(128),
+	subvariety character varying(128),
+	form character varying(128),
+	subform character varying(128)
+);
+
+
+CREATE OR REPLACE FUNCTION cpgdb._gettaxonfordepth(integer, typfulltaxonomy)
+  RETURNS text AS
+$BODY$
+   SELECT CASE $1
+     WHEN 1 THEN $2.kingdom 
+     WHEN 2 THEN $2.subkingdom
+     WHEN 3 THEN $2.phylum
+     WHEN 4 THEN $2.division
+     WHEN 5 THEN $2.class
+     WHEN 6 THEN $2.txorder
+     WHEN 7 THEN $2.family
+     WHEN 8 THEN $2.subfamily
+     WHEN 9 THEN $2.genus
+     WHEN 10 THEN $2.subgenus
+     WHEN 11 THEN $2.section
+     WHEN 12 THEN $2.subsection
+     WHEN 13 THEN $2.species
+     WHEN 14 THEN $2.subspecies
+     WHEN 15 THEN $2.race
+     WHEN 16 THEN $2.variety
+     WHEN 17 THEN $2.subvariety
+     WHEN 18 THEN $2.form
+     WHEN 19 THEN $2.subform
+     ELSE 'invalid'
+   END;
+$BODY$
+  LANGUAGE sql IMMUTABLE
+  COST 100;
+
+
+CREATE OR REPLACE FUNCTION cpgdb.qrytaxonflat1(taxonid varchar)
+  RETURNS SETOF typtaxonrankname AS
+$BODY$SELECT $1 as taxonid, tlkptaxon.taxonrankid, tlkptaxon.label AS col0
+FROM ((((((((((tlkptaxon 
+                                        LEFT JOIN tlkptaxon AS tlkptaxon_1 ON tlkptaxon.taxonid = tlkptaxon_1.parenttaxonid) 
+                                    LEFT JOIN tlkptaxon AS tlkptaxon_2 ON tlkptaxon_1.taxonid = tlkptaxon_2.parenttaxonid) 
+                                LEFT JOIN tlkptaxon AS tlkptaxon_3 ON tlkptaxon_2.taxonid = tlkptaxon_3.parenttaxonid) 
+                            LEFT JOIN tlkptaxon AS tlkptaxon_4 ON tlkptaxon_3.taxonid = tlkptaxon_4.parenttaxonid) 
+                        LEFT JOIN tlkptaxon AS tlkptaxon_5 ON tlkptaxon_4.taxonid = tlkptaxon_5.parenttaxonid) 
+                    LEFT JOIN tlkptaxon AS tlkptaxon_6 ON tlkptaxon_5.taxonid = tlkptaxon_6.parenttaxonid) 
+                LEFT JOIN tlkptaxon AS tlkptaxon_7 ON tlkptaxon_6.taxonid = tlkptaxon_7.parenttaxonid) 
+            LEFT JOIN tlkptaxon AS tlkptaxon_8 ON tlkptaxon_7.taxonid = tlkptaxon_8.parenttaxonid) 
+        LEFT JOIN tlkptaxon AS tlkptaxon_9 ON tlkptaxon_8.taxonid = tlkptaxon_9.parenttaxonid) 
+    LEFT JOIN tlkptaxon AS tlkptaxon_10 ON tlkptaxon_9.taxonid = tlkptaxon_10.parenttaxonid) 
+LEFT JOIN tlkptaxon AS tlkptaxon_11 ON tlkptaxon_10.taxonid = tlkptaxon_11.parenttaxonid
+WHERE 
+   (((tlkptaxon.taxonid)=$1)) 
+OR (((tlkptaxon_1.taxonid)=$1)) 
+OR (((tlkptaxon_2.taxonid)=$1)) 
+OR (((tlkptaxon_3.taxonid)=$1)) 
+OR (((tlkptaxon_4.taxonid)=$1)) 
+OR (((tlkptaxon_5.taxonid)=$1)) 
+OR (((tlkptaxon_6.taxonid)=$1)) 
+OR (((tlkptaxon_7.taxonid)=$1)) 
+OR (((tlkptaxon_8.taxonid)=$1)) 
+OR (((tlkptaxon_9.taxonid)=$1)) 
+OR (((tlkptaxon_10.taxonid)=$1)) 
+OR (((tlkptaxon_11.taxonid)=$1))
+$BODY$
+  LANGUAGE 'sql' VOLATILE;
+
+
+
+CREATE OR REPLACE FUNCTION cpgdb.qrytaxonflat2(taxonid varchar)
+  RETURNS SETOF typtaxonflat2 AS
+$BODY$SELECT qrytaxonflat1.taxonid, 
+qrytaxonflat1.taxonrankid, 
+qrytaxonflat1.taxonname, 
+tlkptaxonrank.taxonrank, 
+tlkptaxonrank.rankorder
+FROM cpgdb.qrytaxonflat1($1) qrytaxonflat1 
+RIGHT JOIN tlkptaxonrank ON qrytaxonflat1.taxonrankid = tlkptaxonrank.taxonrankid 
+ORDER BY tlkptaxonrank.rankorder ASC;$BODY$
+  LANGUAGE 'sql' VOLATILE;
+
+
+CREATE OR REPLACE FUNCTION cpgdb.qrytaxonomy(taxonid varchar)
+  RETURNS typfulltaxonomy AS
+$BODY$
+SELECT * FROM crosstab(
+    'select qrytaxonflat2.taxonid, qrytaxonflat2.taxonrank, qrytaxonflat2.taxonname 
+    from cpgdb.qrytaxonflat2('''||$1||''') 
+    order by taxonrank
+    ', 
+    'select taxonrank
+    from tlkptaxonrank 
+    order by rankorder asc'
+) 
+as 
+(taxonid varchar, 
+    kingdom text, 
+    subkingdom text, 
+    phylum text, 
+    division text, 
+    class text, 
+    txorder text, 
+    family text, 
+    subfamily text,
+    genus text,
+    subgenus text, 
+    section text,
+    subsection text,
+    species text, 
+    subspecies text, 
+    race text, 
+    variety text, 
+    subvariety text, 
+    form text, 
+    subform text);$BODY$
+  LANGUAGE 'sql' VOLATILE;
+
+COMMENT ON FUNCTION cpgdb.qrytaxonomy(taxonid varchar) IS 'This is a cross tab query that builds on qrytaxonflat1 and 2 to flatten out the entire taxonomic element for a given taxonid. ';
+GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonomy(taxonid varchar) TO webuser;
+GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonflat2(taxonid varchar) TO webuser;
+GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonflat1(taxonid varchar) TO webuser;
+GRANT EXECUTE ON FUNCTION cpgdb._gettaxonfordepth(integer, typfulltaxonomy) TO webuser;

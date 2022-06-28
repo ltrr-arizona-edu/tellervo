@@ -6,3 +6,6 @@ ALTER TABLE public.tblcurationevent
   ADD CONSTRAINT "fkey_tblcuration-tblbox" FOREIGN KEY (boxid)
       REFERENCES public.tblbox (boxid) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE CASCADE;
+      
+ALTER TABLE tblupgradelog
+ADD CONSTRAINT uniqupgradelog UNIQUE (filename);

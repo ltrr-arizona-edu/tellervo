@@ -300,6 +300,7 @@ public class ObjectView extends AbstractBulkImportView{
 		 toolbar.add(btnDeleteODKInstances);
 			
 		 toolbar.add(argPopulateFromDB);
+		 toolbar.add(populateFromProject);
 		 toolbar.add(argPopulateFromGeonames);
 		
 

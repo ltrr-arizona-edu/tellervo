@@ -452,6 +452,7 @@ public class SampleView extends AbstractBulkImportView {
 		
 		
 		toolbar.add(argPopulateFromDB);
+		toolbar.add(populateFromProject);
 
 
 		quickFill = new JButton();

@@ -113,7 +113,7 @@ class geometry
 		$lat = (float) $lat;
 		$long = (float) $long;	
 		
-		$sql = "select setsrid(makepoint(".sprintf("%1.8f",pg_escape_string($long)).", ".sprintf("%1.8f",pg_escape_string($lat))."), ".pg_escape_string($srid).") as thevalue";
+		$sql = "select st_setsrid(st_makepoint(".sprintf("%1.8f",pg_escape_string($long)).", ".sprintf("%1.8f",pg_escape_string($lat))."), ".pg_escape_string($srid).") as thevalue";
 	
 		$this->geometry = $this->runSQLCalculation($sql);	
 	}		
@@ -242,37 +242,37 @@ class geometry
 	
 	function getX()
 	{
-		$sql = "select x(centroid('".$this->geometry."')) as thevalue";
+		$sql = "select st_x(centroid('".$this->geometry."')) as thevalue";
 		return $this->runSQLCalculation($sql);			
 	}
 	
 	function getY()
 	{	
-		$sql = "select y(centroid('".$this->geometry."')) as thevalue";
+		$sql = "select st_y(centroid('".$this->geometry."')) as thevalue";
 		return $this->runSQLCalculation($sql);			
 	}
 	
 	function getXMin()
 	{
-		$sql = "select xmin(getbbox('".$this->geometry."')) as thevalue";
+		$sql = "select st_xmin(getbbox('".$this->geometry."')) as thevalue";
 		return $this->runSQLCalculation($sql);				
 	}
 	
 	function getYMin()
 	{
-		$sql = "select ymin(getbbox('".$this->geometry."')) as thevalue";
+		$sql = "select st_ymin(getbbox('".$this->geometry."')) as thevalue";
 		return $this->runSQLCalculation($sql);			
 	}
 
 	function getXMax()
 	{
-		$sql = "select xmax(getbbox('".$this->geometry."')) as thevalue";
+		$sql = "select st_xmax(getbbox('".$this->geometry."')) as thevalue";
 		return $this->runSQLCalculation($sql);			
 	}
 	
 	function getYMax()
 	{
-		$sql = "select ymax(getbbox('".$this->geometry."')) as thevalue";
+		$sql = "select st_ymax(getbbox('".$this->geometry."')) as thevalue";
 		return $this->runSQLCalculation($sql);			
 	}
 	

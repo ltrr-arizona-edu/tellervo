@@ -11,7 +11,7 @@ BEGIN
    -- update all child vmeasurement extents
    FOR vmid IN SELECT vmeasurementID FROM cpgdb.FindChildrenOf('Element', NEW.elementID) LOOP
       -- Calculate extent of vmeasurement by looking up locations of all associated direct Measurements
-      SELECT setsrid(extent(tblelement.locationgeometry)::geometry,4326)
+      SELECT st_setsrid(extent(tblelement.locationgeometry)::geometry,4326)
          INTO  newextent
          FROM  tblelement, tblsample, tblradius, tblMeasurement, tblvmeasurement
          WHERE tblvmeasurement.measurementid=tblmeasurement.measurementid

@@ -72,6 +72,7 @@ import org.tellervo.desktop.gui.menus.actions.HelpReportBugOnLastTransactionActi
 import org.tellervo.desktop.gui.menus.actions.HelpSetupWizardAction;
 import org.tellervo.desktop.gui.menus.actions.HelpSystemsInformationAction;
 import org.tellervo.desktop.gui.menus.actions.HelpVideoTutorialsAction;
+import org.tellervo.desktop.gui.menus.actions.HelpWebserviceTestsAction;
 import org.tellervo.desktop.gui.menus.actions.HelpXMLCommunicationsViewerAction;
 import org.tellervo.desktop.gui.menus.actions.RemarkToggleAction;
 import org.tellervo.desktop.gui.menus.actions.RemoveSeriesFromWorkspaceAction;
@@ -187,6 +188,7 @@ public abstract class AbstractEditorActions{
 	public Action helpSetupWizardAction;
 	public Action helpErrorLogViewerAction;
 	public Action helpReportBugOnLastTransactionAction;
+	public Action helpWebserviceTestsAction;
 	public Action helpXMLCommunicationsViewerAction;
 	public Action helpMVCMonitorAction;
 	public Action helpSystemsInformationAction;
@@ -279,7 +281,8 @@ public abstract class AbstractEditorActions{
 		helpEmailDeveloperAction = new HelpEmailDevelopersAction();
 		helpSetupWizardAction = new HelpSetupWizardAction();
 		helpErrorLogViewerAction = new HelpErrorLogViewerAction();
-		helpReportBugOnLastTransactionAction = new HelpReportBugOnLastTransactionAction(); 
+		helpReportBugOnLastTransactionAction = new HelpReportBugOnLastTransactionAction();
+		helpWebserviceTestsAction = new HelpWebserviceTestsAction();	
 		helpXMLCommunicationsViewerAction = new HelpXMLCommunicationsViewerAction();
 		helpMVCMonitorAction = new HelpMVCMonitorAction();
 		helpSystemsInformationAction = new HelpSystemsInformationAction();

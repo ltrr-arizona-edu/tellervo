@@ -276,6 +276,13 @@ public class HelpMenu extends JMenu {
         {
         	add(reportBug);
         }
+        
+        JMenuItem runTests = Builder.makeMenuItem("menus.help.runtest", "org.tellervo.desktop.testing.WSTester.showDialog()", "bugreport.png");
+        if(App.isLoggedIn())
+        {
+        	add(runTests);
+        }
+        
 
         if(!App.prefs.getBooleanPref(PrefKey.WEBSERVICE_DISABLED, false))
         {

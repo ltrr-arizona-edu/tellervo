@@ -80,6 +80,7 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 	private JMenuItem miSiteMap;
 	private JMenuItem miReportBugOnLastTransaction;
 	private JMenuItem miXMLCommunicationsViewer;
+	private JMenuItem miWSTest;
 	private JMenu mnTools;
 	JMenuItem miComponentSeries;
 	private JMenuItem miToolsCrossdate;
@@ -547,6 +548,9 @@ public class FullEditorMenuBar extends EditorMenuBar implements IEventListener{
 		
 		miReportBugOnLastTransaction = new JMenuItem(actions.helpReportBugOnLastTransactionAction);
 		mnHelp.add(miReportBugOnLastTransaction);
+		
+		miWSTest = new JMenuItem(actions.helpWebserviceTestsAction);
+		mnHelp.add(miWSTest);
 		
 		mnHelp.addSeparator();
 		

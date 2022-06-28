@@ -77,8 +77,26 @@ public class PopulateFromProjectCommand implements ICommand {
         	HashSet<TridasIdentifier> objecthash = new HashSet<TridasIdentifier>();
         	HashSet<TridasIdentifier> elementhash = new HashSet<TridasIdentifier>();
 
-		
-			Double total = (double) entities.size()+entities2.size()+entities3.size();
+        	if(entities==null)
+        	{
+        		log.debug("Object list is empty");
+        	}
+        	if(entities2==null)
+        	{
+        		log.debug("Element list is empty");
+        	}
+        	if(entities3==null)
+        	{
+        		log.debug("Sample list is empty");
+        	}     
+        	
+        	Double total = (double) 0;
+        	try {
+        		total = (double) entities.size()+entities2.size()+entities3.size();
+        	} catch (NullPointerException e)
+        	{
+        		
+        	}
 	
 			MVCArrayList<Object> orows = (MVCArrayList<Object>) event.omodel.getRows();					
 			MVCArrayList<Object> erows = (MVCArrayList<Object>) event.emodel.getRows();					

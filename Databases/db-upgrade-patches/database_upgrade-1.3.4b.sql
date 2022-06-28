@@ -25,8 +25,8 @@ CREATE OR REPLACE VIEW public.vwtblcurationevent AS
 ALTER TABLE public.vwtblcurationevent
   OWNER TO tellervo;
 
-DROP VIEW vwtblsample;
-DROP VIEW vwtblcurationmostrecent;
+DROP VIEW IF EXISTS vwtblsample;
+DROP VIEW IF EXISTS  vwtblcurationmostrecent;
 
 CREATE OR REPLACE VIEW public.vwtblcurationeventmostrecent AS 
  SELECT c.curationeventid,

@@ -92,6 +92,12 @@ INSERT INTO tlkptaxon (taxonid, colid, taxonrankid, label, parenttaxonid) VALUES
 INSERT INTO tlkptaxon (taxonid, colid, taxonrankid, label, parenttaxonid) VALUES (2005, 'X-2005', 9, 'Combretum collinum', 1061);
 INSERT INTO tlkptaxon (taxonid, colid, taxonrankid, label, parenttaxonid) VALUES (2006, 'X-2006', 10, 'Combretum collinum subsp. hypopilinum (Diels) Okafor', 2005);
 
+INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2014, 9, 'Pinus occidentalis Sw.', 455, 'X-2014');
+
+INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2015, 9, 'Pinus taeda L.', 455, 'X-2015');
+
+
+
 INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2016, 9, 'Pinus montezumae Lamb.', 455, 'X-2016');
 INSERT INTO tlkptaxon (taxonid, taxonrankid, label, parenttaxonid, colid) values (2017, 9, 'Abies durangensis Martínez', 6, 'X-2017');
 

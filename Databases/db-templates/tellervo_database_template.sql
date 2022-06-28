@@ -1553,7 +1553,7 @@ $$;
 -- Name: findchildrenof(character varying, anyelement); Type: FUNCTION; Schema: cpgdb; Owner: -
 --
 
-CREATE FUNCTION findchildrenof(character varying, anyelement) RETURNS SETOF public.typvmeasurementsearchresult
+CREATE OR REPLACE FUNCTION findchildrenof(character varying, anyelement) RETURNS SETOF public.typvmeasurementsearchresult
     LANGUAGE plpgsql
     AS $_$
 DECLARE
@@ -1567,7 +1567,7 @@ DECLARE
    joinClause VARCHAR;
    query VARCHAR;
    vsid uuid;
-   res typVMeasurementSearchResult;
+   res public.typVMeasurementSearchResult;
 BEGIN
    joinClause := '';
    FOR i IN array_lower(searches, 1)+1..array_upper(searches,1) LOOP
@@ -1606,7 +1606,7 @@ CREATE FUNCTION findchildrenofobjectancestor(parentid uuid) RETURNS SETOF public
     AS $$
 DECLARE
    id tblobject.objectid%TYPE;
-   res typVMeasurementSearchResult;
+   res public.typVMeasurementSearchResult;
 BEGIN
    FOR id IN SELECT objectId FROM cpgdb.FindObjectDescendants(parentid, true) LOOP
       FOR res in SELECT * FROM cpgdb.FindChildrenOf('object', id::UUID) LOOP
@@ -2627,7 +2627,7 @@ CREATE FUNCTION getsearchresultforid(uuid) RETURNS public.typvmeasurementsearchr
 DECLARE
     _vsid ALIAS FOR $1;
     
-    res typVMeasurementSearchResult;
+    res public.typVMeasurementSearchResult;
     meta tblVMeasurementMetaCache%ROWTYPE;
 BEGIN
     SELECT o.Name, vs.Code, vs.Comments, vs.LastModifiedTimestamp
@@ -4848,7 +4848,7 @@ DECLARE
    _vsid ALIAS FOR $1;
    _recursionlevel INTEGER := $2;
 
-   res typVMeasurementSearchResult;
+   res public.typVMeasurementSearchResult;
    meta tblVMeasurementMetaCache%ROWTYPE;
    ref refcursor;
 
@@ -4912,7 +4912,7 @@ DECLARE
    _vsid ALIAS FOR $1;
    _recursionlevel INTEGER := $2;
 
-   res typVMeasurementSearchResult;
+   res public.typVMeasurementSearchResult;
    meta tblVMeasurementMetaCache%ROWTYPE;
    ref refcursor;
 

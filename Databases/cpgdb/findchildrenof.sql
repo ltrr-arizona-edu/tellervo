@@ -1,8 +1,8 @@
 CREATE OR REPLACE FUNCTION cpgdb.FindChildrenOfObjectAncestor(parentid uuid)
-RETURNS SETOF typVMeasurementSearchResult AS $$
+RETURNS SETOF public.typVMeasurementSearchResult AS $$
 DECLARE
    id tblobject.objectid%TYPE;
-   res typVMeasurementSearchResult;
+   res public.typVMeasurementSearchResult;
 BEGIN
    FOR id IN SELECT objectId FROM cpgdb.FindObjectDescendants(parentid, true) LOOP
       FOR res in SELECT * FROM cpgdb.FindChildrenOf('object', id) LOOP
@@ -13,7 +13,7 @@ END;
 $$ LANGUAGE 'plpgsql' STABLE;
 
 CREATE OR REPLACE FUNCTION cpgdb.FindChildrenOf(varchar, anyelement) 
-RETURNS SETOF typVMeasurementSearchResult AS $$
+RETURNS SETOF public.typVMeasurementSearchResult AS $$
 DECLARE
    stype ALIAS FOR $1;
    id ALIAS FOR $2;
@@ -25,7 +25,7 @@ DECLARE
    joinClause VARCHAR;
    query VARCHAR;
    vsid uuid;
-   res typVMeasurementSearchResult;
+   res public.typVMeasurementSearchResult;
 BEGIN
    -- Loop through our ordered array above, dynamically creating
    -- an SQL statement full of inner joins.

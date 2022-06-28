@@ -47,7 +47,7 @@ class taxon extends taxonEntity implements IDBAccessor
         global $dbconn;
         
         
-        $sql = "SELECT * FROM vwtlkptaxon WHERE taxonid=".pg_escape_string($theID);
+        $sql = "SELECT * FROM vwtlkptaxon WHERE taxonid='".pg_escape_string($theID)."'";
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -209,7 +209,7 @@ class taxon extends taxonEntity implements IDBAccessor
     {
         global $dbconn;
         
-        $sql = "SELECT * FROM cpgdb.qrytaxonomy(".pg_escape_string($this->getID()).")";
+        $sql = "SELECT * FROM cpgdb.qrytaxonomy('".pg_escape_string($this->getID())."')";
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
