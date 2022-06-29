@@ -22,31 +22,43 @@ import javax.swing.table.DefaultTableModel;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.dictionary.Dictionary;
+import org.tellervo.desktop.testing.WSTest.WSTestKey;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
 import org.tellervo.desktop.wsi.tellervo.TellervoResourceAccessDialog;
 import org.tellervo.desktop.wsi.tellervo.resources.EntityResource;
 import org.tellervo.schema.TellervoRequestType;
+import org.tellervo.schema.WSIBox;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.TridasAddress;
+import org.tridas.schema.TridasDerivedSeries;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasLaboratory;
+import org.tridas.schema.TridasMeasurementSeries;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasProject;
+import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
 import org.tridas.util.TridasObjectEx;
 
 public class WSTester extends JDialog implements ActionListener{
 
+	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
 	private JTable tbltest;
-	private DefaultTableModel tablemodel;
+	private WSTestTableModel tablemodel;
 
 	private TridasProject project;
 	private TridasObject object;
 	private TridasObject subobject;
 	private TridasElement element;
+	private WSIBox box;
 	private TridasSample sample;
+	private TridasRadius radius;
+	private TridasMeasurementSeries series;
+	private TridasDerivedSeries dseries;
+	
+	
 	
 	/**
 	 * Launch the application.
@@ -82,44 +94,16 @@ public class WSTester extends JDialog implements ActionListener{
 			contentPanel.add(scrollPane, BorderLayout.CENTER);
 			{
 				tbltest = new JTable();
-						
-						
-				tablemodel=	new DefaultTableModel(
-					new Object[][] {
-						{"Create project", null, null},
-						{"Create object", null, null},
-						{"Create subobject", null, null},
-						{"Create element", null, null},
-						{"Create box", null, null},
-						{"Create sample", null, null},
-						{"Create radius", null, null},
-						{"Create measurement", null, null},
-						{"Create index", null, null},
-						{"Update project", null, null},
-						{"Update object", null, null},
-						{"Update element", null, null},
-						{"Update box", null, null},
-						{"Update sample", null, null},
-						{"Update radius", null, null},
-						{"Update measurement", null, null},
-						{"Delete measurement", null, null},
-						{"Delete radius", null, null},
-						{"Delete sample", null, null},
-						{"Delete box", null, null},
-						{"Delete element", null, null},
-						{"Delete subobject", null, null},
-						{"Delete object", null, null},
-						{"Delete project", null, null},
-					},
-					new String[] {
-						"Test", "Result", "Information"
-					}
-				);
-				
-				
+				tablemodel = new WSTestTableModel();
 				tbltest.setModel(tablemodel);
-		
-				tbltest.getColumnModel().getColumn(0).setPreferredWidth(165);
+				tbltest.getColumnModel().getColumn(0).setPreferredWidth(200);
+				tbltest.getColumnModel().getColumn(0).setMaxWidth(300);
+				tbltest.getColumnModel().getColumn(1).setPreferredWidth(70);
+				tbltest.getColumnModel().getColumn(1).setMaxWidth(100);
+				tbltest.getColumnModel().getColumn(2).setPreferredWidth(500);
+				tbltest.getColumnModel().getColumn(2).setMaxWidth(5000);
+				tbltest.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+
 				scrollPane.setViewportView(tbltest);
 			}
 		}
@@ -147,133 +131,205 @@ public class WSTester extends JDialog implements ActionListener{
 
 		for(int i=0; i<tablemodel.getRowCount(); i++) {
 			
-			String testname = (String) tablemodel.getValueAt(i, 0);
-			
-			if(testname=="Create project")
-			{
-				project = new TridasProject();
-				project.setTitle("WEBSERVICE TEST");
-				project.setInvestigator("TEST");
-				project.setPeriod("TEST");
-				List<ControlledVoc> types = Dictionary
-						.getMutableDictionary("projectTypeDictionary");
-				project.setTypes(types);
-				
-				List<ControlledVoc> categories = Dictionary
-						.getMutableDictionary("projectCategoryDictionary");
-				project.setCategory(categories.get(0));
-				
-				ArrayList<TridasLaboratory> laboratories = new ArrayList<TridasLaboratory>();
-				TridasLaboratory lab = new TridasLaboratory();
-				TridasLaboratory.Name labName = new TridasLaboratory.Name();
-				labName.setAcronym(App.getLabAcronym());
-				labName.setValue(App.getLabName());
-				lab.setName(labName);
-				TridasAddress address = new TridasAddress();
-				lab.setAddress(address);	
-				laboratories.add(lab);
-				project.setLaboratories(laboratories);
-								
+			WSTest test = tablemodel.getTest(i);
+			WSTestKey testname = test.getKey();
 
-				EntityResource<TridasProject> resource = new EntityResource<TridasProject>(project, TellervoRequestType.CREATE, TridasProject.class);
-
-				TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(this, resource, i, tablemodel.getRowCount());
-				
-				resource.query();
-				dialog.setVisible(true);
-				
-				if(!dialog.isSuccessful()) {
-					tablemodel.setValueAt("Fail", i, 1);
-					tablemodel.setValueAt(dialog.getFailException().getLocalizedMessage(), i, 2);
-				}
-				else
+			try {
+				if(testname.equals(WSTestKey.CREATE_PROJECT))
 				{
-					tablemodel.setValueAt("Pass", i, 1);
-					tablemodel.setValueAt("", i, 2);
-					project = resource.getAssociatedResult();
+					boolean pass = test.runTestCreateProject(i, tablemodel.getRowCount());
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						project = (TridasProject) test.getReturnObject();
+					}
 				}
+				if(testname.equals(WSTestKey.DELETE_PROJECT))
+				{
+					boolean pass = test.runTestDeleteProject(i, tablemodel.getRowCount(), project);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						project = null;
+					}
+				}
+				if(testname.equals(WSTestKey.CREATE_OBJECT))
+				{
+					boolean pass = test.runTestCreateObject(i, tablemodel.getRowCount(), project);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						object = (TridasObject) test.getReturnObject();
+					}
+				}
+				if(testname.equals(WSTestKey.DELETE_OBJECT))
+				{
+					boolean pass = test.runTestDeleteObject(i, tablemodel.getRowCount(), object);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						object = null;
+					}
+				}		
+				if(testname.equals(WSTestKey.CREATE_SUBOBJECT))
+				{
+					boolean pass = test.runTestCreateSubobject(i, tablemodel.getRowCount(), object);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						subobject = (TridasObject) test.getReturnObject();
+					}
+				}
+				if(testname.equals(WSTestKey.DELETE_SUBOBJECT))
+				{
+					boolean pass = test.runTestDeleteSubobject(i, tablemodel.getRowCount(), subobject);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						subobject = null;
+					}
+				}	
+				if(testname.equals(WSTestKey.CREATE_ELEMENT))
+				{
+					boolean pass = test.runTestCreateElement(i, tablemodel.getRowCount(), object);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						element = (TridasElement) test.getReturnObject();
+					}
+				}
+				if(testname.equals(WSTestKey.DELETE_ELEMENT))
+				{
+					boolean pass = test.runTestDeleteElement(i, tablemodel.getRowCount(), element);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						element = null;
+					}
+				}	
+				if(testname.equals(WSTestKey.CREATE_BOX))
+				{
+					boolean pass = test.runTestCreateBox(i, tablemodel.getRowCount());
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						box = (WSIBox) test.getReturnObject();
+					}
+				}
+				if(testname.equals(WSTestKey.DELETE_BOX))
+				{
+					boolean pass = test.runTestDeleteBox(i, tablemodel.getRowCount(), box);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						box = null;
+					}
+				}
+				if(testname.equals(WSTestKey.CREATE_SAMPLE))
+				{
+					boolean pass = test.runTestCreateSample(i, tablemodel.getRowCount(), element);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						sample = (TridasSample) test.getReturnObject();
+					}
+				}
+				if(testname.equals(WSTestKey.DELETE_SAMPLE))
+				{
+					boolean pass = test.runTestDeleteSample(i, tablemodel.getRowCount(), sample);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						sample = null;
+					}
+				}				
+				if(testname.equals(WSTestKey.CREATE_RADIUS))
+				{
+					boolean pass = test.runTestCreateRadius(i, tablemodel.getRowCount(), sample);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						radius = (TridasRadius) test.getReturnObject();
+					}
+				}
+				if(testname.equals(WSTestKey.DELETE_RADIUS))
+				{
+					boolean pass = test.runTestDeleteRadius(i, tablemodel.getRowCount(), radius);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						radius = null;
+					}
+				}	
+				if(testname.equals(WSTestKey.CREATE_SERIES))
+				{
+					boolean pass = test.runTestCreateSeries(i, tablemodel.getRowCount(), radius);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						series = (TridasMeasurementSeries) test.getReturnObject();
+					}
+				}
+				if(testname.equals(WSTestKey.DELETE_SERIES))
+				{
+					boolean pass = test.runTestDeleteSeries(i, tablemodel.getRowCount(), series);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						series = null;
+					}
+				}	
+				if(testname.equals(WSTestKey.TAXON_DICTIONARY))
+				{
+					test.runTestTaxonDictionary(i, tablemodel.getRowCount());
+					tablemodel.setTest(i, test);
+				}	
+				if(testname.equals(WSTestKey.REMARK_DICTIONARY))
+				{
+					test.runTestRemarkDictionary(i, tablemodel.getRowCount());
+					tablemodel.setTest(i, test);
+				}	
+				if(testname.equals(WSTestKey.CREATE_INDEX))
+				{
+					boolean pass = test.runTestCreateIndex(i, tablemodel.getRowCount(), series);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						dseries = (TridasDerivedSeries) test.getReturnObject();
+					}
+				}	
+				if(testname.equals(WSTestKey.DELETE_INDEX))
+				{
+					boolean pass = test.runTestDeleteIndex(i, tablemodel.getRowCount(), dseries);
+					tablemodel.setTest(i, test);
+					if(pass)
+					{
+						dseries = null;
+					}
+				}					
+				
+			} catch (Exception ex)
+			{
+				// Set test
+				test.setErrorMessage(ex.getLocalizedMessage());
+				test.setTestResult(false);
+				tablemodel.setTest(i, test);
 			}
-			if(testname=="Delete project")
-			{
-				EntityResource<TridasProject> resource = new EntityResource<TridasProject>(project, TellervoRequestType.DELETE, TridasProject.class);
-
-				TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(this, resource, i, tablemodel.getRowCount());
-				
-				resource.query();
-				dialog.setVisible(true);
-				
-				if(!dialog.isSuccessful()) {
-					tablemodel.setValueAt("Fail", i, 1);
-					tablemodel.setValueAt(dialog.getFailException().getLocalizedMessage(), i, 2);
-				}
-				else
-				{
-					tablemodel.setValueAt("Pass", i, 1);
-					tablemodel.setValueAt("", i, 2);
-					project = null;
-				}
-			}
-			if(testname=="Create object")
-			{
-				object = new TridasObject();
-				object.setTitle("TEST");
-				
-				EntityResource<TridasObject> resource = new EntityResource<TridasObject>(object, TellervoRequestType.CREATE, TridasObject.class);
-				
-				TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(this, resource, i, tablemodel.getRowCount());
-				
-				resource.query();
-				dialog.setVisible(true);
-				
-				if(!dialog.isSuccessful()) {
-					tablemodel.setValueAt("Fail", i, 1);
-					tablemodel.setValueAt(dialog.getFailException().getLocalizedMessage(), i, 2);
-				}
-				else
-				{
-					tablemodel.setValueAt("Pass", i, 1);
-					tablemodel.setValueAt("", i, 2);
-					object = resource.getAssociatedResult();
-				}
-			}
-			if(testname=="Delete object")
-			{
-				EntityResource<TridasObject> resource = new EntityResource<TridasObject>(object, TellervoRequestType.DELETE, TridasObject.class);
-
-				TellervoResourceAccessDialog dialog = new TellervoResourceAccessDialog(this, resource, i, tablemodel.getRowCount());
-				
-				resource.query();
-				dialog.setVisible(true);
-				
-				if(!dialog.isSuccessful()) {
-					tablemodel.setValueAt("Fail", i, 1);
-					tablemodel.setValueAt(dialog.getFailException().getLocalizedMessage(), i, 2);
-				}
-				else
-				{
-					tablemodel.setValueAt("Pass", i, 1);
-					tablemodel.setValueAt("", i, 2);
-					o = null;
-				}
-			}			
-			
-			
 		}
-		
+				
 	}
-	
 	
 	public static void showDialog() {
 		try {
 			WSTester dialog = new WSTester();
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setModal(true);
 			dialog.setVisible(true);
 			dialog.setLocationRelativeTo(null);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -285,7 +341,6 @@ public class WSTester extends JDialog implements ActionListener{
 		{
 			this.setVisible(false);
 		}
-		
 	}
 
 }

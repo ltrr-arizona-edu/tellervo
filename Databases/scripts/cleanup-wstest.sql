@@ -1,0 +1,9 @@
+DELETE FROM tblvmeasurementgroup WHERE membervmeasurementid IN (SELECT vmeasurementid from tblvmeasurement WHERE measurementid in (SELECT measurementid FROM tblmeasurement WHERE radiusid IN (SELECT radiusid FROM tblradius WHERE code='WSTEST')));
+DELETE FROM tblvmeasurement WHERE measurementid in (SELECT measurementid FROM tblmeasurement WHERE radiusid IN (SELECT radiusid FROM tblradius WHERE code='WSTEST'));
+DELETE FROM tblmeasurement WHERE radiusid IN (SELECT radiusid FROM tblradius WHERE code='WSTEST');
+DELETE FROM tblradius WHERE code='WSTEST';
+DELETE FROM tblsample WHERE code='WSTEST';
+DELETE FROM tblelement WHERE code='WSTEST';
+DELETE FROM tblobject WHERE code='WSTEST';
+DELETE FROM tblproject WHERE title='WSTEST';
+DELETE FROM tblbox WHERE title='WSTEST';
