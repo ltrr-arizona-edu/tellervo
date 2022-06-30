@@ -27,6 +27,7 @@ import org.tridas.schema.Certainty;
 import org.tridas.schema.ComplexPresenceAbsence;
 import org.tridas.schema.ControlledVoc;
 import org.tridas.schema.NormalTridasMeasuringMethod;
+import org.tridas.schema.NormalTridasRemark;
 import org.tridas.schema.NormalTridasUnit;
 import org.tridas.schema.NormalTridasVariable;
 import org.tridas.schema.ObjectFactory;
@@ -44,6 +45,7 @@ import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasPith;
 import org.tridas.schema.TridasProject;
 import org.tridas.schema.TridasRadius;
+import org.tridas.schema.TridasRemark;
 import org.tridas.schema.TridasSample;
 import org.tridas.schema.TridasSapwood;
 import org.tridas.schema.TridasUnit;
@@ -653,10 +655,15 @@ public class WSTest {
 
 		ArrayList<TridasValue> ringWidthValues = new ArrayList<TridasValue>();
 		int[] val = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100}; 
-		
+			
 		for (int i = 0; i<val.length ; i++) {
 			TridasValue v = new TridasValue();			
 			v.setValue(String.valueOf(val[i]));
+			ArrayList<TridasRemark> remarks = new ArrayList<TridasRemark>();
+			TridasRemark remark = new TridasRemark();
+			remark.setNormalTridas(NormalTridasRemark.FALSE_RINGS);
+			remarks.add(remark);
+			v.setRemarks(remarks);
 			ringWidthValues.add(v);
 		}
 	

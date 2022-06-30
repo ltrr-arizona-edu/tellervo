@@ -1,7 +1,10 @@
 -- Structural changes
 ALTER TABLE tlkptaxon ADD COLUMN newlabel VARCHAR;
 ALTER TABLE tlkptaxon ADD COLUMN htmllabel VARCHAR;
-INSERT INTO tlkptaxonrank (taxonrankid, taxonrank, rankorder) VALUES (19,'subfamily', 60);
+INSERT INTO tlkptaxonrank (taxonrankid, taxonrank, rankorder) VALUES (19,'subfamily', 60) ON CONFLICT DO NOTHING;
+INSERT INTO tlkptaxonrank (taxonrank, rankorder) VALUES ('subgenus', 72) ON CONFLICT DO NOTHING; 
+INSERT INTO tlkptaxonrank (taxonrank, rankorder) VALUES ('section', 74) ON CONFLICT DO NOTHING;
+INSERT INTO tlkptaxonrank (taxonrank, rankorder) VALUES ('subsection', 76) ON CONFLICT DO NOTHING;
 
 -- Fixes for taxa no longer represented
 UPDATE tblelement SET taxonid=1011 where taxonid=1016;
@@ -27,7 +30,7 @@ DELETE FROM tlkptaxon where taxonid=129;
 DELETE FROM tlkptaxon where taxonid=39;
 DELETE FROM tlkptaxon where taxonid=1025;
 DELETE FROM tlkptaxon where taxonid=390;
-
+DELETE FROM tlkptaxon where taxonid=1016;
 
 DELETE FROM tlkptaxon where taxonid=806;
 DELETE FROM tlkptaxon where taxonid=603;
@@ -2045,7 +2048,7 @@ BEGIN
 	RAISE NOTICE 'Getting extent from component vmeasurements';
 	RAISE NOTICE 'Find all parents of %', vmid;
 	RAISE NOTICE 'Number of measurements is %',ret.MeasurementCount;
-	   SELECT _setsrid(extent(tblvmeasurementmetacache.vmextent)::geometry, 4326)
+	   SELECT st_setsrid(extent(tblvmeasurementmetacache.vmextent)::geometry, 4326)
 	   INTO  ret.vmextent
 	   FROM  tblvmeasurementmetacache
 	   WHERE tblvmeasurementmetacache.vmeasurementid
