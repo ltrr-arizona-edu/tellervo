@@ -24,6 +24,8 @@ ss * Created at Aug 23, 2010, 3:35:03 AM
 package org.tellervo.desktop.bulkdataentry.model;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -59,6 +61,7 @@ import com.dmurph.mvc.model.MVCArrayList;
 public class SampleTableModel extends AbstractBulkImportTableModel {
 	private static final long serialVersionUID = 2L;
 	private static final Logger log = LoggerFactory.getLogger(SampleTableModel.class);
+	private TridasObjectElementListCache objectElementCache = new TridasObjectElementListCache();
 
 	public SampleTableModel(SampleModel argModel){
 		super(argModel);
@@ -203,8 +206,10 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 					}
 					
 					ssm.setProperty(SingleSampleModel.POPULATING_ELEMENT_LIST, true);
-										
-					Thread t = new Thread(new Runnable() {
+					ssm.getPossibleElements().addAll(objectElementCache.getPossibleElementsForObject(o));
+					ssm.setProperty(SingleSampleModel.POPULATING_ELEMENT_LIST, false);
+					
+					/*Thread t = new Thread(new Runnable() {
 						
 						@Override
 						public void run() {
@@ -231,7 +236,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 						}
 					}, "Elements Fetch Thread");
 					
-					t.start();
+					t.start();*/
 				}
 				else	
 				{
@@ -313,9 +318,7 @@ public class SampleTableModel extends AbstractBulkImportTableModel {
 				}, "Element populate thread");
 				
 				t.start();
-				
-				
-				
+
 			}
 		}
 		/*else if (argColumn.equals(SingleSampleModel.CURATION_STATUS))

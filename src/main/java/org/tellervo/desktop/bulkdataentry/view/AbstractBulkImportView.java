@@ -46,6 +46,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -677,7 +678,12 @@ public abstract class AbstractBulkImportView extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-				adapter.doPasteAppend();
+				SwingUtilities.invokeLater(new Runnable() {
+			        public void run() {
+				
+			        	adapter.doPasteAppend();
+			        }
+				});
 				
 			/*	log.debug("1. Table row count = " +table.getRowCount());
 				Integer originalRowCount = table.getRowCount();

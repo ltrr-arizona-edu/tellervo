@@ -25,6 +25,7 @@ package org.tellervo.desktop.bulkdataentry.view;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 
 import org.tellervo.desktop.bulkdataentry.control.BulkImportController;
 import org.tellervo.desktop.bulkdataentry.model.BulkImportModel;
@@ -109,8 +110,12 @@ public class BulkDataEntryWindow extends JFrame {
 	
 	public static void main()	
 	{
-		TellervoModelLocator.getInstance();
-		MVCEvent event = new MVCEvent(BulkImportController.DISPLAY_BULK_IMPORT);
-		event.dispatch();
+		SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+				TellervoModelLocator.getInstance();
+				MVCEvent event = new MVCEvent(BulkImportController.DISPLAY_BULK_IMPORT);
+				event.dispatch();
+	        }
+		});
 	}
 }

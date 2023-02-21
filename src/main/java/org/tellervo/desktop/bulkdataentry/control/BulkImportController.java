@@ -25,6 +25,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 
+import javax.swing.SwingUtilities;
+
 import org.tellervo.desktop.bulkdataentry.command.AddRowCommand;
 import org.tellervo.desktop.bulkdataentry.command.CopyRowCommand;
 import org.tellervo.desktop.bulkdataentry.command.CopySelectedRowsCommand;
@@ -151,10 +153,14 @@ public class BulkImportController extends FrontController {
 		// just put inot the sample model for now, change if we want to add extra radius functionality
 		populateRadiusDefaults(model.getSampleModel().getColumnModel());
 		
-		BulkDataEntryWindow frame = new BulkDataEntryWindow();
-		BulkImportModel.getInstance().setMainView(frame);
-		frame.pack();
-		frame.setVisible(true);
+		SwingUtilities.invokeLater(new Runnable() {
+	        public void run() {
+				BulkDataEntryWindow frame = new BulkDataEntryWindow();
+				BulkImportModel.getInstance().setMainView(frame);
+				frame.pack();
+				frame.setVisible(true);
+			        }
+		});
 		//MVC.showEventMonitor();
 	}
 	
