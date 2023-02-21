@@ -1,6 +1,5 @@
 package org.tellervo.desktop.util;
 
-import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -15,16 +14,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JProgressBar;
 import javax.swing.JTable;
-import javax.swing.KeyStroke;
+import javax.swing.KeyStroke;	
 import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
 import javax.swing.table.DefaultTableModel;
 
 import org.slf4j.Logger;
@@ -68,14 +62,14 @@ import com.joestelmach.natty.Parser;
 public class JTableSpreadsheetAdapter implements ActionListener {
 	private final static Logger log = LoggerFactory
 			.getLogger(JTableSpreadsheetAdapter.class);
-	private String rowstring, value;
+	//private String rowstring, value;
 	private Clipboard system;
 	private StringSelection stsel;
 	private JTable mainTable;
-	private TellervoProgressDialog progDialog;
+	//private TellervoProgressDialog progDialog;
 
-	  private static JProgressBar PROGRESS_BAR;
-	  private static JLabel OUTPUT_LABEL;
+	  //private static JProgressBar PROGRESS_BAR;
+	  //private static JLabel OUTPUT_LABEL;
 	
 	private List<ControlledVoc> taxonDictionary = Dictionary
 			.getMutableDictionary("taxonDictionary");
@@ -132,7 +126,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 		int[] rowsselected = mainTable.getSelectedRows();
 
 		// Remove first two columns
-		ArrayList<Integer> colsselected = new ArrayList();
+		ArrayList<Integer> colsselected = new ArrayList<Integer>();
 		for (int c : mainTable.getSelectedColumns()) {
 			if (c <= 1)
 				continue;
@@ -318,10 +312,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 		
 
 		//progDialog = new TellervoProgressDialog();
-		
-		
-		
-		
+
 		if (simulateFirst == false && pasteAppend == true) {
 			int previousRowCount = mainTable.getRowCount();
 			int rows = getRowCountFromClipboard();
@@ -370,7 +361,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 			log.debug("Clipboard contents: " + system.getName()); 
 			String trstring = (String) (system.getContents(this)
 					.getTransferData(DataFlavor.stringFlavor));
-			log.debug("Clipboard string is: " + trstring);
+			//log.debug("Clipboard string is: " + trstring);
 			String[] lines = trstring.split("\n");
 			
 			// Check we have the correct number of columns 
@@ -426,14 +417,14 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 				if (cells[0].equals(mainTable.getColumnName(0))
 						|| cells[0].equals(mainTable.getColumnName(2))) {
 					// Header found so skip
-					log.debug("Found header line.  Skipping");
+					//log.debug("Found header line.  Skipping");
 					rowsignored++;
 					continue;
 				} else {
-					log.debug("First cell is " + cells[0]
+					/*log.debug("First cell is " + cells[0]
 							+ " which doesn't match the first column name "
 							+ colname);
-					log.debug("No header to skip");
+					log.debug("No header to skip");*/
 				}
 
 				int colViewIndex = -1;
@@ -444,11 +435,15 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 					colViewIndex++;
 					// value=(String)st2.nextToken();
 
-					log.debug("Value of this cell is = '" + value + "'");
+					//log.debug("Value of this cell is = '" + value + "'");
 
 					// Convert the row index to a model index
-					int rowModelIndex = mainTable.convertRowIndexToModel(startRow
-							+ lineindex - rowsignored);
+					int rowModelIndex = startRow+ lineindex - rowsignored;
+					try {
+						rowModelIndex = mainTable.convertRowIndexToModel(startRow + lineindex - rowsignored);
+					} catch (Exception e) {
+						log.debug("Unable to convertRowIndexToModel");
+					}
 					int colModelIndex = mainTable.convertColumnIndexToModel(colViewIndex+startCol);
 
 					if ((rowModelIndex < mainTable.getRowCount() && startCol
@@ -458,18 +453,18 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 						AbstractBulkImportTableModel tablemodel = ((AbstractBulkImportTableModel) mainTable
 								.getModel());
 
-						Class clazz = tablemodel.getColumnClass(colModelIndex);
+						Class<?> clazz = tablemodel.getColumnClass(colModelIndex);
 
-						log.debug("Value for cell " + colViewIndex + " was '"
-								+ value + "'");
+						/*log.debug("Value for cell " + colViewIndex + " was '"
+								+ value + "'");*/
 
 						// Replace various representations of 'null' with a real
 						// null
 						if (value == null || value.equalsIgnoreCase("null")
 								|| value.equals(" ") || value.equals("")
 								|| value.replace(" ", "").length() == 0) {
-							log.debug("Value for cell was '" + value
-									+ "' so setting cell to null");
+							/*log.debug("Value for cell was '" + value
+									+ "' so setting cell to null");*/
 
 							if (!simulateFirst)
 								tablemodel.setValueAt(null, rowModelIndex,colModelIndex);

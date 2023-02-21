@@ -102,16 +102,16 @@ public class ImportSelectedSamplesCommand implements ICommand {
 		
 		HashSet<String> definedProps = new HashSet<String>();
 		for(IBulkImportSingleRowModel srm : selected){
-			SingleSampleModel som = (SingleSampleModel) srm;
+			SingleSampleModel ssm = (SingleSampleModel) srm;
 			definedProps.clear();
 			for(String s : SingleSampleModel.TABLE_PROPERTIES){
-				if(som.getProperty(s) != null){
+				if(ssm.getProperty(s) != null){
 					definedProps.add(s);
 				}
 			}
 			if(smodel.isRadiusWithSample()){
 				for(String s : SingleRadiusModel.PROPERTIES){
-					if(som.getRadiusModel().getProperty(s) != null){
+					if(ssm.getRadiusModel().getProperty(s) != null){
 						definedProps.add(s);
 					}
 				}
@@ -120,13 +120,13 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			
 			String currentIdentifier = "";
 			
-			if(som.getProperty(SingleSampleModel.OBJECT)!=null)
+			if(ssm.getProperty(SingleSampleModel.OBJECT)!=null)
 			{
-				Object tempob = som.getProperty(SingleSampleModel.OBJECT);
+				Object tempob = ssm.getProperty(SingleSampleModel.OBJECT);
 				
 				if(tempob instanceof TridasObjectEx)
 				{
-					currentIdentifier+=TridasUtils.getObjectCodeMulti((TridasObjectEx) som.getProperty(SingleSampleModel.OBJECT))+"-";
+					currentIdentifier+=TridasUtils.getObjectCodeMulti((TridasObjectEx) ssm.getProperty(SingleSampleModel.OBJECT))+"-";
 				}
 				else if (tempob instanceof TridasObjectOrPlaceholder)
 				{
@@ -135,25 +135,25 @@ public class ImportSelectedSamplesCommand implements ICommand {
 				}
 				else
 				{
-					currentIdentifier+=som.getProperty(SingleSampleModel.OBJECT)+"-";
+					currentIdentifier+=ssm.getProperty(SingleSampleModel.OBJECT)+"-";
 				}
 				
-				if(som.getProperty(SingleSampleModel.ELEMENT)!=null)
+				if(ssm.getProperty(SingleSampleModel.ELEMENT)!=null)
 				{
-					Object tempel = som.getProperty(SingleSampleModel.ELEMENT);
+					Object tempel = ssm.getProperty(SingleSampleModel.ELEMENT);
 					if(tempel instanceof TridasElement)
 					{
-						currentIdentifier+=((TridasElement)som.getProperty(SingleSampleModel.ELEMENT)).getTitle()+"-"+som.getProperty(SingleSampleModel.TITLE);
+						currentIdentifier+=((TridasElement)ssm.getProperty(SingleSampleModel.ELEMENT)).getTitle()+"-"+ssm.getProperty(SingleSampleModel.TITLE);
 
 					}
 					else if (tempel instanceof TridasElementOrPlaceholder)
 					{
 						TridasElementOrPlaceholder teop = (TridasElementOrPlaceholder) tempel;
-						currentIdentifier+=teop.getCode()+"-"+som.getProperty(SingleSampleModel.TITLE);
+						currentIdentifier+=teop.getCode()+"-"+ssm.getProperty(SingleSampleModel.TITLE);
 					}
 					else
 					{
-						currentIdentifier+=som.getProperty(SingleSampleModel.ELEMENT)+"-"+som.getProperty(SingleSampleModel.TITLE);
+						currentIdentifier+=ssm.getProperty(SingleSampleModel.ELEMENT)+"-"+ssm.getProperty(SingleSampleModel.TITLE);
 
 					}
 					
@@ -174,16 +174,203 @@ public class ImportSelectedSamplesCommand implements ICommand {
 				requiredMessages.add("Cannot import '"+currentIdentifier+"'. Parent element is missing.");
 				incomplete = true;
 			}
-			else if (fixTempParentCodes(som, emodel))
+			//else if (fixTempParentCodes(ssm, emodel))
+			
+			
+			//**************************************
 			{
-				// There was a temp code but it is fixed now
+				TridasObject parentObject = null;
+				
+				// First get parent object for sample 
+				Object objectField = (Object) ssm.getProperty(SingleSampleModel.OBJECT);
+				boolean objectSet = false;
+
+				if(objectField instanceof TridasObjectOrPlaceholder)
+				{
+					if(((TridasObjectOrPlaceholder) objectField).getTridasObject()!=null) 
+					{
+						parentObject = ((TridasObjectOrPlaceholder) objectField).getTridasObject();
+						ssm.setProperty(SingleSampleModel.OBJECT, objectField);
+						objectSet = true;
+					}
+					else
+					{		
+						String code = ((TridasObjectOrPlaceholder) objectField).getCode();
+						TridasObjectEx o = App.tridasObjects.findObjectBySiteCode(code);
+						if(o!=null)	{
+							
+							parentObject = o;
+							ssm.setProperty(SingleSampleModel.OBJECT, new TridasObjectOrPlaceholder(o));
+							objectSet = true;
+						}
+					}
+				}
+				else if (objectField instanceof String)
+				{
+					List<TridasObjectEx> objlist = App.tridasObjects.getObjectList();
+	
+					for(TridasObjectEx o : objlist)
+					{
+						if(o.getLabCode().equals(objectField)) 
+						{
+							parentObject = o;
+							ssm.setProperty(SingleSampleModel.OBJECT, new TridasObjectOrPlaceholder(o));
+							objectSet = true;
+						}
+					}
+				}
+				else if (objectField instanceof TridasObjectEx)
+				{
+					parentObject = (TridasObject) objectField;
+					objectSet = true;
+				}
+				
+				
+				if(objectSet==false)
+				{
+					requiredMessages.add("Cannot import '"+currentIdentifier+"'. Unable to find parent object.");
+					incomplete = true;
+				}
+	
+				
+				// At this point we have a valid object in the object field.  
+				// Now we need to try and get a valid Element 
+	
+				Object elementField = (Object) ssm.getProperty(SingleSampleModel.ELEMENT);
+				String elementCode = null;
+				Boolean elementSet = false;
+				
+				if(elementField == null)
+				{
+					requiredMessages.add("Cannot import '"+currentIdentifier+"'. No parent element set");
+					incomplete = true;
+				}
+				else if (elementField instanceof TridasElement)
+				{
+					// Element field is already a proper TridasElement so nothing to do!
+				}
+				else if(elementField instanceof TridasElementOrPlaceholder 
+						&& ((TridasElementOrPlaceholder) elementField).getTridasElement()!=null)
+				{
+						// Element field is already a proper TridasElement so nothing to do!
+				}
+				
+				else if (elementField instanceof TridasElementOrPlaceholder)
+				{
+					// element field must be a placeholder code string
+					// Loop through rows of the Element Table to try and grab recently imported element
+					
+					elementCode = ((TridasElementOrPlaceholder) elementField).getCode();
+					
+					for(SingleElementModel elemrow : emodel.getRows())
+					{
+						if(elemrow.getProperty(SingleElementModel.IMPORTED)==null)
+						{
+							// Row is not imported so skip
+							continue;
+						}
+	
+						Object elementTitleField = elemrow.getProperty(SingleElementModel.TITLE);
+						
+						if(elementTitleField==null)
+						{
+							// title field is empty so
+							continue;
+						}
+						else if(elementTitleField.equals(elementCode))
+						{	
+							// This row from the element table has the same element code as our sample row
+							// Check the object is the same 
+							
+							Object elementObjectField = elemrow.getProperty(SingleElementModel.OBJECT);
+							TridasObject elementObject = null;
+							if(elementObjectField instanceof TridasObjectOrPlaceholder)
+							{
+								TridasObjectOrPlaceholder toop = (TridasObjectOrPlaceholder) elementObjectField;
+								if(toop.getTridasObject()!=null) {
+									// Good!
+									elementObject = toop.getTridasObject();
+								}
+								else
+								{
+									continue;
+								}
+							}
+							else if (elementObjectField instanceof TridasObject)
+							{	
+								// Good!
+								elementObject = (TridasObject) elementObjectField;
+							}
+							else 
+							{
+								continue;
+							}
+							
+							
+							if(elementObject.equals(parentObject))
+							{
+								// This element must be the right one so go ahead and set it in the sample model
+								TridasElement element = new TridasElement();
+								try {
+									elemrow.populateToTridasElement(element);
+								} catch (Exception e1) {
+									
+									e1.printStackTrace();
+								}
+								ssm.setProperty(SingleSampleModel.ELEMENT, new TridasElementOrPlaceholder(element));
+								elementSet = true;
+							}
+						}
+					}	
+					
+					if(elementSet==false)
+					{
+						// Failed to find element in BDE so going to have to do a full database search 
+						
+						elementCode = ((TridasElementOrPlaceholder) elementField).getCode();
+						
+						// This sample's parent element is not in the element table
+						// Try to search from the database in case the user is entering a new sample for an element
+						// that was imported some time ago.  We could do this from the start, but it is expensive
+						// as it makes lots of db calls.		
+						TridasElement e = searchForElement(parentObject, elementCode);
+						if(e==null)
+						{
+							requiredMessages.add("Cannot import '"+currentIdentifier+". Parent element was not found in database");
+							incomplete = true;
+						}
+						else
+						{
+							ssm.setProperty(SingleSampleModel.ELEMENT, new TridasElementOrPlaceholder(e));
+						}
+						
+					}
+					
+				}
+				else if (elementField instanceof String)
+				{
+					elementCode = (String) elementField;
+					
+					// This sample's parent element is not in the element table
+					// Try to search from the database in case the user is entering a new sample for an element
+					// that was imported some time ago.  We could do this from the start, but it is expensive
+					// as it makes lots of db calls.		
+					TridasElement e = searchForElement(parentObject, elementCode);
+					if(e==null)
+					{
+						requiredMessages.add("Cannot import '"+currentIdentifier+". Parent element was not found in database");
+						incomplete = true;
+					}
+					else
+					{
+						ssm.setProperty(SingleSampleModel.ELEMENT, new TridasElementOrPlaceholder(e));
+					}
+				}
+			
+				
 			}
-			else
-			{
-				requiredMessages.add("Cannot import '"+currentIdentifier+"'. Parent element has not been created yet");
-				incomplete = true;
-			}
-		
+			//*************************************
+					
 			// type
 			if(!definedProps.contains(SingleSampleModel.TYPE)){
 				requiredMessages.add("Cannot import '"+currentIdentifier+"'. Sample must contain a type.");
@@ -205,7 +392,7 @@ public class ImportSelectedSamplesCommand implements ICommand {
 			
 			
 			if(incomplete){
-				incompleteModels.add(som);
+				incompleteModels.add(ssm);
 			}
 		}
 		
