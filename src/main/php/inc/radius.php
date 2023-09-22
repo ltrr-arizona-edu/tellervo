@@ -74,7 +74,7 @@ class radius extends radiusEntity implements IDBAccessor {
 		global $dbconn;
 		
 		$this->setID ( $theID );
-		$sql = "SELECT * FROM vwtblradius WHERE radiusid='" . pg_escape_string ( $this->getID () ) . "'";
+		$sql = "SELECT * FROM vwtblradius WHERE radiusid='" . pg_escape_string($dbconn, $this->getID () ) . "'";
 		$firebug->log ( $sql, "radius sql" );
 		$dbconnstatus = pg_connection_status ( $dbconn );
 		if ($dbconnstatus === PGSQL_CONNECTION_OK) {
@@ -130,7 +130,7 @@ class radius extends radiusEntity implements IDBAccessor {
 		// RadiusRadiusNotes
 		global $dbconn;
 		
-		$sql = "select measurementid from tblmeasurement where radiusid='" . pg_escape_string ( $this->getID () ) . "'";
+		$sql = "select measurementid from tblmeasurement where radiusid='" . pg_escape_string($dbconn, $this->getID () ) . "'";
 		$dbconnstatus = pg_connection_status ( $dbconn );
 		if ($dbconnstatus === PGSQL_CONNECTION_OK) {
 			
@@ -439,25 +439,25 @@ class radius extends radiusEntity implements IDBAccessor {
 						// Trim off trailing space and comma
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ") values (";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getID () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getPith ( true ) ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getHeartwood ( true ) ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getMissingHeartwoodRingsToPith () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getMissingHeartwoodRingsToPithFoundation () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getSapwood ( true ) ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getNumberOfSapwoodRings () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getTitle () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getID () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getComments () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getPith ( true ) ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getHeartwood ( true ) ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getMissingHeartwoodRingsToPith () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getMissingHeartwoodRingsToPithFoundation () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getSapwood ( true ) ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getNumberOfSapwoodRings () ) . ", ";
 					// $sql.=pg_escape_string($this->getLastRingUnderBark(true)).", ";
 					$sql .= dbHelper::formatBool ( $this->getLastRingUnderBarkPresence (), "pg" ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getMissingSapwoodRingsToBark () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getMissingSapwoodRingsToBarkFoundation () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getNrOfUnmeasuredInnerRings () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getNrOfUnmeasuredOuterRings () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getMissingSapwoodRingsToBark () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getMissingSapwoodRingsToBarkFoundation () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getNrOfUnmeasuredInnerRings () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getNrOfUnmeasuredOuterRings () ) . ", ";
 					$sql .= dbHelper::formatBool ( $this->getBarkPresent (), "pg" ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getAzimuth () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getAzimuth () ) . ", ";
 					if (isset ( $this->parentEntityArray [0] ))
-						$sql .= dbHelper::tellervo_pg_escape_string ( $this->parentEntityArray [0]->getID () ) . ", ";
+						$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->parentEntityArray [0]->getID () ) . ", ";
 						// Trim off trailing space and comma
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ")";
@@ -465,26 +465,26 @@ class radius extends radiusEntity implements IDBAccessor {
 				} else {
 					// Updating DB
 					$sql .= "UPDATE tblradius SET ";
-					$sql .= "code=" . dbHelper::tellervo_pg_escape_string ( $this->getCode () ) . ", ";
-					$sql .= "comments=" . dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					$sql .= "pithid=" . dbHelper::tellervo_pg_escape_string ( $this->getPith ( true ) ) . ", ";
-					$sql .= "heartwoodid=" . dbHelper::tellervo_pg_escape_string ( $this->getHeartwood ( true ) ) . ", ";
-					$sql .= "missingheartwoodringstopith=" . dbHelper::tellervo_pg_escape_string ( $this->getMissingHeartwoodRingsToPith () ) . ", ";
-					$sql .= "missingheartwoodringstopithfoundation=" . dbHelper::tellervo_pg_escape_string ( $this->getMissingHeartwoodRingsToPithFoundation () ) . ", ";
-					$sql .= "sapwoodid=" . dbHelper::tellervo_pg_escape_string ( $this->getSapwood ( true ) ) . ", ";
-					$sql .= "numberofsapwoodrings=" . dbHelper::tellervo_pg_escape_string ( $this->getNumberOfSapwoodRings () ) . ", ";
+					$sql .= "code=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getCode () ) . ", ";
+					$sql .= "comments=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getComments () ) . ", ";
+					$sql .= "pithid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getPith ( true ) ) . ", ";
+					$sql .= "heartwoodid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getHeartwood ( true ) ) . ", ";
+					$sql .= "missingheartwoodringstopith=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getMissingHeartwoodRingsToPith () ) . ", ";
+					$sql .= "missingheartwoodringstopithfoundation=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getMissingHeartwoodRingsToPithFoundation () ) . ", ";
+					$sql .= "sapwoodid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getSapwood ( true ) ) . ", ";
+					$sql .= "numberofsapwoodrings=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getNumberOfSapwoodRings () ) . ", ";
 					// $sql.="lastringunderbark=".dbHelper::tellervo_pg_escape_string($this->getLastRingUnderBark()).", ";
 					$sql .= "lastringunderbarkpresent=" . dbHelper::formatBool ( $this->getLastRingUnderBarkPresence (), "pg" ) . ", ";
-					$sql .= "missingsapwoodringstobark=" . dbHelper::tellervo_pg_escape_string ( $this->getMissingSapwoodRingsToBark () ) . ", ";
-					$sql .= "missingsapwoodringstobarkfoundation=" . dbHelper::tellervo_pg_escape_string ( $this->getMissingSapwoodRingsToBarkFoundation () ) . ", ";
-					$sql .= "nrofunmeasuredinnerrings=" . dbHelper::tellervo_pg_escape_string ( $this->getNrOfUnmeasuredInnerRings () ) . ", ";
-					$sql .= "nrofunmeasuredouterrings=" . dbHelper::tellervo_pg_escape_string ( $this->getNrOfUnmeasuredOuterRings () ) . ", ";
+					$sql .= "missingsapwoodringstobark=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getMissingSapwoodRingsToBark () ) . ", ";
+					$sql .= "missingsapwoodringstobarkfoundation=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getMissingSapwoodRingsToBarkFoundation () ) . ", ";
+					$sql .= "nrofunmeasuredinnerrings=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getNrOfUnmeasuredInnerRings () ) . ", ";
+					$sql .= "nrofunmeasuredouterrings=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getNrOfUnmeasuredOuterRings () ) . ", ";
 					$sql .= "barkpresent=" . dbHelper::formatBool ( $this->getBarkPresent (), "pg" ) . ", ";
-					$sql .= "azimuth=" . pg_escape_string ( $this->getAzimuth () ) . ", ";
+					$sql .= "azimuth=" . pg_escape_string($dbconn, $this->getAzimuth () ) . ", ";
 					if (isset ( $this->parentEntityArray [0] ))
-						$sql .= "sampleid=" . dbHelper::tellervo_pg_escape_string ( $this->parentEntityArray [0]->getID () ) . ", ";
+						$sql .= "sampleid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->parentEntityArray [0]->getID () ) . ", ";
 					$sql = substr ( $sql, 0, - 2 );
-					$sql .= " WHERE radiusid='" . pg_escape_string ( $this->getID () ) . "'";
+					$sql .= " WHERE radiusid='" . pg_escape_string($dbconn, $this->getID () ) . "'";
 				}
 				
 				$firebug->log ( $sql, "Write sql" );
@@ -548,7 +548,7 @@ class radius extends radiusEntity implements IDBAccessor {
 			$dbconnstatus = pg_connection_status ( $dbconn );
 			if ($dbconnstatus === PGSQL_CONNECTION_OK) {
 				
-				$sql = "DELETE FROM tblradius WHERE radiusid='" . pg_escape_string ( $this->getID () ) . "'";
+				$sql = "DELETE FROM tblradius WHERE radiusid='" . pg_escape_string($dbconn, $this->getID () ) . "'";
 				
 				// Run SQL command
 				if ($sql) {

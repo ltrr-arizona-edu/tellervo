@@ -51,7 +51,7 @@ class element extends elementEntity implements IDBAccessor {
 		}
 		
 		// First find the immediate object entity parent
-		$sql = "SELECT * from cpgdb.findelementobjectancestors('" . pg_escape_string ( $this->getID () ) . "')";
+		$sql = "SELECT * from cpgdb.findelementobjectancestors('" . pg_escape_string($dbconn, $this->getID () ) . "')";
 		$dbconnstatus = pg_connection_status ( $dbconn );
 		if ($dbconnstatus === PGSQL_CONNECTION_OK) {
 			pg_send_query ( $dbconn, $sql );
@@ -151,7 +151,7 @@ class element extends elementEntity implements IDBAccessor {
 				$this->setParamsFromDBRow ( $row );
 				
 				if ($format == 'summary') {
-					$sql = "select cpgdb.getlabel('element', '" . pg_escape_string ( $this->getID () ) . "')";
+					$sql = "select cpgdb.getlabel('element', '" . pg_escape_string($dbconn, $this->getID () ) . "')";
 					pg_send_query ( $dbconn, $sql );
 					$result = pg_get_result ( $dbconn );
 					$row = pg_fetch_array ( $result );
@@ -179,7 +179,7 @@ class element extends elementEntity implements IDBAccessor {
 		global $dbconn;
 		global $firebug;
 		
-		$sql2 = "select sampleid from tblsample where elementid='" . pg_escape_string ( $this->getID () ) . "'";
+		$sql2 = "select sampleid from tblsample where elementid='" . pg_escape_string($dbconn, $this->getID () ) . "'";
 		$firebug->log ( $sql2, "sql for getting children" );
 		$dbconnstatus = pg_connection_status ( $dbconn );
 		if ($dbconnstatus === PGSQL_CONNECTION_OK) {
@@ -637,43 +637,43 @@ class element extends elementEntity implements IDBAccessor {
 						// Trim off trailing space and comma
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ") values (";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getID () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getID () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getTitle () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getComments () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getType ( true ) ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getDescription () ) . ", ";
 					$sql .= dbHelper::phpArrayToPGStrArray ( $this->getFile () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->taxon->getID () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getShape ( true ) ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->taxon->getID () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getShape ( true ) ) . ", ";
 					if ($this->hasDimensions ()) {
-						$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDimensionUnits ( true ) ) . ", ";
-						$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDimension ( 'height' ) ) . ", ";
-						$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDimension ( 'width' ) ) . ", ";
-						$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDimension ( 'depth' ) ) . ", ";
-						$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDimension ( 'diameter' ) ) . ", ";
+						$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getDimensionUnits ( true ) ) . ", ";
+						$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getDimension ( 'height' ) ) . ", ";
+						$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getDimension ( 'width' ) ) . ", ";
+						$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getDimension ( 'depth' ) ) . ", ";
+						$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getDimension ( 'diameter' ) ) . ", ";
 						;
 					}
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getAuthenticity () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getTypeID () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getPrecision () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getComment () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getGeometry () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getAddressLine1 () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getAddressLine2 () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getCityOrTown () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getStateProvinceRegion () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getPostalCode () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getCountry () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getProcessing () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getMarks () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getAltitude () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getSlopeAngle () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getSlopeAzimuth () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getSoilDepth () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getSoilDescription () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getBedrockDescription () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getAuthenticity () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getTypeID () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getPrecision () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getComment () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getGeometry () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getAddressLine1 () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getAddressLine2 () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getCityOrTown () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getStateProvinceRegion () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getPostalCode () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getCountry () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getProcessing () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getMarks () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getAltitude () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getSlopeAngle () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getSlopeAzimuth () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getSoilDepth () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getSoilDescription () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getBedrockDescription () ) . ", ";
 					if (isset ( $this->parentEntityArray [0] ))
-						$sql .= dbHelper::tellervo_pg_escape_string ( $this->parentEntityArray [0]->getID () ) . ", ";
+						$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->parentEntityArray [0]->getID () ) . ", ";
 						
 						// Trim off trailing space and comma
 					$sql = substr ( $sql, 0, - 2 );
@@ -682,45 +682,45 @@ class element extends elementEntity implements IDBAccessor {
 				} else {
 					// Updating DB
 					$sql = "update tblelement set ";
-					$sql .= "code=" . dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
-					$sql .= "comments=" . dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					$sql .= "elementtypeid=" . dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
-					$sql .= "description=" . dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
+					$sql .= "code=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getTitle () ) . ", ";
+					$sql .= "comments=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getComments () ) . ", ";
+					$sql .= "elementtypeid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getType ( true ) ) . ", ";
+					$sql .= "description=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getDescription () ) . ", ";
 					$sql .= "file=" . dbHelper::phpArrayToPGStrArray ( $this->getFile () ) . ", ";
-					$sql .= "taxonid=" . dbHelper::tellervo_pg_escape_string ( $this->taxon->getID () ) . ", ";
-					$sql .= "elementshapeid=" . dbHelper::tellervo_pg_escape_string ( $this->getShape ( true ) ) . ", ";
+					$sql .= "taxonid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->taxon->getID () ) . ", ";
+					$sql .= "elementshapeid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getShape ( true ) ) . ", ";
 					if ($this->hasDimensions ()) {
-						$sql .= "units=" . dbHelper::tellervo_pg_escape_string ( $this->getDimensionUnits ( true ) ) . ", ";
-						$sql .= "height=" . dbHelper::tellervo_pg_escape_string ( $this->getDimension ( 'height' ) ) . ", ";
-						$sql .= "width=" . dbHelper::tellervo_pg_escape_string ( $this->getDimension ( 'width' ) ) . ", ";
-						$sql .= "depth=" . dbHelper::tellervo_pg_escape_string ( $this->getDimension ( 'depth' ) ) . ", ";
-						$sql .= "diameter=" . dbHelper::tellervo_pg_escape_string ( $this->getDimension ( 'diameter' ) ) . ", ";
+						$sql .= "units=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getDimensionUnits ( true ) ) . ", ";
+						$sql .= "height=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getDimension ( 'height' ) ) . ", ";
+						$sql .= "width=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getDimension ( 'width' ) ) . ", ";
+						$sql .= "depth=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getDimension ( 'depth' ) ) . ", ";
+						$sql .= "diameter=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getDimension ( 'diameter' ) ) . ", ";
 					}
-					$sql .= "authenticity=" . dbHelper::tellervo_pg_escape_string ( $this->getAuthenticity () ) . ", ";
-					$sql .= "locationtypeid=" . dbHelper::tellervo_pg_escape_string ( $this->location->getTypeID () ) . ", ";
-					$sql .= "locationprecision=" . dbHelper::tellervo_pg_escape_string ( $this->location->getPrecision () ) . ", ";
-					$sql .= "locationcomment=" . dbHelper::tellervo_pg_escape_string ( $this->location->getComment () ) . ", ";
-					$sql .= "locationgeometry=" . dbHelper::tellervo_pg_escape_string ( $this->location->getGeometry () ) . ", ";
-					$sql .= "locationaddressline1=" . dbHelper::tellervo_pg_escape_string ( $this->location->getAddressLine1 () ) . ", ";
-					$sql .= "locationaddressline2=" . dbHelper::tellervo_pg_escape_string ( $this->location->getAddressLine2 () ) . ", ";
-					$sql .= "locationcityortown=" . dbHelper::tellervo_pg_escape_string ( $this->location->getCityOrTown () ) . ", ";
-					$sql .= "locationstateprovinceregion=" . dbHelper::tellervo_pg_escape_string ( $this->location->getStateProvinceRegion () ) . ", ";
-					$sql .= "locationpostalcode=" . dbHelper::tellervo_pg_escape_string ( $this->location->getPostalCode () ) . ", ";
-					$sql .= "locationcountry=" . dbHelper::tellervo_pg_escape_string ( $this->location->getCountry () ) . ", ";
-					$sql .= "processing=" . dbHelper::tellervo_pg_escape_string ( $this->getProcessing () ) . ", ";
-					$sql .= "marks=" . dbHelper::tellervo_pg_escape_string ( $this->getMarks () ) . ", ";
-					$sql .= "altitude=" . dbHelper::tellervo_pg_escape_string ( $this->getAltitude () ) . ", ";
-					$sql .= "slopeangle=" . dbHelper::tellervo_pg_escape_string ( $this->getSlopeAngle () ) . ", ";
-					$sql .= "slopeazimuth=" . dbHelper::tellervo_pg_escape_string ( $this->getSlopeAzimuth () ) . ", ";
-					$sql .= "soildepth=" . dbHelper::tellervo_pg_escape_string ( $this->getSoilDepth () ) . ", ";
-					$sql .= "soildescription=" . dbHelper::tellervo_pg_escape_string ( $this->getSoilDescription () ) . ", ";
-					$sql .= "bedrockdescription=" . dbHelper::tellervo_pg_escape_string ( $this->getBedrockDescription () ) . ", ";
+					$sql .= "authenticity=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getAuthenticity () ) . ", ";
+					$sql .= "locationtypeid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getTypeID () ) . ", ";
+					$sql .= "locationprecision=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getPrecision () ) . ", ";
+					$sql .= "locationcomment=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getComment () ) . ", ";
+					$sql .= "locationgeometry=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getGeometry () ) . ", ";
+					$sql .= "locationaddressline1=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getAddressLine1 () ) . ", ";
+					$sql .= "locationaddressline2=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getAddressLine2 () ) . ", ";
+					$sql .= "locationcityortown=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getCityOrTown () ) . ", ";
+					$sql .= "locationstateprovinceregion=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getStateProvinceRegion () ) . ", ";
+					$sql .= "locationpostalcode=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getPostalCode () ) . ", ";
+					$sql .= "locationcountry=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->location->getCountry () ) . ", ";
+					$sql .= "processing=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getProcessing () ) . ", ";
+					$sql .= "marks=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getMarks () ) . ", ";
+					$sql .= "altitude=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getAltitude () ) . ", ";
+					$sql .= "slopeangle=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getSlopeAngle () ) . ", ";
+					$sql .= "slopeazimuth=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getSlopeAzimuth () ) . ", ";
+					$sql .= "soildepth=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getSoilDepth () ) . ", ";
+					$sql .= "soildescription=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getSoilDescription () ) . ", ";
+					$sql .= "bedrockdescription=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getBedrockDescription () ) . ", ";
 					if (isset ( $this->parentEntityArray [0] ))
-						$sql .= "objectid=" . dbHelper::tellervo_pg_escape_string ( $this->parentEntityArray [0]->getID () ) . ", ";
+						$sql .= "objectid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->parentEntityArray [0]->getID () ) . ", ";
 						
 						// Trim off trailing space and comma
 					$sql = substr ( $sql, 0, - 2 );
-					$sql .= " where elementid='" . pg_escape_string ( $this->getID () ) . "'";
+					$sql .= " where elementid='" . pg_escape_string($dbconn, $this->getID () ) . "'";
 				}
 				global $firebug;
 				

@@ -162,7 +162,7 @@ abstract class UserExtendableEntity extends dbEntity
 		global $dbconn;
 		global $firebug;
 	
-		$result = pg_query_params("SELECT * FROM vwtbluserdefinedfieldandvalue WHERE entityid=$1", array($this->id));
+		$result = pg_query_params($dbconn, "SELECT * FROM vwtbluserdefinedfieldandvalue WHERE entityid=$1", array($this->id));
 	
 		if($result===FALSE)
 		{
@@ -1389,7 +1389,7 @@ class projectEntity extends UserExtendableEntity
 		
 	function getCategory($asKey=false)
 	{
-		if($this->category==null || strlen($this->category)==0) return null;
+		if($this->category==null || $this->category->getValue()==null || strlen($this->category->getValue())==0) return null;
 
 		if($asKey)
 		{

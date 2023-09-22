@@ -1,3 +1,74 @@
+
+ALTER TABLE tblsample ADD COLUMN IF NOT EXISTS dendrochronologist varchar;
+ALTER TABLE tblsample ADD COLUMN IF NOT EXISTS startyear integer;
+ALTER TABLE tblsample ADD COLUMN IF NOT EXISTS endyear integer;
+ALTER TABLE tblsample ADD COLUMN IF NOT EXISTS haspith boolean;
+ALTER TABLE tblsample ADD COLUMN IF NOT EXISTS hasbark boolean;
+ALTER TABLE tblsample ADD COLUMN IF NOT EXISTS eventyears varchar;
+ALTER TABLE tblsample ADD COLUMN IF NOT EXISTS measuredby varchar;
+
+CREATE SCHEMA IF NOT EXISTS portal;
+
+
+CREATE OR REPLACE FUNCTION cpgdb.preferreddouble(in1 double precision, in2 double precision, in3 double precision) RETURNS double precision AS
+$$
+BEGIN
+
+IF in1 IS NOT NULL THEN RETURN in1; 
+ELSIF in2 IS NOT NULL THEN RETURN in2;
+ELSIF in3 IS NOT NULL THEN RETURN in3;
+END IF;
+
+RETURN NULL; 
+
+END;$$
+LANGUAGE PLPGSQL STABLE;      
+
+
+-- FUNCTION FOR OBTAINING THE PREFERRED/BEST GEOMETRY ID FOR THE SPECIFIED ELEMENT
+-- ELEMENT > OBJECT > PARENT OBJECT
+CREATE OR REPLACE FUNCTION cpgdb.getbestgeometryid(uuid) RETURNS uuid AS 
+$$
+DECLARE                                                           
+  theelementid ALIAS FOR $1;                                      
+  objectgeom geometry;                                            
+  elementgeom geometry;                                           
+  objectrow tblobject;                                            
+  parentobjectrow tblobject;                                      
+BEGIN                                                                                                               
+  SELECT locationgeometry INTO elementgeom                        
+  FROM tblelement e                                               
+  WHERE e.elementid=theelementid;                                 
+                                                                  
+  IF elementgeom IS NOT NULL THEN                                 
+    RETURN theelementid;                                             
+  END IF;                                                         
+                                                                  
+  SELECT tblobject.* INTO objectrow                               
+  FROM tblelement                                                 
+    LEFT JOIN tblobject ON tblelement.objectid=tblobject.objectid 
+  WHERE tblelement.elementid=theelementid;                        
+           
+  IF objectrow.locationgeometry IS NOT NULL THEN
+  	RETURN objectrow.objectid;
+  END IF;
+                                                                        
+  IF objectrow.parentobjectid IS NOT NULL THEN                    
+    SELECT tblobject.* INTO parentobjectrow                         
+    FROM tblobject                                                  
+    WHERE tblobject.objectid=objectrow.parentobjectid;              
+                                                                    
+    IF objectrow.locationgeometry IS NOT NULL THEN                  
+        RETURN objectrow.objectid;                              
+    ELSE                                                            
+        RETURN parentobjectrow.objectid;                        
+    END IF;          
+    
+  END IF;                                                         
+  RETURN objectrow.objectid;                                                                               
+END;$$  
+LANGUAGE PLPGSQL STABLE;      
+
 -- Structural changes
 ALTER TABLE tlkptaxon ADD COLUMN newlabel VARCHAR;
 ALTER TABLE tlkptaxon ADD COLUMN htmllabel VARCHAR;
@@ -52,8 +123,8 @@ DELETE FROM tlkptaxon where taxonid=100;
 DELETE FROM tlkptaxon WHERE taxonid=352;
 
 -- Clear out old CoL IDs
-ALTER TABLE tlkptaxon drop constraint colid;
-ALTER TABLE tlkptaxon drop constraint uniq_colid;
+ALTER TABLE tlkptaxon drop constraint IF EXISTS colid;
+ALTER TABLE tlkptaxon drop constraint IF EXISTS uniq_colid;
 UPDATE tlkptaxon set colid='';
 UPDATE tlkptaxon set colparentid='';
 
@@ -2091,20 +2162,18 @@ RETURN new;
 END;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
-CREATE TRIGGER update_element_rebuildmetacache
-  AFTER INSERT OR UPDATE
-  ON tblelement
-  FOR EACH ROW
-  EXECUTE PROCEDURE cpgdb.rebuildmetacacheforelement();
-
 
 UPDATE tblelement SET colid = tlkptaxon.colid FROM tlkptaxon WHERE tblelement.taxonid=tlkptaxon.taxonid;
-CREATE TRIGGER update_element_rebuildmetacache AFTER INSERT OR UPDATE ON tblelement FOR EACH ROW EXECUTE PROCEDURE cpgdb.rebuildmetacacheforelement();
+CREATE TRIGGER update_element_rebuildmetacache 
+  AFTER INSERT OR UPDATE 
+  ON tblelement 
+  FOR EACH ROW 
+  EXECUTE PROCEDURE cpgdb.rebuildmetacacheforelement();
 	
 	ALTER TABLE tlkptaxon DROP CONSTRAINT "pkey_taxon";
-	DROP VIEW vwtblelement;
-	DROP VIEW vwtblelement2;
-	DROP VIEW vwtlkptaxon;
+	DROP VIEW IF EXISTS vwtblelement;
+	DROP VIEW IF EXISTS vwtblelement2;
+	DROP VIEW IF EXISTS vwtlkptaxon;
 	DROP VIEW IF EXISTS vwportalcomb; 
 	DROP VIEW IF EXISTS vwportaldata1;
 	DROP VIEW IF EXISTS vwportaldata2;
@@ -2201,7 +2270,8 @@ CREATE VIEW vwtblelement AS
     vwt.colparentid,
     vwt.taxonrank,
     unit.unit AS units,
-    unit.unitid
+    unit.unitid,
+    cpgdb.getbestgeometryid(e.elementid) AS bestgeometryid
    FROM tblelement e
      LEFT JOIN tlkpdomain dom ON e.domainid = dom.domainid
      LEFT JOIN tlkpelementshape shape ON e.elementshapeid = shape.elementshapeid
@@ -2272,7 +2342,8 @@ CREATE VIEW vwtblelement2 AS
     vwt.colparentid,
     vwt.taxonrank,
     unit.unit AS units,
-    unit.unitid
+    unit.unitid,
+    cpgdb.getbestgeometryid(e.elementid) AS bestgeometryid
 FROM tblelement e
      LEFT JOIN tlkpdomain dom ON e.domainid = dom.domainid
      LEFT JOIN tlkpelementshape shape ON e.elementshapeid = shape.elementshapeid
@@ -2630,6 +2701,35 @@ as
 
 COMMENT ON FUNCTION cpgdb.qrytaxonomy(taxonid varchar) IS 'This is a cross tab query that builds on qrytaxonflat1 and 2 to flatten out the entire taxonomic element for a given taxonid. ';
 
+CREATE OR REPLACE VIEW vwfirstyear AS 
+SELECT tbluserdefinedfieldvalue.entityid,
+    tbluserdefinedfieldvalue.value
+   FROM tbluserdefinedfieldvalue,
+    tlkpuserdefinedfield
+  WHERE tbluserdefinedfieldvalue.userdefinedfieldid = tlkpuserdefinedfield.userdefinedfieldid AND tlkpuserdefinedfield.userdefinedfieldid = '454f7ae1-cbdf-43c9-bf64-92ebd7842632'::uuid AND tbluserdefinedfieldvalue.value IS NOT NULL AND bit_length(tbluserdefinedfieldvalue.value::text) > 0;
+
+CREATE OR REPLACE VIEW vwlastyear AS 
+ SELECT tbluserdefinedfieldvalue.entityid,
+    tbluserdefinedfieldvalue.value
+   FROM tbluserdefinedfieldvalue,
+    tlkpuserdefinedfield
+  WHERE tbluserdefinedfieldvalue.userdefinedfieldid = tlkpuserdefinedfield.userdefinedfieldid AND tlkpuserdefinedfield.userdefinedfieldid = '41aba235-a06c-45f0-a07d-8e2000a93a5f'::uuid AND tbluserdefinedfieldvalue.value IS NOT NULL AND bit_length(tbluserdefinedfieldvalue.value::text) > 0;
+
+CREATE OR REPLACE FUNCTION convert_to_integer(varchar) RETURNS INTEGER AS $$
+DECLARE
+   v_int_value INTEGER DEFAULT NULL;
+BEGIN
+	BEGIN 
+    	v_int_value := v_input::INTEGER; 
+    EXCEPTION WHEN OTHERS THEN           
+    	RETURN NULL;          
+    END; 
+    
+RETURN v_int_value;    
+END;
+$$ LANGUAGE PLPGSQL VOLATILE;
+
+
 CREATE OR REPLACE VIEW portal.vwportaldata1 AS 
  SELECT p.projectid,
     p.lastmodifiedtimestamp AS projectlastmodifiedtimestamp,
@@ -2848,7 +2948,7 @@ UNION
 
  
 
-GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonomy(taxonid varchar) TO webuser;
-GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonflat2(taxonid varchar) TO webuser;
-GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonflat1(taxonid varchar) TO webuser;
-GRANT EXECUTE ON FUNCTION cpgdb._gettaxonfordepth(integer, typfulltaxonomy) TO webuser;
+--GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonomy(taxonid varchar) TO webuser;
+--GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonflat2(taxonid varchar) TO webuser;
+--GRANT EXECUTE ON FUNCTION cpgdb.qrytaxonflat1(taxonid varchar) TO webuser;
+--GRANT EXECUTE ON FUNCTION cpgdb._gettaxonfordepth(integer, typfulltaxonomy) TO webuser;

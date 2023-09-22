@@ -47,7 +47,7 @@ class taxon extends taxonEntity implements IDBAccessor
         global $dbconn;
         
         
-        $sql = "SELECT * FROM vwtlkptaxon WHERE taxonid='".pg_escape_string($theID)."'";
+        $sql = "SELECT * FROM vwtlkptaxon WHERE taxonid='".pg_escape_string($dbconn, $theID)."'";
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -97,11 +97,11 @@ class taxon extends taxonEntity implements IDBAccessor
 	        
 	        $sql = "SELECT taxonid, colid, label 
 	        		FROM tlkptaxon 
-	        		WHERE colid='".pg_escape_string($CoLID)."'";
+	        		WHERE colid='".pg_escape_string($dbconn, $CoLID)."'";
 
 	        if($CoLNormalName!=NULL)
 	        {
-	        	$sql.=" AND label='".pg_escape_string($CoLNormalName)."'";
+	        	$sql.=" AND label='".pg_escape_string($dbconn, $CoLNormalName)."'";
 	        }
 	        
 	        //echo $sql;
@@ -151,7 +151,7 @@ class taxon extends taxonEntity implements IDBAccessor
         // Lookup taxon rank id
         $sql = "SELECT taxonrankid 
         		FROM tlkptaxonrank 
-        		WHERE taxonrank ilike '".pg_escape_string($taxonRank)."'";
+        		WHERE taxonrank ilike '".pg_escape_string($dbconn, $taxonRank)."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -172,7 +172,7 @@ class taxon extends taxonEntity implements IDBAccessor
         {
             $sql = "SELECT taxonid 
             		FROM tlkptaxon 
-            		WHERE colid=".pg_escape_string($colParentID);
+            		WHERE colid=".pg_escape_string($dbconn, $colParentID);
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
@@ -209,7 +209,7 @@ class taxon extends taxonEntity implements IDBAccessor
     {
         global $dbconn;
         
-        $sql = "SELECT * FROM cpgdb.qrytaxonomy('".pg_escape_string($this->getID())."')";
+        $sql = "SELECT * FROM cpgdb.qrytaxonomy('".pg_escape_string($dbconn, $this->getID())."')";
         //echo $sql;
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)

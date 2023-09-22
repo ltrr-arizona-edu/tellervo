@@ -57,7 +57,7 @@ function deleteFormList()
     global $myAuth;
     global $meta;
 
-    $sql = "DELETE FROM tblodkdefinition WHERE ownerid IN (SELECT securityuserid FROM tblsecurityuser WHERE securityuserid='".pg_escape_string($myAuth->getID())."' AND isactive=TRUE)";
+    $sql = "DELETE FROM tblodkdefinition WHERE ownerid IN (SELECT securityuserid FROM tblsecurityuser WHERE securityuserid='".pg_escape_string($dbconn, $myAuth->getID())."' AND isactive=TRUE)";
 	$firebug->log($sql);
 
     $dbconnstatus = pg_connection_status($dbconn);

@@ -276,7 +276,7 @@ if($debugFlag) $firebug->log($sql, "Starting first loop");
 						        "'".$row['notes']."', ".
 						        "'".$row['sampletype']."', ".
 								"'".$thiselemnum."', ".
-								"'".pg_escape_string($thisElement->getLastErrorMessage())."' ".
+								"'".pg_escape_string($dbconn, $thisElement->getLastErrorMessage())."' ".
 								")";
 						pg_send_query($dbconn, $insertsql);	
 						if($debugFlag) $firebug->log($thisElement->getID(), "Failed to write this element to db");
@@ -582,7 +582,7 @@ function logSampleError($row, $thiselemnum, $error=' ', $update=FALSE)
 		        "'".$row['notes']."', ".
 		        "'".$row['sampletype']."', ".
 				"'".$thiselemnum."', ".
-				"'".pg_escape_string($error)."' ".				
+				"'".pg_escape_string($dbconn, $error)."' ".				
 				")";
 	
 	pg_send_query($dbconn, $insertsql);	

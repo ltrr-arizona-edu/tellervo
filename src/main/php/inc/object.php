@@ -146,7 +146,7 @@ class tobject extends objectEntity implements IDBAccessor {
 			*/
 			
 			// First find all parent objects
-			$sql = "SELECT * from cpgdb.findobjectancestors('" . pg_escape_string ( $this->getID () ) . ", false')";
+			$sql = "SELECT * from cpgdb.findobjectancestors('" . pg_escape_string($dbconn,  $this->getID () ) . ", false')";
 			$dbconnstatus = pg_connection_status ( $dbconn );
 			if ($dbconnstatus === PGSQL_CONNECTION_OK) {
 				pg_send_query ( $dbconn, $sql );
@@ -596,61 +596,61 @@ class tobject extends objectEntity implements IDBAccessor {
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ") values (";
 					
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getID () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getTitle () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getID () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getComments () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getType ( true ) ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getDescription () ) . ", ";
 					$sql .= dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getCreatedTimestamp () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getOwner () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getTemporalCoverage () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getTemporalCoverageFoundation () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getCreatedTimestamp () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getOwner () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getTemporalCoverage () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getTemporalCoverageFoundation () ) . ", ";
 					$sql .= dbHelper::pg_value_wrapper ( $this->location->getGeometry () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getComment () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getTypeID () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getPrecision () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getAddressLine1 () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getAddressLine2 () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getCityOrTown () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getStateProvinceRegion () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getPostalCode () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->location->getCountry () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getCode () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getVegetationType () ) . ", ";
-					if (isset ($this->projectid)) $sql .= dbHelper::tellervo_pg_escape_string ( $this->getProjectID()) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getComment () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getTypeID () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getPrecision () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getAddressLine1 () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getAddressLine2 () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getCityOrTown () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getStateProvinceRegion () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getPostalCode () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getCountry () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getCode () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getVegetationType () ) . ", ";
+					if (isset ($this->projectid)) $sql .= dbHelper::tellervo_pg_escape_string($dbconn,  $this->getProjectID()) . ", ";
 					if (isset ( $this->parentEntityArray ) && count ( $this->parentEntityArray ) > 0)
-						$sql .= "'" . pg_escape_string ( $this->parentEntityArray [0]->getID () ) . "', ";
+						$sql .= "'" . pg_escape_string($dbconn,  $this->parentEntityArray [0]->getID () ) . "', ";
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ")";
 					$sql2 = "select * from tblobject where objectid='" . $this->getID () . "'";
 				} else {
 					// Updating DB
 					$sql = "update tblobject set ";
-					$sql .= "title=" . dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
-					$sql .= "comments=" . dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					$sql .= "objecttypeid=" . dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
-					$sql .= "description=" . dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
+					$sql .= "title=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->getTitle () ) . ", ";
+					$sql .= "comments=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->getComments () ) . ", ";
+					$sql .= "objecttypeid=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->getType ( true ) ) . ", ";
+					$sql .= "description=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->getDescription () ) . ", ";
 					$sql .= "file=" . dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
-					$sql .= "creator=" . dbHelper::tellervo_pg_escape_string ( $this->getCreator () ) . ", ";
-					$sql .= "owner=" . dbHelper::tellervo_pg_escape_string ( $this->getOwner () ) . ", ";
-					$sql .= "coveragetemporal=" . dbHelper::tellervo_pg_escape_string ( $this->getTemporalCoverage () ) . ", ";
-					$sql .= "coveragetemporalfoundation=" . dbHelper::tellervo_pg_escape_string ( $this->getTemporalCoverageFoundation () ) . ", ";
+					$sql .= "creator=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->getCreator () ) . ", ";
+					$sql .= "owner=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->getOwner () ) . ", ";
+					$sql .= "coveragetemporal=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->getTemporalCoverage () ) . ", ";
+					$sql .= "coveragetemporalfoundation=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->getTemporalCoverageFoundation () ) . ", ";
 					$sql .= "locationgeometry=" . dbHelper::pg_value_wrapper ( $this->location->getGeometry () ) . ", ";
-					$sql .= "locationcomment=" . dbHelper::tellervo_pg_escape_string ( $this->location->getComment () ) . ", ";
+					$sql .= "locationcomment=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getComment () ) . ", ";
 					$sql .= "locationtypeid=" . dbHelper::pg_value_wrapper ( $this->location->getTypeID () ) . ", ";
-					$sql .= "locationprecision=" . dbHelper::tellervo_pg_escape_string ( $this->location->getPrecision () ) . ", ";
-					$sql .= "locationaddressline1=" . dbHelper::tellervo_pg_escape_string ( $this->location->getAddressLine1 () ) . ", ";
-					$sql .= "locationaddressline2=" . dbHelper::tellervo_pg_escape_string ( $this->location->getAddressLine2 () ) . ", ";
-					$sql .= "locationcityortown=" . dbHelper::tellervo_pg_escape_string ( $this->location->getCityOrTown () ) . ", ";
-					$sql .= "locationstateprovinceregion=" . dbHelper::tellervo_pg_escape_string ( $this->location->getStateProvinceRegion () ) . ", ";
-					$sql .= "locationpostalcode=" . dbHelper::tellervo_pg_escape_string ( $this->location->getPostalCode () ) . ", ";
-					$sql .= "locationcountry=" . dbHelper::tellervo_pg_escape_string ( $this->location->getCountry () ) . ", ";
-					$sql .= "code=" . dbHelper::tellervo_pg_escape_string ( $this->getCode () ) . ", ";
-					$sql .= "vegetationtype=" . dbHelper::tellervo_pg_escape_string ( $this->getVegetationType () ) . ", ";
-					if(isset($this->projectid)) $sql .= "projectid=".dbHelper::tellervo_pg_escape_string ( $this->getProjectID()) . ", ";
+					$sql .= "locationprecision=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getPrecision () ) . ", ";
+					$sql .= "locationaddressline1=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getAddressLine1 () ) . ", ";
+					$sql .= "locationaddressline2=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getAddressLine2 () ) . ", ";
+					$sql .= "locationcityortown=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getCityOrTown () ) . ", ";
+					$sql .= "locationstateprovinceregion=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getStateProvinceRegion () ) . ", ";
+					$sql .= "locationpostalcode=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getPostalCode () ) . ", ";
+					$sql .= "locationcountry=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->location->getCountry () ) . ", ";
+					$sql .= "code=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->getCode () ) . ", ";
+					$sql .= "vegetationtype=" . dbHelper::tellervo_pg_escape_string($dbconn,  $this->getVegetationType () ) . ", ";
+					if(isset($this->projectid)) $sql .= "projectid=".dbHelper::tellervo_pg_escape_string($dbconn,  $this->getProjectID()) . ", ";
 					if (isset ( $this->parentEntityArray ) && count ( $this->parentEntityArray ) > 0)
-						$sql .= "parentobject='" . pg_escape_string ( $this->parentEntityArray[0]->getID () ) . ", ";
+						$sql .= "parentobject='" . pg_escape_string($dbconn,  $this->parentEntityArray[0]->getID () ) . ", ";
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= " where objectid='" . $this->getID () . "'";
 				}

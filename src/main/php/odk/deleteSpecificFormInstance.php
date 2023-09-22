@@ -58,7 +58,7 @@ function deleteFormList()
     global $meta;
     global $mediaStoreFolder;
 
-    $sql = "DELETE FROM tblodkinstance WHERE ownerid IN (SELECT securityuserid from tblsecurityuser where securityuserid='".pg_escape_string($myAuth->getID())."' and isactive=TRUE)";
+    $sql = "DELETE FROM tblodkinstance WHERE ownerid IN (SELECT securityuserid from tblsecurityuser where securityuserid='".pg_escape_string($dbconn, $myAuth->getID())."' and isactive=TRUE)";
 	$firebug->log($sql);
 
     $dbconnstatus = pg_connection_status($dbconn);

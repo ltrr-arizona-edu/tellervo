@@ -18,8 +18,8 @@ import org.tellervo.desktop.wsi.WSIServerDetails;
 
 
 public class UpdateChecker {
-	private static String latestVersionURL = "http://www.tellervo.org/updatechecker/mostrecentdesktopversion";
-	private static String serverRequiredForLatestDesktop = "http://www.tellervo.org/updatechecker/serverrequiredformostrecentdesktopversion";
+	private static String latestVersionURL = "https://tellervo.org/updatechecker/mostrecentdesktopversion";
+	private static String serverRequiredForLatestDesktop = "https://tellervo.org/updatechecker/serverrequiredformostrecentdesktopversion";
 	private static String downloadPage = "http://www.tellervo.org/download/";
 	  private final static Logger log = LoggerFactory.getLogger(UpdateChecker.class);
 

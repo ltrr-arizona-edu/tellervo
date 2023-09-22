@@ -58,15 +58,15 @@ class box extends boxEntity implements IDBAccessor
     function setParamsFromDB($theID)
     {
         global $dbconn;
-        global $firebug;
+        //global $firebug;
         
         if($theID==NULL) {
-		$firebug->log("Box is null");
+		//$firebug->log("Box is null");
 		return FALSE;
 	}
         
         $this->setID($theID);
-        $sql = "SELECT * from vwtblbox WHERE boxid='".pg_escape_string($this->getID())."'";
+        $sql = "SELECT * from vwtblbox WHERE boxid='".pg_escape_string($dbconn, $this->getID())."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -74,8 +74,8 @@ class box extends boxEntity implements IDBAccessor
             $result = pg_get_result($dbconn);
             if(pg_num_rows($result)==0)
             {
-            	$firebug->log(__LINE__, "line no");
-            	$firebug->log($sql, "sql is");
+            	//$firebug->log(__LINE__, "line no");
+            	//$firebug->log($sql, "sql is");
                 // No records match the id specified
                 trigger_error("903"."No records match the specified box id", E_USER_ERROR);
                 return FALSE;
@@ -101,11 +101,11 @@ class box extends boxEntity implements IDBAccessor
     function setParamsFromDBFromName($name)
     {
         global $dbconn;
-        global $firebug;
+        //global $firebug;
         
         if($name==NULL) return FALSE;
         
-        $sql = "SELECT * from vwtblbox WHERE title='".pg_escape_string($name)."'";
+        $sql = "SELECT * from vwtblbox WHERE title='".pg_escape_string($dbconn, $name)."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -113,8 +113,8 @@ class box extends boxEntity implements IDBAccessor
             $result = pg_get_result($dbconn);
             if(pg_num_rows($result)==0)
             {
-            	$firebug->log(__LINE__, "line no");
-            	$firebug->log($sql, "sql is");
+            	//$firebug->log(__LINE__, "line no");
+            	//$firebug->log($sql, "sql is");
                 // No records match the id specified
                 trigger_error("903"."No records match the specified id", E_USER_ERROR);
                 return FALSE;
@@ -148,10 +148,10 @@ class box extends boxEntity implements IDBAccessor
         // RadiusRadiusNotes
 
         global $dbconn;
-        global $firebug;
+        //global $firebug;
         
         
-        $sql  = "select sampleid from tblsample where boxid='".pg_escape_string($this->getID())."'";
+        $sql  = "select sampleid from tblsample where boxid='".pg_escape_string($dbconn, $this->getID())."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -397,11 +397,11 @@ class box extends boxEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if($this->getTitle()!=NULL)                   				$sql.="'".pg_escape_string($this->getTitle())."', ";
-                        if($this->getID()!=NULL)                   					$sql.="'".pg_escape_string($this->getID())."', ";
-                        if($this->getComments()!=NULL)                   			$sql.="'".pg_escape_string($this->getComments())."', ";
-						if($this->getCurationLocation()!=NULL)						$sql.="'".pg_escape_string($this->getCurationLocation())."', ";
-						if($this->getTrackingLocation()!=NULL)						$sql.="'".pg_escape_string($this->getTrackingLocation())."', ";
+                        if($this->getTitle()!=NULL)                   				$sql.="'".pg_escape_string($dbconn, $this->getTitle())."', ";
+                        if($this->getID()!=NULL)                   					$sql.="'".pg_escape_string($dbconn, $this->getID())."', ";
+                        if($this->getComments()!=NULL)                   			$sql.="'".pg_escape_string($dbconn, $this->getComments())."', ";
+						if($this->getCurationLocation()!=NULL)						$sql.="'".pg_escape_string($dbconn, $this->getCurationLocation())."', ";
+						if($this->getTrackingLocation()!=NULL)						$sql.="'".pg_escape_string($dbconn, $this->getTrackingLocation())."', ";
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -411,13 +411,13 @@ class box extends boxEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql.="UPDATE tblbox SET ";
-                        $sql.="title='".pg_escape_string($this->getCode())."', ";
-                        $sql.="comments='".pg_escape_string($this->getComments())."', ";
-						$sql.="curationlocation='".pg_escape_string($this->getCurationLocation())."', ";
-						$sql.="trackinglocation='".pg_escape_string($this->getTrackingLocation())."', ";
+                        $sql.="title='".pg_escape_string($dbconn, $this->getCode())."', ";
+                        $sql.="comments='".pg_escape_string($dbconn, $this->getComments())."', ";
+						$sql.="curationlocation='".pg_escape_string($dbconn, $this->getCurationLocation())."', ";
+						$sql.="trackinglocation='".pg_escape_string($dbconn, $this->getTrackingLocation())."', ";
 						
                     $sql = substr($sql, 0, -2);
-                    $sql.= " WHERE boxid='".pg_escape_string($this->getID())."'";
+                    $sql.= " WHERE boxid='".pg_escape_string($dbconn, $this->getID())."'";
                     $firebug->log($sql, "Box update SQL");
                 }
  
@@ -479,7 +479,7 @@ class box extends boxEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "DELETE FROM tblbox WHERE boxid='".pg_escape_string($this->getID())."'";
+                $sql = "DELETE FROM tblbox WHERE boxid='".pg_escape_string($dbconn, $this->getID())."'";
 
                 $firebug->log($sql, "delete sql");
                 

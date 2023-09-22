@@ -156,7 +156,7 @@ class userDefinedFieldAndValue
 		if($this->userdefinedfieldvalueid!=null)
 		{
 			// Updating
-			$result = pg_query_params("UPDATE tbluserdefinedfieldvalue SET value=$1 WHERE userdefinedfieldvalueid=$2", array($this->value, $this->userdefinedfieldvalueid));
+			$result = pg_query_params($dbconn, "UPDATE tbluserdefinedfieldvalue SET value=$1 WHERE userdefinedfieldvalueid=$2", array($this->value, $this->userdefinedfieldvalueid));
 			
 			if($result===FALSE)
 			{
@@ -171,7 +171,7 @@ class userDefinedFieldAndValue
 		{
 			// Creating new record 
 			
-			$result = pg_query_params("INSERT INTO tbluserdefinedfieldvalue ( userdefinedfieldid, entityid, value) VALUES ($1, $2, $3) RETURNING userdefinedfieldvalueid", array($this->userdefinedfieldid, $this->entityid, $this->value));
+			$result = pg_query_params($dbconn, "INSERT INTO tbluserdefinedfieldvalue ( userdefinedfieldid, entityid, value) VALUES ($1, $2, $3) RETURNING userdefinedfieldvalueid", array($this->userdefinedfieldid, $this->entityid, $this->value));
 			if($result===FALSE)
 			{
 				$firebug->log("Failed to write user defined field value to the database");

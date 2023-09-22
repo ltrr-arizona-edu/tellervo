@@ -135,10 +135,10 @@ function writeInstanceToDB($instanceName, $instance, $fileArray)
 
     $sql = "INSERT INTO tblodkinstance (deviceid, ownerid, name, instance, files) values (";
 
-    $sql.=dbHelper::tellervo_pg_escape_string($deviceid).", ";
-    $sql.=dbHelper::tellervo_pg_escape_string($odkauth->getUserID()).", ";
-    $sql.=dbHelper::tellervo_pg_escape_string($instanceName).", ";
-    $sql.=dbHelper::tellervo_pg_escape_string($instance).", ";
+    $sql.=dbHelper::tellervo_pg_escape_string($dbconn, $deviceid).", ";
+    $sql.=dbHelper::tellervo_pg_escape_string($dbconn, $odkauth->getUserID()).", ";
+    $sql.=dbHelper::tellervo_pg_escape_string($dbconn, $instanceName).", ";
+    $sql.=dbHelper::tellervo_pg_escape_string($dbconn, $instance).", ";
     $sql.=dbHelper::phpArrayToPGStrArray($fileArray); 
     $sql.=")";
   

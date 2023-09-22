@@ -80,9 +80,9 @@ foreach($children as $site)
 			if($location->getDDLat()!=0 && $location->getDDLong()!=0)
 			{
 				//echo "Location of $code - $name is: \n Original string = ".$location->asISODate()."\n Latitude  = ".$location->getDDLat()."\n Longitude = ".$location->getDDLong()."\n";
-				echo "update tblobject set locationgeometry=setsrid(makepoint(".sprintf("%1.8f",pg_escape_string($location->getDDLong())).", "
-				.sprintf("%1.8f",pg_escape_string($location->getDDLat()))."), "
-				.pg_escape_string($srid).") where tblobject.code='".$code."';\n";
+				echo "update tblobject set locationgeometry=setsrid(makepoint(".sprintf("%1.8f",pg_escape_string($dbconn, $location->getDDLong())).", "
+				.sprintf("%1.8f",pg_escape_string($dbconn, $location->getDDLat()))."), "
+				.pg_escape_string($dbconn, $srid).") where tblobject.code='".$code."';\n";
 			}
 
 		}

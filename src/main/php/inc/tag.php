@@ -57,7 +57,7 @@ class tag extends tagEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "SELECT * FROM tbltag WHERE tagid='".pg_escape_string($this->getID())."'";
+        $sql = "SELECT * FROM tbltag WHERE tagid='".pg_escape_string($dbconn, $this->getID())."'";
 		$firebug->log($sql, "tag sql");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -99,7 +99,7 @@ class tag extends tagEntity implements IDBAccessor
 	global $firebug;
         global $dbconn;
         
-        $sql = "SELECT * FROM tblvmeasurementtotag WHERE tagid='".pg_escape_string($this->getID())."'";
+        $sql = "SELECT * FROM tblvmeasurementtotag WHERE tagid='".pg_escape_string($dbconn, $this->getID())."'";
 		$firebug->log($sql, "tag link sql");
 	$firebug->log($sql, "ChildParamsFromDB SQL in tag");
         $dbconnstatus = pg_connection_status($dbconn);
@@ -317,9 +317,9 @@ class tag extends tagEntity implements IDBAccessor
 	   if($this->getID()==NULL) $this->setID(uuid::getUUID(), $domain);  
 	
 	   $sql = "INSERT INTO tbltag (tagid, ownerid, tag) values (";
-	   $sql.= dbHelper::tellervo_pg_escape_string($this->getID()). ", ";	
-           $sql.= dbHelper::tellervo_pg_escape_string($this->getOwnerID()).  ", ";     
-	   $sql.= dbHelper::tellervo_pg_escape_string($this->getTagText()).  ", "; 
+	   $sql.= dbHelper::tellervo_pg_escape_string($dbconn, $this->getID()). ", ";	
+           $sql.= dbHelper::tellervo_pg_escape_string($dbconn, $this->getOwnerID()).  ", ";     
+	   $sql.= dbHelper::tellervo_pg_escape_string($dbconn, $this->getTagText()).  ", "; 
 	   $sql = substr($sql, 0, -2);
            $sql.=")";
            
@@ -340,14 +340,14 @@ class tag extends tagEntity implements IDBAccessor
 		    case 23505:
 			    // Unique constraint error
 			    $firebug->log("This tag already exists.  Grabbing existing ID and continuing");
-			    $readsql = "SELECT tagid FROM tbltag WHERE tag=".dbHelper::tellervo_pg_escape_string($this->getTagText());
+			    $readsql = "SELECT tagid FROM tbltag WHERE tag=".dbHelper::tellervo_pg_escape_string($dbconn, $this->getTagText());
 			    if($this->getOwnerID()==NULL)
 			    {
 				$readsql.=" AND ownerid IS NULL";
 			    }
 			    else
 			    {
-				$readsql.=" AND ownerid=".dbHelper::tellervo_pg_escape_string($this->getOwnerID());
+				$readsql.=" AND ownerid=".dbHelper::tellervo_pg_escape_string($dbconn, $this->getOwnerID());
 			    }
 			    
 			    
@@ -389,9 +389,9 @@ class tag extends tagEntity implements IDBAccessor
 	else if ($crudMode=="update")
 	{
 	   $sql = "UPDATE tbltag SET ";
-	   $sql.= "ownerid=".dbHelper::tellervo_pg_escape_string($this->getOwnerID()).", ";
-	   $sql.= "tag=".dbHelper::tellervo_pg_escape_string($this->getTagText())." ";
-	   $sql.= "WHERE tagid=". dbHelper::tellervo_pg_escape_string($this->getID());
+	   $sql.= "ownerid=".dbHelper::tellervo_pg_escape_string($dbconn, $this->getOwnerID()).", ";
+	   $sql.= "tag=".dbHelper::tellervo_pg_escape_string($dbconn, $this->getTagText())." ";
+	   $sql.= "WHERE tagid=". dbHelper::tellervo_pg_escape_string($dbconn, $this->getID());
            
            $firebug->log($sql, "SQL");
            

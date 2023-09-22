@@ -394,33 +394,33 @@ class project extends projectEntity implements IDBAccessor {
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ") values (";
 					
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getID () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getTitle () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getID () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getComments () ) . ", ";
 					$sql .= dbHelper::phpArrayToPGStrArray ( $this->getTypes(true) ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getDescription () ) . ", ";
 					$sql .= dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getRequestDate() ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getInvestigator () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getPeriod () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getCommissioner () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getCategory( true ) ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getRequestDate() ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getInvestigator () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getPeriod () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getCommissioner () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getCategory( true ) ) . ", ";
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ")";
 					$sql2 = "select * from tblproject where projectid='" . $this->getID () . "'";
 				} else {
 					// Updating DB
 					$sql = "update tblproject set ";
-					$sql .= "title=" . dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
-					$sql .= "comments=" . dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					//$sql .= "projecttypeid=" . dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
-					$sql .= "description=" . dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
+					$sql .= "title=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getTitle () ) . ", ";
+					$sql .= "comments=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getComments () ) . ", ";
+					//$sql .= "projecttypeid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getType ( true ) ) . ", ";
+					$sql .= "description=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getDescription () ) . ", ";
 					$sql .= "file=" . dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
-					$sql .= "requestdate=" . dbHelper::tellervo_pg_escape_string ( $this->getRequestDate () ) . ", ";
-					$sql .= "investigator=" . dbHelper::tellervo_pg_escape_string ( $this->getInvestigator () ) . ", ";
-					$sql .= "period=" . dbHelper::tellervo_pg_escape_string ( $this->getPeriod () ) . ", ";
-					$sql .= "commissioner=" . dbHelper::tellervo_pg_escape_string ( $this->getCommissioner () ) . ", ";
-					$sql .= "projectcategoryid=" . dbHelper::tellervo_pg_escape_string ( $this->getCategory ( true ) ) . ", ";
+					$sql .= "requestdate=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getRequestDate () ) . ", ";
+					$sql .= "investigator=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getInvestigator () ) . ", ";
+					$sql .= "period=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getPeriod () ) . ", ";
+					$sql .= "commissioner=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getCommissioner () ) . ", ";
+					$sql .= "projectcategoryid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getCategory ( true ) ) . ", ";
 						
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= " where projectid='" . $this->getID () . "'";

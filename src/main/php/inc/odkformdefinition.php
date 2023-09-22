@@ -59,7 +59,7 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "SELECT * FROM tblodkdefinition WHERE odkdefinitionid='".pg_escape_string($this->getID())."'";
+        $sql = "SELECT * FROM tblodkdefinition WHERE odkdefinitionid='".pg_escape_string($dbconn, $this->getID())."'";
 		$firebug->log($sql, "odkformdefinition sql");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -255,11 +255,11 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
 	   if($this->getID()==NULL) $this->setID(uuid::getUUID(), $domain);  
 	
 	   $sql = "INSERT INTO tblodkdefinition (odkdefinitionid, name, ownerid, ispublic, definition) values (";
-	   $sql.= dbHelper::tellervo_pg_escape_string($this->getID()). ", ";	
-	   $sql.= dbHelper::tellervo_pg_escape_string($this->getName()). ", ";	
-           $sql.= dbHelper::tellervo_pg_escape_string($this->getOwnerID()).  ", ";     
+	   $sql.= dbHelper::tellervo_pg_escape_string($dbconn, $this->getID()). ", ";	
+	   $sql.= dbHelper::tellervo_pg_escape_string($dbconn, $this->getName()). ", ";	
+           $sql.= dbHelper::tellervo_pg_escape_string($dbconn, $this->getOwnerID()).  ", ";     
            $sql.= dbHelper::formatBool($this->getIsPublic(), 'pg').  ", ";     
-	   $sql.= dbHelper::tellervo_pg_escape_string($this->getDefinition()).  ", "; 
+	   $sql.= dbHelper::tellervo_pg_escape_string($dbconn, $this->getDefinition()).  ", "; 
 	   $sql = substr($sql, 0, -2);
            $sql.=")";
            
@@ -290,10 +290,10 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
 	else if ($crudMode=="update")
 	{
 	   $sql = "UPDATE tblodkdefinition SET ";
-	   $sql.= "ownerid=".dbHelper::tellervo_pg_escape_string($this->getOwnerID()).", ";
-	   $sql.= "name=".dbHelper::tellervo_pg_escape_string($this->getName()).", ";
-	   $sql.= "definition=".dbHelper::tellervo_pg_escape_string($this->getDefinition()).", ";
-	   $sql.= "WHERE odkdefinitionid=". dbHelper::tellervo_pg_escape_string($this->getID());
+	   $sql.= "ownerid=".dbHelper::tellervo_pg_escape_string($dbconn, $this->getOwnerID()).", ";
+	   $sql.= "name=".dbHelper::tellervo_pg_escape_string($dbconn, $this->getName()).", ";
+	   $sql.= "definition=".dbHelper::tellervo_pg_escape_string($dbconn, $this->getDefinition()).", ";
+	   $sql.= "WHERE odkdefinitionid=". dbHelper::tellervo_pg_escape_string($dbconn, $this->getID());
 
            
            $firebug->log($sql, "SQL");

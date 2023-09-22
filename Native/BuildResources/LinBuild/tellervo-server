@@ -66,8 +66,8 @@ $user 			  = "tellervo";
 $pwd 			  = "";
 $wsurl 			  = "";
 $errorsFound 	  = FALSE;
-$postgresversion  = "11";
-$postgisversion   = "3.0";
+$postgresversion  = "14";
+$postgisversion   = "3.2";
 $folderbase       = "/usr/share/tellervo-server/";
 $pg_hba_file      = "/etc/postgres/?";  // set later
 $pg_hba_file_orig = "/etc/postgres/?"; // set later
@@ -222,7 +222,7 @@ else if(isset($args["firstrun"]))
 	runDBUpgrades(true);
 	generateSystemsConfig();
 	include($systemconfig);
-	echo $colors->getColoredString("\n\nStep 5 - Configuring the Apache webservice...\n\n", "light_purple");
+	echo $colors->getColoredString("\n\nStep 5 - Configuring the / webservice...\n\n", "light_purple");
 	apacheSetup();
 	echo $colors->getColoredString("\n\nStep 6 - Verifying setup...\n\n", "light_purple");
 	verifySetup();
@@ -263,7 +263,6 @@ else if(isset($args["deploy"]))
 	{
 		exec("rm /usr/share/tellervo-server/server_credentials");
 	}
-
 	echo "Move first run script into place...\n\n";
 	if (file_exists("/usr/share/tellervo-server/firstrun.template"))
 	{
@@ -271,7 +270,7 @@ else if(isset($args["deploy"]))
 	}
 
 	echo "Installing power interface stuff for clean shutdowns...\n\n";
-	exec("apt-get -q -y install acpid");
+	exec("apt get -q -y install acpid");
 
 	removeNetworkPersistence();
 
@@ -653,7 +652,7 @@ function restoreDB($dbfilename)
     exec("su - postgres -c \"psql -d ".$dbname." -f ".$postgisspatialrefsys." 2>> ".$logfile."\"");
     exec("su - postgres -c \"psql -d ".$dbname." -f ".$postgislegacy." 2>> ".$logfile."\"");
     echo "\nConfiguring PLJava extension.\n";
-    exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-1.3.0e.notransaction.sql 2>> ".$logfile."\"");
+    sexec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-1.3.0e.notransaction.sql 2>> ".$logfile."\"");
     echo "\nApplying PostGIS upgrade patches.  This could take some time on larger databases...\n";
     shell_exec("su - postgres -c \"".$postgisrestore." ".$dbfilename." | psql ".$dbname." 2>> ".$logfile."\"");
     echo "\nFinalising PLJava extension configuration...\n";
@@ -873,7 +872,7 @@ function printHelp($forced=false)
   echo "  * Root or sudo privileges are required to run these commands\n";
   echo "\n";
 
-  if(forced) exit(1);
+  if($forced) exit(1);
 
   exit(0);
 
@@ -1476,6 +1475,7 @@ function getIP()
 function setConfigVariable($var, $value)
 {
   global $configfile;
+  global $logfile;  
 
   $files_to_search = array($configfile);
 
@@ -2198,15 +2198,15 @@ function writeStdErr($error)
  */
 function haveNetworkConnectivity()
 {
-	$command = "ping -c1 google.com";
+	$command = "ping -c1 google.com 2> /dev/null";
 	exec($command, $result, $returncode);
 	if($returncode==0) return true;
 
-	$command = "ping -c1 yahoo.com";
+	$command = "ping -c1 yahoo.com 2> /dev/null";
 	exec($command, $result, $returncode);
 	if($returncode==0) return true;
 
-	$command = "ping -c1 bbc.co.uk";
+	$command = "ping -c1 bbc.co.uk 2> /dev/null";
 	exec($command, $result, $returncode);
 	if($returncode==0) return true;
 
@@ -2215,54 +2215,6 @@ function haveNetworkConnectivity()
 }
 
 
-/**
- * Copyright (c) 2002-2005, Richard Heyes
- * All rights reserved.
- *
- * PHP version 4, 5
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *  o Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  o Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *  o The names of the authors may not be used to endorse or promote
- *    products derived from this software without specific prior written
- *    permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * @category File
- * @package  File_SearchReplace
- * @author   Richard Heyes <richard@phpguru.org>
- * @license  http://www.opensource.org/licenses/bsd-license.php BSD
- * @version  CVS: $Id: SearchReplace.php 304758 2010-10-25 10:29:02Z clockwerx $
- * @link     http://pear.php.net/File_SearchReplace
- */
-
-/**
- * Search and Replace Utility
- *
- * @category File
- * @package  File_SearchReplace
- * @author   Richard Heyes <richard@phpguru.org>
- * @license  http://www.opensource.org/licenses/bsd-license.php BSD
- * @link     http://pear.php.net/File_SearchReplace
- */
 class File_SearchReplace
 {
 
@@ -2298,7 +2250,7 @@ class File_SearchReplace
      *
      * @access public
      */
-    function File_SearchReplace($find, $replace, $files, $directories = '',
+    function __construct($find, $replace, $files, $directories = '',
                                 $include_subdir = true, $ignore_lines = array())
     {
 

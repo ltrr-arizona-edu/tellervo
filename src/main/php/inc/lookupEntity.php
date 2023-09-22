@@ -63,9 +63,9 @@ class lookupEntity
 		if( ($id!=NULL) && ($value==NULL) )
 		{
 			// ID but no value
-			$sql =   "SELECT ".pg_escape_string($this->fieldname)." AS thevalue "
-				 	."FROM ".pg_escape_string($this->tablename)." "
-				 	."WHERE ".pg_escape_string($this->idfieldname)." = '".pg_escape_string($id)."'";
+			$sql =   "SELECT ".pg_escape_string($dbconn, $this->fieldname)." AS thevalue "
+				 	."FROM ".pg_escape_string($dbconn, $this->tablename)." "
+				 	."WHERE ".pg_escape_string($dbconn, $this->idfieldname)." = '".pg_escape_string($dbconn, $id)."'";
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
@@ -92,9 +92,9 @@ class lookupEntity
 		elseif ( ($id==NULL) && ($value!=NULL) )
 		{	
 			// Value given but no ID
-			$sql =   "SELECT ".pg_escape_string($this->idfieldname)." AS theid "
-					."FROM ".pg_escape_string($this->tablename)." "
-					."WHERE ".pg_escape_string($this->fieldname).$operator." '".pg_escape_string($value)."'";
+			$sql =   "SELECT ".pg_escape_string($dbconn, $this->idfieldname)." AS theid "
+					."FROM ".pg_escape_string($dbconn, $this->tablename)." "
+					."WHERE ".pg_escape_string($dbconn, $this->fieldname).$operator." '".pg_escape_string($dbconn, $value)."'";
 
             $dbconnstatus = pg_connection_status($dbconn);
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)

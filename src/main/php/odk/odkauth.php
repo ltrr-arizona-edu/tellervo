@@ -10,8 +10,8 @@
 	global $baseFolder; 
 	$baseFolder = "/var/www/tellervo-servers/dev/";
 
-	require_once($baseFolder.'/inc/FirePHPCore/FirePHP.class.php');
-	$firebug = FirePHP::getInstance(true);
+	//require_once($baseFolder.'/inc/FirePHPCore/FirePHP.class.php');
+	//$firebug = FirePHP::getInstance(true);
 	try{
 	require_once($baseFolder.'/config.php');
 	require_once($baseFolder."/inc/dbsetup.php");
@@ -35,8 +35,8 @@ class ODKAuth
 	function getDBPwd($theUsername)
 	{
 	    global $dbconn;
-	    global $firebug;
-	    $sql = "select * from tblsecurityuser where username='".pg_escape_string($theUsername)."' and isactive=true";
+	    //global $firebug;
+	    $sql = "select * from tblsecurityuser where username='".pg_escape_string($dbconn, $theUsername)."' and isactive=true";
 
 	    $dbconnstatus = pg_connection_status($dbconn);
 	    if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -92,11 +92,11 @@ class ODKAuth
 	{
 	   global $domain;
 	   global $bits;
-	   global $firebug;
+	   //global $firebug;
 
 	   $rand = rand();
 
-	   $firebug->log("auth req");
+	   //$firebug->log("auth req");
 
 	    header('HTTP/1.1 401 Unauthorized');
 	    header('WWW-Authenticate: Digest realm="'.$domain.
@@ -123,9 +123,9 @@ class ODKAuth
 	// function to parse the http auth header
 	function http_digest_parse($txt)
 	{
-	    global $firebug;
+	    //global $firebug;
 	    
-	    $firebug->log($txt, "headers text");
+	    //$firebug->log($txt, "headers text");
 
 	    // protect against missing data
 	    $needed_parts = array('nonce'=>1, 'nc'=>1, 'cnonce'=>1, 'qop'=>1, 'username'=>1, 'uri'=>1, 'response'=>1);
@@ -139,7 +139,7 @@ class ODKAuth
 		unset($needed_parts[$m[1]]);
 	    }
 
-	    $firebug->log($data, "headers");
+	    //$firebug->log($data, "headers");
 
             $this->username = $data['username'];
 	    //return $needed_parts ? false : $data;
@@ -149,7 +149,7 @@ class ODKAuth
 
 	function doAuthentication()
 	{
-		global $firebug;
+		//global $firebug;
 		global $domain;
 		$bits=8;
 
@@ -162,7 +162,7 @@ class ODKAuth
 		}
 
 		$dbpwd = $this->getDBPwd($data['username']);
-		$firebug->log($dbpwd, "dbpwd");
+		//$firebug->log($dbpwd, "dbpwd");
 
 
 		// generate the valid response
@@ -176,9 +176,9 @@ class ODKAuth
 		$valid_response = md5($valid_responsea);
 
 
-		$firebug->log($data['response'], "response from client");
+		//$firebug->log($data['response'], "response from client");
 
-		$firebug->log($valid_response, "response from server");
+		//$firebug->log($valid_response, "response from server");
 		if ($data['response'] != $valid_response)
 		{
 			$this->printAuthReq();

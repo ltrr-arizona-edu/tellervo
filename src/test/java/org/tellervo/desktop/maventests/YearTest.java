@@ -22,9 +22,12 @@ package org.tellervo.desktop.maventests;
 import junit.framework.TestCase;
 
 import java.util.Iterator;
+import java.util.UUID;
 
 import org.tellervo.desktop.Range;
 import org.tellervo.desktop.Year;
+import org.tellervo.desktop.labelgen.LabBarcode;
+import org.tellervo.desktop.labelgen.LabBarcode.Type;
 import org.tellervo.desktop.metadata.MetadataTemplate;
 
 
@@ -33,6 +36,42 @@ public class YearTest extends TestCase {
         super(name);
     }
 
+    public void testBarcodeEncoding() {
+    	
+    	// Creating two UUIDs
+        UUID UUID_1
+            = UUID
+                  .fromString(
+                      "58e0a7d7-eebc-11d8-9669-0800200c9a66");
+  
+        // Displaying the UUID
+        System.out.println("UUID: "
+                           + UUID_1);
+  
+        // Displaying the value of UUID
+        System.out.println("The value is: "
+                           + UUID_1.clockSequence());
+  
+        // Getting the most significant 64 bit
+        System.out.println("The most significant 64 bit: "
+                           + UUID_1
+                                 .getLeastSignificantBits());
+    
+        String b64enc = LabBarcode.encode(Type.SAMPLE, UUID_1);
+        
+        System.out.println("b64enc: "+b64enc);
+        
+        System.out.println("decoded: "+LabBarcode.decode(b64enc).uuid);
+        
+        
+        String b64enc2 = LabBarcode.encodeHalf(Type.SAMPLE, UUID_1);
+        
+        System.out.println("b64encHalf: "+b64enc2);
+        System.out.println("b64encHalf: "+LabBarcode.decodeHalf(b64enc2));
+
+        
+    }
+    
     //
     // testing Year.java
     //

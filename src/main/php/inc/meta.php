@@ -34,13 +34,20 @@ class meta
   var $timing = array();
   	
 
-  function meta($theRequestType="")
+  function __construct($theRequestType="")
   {
     global $wsversion;
     $this->startTimestamp = microtime(true);
-    $this->requestdate= date('c');
+    $this->requestdate= date('c');          
     $this->requesturl= dbHelper::escapeXMLChars($_SERVER['REQUEST_URI']);
-    $this->clientversion= dbHelper::escapeXMLChars($_SERVER['HTTP_USER_AGENT']);
+    
+    if(isset($_SERVER['HTTP_USER_AGENT']))
+    {
+        $this->clientversion= dbHelper::escapeXMLChars($_SERVER['HTTP_USER_AGENT']);
+    }
+    else {
+        $this->clientversion= "Unspecified";
+    }
     if($theRequestType)  $this->requesttype= $theRequestType;
     $this->wsversion = $wsversion;
   }

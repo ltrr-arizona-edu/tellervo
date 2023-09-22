@@ -129,7 +129,7 @@ class sample extends sampleEntity implements IDBAccessor {
 		// samplesampleNotes
 		global $dbconn;
 		
-		$sql = "SELECT radiusid FROM tblradius WHERE sampleid='" . pg_escape_string ( $this->getID () ) . "'";
+		$sql = "SELECT radiusid FROM tblradius WHERE sampleid='" . pg_escape_string($dbconn, $this->getID () ) . "'";
 		$dbconnstatus = pg_connection_status ( $dbconn );
 		if ($dbconnstatus === PGSQL_CONNECTION_OK) {
 			
@@ -198,7 +198,7 @@ class sample extends sampleEntity implements IDBAccessor {
 		
 		// Find out the parent ID if it's not specified
 		if ($parentID == NULL) {
-			$sql = "SELECT elementid FROM tblsample WHERE sampleid ='" . pg_escape_string ( $this->getID () . "'" );
+			$sql = "SELECT elementid FROM tblsample WHERE sampleid ='" . pg_escape_string($dbconn, $this->getID () . "'" );
 			$dbconnstatus = pg_connection_status ( $dbconn );
 			if ($dbconnstatus === PGSQL_CONNECTION_OK) {
 				pg_send_query ( $dbconn, $sql );
@@ -513,23 +513,23 @@ class sample extends sampleEntity implements IDBAccessor {
 						// Trim off trailing space and comma
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ") VALUES (";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getID () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getTitle () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getID () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getComments () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getType ( true ) ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getDescription () ) . ", ";
 					$sql .= dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getSamplingDate () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( strtolower($this->getSamplingDatePrecision()) ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getPosition () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getState () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getSamplingDate () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, strtolower($this->getSamplingDatePrecision()) ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getPosition () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getState () ) . ", ";
 					$sql .= dbHelper::formatBool ( $this->getKnots (), "pg" ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getBoxID () ) . ", ";
-					$sql .= dbHelper::tellervo_pg_escape_string ( $this->getExternalID () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getBoxID () ) . ", ";
+					$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getExternalID () ) . ", ";
 					if ($this->getSampleStatus () != null)
-						$sql .= dbHelper::tellervo_pg_escape_string ( $this->getSampleStatus ( true ) ) . ", ";
+						$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->getSampleStatus ( true ) ) . ", ";
 					if (isset ( $this->parentEntityArray [0] ))
-						$sql .= dbHelper::tellervo_pg_escape_string ( $this->parentEntityArray [0]->getID () ) . ", ";
+						$sql .= dbHelper::tellervo_pg_escape_string($dbconn, $this->parentEntityArray [0]->getID () ) . ", ";
 						// Trim off trailing space and comma
 					$sql = substr ( $sql, 0, - 2 );
 					$sql .= ")";
@@ -537,24 +537,24 @@ class sample extends sampleEntity implements IDBAccessor {
 				} else {
 					// Updating DB
 					$sql .= "update tblsample set ";
-					$sql .= "code=" . dbHelper::tellervo_pg_escape_string ( $this->getTitle () ) . ", ";
-					$sql .= "comments=" . dbHelper::tellervo_pg_escape_string ( $this->getComments () ) . ", ";
-					$sql .= "typeid=" . dbHelper::tellervo_pg_escape_string ( $this->getType ( true ) ) . ", ";
-					$sql .= "description=" . dbHelper::tellervo_pg_escape_string ( $this->getDescription () ) . ", ";
+					$sql .= "code=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getTitle () ) . ", ";
+					$sql .= "comments=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getComments () ) . ", ";
+					$sql .= "typeid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getType ( true ) ) . ", ";
+					$sql .= "description=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getDescription () ) . ", ";
 					$sql .= "file=" . dbHelper::phpArrayToPGStrArray ( $this->getFiles () ) . ", ";
-					$sql .= "samplingdate=" . dbHelper::tellervo_pg_escape_string ( $this->getSamplingDate () ) . ", ";
-					$sql .= "samplingdateprec=" . dbHelper::tellervo_pg_escape_string ( strtolower($this->getSamplingDatePrecision ()) ) . ", ";
-					$sql .= "position=" . dbHelper::tellervo_pg_escape_string ( $this->getPosition () ) . ", ";
-					$sql .= "state=" . dbHelper::tellervo_pg_escape_string ( $this->getState () ) . ", ";
+					$sql .= "samplingdate=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getSamplingDate () ) . ", ";
+					$sql .= "samplingdateprec=" . dbHelper::tellervo_pg_escape_string($dbconn, strtolower($this->getSamplingDatePrecision ()) ) . ", ";
+					$sql .= "position=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getPosition () ) . ", ";
+					$sql .= "state=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getState () ) . ", ";
 					$sql .= "knots=" . dbHelper::formatBool ( $this->getKnots (), "pg" ) . ", ";
-					$sql .= "boxid=" . dbHelper::tellervo_pg_escape_string ( $this->getBoxID () ) . ", ";
-					$sql .= "externalid=" . dbHelper::tellervo_pg_escape_string ( $this->getExternalID () ) . ", ";
-					$sql .= "samplestatusid=" . dbHelper::tellervo_pg_escape_string ( $this->getSampleStatus ( true ) ) . ", ";
+					$sql .= "boxid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getBoxID () ) . ", ";
+					$sql .= "externalid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getExternalID () ) . ", ";
+					$sql .= "samplestatusid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getSampleStatus ( true ) ) . ", ";
 					if (isset ( $this->parentEntityArray [0] ))
-						$sql .= "elementid='" . pg_escape_string ( $this->parentEntityArray [0]->getID () ) . "', ";
+						$sql .= "elementid='" . pg_escape_string($dbconn, $this->parentEntityArray [0]->getID () ) . "', ";
 					
 					$sql = substr ( $sql, 0, - 2 );
-					$sql .= " WHERE sampleid=" . dbHelper::tellervo_pg_escape_string ( $this->getID () );
+					$sql .= " WHERE sampleid=" . dbHelper::tellervo_pg_escape_string($dbconn, $this->getID () );
 				}
 				
 				// Run SQL command
@@ -633,7 +633,7 @@ class sample extends sampleEntity implements IDBAccessor {
 			$dbconnstatus = pg_connection_status ( $dbconn );
 			if ($dbconnstatus === PGSQL_CONNECTION_OK) {
 				
-				$sql = "DELETE FROM tblsample WHERE sampleid='" . pg_escape_string ( $this->getID () ) . "'";
+				$sql = "DELETE FROM tblsample WHERE sampleid='" . pg_escape_string($dbconn, $this->getID () ) . "'";
 				
 				// Run SQL command
 				if ($sql) {

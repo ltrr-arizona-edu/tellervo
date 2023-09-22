@@ -36,7 +36,7 @@ class auth
    */
   function __construct()
   {
-     global $firebug;
+     //global $firebug;
      global $timeout;
     session_start(); 
 
@@ -46,7 +46,7 @@ class auth
 	}
  
 	if (isset($_SESSION['LAST_ACTIVITY']) && (time() - $_SESSION['LAST_ACTIVITY'] > $timeout)) {
-	    $firebug->log("Session has expired");
+	    //$firebug->log("Session has expired");
 	    session_destroy();   // destroy session data in storage
 	    session_unset();     // unset $_SESSION variable for the runtime
 		$this->isLoggedIn = FALSE;
@@ -99,7 +99,7 @@ class auth
     }
 
     
-    $sql = "select * from tblsecurityuser where username='".pg_escape_string($theUsername)."' and isactive=true";
+    $sql = "select * from tblsecurityuser where username='".pg_escape_string($dbconn, $theUsername)."' and isactive=true";
  
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -157,7 +157,7 @@ class auth
   {
     global $dbconn;
 
-    $sql = "select * from tblsecurityuser where username='".pg_escape_string($theUsername)."' and isactive=true";
+    $sql = "select * from tblsecurityuser where username='".pg_escape_string($dbconn, $theUsername)."' and isactive=true";
     
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -250,14 +250,16 @@ class auth
       // Get 'delete' result then 'insert' result, ignoring delete result as we don't need to know
       $result = pg_get_result($dbconn);
       $result = pg_get_result($dbconn);
-      if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
+      
+      // Fix for PHP 8
+      /*if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
       {
           return false;
       }
       else
       {
           return true;
-      }
+      }*/
   }
 
   /**
@@ -297,11 +299,11 @@ class auth
 
     if ($this->getID()==NULL)
     {
-        $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".pg_escape_string($request)."', '".pg_escape_string($_SERVER['REMOTE_ADDR'])."', '".pg_escape_string($wsversion)."')";
+        $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".pg_escape_string($dbconn,$request)."', '".pg_escape_string($dbconn,$_SERVER['REMOTE_ADDR'])."', '".pg_escape_string($dbconn,$wsversion)."')";
     }
     else
     {
-        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->getID()."', '".pg_escape_string($request)."', '".pg_escape_string($_SERVER['REMOTE_ADDR'])."', '".pg_escape_string($wsversion)."')";
+        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->getID()."', '".pg_escape_string($dbconn,$request)."', '".pg_escape_string($dbconn,$_SERVER['REMOTE_ADDR'])."', '".pg_escape_string($dbconn, $wsversion)."')";
     }
 
     pg_send_query($dbconn, $sql);
@@ -401,7 +403,7 @@ class auth
   public function getPermission($thePermissionType, $theObjectType, $theObjectID, $paramObj=null)
   {
         global $dbconn;
-		global $firebug;
+		//global $firebug;
 
 	
         // If user is not logged in deny!
@@ -479,14 +481,14 @@ class auth
         if ($theObjectType=='tag')
         {
         
-          	$firebug->log($theObjectType, "getPermission object type");
-  	$firebug->log($thePermissionType, "getPermission permission type");
+          	//$firebug->log($theObjectType, "getPermission object type");
+  	        //$firebug->log($thePermissionType, "getPermission permission type");
 
         
 	    if( ($thePermissionType=='read') || ($thePermissionType=='update') || ($thePermissionType=='delete') || ($thePermissionType=='assign') || ($thePermissionType=='unassign'))
 	    {
 		$sql = "SELECT ownerid from tbltag where tagid='$theObjectID'";
-		$firebug->log($sql, "Tag perms SQL");
+		//$firebug->log($sql, "Tag perms SQL");
 	        if($sql)
 		{
 		    $dbconnstatus = pg_connection_status($dbconn);
@@ -587,14 +589,14 @@ class auth
 
         // Do the actual perms lookup
         $sql = "select * from cpgdb.getuserpermissionset('$this->securityuserid'::uuid, '$theObjectType', '$theObjectID'::uuid)";
-        $firebug->log($sql, "Get permissions sql");
+        //$firebug->log($sql, "Get permissions sql");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
             $result = pg_query($dbconn, $sql);
             $row = pg_fetch_array($result);
            
-  	    $firebug->log("Permissions are: denied=".$row['denied']." create=".$row['cancreate']."  read=".$row['canread']." update=".$row['canupdate']." delete=".$row['candelete']);
+  	    //$firebug->log("Permissions are: denied=".$row['denied']." create=".$row['cancreate']."  read=".$row['canread']." update=".$row['canupdate']." delete=".$row['candelete']);
             
             if($row['denied']=='t')
             {
@@ -611,7 +613,7 @@ class auth
                 return FALSE;
             }
 
-	    $firebug->log($thePermissionType, "Permission type");
+	    //$firebug->log($thePermissionType, "Permission type");
             switch ($thePermissionType)
             {
             case "create":
@@ -630,7 +632,7 @@ class auth
 		break;
 
 
-		$firebug->log("permissions not granted");
+		//$firebug->log("permissions not granted");
                 // Incorrect permission type specified returning false
                 if ($theObjectType=='default')
                 {
@@ -652,10 +654,10 @@ class auth
    */
   public function isAdmin()
   {
-	global $firebug;
+	//global $firebug;
         global $dbconn;
         $sql = "select * from cpgdb.isadmin('".$this->securityuserid."'::uuid) where isadmin=true";
-	$firebug->log($sql, "Checking isAdmin SQL");
+	//$firebug->log($sql, "Checking isAdmin SQL");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -804,7 +806,7 @@ class auth
   {
     global $dbconn;
 
-    $sql = "update tblsecurityuser set password='".hash('md5', pg_escape_string($password))."' where username='".pg_escape_string($this->username)."'";
+    $sql = "update tblsecurityuser set password='".hash('md5', pg_escape_string($dbconn, $password))."' where username='".pg_escape_string($dbconn, $this->username)."'";
     $dbconnstatus = pg_connection_status($dbconn);
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {

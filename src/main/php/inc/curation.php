@@ -68,7 +68,7 @@ class curation extends curationEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "SELECT * FROM vwtblcuration WHERE curationid='".pg_escape_string($this->getID())."'";
+        $sql = "SELECT * FROM vwtblcuration WHERE curationid='".pg_escape_string($dbconn, $this->getID())."'";
 		$firebug->log($sql, "curation sql");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -267,7 +267,7 @@ class curation extends curationEntity implements IDBAccessor
         }			
 			
     	$curationsql = "INSERT INTO tblcuration (curationstatusid, curatorid, sampleid, notes) values (";
-    	$curationsql .= $this->getCurationStatus(true).", '".$myMetaHeader->securityUserID."', '".$this->sample->getID()."', ".dbHelper::tellervo_pg_escape_string($this->getNotes()).") RETURNING curationid";
+    	$curationsql .= $this->getCurationStatus(true).", '".$myMetaHeader->securityUserID."', '".$this->sample->getID()."', ".dbHelper::tellervo_pg_escape_string($dbconn, $this->getNotes()).") RETURNING curationid";
     	
     	$firebug->log($curationsql, "Curation SQL");
     	$query = pg_query($dbconn, $curationsql);

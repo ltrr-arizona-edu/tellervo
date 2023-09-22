@@ -79,7 +79,7 @@ class curationEvent extends curationEventEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "SELECT * FROM vwtblcurationevent WHERE curationeventid='".pg_escape_string($this->getID())."'";
+        $sql = "SELECT * FROM vwtblcurationevent WHERE curationeventid='".pg_escape_string($dbconn, $this->getID())."'";
 		$firebug->log($sql, "curation sql");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -309,7 +309,7 @@ class curationEvent extends curationEventEntity implements IDBAccessor
         }
         
     	$curationsql = "INSERT INTO tblcurationevent (curationstatusid, curatorid, sampleid, boxid, notes) values (";
-    	$curationsql .= $this->getCurationStatus(true).", '".$myMetaHeader->securityUserID."', ".dbHelper::tellervo_pg_escape_string($sampleID).", ".dbHelper::tellervo_pg_escape_string($boxID).", ".dbHelper::tellervo_pg_escape_string($this->getNotes()).") RETURNING curationeventid";
+    	$curationsql .= $this->getCurationStatus(true).", '".$myMetaHeader->securityUserID."', ".dbHelper::tellervo_pg_escape_string($dbconn, $sampleID).", ".dbHelper::tellervo_pg_escape_string($dbconn, $boxID).", ".dbHelper::tellervo_pg_escape_string($dbconn, $this->getNotes()).") RETURNING curationeventid";
     	
 	file_put_contents("/tmp/debug.txt", $curationsql."\n", FILE_APPEND | LOCK_EX);
 

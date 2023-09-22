@@ -36,7 +36,7 @@ function getFormList($theUsername)
     global $domain;
     global $securehttp;
 
-    $sql = "select * from tblodkdefinition where ownerid = (SELECT securityuserid from tblsecurityuser where username='".pg_escape_string($theUsername)."' and isactive=true)  OR ispublic = true";
+    $sql = "select * from tblodkdefinition where ownerid = (SELECT securityuserid from tblsecurityuser where username='".pg_escape_string($dbconn, $theUsername)."' and isactive=true)  OR ispublic = true";
 	$firebug->log($sql);
 
     $dbconnstatus = pg_connection_status($dbconn);

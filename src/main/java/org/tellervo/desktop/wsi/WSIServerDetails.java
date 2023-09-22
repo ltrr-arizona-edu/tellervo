@@ -339,9 +339,12 @@ public class WSIServerDetails {
 			}
 		} catch (NumberFormatException e)
 		{
+			this.status = WSIServerStatus.TOO_OLD;
+			this.errMessage = "Unable to parse server version";
 			throw new Exception("Server version is invalid");
 		}
 		
+		status = WSIServerStatus.VALID;
 		isServerValid();
 		
 	}

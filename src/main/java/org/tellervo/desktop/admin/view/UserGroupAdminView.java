@@ -28,8 +28,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
@@ -41,7 +39,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.table.TableRowSorter;
-import javax.swing.tree.DefaultTreeModel;
 
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.search.SearchFactory;
@@ -61,18 +58,17 @@ import org.tellervo.desktop.admin.control.ToggleDisabledUsersEvent;
 import org.tellervo.desktop.admin.control.UpdateUserEvent;
 import org.tellervo.desktop.admin.model.SecurityGroupTableModelA;
 import org.tellervo.desktop.admin.model.SecurityMixTableModel;
-import org.tellervo.desktop.admin.model.SecurityUserTableModelA;
 import org.tellervo.desktop.admin.model.TransferableGroup;
 import org.tellervo.desktop.admin.model.TransferableUser;
 import org.tellervo.desktop.admin.model.UserGroupAdminModel;
 import org.tellervo.desktop.admin.model.UserGroupNode;
 import org.tellervo.desktop.admin.model.UserGroupTreeCellRenderer;
 import org.tellervo.desktop.model.TellervoModelLocator;
-import org.tellervo.schema.WSISecurityGroup;
-import org.tellervo.schema.WSISecurityUser;
 import org.tellervo.desktop.ui.Alert;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.schema.WSISecurityGroup;
+import org.tellervo.schema.WSISecurityUser;
 
 import net.miginfocom.swing.MigLayout;
 

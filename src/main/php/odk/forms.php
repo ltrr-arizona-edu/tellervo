@@ -36,7 +36,7 @@ function getForm($id)
     global $dbconn;
     global $firebug;
     global $odkauth;
-    $sql = "select * from tblodkdefinition where odkdefinitionid = '".pg_escape_string($id)."' AND (ispublic = true OR ownerid='".$odkauth->getUserID()."')";
+    $sql = "select * from tblodkdefinition where odkdefinitionid = '".pg_escape_string($dbconn, $id)."' AND (ispublic = true OR ownerid='".$odkauth->getUserID()."')";
 	$firebug->log($sql);
 
     $dbconnstatus = pg_connection_status($dbconn);

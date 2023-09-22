@@ -197,11 +197,11 @@ class request
 
         if($myAuth->getID()==NULL)
         {
-            $sql = "insert into tblrequestlog (request, ipaddr, wsversion, page, client) values ('".pg_escape_string($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."', '".pg_escape_string($_SERVER['HTTP_USER_AGENT'])."')";
+            $sql = "insert into tblrequestlog (request, ipaddr, wsversion, page, client) values ('".pg_escape_string($dbconn, $request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."', '".pg_escape_string($dbconn, $_SERVER['HTTP_USER_AGENT'])."')";
         }
         else
         {
-            $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion, page, client) values ('".$myAuth->getID()."', '".pg_escape_string($request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."', '".pg_escape_string($_SERVER['HTTP_USER_AGENT'])."')";
+            $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion, page, client) values ('".$myAuth->getID()."', '".pg_escape_string($dbconn, $request)."', '".$_SERVER['REMOTE_ADDR']."', '$wsversion', '".$_SERVER['SCRIPT_NAME']."', '".pg_escape_string($dbconn, $_SERVER['HTTP_USER_AGENT'])."')";
         }
 
         pg_send_query($dbconn, $sql);

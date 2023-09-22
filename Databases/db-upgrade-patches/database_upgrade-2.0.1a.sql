@@ -36,6 +36,26 @@ FROM crosstab(
     subform varchar);
     $BODY$
   LANGUAGE 'sql' VOLATILE;
+
+
+-- GET SPECIFIC EPITHET FROM TAXONID  
+CREATE OR REPLACE FUNCTION cpgdb.getspecificepithet(varchar) RETURNS varchar AS 
+$$
+DECLARE                                                           
+  thetaxonid ALIAS FOR $1;                                                                                
+  taxonrow tlkptaxon;                                            
+BEGIN                                                                                                               
+  
+  SELECT tlkptaxon.* INTO taxonrow FROM tlkptaxon WHERE taxonid=thetaxonid;
+
+  IF taxonrow.taxonrankid=9 THEN  	   
+  	   RETURN split_part(taxonrow.label,' ',2 );
+  END IF;
+  
+  RETURN NULL;
+                                                                           
+END;$$  
+LANGUAGE PLPGSQL STABLE;   
   
   
 -- CREATE STATIC FLATTENED TAXONOMY TABLE
@@ -48,54 +68,11 @@ tlkptaxonrank tr
 WHERE tr.taxonrankid = e.taxonrankid;
 
 -- UNION QUERY FOR ALL LOCATION FIELDS BY ENTITY
-CREATE VIEW vwlocation AS 
+CREATE OR REPLACE VIEW vwlocation AS 
 SELECT objectid AS entityid, locationgeometry, locationprecision, locationcomment, locationcountry, locationpostalcode, locationstateprovinceregion, locationcityortown, locationaddressline2, locationaddressline1, locationtypeid FROM tblobject
 UNION
 SELECT elementid AS entityid, locationgeometry, locationprecision, locationcomment, locationcountry, locationpostalcode, locationstateprovinceregion, locationcityortown, locationaddressline2, locationaddressline1, locationtypeid FROM tblelement;
-
--- FUNCTION FOR OBTAINING THE PREFERRED/BEST GEOMETRY ID FOR THE SPECIFIED ELEMENT
--- ELEMENT > OBJECT > PARENT OBJECT
-CREATE OR REPLACE FUNCTION cpgdb.getbestgeometryid(uuid) RETURNS uuid AS 
-$$
-DECLARE                                                           
-  theelementid ALIAS FOR $1;                                      
-  objectgeom geometry;                                            
-  elementgeom geometry;                                           
-  objectrow tblobject;                                            
-  parentobjectrow tblobject;                                      
-BEGIN                                                                                                               
-  SELECT locationgeometry INTO elementgeom                        
-  FROM tblelement e                                               
-  WHERE e.elementid=theelementid;                                 
-                                                                  
-  IF elementgeom IS NOT NULL THEN                                 
-    RETURN theelementid;                                             
-  END IF;                                                         
-                                                                  
-  SELECT tblobject.* INTO objectrow                               
-  FROM tblelement                                                 
-    LEFT JOIN tblobject ON tblelement.objectid=tblobject.objectid 
-  WHERE tblelement.elementid=theelementid;                        
-           
-  IF objectrow.locationgeometry IS NOT NULL THEN
-  	RETURN objectrow.objectid;
-  END IF;
-                                                                        
-  IF objectrow.parentobjectid IS NOT NULL THEN                    
-    SELECT tblobject.* INTO parentobjectrow                         
-    FROM tblobject                                                  
-    WHERE tblobject.objectid=objectrow.parentobjectid;              
-                                                                    
-    IF objectrow.locationgeometry IS NOT NULL THEN                  
-        RETURN objectrow.objectid;                              
-    ELSE                                                            
-        RETURN parentobjectrow.objectid;                        
-    END IF;          
-    
-  END IF;                                                         
-  RETURN objectrow.objectid;                                                                               
-END;$$  
-LANGUAGE PLPGSQL STABLE;        
+  
 
 
 -- FUNCTION FOR OBTAINING THE PREFERRED/BEST GEOMETRY FOR THE SPECIFIED ELEMENT
@@ -148,26 +125,7 @@ BEGIN
 END;$$  
 LANGUAGE PLPGSQL STABLE;  
 
-
--- GET SPECIFIC EPITHET FROM TAXONID  
-CREATE OR REPLACE FUNCTION cpgdb.getspecificepithet(varchar) RETURNS varchar AS 
-$$
-DECLARE                                                           
-  thetaxonid ALIAS FOR $1;                                                                                
-  taxonrow tlkptaxon;                                            
-BEGIN                                                                                                               
-  
-  SELECT tlkptaxon.* INTO taxonrow FROM tlkptaxon WHERE taxonid=thetaxonid;
-
-  IF taxonrow.taxonrankid=9 THEN  	   
-  	   RETURN split_part(taxonrow.label,' ',2 );
-  END IF;
-  
-  RETURN NULL;
-                                                                           
-END;$$  
-LANGUAGE PLPGSQL STABLE;        
-
+     
 
 
 
@@ -271,6 +229,7 @@ BEGIN
 END;$$  
 LANGUAGE PLPGSQL STABLE;      
 
+
 ----------------------------------
 -- CREATE VIEW FOR IPT
 ---------------------------------- 
@@ -353,7 +312,7 @@ LEFT JOIN vwlocation l ON l.entityid = e.bestgeometryid
 
 WHERE s.sampleid IS NOT NULL;
 
-DROP TABLE staticvwipt;
+DROP TABLE IF EXISTS staticvwipt;
 CREATE TABLE staticvwipt AS SELECT * FROM vwipt;
 GRANT ALL ON staticvwipt TO tellervo;
 

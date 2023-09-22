@@ -162,8 +162,8 @@ class search Implements IDBAccessor
         $orderBySQL      = "\n ORDER BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id asc ";
         //$groupBySQL      = "\n GROUP BY ".$this->tableName($this->returnObject).".".$this->variableName($this->returnObject)."id" ;
         $groupBySQL = NULL;
-        if ($myRequest->limit) $limitSQL = "\n LIMIT ".pg_escape_string($myRequest->limit);
-        if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".pg_escape_string($myRequest->skip);
+        if ($myRequest->limit) $limitSQL = "\n LIMIT ".pg_escape_string($dbconn, $myRequest->limit);
+        if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".pg_escape_string($dbconn, $myRequest->skip);
 
         if( $myRequest->allData===FALSE || $this->includeTag($this->tablesFromParams($paramsArray)) )
         {

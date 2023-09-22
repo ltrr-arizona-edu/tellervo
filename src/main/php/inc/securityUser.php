@@ -331,12 +331,12 @@ class securityUser extends securityUserEntity implements IDBAccessor
                     
 		    // New record
                     $sql = "insert into tblsecurityuser (securityuserid, username, password, firstName, lastName, odkpassword, isactive) values (";
-                    $sql.= "'".pg_escape_string($this->id)."', ";
-                    $sql.= "'".pg_escape_string($this->username)."', ";
-                    $sql.= "'".pg_escape_string($this->password)."', ";
-                    $sql.= "'".pg_escape_string($this->firstName)."', ";
-                    $sql.= "'".pg_escape_string($this->lastName)."', ";
-                    $sql.= "'".pg_escape_string($this->odkPassword)."', ";
+                    $sql.= "'".pg_escape_string($dbconn, $this->id)."', ";
+                    $sql.= "'".pg_escape_string($dbconn, $this->username)."', ";
+                    $sql.= "'".pg_escape_string($dbconn, $this->password)."', ";
+                    $sql.= "'".pg_escape_string($dbconn, $this->firstName)."', ";
+                    $sql.= "'".pg_escape_string($dbconn, $this->lastName)."', ";
+                    $sql.= "'".pg_escape_string($dbconn, $this->odkPassword)."', ";
                     $sql.= dbhelper::formatBool($this->isActive,'pg');
                     $sql.= " )";
                     $sql2 = "select * from tblsecurityuser where securityuserid='".$this->id."'";
@@ -345,11 +345,11 @@ class securityUser extends securityUserEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql = "update tblsecurityuser set ";
-                    $sql.= "username = '".pg_escape_string($this->username)."', ";
-                    $sql.= "password = '".pg_escape_string($this->password)."', ";
-                    $sql.= "firstName = '".pg_escape_string($this->firstName)."', ";
-                    $sql.= "lastName = '".pg_escape_string($this->lastName)."', ";
-                    $sql.= "odkpassword = '".pg_escape_string($this->odkPassword)."', ";
+                    $sql.= "username = '".pg_escape_string($dbconn, $this->username)."', ";
+                    $sql.= "password = '".pg_escape_string($dbconn, $this->password)."', ";
+                    $sql.= "firstName = '".pg_escape_string($dbconn, $this->firstName)."', ";
+                    $sql.= "lastName = '".pg_escape_string($dbconn, $this->lastName)."', ";
+                    $sql.= "odkpassword = '".pg_escape_string($dbconn, $this->odkPassword)."', ";
                     $sql.= "isactive = ".dbhelper::formatBool($this->isActive, 'pg');
                     $sql.= " where securityuserid = '".$this->id."'";
                 }

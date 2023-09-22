@@ -11,21 +11,24 @@
  * *******************************************************************
  */
 
-require_once('FirePHPCore/FirePHP.class.php');
+require_once('FirePHPCore/fb.php');
 
 // Set up FireBug debugging
-$firebug = FirePHP::getInstance(true);
-$firebug->setEnabled($debugFlag);
-if($debugFlag===TRUE) ob_start();
+$firebug = new FB();
+//$firebug->setEnabled($debugFlag);
+//if($debugFlag===TRUE) ob_start();
 
 
 // Remove standard PHP error reporting
-//error_reporting(0);
+if($debugFlag===TRUE)
+{
+    error_reporting(0);
+}
 
 // Set up our own error handling
 $old_error_handler = set_error_handler("userErrorHandler");
 
-function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars) 
+function userErrorHandler($errno, $errmsg, $filename, $linenum) 
 {
     global $myMetaHeader;
     global $firebug;
@@ -128,7 +131,15 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum, $vars)
     // Other unusual PHP errors
     else 
     {
-    	$message = "PHP ".$errortype[$errno]." - ".$errmsg.". \n See line $linenum \n in file $filename";
+        $message = $errmsg.". \n See line $linenum \n in file $filename";
+        try{
+            $message = "PHP ".$errortype[$errno]." - ".$errmsg.". \n See line $linenum \n in file $filename";
+        }
+        catch (Exception $ex)
+        {
+            
+        }
+    	
         $myMetaHeader->setMessage("99".$errno, wordwrap($message, $wrapwidth), "Warning");
         $firebug->log($message, "PHP warning code $errno");
     }

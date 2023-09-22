@@ -39,7 +39,7 @@ class dbHelper
 	public static function getKeyFromValue($entityname, $value)
 	{
 		global $dbconn;
-		$sql = "select tlkp".pg_escape_string($entityname).".".pg_escape_string($entityname)."id as key from tlkp".pg_escape_string($entityname)." where ".pg_escape_string($entityname)."='".pg_escape_string($value)."'";
+		$sql = "select tlkp".pg_escape_string($dbconn, $entityname).".".pg_escape_string($dbconn, $entityname)."id as key from tlkp".pg_escape_string($dbconn, $entityname)." where ".pg_escape_string($dbconn, $entityname)."='".pg_escape_string($dbconn, $value)."'";
 		
 		$dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -77,6 +77,8 @@ class dbHelper
 	 */
 	public static function escapeXMLChars($theString)
 	{
+	    if($theString==null) return null;
+	    
 	    $theString = str_replace('&', '&amp;',  $theString);
 	    $theString = str_replace("'", '&apos;', $theString);
 	    $theString = str_replace('"', '&quot;', $theString);
@@ -421,7 +423,7 @@ class dbHelper
 		}
 	}
 
-	public static function tellervo_pg_escape_string($string)
+	public static function tellervo_pg_escape_string($dbconn, $string)
 	{
 		if($string===null)
 		{
@@ -433,7 +435,7 @@ class dbHelper
 		}
 		else
 		{
-			return "'".pg_escape_string($string)."'";
+			return "'".pg_escape_string($dbconn, $string)."'";
 		}
 
 

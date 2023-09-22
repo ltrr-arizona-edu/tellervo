@@ -113,7 +113,7 @@ class geometry
 		$lat = (float) $lat;
 		$long = (float) $long;	
 		
-		$sql = "select st_setsrid(st_makepoint(".sprintf("%1.8f",pg_escape_string($long)).", ".sprintf("%1.8f",pg_escape_string($lat))."), ".pg_escape_string($srid).") as thevalue";
+		$sql = "select st_setsrid(st_makepoint(".sprintf("%1.8f",pg_escape_string($dbconn, $long)).", ".sprintf("%1.8f",pg_escape_string($dbconn, $lat))."), ".pg_escape_string($dbconn, $srid).") as thevalue";
 	
 		$this->geometry = $this->runSQLCalculation($sql);	
 	}		
@@ -145,11 +145,11 @@ class geometry
 		if ($gmlversion!=2 || $gmlversion!=3) $gmlversion=3;
 		
 		// PG v8.x 
-		//$sql = "select st_asgml(".pg_escape_string($gmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
+		//$sql = "select st_asgml(".pg_escape_string($dbconn, $gmlversion).", '".pg_escape_string($dbconn, $this->geometry)."') as thevalue";
 		
 		// PG v9.1 
 		// the final parameter of 17 in st_asgml flips the coordinates to lat/lon as they should be for EPSG:4326.  
-		$sql = "select st_asgml(".pg_escape_string($gmlversion).", '".pg_escape_string($this->geometry)."'::geometry, 15, 17) as thevalue";
+		$sql = "select st_asgml(".pg_escape_string($dbconn, $gmlversion).", '".pg_escape_string($dbconn, $this->geometry)."'::geometry, 15, 17) as thevalue";
 				
 		return $this->runSQLCalculation($sql);
 	}
@@ -163,7 +163,8 @@ class geometry
 	function asKML($kmlversion=2, $returnDataType="POINT")
 	{
 		global $firebug;
-		$sql = "select geometrytype('".pg_escape_string($this->geometry)."') as thevalue";
+		global $dbconn;
+		$sql = "select geometrytype('".pg_escape_string($dbconn, $this->geometry)."') as thevalue";
 		$actualDataType = $this->runSQLCalculation($sql);
 		$kml = "";
 		
@@ -179,11 +180,11 @@ class geometry
 						// Actual datatype is point so simple
 						
 						// PG v8.x
-						//$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
+						//$sql = "select st_askml(".pg_escape_string($dbconn, $kmlversion).", '".pg_escape_string($dbconn, $this->geometry)."') as thevalue";
 						
 						// PG v9.1
 						// TODO Check whether st_askml needs final parameter switching to 17 like st_asgml does
-						$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."'::geometry, 15, 1) as thevalue";
+						$sql = "select st_askml(".pg_escape_string($dbconn, $kmlversion).", '".pg_escape_string($dbconn, $this->geometry)."'::geometry, 15, 1) as thevalue";
 						
 						$kml .= $this->runSQLCalculation($sql);	
 						$firebug->log($kml, "Output KML for point:");
@@ -192,10 +193,10 @@ class geometry
 						// Data type is polygon so return centroid
 						
 						// PG v8.x 
-						//$sql = "select st_askml(".pg_escape_string($kmlversion).", st_centroid(st_expand('".pg_escape_string($this->geometry)."'::geometry, 0.1))) as thevalue";
+						//$sql = "select st_askml(".pg_escape_string($dbconn, $kmlversion).", st_centroid(st_expand('".pg_escape_string($dbconn, $this->geometry)."'::geometry, 0.1))) as thevalue";
 
 						// PG v9.1 
-						$sql = "select st_askml(".pg_escape_string($kmlversion).", st_centroid(st_expand('".pg_escape_string($this->geometry)."'::geometry, 0.1)), 15, 1) as thevalue";
+						$sql = "select st_askml(".pg_escape_string($dbconn, $kmlversion).", st_centroid(st_expand('".pg_escape_string($dbconn, $this->geometry)."'::geometry, 0.1)), 15, 1) as thevalue";
 												
 						$kml .= $this->runSQLCalculation($sql);	
 						$firebug->log($kml, "Output KML for centroid of polygon:");
@@ -210,10 +211,10 @@ class geometry
 						return null;
 					case "POLYGON":
 						// PG v8.x 
-						//$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."') as thevalue";
+						//$sql = "select st_askml(".pg_escape_string($dbconn, $kmlversion).", '".pg_escape_string($dbconn, $this->geometry)."') as thevalue";
 						
 						// PG v9.1 
-						$sql = "select st_askml(".pg_escape_string($kmlversion).", '".pg_escape_string($this->geometry)."'::geometry, 15, 1) as thevalue";
+						$sql = "select st_askml(".pg_escape_string($dbconn, $kmlversion).", '".pg_escape_string($dbconn, $this->geometry)."'::geometry, 15, 1) as thevalue";
 												
 						$kml .= $this->runSQLCalculation($sql);	
 						$firebug->log($kml, "Output KML for polygon:");
@@ -227,10 +228,11 @@ class geometry
 	function asKMLValue($kmlversion=2, $value)
 	{
 		global $firebug;
-
+        global $dbconn;
+        
 		// Actual datatype is point so simple
 		$value = $value/20;
-		$sql = "select st_askml(".pg_escape_string($kmlversion).", ST_Buffer('".pg_escape_string($this->geometry)."'::geometry, ".$value.")) as thevalue";
+		$sql = "select st_askml(".pg_escape_string($dbconn, $kmlversion).", ST_Buffer('".pg_escape_string($dbconn, $this->geometry)."'::geometry, ".$value.")) as thevalue";
 		$kml .= $this->runSQLCalculation($sql);				
 		$firebug->log($kml, "Output KML for point value:");
 		return $kml;

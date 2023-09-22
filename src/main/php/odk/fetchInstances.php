@@ -66,7 +66,7 @@ function createZipFile()
 	
 
 
-    $sql = "SELECT *, array_to_string(files, '><'::text) AS filearr FROM tblodkinstance WHERE ownerid = (SELECT securityuserid from tblsecurityuser where securityuserid='".pg_escape_string($myAuth->getID())."' and isactive=true)";
+    $sql = "SELECT *, array_to_string(files, '><'::text) AS filearr FROM tblodkinstance WHERE ownerid = (SELECT securityuserid from tblsecurityuser where securityuserid='".pg_escape_string($dbconn, $myAuth->getID())."' and isactive=true)";
     
     $firebug->log($sql);
 

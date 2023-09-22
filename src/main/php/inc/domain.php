@@ -83,7 +83,7 @@ class domain extends dbEntity implements IDBAccessor
         if($theID==NULL) return FALSE;
         
         $this->setID($theID);
-        $sql = "SELECT * from tlkpdomain WHERE domainid='".pg_escape_string($this->getID())."'";
+        $sql = "SELECT * from tlkpdomain WHERE domainid='".pg_escape_string($dbconn, $this->getID())."'";
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
         {
@@ -275,9 +275,9 @@ class domain extends dbEntity implements IDBAccessor
                     // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=") values (";
-                        if($this->getTitle()!=NULL)                   				$sql.="'".pg_escape_string($this->getDomain())."', ";
-                        if($this->getID()!=NULL)                   					$sql.="'".pg_escape_string($this->getID())."', ";
-                        if($this->getComments()!=NULL)                   			$sql.="'".pg_escape_string($this->getPrefix())."', ";
+                        if($this->getTitle()!=NULL)                   				$sql.="'".pg_escape_string($dbconn, $this->getDomain())."', ";
+                        if($this->getID()!=NULL)                   					$sql.="'".pg_escape_string($dbconn, $this->getID())."', ";
+                        if($this->getComments()!=NULL)                   			$sql.="'".pg_escape_string($dbconn, $this->getPrefix())."', ";
                    // Trim off trailing space and comma
                     $sql = substr($sql, 0, -2);
                     $sql.=")";
@@ -287,11 +287,11 @@ class domain extends dbEntity implements IDBAccessor
                 {
                     // Updating DB
                     $sql.="UPDATE tlkpdomain SET ";
-                        $sql.="domain='".pg_escape_string($this->getDomain())."', ";
-                        $sql.="prefix='".pg_escape_string($this->getPrefix())."', ";
+                        $sql.="domain='".pg_escape_string($dbconn, $this->getDomain())."', ";
+                        $sql.="prefix='".pg_escape_string($dbconn, $this->getPrefix())."', ";
 						
                     $sql = substr($sql, 0, -2);
-                    $sql.= " WHERE domainid='".pg_escape_string($this->getID())."'";
+                    $sql.= " WHERE domainid='".pg_escape_string($dbconn, $this->getID())."'";
                     $firebug->log($sql, "Domain update SQL");
                 }
  
@@ -342,7 +342,7 @@ class domain extends dbEntity implements IDBAccessor
             if ($dbconnstatus ===PGSQL_CONNECTION_OK)
             {
 
-                $sql = "DELETE FROM tlkpdomain WHERE domainid='".pg_escape_string($this->getID())."'";
+                $sql = "DELETE FROM tlkpdomain WHERE domainid='".pg_escape_string($dbconn, $this->getID())."'";
 
                 $firebug->log($sql, "delete sql");
                 

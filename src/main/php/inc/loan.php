@@ -63,7 +63,7 @@ class loan extends loanEntity implements IDBAccessor
         global $dbconn;
         
         $this->setID($theID);
-        $sql = "SELECT * FROM vwtblloan WHERE loanid='".pg_escape_string($this->getID())."'";
+        $sql = "SELECT * FROM vwtblloan WHERE loanid='".pg_escape_string($dbconn, $this->getID())."'";
 		$firebug->log($sql, "loan sql");
         $dbconnstatus = pg_connection_status($dbconn);
         if ($dbconnstatus ===PGSQL_CONNECTION_OK)
@@ -107,7 +107,7 @@ class loan extends loanEntity implements IDBAccessor
         global $dbconn;
         global $firebug;
                 
-        $sql  = "select sampleid from tblcuration where loanid='".pg_escape_string($this->getID())."'";
+        $sql  = "select sampleid from tblcuration where loanid='".pg_escape_string($dbconn, $this->getID())."'";
         
         $firebug->log($sql, "Setting samples associated with a loan");
         $dbconnstatus = pg_connection_status($dbconn);
@@ -316,15 +316,15 @@ class loan extends loanEntity implements IDBAccessor
     				$sql.="returndate, ";
     				$sql = substr($sql, 0, -2);
     				$sql.=") VALUES (";
-    				$sql.=dbHelper::tellervo_pg_escape_string($this->getID()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($dbconn, $this->getID()).", ";
     				
-    				$sql.=dbHelper::tellervo_pg_escape_string($this->getFirstName()).", ";
-    				$sql.=dbHelper::tellervo_pg_escape_string($this->getLastName()).", ";
-    				$sql.=dbHelper::tellervo_pg_escape_string($this->getOrganisation()).", ";
-    				$sql.=dbHelper::tellervo_pg_escape_string($this->getDueDate()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($dbconn, $this->getFirstName()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($dbconn, $this->getLastName()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($dbconn, $this->getOrganisation()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($dbconn, $this->getDueDate()).", ";
     				$sql.=dbHelper::phpArrayToPGStrArray($this->getFiles()).", ";
-    				$sql.=dbHelper::tellervo_pg_escape_string($this->getNotes()).", ";
-    				$sql.=dbHelper::tellervo_pg_escape_string($this->getReturnDate()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($dbconn, $this->getNotes()).", ";
+    				$sql.=dbHelper::tellervo_pg_escape_string($dbconn, $this->getReturnDate()).", ";
     				
     				// Trim off trailing space and comma
     				$sql = substr($sql, 0, -2);
@@ -335,17 +335,17 @@ class loan extends loanEntity implements IDBAccessor
     			{
     				// Updating DB
     				$sql.="UPDATE tblloan SET ";
-    				$sql.="loanid="         .dbHelper::tellervo_pg_escape_string($this->getID()).", ";
-    				$sql.="firstname="      .dbHelper::tellervo_pg_escape_string($this->getFirstName()).", ";
-    				$sql.="lastname="     	.dbHelper::tellervo_pg_escape_string($this->getLastName()).", ";
-    				$sql.="organisation="	.dbHelper::tellervo_pg_escape_string($this->getOrganisation()).", ";
-    				$sql.="duedate="		.dbHelper::tellervo_pg_escape_string($this->getDueDate()).", ";
+    				$sql.="loanid="         .dbHelper::tellervo_pg_escape_string($dbconn, $this->getID()).", ";
+    				$sql.="firstname="      .dbHelper::tellervo_pg_escape_string($dbconn, $this->getFirstName()).", ";
+    				$sql.="lastname="     	.dbHelper::tellervo_pg_escape_string($dbconn, $this->getLastName()).", ";
+    				$sql.="organisation="	.dbHelper::tellervo_pg_escape_string($dbconn, $this->getOrganisation()).", ";
+    				$sql.="duedate="		.dbHelper::tellervo_pg_escape_string($dbconn, $this->getDueDate()).", ";
     				$sql.="files="	 		.dbHelper::phpArrayToPGStrArray($this->getFiles()).", ";
-    				$sql.="notes="			.dbHelper::tellervo_pg_escape_string($this->getNotes()).", ";
-    				$sql.="returndate="		.dbHelper::tellervo_pg_escape_string($this->getReturnDate()).", ";
+    				$sql.="notes="			.dbHelper::tellervo_pg_escape_string($dbconn, $this->getNotes()).", ";
+    				$sql.="returndate="		.dbHelper::tellervo_pg_escape_string($dbconn, $this->getReturnDate()).", ";
     				
     				$sql = substr($sql, 0, -2);
-    				$sql.= " WHERE loanid=".dbHelper::tellervo_pg_escape_string($this->getID());
+    				$sql.= " WHERE loanid=".dbHelper::tellervo_pg_escape_string($dbconn, $this->getID());
     			}
     	
     			// Run SQL command
@@ -491,7 +491,7 @@ class loan extends loanEntity implements IDBAccessor
     		if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     		{
     	
-    			$sql = "DELETE FROM tblloan WHERE loanid='".pg_escape_string($this->getID())."'";
+    			$sql = "DELETE FROM tblloan WHERE loanid='".pg_escape_string($dbconn, $this->getID())."'";
     	
     			// Run SQL command
     			if ($sql)

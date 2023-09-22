@@ -32,11 +32,10 @@ public class ShelfEndLabelStyle extends AbstractTellervoLabelStyle {
 	
 	
 	public ShelfEndLabelStyle() {
-		super("Box barcodes 3.5 x 1.5\"", "Simple box barcode labels for printing on a roll - 3.5 x 1.5\"", ItemType.GENERIC);
+		super("Shelf end caps", "Simple shelf end cap labels", ItemType.GENERIC);
 		
 	}
 
-	
 
 	@Override
 	public void outputPDFToStream(java.io.OutputStream output, ArrayList items) throws Exception {
