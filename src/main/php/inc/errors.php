@@ -133,7 +133,11 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum)
     {
         $message = $errmsg.". \n See line $linenum \n in file $filename";
         try{
-            $message = "PHP ".$errortype[$errno]." - ".$errmsg.". \n See line $linenum \n in file $filename";
+            $etype = "Misc error";
+            if(array_key_exists($errno, $errortype)){
+                $etype = $errortype[$errno];
+            }
+            $message = "PHP ".$etype." - ".$errmsg.". \n See line $linenum \n in file $filename";
         }
         catch (Exception $ex)
         {

@@ -141,6 +141,8 @@ class geometry
 	 */
 	function asGML($gmlversion=3)
 	{
+	    global $dbconn;
+	    
 		// Override to v3 if not 2 or 3
 		if ($gmlversion!=2 || $gmlversion!=3) $gmlversion=3;
 		

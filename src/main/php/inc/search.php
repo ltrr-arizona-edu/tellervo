@@ -165,7 +165,7 @@ class search Implements IDBAccessor
         if ($myRequest->limit) $limitSQL = "\n LIMIT ".pg_escape_string($dbconn, $myRequest->limit);
         if ($myRequest->skip)  $skipSQL  = "\n OFFSET ".pg_escape_string($dbconn, $myRequest->skip);
 
-        if( $myRequest->allData===FALSE || $this->includeTag($this->tablesFromParams($paramsArray)) )
+        if( $myRequest->allData===FALSE || $this->includeTag($this->tablesFromParams($myRequest->paramsArray)) )
         {
             // User doing a normal search (not all records) OR
             // request include tbltag which always needs filter

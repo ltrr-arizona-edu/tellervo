@@ -26,7 +26,18 @@ XML:  <textarea name="xmlrequest" rows="20" cols="80">
 &lt;?xml version="1.0" encoding="UTF-8"?&gt;
 &lt;tellervo xmlns="http://www.tellervo.org/schema/1.0" xmlns:tridas="http://www.tridas.org/1.3"&gt;
   &lt;request type="plainlogin"&gt;
-     &lt;authenticate username="yourusername" password="yourpassword" /&gt;
+     &lt;authenticate username="admin" password="qu3rcu5" /&gt;
+  &lt;/request&gt;
+&lt;/tellervo&gt;
+</pre>
+
+<h4>Get dictionaries:</h4>
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;tellervo xmlns="http://www.tellervo.org/schema/1.0" xmlns:tridas="http://www.tridas.org/1.3"&gt;
+  &lt;request type="read"&gt;
+     &lt;dictionaries /&gt;
   &lt;/request&gt;
 &lt;/tellervo&gt;
 </pre>

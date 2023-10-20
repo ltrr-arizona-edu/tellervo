@@ -538,6 +538,15 @@
 											</mapper>
 										</data>
 										<data>
+											<src>Native/BuildResources/LinBuild/pljava-pg14-amd64-Linux-gpp.jar</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/share/tellervo-server/</prefix>
+												<filemode>755</filemode>
+											</mapper>
+										</data>										
+										<data>
 											<src>Native/BuildResources/LinBuild/pljava-pg9.5-i386-Linux-gpp.jar</src>
 											<type>file</type>
 											<mapper>
@@ -577,6 +586,15 @@
 											<mapper>
 												<type>perm</type>
 												<prefix>/usr/share/tellervo-server/db-options</prefix>
+											</mapper>
+										</data>
+										<data>
+											<src>Native/BuildResources/LinBuild/tui.php</src>
+											<type>file</type>
+											<mapper>
+												<type>perm</type>
+												<prefix>/usr/share/tellervo-server</prefix>
+												<filemode>777</filemode>
 											</mapper>
 										</data>
 										<data>

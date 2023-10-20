@@ -16,45 +16,31 @@ if (!isset($argc))
 	exit(1);
 }
 
+require_once('/usr/share/tellervo-server/tui.php');
+
 // Global variables
 $user = "tellervo";
 $pwd = "w3l0v3tr33s";
 $colors = new Colors();
 
-exec("reset");
 
-printDivider();
-echo $colors->getColoredString(getTitleString(), "light_purple");
-echo "\n";
-printDivider();
-echo "\n\n\n";
-echo "As this is the first time you have logged in, we need to ask a few questions to\n";
-echo "configure your new system.  Please read each step carefully before proceeding.\n\n";
-echo "When you are prompted for a response the option in square brackets indicates \n";
-echo "the default option.  You can simply press enter to select this. When you are \n";
-echo "offered options on a coloured page, you can use the arrow and enter keys to \n";
-echo "make your choice.\n\n";
 
+$dialog = new Tui();
+
+// WELCOME SLIDE
+Tui::dialog("--backtitle 'Tellervo Server Configuration' --title 'First run wizard' --msgbox '\n\nWelcome to the Tellervo Server setup wizard.  As this is the first time you have logged in, we need to ask a few questions to configure your new system.\n\nYou can use the arrow and enter keys to make your selections, or just hit enter to chose the default.' 15 80");
 
 // This makes sure we have sudo access without further passwords required
 pingSudo();
 
-
-echo "\n\n";
-echo "Press [enter] to continue...";
-$response = fgets(STDIN); 
-
-exec("ifconfig $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
+// Grab the current IP address
+exec("hostname -I | awk '{print $1}'", $response);
 $ipadd = $response[0];
 
 // Check that the server is not using a localhost for IP
 if(stripos($ipadd, "127.0.0", 0) === 0)
 {
-	exec("reset");
-    echo "The network card on your virtual server is reporting that it's IP address is\n";
-    echo $ipadd." (localhost) rather than an externally accessible address.  This means\n";
-    echo "that your Tellervo server will not be accessible to other computers.\n\n";
-    echo "Please contact the Tellervo developers for support and advice.\n\n";
+	Tui::dialog("--backtitle 'Tellervo Server Configuration' --title 'Internal Network Warning!' --msgbox 'The network card on your virtual server is reporting that it's IP address is ".$ipadd." (localhost) rather than an externally accessible address.  This means that your Tellervo server will not be accessible to other computers.\n\nPlease contact the Tellervo developers for support and advice' 20 70");
     die();
 }
 
@@ -62,83 +48,62 @@ if(stripos($ipadd, "127.0.0", 0) === 0)
 //
 //   STEP 1 - KEYBOARD
 //
-exec("reset");
-echo $colors->getColoredString("\n\nStep 1 - Setting up your keyboard...\n\n", "light_purple");
-echo "The keyboard is currently set to a standard US English layout. You can change\n";
-echo "it here but please note that if you do there will be a little wait (1 min or\n";
-echo "wore while the server rebuilds.\n";
-echo "Would you like to change the keyboard layout now?";
-echo "    [Y]/n  ";
-$response = fgets(STDIN); 
 
-if(!(trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
+$dialog = new Tui();
+$dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'Keyboard setup' --yesno 'The default keyboard layout is:\n\n - US English\n\nWould you like to change it?' 15 60");
+$dialog->processStop();
+$response = $dialog->getReturnCode();
+
+if(!(trim(strtolower($response))==1) || (trim(strtolower($response))==0))
 {
-	passthru("echo \"dendrochronology\" | sudo -S dpkg-reconfigure keyboard-configuration");
-	exec("reset");
+	$process = new Tui();
+	$process->processStart("sudo -S dpkg-reconfigure keyboard-configuration");
+	$process->processStop();
+
 }
 
 
 //
 //   STEP 2 - TIMEZONE
 //
-exec("reset");
-echo $colors->getColoredString("\n\nStep 2 - Setting the server timezone...\n\n", "light_purple");
 
-  echo "The server timezone is currently set to America/Phoenix.  Would you like to\nchange it?\n";
-  echo "    [Y]/n  ";
-  $response = fgets(STDIN); 
+$dialog = new Tui();
+$dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'Timezone Configuration' --yesno 'The server timezone is currently set to:\n\n - America/Phoenix\n\nWould you like to change it?' 15 60");
+$dialog->processStop();
+$response = $dialog->getReturnCode();
 
-   if(!(trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
-   {
-   		passthru("sudo dpkg-reconfigure tzdata");
-   		sleep(2);
-   }
+if(!(trim(strtolower($response))==1) || (trim(strtolower($response))==0))
+{
+	$process = new Tui();
+	$process->processStart("sudo dpkg-reconfigure tzdata");
+	$process->processStop();
+   	sleep(2);
+}
        
        
 //
 //   STEP 3 - PASSWORD
 //   
-exec("reset");                     
-echo $colors->getColoredString("\n\nStep 3 - Setting your main login password...\n\n", "light_purple");
-echo 
-"This will be the password that you will use in future to log into the server\n".
-"command line rather than the default password you just logged in with.  It is\n".
-"also used when the server needs you to authorise a command, in which case it is\n".
-"often referred to as your 'sudo' password. It should be 8-20 characters, include\n".
-"numbers, letters, and capitals but no spaces.  Please take careful note of it as\n".
-"it cannot easily be recovered if forgotten:\n";
-$pwd = promptForPwd();
+$pwd = promptForPwd("Server login password", '\n\nPlease choose a new server command line login password:\n');
 resetTellervoLogin($pwd);
    
 //
 //   STEP 4 - CONTINUE WITH TELLERVO-SERVER CONFIGURATION
 //
-exec("reset");
-passthru("sudo tellervo-server --firstrun");
-exec("sudo rm /usr/share/tellervo-server/firstrun");
+$process = new Tui();
+$process->processStart("sudo tellervo-server --firstrun");
+$process->processStop();
+
+// Remove firstrun file so it doesn't run again next time
+exec("sudo rm /home/tellervo/firstrun");
+
+
 die();
 
 
 
 function pingSudo()
-{
-/*
-	echo "ping Sudo called";
-	$myFile = "/tmp/chpwd";
-	$fh = fopen($myFile, 'w') or die("can't open temp file");
-	chmod($myFile, 0700); 
-	
-	fwrite($fh, "#!/bin/bash\n");
-	fwrite($fh, "expect << EOF\n");
-    fwrite($fh, "send \"sudo touch /tmp/test\\r\n");
-    fwrite($fh, "expect \"[sudo] password for tellervo:\"\n");
-    fwrite($fh, "send \"dendrochronology\\r\"\n");
-    fwrite($fh, "expect eof;\n");
-    fwrite($fh, "EOF");   
-    fclose($fh);
-	exec($myFile);
-	unlink($myFile);*/
-	
+{	
 	exec("echo \"dendrochronology\" | sudo -S touch /tmp/test >> /dev/null");
 }
 
@@ -155,21 +120,16 @@ function resetTellervoLogin($pwd)
 	chmod($myFile, 0700); 
 	
 	fwrite($fh, "#!/bin/bash\n");
-	fwrite($fh, "expect << EOF\n");
-	fwrite($fh, "spawn passwd tellervo\n");
-    fwrite($fh, "expect \"Changing password for tellervo\"\n");
-    fwrite($fh, "expect \"(current) UNIX password: \"\n");
-    fwrite($fh, "send \"dendrochronology\\r\"\n");
-    fwrite($fh, "expect \"Enter new UNIX password:\"\n");
-    fwrite($fh, "send \"$pwd\\r\"\n");
-    fwrite($fh, "expect \"Retype new UNIX password:\"\n");
-    fwrite($fh, "send \"$pwd\\r\"\n");
-    fwrite($fh, "expect \"passwd: password updated successfully\"\n");
-    fwrite($fh, "expect eof;\n");
-    fwrite($fh, "EOF");   
+	fwrite($fh, "echo -e 'dendrochronology\\n$pwd\\n$pwd' | passwd");
     fclose($fh);
+	$process = new Tui();
+	$process->processStart($myFile);
+	$process->processStop();
     
-	exec($myFile);
+	if(file_exists($myFile))
+	{
+		unlink($myFile); 
+	}
 	unlink($myFile);
 }
 
@@ -209,25 +169,44 @@ function printDivider()
  * @param $isCreating - if true then prompts are tailored to a new password
  *                      otherwise they are for getting existing password
  */
-function promptForPwd($isCreating=TRUE)
+function promptForPwd($title, $prompttext, $isCreating=TRUE)
 {
-   $pwd1 = prompt_silent("    Password : ");
+
+$dialog = new Tui();
+$dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title '".$title."' --clear --insecure --passwordbox '".$prompttext."' 20 70");
+$dialog->processStop();
+$retcode = $dialog->getReturnCode();
+$pwd1 = $dialog->getPipeTwo();
+if($retcode!=0)
+{
+	clear();
+	die();
+}
+
    
    if ((!preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$#", $pwd1) || strpos($pwd1, " ")))
    {
-     echo "Your password is invalid.  Please try again.\n";
-     return promptForPwd();
+     Tui::dialog("--backtitle 'Tellervo Server Configuration' --title '".$title."' --msgbox '\n\nYour password is invalid.  Please try again.\n', 20 70");
+     return promptForPwd($title, $prompttext);
    }
 	
    if($isCreating===TRUE)
    {
-	   
-	   $pwd2 = prompt_silent("    Repeat   : ");
-	
+	    $dialog = new Tui();
+		$dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title '".$title."' --clear --insecure --passwordbox '\n\nEnter again to confirm...\n' 20 70");
+		$dialog->processStop();
+		$retcode = $dialog->getReturnCode();
+		$pwd2 = $dialog->getPipeTwo();
+		if($retcode!=0)
+		{
+			clear();
+			die();
+		}
+
 	   if($pwd1!=$pwd2)
 	   {
-	      echo "\nPasswords do not match.  Try again!\n";
-	      return promptForPwd();
+     	  Tui::dialog("--backtitle 'Tellervo Server Configuration' --title '$title' --msgbox 'Passwords do not match.  Please try again.', 20 70");
+	      return promptForPwd($title, $prompttext);
 	   }
 
 	   return $pwd1;
@@ -235,6 +214,13 @@ function promptForPwd($isCreating=TRUE)
 
    return $pwd1;
 }
+
+function clear()
+{
+  exec ("clear");
+
+}
+
 
 /**
  * Script for hidding password from console
@@ -355,3 +341,4 @@ function echoTruncatedString($str, $length=70)
 
 
 ?>
+

@@ -231,7 +231,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 		$dbconnstatus = pg_connection_status ( $dbconn );
 		if ($dbconnstatus === PGSQL_CONNECTION_OK) {
 			$result3 = pg_query ( $dbconn, $sql3 );
-			if (pg_numrows ( $result3 ) > 0) {
+			if (pg_num_rows ( $result3 ) > 0) {
 				$theUnits = null;
 			} else {
 				$theUnits = "db-default";
@@ -251,34 +251,37 @@ class measurement extends measurementEntity implements IDBAccessor {
 				if ($relYearCheck == $row ['relyear']) {
 					// Compile notes array
 					
-					$jsonNotes = json_decode ( $row ['jsonnotes'], true );
-					
-					$notesArray = array ();
-					
-					if ($jsonNotes) {
-						foreach ( $jsonNotes as $note ) {
-							$currReadingNote = new readingNote ();
-							$currReadingNote->setID ( $note ['dbid'] );
-							$currReadingNote->setStandardisedID ( $note ['stdid'] );
-							$currReadingNote->setNote ( $note ['note'] );
-							$currReadingNote->setInheritedCount ( $note ['icnt'] );
-							$currReadingNote->setControlledVoc ( null, $note ['std'] );
-							
-							// All note to the readingsArray
-							array_push ( $notesArray, $currReadingNote );
-						}
-					}
-					
-					// Get all reading values to array
-					$this->readingsArray [$row ['relyear']] = array (
-							'value' => unit::unitsConverter ( $row ['reading'], $theUnits, "db-default" ),
-							'ewwidth' => unit::unitsConverter ( $row ['ewwidth'], $theUnits, "db-default" ),
-							'lwwidth' => unit::unitsConverter ( $row ['lwwidth'], $theUnits, "db-default" ),
-							'wjinc' => $row ['wjinc'],
-							'wjdec' => $row ['wjdec'],
-							'count' => $row ['count'],
-							'notesArray' => $notesArray 
-					);
+				    if($row['jsonnotes']!=null)
+				    {
+    					$jsonNotes = json_decode ( $row ['jsonnotes'], true );
+    					
+    					$notesArray = array ();
+    					
+    					if ($jsonNotes) {
+    						foreach ( $jsonNotes as $note ) {
+    							$currReadingNote = new readingNote ();
+    							$currReadingNote->setID ( $note ['dbid'] );
+    							$currReadingNote->setStandardisedID ( $note ['stdid'] );
+    							$currReadingNote->setNote ( $note ['note'] );
+    							$currReadingNote->setInheritedCount ( $note ['icnt'] );
+    							$currReadingNote->setControlledVoc ( null, $note ['std'] );
+    							
+    							// All note to the readingsArray
+    							array_push ( $notesArray, $currReadingNote );
+    						}
+    					}
+    					
+    					// Get all reading values to array
+    					$this->readingsArray [$row ['relyear']] = array (
+    							'value' => unit::unitsConverter ( $row ['reading'], $theUnits, "db-default" ),
+    							'ewwidth' => unit::unitsConverter ( $row ['ewwidth'], $theUnits, "db-default" ),
+    							'lwwidth' => unit::unitsConverter ( $row ['lwwidth'], $theUnits, "db-default" ),
+    							'wjinc' => $row ['wjinc'],
+    							'wjdec' => $row ['wjdec'],
+    							'count' => $row ['count'],
+    							'notesArray' => $notesArray 
+    					);
+				    }
 					$relYearCheck ++;
 				} else {
 					// Something screwy going on with relyears in the vmeasurementResult
@@ -288,8 +291,8 @@ class measurement extends measurementEntity implements IDBAccessor {
 			}
 			
 			// If this is a direct measurement then add any notes as a subarray
-			if ($row ['readingid']) {
-				$noteSQL = "SELECT tlkpreadingnote.*, tblreadingreadingnote.readingid FROM tlkpreadingnote, tblreadingreadingnote WHERE tblreadingreadingnote.readingid = " . pg_escape_string($dbconn,  $row ['readingid'] );
+			if (isset($row['readingid']) && $row ['readingid']) {
+			    $noteSQL = "SELECT tlkpreadingnote.*, tblreadingreadingnote.readingid FROM tlkpreadingnote, tblreadingreadingnote WHERE tblreadingreadingnote.readingid = " . pg_escape_string($dbconn,  $row ['readingid'] );
 				$noteResult = pg_query ( $dbconn, $noteSQL );
 				while ( $noteRow = pg_fetch_array ( $noteResult ) ) {
 					// Get all reading values to array

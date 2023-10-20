@@ -62,23 +62,24 @@ if [ $1 = 'configure' ]; then
 	      ## Remaining steps required no matter what the previous version was
 	      ##
 	      
-	      if [ -e "/usr/lib/postgresql/9.5/lib/libpljava-so-1.6.0-SNAPSHOT.so" ]
-	        then
-	          echo "PLJava already installed... skipping" >> /var/log/tellervo-installation.log
-	        else
-	          echo "Installing PLJava binary" >> /var/log/tellervo-installation.log
-	          
-	          bits="$(getconf LONG_BIT)"
-	          if [ "$bits" = '64' ]; then
-	             ln -fs /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so /usr/share/tellervo-server/libjvm.so
-	             java -jar /usr/share/tellervo-server/pljava-pg9.5-amd64-Linux-gpp.jar
-	          else
-	             ln -fs /usr/lib/jvm/java-8-openjdk-i386/jre/lib/i386/server/libjvm.so /usr/share/tellervo-server/libjvm.so
-	             java -jar /usr/share/tellervo-server/pljava-pg9.5-i386-Linux-gpp.jar
-	          fi
-	      	  
-	      fi
+	      ##if [ -e "/usr/lib/postgresql/9.5/lib/libpljava-so-1.6.0-SNAPSHOT.so" ]
+	      ##  then
+	      ##    echo "PLJava already installed... skipping" >> /var/log/tellervo-installation.log
+	      ##  else
+	      ##    echo "Installing PLJava binary" >> /var/log/tellervo-installation.log
+	      ##    
+	      ##    bits="$(getconf LONG_BIT)"
+	      ##    if [ "$bits" = '64' ]; then
+	      ##       ln -fs /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so /usr/share/tellervo-server/libjvm.so
+	      ##       java -jar /usr/share/tellervo-server/pljava-pg9.5-amd64-Linux-gpp.jar
+	      ##    else
+	      ##       ln -fs /usr/lib/jvm/java-8-openjdk-i386/jre/lib/i386/server/libjvm.so /usr/share/tellervo-server/libjvm.so
+	      ##       java -jar /usr/share/tellervo-server/pljava-pg9.5-i386-Linux-gpp.jar
+	      ##    fi
+	      ##	  
+	      ##fi
 	      
+	      ##java -jar /usr/share/tellervo-server/pljava-pg14-amd64-Linux-gpp.jar
 	      
 	      if [ -e "/var/www/tellervo/config.php" ]
 	       then     
@@ -115,21 +116,23 @@ if [ $1 = 'configure' ]; then
       
             echo "Configuring new installation" >> /var/log/tellervo-installation.log
             
-            if [ -e "/usr/lib/postgresql/9.5/lib/libpljava-so-1.6.0-SNAPSHOT.so" ]
-	        then
-	          echo "PLJava already installed... skipping" >> /var/log/tellervo-installation.log
-	        else
-	          echo "Installing PLJava binary" >> /var/log/tellervo-installation.log
-	          
-	      	  bits="$(getconf LONG_BIT)"
-	          if [ "$bits" = '64' ]; then
-	             ln -fs /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so /usr/share/tellervo-server/libjvm.so
-	             java -jar /usr/share/tellervo-server/pljava-pg9.5-amd64-Linux-gpp.jar
-	          else
-	             ln -fs /usr/lib/jvm/java-8-openjdk-i386/jre/lib/i386/server/libjvm.so /usr/share/tellervo-server/libjvm.so
-	             java -jar /usr/share/tellervo-server/pljava-pg9.5-i386-Linux-gpp.jar
-	          fi
-	        fi
+            ##if [ -e "/usr/lib/postgresql/9.5/lib/libpljava-so-1.6.0-SNAPSHOT.so" ]
+	        ##then
+	        ##  echo "PLJava already installed... skipping" >> /var/log/tellervo-installation.log
+	        ##else
+	        ##  echo "Installing PLJava binary" >> /var/log/tellervo-installation.log
+	        ##  
+	      	##  bits="$(getconf LONG_BIT)"
+	        ##  if [ "$bits" = '64' ]; then
+	        ##     ln -fs /usr/lib/jvm/java-8-openjdk-amd64/jre/lib/amd64/server/libjvm.so /usr/share/tellervo-server/libjvm.so
+	        ##     java -jar /usr/share/tellervo-server/pljava-pg9.5-amd64-Linux-gpp.jar
+	        ##  else
+	        ##     ln -fs /usr/lib/jvm/java-8-openjdk-i386/jre/lib/i386/server/libjvm.so /usr/share/tellervo-server/libjvm.so
+	        ##     java -jar /usr/share/tellervo-server/pljava-pg9.5-i386-Linux-gpp.jar
+	        ##  fi
+	        ##fi
+	        
+	        ##java -jar /usr/share/tellervo-server/pljava-pg14-amd64-Linux-gpp.jar
             
             
      		#/usr/bin/tellervo-server --configure

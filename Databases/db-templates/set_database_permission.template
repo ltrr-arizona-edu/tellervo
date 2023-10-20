@@ -1,8 +1,53 @@
-CREATE ROLE "Webgroup"
-  SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
 
-CREATE ROLE %%DBUSER%% LOGIN
-  ENCRYPTED PASSWORD '%%DBPWD%%'
-  SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
+DO
+$do$
+BEGIN
+   IF EXISTS (
+      SELECT FROM pg_catalog.pg_roles
+      WHERE  rolname = 'Webgroup') THEN
+
+      RAISE NOTICE 'Role "Webgroup" already exists. Skipping.';
+   ELSE
+     CREATE ROLE "Webgroup" SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
+   END IF;
+END
+$do$;
+
+DO
+$do$
+BEGIN
+   IF EXISTS (
+      SELECT FROM pg_catalog.pg_roles
+      WHERE  rolname = '%%DBUSER%%') THEN
+
+      RAISE NOTICE 'Role "%%DBUSER%%" already exists. Setting password...';
+      ALTER ROLE %%DBUSER%% WITH ENCRYPTED PASSWORD '%%DBPWD%%' SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
+      
+      
+   ELSE
+     CREATE ROLE "%%DBUSER%%" LOGIN
+  		ENCRYPTED PASSWORD '%%DBPWD%%'
+ 		SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
+   END IF;
+END
+$do$;
 
 ALTER GROUP "Webgroup" ADD USER %%DBUSER%%;
+
+DO
+$do$
+BEGIN
+   IF EXISTS (
+      SELECT FROM pg_catalog.pg_roles
+      WHERE  rolname = 'pbrewer') THEN
+
+      RAISE NOTICE 'Role "pbrewer" already exists.';    
+      
+   ELSE
+     CREATE ROLE "pbrewer" LOGIN
+  		ENCRYPTED PASSWORD '%%DBPWD%%'
+ 		SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
+   END IF;
+END
+$do$;
+

@@ -10,6 +10,8 @@ if (!isset($argc))
 	exit(1);
 }
 
+require_once('/usr/share/tellervo-server/tui.php');
+
 
 // Set custom error handler to divert messages to log file
 set_error_handler("myErrorHandler");
@@ -66,8 +68,8 @@ $user 			  = "tellervo";
 $pwd 			  = "";
 $wsurl 			  = "";
 $errorsFound 	  = FALSE;
-$postgresversion  = "14";
-$postgisversion   = "3.2";
+$postgresversion  = "13";
+$postgisversion   = "3";
 $folderbase       = "/usr/share/tellervo-server/";
 $pg_hba_file      = "/etc/postgres/?";  // set later
 $pg_hba_file_orig = "/etc/postgres/?"; // set later
@@ -118,8 +120,8 @@ if(isset($args["auto-configure"]))
 	include($dbsetupfile);
 	generateSystemsConfig();
 	include($systemconfig);
-	runDBUpgrades(true);
-	apacheSetup(true);
+	runDBUpgrades(TRUE);
+	apacheSetup(TRUE);
 	verifySetup();
 	printComplete();
 	exit(0);
@@ -209,7 +211,7 @@ else if(isset($args["firstrun"]))
 	// Configure server for first run
 	$colors = new Colors();
 
-	echo $colors->getColoredString("\n\nStep 4 - Setting up the Tellervo database...\n\n", "light_purple");
+	//echo $colors->getColoredString("\n\nStep 4 - Setting up the Tellervo database...\n\n", "light_purple");
 	requireRoot();
 	// Make sure media store is accessible to www-data
 
@@ -222,9 +224,7 @@ else if(isset($args["firstrun"]))
 	runDBUpgrades(true);
 	generateSystemsConfig();
 	include($systemconfig);
-	echo $colors->getColoredString("\n\nStep 5 - Configuring the / webservice...\n\n", "light_purple");
 	apacheSetup();
-	echo $colors->getColoredString("\n\nStep 6 - Verifying setup...\n\n", "light_purple");
 	verifySetup();
 	printComplete();
 	exec("$folderbase/firstrun");
@@ -237,7 +237,7 @@ else if(isset($args["deploy"]))
 	echo "Deleting any existing config files...\n\n";
 	if (file_exists("$folderbase/firstrun"))
 	{
-		exec("rm $folderbase/firstrun");
+		exec("sudo rm $folderbase/firstrun");
 	}
 	if (file_exists("$wsbase/config.php"))
 	{
@@ -266,16 +266,31 @@ else if(isset($args["deploy"]))
 	echo "Move first run script into place...\n\n";
 	if (file_exists("/usr/share/tellervo-server/firstrun.template"))
 	{
-		exec("cp /usr/share/tellervo-server/firstrun.template /usr/share/tellervo-server/firstrun");
+		exec("cp /usr/share/tellervo-server/firstrun.template /home/tellervo/firstrun");
+		exec("chmod a+rwx /home/tellervo/firstrun");
 	}
 
 	echo "Installing power interface stuff for clean shutdowns...\n\n";
-	exec("apt get -q -y install acpid");
+	exec("apt install -q -y acpid");
 
 	removeNetworkPersistence();
 
 	echo "Make sure firstrun gets run on next login...\n\n";
-	exec("echo \"\n# Run Tellervo firstrun script if required\nif [ -f /usr/share/tellervo-server/firstrun ]\nthen\n   /usr/share/tellervo-server/firstrun\nfi\" >> ~/.bashrc");
+	
+	$myfile = fopen("/home/tellervo/.bashrc", "a") or die("Unable to open file!");
+    $txt = "
+
+# Run Tellervo firstrun script if required
+if [ -f /home/tellervo/firstrun ]
+then
+   /home/tellervo/firstrun
+fi
+
+";
+
+    fwrite($myfile, $txt);
+    fclose($myfile);
+
 	//exec("su - tellervo -c `history -c`");
 	echo "\n\n";
 	echo "All pre-deployment steps have been completed\n\n";
@@ -652,7 +667,7 @@ function restoreDB($dbfilename)
     exec("su - postgres -c \"psql -d ".$dbname." -f ".$postgisspatialrefsys." 2>> ".$logfile."\"");
     exec("su - postgres -c \"psql -d ".$dbname." -f ".$postgislegacy." 2>> ".$logfile."\"");
     echo "\nConfiguring PLJava extension.\n";
-    sexec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-1.3.0e.notransaction.sql 2>> ".$logfile."\"");
+    exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-1.3.0e.notransaction.sql 2>> ".$logfile."\"");
     echo "\nApplying PostGIS upgrade patches.  This could take some time on larger databases...\n";
     shell_exec("su - postgres -c \"".$postgisrestore." ".$dbfilename." | psql ".$dbname." 2>> ".$logfile."\"");
     echo "\nFinalising PLJava extension configuration...\n";
@@ -952,6 +967,10 @@ function runDBUpgrades($skipbackup=false)
 	        }
 		}
 	}
+    else
+    {
+   		echo "No patches found...\n";
+    }
 
 	if($upgradeScriptFailed===TRUE)
 	{
@@ -1399,8 +1418,16 @@ function createScriptsFromTemplates($auto=false)
   }
   else
   {
-	  echo "\nPlease enter the name of your laboratory : ";
-	  $response = fgets(STDIN);
+	  $dialog = new Tui();
+	  $dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'Server Details' --inputbox '\n\nPlease enter the name of your laboratory\n' 15 60");
+	  $dialog->processStop();
+      $retcode = $dialog->getReturnCode();
+      if($retcode!=0)
+ 	  {
+	     clear();
+	     die();
+      }
+      $response = $dialog->getPipeTwo();
   }
   setConfigVariable("%%LABNAME%%", trim($response, "\n\r"));
 
@@ -1410,8 +1437,18 @@ function createScriptsFromTemplates($auto=false)
   }
   else
   {
-  	echo "\nPlease enter a code/acronym for your lab e.g. C for Cornell : ";
-  	$response = fgets(STDIN);
+      $dialog = new Tui();
+	  $dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'Server Details' --inputbox '\n\nPlease enter the acronym for your laboratory (e.g. LTRR).  If you prefer you can leave this blank.\n' 15 60");
+	  $dialog->processStop();
+      $retcode = $dialog->getReturnCode();
+      if($retcode!=0)
+ 	  {
+	     clear();
+	     die();
+      }
+      $response = $dialog->getPipeTwo();  
+  
+ 
   }
   setConfigVariable("%%LABACRONYM%%", trim($response, "\n\r"));
 
@@ -1422,10 +1459,16 @@ function createScriptsFromTemplates($auto=false)
   }
   else
   {
-	  echo "\nPlease enter a unique 'domain' for your database.  This should normally be the\n";
-	  echo   "domain name of your lab's website (e.g. dendro.cornell.edu), but can be any\n";
-	  echo   "name as long as it is unique and doesn't contain spaces : ";
-	  $response = fgets(STDIN);
+      $dialog = new Tui();
+	  $dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'Server Details' --inputbox '\n\nPlease enter a unique domain name for your database.  This should normally be the domain name of your website (e.g. ltrr.arizona.edu), but can be any name as long as it is unique and does not contain spaces:\n' 15 60");
+	  $dialog->processStop();
+      $retcode = $dialog->getReturnCode();
+      if($retcode!=0)
+ 	  {
+	     clear();
+	     die();
+      }
+      $response = $dialog->getPipeTwo();  
   }
   setConfigVariable("%%DOMAIN%%", trim($response, "\n\r"));
 
@@ -1459,8 +1502,6 @@ function createScriptsFromTemplates($auto=false)
  */
 function getIP()
 {
-  //exec("ifconfig $1 | grep \"inet addr\" | awk -F: '{print $2}' | awk '{print $1}'", $response);
-  //exec("ip -o route get 8.8.8.8 | sed -e 's/^.* src \([^ ]*\) .*$/\1/'", $response); 
   exec("hostname -I | awk '{print $1}'", $response);
   
   return $response[0];
@@ -1509,17 +1550,35 @@ function postgresSetup($quick=false)
   }
   else
   {
-	  // Find out if the user wants a new db
-	  echo "Would you like the installer to set up a new Tellervo database?\n";
-	  echo "    [Y]/n  ";
-	  $response = fgets(STDIN);
+        $dialog = new Tui();
+		$dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'Postgresql Database' --yesno '\n\nWould you like the installer to set up a new Tellervo database?' 15 60");
+		$dialog->processStop();
+		$response = $dialog->getReturnCode();
+		
+		if(!(trim(strtolower($response))==1) || (trim(strtolower($response))==0))
+		{
+			$response = "y";
+		}
+		else
+		{
+			$response = "n";
+		}
   }
 
    if((trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
    {
      // User doesn't want a new db so must already have one
-     echo "\nWhat is the name of your Tellervo PostgreSQL database? : ";
-     $response = fgets(STDIN);
+    
+      $dialog = new Tui();
+	  $dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'Server Details' --inputbox '\n\nWhat is the name of your Tellervo PostgreSQL database?:\n' 15 60");
+	  $dialog->processStop();
+      $retcode = $dialog->getReturnCode();
+      if($retcode!=0)
+ 	  {
+	     clear();
+	     die();
+      }
+      $response = $dialog->getPipeTwo();  
 
      if(trim($response)=="")
      {
@@ -1690,17 +1749,35 @@ function setDBUser($quick=false)
   }
   else
   {
-	  echo "\n\nWould you like to create a new database user?\n";
-	  echo "    [Y]/n  ";
-	  $response = fgets(STDIN);
+		$dialog = new Tui();
+		$dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'Database setup' --yesno 'Would you like to create a new database user?' 15 60");
+		$dialog->processStop();
+		$response = $dialog->getReturnCode();
+		
+		if(!(trim(strtolower($response))==1) || (trim(strtolower($response))==0))
+		{
+			$response = 'y';
+		}
+		else
+		{
+			$response = 'n';
+		}
   }
 
   if((trim(strtolower($response))=='n') || (trim(strtolower($response))=='no'))
   {
-       echo "\nPlease provide details of a PostgreSQL user with full access to this database...\n";
-       echo "    Username : ";
-       $user = fgets(STDIN);
-       $pwd = promptForPwd(FALSE);
+
+		$dialog = new Tui();
+		$dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'Database details' --inputbox '\n\nPlease provide the name of a PostgreSQL user with full access to this datbase:\n' 15 60");
+		$dialog->processStop();
+		$retcode = $dialog->getReturnCode();
+		if($retcode!=0)
+		{
+		    clear();
+		    die();
+		}
+		$response = $dialog->getPipeTwo();  
+        $pwd = promptForPwd("Database user", "Password for this PostgreSQL user", FALSE);
   }
   else
   {
@@ -1712,11 +1789,7 @@ function setDBUser($quick=false)
       }
       else
       {
-        echo "\nCreate a PostgreSQL password.  This password is used internally within the\n";
-        echo   "server and is only required again if you want to access the Tellervo database\n";
-        echo   "directly. The password should be 8-20 characters, and include numbers, letters,\n";
-        echo   "and capitals but no spaces.\n";
-      	$pwd = promptForPwd();
+      	$pwd = promptForPwd("Database user", "Create a PostgreSQL password.  This password is used internally within the server and is only required again if you want to access the Tellervo database directly. The password should be 8-20 characters, and include numbers, letters, and capitals but no spaces.");
       }
   }
 }
@@ -1724,29 +1797,48 @@ function setDBUser($quick=false)
 /**
  * Interactive script for getting a password.  Checks that the password
  * is strong and asks for it twice to check for typos.
- *
+ * 
  * @param $isCreating - if true then prompts are tailored to a new password
  *                      otherwise they are for getting existing password
  */
-function promptForPwd($isCreating=TRUE)
+function promptForPwd($title, $prompttext, $isCreating=TRUE)
 {
-   $pwd1 = prompt_silent("    Password : ");
 
+$dialog = new Tui();
+$dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title '".$title."' --clear --insecure --passwordbox '".$prompttext."' 20 70");
+$dialog->processStop();
+$retcode = $dialog->getReturnCode();
+$pwd1 = $dialog->getPipeTwo();
+if($retcode!=0)
+{
+	clear();
+	die();
+}
+
+   
    if ((!preg_match("#.*^(?=.{8,20})(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).*$#", $pwd1) || strpos($pwd1, " ")))
    {
-     echo "Your password is invalid.  Please try again.\n";
-     return promptForPwd();
+     Tui::dialog("--backtitle 'Tellervo Server Configuration' --title '".$title."' --msgbox '\n\nYour password is invalid.  Please try again.\n', 20 70");
+     return promptForPwd($title, $prompttext);
    }
-
+	
    if($isCreating===TRUE)
    {
-
-	   $pwd2 = prompt_silent("    Repeat   : ");
+	    $dialog = new Tui();
+		$dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title '".$title."' --clear --insecure --passwordbox '\n\nEnter again to confirm...\n' 20 70");
+		$dialog->processStop();
+		$retcode = $dialog->getReturnCode();
+		$pwd2 = $dialog->getPipeTwo();
+		if($retcode!=0)
+		{
+			clear();
+			die();
+		}
 
 	   if($pwd1!=$pwd2)
 	   {
-	      echo "\nPasswords do not match.  Try again!\n";
-	      return promptForPwd();
+     	  Tui::dialog("--backtitle 'Tellervo Server Configuration' --title '$title' --msgbox 'Passwords do not match.  Please try again.', 20 70");
+	      return promptForPwd($title, $prompttext);
 	   }
 
 	   return $pwd1;
@@ -1754,6 +1846,7 @@ function promptForPwd($isCreating=TRUE)
 
    return $pwd1;
 }
+
 
 /**
  * Interactive script for setting up Apache 2 webserver
@@ -1768,9 +1861,19 @@ function apacheSetup($auto=false)
   }
   else
   {
-	  echo "\n\nWould you like the installer to configure Apache to run the webservice?\n";
-	  echo "    [Y]/n  ";
-	  $response = fgets(STDIN);
+  		$dialog = new Tui();
+		$dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'Apache setup' --yesno 'Would you like the installer to configure Apache to run the webservice?' 15 60");
+		$dialog->processStop();
+		$response = $dialog->getReturnCode();
+		
+		if(!(trim(strtolower($response))==1) || (trim(strtolower($response))==0))
+		{
+			$response = 'y';
+		}
+		else
+		{
+			$response = 'n';
+		}
   }
 
   if(trim(strtolower($response))=='n')
@@ -1786,6 +1889,13 @@ function apacheSetup($auto=false)
   exec("service apache2 reload");
 
 }
+
+function clear()
+{
+  passthru("clear");
+
+}
+
 
 /**
  * Checks whether the config.php file is valid
