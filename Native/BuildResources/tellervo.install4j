@@ -5,7 +5,7 @@
     <variables>
       <variable name="platformtype" value="${compiler:sys.platform}" />
     </variables>
-    <codeSigning macEnabled="true" macPkcs12File="${pkcs12.filename}" windowsEnabled="true" windowsPkcs12File="${pkcs12.filename}" />
+    <codeSigning macPkcs12File="${pkcs12.filename}" windowsEnabled="true" windowsPkcs12File="${pkcs12.filename}" />
     <jreBundles jdkProviderId="AdoptOpenJDK" release="8/jdk8u362-b09" />
   </application>
   <files>
@@ -148,7 +148,7 @@
         <file path="${project.build.directory}/classes/Icons/512x512/tellervo-application.png" />
       </iconImageFiles>
     </launcher>
-    <launcher name="Tellervo for OSX" id="593" excludeFromMenu="true">
+    <launcher name="Tellervo for macOS" id="593" excludeFromMenu="true">
       <executable name="tellervo" iconSet="true" executableDir="." executableMode="gui" changeWorkingDirectory="false" singleInstance="true" checkConsoleParameter="true" dpiAware="false" />
       <java mainClass="org.tellervo.desktop.gui.Startup">
         <classPath>
@@ -862,8 +862,9 @@ rm -f /usr/share/pixmaps/tellervo-application.png</postUninstallScript>
       </variables>
       <jreBundle directDownload="true" />
     </windows>
+    <macosArchive name="macOS Single Bundle Archive" id="834" architecture="aarch64" launcherId="593" />
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="646" />
+    <mediaSet refId="834" />
   </buildIds>
 </install4j>

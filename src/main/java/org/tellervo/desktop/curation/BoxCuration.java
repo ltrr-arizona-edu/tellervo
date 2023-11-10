@@ -340,7 +340,7 @@ implements KeyListener, ActionListener, TableModelListener{
 		}
 
 		// set up a dialog...
-		Window parentWindow = SwingUtilities.getWindowAncestor(getParent());
+		Window parentWindow = this;
 		TellervoResourceAccessDialog dialog = TellervoResourceAccessDialog.forWindow(parentWindow, resource);
 
 		resource.query();

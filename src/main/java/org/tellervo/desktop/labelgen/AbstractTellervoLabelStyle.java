@@ -24,8 +24,8 @@ public abstract class AbstractTellervoLabelStyle {
 	protected final ItemType itemType;
 	protected Document document;
 	protected PdfContentByte cb;
-	protected float barcodeSize = 1.0f;
-	//protected float barcodeSize = 0.7f;
+	//protected float barcodeSize = 1.0f;
+	protected float barcodeSize = 0.7f;
 	protected LabelSummarizationType summarizationType = LabelSummarizationType.ELEMENT;
 	
 	private final String configureableLine1Description;

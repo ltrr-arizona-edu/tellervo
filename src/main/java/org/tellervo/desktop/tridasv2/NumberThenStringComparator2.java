@@ -93,7 +93,7 @@ public class NumberThenStringComparator2 implements Comparator<Object> {
 			}
 		}
 		
-		log.debug("Comparing '"+o1+"' with '"+02+"' = "+result);
+		//log.debug("Comparing '"+o1+"' with '"+02+"' = "+result);
 		return result;
 
 	}

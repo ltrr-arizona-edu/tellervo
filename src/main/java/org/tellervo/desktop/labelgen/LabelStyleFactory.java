@@ -31,6 +31,11 @@ public class LabelStyleFactory {
 		new SampleLabelRoll3Point25xPoint375AllInStyle(),
 		new SampleLabelRoll4xPoint375TwoLabelStyle(),
 		new SampleLabelRoll3x1Point5(),
+		
+		new BoxLabelStyleB10By8(),
+		new BoxLabelStyleB8By8(),
+		new BoxLabelStyleB20By4(),
+
 
 		
 		};
