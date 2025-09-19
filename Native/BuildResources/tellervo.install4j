@@ -6,7 +6,7 @@
       <variable name="platformtype" value="${compiler:sys.platform}" />
     </variables>
     <codeSigning macPkcs12File="${pkcs12.filename}" windowsEnabled="true" windowsPkcs12File="${pkcs12.filename}" />
-    <jreBundles jdkProviderId="AdoptOpenJDK" release="8/jdk8u362-b09" />
+    <jreBundles jdkProviderId="AdoptOpenJDK" release="8/jdk8u412-b08" />
   </application>
   <files>
     <filesets>
@@ -862,9 +862,9 @@ rm -f /usr/share/pixmaps/tellervo-application.png</postUninstallScript>
       </variables>
       <jreBundle directDownload="true" />
     </windows>
-    <macosArchive name="macOS Single Bundle Archive" id="834" architecture="aarch64" launcherId="593" />
+    <macosArchive name="macOS Intel" id="834" launcherId="593" />
   </mediaSets>
   <buildIds buildAll="false">
-    <mediaSet refId="834" />
+    <mediaSet refId="81" />
   </buildIds>
 </install4j>

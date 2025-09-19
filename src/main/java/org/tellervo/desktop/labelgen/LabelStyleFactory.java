@@ -29,6 +29,7 @@ public class LabelStyleFactory {
 		new SampleLabel1Style(),
 		new SampleLabelRoll4xPoint375AllInStyle(),
 		new SampleLabelRoll3Point25xPoint375AllInStyle(),
+		new SampleLabelRoll3Point25xPoint375AllInStyleExtID(),
 		new SampleLabelRoll4xPoint375TwoLabelStyle(),
 		new SampleLabelRoll3x1Point5(),
 		

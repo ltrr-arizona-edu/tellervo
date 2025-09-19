@@ -349,7 +349,7 @@
 		<dependency>
 			<groupId>org.tridas</groupId>
 			<artifactId>tricycle</artifactId>
-			<version>0.3.4</version>
+			<version>0.3.6-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
@@ -731,15 +731,15 @@
 													<arg value="-tsa" />
 													<arg value="http://tsa.starfieldtech.com" />
 													<arg value="-keystore" />
-													<!-- <arg value="/home/pbrewer/.ssh/pwb_code_signing_2014.p12" 
-														/> -->
-													<arg value="${pkcs12.filename}" />
+													 <arg value="/home/pbrewer/.ssh/pwb_code_signing_2014.p12" 
+														/> 
+													<!-- <arg value="${pkcs12.filename}" />-->
 													<arg value="-storepass" />
-													<!-- <arg value="/home/pbrewer/.ssh/key" /> -->
-													<arg value="${cert.password}" />
+													<arg value="/home/pbrewer/.ssh/key" /> 
+													<!-- <arg value="${cert.password}" />-->
 													<arg value="-keypass" />
-													<!-- <arg value="/home/pbrewer/.ssh/key" /> -->
-													<arg value="${cert.password}" />
+													<arg value="/home/pbrewer/.ssh/key" /> 
+													<!-- <arg value="${cert.password}" />-->
 													<arg
 														value="${project.build.directory}/${project.build.finalName}.jar" />
 													<arg value="the university of arizona's internet2 id" />
@@ -1364,5 +1364,5 @@
 		<url>https://sourceforge.net/p/tellervo/tickets/</url>
 		<system>Sourceforge.net</system>
 	</issueManagement>
-	<version>1.5.0</version>
+	<version>1.5.3</version>
 </project>

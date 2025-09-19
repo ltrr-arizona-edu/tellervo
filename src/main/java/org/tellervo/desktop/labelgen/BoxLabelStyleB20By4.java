@@ -379,6 +379,16 @@ public class BoxLabelStyleB20By4 extends AbstractTellervoLabelStyle {
 		cb.stroke();
 		cb.restoreState();
 		
+		// Title box outline - right side
+		cb.saveState();
+		cb.setColorStroke(CMYKColor.BLACK);
+		cb.rectangle(getLabelLeft(), 
+				countryLLY-inchToPoint(4)+pagemargin,
+				getLabelWidth(), 
+				getLabelTop()-countryLLY);
+		cb.stroke();
+		cb.restoreState();
+		
 		
 		// Jurisdiction Logos
 		if(getLine5OverrideText()!=null)
