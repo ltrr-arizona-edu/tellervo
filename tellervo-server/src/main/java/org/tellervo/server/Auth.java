@@ -13,9 +13,9 @@ import java.util.Date;
 
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tellervo.server.util.SqlEscapers;
 import org.tellervo.desktop.wsi.tellervo.resources.AuthenticateResource;
 import org.tellervo.schema.TellervoRequestStatus;
 import org.tellervo.schema.TellervoRequestType;
@@ -162,11 +162,11 @@ public class Auth {
 		Integer seqint = null;
 		String dbpwdhash = null;
 		try {
-			tusr = StringEscapeUtils.escapeSql(handler.getRequest().getAuthenticate().getUsername());
-			hash = StringEscapeUtils.escapeSql(handler.getRequest().getAuthenticate().getHash());
-			snonce  = StringEscapeUtils.escapeSql(handler.getRequest().getAuthenticate().getSnonce());
-			cnonce = StringEscapeUtils.escapeSql(handler.getRequest().getAuthenticate().getCnonce());
-			seq = StringEscapeUtils.escapeSql(handler.getRequest().getAuthenticate().getSeq());
+			tusr = SqlEscapers.escapeSql(handler.getRequest().getAuthenticate().getUsername());
+			hash = SqlEscapers.escapeSql(handler.getRequest().getAuthenticate().getHash());
+			snonce  = SqlEscapers.escapeSql(handler.getRequest().getAuthenticate().getSnonce());
+			cnonce = SqlEscapers.escapeSql(handler.getRequest().getAuthenticate().getCnonce());
+			seq = SqlEscapers.escapeSql(handler.getRequest().getAuthenticate().getSeq());
 			
 		} catch (Exception e) {
 			logIP();
@@ -366,7 +366,7 @@ public class Auth {
 			con = Main.getDatabaseConnection();
 			st = con.createStatement();
 			rs = st.executeQuery("SELECT * FROM tblsecurityuser WHERE username='"
-					+ StringEscapeUtils.escapeSql(tusr) + "' AND isactive=true");
+					+ SqlEscapers.escapeSql(tusr) + "' AND isactive=true");
 
 			if (rs.next()) {
 				dbpwd = rs.getString("password");
@@ -573,10 +573,10 @@ public class Auth {
 		Statement st1 = null;
 
 		String delSQL = "DELETE FROM tbliptracking WHERE ipaddr='"
-				+ StringEscapeUtils.escapeSql(handler.getOriginalFullRequest()
+				+ SqlEscapers.escapeSql(handler.getOriginalFullRequest()
 						.getRemoteAddr()) + "'";
 		String insSQL = "INSERT INTO tbliptracking (ipaddr, securityuserid) VALUES ('"
-				+ StringEscapeUtils.escapeSql(handler.getOriginalFullRequest()
+				+ SqlEscapers.escapeSql(handler.getOriginalFullRequest()
 						.getRemoteAddr()) + "', '"+this.getSecurityUserID()+"')";
 
 		//log.debug("DelSQL : " + delSQL);
@@ -636,20 +636,20 @@ public class Auth {
 		try{
 			if(handler.getRequest().getType().equals(TellervoRequestType.PLAINLOGIN))
 			{
-				insSQL += StringEscapeUtils.escapeSql("[plain text login not logged]")+"', '";
+				insSQL += SqlEscapers.escapeSql("[plain text login not logged]")+"', '";
 			}
 			else
 			{
-				insSQL += StringEscapeUtils.escapeSql(handler.getRequestAsString())+"', '";
+				insSQL += SqlEscapers.escapeSql(handler.getRequestAsString())+"', '";
 			}	
 		} catch (Exception e)
 		{
-			insSQL += StringEscapeUtils.escapeSql(handler.getRequestAsString())+"', '";
+			insSQL += SqlEscapers.escapeSql(handler.getRequestAsString())+"', '";
 		}
 			
 			
-		insSQL += StringEscapeUtils.escapeSql(handler.getOriginalFullRequest().getRemoteAddr()) + "', '"
-				+ StringEscapeUtils.escapeSql(handler.getOriginalFullRequest().getHeader("User-Agent"))+ "', ";
+		insSQL += SqlEscapers.escapeSql(handler.getOriginalFullRequest().getRemoteAddr()) + "', '"
+				+ SqlEscapers.escapeSql(handler.getOriginalFullRequest().getHeader("User-Agent"))+ "', ";
 		
 		if(this.getSecurityUserID()==null)
 		{

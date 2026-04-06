@@ -23,7 +23,7 @@
  */
 package org.tellervo.desktop.util;
 
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 /**
  * An implementation of EqualsBuilder that treats empty strings ("") the same as null

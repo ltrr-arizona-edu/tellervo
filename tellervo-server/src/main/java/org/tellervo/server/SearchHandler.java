@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.schema.SearchOperator;
@@ -17,6 +16,7 @@ import org.tellervo.schema.SearchReturnObject;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestStatus;
 import org.tellervo.schema.WSIParam;
+import org.tellervo.server.util.SqlEscapers;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.TridasObject;
 
@@ -694,7 +694,7 @@ public class SearchHandler {
 					throw new SQLException("Invalid search operator used.  The anyparentobjectid field only supports = or != operators");
 				}
 				
-				sql += "    vwtblobject.objectid "+operator+" (SELECT objectid FROM cpgdb.findobjectdescendants('"+StringEscapeUtils.escapeSql(param.getValue())+"', true))\n AND ";
+				sql += "    vwtblobject.objectid "+operator+" (SELECT objectid FROM cpgdb.findobjectdescendants('"+SqlEscapers.escapeSql(param.getValue())+"', true))\n AND ";
 
 			}
 			else if(param.getName().equals(SearchParameterName.ANYPARENTOBJECTCODE))
@@ -713,7 +713,7 @@ public class SearchHandler {
 					throw new SQLException("Invalid search operator used.  The anyparentobjectcode field only supports = or != operators");
 				}
 				
-				sql += "    vwtblobject.code "+operator+" (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode('"+StringEscapeUtils.escapeSql(param.getValue())+"', true)))\n AND ";
+				sql += "    vwtblobject.code "+operator+" (SELECT code FROM tblobject WHERE objectid IN (SELECT objectid FROM cpgdb.findobjectdescendantsfromcode('"+SqlEscapers.escapeSql(param.getValue())+"', true)))\n AND ";
 			}
 			else if(param.getName().equals(SearchParameterName.DEPENDENTSERIESID))
 			{
@@ -731,7 +731,7 @@ public class SearchHandler {
 					throw new SQLException("Invalid search operator used.  The dependenseriesid field only supports = or != operators");
 				}
 				
-				sql += "    vwcomprehensivevm.vmeasurementid "+operator+" (SELECT vmeasurementid FROM cpgdb.findvmchildren('"+StringEscapeUtils.escapeSql(param.getValue())+"', false))\n AND ";
+				sql += "    vwcomprehensivevm.vmeasurementid "+operator+" (SELECT vmeasurementid FROM cpgdb.findvmchildren('"+SqlEscapers.escapeSql(param.getValue())+"', false))\n AND ";
 			}
 			else
 			{
@@ -740,11 +740,11 @@ public class SearchHandler {
 				sql += "    "+getDBTableFromSearchParameterName(param.getName())+"."+getDBFieldNameFromSearchParameterName(param.getName());
 				if(param.getOperator().equals(SearchOperator.LIKE))
 				{
-					sql+= " ilike '%"+StringEscapeUtils.escapeSql(param.getValue())+"%'\n AND ";
+					sql+= " ilike '%"+SqlEscapers.escapeSql(param.getValue())+"%'\n AND ";
 				}
 				else
 				{
-					sql+= " " + param.getOperator().value()+" '"+StringEscapeUtils.escapeSql(param.getValue())+"'\n AND ";
+					sql+= " " + param.getOperator().value()+" '"+SqlEscapers.escapeSql(param.getValue())+"'\n AND ";
 				}
 			}
 		}

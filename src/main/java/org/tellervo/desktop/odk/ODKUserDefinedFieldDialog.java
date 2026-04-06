@@ -26,7 +26,7 @@ import javax.swing.border.EmptyBorder;
 
 import net.miginfocom.swing.MigLayout;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.tellervo.desktop.odk.fields.AbstractODKField;
 import org.tellervo.desktop.odk.fields.ODKDataType;
 import org.tellervo.desktop.odk.fields.ODKUserDefinedAudioField;
@@ -287,7 +287,7 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 	{
 		String name = this.txtName.getText().toLowerCase();
 		name = name.replaceAll("[^A-Za-z0-9]", "").trim();
-		name = StringEscapeUtils.escapeXml(name.replaceAll(" ", "_"));
+		name = StringEscapeUtils.escapeXml10(name.replaceAll(" ", "_"));
 		return "tellervo.user."+this.getFieldType().toString().toLowerCase()+"."+name;
 	}
 	
@@ -483,4 +483,3 @@ public class ODKUserDefinedFieldDialog extends JDialog {
 	}*/
 
 }
-

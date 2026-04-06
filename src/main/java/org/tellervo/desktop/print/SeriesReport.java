@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.editor.DecadalModel;
 import org.tellervo.desktop.editor.UnitAwareDecadalModel;

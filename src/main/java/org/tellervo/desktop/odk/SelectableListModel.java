@@ -5,7 +5,7 @@ import java.util.Collection;
 
 import javax.swing.AbstractListModel;
 
-import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 public class SelectableListModel extends AbstractListModel {
 

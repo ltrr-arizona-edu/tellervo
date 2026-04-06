@@ -53,7 +53,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import jsyntaxpane.DefaultSyntaxKit;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.tellervo.desktop.gui.TridasSelectEvent;
 import org.tellervo.desktop.gui.TridasSelectListener;
 import org.tellervo.desktop.gui.widgets.TridasTreeViewPanel;

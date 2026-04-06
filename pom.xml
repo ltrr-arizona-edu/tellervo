@@ -136,6 +136,8 @@
 		<javax.activation.version>1.2.0</javax.activation.version>
         <jaxb.api.version>2.3.0</jaxb.api.version>
         <lombok.version>1.18.36</lombok.version>
+        <commons.lang3.version>3.18.0</commons.lang3.version>
+        <commons.text.version>1.13.1</commons.text.version>
 	</properties>
 
 	<!-- Packages that this project depends upon -->
@@ -282,11 +284,14 @@
 			<version>0.9.5</version>
 		</dependency>
 		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>${commons.lang3.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-text</artifactId>
+			<version>${commons.text.version}</version>
 		</dependency>
 		<!-- Serial port library -->
 		<dependency>

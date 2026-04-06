@@ -6,11 +6,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.schema.TellervoRequestFormat;
 import org.tellervo.schema.TellervoRequestStatus;
+import org.tellervo.server.util.SqlEscapers;
 import org.tridas.schema.TridasElement;
 import org.tridas.schema.TridasSample;
 
@@ -120,7 +120,7 @@ public class TridasSampleHandler {
 	 */
 	public void readTridasSample(String id)
 	{
-		ArrayList<TridasSample> samples = readTridasSamplesWithSQL("elementid='"+StringEscapeUtils.escapeSql(id)+"'::uuid");
+		ArrayList<TridasSample> samples = readTridasSamplesWithSQL("elementid='"+SqlEscapers.escapeSql(id)+"'::uuid");
 		
 		if(samples.size()==1)
 		{	

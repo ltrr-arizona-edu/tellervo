@@ -42,7 +42,7 @@ package org.tellervo.desktop.maventests;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.tellervo.desktop.nativeloader.RxTxNativeLoader;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator2;
 import org.tellervo.desktop.util.StringUtils;
@@ -123,7 +123,7 @@ public class UtilTest extends TestCase {
     public void testEscape(){
     	
     	String str = "<hello>Some & text </hello";
-    	System.out.println(StringEscapeUtils.escapeHtml(str));
+    	System.out.println(StringEscapeUtils.escapeHtml4(str));
     }
     
     //
@@ -180,4 +180,3 @@ public class UtilTest extends TestCase {
     }
     
 }
-

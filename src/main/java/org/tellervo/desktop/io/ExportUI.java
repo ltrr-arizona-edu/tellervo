@@ -33,7 +33,7 @@ import javax.swing.GroupLayout;
 import javax.swing.JFileChooser;
 import javax.swing.LayoutStyle;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.tellervo.desktop.core.App;
 import org.tellervo.desktop.gui.Help;
 import org.tellervo.desktop.prefs.Prefs.PrefKey;
@@ -787,4 +787,3 @@ public class ExportUI extends javax.swing.JPanel{
 
     public enum Response {OVERWRITE , IGNORE, RENAME}
 }
-

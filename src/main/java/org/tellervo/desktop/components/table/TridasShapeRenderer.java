@@ -3,7 +3,7 @@
  */
 package org.tellervo.desktop.components.table;
 
-import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.tellervo.desktop.tridasv2.ui.DefaultCellRendererEx;
 import org.tridas.schema.TridasShape;
 
