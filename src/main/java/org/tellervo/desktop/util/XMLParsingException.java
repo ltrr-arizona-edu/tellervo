@@ -23,7 +23,7 @@ package org.tellervo.desktop.util;
 import java.io.File;
 import java.io.IOException;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 
 @SuppressWarnings("serial")
 public class XMLParsingException extends IOException {

@@ -19,7 +19,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.dictionary;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 public abstract class DictionaryElement {
 

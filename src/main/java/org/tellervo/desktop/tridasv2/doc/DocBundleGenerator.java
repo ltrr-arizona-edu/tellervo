@@ -35,12 +35,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.Namespace;
-import org.jdom.input.SAXBuilder;
-import org.jdom.xpath.XPath;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
+import org.jdom2.Namespace;
+import org.jdom2.filter.Filters;
+import org.jdom2.xpath.XPathExpression;
+import org.jdom2.xpath.XPathFactory;
+import org.tellervo.desktop.util.SecureXml;
 
 /**
  * Generates properties file for TRiDaS documentation.  This is used 
@@ -53,9 +55,8 @@ public class DocBundleGenerator {
 
 		InputStream is = DocBundleGenerator.class.getClassLoader().getResourceAsStream("schemas/tridas.xsd");
 		Document doc;
-		SAXBuilder builder = new SAXBuilder();
 		try {
-			doc = builder.build(is);
+			doc = SecureXml.newSaxBuilder().build(is);
 		} catch (JDOMException e) {
 			e.printStackTrace();
 			return;
@@ -64,9 +65,14 @@ public class DocBundleGenerator {
 			return;
 		}
 
-		List<?> docs;
+		List<Element> docs;
 		try {
-			docs = XPath.selectNodes(doc.getRootElement(), "//xs:documentation");
+			XPathExpression<Element> expression = XPathFactory.instance().compile(
+					"//xs:documentation",
+					Filters.element(),
+					null,
+					Namespace.getNamespace("xs", "http://www.w3.org/2001/XMLSchema"));
+			docs = expression.evaluate(doc.getRootElement());
 		} catch (JDOMException e) {
 			e.printStackTrace();
 			return;
@@ -74,11 +80,7 @@ public class DocBundleGenerator {
 		
 		writers = new HashMap<String,PrintWriter>();
 		
-		for(Object o : docs) {
-			if(!(o instanceof Element))
-				continue;
-			
-			Element e = (Element) o;
+		for(Element e : docs) {
 						
 			String tree = buildTreeFor(e);
 			String lang = e.getAttributeValue("lang", Namespace.XML_NAMESPACE);

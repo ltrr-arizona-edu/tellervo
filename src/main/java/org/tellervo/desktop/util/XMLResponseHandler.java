@@ -36,9 +36,8 @@ import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.JDOMException;
 
 public class XMLResponseHandler implements ResponseHandler<Document> {
    /**
@@ -103,7 +102,7 @@ public class XMLResponseHandler implements ResponseHandler<Document> {
 				// well, that didn't work...
 				try {
 					// try building it in memory, then
-					SAXBuilder builder = new SAXBuilder();
+					org.jdom2.input.SAXBuilder builder = SecureXml.newSaxBuilder();
 
 					return builder.build(new BufferedReader(
 							new InputStreamReader(instream, charset)));
@@ -132,7 +131,7 @@ public class XMLResponseHandler implements ResponseHandler<Document> {
 
 			try {
 				// try building it with validation
-				SAXBuilder builder = new SAXBuilder();
+				org.jdom2.input.SAXBuilder builder = SecureXml.newSaxBuilder();
 
 				return builder.build(tempFile);
 

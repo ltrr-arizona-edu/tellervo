@@ -23,7 +23,7 @@ package org.tellervo.desktop.wsi;
 import java.io.File;
 import java.io.IOException;
 
-import org.jdom.Document;
+import org.jdom2.Document;
 
 public class ResponseProcessingException extends IOException {
 	private static final long serialVersionUID = 1L;

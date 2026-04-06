@@ -27,10 +27,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math.util.MultidimensionalCounter.Iterator;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
+import org.jdom2.Document;
+import org.jdom2.Element;
+import org.jdom2.JDOMException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.Range;
@@ -45,6 +44,7 @@ import org.tellervo.desktop.tridasv2.LabCodeFormatter;
 import org.tellervo.desktop.tridasv2.SeriesLinkUtil;
 import org.tellervo.desktop.tridasv2.TridasIdentifierMap;
 import org.tellervo.desktop.ui.I18n;
+import org.tellervo.desktop.util.SecureXml;
 import org.tellervo.desktop.wsi.tellervo.TridasGenericFieldMap;
 import org.tridas.interfaces.ITridasDerivedSeries;
 import org.tridas.interfaces.ITridasSeries;
@@ -471,7 +471,7 @@ public class TridasDoc implements Filetype {
 		Document doc;
 		
 		try {
-			doc = new SAXBuilder().build(r);
+			doc = SecureXml.newSaxBuilder().build(r);
 		} catch (JDOMException jdome) {
 			log.error(jdome.getLocalizedMessage());
 			throw new WrongFiletypeException();

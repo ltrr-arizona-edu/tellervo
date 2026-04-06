@@ -74,10 +74,11 @@ public class GPXParser {
 	private void parse(Reader reader) throws IOException
 	{
 		// Parse into document
-		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		DocumentBuilderFactory dbf;
 		DocumentBuilder db = null;
 		Document doc = null;
 		try {
+			dbf = org.tellervo.desktop.util.SecureXml.newDocumentBuilderFactory();
 			 db = dbf.newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
 			throw new IOException("Error parsing GPX file");

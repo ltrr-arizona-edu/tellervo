@@ -531,8 +531,8 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 				
 		org.w3c.dom.Element formdef = null;
 		try {
-			formdef = DocumentBuilderFactory
-				    .newInstance()
+			formdef = org.tellervo.desktop.util.SecureXml
+				    .newDocumentBuilderFactory()
 				    .newDocumentBuilder()
 				    .parse(new ByteArrayInputStream(contents.getBytes()))
 				    .getDocumentElement();
@@ -1851,7 +1851,6 @@ public class ODKFormDesignPanel extends JPanel implements ActionListener, Serial
 		}
 	}
 }
-
 
 
 

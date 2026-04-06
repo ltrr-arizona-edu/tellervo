@@ -19,7 +19,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.dictionary;
 
-import org.jdom.Element;
+import org.jdom2.Element;
 
 @SuppressWarnings("unchecked")
 public class Taxon extends DictionaryElement implements Comparable {

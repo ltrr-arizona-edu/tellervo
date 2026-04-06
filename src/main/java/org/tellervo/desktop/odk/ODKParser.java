@@ -64,7 +64,7 @@ public class ODKParser implements Comparable<ODKParser>{
 		
 		try {
 
-			DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+			DocumentBuilderFactory dbFactory = org.tellervo.desktop.util.SecureXml.newDocumentBuilderFactory();
 			DocumentBuilder dBuilder;
 			
 			dBuilder = dbFactory.newDocumentBuilder();

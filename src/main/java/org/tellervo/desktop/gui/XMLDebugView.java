@@ -35,9 +35,9 @@ import javax.swing.event.ListSelectionListener;
 
 import jsyntaxpane.DefaultSyntaxKit;
 
-import org.jdom.Document;
-import org.jdom.output.Format;
-import org.jdom.output.XMLOutputter;
+import org.jdom2.Document;
+import org.jdom2.output.Format;
+import org.jdom2.output.XMLOutputter;
 import org.tellervo.desktop.ui.Builder;
 import org.tellervo.desktop.util.ArrayListModel;
 import org.tellervo.desktop.util.Center;
