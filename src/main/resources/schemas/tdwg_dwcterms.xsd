@@ -26,7 +26,7 @@
     <xs:include schemaLocation="tdwg_basetypes.xsd"/>
     <xs:import namespace="http://purl.org/dc/terms/" schemaLocation="dcterms.xsd"/>
     <xs:import namespace="http://purl.org/dc/elements/1.1/" schemaLocation="dc.xsd"/>
-    <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2001/03/xml.xsd"/>
+    <xs:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
     <!-- ANY DWC TERM -->
     <xs:element name="any" abstract="true"/>
     <!-- ANY DWC IDENTIFIER -->

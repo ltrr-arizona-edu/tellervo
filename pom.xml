@@ -130,24 +130,13 @@
 		<maven.build.timestamp.format>HH:mm dd-MMM-yyyy</maven.build.timestamp.format>
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<serverversion>2.0</serverversion>
+		<java.version>21</java.version>
+		<github.package.owner>petebrew</github.package.owner>
 		
 		<javax.activation.version>1.2.0</javax.activation.version>
         <jaxb.api.version>2.3.0</jaxb.api.version>
-        <lombok.version>1.18.6</lombok.version>
+        <lombok.version>1.18.36</lombok.version>
 	</properties>
-
-	 <!--  Repository to deploy to.  When deploying make sure your .m2/settings.xml
-	 file contains the correct username and password for the repository server -->
-	<distributionManagement>
-	    <repository>
-	      <id>ltrr-releases</id>
-	      <url>https://repo.ltrr.arizona.edu/ltrr-releases/</url>
-	    </repository>
-	    <snapshotRepository>
-	      <id>ltrr-snapshots</id>
-	      <url>https://repo.ltrr.arizona.edu/ltrr-snapshots/</url>
-	    </snapshotRepository>
-	</distributionManagement>
 
 	<!-- Packages that this project depends upon -->
 	<dependencies>
@@ -349,7 +338,7 @@
 		<dependency>
 			<groupId>org.tridas</groupId>
 			<artifactId>tricycle</artifactId>
-			<version>0.3.6-SNAPSHOT</version>
+			<version>2.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>postgresql</groupId>
@@ -369,7 +358,7 @@
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
-			<version>2.7</version>
+			<version>2.14.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -411,16 +400,43 @@
 	</dependencies>
 	<profiles>
 		<profile>
+			<id>desktop-jpackage</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>3.5.0</version>
+						<executions>
+							<execution>
+								<id>desktop-jpackage</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>bash</executable>
+									<workingDirectory>${project.basedir}</workingDirectory>
+									<arguments>
+										<argument>${project.basedir}/scripts/package-desktop.sh</argument>
+										<argument>--version</argument>
+										<argument>${project.version}</argument>
+										<argument>--java-home</argument>
+										<argument>${java.home}</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 
-			<!-- This profile should be used to create the Windows, Linux and MacOSX 
-				binaries. It requries the Install4j (closed-sourced) application as well 
-				as access to the appropriate code signing certificate. As such it is not 
-				run by default. The following keys must be set in your .m2/settings.xml file: 
-				- install4jc.binary - Absolute path to the install4jc binary - pkcs12.filename 
-				- Absolute path to the PKCS12 certificate file - cert.password - Password 
-				to unlock PKCS12 certificate file -->
-
-			<id>binaries</id>
+		<profile>
+			<id>server-binaries</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
 			</activation>
@@ -428,35 +444,10 @@
 			<build>
 				<plugins>
 
-					<!-- Create a MacOSX native executable n.b. on Linux and Windows this 
-						will create an *app.zip file on MacOSX it will also create a DMG file. Also 
-						note that on Linux and Windows computers the App will not include the Apple 
-						integration portions therefore they will have an ugly menu bar. -->
-					<!-- handled by install4j now -->
-					<!-- <plugin> <groupId>org.codehaus.mojo</groupId> <artifactId>osxappbundle-maven-plugin</artifactId> 
-						<version>1.0-alpha-2</version> <configuration> <mainClass>org.tellervo.desktop.gui.Startup</mainClass> 
-						<iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile> <jvmVersion>1.5+</jvmVersion> 
-						<bundleName>${project.name}</bundleName> <javaApplicationStub>Native/BuildResources/MacBuild/JavaApplicationStub</javaApplicationStub> 
-						</configuration> <executions> <execution> <phase>package</phase> <goals> 
-						<goal>bundle</goal> </goals> </execution> </executions> </plugin> <plugin> 
-						<groupId>org.codehaus.mojo</groupId> <artifactId>osxappbundle-maven-plugin</artifactId> 
-						<version>1.0-alpha-2</version> <configuration> <additionalResources> <fileSet> 
-						<directory>src/main/resources/Licenses</directory> <includes> <include>license.txt</include> 
-						</includes> </fileSet> <fileSet> <directory>Documentation/</directory> <includes> 
-						<include>tellervo-manual.pdf</include> </includes> </fileSet> <fileSet> <directory>${project.build.directory}/classes/MacBuild</directory> 
-						<includes> <include>Tellervo Drivers.pkg</include> </includes> </fileSet> 
-						</additionalResources> <bundleName>Tellervo</bundleName> <zipFile>${project.build.directory}/mac-app.zip</zipFile> 
-						<mainClass>org.tellervo.desktop.gui.Startup</mainClass> <jvmVersion>1.5+</jvmVersion> 
-						<iconFile>src/main/resources/Icons/tellervo-application.icns</iconFile> <javaApplicationStub>${project.build.directory}/classes/MacBuild/JavaApplicationStub</javaApplicationStub> 
-						</configuration> <executions> <execution> <phase>package</phase> <goals> 
-						<goal>bundle</goal> </goals> </execution> </executions> </plugin> -->
-
-
-			
 			        <plugin>
 			          <groupId>org.apache.maven.plugins</groupId>
 			          <artifactId>maven-surefire-plugin</artifactId>
-			          <version>2.19.1</version>
+			          <version>3.1.0</version>
 			        </plugin>
 
 					<!-- Create a Linux Ubuntu debian native installer -->
@@ -628,39 +619,6 @@
 						</executions>
 					</plugin>
 
-					<!-- Nasty kludge fixes. Tasks that Maven can not perform are done by 
-						running Ant instead -->
-					<plugin>
-						<artifactId>maven-antrun-plugin</artifactId>
-						<version>1.3</version>
-						<executions>
-
-							<execution>
-								<id>Install4J</id>
-								<phase>package</phase>
-								<configuration>
-									<tasks>
-										<taskdef resource="net/sf/antcontrib/antcontrib.properties"
-											classpathref="maven.plugin.classpath" />
-										<!-- <exec dir="${project.build.directory}" executable="/home/pbrewer/bin/install4j6/bin/install4jc"> -->
-										<exec dir="${project.build.directory}" executable="${install4jc.binary}">
-
-											<arg value="--win-keystore-password" />
-											<arg value="${cert.password}" />
-											<arg value="--mac-keystore-password" />
-											<arg value="${cert.password}" />
-											<arg value="${project.build.directory}/classes/tellervo.install4j" />
-										</exec>
-									</tasks>
-								</configuration>
-								<goals>
-									<goal>run</goal>
-								</goals>
-							</execution>
-
-						</executions>
-
-					</plugin>
 				</plugins>
 			</build>
 		</profile>
@@ -902,6 +860,14 @@
 					</execution>
 				</executions>
 				<configuration>
+					<schemaDirectory>src/main/resources/schemas</schemaDirectory>
+					<schemaExcludes>
+						<exclude>gmlsf.xsd</exclude>
+						<exclude>tridas.xsd</exclude>
+					</schemaExcludes>
+					<bindingDirectory>src/main/resources/binding</bindingDirectory>
+					<generateDirectory>src/main/generated</generateDirectory>
+					<verbose>true</verbose>
 
 					<args>
 						<arg>-extension</arg>
@@ -915,19 +881,6 @@
 						<arg>-Xcollection-setter-injector</arg>
 						<arg>-Xannotate</arg>
 					</args>
-
-					<schemaDirectory>src/main/resources/schemas</schemaDirectory>
-					<!-- Ignore these as they are in TridasJLib -->
-					<schemaExcludes>
-						<exclude>gmlsf.xsd</exclude>
-						<exclude>tridas.xsd</exclude>
-					</schemaExcludes>
-					
-					<bindingDirectory>src/main/resources/binding</bindingDirectory>
-					<generateDirectory>src/main/generated</generateDirectory>
-					<verbose>true</verbose>
-
-
 
 					<plugins>
 						<plugin>
@@ -972,7 +925,7 @@
 					<dependency>
 						<groupId>org.tridas</groupId>
 						<artifactId>tridasjlib</artifactId>
-						<version>1.22.6</version>
+						<version>2.0.0</version>
 					</dependency>
 				</dependencies>
 			</plugin>
@@ -1056,10 +1009,9 @@
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
+				<version>3.11.0</version>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<release>${java.version}</release>
 					<excludes>
 						<exclude>**/edu/cornell/dendro/cpgdb/*</exclude>
 						<exclude>**/edu/cornell/dendro/webservice/*</exclude>
@@ -1310,47 +1262,6 @@
 	
 	
 
-	<repositories>
-		<repository>
-			<id>ltrr-releases</id>
-			<name>LTRR Maven Releases Repository</name>
-			<url>https://repo.ltrr.arizona.edu/ltrr-releases/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>ltrr-snapshots</id>
-			<name>LTRR Maven Snapshots Repository</name>
-			<url>https://repo.ltrr.arizona.edu/ltrr-snapshots/</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
-
-
-	<pluginRepositories>
-		<pluginRepository>
-			<id>ltrr-releases</id>
-			<name>LTRR Maven Releases Repository</name>
-			<url>https://repo.ltrr.arizona.edu/ltrr-releases/</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>ltrr-snapshots</id>
-			<name>LTRR Maven Snapshots Repository</name>
-			<url>https://repo.ltrr.arizona.edu/ltrr-snapshots/</url>
-		</pluginRepository>
-	</pluginRepositories>
-
-
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
@@ -1364,5 +1275,5 @@
 		<url>https://sourceforge.net/p/tellervo/tickets/</url>
 		<system>Sourceforge.net</system>
 	</issueManagement>
-	<version>1.5.3</version>
+	<version>2.0.0</version>
 </project>

@@ -33,6 +33,10 @@ public class MapCountryBoundariesLayerToggleAction extends AbstractAction {
 		Layer countryBoundaries = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
 				.getLayerByName("Political Boundaries");
+
+		if (countryBoundaries == null) {
+			return;
+		}
 		
 		countryBoundaries.setEnabled(!countryBoundaries.isEnabled());
 		App.prefs.setBooleanPref(PrefKey.MAP_COUNTRYBOUNDARY_ENABLED, countryBoundaries.isEnabled());

@@ -1,0 +1,45 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Tellervo Install Local Maven Jars",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "Libraries/InstallLocalMavenJars.sh"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Tellervo Startup (Maven)",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "-q",
+        "-Dmaven.test.skip=true",
+        "compile",
+        "exec:java",
+        "-Dexec.mainClass=org.tellervo.desktop.gui.Startup"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "GITHUB_ACTOR": "${env:GITHUB_ACTOR}",
+          "GITHUB_TOKEN": "${env:GITHUB_TOKEN}"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

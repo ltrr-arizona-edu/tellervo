@@ -1,0 +1,30 @@
+#!/bin/sh
+# postrm script for tellervo
+#
+# see: dh_installdeb(1)
+
+set -e
+
+APP_DIR="/opt/tellervo/tellervo"
+LAUNCHER_PATH="$APP_DIR/bin/Tellervo"
+SYMLINK_PATH="/usr/bin/tellervo"
+DESKTOP_FILE="$APP_DIR/lib/tellervo-Tellervo.desktop"
+
+case "$1" in
+    remove|purge)
+        xdg-desktop-menu uninstall "$DESKTOP_FILE" || true
+        if [ -L "$SYMLINK_PATH" ] && [ "$(readlink "$SYMLINK_PATH")" = "$LAUNCHER_PATH" ]; then
+            rm -f "$SYMLINK_PATH"
+        fi
+    ;;
+
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+    ;;
+
+    *)
+        echo "postrm called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+exit 0
