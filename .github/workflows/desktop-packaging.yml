@@ -1,0 +1,64 @@
+name: Desktop Packaging
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  package:
+    name: Package on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            package_type: deb
+            artifact_name: tellervo-linux
+          - os: windows-latest
+            package_type: exe
+            artifact_name: tellervo-windows
+          - os: macos-latest
+            package_type: dmg
+            artifact_name: tellervo-macos
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.9
+
+      - name: Seed local Maven repository for bundled jars
+        shell: bash
+        run: bash Libraries/InstallLocalMavenJars.sh
+
+      - name: Regenerate JAXB sources
+        shell: bash
+        run: mvn -q -DskipTests generate-sources
+
+      - name: Build application jars
+        shell: bash
+        run: mvn -q -DskipTests package
+
+      - name: Create desktop package with jpackage
+        shell: bash
+        run: bash ./scripts/package-desktop.sh --type "${{ matrix.package_type }}" --verbose
+
+      - name: Upload desktop artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: target/jpackage/dist/**
+          if-no-files-found: error

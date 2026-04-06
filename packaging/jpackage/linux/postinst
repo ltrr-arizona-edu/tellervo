@@ -1,0 +1,28 @@
+#!/bin/sh
+# postinst script for tellervo
+#
+# see: dh_installdeb(1)
+
+set -e
+
+APP_DIR="/opt/tellervo/tellervo"
+LAUNCHER_PATH="$APP_DIR/bin/Tellervo"
+SYMLINK_PATH="/usr/bin/tellervo"
+DESKTOP_FILE="$APP_DIR/lib/tellervo-Tellervo.desktop"
+
+case "$1" in
+    configure)
+        xdg-desktop-menu install "$DESKTOP_FILE"
+        ln -sfn "$LAUNCHER_PATH" "$SYMLINK_PATH"
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+exit 0

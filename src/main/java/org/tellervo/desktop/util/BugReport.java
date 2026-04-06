@@ -164,7 +164,7 @@ public class BugReport {
 		try{
 			  // Open the file that is the first 
 			  // command line parameter
-			  FileInputStream fstream = new FileInputStream(System.getProperty("user.home")
+			  FileInputStream fstream = new FileInputStream(System.getProperty("user.dir")
 						+File.separator+"tellervo-submission.log" );
 			  // Get the object of DataInputStream
 			  in = new DataInputStream(fstream);

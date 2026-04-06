@@ -124,7 +124,7 @@ public class TridasRepresentationTreeModel extends DefaultTreeModel implements T
 		if(o==null) return true;
 		
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode) o;
-		ITridas entity = (ITridas) node.getUserObject();
+		Object entity = node.getUserObject();
 		
 		if(!(entity instanceof ITridas))         return true;
 		/*else if(entity instanceof TridasProject) return !((TridasProject) entity).isSetObjects();
@@ -172,7 +172,7 @@ public class TridasRepresentationTreeModel extends DefaultTreeModel implements T
     	DefaultMutableTreeNode dmtnode = (DefaultMutableTreeNode) node; 
         
     	try{
-    		ITridas entity = (ITridas) dmtnode.getUserObject();
+    		Object entity = dmtnode.getUserObject();
     		switch (column) {
 		        case 0:
 		        	if(entity instanceof TridasProject)
@@ -181,8 +181,9 @@ public class TridasRepresentationTreeModel extends DefaultTreeModel implements T
 		        	}
 		        	else if (entity instanceof ITridas)
 		        	{
+		        		ITridas tridasEntity = (ITridas) entity;
 		        		   		
-		        		TridasIdentifier id = entity.getIdentifier();
+		        		TridasIdentifier id = tridasEntity.getIdentifier();
 		        		if(id==null) return ImportStatus.PENDING;
 		        		if(!id.isSetDomain()) return ImportStatus.PENDING;
 		        		if(!id.isSetValue()) return ImportStatus.PENDING;

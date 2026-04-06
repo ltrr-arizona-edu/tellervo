@@ -310,7 +310,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 		this.doPaste(true, false);
 	}
 	
-	private void doPaste(Boolean simulateFirst, Boolean pasteAppend) {
+	private void doPaste(final Boolean simulateFirst, final Boolean pasteAppend) {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 			 public void run() {
@@ -855,7 +855,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 		
 	}
 
-	private void logPasteError(int row, int col, String value, String msg) {
+	private void logPasteError(final int row, final int col, final String value, final String msg) {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 	        public void run() {
@@ -890,7 +890,7 @@ public class JTableSpreadsheetAdapter implements ActionListener {
 	 * left corner of the selection with the 1st element in the current
 	 * selection of the JTable.
 	 */
-	public void actionPerformed(ActionEvent e) {
+	public void actionPerformed(final ActionEvent e) {
 		
 		SwingUtilities.invokeLater(new Runnable() {
 		

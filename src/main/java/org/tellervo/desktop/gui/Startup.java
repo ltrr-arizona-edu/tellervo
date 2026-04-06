@@ -178,6 +178,12 @@ public class Startup  {
 	 *            command-line arguments; ignored
 	 */
 	public static void main(String args[]) {
+		System.setProperty("com.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize", "true");
+		if (System.getProperty("http.agent") == null) {
+			System.setProperty("http.agent",
+					"Tellervo/2.0.0 (+http://www.tellervo.org; contact: p.brewer@ltrr.arizona.edu)");
+		}
+
 		// initialize controllers
 		TellervoModelLocator.getInstance();
 

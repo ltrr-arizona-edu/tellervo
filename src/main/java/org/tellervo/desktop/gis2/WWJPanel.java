@@ -2,7 +2,6 @@ package org.tellervo.desktop.gis2;
 
 import gov.nasa.worldwind.BasicModel;
 import gov.nasa.worldwind.Model;
-import gov.nasa.worldwind.WorldWind;
 import gov.nasa.worldwind.WorldWindow;
 import gov.nasa.worldwind.avlist.AVKey;
 import gov.nasa.worldwind.awt.WorldWindowGLCanvas;
@@ -22,20 +21,8 @@ import gov.nasa.worldwind.layers.StarsLayer;
 import gov.nasa.worldwind.layers.ViewControlsLayer;
 import gov.nasa.worldwind.layers.ViewControlsSelectListener;
 import gov.nasa.worldwind.layers.WorldMapLayer;
-import gov.nasa.worldwind.layers.Earth.BMNGWMSLayer;
-import gov.nasa.worldwind.layers.Earth.CountryBoundariesLayer;
-import gov.nasa.worldwind.layers.Earth.LandsatI3WMSLayer;
 import gov.nasa.worldwind.layers.Earth.MGRSGraticuleLayer;
-import gov.nasa.worldwind.layers.Earth.MSVirtualEarthLayer;
-import gov.nasa.worldwind.layers.Earth.NASAWFSPlaceNameLayer;
-import gov.nasa.worldwind.layers.Earth.OSMCycleMapLayer;
-import gov.nasa.worldwind.layers.Earth.OSMMapnikLayer;
-import gov.nasa.worldwind.layers.Earth.USGSTopoHighRes;
-import gov.nasa.worldwind.layers.Earth.USGSTopoLowRes;
-import gov.nasa.worldwind.layers.Earth.USGSTopoMedRes;
-import gov.nasa.worldwind.layers.Earth.USGSUrbanAreaOrtho;
 import gov.nasa.worldwind.layers.Earth.UTMGraticuleLayer;
-import gov.nasa.worldwind.layers.placename.PlaceNameLayer;
 import gov.nasa.worldwind.ogc.kml.KMLRoot;
 import gov.nasa.worldwind.ogc.kml.impl.KMLController;
 import gov.nasa.worldwind.pick.PickedObject;
@@ -105,11 +92,6 @@ public class WWJPanel extends JPanel  implements SelectListener{
 		mapHolder.setLayout(new BorderLayout());
 		mapHolder.add((Component) wwd, BorderLayout.CENTER);
 		
-		// Create the default model as described in the current worldwind properties.
-		Model m = (Model) WorldWind.createConfigurationComponent(AVKey.MODEL_CLASS_NAME);
-		this.wwd.setModel(m);
-
-		
         // Create the Model, starting with the Globe.
         Globe earth = new Earth();
         
@@ -127,23 +109,13 @@ public class WWJPanel extends JPanel  implements SelectListener{
                 new ScalebarLayer(),
                 new SkyColorLayer(),
                 new SkyGradientLayer(),
-                new BMNGWMSLayer(),
+                new UsgsTopoLayer(),
                                 
                 new CompassLayer(),
                 viewControlsLayer,
                 new WorldMapLayer(),
                 new UTMGraticuleLayer(),
                 new MGRSGraticuleLayer(),
-                new NASAWFSPlaceNameLayer(),
-                new CountryBoundariesLayer(),
-                
-                new LandsatI3WMSLayer(),
-                new MSVirtualEarthLayer(),
-                new OSMMapnikLayer(),
-                new USGSTopoHighRes(),
-                new USGSTopoMedRes(),
-                new USGSTopoLowRes(),
-                new USGSUrbanAreaOrtho(),
                 new AllSitesLayer(),
                 new TellervoSampleLayer("Workspace series"),
             };
@@ -153,14 +125,6 @@ public class WWJPanel extends JPanel  implements SelectListener{
         {
         	if(layer instanceof UTMGraticuleLayer || 
         			layer instanceof MGRSGraticuleLayer ||
-        			layer instanceof LandsatI3WMSLayer ||
-        			layer instanceof CountryBoundariesLayer ||
-        			layer instanceof MSVirtualEarthLayer ||
-        			layer instanceof OSMMapnikLayer ||
-        			layer instanceof USGSTopoHighRes ||
-        			layer instanceof USGSTopoMedRes ||
-        			layer instanceof USGSTopoLowRes ||
-        			layer instanceof USGSUrbanAreaOrtho ||
         			layer instanceof AllSitesLayer)
         	{
         		layer.setEnabled(false);
@@ -170,13 +134,7 @@ public class WWJPanel extends JPanel  implements SelectListener{
         
         layersList = new LayerList(layers);
 
-        WorldMapLayer layer = new WorldMapLayer();
-        //layer.get
-        
-        // Create two models and pass them the shared layers.
-        Model model = new BasicModel();
-        model.setGlobe(earth);
-        model.setLayers(layersList);
+        Model model = new BasicModel(earth, layersList);
         wwd.setModel(model);
         
         // Set control layer enabled/disabled based on preferences
@@ -186,22 +144,20 @@ public class WWJPanel extends JPanel  implements SelectListener{
         model.getLayers().getLayerByName(Logging.getMessage("layers.CompassLayer.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_COMPASS_ENABLED, true));
         
         // Set MGRS graticule layer enabled/disabled based on preferences
-        model.getLayers().getLayerByName(Logging.getMessage("layers.Earth.MGRSGraticule.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_MGRSGRATICULE_ENABLED, true));
-        
-        // Set NASAWFS place name layer enabled/disabled based on preferences
-        model.getLayers().getLayerByName(Logging.getMessage("layers.Earth.PlaceName.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_NASAWFSPLACENAME_ENABLED, true));
+        setLayerEnabledIfPresent(model, Logging.getMessage("layers.Earth.MGRSGraticule.Name"),
+        		App.prefs.getBooleanPref(PrefKey.MAP_MGRSGRATICULE_ENABLED, true));
         
         // Set Scale bar layer enabled/disabled based on preferences
-        model.getLayers().getLayerByName(Logging.getMessage("layers.Earth.ScalebarLayer.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_SCALEBAR_ENABLED, true));
+        setLayerEnabledIfPresent(model, Logging.getMessage("layers.Earth.ScalebarLayer.Name"),
+        		App.prefs.getBooleanPref(PrefKey.MAP_SCALEBAR_ENABLED, true));
      
         // Set world map layer enabled/disabled based on preferences
-        model.getLayers().getLayerByName(Logging.getMessage("layers.Earth.WorldMapLayer.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_WORLDMAP_ENABLED, true));
+        setLayerEnabledIfPresent(model, Logging.getMessage("layers.Earth.WorldMapLayer.Name"),
+        		App.prefs.getBooleanPref(PrefKey.MAP_WORLDMAP_ENABLED, true));
         
         // Set UTM graticule layer enabled/disabled based on preferences
-        model.getLayers().getLayerByName(Logging.getMessage("layers.Earth.UTMGraticule.Name")).setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_UTMGRATICULE_ENABLED, true));
-        
-        // Set country boundaries enabled/disabled based on preferences
-        model.getLayers().getLayerByName("Political Boundaries").setEnabled(App.prefs.getBooleanPref(PrefKey.MAP_COUNTRYBOUNDARY_ENABLED, true));
+        setLayerEnabledIfPresent(model, Logging.getMessage("layers.Earth.UTMGraticule.Name"),
+        		App.prefs.getBooleanPref(PrefKey.MAP_UTMGRATICULE_ENABLED, true));
         
         //Set stereo mode on based on preferences
 		if(System.getProperty("gov.nasa.worldwind.stereo.mode")!=null && System.getProperty("gov.nasa.worldwind.stereo.mode").equals("redblue"))
@@ -243,6 +199,15 @@ public class WWJPanel extends JPanel  implements SelectListener{
 		
         // Create and install the view controls layer and register a controller for it with the World Window.
         this.getWwd().addSelectListener(new ViewControlsSelectListener(this.getWwd(), viewControlsLayer));
+	}
+
+	private void setLayerEnabledIfPresent(Model model, String layerName, boolean enabled)
+	{
+		Layer layer = model.getLayers().getLayerByName(layerName);
+		if(layer != null)
+		{
+			layer.setEnabled(enabled);
+		}
 	}
 	
 	public WorldWindow getWwd() {
@@ -628,15 +593,16 @@ public class WWJPanel extends JPanel  implements SelectListener{
 	
     public static void insertBeforePlacenames(WorldWindow wwd, Layer layer)
     {
-        // Insert the layer into the layer list just before the placenames.
-        int compassPosition = 0;
+        // Insert the layer into the layer list just before the compass. Older builds
+        // used a place-name layer as the anchor, but that layer is no longer guaranteed.
+        int insertPosition = 0;
         LayerList layers = wwd.getModel().getLayers();
         for (Layer l : layers)
         {
-            if (l instanceof PlaceNameLayer)
-                compassPosition = layers.indexOf(l);
+            if (l instanceof CompassLayer)
+                insertPosition = layers.indexOf(l);
         }
-        layers.add(compassPosition, layer);
+        layers.add(insertPosition, layer);
     }
     
     public static void insertBeforeCompass(WorldWindow wwd, Layer layer)
@@ -710,4 +676,3 @@ public class WWJPanel extends JPanel  implements SelectListener{
 }
     
 	
-

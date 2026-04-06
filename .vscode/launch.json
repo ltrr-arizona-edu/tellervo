@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Tellervo Startup",
+      "request": "launch",
+      "mainClass": "org.tellervo.desktop.gui.Startup",
+      "projectName": "tellervo",
+      "classPaths": [
+        "$Runtime",
+        "${workspaceFolder}/target/classes"
+      ],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

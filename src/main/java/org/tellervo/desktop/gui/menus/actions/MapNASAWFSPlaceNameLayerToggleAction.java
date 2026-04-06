@@ -33,6 +33,10 @@ public class MapNASAWFSPlaceNameLayerToggleAction extends AbstractAction {
 		Layer NASAWFSPlaceNameLayer = editor.getMapPanel().getWwd()
 				.getModel().getLayers()
 				.getLayerByName(Logging.getMessage("layers.Earth.PlaceName.Name"));
+
+		if (NASAWFSPlaceNameLayer == null) {
+			return;
+		}
 		
 		NASAWFSPlaceNameLayer.setEnabled(!NASAWFSPlaceNameLayer.isEnabled());
 		App.prefs.setBooleanPref(PrefKey.MAP_NASAWFSPLACENAME_ENABLED, NASAWFSPlaceNameLayer.isEnabled());

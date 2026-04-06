@@ -84,7 +84,6 @@ public class TellervoWsiAccessor extends WebJaxbAccessor<WSIRootElement, WSIRoot
 
 	private static JAXBContext tellervoContext;
 	private static final Class<?> TELLERVO_CONTEXT_CLASSES[] = {
-		net.opengis.gml.schema.ObjectFactory.class,
 		org.tridas.schema.ObjectFactory.class,
 		org.tellervo.schema.ObjectFactory.class,
 		//org.tellervo.desktop.tridasv2.TridasObjectEx.class,

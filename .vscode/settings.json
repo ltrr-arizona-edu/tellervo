@@ -1,0 +1,6 @@
+{
+  "terminal.integrated.env.linux": {
+    "GITHUB_ACTOR": "${env:GITHUB_ACTOR}",
+    "GITHUB_TOKEN": "${env:GITHUB_TOKEN}"
+  }
+}

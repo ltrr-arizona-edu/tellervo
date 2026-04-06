@@ -25,9 +25,11 @@ package org.tellervo.desktop.tridasv2;
 
 import java.util.Comparator;
 
+import org.tellervo.desktop.tridasv2.GenericFieldUtils;
 import org.tridas.interfaces.ITridas;
 import org.tridas.schema.BaseSeries;
 import org.tridas.schema.TridasElement;
+import org.tridas.schema.TridasGenericField;
 import org.tridas.schema.TridasObject;
 import org.tridas.schema.TridasRadius;
 import org.tridas.schema.TridasSample;
@@ -157,12 +159,7 @@ public class TridasComparator implements Comparator<ITridas> {
 			}
 			else if(o1 instanceof TridasSample){
 				TridasSample s1 = (TridasSample) o1;
-				try{
-				v1 = GenericFieldUtils.findField(s1, "tellervo.internal.labcodeText").getValue().toString();
-				} catch (NullPointerException e)
-				{
-					v1 = o1.getTitle();
-				}
+				v1 = getSampleLabCodeOrTitle(s1);
 			}
 			else{
 				v1 =o1.getTitle();
@@ -175,12 +172,7 @@ public class TridasComparator implements Comparator<ITridas> {
 			}
 			else if(o2 instanceof TridasSample){
 				TridasSample s2 = (TridasSample) o2;
-				try{
-				v2 = GenericFieldUtils.findField(s2, "tellervo.internal.labcodeText").getValue().toString();
-				} catch (NullPointerException e)
-				{
-					v2 = o2.getTitle();
-				}
+				v2 = getSampleLabCodeOrTitle(s2);
 			}
 			else{
 				v2 =o2.getTitle();
@@ -232,6 +224,17 @@ public class TridasComparator implements Comparator<ITridas> {
 		
 		// flat-out string compare
 		return (compareBehavior != CompareBehavior.CASE_SENSITIVE) ? v1.compareToIgnoreCase(v2) : v1.compareTo(v2);
+	}
+
+	private String getSampleLabCodeOrTitle(TridasSample sample) {
+		if(sample != null) {
+			TridasGenericField field = GenericFieldUtils.findField(sample, "tellervo.internal.labcodeText");
+			if(field != null && field.getValue() != null) {
+				return field.getValue().toString();
+			}
+		}
+
+		return sample == null ? null : sample.getTitle();
 	}
 
 	public static Integer getEntityLevel(ITridas entity)
