@@ -456,9 +456,9 @@
 					<!-- Create a Linux Ubuntu debian native installer -->
 
 					<plugin>
-						<artifactId>jdeb</artifactId>
-						<groupId>org.vafer</groupId>
-						<version>1.5</version>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>3.5.0</version>
 						<executions>
 
 
@@ -481,142 +481,20 @@
 								<id>deb-server-build</id>
 								<phase>package</phase>
 								<goals>
-									<goal>jdeb</goal>
+									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<deb>${project.build.directory}/binaries/server/${serverversion}/Linux/tellervo-server-${serverversion}.deb</deb>
-									<controlDir>${project.build.directory}/classes/</controlDir>
-									<dataSet>
-										<data>
-											<src>Native/BuildResources/LinBuild/tellervo-server</src>
-											<type>file</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/bin</prefix>
-												<filemode>755</filemode>
-											</mapper>
-										</data>
-										<data>
-											<src>Native/BuildResources/LinBuild/create-tellervo-instance</src>
-											<type>file</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/bin</prefix>
-												<filemode>755</filemode>
-											</mapper>
-										</data>
-										<data>
-											<type>template</type>
-											<paths>
-												<path>/usr/share/tellervo-server/mediastore</path>
-												<user>www-data</user>
-												<group>www-data</group>
-											</paths>
-										</data>
-										<data>
-											<src>${project.build.directory}/tellervo-pljava.jar</src>
-											<type>file</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/share/tellervo-server/</prefix>
-												<filemode>755</filemode>
-											</mapper>
-										</data>
-										<data>
-											<src>Native/BuildResources/LinBuild/tellervo-apache.conf</src>
-											<type>file</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/etc/apache2/sites-available/</prefix>
-												<filemode>755</filemode>
-											</mapper>
-										</data>
-										<data>
-											<src>Native/BuildResources/LinBuild/pljava-pg14-amd64-Linux-gpp.jar</src>
-											<type>file</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/share/tellervo-server/</prefix>
-												<filemode>755</filemode>
-											</mapper>
-										</data>										
-										<data>
-											<src>Native/BuildResources/LinBuild/pljava-pg9.5-i386-Linux-gpp.jar</src>
-											<type>file</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/share/tellervo-server/</prefix>
-												<filemode>755</filemode>
-											</mapper>
-										</data>
-										<data>
-											<src>Native/BuildResources/LinBuild/pljava-pg9.5-amd64-Linux-gpp.jar</src>
-											<type>file</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/share/tellervo-server/</prefix>
-												<filemode>755</filemode>
-											</mapper>
-										</data>
-										<data>
-											<src>Databases/db-upgrade-patches</src>
-											<type>directory</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/share/tellervo-server/db-upgrade-patches</prefix>
-											</mapper>
-										</data>
-										<data>
-											<src>Databases/db-templates</src>
-											<type>directory</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/share/tellervo-server</prefix>
-											</mapper>
-										</data>
-										<data>
-											<src>Databases/db-options</src>
-											<type>directory</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/share/tellervo-server/db-options</prefix>
-											</mapper>
-										</data>
-										<data>
-											<src>Native/BuildResources/LinBuild/tui.php</src>
-											<type>file</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/share/tellervo-server</prefix>
-												<filemode>777</filemode>
-											</mapper>
-										</data>
-										<data>
-											<src>Native/BuildResources/LinBuild/firstrun.template</src>
-											<type>file</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/share/tellervo-server</prefix>
-												<filemode>777</filemode>
-											</mapper>
-										</data>
-										<data>
-											<src>src/main/php/config.php.template</src>
-											<type>file</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/usr/share/tellervo-server</prefix>
-											</mapper>
-										</data>
-										<data>
-											<src>src/main/php</src>
-											<type>directory</type>
-											<mapper>
-												<type>perm</type>
-												<prefix>/var/www/tellervo</prefix>
-											</mapper>
-										</data>
-									</dataSet>
+									<executable>bash</executable>
+									<workingDirectory>${project.basedir}</workingDirectory>
+									<arguments>
+										<argument>${project.basedir}/scripts/package-server.sh</argument>
+										<argument>--server-version</argument>
+										<argument>${serverversion}</argument>
+										<argument>--pljava-jar</argument>
+										<argument>${project.build.directory}/tellervo-pljava.jar</argument>
+										<argument>--dest-dir</argument>
+										<argument>${project.build.directory}/binaries/server/${serverversion}/Linux</argument>
+									</arguments>
 								</configuration>
 							</execution>
 						</executions>

@@ -1,0 +1,18 @@
+#!/bin/bash
+echo "*******************" >> /var/log/tellervo-installation.log
+echo "Prerm run {{SERVER_VERSION}} with $1 argument" >> /var/log/tellervo-installation.log
+date '+%R.%S' >> /var/log/tellervo-installation.log
+echo "*******************" >> /var/log/tellervo-installation.log
+
+if [ "$1" = 'upgrade' ]; then
+  echo "*****************************************************************" >> /var/log/tellervo-installation.log
+  echo "*****************************************************************" >> /var/log/tellervo-installation.log
+  echo "      UPGRADING TELLERVO SERVER TO VERSION $2 " >> /var/log/tellervo-installation.log
+  echo "*****************************************************************" >> /var/log/tellervo-installation.log
+  echo "*****************************************************************" >> /var/log/tellervo-installation.log
+elif [ "$1" = 'failed-upgrade' ]; then
+  echo "Previous versions prerm script failed, but continuing anyway... " >> /var/log/tellervo-installation.log
+  exit 0
+fi
+
+exit 0

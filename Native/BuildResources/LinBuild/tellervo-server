@@ -68,7 +68,7 @@ $user 			  = "tellervo";
 $pwd 			  = "";
 $wsurl 			  = "";
 $errorsFound 	  = FALSE;
-$postgresversion  = "13";
+$postgresversion  = detectPostgresVersion();
 $postgisversion   = "3";
 $folderbase       = "/usr/share/tellervo-server/";
 $pg_hba_file      = "/etc/postgres/?";  // set later
@@ -85,6 +85,34 @@ $dbsetupfile      = $wsbase."inc/dbsetup.php";
 $systemconfig     = $wsbase."systemconfig.php";
 $postgisfolder    = "/usr/share/postgresql/".$postgresversion."/contrib/postgis-".$postgisversion."/";
 /*******************************************************************/;
+
+function detectPostgresVersion()
+{
+	$versions = array();
+
+	foreach (glob('/etc/postgresql/*', GLOB_ONLYDIR) as $dir)
+	{
+		$basename = basename($dir);
+		if (preg_match('/^\d+$/', $basename))
+		{
+			$versions[] = (int) $basename;
+		}
+	}
+
+	if (!empty($versions))
+	{
+		sort($versions, SORT_NUMERIC);
+		return (string) end($versions);
+	}
+
+	exec("pg_config --version 2>/dev/null", $output, $retcode);
+	if ($retcode === 0 && !empty($output[0]) && preg_match('/(\d+)/', $output[0], $matches))
+	{
+		return $matches[1];
+	}
+
+	return "17";
+}
 
 // Depending on command line arguments run different functions
 
