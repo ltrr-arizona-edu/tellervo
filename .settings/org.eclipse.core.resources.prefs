@@ -4,6 +4,7 @@ encoding//Native/BuildResources/Docker=UTF-8
 encoding//Native/BuildResources/LinBuild=UTF-8
 encoding//Native/BuildResources/LinBuild/ServerControl=UTF-8
 encoding//Native/BuildResources/MacBuild=UTF-8
+encoding//src/main/generated=UTF-8
 encoding//src/main/java=UTF-8
 encoding//src/main/resources=UTF-8
 encoding//src/test/java=UTF-8
