@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +73,7 @@ public abstract class AbstractMeasuringDevice
 	private Integer prevMeasurementPosition = 0;
 	
 	/** Class that receives the measurements */
-	private MeasurementReceiver receiver;
+	private volatile MeasurementReceiver receiver;
 	
 	/** A set of listeners */
 	private Set<MeasuringSampleIOListener> listeners = new HashSet<MeasuringSampleIOListener>();
@@ -595,48 +597,70 @@ public abstract class AbstractMeasuringDevice
 	/**
 	 * Notify the receiver of an event
 	 */
-	public void measuringSampleIONotify(MeasuringSampleIOEvent sse) {
-		
-		if(receiver==null)
+	public void measuringSampleIONotify(final MeasuringSampleIOEvent sse) {
+		final MeasurementReceiver currentReceiver = receiver;
+
+		if(currentReceiver==null)
 		{
 			log.debug("Measurement receiver is null");
 			return;
 		}
-		
+
+		Runnable notifyReceiver = new Runnable() {
+			@Override
+			public void run() {
+				try {
+					notifyMeasurementReceiver(currentReceiver, sse);
+				} catch (Exception e) {
+					log.error("Error processing measuring device event", e);
+				}
+			}
+		};
+
+		if(SwingUtilities.isEventDispatchThread())
+		{
+			notifyReceiver.run();
+		}
+		else
+		{
+			SwingUtilities.invokeLater(notifyReceiver);
+		}
+	}
+
+	private void notifyMeasurementReceiver(MeasurementReceiver currentReceiver, MeasuringSampleIOEvent sse) {
 		if(sse.getType() == MeasuringSampleIOEvent.BAD_SAMPLE_EVENT) {
-			receiver.receiverUpdateStatus("Error reading value from device. "+sse.getValue());
+			currentReceiver.receiverUpdateStatus("Error reading value from device. "+sse.getValue());
 			SoundUtil.playSystemSound(SystemSound.MEASURE_ERROR);
 		}
 		if(sse.getType() == MeasuringSampleIOEvent.ERROR) {
 			SoundUtil.playSystemSound(SystemSound.MEASURE_ERROR);
 			try{
-			receiver.receiverUpdateStatus(sse.getValue().toString());
+				currentReceiver.receiverUpdateStatus(sse.getValue().toString());
 			} catch (NullPointerException e)
 			{
-				receiver.receiverUpdateStatus("null");
+				currentReceiver.receiverUpdateStatus("null");
 			}
 		}
 		else if(sse.getType() == MeasuringSampleIOEvent.INITIALIZING_EVENT) {
-			receiver.receiverUpdateStatus("Initializing reader (try "+ sse.getValue() +")");
+			currentReceiver.receiverUpdateStatus("Initializing reader (try "+ sse.getValue() +")");
 		}
 		else if(sse.getType() == MeasuringSampleIOEvent.INITIALIZED_EVENT) {
-			receiver.receiverUpdateStatus("Initialized; ready to read sample.");
+			currentReceiver.receiverUpdateStatus("Initialized; ready to read sample.");
 		}
 		else if(sse.getType() == MeasuringSampleIOEvent.NEW_SAMPLE_EVENT) {
  			Integer value = (Integer) sse.getValue();
- 			receiver.receiverUpdateStatus("");
-			receiver.receiverNewMeasurement(value);
+			currentReceiver.receiverUpdateStatus("");
+			currentReceiver.receiverNewMeasurement(value);
 		}
 		else if(sse.getType() == MeasuringSampleIOEvent.UPDATED_CURRENT_VALUE_EVENT) {
 			Integer value = (Integer) sse.getValue();
-			receiver.receiverUpdateStatus("");
-			receiver.receiverUpdateCurrentValue(value);
+			currentReceiver.receiverUpdateStatus("");
+			currentReceiver.receiverUpdateCurrentValue(value);
 		}
 		else if(sse.getType() == MeasuringSampleIOEvent.RAW_DATA){
 			String value = (String) sse.getValue();
-			receiver.receiverRawData(sse.getDataDirection(), value);
+			currentReceiver.receiverRawData(sse.getDataDirection(), value);
 		}
-		
 	}
 	
 	/**
