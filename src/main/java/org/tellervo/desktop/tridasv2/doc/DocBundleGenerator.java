@@ -65,18 +65,12 @@ public class DocBundleGenerator {
 			return;
 		}
 
-		List<Element> docs;
-		try {
-			XPathExpression<Element> expression = XPathFactory.instance().compile(
-					"//xs:documentation",
-					Filters.element(),
-					null,
-					Namespace.getNamespace("xs", "http://www.w3.org/2001/XMLSchema"));
-			docs = expression.evaluate(doc.getRootElement());
-		} catch (JDOMException e) {
-			e.printStackTrace();
-			return;
-		}
+		XPathExpression<Element> expression = XPathFactory.instance().compile(
+				"//xs:documentation",
+				Filters.element(),
+				null,
+				Namespace.getNamespace("xs", "http://www.w3.org/2001/XMLSchema"));
+		List<Element> docs = expression.evaluate(doc.getRootElement());
 		
 		writers = new HashMap<String,PrintWriter>();
 		

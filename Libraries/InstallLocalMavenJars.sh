@@ -12,23 +12,6 @@ TARGET_REPO="${PROJECT_ROOT}/.mvn-repo"
 
 mkdir -p "${TARGET_REPO}"
 
-install_from_m2() {
-  local group_path="$1"
-  local artifact="$2"
-  local version="$3"
-  local src_dir="${HOME}/.m2/repository/${group_path}/${artifact}/${version}"
-  local dest_dir="${TARGET_REPO}/${group_path}/${artifact}/${version}"
-
-  if [[ ! -f "${src_dir}/${artifact}-${version}.jar" || ! -f "${src_dir}/${artifact}-${version}.pom" ]]; then
-    echo "Skipping ${group_path}:${artifact}:${version}; source artifact not found in ~/.m2" >&2
-    return
-  fi
-
-  mkdir -p "${dest_dir}"
-  cp "${src_dir}/${artifact}-${version}.jar" "${dest_dir}/"
-  cp "${src_dir}/${artifact}-${version}.pom" "${dest_dir}/"
-}
-
 install_with_generated_pom() {
   local group_path="$1"
   local group_id="$2"
@@ -76,9 +59,9 @@ install_with_generated_pom "jpedal" "jpedal" "jpedal" "4.45-b-105" "jpedal-4.45-
 install_with_generated_pom "org/osgeo" "org.osgeo" "gdal" "0.2" "gdal.jar"
 install_with_generated_pom "org/rxtx" "org.rxtx" "rxtx" "2.2-20081207" "RXTXcomm.jar"
 install_with_pom_file "gov/nasa/worldwind" "worldwindjava-tellervo" "2.0.0" "worldwindjava-tellervo-2.0.0.jar" "worldwindjava-pom.xml"
-
-install_from_m2 "com/dmurph/mvc" "java-simple-mvc" "1.4.4"
-install_from_m2 "com/dmurph" "JGoogleAnalyticsTracker" "1.2.0"
-install_from_m2 "org/tridas" "tridasjlib" "2.0.0"
-install_from_m2 "org/tridas" "dendrofileio" "2.0.0"
-install_from_m2 "org/tridas" "tricycle" "2.0.0"
+install_with_pom_file "com/dmurph/mvc" "java-simple-mvc" "1.4.2" "java-simple-mvc-1.4.2.jar" "java-simple-mvc-1.4.2.pom"
+install_with_pom_file "com/dmurph/mvc" "java-simple-mvc" "1.4.4" "java-simple-mvc-1.4.4.jar" "java-simple-mvc-1.4.4.pom"
+install_with_pom_file "com/dmurph" "JGoogleAnalyticsTracker" "1.2.0" "JGoogleAnalyticsTracker-1.2.0.jar" "JGoogleAnalyticsTracker-1.2.0.pom"
+install_with_pom_file "org/tridas" "tridasjlib" "2.0.0" "tridasjlib-2.0.0.jar" "tridasjlib-2.0.0.pom"
+install_with_pom_file "org/tridas" "dendrofileio" "2.0.0" "dendrofileio-2.0.0.jar" "dendrofileio-2.0.0.pom"
+install_with_pom_file "org/tridas" "tricycle" "2.0.0" "tricycle-2.0.0.jar" "tricycle-2.0.0.pom"
