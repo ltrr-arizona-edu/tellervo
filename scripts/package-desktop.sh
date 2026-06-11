@@ -88,6 +88,7 @@ PLATFORM="$(uname -s)"
 ICON=""
 INSTALL_DIR=""
 RESOURCE_DIR=""
+NATIVE_LIB_DIR=""
 EXTRA_ARGS=()
 
 case "$PLATFORM" in
@@ -114,6 +115,7 @@ case "$PLATFORM" in
     DEFAULT_TYPE="exe"
     ICON="$REPO_ROOT/src/main/resources/Icons/tellervo-application.ico"
     INSTALL_DIR="Tellervo"
+    NATIVE_LIB_DIR="$REPO_ROOT/Native/Libraries/windows-amd64"
     EXTRA_ARGS+=(--win-shortcut --win-menu --win-dir-chooser)
     ;;
   *)
@@ -143,6 +145,18 @@ if [[ -d "$REPO_ROOT/target/dependency" ]]; then
   cp "$REPO_ROOT"/target/dependency/* "$INPUT_DIR/" || true
 fi
 
+if [[ -n "$NATIVE_LIB_DIR" ]]; then
+  if [[ ! -d "$NATIVE_LIB_DIR" ]]; then
+    echo "Native library directory not found: $NATIVE_LIB_DIR" >&2
+    exit 1
+  fi
+  if [[ ! -f "$NATIVE_LIB_DIR/rxtxSerial.dll" ]]; then
+    echo "Required Windows serial library not found: $NATIVE_LIB_DIR/rxtxSerial.dll" >&2
+    exit 1
+  fi
+  cp "$NATIVE_LIB_DIR"/* "$INPUT_DIR/"
+fi
+
 ARGS=(
   --type "$TYPE"
   --dest "$DEST_DIR"
@@ -158,6 +172,10 @@ ARGS=(
   --java-options "-Djava.awt.headless=false"
   --java-options "-Dcom.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize=true"
 )
+
+if [[ -n "$NATIVE_LIB_DIR" ]]; then
+  ARGS+=(--java-options '-Djava.library.path=$APPDIR')
+fi
 
 if [[ -n "$ICON" && -f "$ICON" ]]; then
   ARGS+=(--icon "$ICON")

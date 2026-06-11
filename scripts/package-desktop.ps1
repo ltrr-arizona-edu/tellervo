@@ -51,6 +51,7 @@ function Get-PlatformConfig {
             DefaultType = "app-image"
             Icon = "src/main/resources/Icons/128x128/pdf.ico"
             InstallDir = "Tellervo"
+            NativeLibDir = "Native/Libraries/windows-amd64"
             ExtraArgs = @("--win-shortcut", "--win-menu")
         }
     }
@@ -61,6 +62,7 @@ function Get-PlatformConfig {
             DefaultType = "app-image"
             Icon = ""
             InstallDir = "/Applications/Tellervo"
+            NativeLibDir = ""
             ExtraArgs = @()
         }
     }
@@ -70,6 +72,7 @@ function Get-PlatformConfig {
         DefaultType = "app-image"
         Icon = "src/main/resources/Icons/128x128/tellervo-application.png"
         InstallDir = "/opt/tellervo"
+        NativeLibDir = ""
         ExtraArgs = @("--linux-shortcut", "--linux-menu-group", "Science", "--linux-app-category", "Science")
     }
 }
@@ -129,6 +132,20 @@ try {
         }
     }
 
+    if ($platform.NativeLibDir) {
+        $nativeLibDir = Join-Path $repoRoot $platform.NativeLibDir
+        if (-not (Test-Path $nativeLibDir -PathType Container)) {
+            throw "Native library directory not found: $nativeLibDir"
+        }
+        $serialLibrary = Join-Path $nativeLibDir "rxtxSerial.dll"
+        if (-not (Test-Path $serialLibrary -PathType Leaf)) {
+            throw "Required Windows serial library not found: $serialLibrary"
+        }
+        Get-ChildItem -LiteralPath $nativeLibDir -File | ForEach-Object {
+            Copy-Item -LiteralPath $_.FullName -Destination $InputDir
+        }
+    }
+
     $args = @(
         "--type", $Type,
         "--dest", $DestDir,
@@ -144,6 +161,10 @@ try {
         "--java-options", "-Dfile.encoding=UTF-8",
         "--java-options", "-Djava.awt.headless=false"
     )
+
+    if ($platform.NativeLibDir) {
+        $args += @("--java-options", '-Djava.library.path=$APPDIR')
+    }
 
     if ($platform.Icon) {
         $iconPath = Join-Path $repoRoot $platform.Icon

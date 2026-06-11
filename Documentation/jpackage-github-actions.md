@@ -8,6 +8,7 @@ standard Maven package first and then wraps it with `jpackage`.
 - regenerates JAXB sources with `mvn generate-sources`
 - builds the desktop jar with `mvn -DskipTests package`
 - collects the main jar plus runtime dependencies from `target/dependency`
+- includes the 64-bit native DLLs required by the Windows launcher
 - runs `jpackage` to create a desktop application image
 - uploads the resulting artifacts from `target/jpackage/dist`
 
@@ -53,6 +54,11 @@ Linux `deb` packages also declare runtime package dependencies on:
 
 Linux `deb` packages also install a `/usr/bin/tellervo` launcher symlink so the
 application can be started directly from a shell.
+
+The Windows package includes the native libraries from
+`Native/Libraries/windows-amd64` in the application directory and adds that
+directory to `java.library.path`. This includes `rxtxSerial.dll`, which is
+required for serial measuring devices.
 
 ## Notes
 
