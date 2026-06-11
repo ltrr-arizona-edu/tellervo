@@ -11,6 +11,7 @@ standard Maven package first and then wraps it with `jpackage`.
 - includes the 64-bit native DLLs required by the Windows launcher
 - runs `jpackage` to create a desktop application image
 - uploads the resulting artifacts from `target/jpackage/dist`
+- publishes version-tag builds as public GitHub Release assets
 
 ## Local usage
 
@@ -40,6 +41,11 @@ The workflow is defined in:
 ```text
 .github/workflows/desktop-packaging.yml
 ```
+
+Pushing a tag beginning with `v`, such as `v2.0.1`, builds all three desktop
+packages and publishes them on the matching GitHub Release. Release assets are
+publicly downloadable when the repository is public. Manually dispatched
+workflow runs create Actions artifacts only and do not publish a release.
 
 It currently produces native artifacts for:
 
