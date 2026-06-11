@@ -56,6 +56,30 @@ jobs:
         shell: bash
         run: bash ./scripts/package-desktop.sh --type "${{ matrix.package_type }}" --verbose
 
+      - name: Smoke test Windows installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem -LiteralPath target/jpackage/dist -Filter *.exe | Select-Object -First 1
+          if ($null -eq $installer) {
+            throw "Windows installer was not created"
+          }
+
+          $process = Start-Process -FilePath $installer.FullName -ArgumentList "/quiet", "/norestart" -Wait -PassThru
+          if ($process.ExitCode -ne 0) {
+            throw "Windows installer failed with exit code $($process.ExitCode)"
+          }
+
+          $installDir = Join-Path $env:LOCALAPPDATA "Tellervo"
+          $launcher = Join-Path $installDir "Tellervo.exe"
+          $serialLibrary = Join-Path $installDir "app/rxtxSerial.dll"
+          if (-not (Test-Path $launcher -PathType Leaf)) {
+            throw "Installed launcher not found: $launcher"
+          }
+          if (-not (Test-Path $serialLibrary -PathType Leaf)) {
+            throw "Installed serial library not found: $serialLibrary"
+          }
+
       - name: Upload desktop artifact
         uses: actions/upload-artifact@v4
         with:

@@ -52,7 +52,7 @@ function Get-PlatformConfig {
             Icon = "src/main/resources/Icons/128x128/pdf.ico"
             InstallDir = "Tellervo"
             NativeLibDir = "Native/Libraries/windows-amd64"
-            ExtraArgs = @("--win-shortcut", "--win-menu")
+            ExtraArgs = @("--win-per-user-install", "--win-shortcut", "--win-menu")
         }
     }
 

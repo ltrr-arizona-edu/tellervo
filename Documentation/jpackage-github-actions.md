@@ -58,7 +58,11 @@ application can be started directly from a shell.
 The Windows package includes the native libraries from
 `Native/Libraries/windows-amd64` in the application directory and adds that
 directory to `java.library.path`. This includes `rxtxSerial.dll`, which is
-required for serial measuring devices.
+required for serial measuring devices. It installs per-user under
+`%LOCALAPPDATA%\Tellervo`, so administrator privileges are not required.
+
+GitHub Actions also silently installs the generated Windows executable and
+checks that the launcher and serial DLL were installed before uploading it.
 
 ## Notes
 

@@ -116,7 +116,7 @@ case "$PLATFORM" in
     ICON="$REPO_ROOT/src/main/resources/Icons/tellervo-application.ico"
     INSTALL_DIR="Tellervo"
     NATIVE_LIB_DIR="$REPO_ROOT/Native/Libraries/windows-amd64"
-    EXTRA_ARGS+=(--win-shortcut --win-menu --win-dir-chooser)
+    EXTRA_ARGS+=(--win-per-user-install --win-shortcut --win-menu --win-dir-chooser)
     ;;
   *)
     echo "Unsupported platform for jpackage script: $PLATFORM" >&2
@@ -187,7 +187,9 @@ fi
 
 if [[ "$TYPE" != "app-image" ]]; then
   ARGS+=(--install-dir "$INSTALL_DIR")
-  ARGS+=("${EXTRA_ARGS[@]}")
+  if [[ "${#EXTRA_ARGS[@]}" -gt 0 ]]; then
+    ARGS+=("${EXTRA_ARGS[@]}")
+  fi
 fi
 
 if [[ "$VERBOSE" == "true" ]]; then
