@@ -29,6 +29,7 @@ import org.tellervo.desktop.gui.widgets.TitlelessButton;
 import org.tellervo.desktop.gui.widgets.TitlelessToggleButton;
 import org.tellervo.desktop.io.Metadata;
 import org.tellervo.desktop.prefs.PrefsEvent;
+import org.tellervo.desktop.prefs.Prefs.PrefKey;
 import org.tellervo.desktop.sample.Sample;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewer;
 import org.tellervo.desktop.tridasv2.ui.ComponentViewerOld;
@@ -164,7 +165,7 @@ public class FullEditor extends AbstractEditor {
 		// Important hack to ensure resizing of whole GUI works correctly.  Without this gui grows but doesn't shrink!
 		mapHolder.setMinimumSize(new Dimension(0, 0));
 		
-		if(OpenGLTestCapabilities.isOpenGLCapable()) tabbedPane.addTab("Map", Builder.getIcon("maptab.png", 16), mapHolder, BorderLayout.CENTER);
+		if(isMappingAvailable()) tabbedPane.addTab("Map", Builder.getIcon("maptab.png", 16), mapHolder, BorderLayout.CENTER);
 		
 			
 		itemSelected();
@@ -180,7 +181,7 @@ public class FullEditor extends AbstractEditor {
 				if(evt.getClickCount()>1)
 				{
 					// Zoom map
-					if(OpenGLTestCapabilities.isOpenGLCapable()) wwMapPanel.zoomToSample(getSample());
+					if(isMappingAvailable() && wwMapPanel != null) wwMapPanel.zoomToSample(getSample());
 				}
 			}
 
@@ -215,7 +216,8 @@ public class FullEditor extends AbstractEditor {
 	public void reinitMapPanel()
 	{
 		initMapPanel();
-		
+		if(wwMapPanel == null) return;
+
 		TellervoSampleLayer layer = (TellervoSampleLayer) wwMapPanel.getWorkspaceSeriesLayer();
 		
 		for(Sample s: samplesModel.getSamples())
@@ -228,29 +230,34 @@ public class FullEditor extends AbstractEditor {
 	
 	private void initMapPanel()
 	{
-		if(!OpenGLTestCapabilities.isOpenGLCapable()) return;
+		if(!isMappingAvailable()) return;
 
-		
-		wwMapPanel = new WWJPanel();
-		mapHolder.removeAll();
-		mapHolder.add(wwMapPanel, BorderLayout.CENTER);
-		
+		try {
+			wwMapPanel = new WWJPanel();
+			mapHolder.removeAll();
+			mapHolder.add(wwMapPanel, BorderLayout.CENTER);
+		} catch (Throwable t) {
+			disableMapping(t);
+			return;
+		}
+
 		this.getSamplesModel().addListDataListener(new ListDataListener(){
 
 			@Override
 			public void contentsChanged(ListDataEvent arg0) {
-				
+				if(wwMapPanel == null) return;
+
 				wwMapPanel.removeAnnotations();
-				
+
 				TellervoSampleLayer layer = (TellervoSampleLayer) wwMapPanel.getWorkspaceSeriesLayer();
-				
+
 				for(Sample s: samplesModel.getSamples())
 				{
 					layer.addMarker(s);
 				}
-				
+
 				layer.removeAbsentMarkers(samplesModel.getSamples());
-				
+
 			}
 
 			@Override
@@ -261,13 +268,27 @@ public class FullEditor extends AbstractEditor {
 
 			@Override
 			public void intervalRemoved(ListDataEvent evt) {
-				TellervoSampleLayer layer = (TellervoSampleLayer) wwMapPanel.getWorkspaceSeriesLayer();
-
-				
-				
+				if(wwMapPanel == null) return;
 			}
-			
-		});		
+
+			});
+	}
+
+	private boolean isMappingAvailable()
+	{
+		return !App.prefs.getBooleanPref(PrefKey.OPENGL_FAILED, false)
+				&& OpenGLTestCapabilities.isOpenGLCapable();
+	}
+
+	private void disableMapping(Throwable cause)
+	{
+		log.error("Unable to initialize OpenGL mapping; mapping will be disabled", cause);
+		OpenGLTestCapabilities.markOpenGLUnavailable();
+		App.prefs.setBooleanPref(PrefKey.OPENGL_FAILED, true);
+		wwMapPanel = null;
+		mapHolder.removeAll();
+		int mapTabIndex = tabbedPane.indexOfComponent(mapHolder);
+		if(mapTabIndex >= 0) tabbedPane.removeTabAt(mapTabIndex);
 	}
 	
 	/**
@@ -509,7 +530,7 @@ public class FullEditor extends AbstractEditor {
 					referencesHolder.add(refFilePanel, BorderLayout.CENTER);
 					
 					// Highlight map pin
-					if(OpenGLTestCapabilities.isOpenGLCapable()) wwMapPanel.highlightMarkerForSample(sample);
+					if(isMappingAvailable() && wwMapPanel != null) wwMapPanel.highlightMarkerForSample(sample);
 					
 					this.revalidate();
 				} catch (Exception e)

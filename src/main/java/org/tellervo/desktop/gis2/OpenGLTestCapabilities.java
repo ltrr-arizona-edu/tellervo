@@ -46,6 +46,12 @@ public class OpenGLTestCapabilities implements GLEventListener{
 		
 		return testOpenGL();
 	}
+
+	public static void markOpenGLUnavailable()
+	{
+		testedPreviously = true;
+		previouslyTestedAsOpenGLCapable = false;
+	}
 	
 	private static boolean testOpenGL()
 	{
