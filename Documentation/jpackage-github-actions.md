@@ -42,6 +42,9 @@ The workflow is defined in:
 .github/workflows/desktop-packaging.yml
 ```
 
+The workflow opts into GitHub Actions' Node.js 24 runtime and caches Tellervo's
+project-local `.mvn-repo` rather than Maven's default `~/.m2/repository`.
+
 Pushing a tag beginning with `v`, such as `v2.0.1`, builds all three desktop
 packages and publishes them on the matching GitHub Release. Release assets are
 publicly downloadable when the repository is public. Manually dispatched

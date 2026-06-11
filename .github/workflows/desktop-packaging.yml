@@ -3,6 +3,9 @@ name: Desktop Packaging
 permissions:
   contents: read
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 on:
   workflow_dispatch:
   push:
@@ -29,19 +32,21 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Java
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
-          cache: maven
 
-      - name: Set up Maven
-        uses: stCarolas/setup-maven@v5
+      - name: Cache project Maven repository
+        uses: actions/cache@v5
         with:
-          maven-version: 3.9.9
+          path: .mvn-repo
+          key: ${{ runner.os }}-maven-${{ hashFiles('pom.xml', 'Libraries/InstallLocalMavenJars.sh', 'Libraries/*.pom', 'Libraries/*.jar') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
 
       - name: Seed local Maven repository for bundled jars
         shell: bash
@@ -97,14 +102,14 @@ jobs:
 
       - name: Upload Windows installer log
         if: runner.os == 'Windows' && always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: diagnostics-windows-installer-log
           path: ${{ runner.temp }}/tellervo-msi-install.log
           if-no-files-found: warn
 
       - name: Upload desktop artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.artifact_name }}
           path: target/jpackage/dist/**
@@ -120,7 +125,7 @@ jobs:
 
     steps:
       - name: Download desktop packages
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v5
         with:
           pattern: tellervo-*
           path: release-assets

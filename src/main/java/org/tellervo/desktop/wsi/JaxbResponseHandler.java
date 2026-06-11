@@ -20,13 +20,12 @@
  ******************************************************************************/
 package org.tellervo.desktop.wsi;
 
-import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -41,8 +40,6 @@ import org.apache.http.ParseException;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.ResponseHandler;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tellervo.desktop.wsi.WSIServerDetails.WSIServerStatus;
@@ -104,17 +101,9 @@ public class JaxbResponseHandler<T> implements ResponseHandler<T> {
 			return null;
 		}
 
-		String charset = EntityUtils.getContentCharSet(entity);
-		if (charset == null) {
-			charset = defaultCharset;
-		}
-		if (charset == null) {
-			charset = HTTP.DEFAULT_CONTENT_CHARSET;
-		}
-
 		/**
 		 * Methodology
-		 * 1) Save XML to disk temporarily (it can be big, 
+		 * 1) Save the raw XML bytes to disk temporarily (it can be big,
 		 * 		we might want to look at it as a raw file)
 		 * 2) If we can't write to disk, throw IOException
 		 * 3) Try to parse
@@ -122,29 +111,22 @@ public class JaxbResponseHandler<T> implements ResponseHandler<T> {
 		 */
 		
 		File tempFile = null;
-		OutputStreamWriter fileOut = null;
 		boolean usefulFile = false;	// preserve this file outside this local context?
 
 		try {
 			tempFile = File.createTempFile("tellervo", ".xml");
-			fileOut = new OutputStreamWriter(new FileOutputStream(tempFile, false), charset);
-		
-			// ok, dump the webservice xml to a file
-			BufferedReader webIn = new BufferedReader(new InputStreamReader(
-				instream, charset));
 
-			char indata[] = new char[8192];
-			int inlen;
+			try (FileOutputStream fileOut = new FileOutputStream(tempFile, false)) {
+				byte[] indata = new byte[8192];
+				int inlen;
 
-			// write the file out
-			while ((inlen = webIn.read(indata)) >= 0)
-				fileOut.write(indata, 0, inlen);
-			
-			fileOut.close();
+				// Preserve BOMs and XML encoding declarations for the XML parser.
+				while ((inlen = instream.read(indata)) >= 0) {
+					fileOut.write(indata, 0, inlen);
+				}
+			}
 		} catch(IOException ioe) {
 			// File I/O failed (?!) Clean up and re-throw the IOE.
-			if(fileOut != null)
-				fileOut.close();
 			if(tempFile != null)
 				tempFile.delete();
 			
@@ -168,7 +150,7 @@ public class JaxbResponseHandler<T> implements ResponseHandler<T> {
 			return returnClass.cast(ret);
 		} catch (UnmarshalException ume) {
 			usefulFile = true;
-			throw new ResponseProcessingException(ume, tempFile);
+			throw malformedResponseException(ume, tempFile);
 
 		} catch (JAXBException jaxbe) {
 			usefulFile = true;
@@ -185,41 +167,34 @@ public class JaxbResponseHandler<T> implements ResponseHandler<T> {
 					tempFile.delete();
 				else
 					tempFile.deleteOnExit();
-			}			
+			}
+		}
+	}
+
+	private ResponseProcessingException malformedResponseException(Throwable cause, File responseFile) {
+		String prefix = readResponsePrefix(responseFile);
+		String message = "The server returned malformed XML.";
+		if(prefix.length() > 0) {
+			message += " Response begins with: " + prefix;
+		}
+		return new ResponseProcessingException(new IOException(message, cause), responseFile);
+	}
+
+	private String readResponsePrefix(File responseFile) {
+		byte[] prefix = new byte[256];
+		int length;
+
+		try (FileInputStream input = new FileInputStream(responseFile)) {
+			length = input.read(prefix);
+		} catch (IOException e) {
+			return "";
 		}
 
-		/*
-		try {
-			um.un
-		} catch (JDOMException jdome) {
-				// this document must be malformed
-				usefulFile = true;
-				throw new XMLParsingException(jdome, tempFile);
-			} 
-		} catch (IOException ioe) {
-			// well, something there failed and it was lower level than just bad XML...
-			if(tempFile != null) {
-				usefulFile = true;
-				throw new XMLParsingException(ioe, tempFile);
-			}
-			
-			throw new XMLParsingException(ioe);
-			
-		} finally {
-			// make sure we closed our file
-			if(fileOut != null)
-				fileOut.close();
-			
-			// make sure we delete it, too
-			if(tempFile != null)
-			{
-				if (!usefulFile)
-					tempFile.delete();
-				else
-					tempFile.deleteOnExit();
-			}
-		}
-		*/
+		if(length <= 0) return "";
+
+		String text = new String(prefix, 0, length, StandardCharsets.UTF_8);
+		if(text.startsWith("\uFEFF")) text = text.substring(1);
+		return text.replaceAll("\\s+", " ").trim();
 	}
-      
+
 }
