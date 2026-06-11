@@ -24,6 +24,11 @@ class region
     /* CONSTRUCTOR */
     /***************/
 
+    function __construct()
+    {
+        $this->region();
+    }
+
     function region()
     {
         // Constructor for this class.

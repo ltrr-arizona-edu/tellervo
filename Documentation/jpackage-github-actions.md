@@ -44,7 +44,7 @@ The workflow is defined in:
 It currently produces native artifacts for:
 
 - macOS: `dmg`
-- Windows: `exe`
+- Windows: `msi`
 - Linux: `deb`
 
 Linux `deb` packages also declare runtime package dependencies on:
@@ -61,8 +61,10 @@ directory to `java.library.path`. This includes `rxtxSerial.dll`, which is
 required for serial measuring devices. It installs per-user under
 `%LOCALAPPDATA%\Tellervo`, so administrator privileges are not required.
 
-GitHub Actions also silently installs the generated Windows executable and
+GitHub Actions also silently installs the generated Windows MSI package and
 checks that the launcher and serial DLL were installed before uploading it.
+The Windows Installer log from this smoke test is uploaded as a separate
+artifact for troubleshooting.
 
 ## Notes
 

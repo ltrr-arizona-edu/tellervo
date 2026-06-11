@@ -77,6 +77,13 @@ class ProgressBar {
 	
 	var $message;
 	
+    function __construct($message='', $hide=false, $sleepOnFinish=0, $barLength=200, $precision=20,
+    					 $backgroundColor='#cccccc', $foregroundColor='blue', $domID='progressbar',
+    					 $stepElement='<div style="width:%spx;height:20px;float:left;"></div>'
+    					 ){
+	    	$this->ProgressBar($message, $hide, $sleepOnFinish, $barLength, $precision, $backgroundColor, $foregroundColor, $domID, $stepElement);
+    }
+
     function ProgressBar($message='', $hide=false, $sleepOnFinish=0, $barLength=200, $precision=20,
     					 $backgroundColor='#cccccc', $foregroundColor='blue', $domID='progressbar',
     					 $stepElement='<div style="width:%spx;height:20px;float:left;"></div>'

@@ -48,7 +48,7 @@ function Get-PlatformConfig {
     if ($IsWindows) {
         return @{
             Label = "windows"
-            DefaultType = "app-image"
+            DefaultType = "msi"
             Icon = "src/main/resources/Icons/128x128/pdf.ico"
             InstallDir = "Tellervo"
             NativeLibDir = "Native/Libraries/windows-amd64"

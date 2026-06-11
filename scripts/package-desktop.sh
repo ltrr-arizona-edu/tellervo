@@ -112,7 +112,7 @@ case "$PLATFORM" in
     INSTALL_DIR="/Applications/Tellervo"
     ;;
   MINGW*|MSYS*|CYGWIN*)
-    DEFAULT_TYPE="exe"
+    DEFAULT_TYPE="msi"
     ICON="$REPO_ROOT/src/main/resources/Icons/tellervo-application.ico"
     INSTALL_DIR="Tellervo"
     NATIVE_LIB_DIR="$REPO_ROOT/Native/Libraries/windows-amd64"

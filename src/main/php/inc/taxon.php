@@ -19,6 +19,11 @@ class taxon extends taxonEntity implements IDBAccessor
     /* CONSTRUCTOR */
     /***************/
 
+    function __construct()
+    {
+        $this->taxon();
+    }
+
     function taxon()
     {
         // Constructor for this class.

@@ -227,7 +227,7 @@ class geometry
 		return null;
 	}
 	
-	function asKMLValue($kmlversion=2, $value)
+	function asKMLValue($kmlversion, $value)
 	{
 		global $firebug;
         global $dbconn;

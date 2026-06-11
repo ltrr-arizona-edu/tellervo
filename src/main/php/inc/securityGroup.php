@@ -26,6 +26,11 @@ class securityGroup extends securityGroupEntity implements IDBAccessor
 	/* CONSTRUCTOR */
 	/***************/
 
+	function __construct()
+	{
+		$this->securityGroup();
+	}
+
 	function securityGroup()
 	{
 		// Constructor for this class.

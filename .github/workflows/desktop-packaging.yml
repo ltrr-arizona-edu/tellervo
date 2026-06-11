@@ -18,7 +18,7 @@ jobs:
             package_type: deb
             artifact_name: tellervo-linux
           - os: windows-latest
-            package_type: exe
+            package_type: msi
             artifact_name: tellervo-windows
           - os: macos-latest
             package_type: dmg
@@ -60,13 +60,25 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          $installer = Get-ChildItem -LiteralPath target/jpackage/dist -Filter *.exe | Select-Object -First 1
+          $installer = Get-ChildItem -LiteralPath target/jpackage/dist -Filter *.msi | Select-Object -First 1
           if ($null -eq $installer) {
             throw "Windows installer was not created"
           }
 
-          $process = Start-Process -FilePath $installer.FullName -ArgumentList "/quiet", "/norestart" -Wait -PassThru
+          $logPath = Join-Path $env:RUNNER_TEMP "tellervo-msi-install.log"
+          $arguments = @(
+            "/i",
+            "`"$($installer.FullName)`"",
+            "/qn",
+            "/norestart",
+            "/l*v",
+            "`"$logPath`""
+          )
+          $process = Start-Process -FilePath "msiexec.exe" -ArgumentList $arguments -Wait -PassThru
           if ($process.ExitCode -ne 0) {
+            if (Test-Path $logPath) {
+              Get-Content -LiteralPath $logPath
+            }
             throw "Windows installer failed with exit code $($process.ExitCode)"
           }
 
@@ -79,6 +91,14 @@ jobs:
           if (-not (Test-Path $serialLibrary -PathType Leaf)) {
             throw "Installed serial library not found: $serialLibrary"
           }
+
+      - name: Upload Windows installer log
+        if: runner.os == 'Windows' && always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tellervo-windows-installer-log
+          path: ${{ runner.temp }}/tellervo-msi-install.log
+          if-no-files-found: warn
 
       - name: Upload desktop artifact
         uses: actions/upload-artifact@v4

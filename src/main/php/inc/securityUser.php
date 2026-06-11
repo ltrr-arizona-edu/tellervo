@@ -27,6 +27,11 @@ class securityUser extends securityUserEntity implements IDBAccessor
     /* CONSTRUCTOR */
     /***************/
 
+    function __construct()
+    {
+        $this->securityUser();
+    }
+
     function securityUser()
     {
         // Constructor for this class.

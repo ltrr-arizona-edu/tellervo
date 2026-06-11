@@ -20,6 +20,11 @@ class permission extends permissionEntity implements IDBAccessor
     /* CONSTRUCTOR */
     /***************/
 
+    function __construct()
+    {
+        $this->permission();
+    }
+
     function permission()
     {
     }
