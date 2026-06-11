@@ -89,6 +89,7 @@ ICON=""
 INSTALL_DIR=""
 RESOURCE_DIR=""
 NATIVE_LIB_DIR=""
+NATIVE_LIB_FILES=()
 EXTRA_ARGS=()
 
 case "$PLATFORM" in
@@ -116,6 +117,7 @@ case "$PLATFORM" in
     ICON="$REPO_ROOT/src/main/resources/Icons/tellervo-application.ico"
     INSTALL_DIR="Tellervo"
     NATIVE_LIB_DIR="$REPO_ROOT/Native/Libraries/windows-amd64"
+    NATIVE_LIB_FILES+=(rxtxSerial.dll)
     EXTRA_ARGS+=(--win-per-user-install --win-shortcut --win-menu --win-dir-chooser)
     ;;
   *)
@@ -150,11 +152,13 @@ if [[ -n "$NATIVE_LIB_DIR" ]]; then
     echo "Native library directory not found: $NATIVE_LIB_DIR" >&2
     exit 1
   fi
-  if [[ ! -f "$NATIVE_LIB_DIR/rxtxSerial.dll" ]]; then
-    echo "Required Windows serial library not found: $NATIVE_LIB_DIR/rxtxSerial.dll" >&2
-    exit 1
-  fi
-  cp "$NATIVE_LIB_DIR"/* "$INPUT_DIR/"
+  for native_lib in "${NATIVE_LIB_FILES[@]}"; do
+    if [[ ! -f "$NATIVE_LIB_DIR/$native_lib" ]]; then
+      echo "Required Windows native library not found: $NATIVE_LIB_DIR/$native_lib" >&2
+      exit 1
+    fi
+    cp "$NATIVE_LIB_DIR/$native_lib" "$INPUT_DIR/"
+  done
 fi
 
 ARGS=(

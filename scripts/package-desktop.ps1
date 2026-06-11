@@ -52,6 +52,7 @@ function Get-PlatformConfig {
             Icon = "src/main/resources/Icons/128x128/pdf.ico"
             InstallDir = "Tellervo"
             NativeLibDir = "Native/Libraries/windows-amd64"
+            NativeLibFiles = @("rxtxSerial.dll")
             ExtraArgs = @("--win-per-user-install", "--win-shortcut", "--win-menu")
         }
     }
@@ -63,6 +64,7 @@ function Get-PlatformConfig {
             Icon = ""
             InstallDir = "/Applications/Tellervo"
             NativeLibDir = ""
+            NativeLibFiles = @()
             ExtraArgs = @()
         }
     }
@@ -73,6 +75,7 @@ function Get-PlatformConfig {
         Icon = "src/main/resources/Icons/128x128/tellervo-application.png"
         InstallDir = "/opt/tellervo"
         NativeLibDir = ""
+        NativeLibFiles = @()
         ExtraArgs = @("--linux-shortcut", "--linux-menu-group", "Science", "--linux-app-category", "Science")
     }
 }
@@ -137,12 +140,12 @@ try {
         if (-not (Test-Path $nativeLibDir -PathType Container)) {
             throw "Native library directory not found: $nativeLibDir"
         }
-        $serialLibrary = Join-Path $nativeLibDir "rxtxSerial.dll"
-        if (-not (Test-Path $serialLibrary -PathType Leaf)) {
-            throw "Required Windows serial library not found: $serialLibrary"
-        }
-        Get-ChildItem -LiteralPath $nativeLibDir -File | ForEach-Object {
-            Copy-Item -LiteralPath $_.FullName -Destination $InputDir
+        foreach ($nativeLibFile in $platform.NativeLibFiles) {
+            $nativeLibrary = Join-Path $nativeLibDir $nativeLibFile
+            if (-not (Test-Path $nativeLibrary -PathType Leaf)) {
+                throw "Required Windows native library not found: $nativeLibrary"
+            }
+            Copy-Item -LiteralPath $nativeLibrary -Destination $InputDir
         }
     }
 
