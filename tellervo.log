@@ -1,0 +1,50 @@
+11 Jun 2026 21:57:05,597 [org.tellervo.desktop.gui.Startup.main()] WARN org.tellervo.desktop.ui.Builder - Unabled to find icon warning.png.  Replacing with the 'missing icon' icon.
+11 Jun 2026 21:57:08,801 [org.tellervo.desktop.gui.Startup.main()] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+11 Jun 2026 21:57:08,971 [Finalizer] ERROR org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice - The specified port does not exist on this computer. 
+Please check and try again.
+11 Jun 2026 21:57:22,468 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,471 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,478 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,482 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,488 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,494 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,499 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,505 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,510 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,514 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,517 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,521 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,523 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,524 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,528 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,531 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,532 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,536 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,539 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:22,540 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:57:23,187 [org.tellervo.desktop.gui.Startup.main()] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+11 Jun 2026 21:59:10,531 [org.tellervo.desktop.gui.Startup.main()] WARN org.tellervo.desktop.ui.Builder - Unabled to find icon warning.png.  Replacing with the 'missing icon' icon.
+11 Jun 2026 21:59:12,253 [Finalizer] ERROR org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice - The specified port does not exist on this computer. 
+Please check and try again.
+11 Jun 2026 21:59:12,415 [org.tellervo.desktop.gui.Startup.main()] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+11 Jun 2026 21:59:20,024 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,025 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,027 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,028 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,029 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,030 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,031 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,032 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,034 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,037 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,039 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,041 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,042 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,043 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,044 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,045 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,046 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,047 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,048 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,050 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+11 Jun 2026 21:59:20,540 [org.tellervo.desktop.gui.Startup.main()] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.

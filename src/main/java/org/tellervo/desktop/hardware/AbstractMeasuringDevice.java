@@ -25,6 +25,7 @@ import gnu.io.CommPortOwnershipListener;
 import gnu.io.SerialPort;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -623,7 +624,14 @@ public abstract class AbstractMeasuringDevice
 		}
 		else
 		{
-			SwingUtilities.invokeLater(notifyReceiver);
+			try {
+				SwingUtilities.invokeAndWait(notifyReceiver);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+				log.error("Interrupted while processing measuring device event", e);
+			} catch (InvocationTargetException e) {
+				log.error("Error processing measuring device event", e.getCause());
+			}
 		}
 	}
 
