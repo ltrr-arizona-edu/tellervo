@@ -1,0 +1,89 @@
+
+\chapter{Publishing data}
+
+This chapter covers the publishing of data within your Tellervo database to international data repositories, namely: the International Tree Ring Data Bank\footnote{ITRDB: \url{https://www.ncei.noaa.gov/products/paleoclimatology/tree-ring}} (ITRDB); Global Biodiversity Information Facility\footnote{GBIF: \url{https://www.gbif.org}} (GBIF); and Integrated Digitized Biocollections\footnote{iDigBio: \url{https://www.idigbio.org}} (iDigBio).
+
+The ITRDB is probably the most well known repository for tree-ring.  Established in 1974, it is managed by the World Data Service for Paleoclimatology, at the National Centers for Environmental Information (NCEI) of the National Oceanic and Atmospheric Administration (NOAA).  The ITRDB is one of multiple databases held by NCEI related to paleoclimate research including: ice cords; pollen; speleothem; corals; boreholes; and many others.  As such, it is primarily focused on dendroclimatology specimens although it does contain broader cultural collections to.
+
+The Global Biodiversity Information Facility (GBIF) is an international network and data infrastructure that seeks to provide anyone with open access to data about all types of life on Earth.  Many contributing organizations provide data about specimens and species observations from museums, herbaria, and other scientific organizations from around the world.  As a biodiversity database the focus of data within the GBIF repository are species observations and specimen records from all kingdoms of life. 
+
+Integrated Digitized Biocollections (iDigBio) is a US-based and funded organization that works closely with GBIF to support the digitization of biocollections in the USA.  The National Science Foundation will typically make contribution of data to iDigBio a requirement of a grant where funding is provided to digitize collections.  
+
+\section{Integrated Publishing Toolkit (IPT)}
+The Integrated Publishing Toolkit (IPT) is an open source tool that can assist with the publishing of data to GBIF and iDigBio.  IPT can be installed as an optional extra to your Tellervo Server if you would like to have your data accessible to users around the world through these international repositories.  If you don't have a server that is accessible from outside your organization, there are a number of organization that run instances of IPT that will accept dumps of your data manually. This is a relatively simple way to publish your data but does require that you manually export your data periodically.  Installing your own instance of IPT alongside your Tellervo database means you can continually deliver data without intervention.  IPT can be easily configured to publish portions, or the entirety of your Tellervo database to suit your needs.  The Tellervo Server is preconfigured with all the datamapping completed for you, making the process relatively straightforward.  
+
+\subsection{Installing IPT}
+The IPT website at \url{https://www.gbif.org/ipt} contains extensive instructions for the installation of the IPT software including a manual and video tutorials.  For the most up-to-date information please visit these pages.  Some additional instructions and tips are provided below and are aimed at users who have Tellervo Server installed on Ubuntu either natively or as a VirtualBox appliance.
+
+IPT is written in Java and is served via Tomcat, so the first step is to install this:
+\code{sudo apt install tomcat9 tomcat9-admin}
+
+By default, Tomcat runs on port 8080 which makes for rather ugly URLs.  As such many people prefer to configure port forwarding so that requests to the standard port 80 are forwarded on to Tomcat on port 8080.  There are many ways to do this but to most straightforward is to add the following configuration to the relevant `Directory' section of your /etc/apache2/sites/enabled/ file:
+
+\begin{verbatim}
+  ProxyPreserveHost On
+  ProxyRequests Off
+  ProxyPass / http://localhost:8080/
+  ProxyPassReverse / http://localhost:8080/  
+\end{verbatim}
+
+Enable Apache modproxy and restart the server as follows:
+\code{sudo a2enmod proxy \&\& sudo a2enmod proxy\_http \&\& sudo service apache2 restart}
+
+Next there are a number of steps required to get the Tomcat manager running.  The first step is to add an admin user by including the following configuration line to /etc/tomcat9/tomcat-users.xml:
+\begin{verbatim}
+    <user username="admin" password="password" roles="manager-gui,admin-gui"/>
+\end{verbatim}
+
+Next you to edit the following two files:
+\begin{verbatim}
+    /usr/share/tomcat9-admin/host-manager/META-INF/context.xml
+    /usr/share/tomcat9-admin/manager/META-INF/context.xml
+\end{verbatim}
+
+Within these files you need to locate and comment out the IP restrictions link so:
+\begin{verbatim}
+ <Context antiResourceLocking="false" privileged="true" >
+  <!--<Valve className="org.apache.catalina.valves.RemoteAddrValve"
+         allow="127\.\d+\.\d+\.\d+|::1|0:0:0:0:0:0:0:1" />-->
+ </Context>   
+\end{verbatim}
+
+Next you need to allow Tomcat to write to /srv/ipt.  This can be done by creating /etc/systemd/system/tomcat9.service.d/override.conf and adding 
+\begin{verbatim}
+ [Service]
+ ReadWritePaths=/srv/ipt   
+\end{verbatim}
+
+Next you need to restart Tomcat and deploy the ipt.war using the Tomcat Manage. 
+ Follow the IPT setup steps described in full at: \url{https://ipt.gbif.org/manual/en/ipt/2.5/initial-setup}
+ 
+\subsection{Connecting Tellervo to IPT}
+
+Once your IPT server is up and running, the next thing you need to do is to `create a resource' using the IPT interface described in full at: 
+url{https://ipt.gbif.org/manual/en/ipt/2.6/manage-resources}.  One of the major tasks in connecting Tellervo to IPT is the mapping between the Tellervo/TRiDaS data model to the data model used by IPT.  The majority of this work has been completed for you through the creation of a view in the Tellervo database named vwipt.  On the `source data' page in IPT, simply enter your database details and for the SQL statement use: 
+\begin{verbatim}
+select * from vwipt;
+\end{verbatim}
+
+On the `Darwin Core Mapping' section, the majority of the fields will now be auto-mapped.  You may chose to override some of these e.g.\ institutioncode; institutionid; datasetname, but please take time to understand the scope of each field before changing them.  
+
+\subsection{Submitting data to GBIF}
+The IPT provides an internal mechanism to provide data to GBIF.  Follow the steps to register your institution and your server.
+
+\subsection{Submitting data to iDigBio}
+iDigBio also supports the ingestion of data through IPT.  Registering your institution and server with iDigBio can be done by emailing your server URL and details to data@idigbio.org.
+
+\section{International Tree Ring Databank (ITRDB)}
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,319 @@
+
+\chapter{The Tellervo server}
+\label{txt:servermaintenance}
+
+For basic day-to-day running of the Tellervo server, you simply need to make sure that the server is running.  All other interaction and managment (creating users, granting permissions, accessing data) is done through the Tellervo desktop application.  This section, however, outlines a number of aspects of the server that advanced users may find useful.
+
+\section{Backing up and restoring your database}
+\index{Server!Backup}
+\index{Backup}
+As with any computer system it is important for you to back regular backups of your data to guard against hardware (as well as human!) errors. The two main methods for doing this are outlined below:
+
+\subsection{Backup whole Virtual Appliance}
+\label{txt:BackupVA}
+The simplest method is to make a copy of your entire Virtual Appliance, but this does have a number of drawbacks.  The first is that you need to shut down your server before you can make the backup so this is only possible if server `downtime' is not a problem for your lab.  The second drawback is that it makes a copy of your entire server including the whole operating system, therefore each backup takes a lot more space.  
+
+\begin{enumerate*}
+ \item Open VirtualBox
+ \item If you server is running you will need to do a full shutdown.  From the server console type \verb|sudo halt| then once it has halted you can close the console window and select `Power off the machine'. 
+ \item Select your virtual machine in the list on the left and go to \menutwo{File}{Export Appliance}.
+ \item Follow the wizard, specifying a file where you'd like to back the server up to.  Keep in mind that this will contain a complete copy of the server (including operating system) so could be 1Gb or more.
+\end{enumerate*}
+
+\subsection{Restoring a Virtual Appliance backup}
+If you have followed the instructions in section \ref{txt:BackupVA} to backup your Virtual Appliance the steps to restoring your server are very similar to how your initially installed it.  Simply open VirtualBox, then go to \menutwo{File}{Import Appliance} and select the backup file that you made.  Follow the wizard and it should restore your server.  You can restore onto the same computer that was originally running the virtual machine (remember to give it a new name though if this is the case) or alternatively to any other computer with VirtualBox installed.  This method can therefore be used to share entire databases.
+
+
+\subsection{Backup PostgreSQL database}
+\label{txt:dbbackup}
+The more standard way of backing up your database is to do a dump of the PostgreSQL database itself into a large text file.  You can do this using the following command:
+
+\code{sudo tellervo-server --backup-db /folder/and/file/to/make/mybackup.dump}
+
+For example the following line will backup the database into a file called backup.dump in the tmp folder.  Keep in mind that the tmp folder is cleaned each time the server is booted.
+
+\code{sudo tellervo-server --backup-db /tmp/mybackup.dump}
+
+You will want to transfer this backup to a remote location.  Methods for doing this are given in section \ref{txt:serverfileio}.
+
+
+\subsection{Restoring a PostgreSQL database}
+\label{txt:dbrestore}
+To restore an existing database dump file use the following command:
+
+\code{sudo tellervo-server --restore-db /tmp/mybackup.dump}
+
+The restore will confirm that you want to delete the current database and replace it with the backup.  The restore procedure will create a fresh database, restore the database tables, restore your data and apply any outstanding database upgrades.  
+
+
+\subsection{Backing up media files}
+If you have used the ODK field data entry system described in chapter \ref{txt:odk}, and requested to include media files then you will also need to make provision for backing these up.  For reasons of efficiency these media files are not included in the PostGreSQL database.  Links to these files are stored in the database, while the files themselves are stored in a web accessible folder.  
+
+\subsection{Automated backups}
+If your server is left on, it's a good idea to schedule automated backups to ensure backups are made on a regular basis.  Backup scripts can be written to use various backup rotations so that you have multiple versions of your backup over the last days, weeks or months allowing you to roll back to specific points in time.  A good example would be to have nightly backups named by day of the week, as well as monthly backups taken on the first of the month.  This will give you 19 backup files that will enable you to restore your database to the state it was in at any night of the last week or any month of the last year.  An example of a simple nightly backup script would be:
+
+\code{day=`date +\%A`}
+\code{tellervo-server --backup-db /home/tellervo/Dropbox/\$day.dump}
+
+Similarly a monthly backup script would look like:
+
+\code{month=`date +\%B`}
+\code{tellervo-server --backup-db /homne/tellervo/Dropbox/\$month.dump}
+
+Save these scripts to files (e.g.\ at /home/tellervo/nightlybackupscript and monthlybackupscript) and then instruct the cron daemon to run them by editing the crontab using:
+
+\code{sudo crontab -e}
+
+adding lines such as:
+
+\code{@daily /home/tellervo/nightlybackupscript}
+\code{@monthly /home/tellervo/monthlybackupscript}
+
+Used in conjunction with tools like Dropbox or Amazon S3 (see section \ref{txt:serverfileio}), these cron jobs will provide a robust mechanism for securing your data.
+
+
+\section{Copying files to/from server}
+\label{txt:serverfileio}
+There are times when you will need to transfer files to and/or from your Tellervo server.  There are a number of ways to do this depending on your needs and skill level.  
+
+\subsection{Virtualbox shared folder}
+Virtualbox includes a mechanism for sharing a folder on your physical computer with your virtual server.  This is probably the easiest option as once mounted the folder can be seen on your server and files copied into and out of it as normal.  In the Virtualbox Manager select your server and press the `Settings' button.  Now go to the `Shared folders' tab and click the add folder button.  Select the folder on your physical computer that you'd like to share and give it a name e.g.\ `share'.  Make sure you tick the `make permanent' and `auto mount' checkboxes.  Now reboot your virtual server and your shared folder should be available at /media/share.  If the folder has not mounted it may be because the tellervo user is not a member of the vboxsf group.  In this case you'll need to enter the following before rebooting the server:
+
+\code{sudo adduser tellervo vboxsf}
+
+
+\subsection{Secure copy (SCP)}
+The most commonly used method for copying files to and from Linux computers is SCP.  SCP is a secure transfer protocol based on SSH.  You can use SCP to copy files to/from Linux and OSX computers or to Windows computers with a suitable SCP client the most common being WinSCP.  To use SCP you'll need to install SSH on your server:
+
+\code{sudo apt-get install openssh-server}
+
+
+\subsection{Dropbox}
+Dropbox is a commercial application that most people are familiar with.  No cost accounts can be set up that support up to 2Gb of data.  There is a Linux command line client (i.e.\ without the usual graphical interface) that will syncronise files between your server and Dropbox clients on other computers.  To install you'll need to enter the following commands:
+
+\code{cd \textasciitilde \&\& wget -O - https://www.dropbox.com/download?plat=lnx.x86\_64 $\vert$ tar xzf -}
+\code{~/.dropbox-dist/dropboxd}
+
+You'll be prompted to visit a webpage to confirm your account details. Next you'll need a Python script to control the client:
+
+\code{cd \textasciitilde \&\& wget -O - https://www.dropbox.com/download?dl=packages/dropbox.py}
+\code{chmod a+x dropbox.py}
+\code{./dropbox.py start}
+\code{./dropbox.py autostart}
+
+The Dropbox client should then download any existing files in your Dropbox folder at /home/tellervo/Dropbox/.  You can check the status of your Dropbox folder by typing:
+\code{./dropbox.py status}
+
+\subsection{Amazon Simple Storage Service (S3)}
+Another commercial tool with good support for Linux is Amazon S3.  Amazon provide a `free useage tier' which stores up to 5Gb of data at no cost.  While more complex to set up, S3 provides true commercial grade off-site backups.  There is an open source command line client called s3cmd available from \url{https://github.com/s3tools/s3cmd}.  Check out the documentation on Github and the Amazon AWS website for more information.
+
+
+
+
+\section{Upgrading the server}
+\index{Upgrading}
+\label{txt:upgradeserver}
+\index{Upgrading!Tellervo server}
+
+Before upgrading your server it's important to backup your database. We will always endeavour to make sure that nothing happens to your database, even if the upgrade fails for some reason (in which case the system should roll back to your previous version again), but things don't always go to plan.  The method for upgrading your server will depend on what installation method you originally chose:
+
+
+\subsection{Upgrading VirtualBox Tellervo Server}
+If your current version of Tellervo Server is running in VirtualBox one of the easiest methods for upgrading is to backup the database (see section \ref{txt:dbbackup}), download and install the latest Tellervo Server (see section \ref{txt:serverinstallation}) and restore your database within the new server (see section \ref{txt:dbrestore}).  This has the advantage of ensuring you are running the latest version of the Ubuntu operating system.  If you would rather upgrade your Tellervo server in place, then you can also follow the instructions for upgrading a native Ubuntu server below.
+
+\subsection{Upgrading a native Ubuntu Tellervo Server}
+If you are familiar with the Linux command line you can upgrade your Tellervo Server using the dpkg tool.  Please note that with limited resources we are unable to support multiple versions of Ubuntu as there can be many versions of the underlying dependencies that can conflict.  As a rule we aim to support the most recent LTS version of Ubuntu.  If you are running an older version of Ubuntu and end up with dependency problems please contact us.
+
+For those running v1.3.2 or later of Tellervo Server the upgrade can be done by running the following command which will download and install the latest version of Tellervo Server in one go:
+
+\code{sudo tellervo-server --upgrade}
+
+If you are upgrading from an older version of Tellervo Server you'll need to download and install the latest version manually. First, you will need to get the latest Tellervo Server Ubuntu deb package from the Tellervo website.  Save this to your server using one of the mechanisms described in section \ref{txt:serverfileio}.  Alternatively you can download directly to your server using the command line by typing:
+
+\code{wget --output-document tellervo-server-x.x.x.deb\\ http://www.tellervo.org/download/?type=server\textbackslash\&os=linux\textbackslash\&version=latest}
+
+Regardless of how you get the latest deb file you will then need to install it by typing:
+
+\code{sudo dpkg --install tellervo-server-x.x.x.deb}
+
+The upgrade should run and finish with a test to confirm all has worked correctly. 
+
+\subsection{Upgrading the server operating system}
+\index{Upgrading!Operating system}
+Tellervo is designed to run on the Ubuntu operating system.  Due to limited resources we only support one version of Ubuntu at a time, typically the most recent `Long Term Support' (LTS) release.  LTS releases are typically very stable and supported for five years, limiting the need to perform upgrades.  
+
+If you are running an older version of Tellervo server on a previous release of Ubuntu by far the simpliest method of upgrading is:
+
+\begin{enumerate}
+    \item Backup your database (see section \ref{txt:dbbackup})
+    \item Remove Tellervo
+    \item Upgrade (or reinstall) Ubuntu
+    \item Install the latest Tellervo Server (see section \ref{txt:serverinstallation})
+    \item Restore your database (see section \ref{txt:dbrestore})
+\end{enumerate}
+
+
+
+
+
+
+\section{Graphical Interface to the Virtual Appliance}
+\index{Server!Graphical interface}
+For those of you that are unfamiliar with Linux, the basic command line prompt is not likely to be very comfortable.  If you are interesting in looking at the server in more detail you may therefore prefer to install a full graphical interface.  Unlike Windows, there are a number of different graphical interfaces (or desktops) to choose from in Linux, the most popular being Gnome and KDE.  To install one of these you need to type one of the commands listed below.  The first line installs Gnome and the second KDE. Windows users that are new to Linux may find KDE more familiar, but Apple users may be more at home with Gnome.
+
+ \code{sudo apt-get install ubuntu-desktop}
+ \code{sudo apt-get install kubuntu-desktop}
+
+\section{Security}
+\index{Security}
+The basic installation of the Tellervo server includes the standard configuration for Apache, PHP and PostgreSQL.  Although these products are considered secure by default, there are a number of measures that can be taken to make them more so.  If your server is only accessible within your local intranet (e.g. behind a robust firewall) then you may not feel it necessary to modify the standard setup.  Precautions may be deemed more important if you server is accessible from the internet.  In this case it would be wise to contact your local network administrator for further information.
+
+\subsection{Usernames and passwords}
+\label{txt:passwords}
+\index{Passwords}
+There are a number of default usernames and passwords setup on your server.  If your server is accessible for the internet we strongly advise you to change these defaults and anyone with knowledge of the Tellervo server could access and compromise your machine.
+
+\begin{description*}
+ \item[System user] - these are the credentials you use to log in to the command prompt in your Tellervo Virtual Appliance.  By default the user is `tellervo' and the password is `dendrochronology'.  To change this log in to the command prompt and type \verb|passwd| and follow the instructions.  There is no easy way to recover this password if you loose it.
+ \item[PostgreSQL database user] - these are the credentials used by the webservice to read and write to the database and are set by the database administrator during the initial configuration of the Tellervo server. You are only ever likely to need this again if you want to directly access the database from a third party tool like PGAdminIII.  You can reset this password from the Tellervo Virtual Appliance command prompt by typing \verb|tellervo-server --reconfigure|
+ \item[Tellervo admin user] - these are the admin credentials that you use to log in with in your Tellervo desktop application.  Be default the user is `admin' and the password is `qu3rcu5'.  You should change these the first time you open the Tellervo desktop application by going to \menutwo{Admin}{Change password}.
+\end{description*}
+
+\subsection{Authentication and encryption}
+\index{Authentication}\index{Encryption}
+Tellervo uses a relatively sophisticated method to ensure that unauthorised users cannot access the Tellervo database through the webservice.  It is loosely based around http digest authentication and uses a challenge and response scheme.  This makes use of cryptographic hashes (a relatively short digital fingerprint of some data but which cannot be decompiled to retrieve the original data) and nonces (a pseudo-random string used just once). All hashes used in the Tellervo webservice use the MD5 algorithm. This decision will be periodically reviewed to ensure that MD5 is the most appropriate and secure algorithm to use. Whilst an MD5 hash of a short phrase can be compromised, the length and randomness of the original data means with current cracking techniques this is very difficult.   For a complete description of Tellervo's authentication procedure see section \ref{txt:authentication}.
+
+The default Tellervo server setup, however, uses standard HTTP protocol to communicate between the server and the desktop application.  This is the same protocol used for the majority of web pages on the internet and a determined hacker could eavesdrop on this communication.  Depending on how important and private you perceive your data you may choose to use Secure Socket Layer (SSL) to encrypt this communication.  This is the same technology used by websites such as online banking.  To make full use of this upgrade in security you will however also require a SSL certificate from an official licensing authority.  These certificates typically cost several hundred dollars per year although some academic institutions make these available to their departments for free.  It is possible to setup SSL with a self-signed certificate for free.  This will encrypt your communications although it won't protect you from some other style of hacking such as `man in the middle attacks'.  If you use a self-signed certificate you will need to instruct users to turn of checking for valid certificates in Tellervo Desktop.  This option is on the Network tab in \menutwo{Edit}{Preferences}.
+
+To configure SSL, from the server command line, first of all you need to enable the SSL Apache module:
+
+\code{sudo a2enmod ssl}
+\code{sudo a2ensite default-ssl.conf}
+
+The default HTTPS configuration will use a self-signed certificate and key generated by the ssl-cert package. They are good for testing, but the auto-generated certificate and key should be replaced by a certificate specific to the site or server. For information on generating a key and obtaining a certificate talk to your network administrator.  There is also some good information at \url{https://help.ubuntu.com/lts/serverguide/certificates-and-security.html}.
+
+Once you have your valid certificate you will need to copy it into \url{/etc/ssl/certs/} and your key into \url{/etc/ssl/private/} and update the filenames in the Apache configuration file at: \url{/etc/apache2/sites-available/default-ssl.conf}.  Make sure you also change the DocumentRoot variable to the location of your server folder \url{/var/www/tellervo/}.
+
+Finally you will need to reload Apache by doing:
+\code{sudo service apache2 reload}
+
+If all has gone well your webservice will now be available at \url{https://your.server.ip/} (note the https rather than http).  
+
+
+\section{Directly accessing the database}
+\index{Database}
+\index{PostgreSQL}
+Although the Tellervo database is designed to only be accessed by the Tellervo desktop application via the Tellervo server's webservice, you may decide that you'd like to directly access the database yourself.  For instance, you may like to write complicated SQL queries to probe your database in ways not currently supported by the Tellervo desktop client. 
+
+\warn{Any changes made to the database may have drastic consequences.  We strongly recommend that you never write changes directly to the database as this can cause loss of data and corrupt future upgrades to Tellervo.}
+
+\subsection{PGAdminIII}
+\index{PGAdminIII}
+One of the easiest ways to access the PostgreSQL database is through the application PGAdminIII.  This is a cross-platform open source application for communicating with PostgreSQL databases.  You can install PGAdminIII on your desktop computer and access the remotely running database using your database user credentials.  
+
+For security reasons by default the Tellervo database cannot be accessed from computers outside of the Tellervo server.  This may sound peculiar because the webservice can be accessed from computers anywhere on the web, but the database is actually accessed by the webservice, which is essentially a user running on the same computer as the database.  To access the database \emph{directly} from a remote computer you must therefore open access first.  This is done by adding an entry to the file `/etc/postgresql/9.5/main/pg\_hba.conf'.  My personal command line text editor of choice is vim, but it is a little confusing to the uninitiated.  If you are unfamiliar with command line text editing you are probably best to use pico:
+
+\code{sudo pico /etc/postgresql/9.5/main/pg\_hba.conf}
+
+Scroll down passed all the comments, to the bottom of the file.  Add the following line:
+
+%%TODO Check this is the best to suggest
+\code{host  all  all   IPADDRESS/32       md5}
+
+Make sure you replace IPADDRESS with the IP address of the computer you are trying to connect \emph{from}. This is just one style of pg\_hba.conf entry.  There are many others which allow you to restrict to specific users, computers, networks etc.  See the online PostgreSQL documentation for more details.  Save your changes and exit by doing CTRL+X.  
+
+Next you need to make sure the PostgreSQL server is listening to requests from other IP addresses.  To do this you need to edit the postgresql.conf file like this:
+
+\code{sudo pico /etc/postgresql/9.5/main/postgresql.conf}
+
+making the following changes:
+
+\begin{description}
+ \item[Old line] - \verb|#listen_addresses = 'localhost'|
+ \item[New line] - \verb|listen_addresses = '*'|
+\end{description}
+
+Make sure you remove the hash character at the beginning of the line.  Save the file and finally restart the Tellervo server:
+
+\code{sudo tellervo-server --restart}
+
+You should now be able to access your database through PGAdminIII. To do this open the application and go to \menutwo{File}{Add server}.  Specify your server's IP address is the host field, and your database username and password.
+
+
+\subsection{ODBC}
+\index{ODBC}
+It is also possible to connect to your Tellervo database via an ODBC connection.  This allows limited access to the database from a variety of database applications including programs like Microsoft Access for which further details are given here.   To use ODBC you will need to install the PostgreSQL ODBC driver (\url{http://www.postgresql.org/ftp/odbc/}) on your desktop computer.
+
+Once you've installed the driver you can then open a blank database in Access and go to Files, Get external data then Link tables.  In the file dialog box change the file type to ODBC Databases().  Next, select the PostgreSQL Unicode driver, then fill out the server details.  You should then be able to open the tables and views from the Tellervo server database directly from within Access as if they were local tables.  Be warned though that Access and ODBC have many limitations compared to PostgreSQL, especially with regards data types.  For this reason we \emph{strongly} recommend using this for read only purposes.  Using the ODBC connection to write changes to your PostgreSQL database is quite likely to cause serious issues. 
+
+\subsection{PSQL}
+\index{PSQL}
+The final, and most advanced method is to use the psql client on your server.  This is a command line client which can be used to interrogate the database.  If you're not already familiar with psql it is unlikely that this is a good method for you to use!
+
+
+\section{Tellervo server configuration}
+\label{txt:serverConfig}
+\subsection{Standard server configuration}
+\index{config.php}
+The Tellervo server can be configured using the command line tool that is installed on both the Virtual Appliance and native server installs.  It is the same tool that is run at the end of the native server install, but can be run at any time to reconfigure or test your system.  It must be run with superuser privileges therefore \verb|sudo| is required before the command.  For instance to get help on usage type:
+
+
+\begin{figure}[hbtp]
+  \centering
+  \includegraphics[width=0.5\textwidth]{Images/serverconfig.png}
+  \caption{Example of the output from the tellervo-server test.}
+  \label{fig:serverTerminal}
+\end{figure}
+
+
+\code{sudo tellervo-server --help}
+
+Possible options to pass the server are:
+
+\begin{itemize*}
+ \item `\verb|--help|' -- Display a list of the possible options
+ \item `\verb|--version|' -- Display the version of the Tellervo server webservice and database currently installed
+ \item \verb|`--test'| -- Run tests on the current configuration
+ \item \verb|`--configure'| -- Configure the Tellervo server from scratch.  
+ \item \verb|`--reconfigure'| -- Reconfigure the Tellervo server.  This should be done if the database name or user credentials change, or if the
+ \item \verb|`--network'| -- Check network settings and reset if necessary
+ \item \verb|`--emptylog'| -- Clean the log files and database table logs
+ \item \verb|`--sysconfig'| -- Generate the systems configuration file
+ \item \verb|`--set-db-pwd'| -- Reset the PostgreSQL database password
+ \item \verb|`--set-admin-pwd'| -- Reset the Tellervo desktop login for the admin user
+ \item \verb|`--start'| -- Start the Tellervo server
+ \item \verb|`--stop'| -- Stop the Tellervo server
+ \item \verb|`--restart'| -- Restart the Tellervo server
+ \item \verb|`--upgrade-db'| -- Run database upgrade scripts
+ \item \verb|`--add-wms-name'| -- Name of a web mapping server to add to database
+ \item \verb|`--add-wms-url'| -- URL of a web mapping server to add to database
+ \item \verb|`--del-wms-name'| -- Name of a web mapping server to delete from database
+\end{itemize*} 
+
+Figure \ref{fig:serverTerminal} shows an example of asking the server to test the configuration, with all tests passed successfully.
+
+The command line tool stores the majority of settings in the config.php file stored in the base directory of your Tellervo webservice.  In theory you could make changes direct to this file, but we do not recommend this unless you know exactly what you're doing.
+
+
+\subsection{Advanced server configuration}
+\index{systemconfig.php}
+
+In addition to the standard configuration options offered on the command line there are a number of other options that can be set.  These are not accessible via the command line because as a rule they should only be altered by the Tellervo developers.  They are primarily for use by the developers as an alternative to hard coding values within the server files.  For instance, one such value is the TRiDaS version being used by the server.  This value will only ever need to be changed alongside other substantial changes to the code.  
+
+
+
+
+\section{Managing map services}
+\label{txt:managingmaps}
+\index{Web Map Service (WMS)}
+\index{Mapping!Adding layers|see{Web Map Service(WMS)}}
+
+There is currently no interface in Tellervo desktop that lets you specify the WMS mapping services that should automatically be available to your Tellervo users.  Each user can add servers temporarily (see section \ref{txt:userAddWMS}) but these will disappear at the end of each session.  
+
+To add web mapping services for all uses to a database, you need to use the Tellervo server command line client.  Two parameters are needed: the friendly name you'd like to give the server; and the URL.  A new WMS can be added like this:
+
+\code{sudo tellervo-server --add-wms-name NAMEOFSERVER --add-wms-url URLOFSERVER}
+
+Similarly a WMS can be removed with the command:
+
+\code{sudo tellervo-server --del-wms-name NAMEOFSERVER}
