@@ -61,6 +61,10 @@ $debugFlag = FALSE;
 // Include timing in debug messages
 $timingFlag = FALSE;
 
+// Request logging mode: off, summary or full.
+// summary records request metadata without storing full XML payloads.
+$requestLogMode = "summary";
+
 // Base folder on the server where the webservice is stored
 $baseFolder = "%%WSBASE%%";
 

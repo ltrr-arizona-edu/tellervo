@@ -11,10 +11,35 @@
  * *******************************************************************
  */
 
-require_once('FirePHPCore/fb.php');
+class TellervoNullLogger
+{
+    public function log()
+    {
+        return true;
+    }
 
-// Set up FireBug debugging
-$firebug = new FB();
+    public function setEnabled()
+    {
+        return true;
+    }
+
+    public function __call($name, $arguments)
+    {
+        return true;
+    }
+}
+
+// Set up FireBug debugging only when requested. Production requests use a
+// lightweight no-op logger so existing $firebug->log() calls stay cheap.
+if($debugFlag===TRUE)
+{
+    require_once('FirePHPCore/fb.php');
+    $firebug = new FB();
+}
+else
+{
+    $firebug = new TellervoNullLogger();
+}
 //$firebug->setEnabled($debugFlag);
 //if($debugFlag===TRUE) ob_start();
 

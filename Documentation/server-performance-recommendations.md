@@ -4,71 +4,86 @@ This note records performance improvements identified during a PHP webservice
 audit. The focus is on changes that should make common user-facing requests
 feel faster without changing the API contract.
 
+## Implementation Status
+
+The first four recommendations have been implemented:
+
+- Configurable request logging.
+- Session-cached administrator status.
+- Duplicate login query removal.
+- Lazy debug logger loading.
+
+The remaining recommendations still need profiling and implementation:
+
+- Batch permission checks in search results.
+- Reduce measurement read query count.
+- Add short-lived statistics caching.
+- Consider front controller autoloading or more selective includes.
+
 ## Highest Impact, Lowest Risk
 
-### Make Request Logging Configurable
+### Make Request Logging Configurable - Implemented
 
-The server currently writes full request payloads synchronously during normal
-request handling.
+The server can now avoid writing full request payloads during normal request
+handling.
 
 Relevant code:
 
+- `src/main/php/config.php.template`
 - `src/main/php/inc/request.php`
 - `src/main/php/inc/auth.php`
 
-In `request.php`, `logRequest()` inserts the full XML request and waits for
-the result before request processing can continue. Authentication requests are
-logged similarly in `auth.php`.
+Configuration:
 
-Recommendation:
+```php
+$requestLogMode = "summary";
+```
 
-- Add a server configuration setting for request logging, for example
-  `off`, `summary`, or `full`.
-- Default production installs to `summary` or `off`.
-- Keep `full` logging available for debugging installations and support cases.
-- In summary mode, store only timestamp, user, IP address, request type, and
-  result status rather than full XML payloads.
+Supported values:
+
+- `off`: disables request logging.
+- `summary`: logs request metadata without storing full XML payloads.
+- `full`: logs the full XML request payload, matching the older behavior.
+
+Default:
+
+- New configurations default to `summary`.
+- Existing configurations without `$requestLogMode` also behave as `summary`.
 
 Expected benefit:
 
 - Reduces database writes on every request.
 - Reduces storage growth.
-- Removes a synchronous wait from the request path.
+- Avoids storing large XML request bodies unless an administrator explicitly
+  enables full logging.
 
-### Cache Session Admin Status
+### Cache Session Admin Status - Implemented
 
-The authentication class checks whether a logged-in user is an administrator
-while constructing the session object.
+The authentication class now stores administrator status in `$_SESSION` after
+login and reuses it on later authenticated requests.
 
 Relevant code:
 
 - `src/main/php/inc/auth.php`
 
-Recommendation:
-
-- Store the administrator flag in `$_SESSION` after login.
-- Reuse the session value on subsequent requests.
-- Refresh it when the user logs in again, logs out, or when permissions are
-  changed by an administrator.
+The value is refreshed during plain login and secure nonce login. If an older
+session does not already contain the cached value, the server refreshes it once
+and stores it for later requests.
 
 Expected benefit:
 
 - Avoids an extra database query on most authenticated requests.
 
-### Remove Duplicate Login Queries
+### Remove Duplicate Login Queries - Implemented
 
-The login flow currently performs a user lookup, then performs a second lookup
-for the same user after password verification.
+The login flow now reuses the first user lookup result after password
+verification instead of repeating the same query.
 
 Relevant code:
 
 - `src/main/php/inc/auth.php`
 
-Recommendation:
-
-- Reuse the row fetched by the first login query.
-- Only issue a second query if additional data is genuinely required and cannot
-  be returned in the first result.
+This applies to both plain login and secure nonce login.
 
 Expected benefit:
 
@@ -142,10 +157,9 @@ Expected benefit:
 
 ## Structural Improvements
 
-### Lazy Load Debug Logging
+### Lazy Load Debug Logging - Implemented
 
-Debug logging support is loaded during normal request bootstrap, even when
-debug logging is disabled.
+Debug logging support is now loaded only when `$debugFlag === TRUE`.
 
 Relevant code:
 
@@ -153,10 +167,9 @@ Relevant code:
 - `src/main/php/inc/FirePHPCore/FirePHP.class.php`
 - `src/main/php/inc/ChromePhp.php`
 
-Recommendation:
-
-- Load FirePHP and ChromePhp only when debug output is enabled.
-- Use a tiny no-op logger object when debug output is disabled.
+When debug output is disabled, `$firebug` is a lightweight no-op logger. This
+keeps existing `$firebug->log(...)` calls compatible without loading FirePHP on
+normal production requests.
 
 Expected benefit:
 
@@ -185,15 +198,15 @@ Expected benefit:
 
 ## Suggested Implementation Order
 
-1. Add configurable request logging.
-2. Cache administrator status in the session.
-3. Remove duplicate login queries.
-4. Lazy load debug logging.
+1. Add configurable request logging. Implemented.
+2. Cache administrator status in the session. Implemented.
+3. Remove duplicate login queries. Implemented.
+4. Lazy load debug logging. Implemented.
 5. Batch search permission checks.
 6. Reduce measurement read query count.
 7. Add short-lived statistics caching.
 8. Consider autoloading after the smaller changes have landed.
 
-The first four items are good candidates for small, isolated commits. The
-search and measurement changes should be developed with profiling data and a
-representative database because they touch higher-value workflows and more SQL.
+The search and measurement changes should be developed with profiling data and
+a representative database because they touch higher-value workflows and more
+SQL.

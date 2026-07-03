@@ -61,7 +61,14 @@ class auth
 		$this->lastname = $_SESSION['lastname'];
 		$this->username = $_SESSION['username'];
 		$this->isLoggedIn = TRUE;
-		$this->isAdmin = $this->isAdmin();
+		if(isset($_SESSION['isAdmin']))
+		{
+		    $this->isAdmin = $_SESSION['isAdmin'];
+		}
+		else
+		{
+		    $this->refreshSessionAdminStatus();
+		}
 		$this->logIP();
 	    }
 	    else
@@ -89,6 +96,7 @@ class auth
   function loginWithNonce($theUsername, $theClientHash, $theClientNonce, $theServerNonce, $theSequence)
   {
     global $dbconn;
+    $row = NULL;
 
     // Before we do anything - check that the server nonce the client is sending has not expired
     if($this->isValidServerNonce($theServerNonce,$theSequence)===FALSE) 
@@ -105,34 +113,32 @@ class auth
     if ($dbconnstatus ===PGSQL_CONNECTION_OK)
     {
         $result = pg_query($dbconn, $sql);
-        while ($row = pg_fetch_array($result))
+        if(pg_num_rows($result)>0)
         {
+            $row = pg_fetch_array($result);
             $this->dbPasswordHash = $row['password'];
             $this->username = $row['username'];
         }
     }
 
     // Authenticate against the database
-    if ($this->checkClientHash($this->dbPasswordHash, $theClientNonce, $theSequence, $theClientHash))
+    if ($row && $this->checkClientHash($this->dbPasswordHash, $theClientNonce, $theSequence, $theClientHash))
     {
         // Login passed
-        $result = pg_query($dbconn, $sql);
-        while ($row = pg_fetch_array($result))
-        {
-            $_SESSION['initiated'] = TRUE;
-            $_SESSION["securityuserid"] = $row['securityuserid'];
-            $this->securityuserid = $row['securityuserid'];
-            $_SESSION['firstname'] = $row['firstname'];
-            $this->firstname = $row['firstname'];
-            $_SESSION['lastname'] = $row['lastname'];
-            $_SESSION['username'] = $row['username'];
-            $this->username = $row['username'];
-            
-            $this->isLoggedIn = TRUE;
-            $this->logIP();
-            $this->logRequest("loginSecure");
-            $this->isAdmin = $this->isAdmin();
-        }
+        $_SESSION['initiated'] = TRUE;
+        $_SESSION["securityuserid"] = $row['securityuserid'];
+        $this->securityuserid = $row['securityuserid'];
+        $_SESSION['firstname'] = $row['firstname'];
+        $this->firstname = $row['firstname'];
+        $_SESSION['lastname'] = $row['lastname'];
+        $this->lastname = $row['lastname'];
+        $_SESSION['username'] = $row['username'];
+        $this->username = $row['username'];
+
+        $this->isLoggedIn = TRUE;
+        $this->refreshSessionAdminStatus();
+        $this->logIP();
+        $this->logRequest("loginSecure");
     }
     else
     {
@@ -156,6 +162,8 @@ class auth
   public function login($theUsername, $thePassword)
   {
     global $dbconn;
+    $row = NULL;
+    $dbpassword = NULL;
 
     $sql = "select * from tblsecurityuser where username='".pg_escape_string($dbconn, $theUsername)."' and isactive=true";
     
@@ -170,33 +178,29 @@ class auth
         }
         else
         {
-            $row=pg_fetch_array($result);
+            $row = pg_fetch_array($result);
             $dbpassword = $row['password'];
         }
     }
 
     // Authenticate against the database
-    if (hash('md5', $thePassword)==$dbpassword)
+    if ($row && hash('md5', $thePassword)==$dbpassword)
     {
         // Login passed
-        $result = pg_query($dbconn, $sql);
-        while ($row = pg_fetch_array($result))
-        {
-            $_SESSION['initiated'] = TRUE;
-            $_SESSION["securityuserid"] = $row['securityuserid'];
-            $this->securityuserid = $row['securityuserid'];
-            $_SESSION['firstname'] = $row['firstname'];
-            $this->firstname = $row['firstname'];
-            $_SESSION['lastname'] = $row['lastname'];
-            $this->lastname = $row['lastname'];
-            $_SESSION['username'] = $row['username'];
-            $this->username = $row['username'];
+        $_SESSION['initiated'] = TRUE;
+        $_SESSION["securityuserid"] = $row['securityuserid'];
+        $this->securityuserid = $row['securityuserid'];
+        $_SESSION['firstname'] = $row['firstname'];
+        $this->firstname = $row['firstname'];
+        $_SESSION['lastname'] = $row['lastname'];
+        $this->lastname = $row['lastname'];
+        $_SESSION['username'] = $row['username'];
+        $this->username = $row['username'];
 
-
-            $this->logIP();
-            $this->isLoggedIn = TRUE;
-            $this->logRequest("loginPlain");
-        }
+        $this->isLoggedIn = TRUE;
+        $this->refreshSessionAdminStatus();
+        $this->logIP();
+        $this->logRequest("loginPlain");
     }
     else
     {
@@ -271,6 +275,13 @@ class auth
   {
     global $dbconn;
     global $wsversion;
+    global $requestLogMode;
+
+    $logMode = isset($requestLogMode) ? strtolower($requestLogMode) : "summary";
+    if($logMode=="off")
+    {
+        return true;
+    }
 
     if ($requestType=="loginPlain")
     {
@@ -297,13 +308,15 @@ class auth
         $request = "Unknown authentication request";
     }
 
+    $remoteAddr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : "0.0.0.0";
+
     if ($this->getID()==NULL)
     {
-        $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".pg_escape_string($dbconn,$request)."', '".pg_escape_string($dbconn,$_SERVER['REMOTE_ADDR'])."', '".pg_escape_string($dbconn,$wsversion)."')";
+        $sql = "insert into tblrequestlog (request, ipaddr, wsversion) values ('".pg_escape_string($dbconn,$request)."', '".pg_escape_string($dbconn,$remoteAddr)."', '".pg_escape_string($dbconn,$wsversion)."')";
     }
     else
     {
-        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->getID()."', '".pg_escape_string($dbconn,$request)."', '".pg_escape_string($dbconn,$_SERVER['REMOTE_ADDR'])."', '".pg_escape_string($dbconn, $wsversion)."')";
+        $sql = "insert into tblrequestlog (securityuserid, request, ipaddr, wsversion) values ('".$this->getID()."', '".pg_escape_string($dbconn,$request)."', '".pg_escape_string($dbconn,$remoteAddr)."', '".pg_escape_string($dbconn, $wsversion)."')";
     }
 
     pg_send_query($dbconn, $sql);
@@ -654,6 +667,17 @@ class auth
    */
   public function isAdmin()
   {
+        if($this->isLoggedIn && isset($_SESSION['isAdmin']))
+        {
+            $this->isAdmin = $_SESSION['isAdmin'];
+            return $this->isAdmin;
+        }
+
+        return $this->refreshSessionAdminStatus();
+  }
+
+  private function refreshSessionAdminStatus()
+  {
 	//global $firebug;
         global $dbconn;
         $sql = "select * from cpgdb.isadmin('".$this->securityuserid."'::uuid) where isadmin=true";
@@ -666,13 +690,28 @@ class auth
             if(pg_num_rows($result)==0)
             {
                 // No records match so not in admin group
+                $this->isAdmin = false;
+                if($this->isLoggedIn)
+                {
+                    $_SESSION['isAdmin'] = false;
+                }
                 return false;
             }
             else
             {
                 // Result returned so must be in admin group
+                $this->isAdmin = true;
+                if($this->isLoggedIn)
+                {
+                    $_SESSION['isAdmin'] = true;
+                }
                 return true;
             }
+        }
+        $this->isAdmin = false;
+        if($this->isLoggedIn)
+        {
+            $_SESSION['isAdmin'] = false;
         }
         return false;
   }
