@@ -65,6 +65,9 @@ $timingFlag = FALSE;
 // summary records request metadata without storing full XML payloads.
 $requestLogMode = "summary";
 
+// Dictionary cache lifetime in seconds. Set to 0 to disable server-side dictionary caching.
+$dictionaryCacheTTL = 300;
+
 // Base folder on the server where the webservice is stored
 $baseFolder = "%%WSBASE%%";
 

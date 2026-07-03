@@ -27,6 +27,7 @@ class dictionaries
     var $xmldata = NULL;
     var $lastErrorCode = NULL;
     var $lastErrorMessage = NULL;
+    var $cacheVersion = NULL;
 
     /***************/
     /* CONSTRUCTOR */
@@ -66,6 +67,20 @@ class dictionaries
     {
         global $dbconn;
         global $firebug;
+
+        $cacheVersion = $this->getDictionaryCacheVersion();
+        if($cacheVersion!==FALSE)
+        {
+            $cachedXML = $this->readDictionaryCache($cacheVersion);
+            if($cachedXML!==FALSE)
+            {
+                $this->cacheVersion = $cacheVersion;
+                $this->xmldata = $cachedXML;
+                $firebug->log($cacheVersion, "Dictionary cache hit");
+                return true;
+            }
+            $firebug->log($cacheVersion, "Dictionary cache miss");
+        }
         
         $xmldata = "";
         
@@ -298,6 +313,11 @@ class dictionaries
         if($xmldata!=NULL)
         {
             $this->xmldata=$xmldata;
+            $this->cacheVersion = $cacheVersion;
+            if($cacheVersion!==FALSE)
+            {
+                $this->writeDictionaryCache($cacheVersion, $xmldata);
+            }
             return true;
         }
         else
@@ -355,6 +375,225 @@ class dictionaries
         // Return a string containing the last error message recorded for this object
         $error = $this->lastErrorMessage;
         return $error;
+    }
+
+    private function getDictionaryCacheTTL()
+    {
+        global $dictionaryCacheTTL;
+
+        if(!isset($dictionaryCacheTTL))
+        {
+            return 300;
+        }
+
+        $ttl = (int) $dictionaryCacheTTL;
+        if($ttl<0)
+        {
+            return 0;
+        }
+        return $ttl;
+    }
+
+    private function getDictionaryCacheFile()
+    {
+        global $dbName;
+        global $domain;
+
+        $cacheDir = sys_get_temp_dir().DIRECTORY_SEPARATOR."tellervo-dictionary-cache";
+        if(!is_dir($cacheDir))
+        {
+            if(!@mkdir($cacheDir, 0770, true) && !is_dir($cacheDir))
+            {
+                return FALSE;
+            }
+        }
+
+        $key = md5((isset($dbName) ? $dbName : "tellervo")."|".(isset($domain) ? $domain : ""));
+        return $cacheDir.DIRECTORY_SEPARATOR.$key.".cache";
+    }
+
+    private function readDictionaryCache($version)
+    {
+        $ttl = $this->getDictionaryCacheTTL();
+        if($ttl==0)
+        {
+            return FALSE;
+        }
+
+        $cacheFile = $this->getDictionaryCacheFile();
+        if($cacheFile===FALSE || !is_readable($cacheFile))
+        {
+            return FALSE;
+        }
+
+        $cache = @unserialize(@file_get_contents($cacheFile));
+        if(!is_array($cache) || !isset($cache['version']) || !isset($cache['created']) || !isset($cache['xmldata']))
+        {
+            return FALSE;
+        }
+
+        if($cache['version']!==$version)
+        {
+            return FALSE;
+        }
+
+        if((time() - (int) $cache['created']) > $ttl)
+        {
+            return FALSE;
+        }
+
+        return $cache['xmldata'];
+    }
+
+    private function writeDictionaryCache($version, $xmldata)
+    {
+        $ttl = $this->getDictionaryCacheTTL();
+        if($ttl==0)
+        {
+            return FALSE;
+        }
+
+        $cacheFile = $this->getDictionaryCacheFile();
+        if($cacheFile===FALSE)
+        {
+            return FALSE;
+        }
+
+        $cache = array(
+            'version' => $version,
+            'created' => time(),
+            'xmldata' => $xmldata
+        );
+
+        $tmpFile = $cacheFile.".".getmypid().".tmp";
+        if(@file_put_contents($tmpFile, serialize($cache), LOCK_EX)===FALSE)
+        {
+            return FALSE;
+        }
+
+        @chmod($tmpFile, 0660);
+        return @rename($tmpFile, $cacheFile);
+    }
+
+    private function getDictionarySourceTables()
+    {
+        return array(
+            'tlkpprojecttype',
+            'tlkpobjecttype',
+            'tlkpelementtype',
+            'tlkpsampletype',
+            'tlkpcoveragetemporal',
+            'tlkpcoveragetemporalfoundation',
+            'tlkpelementauthenticity',
+            'tlkpdatingtype',
+            'tlkptaxon',
+            'tlkptaxonrank',
+            'tlkpsamplestatus',
+            'tlkpuserdefinedfield',
+            'tlkpuserdefinedterm',
+            'tlkpprojectcategory',
+            'tblsecurityuser',
+            'tblsecuritygroup',
+            'tblsecurityusermembership',
+            'tblsecuritygroupmembership',
+            'tlkpreadingnote',
+            'tblbox',
+            'tblsample',
+            'tlkpdomain',
+            'tlkpwmsserver'
+        );
+    }
+
+    private function tableExists($table)
+    {
+        global $dbconn;
+
+        $result = pg_query_params($dbconn, "SELECT to_regclass($1) AS table_name", array('public.'.$table));
+        if($result===FALSE)
+        {
+            return FALSE;
+        }
+
+        $row = pg_fetch_array($result);
+        return ($row && $row['table_name']!=NULL);
+    }
+
+    private function tableHasColumn($table, $column)
+    {
+        global $dbconn;
+
+        $result = pg_query_params($dbconn, "SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name=$1 AND column_name=$2", array($table, $column));
+        if($result===FALSE)
+        {
+            return FALSE;
+        }
+
+        return pg_num_rows($result)>0;
+    }
+
+    private function getTableCacheFingerprint($table)
+    {
+        global $dbconn;
+
+        if(!$this->tableExists($table))
+        {
+            return $table.":missing";
+        }
+
+        $quotedTable = pg_escape_identifier($dbconn, $table);
+        $fields = array(
+            "count(*)::text AS rowcount",
+            "coalesce(max(xmin::text), '') AS maxxmin"
+        );
+
+        if($this->tableHasColumn($table, 'lastmodifiedtimestamp'))
+        {
+            $fields[] = "coalesce(max(lastmodifiedtimestamp)::text, '') AS maxmodified";
+        }
+        if($this->tableHasColumn($table, 'createdtimestamp'))
+        {
+            $fields[] = "coalesce(max(createdtimestamp)::text, '') AS maxcreated";
+        }
+
+        $sql = "SELECT ".implode(", ", $fields)." FROM ".$quotedTable;
+        $result = pg_query($dbconn, $sql);
+        if($result===FALSE)
+        {
+            return $table.":error";
+        }
+
+        $row = pg_fetch_assoc($result);
+        return $table.":".md5(json_encode($row));
+    }
+
+    private function getDictionaryCacheVersion()
+    {
+        global $dbconn;
+        global $labname;
+        global $labacronym;
+        global $taxonomicAuthorityEdition;
+        global $wsversion;
+
+        $dbconnstatus = pg_connection_status($dbconn);
+        if ($dbconnstatus !==PGSQL_CONNECTION_OK)
+        {
+            return FALSE;
+        }
+
+        $parts = array(
+            "dictionary-cache-v1",
+            "labname=".(isset($labname) ? $labname : ""),
+            "labacronym=".(isset($labacronym) ? $labacronym : ""),
+            "taxonomicAuthorityEdition=".(isset($taxonomicAuthorityEdition) ? $taxonomicAuthorityEdition : ""),
+            "wsversion=".(isset($wsversion) ? $wsversion : "")
+        );
+
+        foreach($this->getDictionarySourceTables() as $table)
+        {
+            $parts[] = $this->getTableCacheFingerprint($table);
+        }
+
+        return md5(implode("|", $parts));
     }
 
   

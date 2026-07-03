@@ -6,12 +6,13 @@ feel faster without changing the API contract.
 
 ## Implementation Status
 
-The first four recommendations have been implemented:
+The following recommendations have been implemented:
 
 - Configurable request logging.
 - Session-cached administrator status.
 - Duplicate login query removal.
 - Lazy debug logger loading.
+- Server-side dictionary cache/versioning.
 
 The remaining recommendations still need profiling and implementation:
 
@@ -91,6 +92,38 @@ Expected benefit:
   sessions where many users sign in at once.
 
 ## Medium-Sized Improvements
+
+### Add Server-Side Dictionary Cache - Implemented
+
+Dictionary XML is now cached server-side using a version fingerprint derived
+from the dictionary source tables.
+
+Relevant code:
+
+- `src/main/php/config.php.template`
+- `src/main/php/inc/dictionaries.php`
+
+Configuration:
+
+```php
+$dictionaryCacheTTL = 300;
+```
+
+Behavior:
+
+- Repeated dictionary requests reuse a cached XML blob when the dictionary
+  source table fingerprint still matches.
+- The fingerprint includes row counts, PostgreSQL row-version markers, and
+  timestamp columns where available.
+- Security user/group membership tables are included because those dictionaries
+  include group membership.
+- `tblsample` is included because the box dictionary can include sample counts.
+- Set `$dictionaryCacheTTL = 0;` to disable the cache.
+
+Expected benefit:
+
+- Avoids repeatedly rebuilding the full dictionary XML payload.
+- Reduces database queries and PHP object construction during startup.
 
 ### Batch Permission Checks In Search Results
 
@@ -202,10 +235,11 @@ Expected benefit:
 2. Cache administrator status in the session. Implemented.
 3. Remove duplicate login queries. Implemented.
 4. Lazy load debug logging. Implemented.
-5. Batch search permission checks.
-6. Reduce measurement read query count.
-7. Add short-lived statistics caching.
-8. Consider autoloading after the smaller changes have landed.
+5. Add server-side dictionary cache/versioning. Implemented.
+6. Batch search permission checks.
+7. Reduce measurement read query count.
+8. Add short-lived statistics caching.
+9. Consider autoloading after the smaller changes have landed.
 
 The search and measurement changes should be developed with profiling data and
 a representative database because they touch higher-value workflows and more
