@@ -198,10 +198,6 @@ class search Implements IDBAccessor
         pg_send_query($dbconn, $fullSQL);
         $result = pg_get_result($dbconn);
         $this->recordHits = pg_num_rows($result);
-	
-	file_put_contents("/tmp/php.log", $fullSQL."\n----\n", FILE_APPEND | LOCK_EX);
-        $result = pg_query($dbconn, $fullSQL);
-	
 
         $firebug->log("Begin permissions check");
         while ($row = pg_fetch_array($result))
