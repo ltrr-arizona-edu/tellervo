@@ -4,5 +4,7 @@
 \set ON_ERROR_STOP true
 
 SET pljava.libjvm_location TO '/usr/lib/jvm/default-java/lib/server/libjvm.so';
+SET pljava.vmoptions TO '-Djava.security.manager=allow';
 ALTER SYSTEM SET pljava.libjvm_location TO '/usr/lib/jvm/default-java/lib/server/libjvm.so';
+ALTER SYSTEM SET pljava.vmoptions TO '-Djava.security.manager=allow';
 CREATE EXTENSION IF NOT EXISTS pljava;

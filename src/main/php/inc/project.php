@@ -79,7 +79,7 @@ class project extends projectEntity implements IDBAccessor {
 				break;
 			
 			default :
-				trigger_error ( '667' . 'Unknown database id type.', E_USER_ERROR );
+				tellervoTriggerError( '667' . 'Unknown database id type.', E_USER_ERROR);
 				die ();
 		}
 		
@@ -89,7 +89,7 @@ class project extends projectEntity implements IDBAccessor {
 			$result = pg_get_result ( $dbconn );
 			if (pg_num_rows ( $result ) == 0) {
 				// No records match the id specified
-				trigger_error ( "903" . "No records match the specified id. $sql", E_USER_ERROR );
+				tellervoTriggerError( "903" . "No records match the specified id. $sql", E_USER_ERROR);
 				return FALSE;
 			} else {
 				// Set parameters from db
@@ -98,7 +98,7 @@ class project extends projectEntity implements IDBAccessor {
 			}
 		} else {
 			// Connection bad
-			trigger_error ( "001" . "Error connecting to database", E_USER_ERROR );
+			tellervoTriggerError( "001" . "Error connecting to database", E_USER_ERROR);
 			return FALSE;
 		}
 		

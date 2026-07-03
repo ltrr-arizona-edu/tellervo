@@ -130,10 +130,10 @@ class request
    		if($myMetaHeader->isClientVersionValid()===FALSE)
    		{
    			if($myMetaHeader->getClientName()===FALSE){
-   				trigger_error("107"."The client that you are using is not recognised/supported by this webservice. Supported clients are:", E_USER_ERROR);
+   				tellervoTriggerError("107"."The client that you are using is not recognised/supported by this webservice. Supported clients are:", E_USER_ERROR);
    			}
    			else{
-   				trigger_error("108"."The version of ".$myMetaHeader->getClientName()." that you are using is no longer supported\nby the webservice at: ".
+   				tellervoTriggerError("108"."The version of ".$myMetaHeader->getClientName()." that you are using is no longer supported\nby the webservice at: ".
    							 "https://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI']."\n\n".
    							 "Your current ".$myMetaHeader->getClientName()." version = ".$myMetaHeader->getClientVersion()."\n".
    							 "You need version >= ".$myMetaHeader->getMinRequiredClientVersion()."\n\n".
@@ -168,7 +168,7 @@ class request
         }
         else
         {
-        	trigger_error("905"."The XML request does not validate against the schema. ".$this->xml_validation_errors($xmlrequest), E_USER_ERROR);
+        	tellervoTriggerError("905"."The XML request does not validate against the schema. ".$this->xml_validation_errors($xmlrequest), E_USER_ERROR);
             error_reporting($origErrorLevel);
             return false;
         }
@@ -297,7 +297,7 @@ class request
            				 
            				 if($mergeWithID==NULL)
            				 {
-           				 	trigger_error("905"."Invalid XML request - merge requests require a mergeWithID", E_USER_ERROR);
+           				 	tellervoTriggerError("905"."Invalid XML request - merge requests require a mergeWithID", E_USER_ERROR);
            				 }
 	                }
 
@@ -381,7 +381,7 @@ class request
                             break;                            
                             
 	                	default:
-	                		trigger_error("901"."Unknown entity type specified", E_USER_ERROR);
+	                		tellervoTriggerError("901"."Unknown entity type specified", E_USER_ERROR);
 	                }
 	                
 	                array_push($this->paramObjectsArray, $myParamObj);
@@ -399,7 +399,7 @@ class request
         	}
             else
             {
-                trigger_error("905"."Invalid XML request - read, merge and delete requests require entity tags", E_USER_ERROR);
+                tellervoTriggerError("905"."Invalid XML request - read, merge and delete requests require entity tags", E_USER_ERROR);
             }
         
         }
@@ -468,7 +468,7 @@ class request
             			$myParamObj = new odkFormDefinitionParameters($this->xmlRequestDom->saveXML($item));
             			break;            			
             		default:
-            			trigger_error("901"."Unknown entity tag &lt;".$item->tagName."&gt; when trying to ".$this->crudMode." a record", E_USER_ERROR);
+            			tellervoTriggerError("901"."Unknown entity tag &lt;".$item->tagName."&gt; when trying to ".$this->crudMode." a record", E_USER_ERROR);
             	}
             	
                 if(isset($myParamObj)) array_push($this->paramObjectsArray, $myParamObj);
@@ -500,7 +500,7 @@ class request
         
         else
         {
-            trigger_error("667"."Program bug - unable to determine request mode but shouldn't have got this far!", E_USER_ERROR);
+            tellervoTriggerError("667"."Program bug - unable to determine request mode but shouldn't have got this far!", E_USER_ERROR);
         }
 
         
@@ -514,7 +514,7 @@ class request
         }
         else
         {
-            trigger_error("905"."Invalid XML request - unable to extract a meaningful request from your XML document.", E_USER_ERROR);
+            tellervoTriggerError("905"."Invalid XML request - unable to extract a meaningful request from your XML document.", E_USER_ERROR);
             return false;
         }
 

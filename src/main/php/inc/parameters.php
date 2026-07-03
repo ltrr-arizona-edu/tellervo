@@ -274,7 +274,7 @@ class searchParameters implements IParams
 			}
 			else
 			{
-				trigger_error("104"."Unknown parameter ".$param->getAttribute("name")." specified.", E_USER_ERROR);
+				tellervoTriggerError("104"."Unknown parameter ".$param->getAttribute("name")." specified.", E_USER_ERROR);
 			}	
 		}		
 
@@ -817,7 +817,7 @@ class projectParameters extends projectEntity implements IParams
 					}
 					else
 					{
-						trigger_error("901"."Error getting href", E_USER_ERROR);
+						tellervoTriggerError("901"."Error getting href", E_USER_ERROR);
 					}
 					break;
 
@@ -830,11 +830,11 @@ class projectParameters extends projectEntity implements IParams
 						}
 						else
 						{
-							trigger_error("901"."Webservice only supports Tellervo vocabularies for project category", E_USER_ERROR);
+							tellervoTriggerError("901"."Webservice only supports Tellervo vocabularies for project category", E_USER_ERROR);
 							break;
 						}
 					}
-					trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+					tellervoTriggerError("902"."The requested element type is unsupported", E_USER_ERROR); break;
 					
 				case "tridas:type":
 					if($child->hasAttribute("normalStd"))
@@ -845,11 +845,11 @@ class projectParameters extends projectEntity implements IParams
 						}
 						else
 						{
-							trigger_error("901"."Webservice only supports Tellervo vocabularies for project type", E_USER_ERROR);
+							tellervoTriggerError("901"."Webservice only supports Tellervo vocabularies for project type", E_USER_ERROR);
 							break;
 						}
 					}
-					trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+					tellervoTriggerError("902"."The requested element type is unsupported", E_USER_ERROR); break;
 
 
 				case "tridas:genericField":
@@ -950,7 +950,7 @@ class objectParameters extends objectEntity implements IParams
 				}
 				else
 				{
-					trigger_error("901"."Error getting href", E_USER_ERROR);
+					tellervoTriggerError("901"."Error getting href", E_USER_ERROR);
 				}
 				break;
 
@@ -963,11 +963,11 @@ class objectParameters extends objectEntity implements IParams
 		   			}
 		   			else
 		   			{
-		   				trigger_error("901"."Webservice only supports Tellervo vocabularies for element type", E_USER_ERROR);
+		   				tellervoTriggerError("901"."Webservice only supports Tellervo vocabularies for element type", E_USER_ERROR);
 		   				break;
 		   			}
 		   		}
-				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+				tellervoTriggerError("902"."The requested element type is unsupported", E_USER_ERROR); break;
 		   	
 		   	case "tridas:location": 
 				$locationTags = $child->childNodes;
@@ -1059,7 +1059,7 @@ class objectParameters extends objectEntity implements IParams
 		   	
 		   		
 		   	case "tridas:object":
-		   		trigger_error("901"."Nested objects not supported in XML request.  Use parentID instead to show relationships", E_USER_ERROR);
+		   		tellervoTriggerError("901"."Nested objects not supported in XML request.  Use parentID instead to show relationships", E_USER_ERROR);
 		   		break;
 		   		
 		   	default:
@@ -1127,11 +1127,11 @@ class elementParameters extends elementEntity implements IParams
 		   			}
 		   			else
 		   			{
-		   				trigger_error("901"."Webservice only supports Tellervo vocabularies for element type", E_USER_ERROR);
+		   				tellervoTriggerError("901"."Webservice only supports Tellervo vocabularies for element type", E_USER_ERROR);
 		   				break;
 		   			}
 		   		}
-				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+				tellervoTriggerError("902"."The requested element type is unsupported", E_USER_ERROR); break;
 		   		
 		   		
 		   	case "tridas:description":			$this->setDescription($child->nodeValue); break;
@@ -1153,7 +1153,7 @@ class elementParameters extends elementEntity implements IParams
 		   		}
 		   		else
 		   		{
-					trigger_error("901"."The Tellervo web service only supports taxonomic data that conforms to the '$taxonomicAuthorityEdition'.  Please normalise your data and try again.", E_USER_ERROR);
+					tellervoTriggerError("901"."The Tellervo web service only supports taxonomic data that conforms to the '$taxonomicAuthorityEdition'.  Please normalise your data and try again.", E_USER_ERROR);
 		   		}
 		   		break; 
 		   	case "tridas:shape": $this->setShape(null, $child->getAttribute("normalTridas")); break; 
@@ -1412,11 +1412,11 @@ class sampleParameters extends sampleEntity implements IParams
 		   			}
 		   			else
 		   			{
-		   				trigger_error("901"."Webservice only supports Tellervo vocabularies for sample type", E_USER_ERROR);
+		   				tellervoTriggerError("901"."Webservice only supports Tellervo vocabularies for sample type", E_USER_ERROR);
 		   				break;
 		   			}
 		   		}
-				trigger_error("902"."The requested element type is unsupported", E_USER_ERROR); break;
+				tellervoTriggerError("902"."The requested element type is unsupported", E_USER_ERROR); break;
 		   	case "tridas:description":			$this->setDescription($child->nodeValue); break;	
 	        case "tridas:file":				
 			if($child->hasAttribute("xlink:href"))
@@ -1887,7 +1887,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   				}
 		   				else
 		   				{
-		   					trigger_error("104"."Only TRiDaS normalised variables are supported by this webservice", E_USER_ERROR);
+		   					tellervoTriggerError("104"."Only TRiDaS normalised variables are supported by this webservice", E_USER_ERROR);
 		   				}
 		   			}
 		   			else if($tag->tagName=='tridas:unit')
@@ -1899,7 +1899,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   				}
 		   				else
 		   				{
-		   					trigger_error("104"."Only TRiDaS normalised units are supported by this webservice", E_USER_ERROR);
+		   					tellervoTriggerError("104"."Only TRiDaS normalised units are supported by this webservice", E_USER_ERROR);
 		   				}		   				
 		   			}
 		   			else if($tag->tagName == 'tridas:value') 
@@ -1909,7 +1909,7 @@ class measurementParameters extends measurementEntity implements IParams
 		   				// Check that we know what variable we're dealing with
 		   				if($this->getVariable()==null || $this->getVariable()=='')
 		   				{
-		   					trigger_error("104"."Values 'variable' is missing", E_USER_ERROR);		   		
+		   					tellervoTriggerError("104"."Values 'variable' is missing", E_USER_ERROR);		   		
 		   				}
 		   				
 		   				// get the value fields

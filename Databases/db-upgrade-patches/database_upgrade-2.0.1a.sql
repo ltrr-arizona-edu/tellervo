@@ -314,5 +314,4 @@ WHERE s.sampleid IS NOT NULL;
 
 DROP TABLE IF EXISTS staticvwipt;
 CREATE TABLE staticvwipt AS SELECT * FROM vwipt;
-GRANT ALL ON staticvwipt TO tellervo;
-
+GRANT ALL ON staticvwipt TO CURRENT_USER;

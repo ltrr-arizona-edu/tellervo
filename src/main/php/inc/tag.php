@@ -169,7 +169,7 @@ class tag extends tagEntity implements IDBAccessor
             case "read":
                 if($paramsObj->getID()==NULL)
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 
@@ -178,7 +178,7 @@ class tag extends tagEntity implements IDBAccessor
             case "update":
                 if($paramsObj->getID()==NULL)
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 
@@ -187,7 +187,7 @@ class tag extends tagEntity implements IDBAccessor
             case "delete":
                 if($paramsObj->getID() ==NULL) 
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -200,12 +200,12 @@ class tag extends tagEntity implements IDBAccessor
             case "assign":
                 if($paramsObj->getID() ==NULL) 
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
 		if($paramsObj->getEntityIdArray()==NULL)
 		{
-			trigger_error("902"."Missing parameter - 'assignedTo' records are required.", E_USER_ERROR);
+			tellervoTriggerError("902"."Missing parameter - 'assignedTo' records are required.", E_USER_ERROR);
 			return false;
 		}
             
@@ -214,12 +214,12 @@ class tag extends tagEntity implements IDBAccessor
 	    case "unassign":
 		if($paramsObj->getID() ==NULL) 
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
 	    	if($paramsObj->getEntityIdArray()==NULL)
 		{
-			trigger_error("902"."Missing parameter - 'assignedTo' records are required.", E_USER_ERROR);
+			tellervoTriggerError("902"."Missing parameter - 'assignedTo' records are required.", E_USER_ERROR);
 			return false;
 	
 		}

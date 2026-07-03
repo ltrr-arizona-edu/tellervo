@@ -150,7 +150,7 @@ class curation extends curationEntity implements IDBAccessor
             case "read":
                 if($paramsObj->getID()===NULL)
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required when reading a curation record.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required when reading a curation record.", E_USER_ERROR);
                     return false;
                 }
                 
@@ -159,7 +159,7 @@ class curation extends curationEntity implements IDBAccessor
             case "update":
                 if($paramsObj->getID()===NULL)
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 
@@ -168,7 +168,7 @@ class curation extends curationEntity implements IDBAccessor
             case "delete":
                 if($paramsObj->getID() ===NULL) 
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -176,7 +176,7 @@ class curation extends curationEntity implements IDBAccessor
             case "create":
 				if($paramsObj->getCurationStatus()===NULL)
 				{
-					trigger_error("902"."Missing parameter - 'status' field is required.", E_USER_ERROR);
+					tellervoTriggerError("902"."Missing parameter - 'status' field is required.", E_USER_ERROR);
 						
 				}
                 

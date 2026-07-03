@@ -143,7 +143,7 @@ class element extends elementEntity implements IDBAccessor {
 			$result = pg_get_result ( $dbconn );
 			if (pg_num_rows ( $result ) == 0) {
 				// No records match the id specified
-				trigger_error ( "903" . "No records match the specified id. $sql", E_USER_ERROR );
+				tellervoTriggerError( "903" . "No records match the specified id. $sql", E_USER_ERROR);
 				return FALSE;
 			} else {
 				// Set parameters from db
@@ -276,14 +276,14 @@ class element extends elementEntity implements IDBAccessor {
 					return false;
 				}
 				if (($paramsObj->getType () == NULL) && ($paramsObj->getAuthenticity () == NULL) && ($paramsObj->getDescription () == NULL) && ($paramsObj->hasDimensions () === FALSE) && ($paramsObj->getFile () == NULL) && ($paramsObj->getMarks () == NULL) && ($paramsObj->getProcessing () == NULL) && ($paramsObj->getShape () == NULL) && ($paramsObj->taxon->getCoLID () == NULL) && ($paramsObj->taxon->getOriginalTaxon () == NULL) && ($paramsObj->taxon->getLabel () == NULL) && ($paramsObj->hasChild != True)) {
-					trigger_error ( "902" . "Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
 					return false;
 				}
 				return true;
 			
 			case "delete" :
 				if ($paramsObj->getID () == NULL) {
-					trigger_error ( "902" . "Missing parameter - 'id' field is required when deleting an element.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameter - 'id' field is required when deleting an element.", E_USER_ERROR);
 					return false;
 				}
 				return true;
@@ -291,16 +291,16 @@ class element extends elementEntity implements IDBAccessor {
 			case "create" :
 				if ($paramsObj->hasChild === TRUE) {
 					if ($paramsObj->getID () == NULL) {
-						trigger_error ( "902" . "Missing parameter - 'elementid' field is required when creating a sample.", E_USER_ERROR );
+						tellervoTriggerError( "902" . "Missing parameter - 'elementid' field is required when creating a sample.", E_USER_ERROR);
 						return false;
 					}
 				} else {
 					if ($paramsObj->getCode () == NULL) {
-						trigger_error ( "902" . "Missing parameter - 'code' field is required when creating a element.", E_USER_ERROR );
+						tellervoTriggerError( "902" . "Missing parameter - 'code' field is required when creating a element.", E_USER_ERROR);
 						return false;
 					}
 					if ($paramsObj->getType () == "") {
-						trigger_error ( "902" . "Missing parameter - 'elementType' field is required when creating an element", E_USER_ERROR );
+						tellervoTriggerError( "902" . "Missing parameter - 'elementType' field is required when creating an element", E_USER_ERROR);
 						return false;
 					}
 				}
@@ -308,17 +308,17 @@ class element extends elementEntity implements IDBAccessor {
 			
 			case "merge" :
 				if ($paramsObj->getID () == NULL) {
-					trigger_error ( "902" . "Missing parameter - 'id' field is required when merging.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameter - 'id' field is required when merging.", E_USER_ERROR);
 					return false;
 				}
 				if ($paramsObj->mergeWithID == NULL) {
-					trigger_error ( "902" . "Missing parameter - 'mergeWithID' field is required when merging.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameter - 'mergeWithID' field is required when merging.", E_USER_ERROR);
 					return false;
 				}
 				return true;
 			
 			default :
-				trigger_error ( "667" . "Program bug - invalid crudMode specified when validating request", E_USER_ERROR );
+				tellervoTriggerError( "667" . "Program bug - invalid crudMode specified when validating request", E_USER_ERROR);
 				return false;
 		}
 	}

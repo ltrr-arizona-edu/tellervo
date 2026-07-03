@@ -1199,19 +1199,19 @@ class search Implements IDBAccessor
     
     function writeToDB($crudMode="create")
     {
-    	trigger_error("667"."search class should not be asked to write to db", E_USER_ERROR);
+    	tellervoTriggerError("667"."search class should not be asked to write to db", E_USER_ERROR);
     	return false;
     }
     
     function deleteFromDB()
     {
-    	trigger_error("667"."search class should not be asked to delete from the db", E_USER_ERROR);
+    	tellervoTriggerError("667"."search class should not be asked to delete from the db", E_USER_ERROR);
     	return false;
     }
     
     function mergeRecords($newParentID)
     {
-    	trigger_error("667"."search class should not be asked to merge", E_USER_ERROR);
+    	tellervoTriggerError("667"."search class should not be asked to merge", E_USER_ERROR);
     	return false;
     }
 

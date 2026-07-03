@@ -72,7 +72,7 @@ class lookupEntity
                 $result = pg_query($dbconn, $sql);
                 if (pg_num_rows($result) == 0)
                 {
-					trigger_error("903"."The id '".$id."' was not found when doing a lookup in table ".$this->tablename, E_USER_ERROR);
+					tellervoTriggerError("903"."The id '".$id."' was not found when doing a lookup in table ".$this->tablename, E_USER_ERROR);
 					return false;
                 }                
                 while ($row = pg_fetch_array($result))
@@ -84,7 +84,7 @@ class lookupEntity
             else
             {
                 // Connection bad
-                trigger_error("001"."Error connecting to database", E_USER_ERROR );
+                tellervoTriggerError("001"."Error connecting to database", E_USER_ERROR);
                 return FALSE;
             }
             return TRUE;	
@@ -105,7 +105,7 @@ class lookupEntity
             	$result = pg_query($dbconn, $sql);
                 if (pg_num_rows($result) == 0)
                 {
-					trigger_error("903"."The value '".$value."' was not found when doing a lookup in table ".$this->tablename, E_USER_ERROR);
+					tellervoTriggerError("903"."The value '".$value."' was not found when doing a lookup in table ".$this->tablename, E_USER_ERROR);
 					return false;
                 }
                 while ($row = pg_fetch_array($result))
@@ -117,7 +117,7 @@ class lookupEntity
             else
             {
                 // Connection bad
-                trigger_error("001"."Error connecting to database", E_USER_ERROR );
+                tellervoTriggerError("001"."Error connecting to database", E_USER_ERROR);
                 return FALSE;
             }
             return TRUE;			

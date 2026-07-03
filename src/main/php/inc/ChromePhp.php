@@ -347,7 +347,13 @@ class ChromePhp
      */
     protected function _encode($data)
     {
-        return base64_encode(utf8_encode(json_encode($data)));
+        $json = json_encode($data);
+        if(function_exists('mb_convert_encoding')) {
+            $json = mb_convert_encoding($json, 'UTF-8', 'ISO-8859-1');
+        } elseif(function_exists('iconv')) {
+            $json = iconv('ISO-8859-1', 'UTF-8//IGNORE', $json);
+        }
+        return base64_encode($json);
     }
     /**
      * adds a setting

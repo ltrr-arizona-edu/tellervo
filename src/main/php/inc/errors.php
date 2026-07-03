@@ -28,6 +28,20 @@ if($debugFlag===TRUE)
 // Set up our own error handling
 $old_error_handler = set_error_handler("userErrorHandler");
 
+function tellervoTriggerError($errmsg, $errno=E_USER_NOTICE)
+{
+    if($errno==E_USER_ERROR)
+    {
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+        $filename = isset($trace[0]['file']) ? $trace[0]['file'] : __FILE__;
+        $linenum = isset($trace[0]['line']) ? $trace[0]['line'] : __LINE__;
+        userErrorHandler(E_USER_ERROR, $errmsg, $filename, $linenum);
+        return true;
+    }
+
+    return trigger_error($errmsg, $errno);
+}
+
 function userErrorHandler($errno, $errmsg, $filename, $linenum) 
 {
     global $myMetaHeader;

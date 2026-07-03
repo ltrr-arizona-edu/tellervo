@@ -770,7 +770,14 @@ class auth
   {
         $this->lastErrorMessage = $theMessage;
         $this->lastErrorCode = $theCode;
-        trigger_error($theCode.$theMessage, E_USER_ERROR);
+        if(function_exists("tellervoTriggerError"))
+        {
+            tellervoTriggerError($theCode.$theMessage, E_USER_ERROR);
+        }
+        else
+        {
+            trigger_error($theCode.$theMessage, E_USER_WARNING);
+        }
   }
 
   /**

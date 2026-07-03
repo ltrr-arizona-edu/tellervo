@@ -198,7 +198,7 @@ class radius extends radiusEntity implements IDBAccessor {
 		switch ($crudMode) {
 			case "read" :
 				if ($paramsObj->getID () === NULL) {
-					trigger_error ( "902" . "Missing parameter - 'id' field is required when reading a radius.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameter - 'id' field is required when reading a radius.", E_USER_ERROR);
 					return false;
 				}
 				if (! ($paramsObj->getID () > 0) && ! ($paramsObj->getID () === NULL)) {
@@ -209,18 +209,18 @@ class radius extends radiusEntity implements IDBAccessor {
 			
 			case "update" :
 				if ($paramsObj->getID () === NULL) {
-					trigger_error ( "902" . "Missing parameter - 'id' field is required.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameter - 'id' field is required.", E_USER_ERROR);
 					return false;
 				}
 				if (($paramsObj->getSampleID () === NULL) && ($paramsObj->getCode () === NULL) && ($paramsObj->hasChild != True)) {
-					trigger_error ( "902" . "Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameters - you haven't specified any parameters to update.", E_USER_ERROR);
 					return false;
 				}
 				return true;
 			
 			case "delete" :
 				if ($paramsObj->getID () === NULL) {
-					trigger_error ( "902" . "Missing parameter - 'id' field is required.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameter - 'id' field is required.", E_USER_ERROR);
 					return false;
 				}
 				return true;
@@ -228,26 +228,26 @@ class radius extends radiusEntity implements IDBAccessor {
 			case "create" :
 				if ($paramsObj->hasChild === TRUE) {
 					if ($paramsObj->getID () === NULL) {
-						trigger_error ( "902" . "Missing parameter - 'radiusid' field is required when creating a measurement.", E_USER_ERROR );
+						tellervoTriggerError( "902" . "Missing parameter - 'radiusid' field is required when creating a measurement.", E_USER_ERROR);
 						return false;
 					}
 				} else {
 					if ($paramsObj->getCode () === NULL) {
-						trigger_error ( "902" . "Missing parameter - 'code' field is required when creating a radius.", E_USER_ERROR );
+						tellervoTriggerError( "902" . "Missing parameter - 'code' field is required when creating a radius.", E_USER_ERROR);
 						return false;
 					}
 					if ($paramsObj->parentID === NULL) {
-						trigger_error ( "902" . "Missing parameter - 'sampleid' field is required when creating a radius.", E_USER_ERROR );
+						tellervoTriggerError( "902" . "Missing parameter - 'sampleid' field is required when creating a radius.", E_USER_ERROR);
 						return false;
 					}
 					if ($paramsObj->pith->getValue () === NULL) {
-						trigger_error ( "902" . "Missing parameter - 'pith' field is required when creating a radius.", E_USER_ERROR );
+						tellervoTriggerError( "902" . "Missing parameter - 'pith' field is required when creating a radius.", E_USER_ERROR);
 					}
 					if ($paramsObj->heartwood->getValue () === NULL) {
-						trigger_error ( "902" . "Missing parameter - 'heartwood' field is required when creating a radius.", E_USER_ERROR );
+						tellervoTriggerError( "902" . "Missing parameter - 'heartwood' field is required when creating a radius.", E_USER_ERROR);
 					}
 					if ($paramsObj->sapwood->getValue () === NULL) {
-						trigger_error ( "902" . "Missing parameter - 'sapwood' field is required when creating a radius.", E_USER_ERROR );
+						tellervoTriggerError( "902" . "Missing parameter - 'sapwood' field is required when creating a radius.", E_USER_ERROR);
 					}
 				}
 				return true;
@@ -539,7 +539,7 @@ class radius extends radiusEntity implements IDBAccessor {
 		
 		// Check for required parameters
 		if ($this->getID () === NULL) {
-			trigger_error ( "902" . "Missing parameter - 'id' field is required.", E_USER_ERROR );
+			tellervoTriggerError( "902" . "Missing parameter - 'id' field is required.", E_USER_ERROR);
 			return FALSE;
 		}
 		

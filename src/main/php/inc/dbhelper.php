@@ -62,7 +62,7 @@ class dbHelper
         else
         {
             // Connection bad
-            trigger_error("001"."Error connecting to database", E_USER_ERROR);
+            tellervoTriggerError("001"."Error connecting to database", E_USER_ERROR);
             return FALSE;
         }
 
@@ -139,7 +139,7 @@ class dbHelper
 	    }	
 	    else
 	    {
-	        trigger_error("667"."Unable to interpret a boolean from the value provided to formatBool().  Value given was '$value'", E_USER_ERROR);    	
+	        tellervoTriggerError("667"."Unable to interpret a boolean from the value provided to formatBool().  Value given was '$value'", E_USER_ERROR);    	
 	    	return 'error';
 	    }
 	    
@@ -198,7 +198,7 @@ class dbHelper
     				return 'unknown';
     			}
 	    	default:
-	    		trigger_error("667"."Invalid format provided in formatBool().  Should be one of php, pg or english but got $format instead", E_USER_ERROR);
+	    		tellervoTriggerError("667"."Invalid format provided in formatBool().  Should be one of php, pg or english but got $format instead", E_USER_ERROR);
 	    		return false;
 	    }
 		

@@ -8,6 +8,8 @@ echo "*******************" >> /var/log/tellervo-installation.log
 if [ "$1" = 'configure' ]; then
   mkdir -p /usr/share/tellervo-server/mediastore
   chown -R www-data:www-data /usr/share/tellervo-server/mediastore || true
+  echo "Repairing named instance web assets" >> /var/log/tellervo-installation.log
+  /usr/bin/tellervo-server --repair-web-assets >> /var/log/tellervo-installation.log 2>&1 || true
 
   if [[ $2 ]]; then
     if [ -e "/usr/share/tellervo-server/config.bak" ]; then

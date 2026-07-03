@@ -25,7 +25,8 @@ try{
 	require_once("systemconfig.php");
 } catch (Exception $e)
 {
-	trigger_error('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_ERROR);
+	trigger_error('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_WARNING);
+	die();
 }
 require_once("inc/meta.php");
 require_once("inc/auth.php");

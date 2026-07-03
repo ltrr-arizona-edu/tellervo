@@ -1,4 +1,5 @@
 SET pljava.libjvm_location TO '/usr/lib/jvm/default-java/lib/server/libjvm.so';
+SET pljava.vmoptions TO '-Djava.security.manager=allow';
 
 DELETE FROM sqlj.jar_repository where jarname='tellervo_jar';
 SELECT sqlj.install_jar('file:///usr/share/tellervo-server/tellervo-pljava.jar', 'tellervo_jar', false);

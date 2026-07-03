@@ -3,8 +3,10 @@
 -- UPGRADE vwtblsample to include userdefinedfields 
 ----------------------------------------------------
 
-DROP VIEW vwipt;
-DROP VIEW vwtblsample2;
+DROP VIEW IF EXISTS vwipt;
+DROP VIEW IF EXISTS vwtblsample2;
+DROP VIEW IF EXISTS vwuserdefinedfieldagg;
+DROP VIEW IF EXISTS vwtbluserdefinedfieldvalue;
 
 
 CREATE VIEW vwtbluserdefinedfieldvalue AS 
@@ -156,4 +158,4 @@ WHERE s.sampleid IS NOT NULL;
 
 DROP TABLE IF EXISTS staticvwipt;
 CREATE TABLE staticvwipt AS SELECT * FROM vwipt;
-GRANT ALL ON staticvwipt TO tellervo;
+GRANT ALL ON staticvwipt TO "Webgroup";

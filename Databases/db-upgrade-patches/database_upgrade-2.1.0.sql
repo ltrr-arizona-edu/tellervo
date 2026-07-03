@@ -5,13 +5,13 @@
 -- Add fields to tblobject and tblelement
 
 
-ALTER TABLE tblobject ADD COLUMN islocsensitive boolean default false;
-ALTER TABLE tblobject ADD COLUMN safelocationgeometry geometry;
-ALTER TABLE tblobject ADD COLUMN safelocationprecision integer;
+ALTER TABLE tblobject ADD COLUMN IF NOT EXISTS islocsensitive boolean default false;
+ALTER TABLE tblobject ADD COLUMN IF NOT EXISTS safelocationgeometry geometry;
+ALTER TABLE tblobject ADD COLUMN IF NOT EXISTS safelocationprecision integer;
 
-ALTER TABLE tblelement ADD COLUMN islocsensitive boolean default false;
-ALTER TABLE tblelement ADD COLUMN safelocationgeometry geometry;
-ALTER TABLE tblelement ADD COLUMN safelocationprecision integer;
+ALTER TABLE tblelement ADD COLUMN IF NOT EXISTS islocsensitive boolean default false;
+ALTER TABLE tblelement ADD COLUMN IF NOT EXISTS safelocationgeometry geometry;
+ALTER TABLE tblelement ADD COLUMN IF NOT EXISTS safelocationprecision integer;
 
 
 CREATE OR REPLACE FUNCTION cpgdb.obfuscatePoint(thegeom Geometry) RETURNS Geometry AS 
@@ -65,21 +65,23 @@ END;
 $$;
 
 
+DROP TRIGGER IF EXISTS "trig_update_object-safelocation" ON tblobject;
 CREATE TRIGGER "trig_update_object-safelocation"
   BEFORE INSERT OR UPDATE
   ON tblobject
   FOR EACH ROW
   EXECUTE PROCEDURE update_safelocation();
  
+DROP TRIGGER IF EXISTS "trig_update_element-safelocation" ON tblelement;
 CREATE TRIGGER "trig_update_element-safelocation"
   BEFORE INSERT OR UPDATE
   ON tblelement
   FOR EACH ROW
   EXECUTE PROCEDURE update_safelocation();
 
-DROP VIEW portal.vwportalcomb;
-DROP VIEW portal.vwportaldata2;  
-DROP VIEW portal.vwportaldata1;
+DROP VIEW IF EXISTS portal.vwportalcomb;
+DROP VIEW IF EXISTS portal.vwportaldata2;  
+DROP VIEW IF EXISTS portal.vwportaldata1;
 
 CREATE OR REPLACE VIEW portal.vwportaldata1 AS 
  SELECT p.projectid,

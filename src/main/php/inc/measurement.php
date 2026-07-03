@@ -1621,7 +1621,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 						if (pg_result_error_field ( $result, PGSQL_DIAG_SQLSTATE )) {
 							
 							if (substr ( pg_result_error ( $result ), 8, 21 ) == 'EVERSIONALREADYEXISTS') {
-								trigger_error ( "911" . "A series with this version number already exists.  Change version number and try again", E_USER_ERROR );
+								tellervoTriggerError( "911" . "A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
 								return FALSE;
 							}
 							
@@ -1659,7 +1659,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 							$result = pg_get_result ( $dbconn );
 							if (pg_result_error_field ( $result, PGSQL_DIAG_SQLSTATE )) {
 								if (substr ( pg_result_error ( $result ), 8, 21 ) == 'EVERSIONALREADYEXISTS') {
-									trigger_error ( "911" . "A series with this version number already exists.  Change version number and try again", E_USER_ERROR );
+									tellervoTriggerError( "911" . "A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
 									return FALSE;
 								}
 								// Insert failed
@@ -1679,7 +1679,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 					$result = pg_get_result ( $dbconn );
 					if (pg_result_error_field ( $result, PGSQL_DIAG_SQLSTATE )) {
 						if (substr ( pg_result_error ( $result ), 8, 21 ) == 'EVERSIONALREADYEXISTS') {
-							trigger_error ( "911" . "A series with this version number already exists.  Change version number and try again", E_USER_ERROR );
+							tellervoTriggerError( "911" . "A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
 							return FALSE;
 						}
 						
@@ -1847,9 +1847,9 @@ class measurement extends measurementEntity implements IDBAccessor {
 						while ( $result = pg_get_result ( $dbconn ) ) {
 							if (pg_result_error_field ( $result, PGSQL_DIAG_SQLSTATE )) {
 								if (substr ( pg_result_error ( $result ), 8, 21 ) == 'EVERSIONALREADYEXISTS') {
-									trigger_error ( "911" . "A series with this version number already exists.  Change version number and try again", E_USER_ERROR );
+									tellervoTriggerError( "911" . "A series with this version number already exists.  Change version number and try again", E_USER_ERROR);
 								} else {
-									trigger_error ( "002" . pg_result_error ( $result ) . "--- SQL was $stmt", E_USER_ERROR );
+									tellervoTriggerError( "002" . pg_result_error ( $result ) . "--- SQL was $stmt", E_USER_ERROR);
 								}
 								
 								pg_query ( $dbconn, "rollback;" );
@@ -1931,7 +1931,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 						$result = pg_query ( $dbconn, $sql );
 						if (pg_result_error_field ( $result, PGSQL_DIAG_SQLSTATE )) {
 							// Insert failed
-							trigger_error ( "002" . "Error inserting note to database. Database returned: " . pg_result_error ( $result ) . ".  SQL was $sql", E_USER_ERROR );
+							tellervoTriggerError( "002" . "Error inserting note to database. Database returned: " . pg_result_error ( $result ) . ".  SQL was $sql", E_USER_ERROR);
 							return FALSE;
 						}
 						$note->setControlledVoc ( "0", "[Custom]" );
@@ -1941,7 +1941,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 						if ($this->getVMeasurementOp () == 'Direct') {
 							$disabledoverride = 'null';
 							if (($note->getInheritedCount () != NULL) || ($note->getInheritedCount () != 0)) {
-								trigger_error ( "667" . "InheritanceCount can only be 0 or NULL for notes in measurementSeries", E_USER_ERROR );
+								tellervoTriggerError( "667" . "InheritanceCount can only be 0 or NULL for notes in measurementSeries", E_USER_ERROR);
 							}
 						} else {
 							if (($note->getInheritedCount () == NULL) || ($note->getInheritedCount () == 0)) {
@@ -1961,7 +1961,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 						$result = pg_query ( $dbconn, $sql );
 						if (pg_result_error_field ( $result, PGSQL_DIAG_SQLSTATE )) {
 							// Insert failed
-							trigger_error ( "002" . "Error inserting note to database. Database returned: " . pg_result_error ( $result ) . ".  SQL was $sql", E_USER_ERROR );
+							tellervoTriggerError( "002" . "Error inserting note to database. Database returned: " . pg_result_error ( $result ) . ".  SQL was $sql", E_USER_ERROR);
 							return FALSE;
 						}
 					} else {
@@ -2036,7 +2036,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 		return TRUE;
 	}
 	function mergeRecords($newParentID) {
-		trigger_error ( "667" . "measurements class should not be asked to merge", E_USER_ERROR );
+		tellervoTriggerError( "667" . "measurements class should not be asked to merge", E_USER_ERROR);
 		return false;
 	}
 	

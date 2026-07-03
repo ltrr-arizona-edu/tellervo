@@ -1135,7 +1135,12 @@ class FirePHP {
       if(self::is_utf8($Object)) {
         return $Object;
       } else {
-        return utf8_encode($Object);
+        if(function_exists('mb_convert_encoding')) {
+          return mb_convert_encoding($Object, 'UTF-8', 'ISO-8859-1');
+        } elseif(function_exists('iconv')) {
+          return iconv('ISO-8859-1', 'UTF-8//IGNORE', $Object);
+        }
+        return $Object;
       }
     }
     return $return;

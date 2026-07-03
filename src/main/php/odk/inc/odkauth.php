@@ -14,7 +14,8 @@
 		require_once("../systemconfig.php");
 	} catch (Exception $e)
 	{
-		trigger_error('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_ERROR);
+		trigger_error('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_WARNING);
+		die();
 	}
 
 class ODKAuth 
@@ -67,7 +68,7 @@ class ODKAuth
 	    if ($diff < 0 || $diff > 0x7FFFFFFF) {
 		throw new RuntimeException("Bad range");
 	    }
-	    $bytes = mcrypt_create_iv(4, MCRYPT_DEV_URANDOM);
+	    $bytes = random_bytes(4);
 	    if ($bytes === false || strlen($bytes) != 4) {
 		throw new RuntimeException("Unable to get 4 bytes");
 	    }

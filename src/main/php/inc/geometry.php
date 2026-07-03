@@ -68,7 +68,7 @@ class geometry
 			
 		   if(strtolower($tag->tagName)!="gml:point")
 		   {
-		   		trigger_error("104"."This webservice does not accept gml:".$tag->tagName.". Please resubmit your request with either no GML data or with gml:point data.", E_USER_ERROR);
+		   		tellervoTriggerError("104"."This webservice does not accept gml:".$tag->tagName.". Please resubmit your request with either no GML data or with gml:point data.", E_USER_ERROR);
 		   		return false;
 		   }
 		   
@@ -76,7 +76,7 @@ class geometry
 		   {
 		   		if(($tag->getAttribute("srsName")!="EPSG:4326") && ($tag->getAttribute("srsName")!="urn:ogc:def:crs:EPSG::4326"))
 		   		{
-		   			trigger_error("104"."This webservice currently only supports GML data supplied in the EPSG:4326 coordinate system", E_USER_ERROR);
+		   			tellervoTriggerError("104"."This webservice currently only supports GML data supplied in the EPSG:4326 coordinate system", E_USER_ERROR);
 		   			return false;
 		   		}
 		   }

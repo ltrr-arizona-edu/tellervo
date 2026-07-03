@@ -144,7 +144,7 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
             case "read":
                 if($paramsObj->getID()==NULL)
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 
@@ -153,7 +153,7 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
             case "update":
                 if($paramsObj->getID()==NULL)
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 
@@ -162,7 +162,7 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
             case "delete":
                 if($paramsObj->getID() ==NULL) 
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 return true;

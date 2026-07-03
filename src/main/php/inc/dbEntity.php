@@ -417,7 +417,14 @@ class dbEntity
         $this->lastErrorMessage = $theMessage;
         
         // Trigger the error
-        trigger_error($theCode.$theMessage, E_USER_ERROR);
+        if(function_exists("tellervoTriggerError"))
+        {
+            tellervoTriggerError($theCode.$theMessage, E_USER_ERROR);
+        }
+        else
+        {
+            trigger_error($theCode.$theMessage, E_USER_WARNING);
+        }
         
         return true;
     }
@@ -1825,7 +1832,7 @@ class elementEntity extends UserExtendableEntity
 		{
 			if( (!isset($normalisedName)) && (!isset($normalisedID)) && (!isset($dictionary)) )
 			{
-				trigger_error("need more attribs", 901);		
+				tellervoTriggerError("901"."need more attribs", E_USER_ERROR);		
 			}
 		}
 		

@@ -23,7 +23,8 @@ try{
 	require_once("systemconfig.php");
 } catch (Exception $e)
 {
-	trigger_error('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_ERROR);
+	trigger_error('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_WARNING);
+	die();
 }
 
 require_once("inc/meta.php");
@@ -65,7 +66,7 @@ if(isset($_POST['xmlrequest']))
     }
     else
     {
-	    trigger_error('902'.'No XML request file given', E_USER_ERROR);
+	    tellervoTriggerError('902'.'No XML request file given', E_USER_ERROR);
 	    $myMetaHeader->setRequestType("help");
 	    writeHelpOutput($myMetaHeader);
 	    die();    	
@@ -75,7 +76,7 @@ else
 {
 	if($myMetaHeader->getClientName()=='Tellervo WSI')
 	{
-		trigger_error('902'.'This webservice expects a POST variable called xmlrequest inside which should be a string representation of your XML request document.  Please see the documentation for detailed information on how to interact with this webservice.', E_USER_ERROR);
+		tellervoTriggerError('902'.'This webservice expects a POST variable called xmlrequest inside which should be a string representation of your XML request document.  Please see the documentation for detailed information on how to interact with this webservice.', E_USER_ERROR);
 	    $myMetaHeader->setRequestType("help");
 	    writeHelpOutput($myMetaHeader);
 	    die();
@@ -133,7 +134,7 @@ if($myMetaHeader->status != "Error")
             case "odkFormDefinitionParameters":			$myObject = new odkFormDefinition(); break;
 
             default:
-            	trigger_error("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
+            	tellervoTriggerError("104"."The parameter object '".get_class($paramObj)."'  is unsupported", E_USER_ERROR);
             	echo "Object type not supported";
             	die();
         }
@@ -151,7 +152,7 @@ if($myMetaHeader->status != "Error")
             $success = $myObject->validateRequestParams($paramObj, $myRequest->getCrudMode());
             if(!$success)
             {
-                trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), $defaultErrType);
+                tellervoTriggerError($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), $defaultErrType);
                 continue;
             }
         }
@@ -250,7 +251,7 @@ if($myMetaHeader->status != "Error")
 	{
 	    if($objectType!="tag")
 	    {
-	      trigger_error("901"."The assign and unassign request types are only applicable to the tag entity", $defaultErrType);
+	      tellervoTriggerError("901"."The assign and unassign request types are only applicable to the tag entity", $defaultErrType);
 	    }	
 	}
        
@@ -269,14 +270,14 @@ if($myMetaHeader->status != "Error")
                 
             	if($originalObjectType=='project')
             	{
-            		trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." was denied. ".$myAuth->authFailReason, $defaultErrType);
+            		tellervoTriggerError("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." was denied. ".$myAuth->authFailReason, $defaultErrType);
             		break;
             	}
             	
                 if (($originalObjectType=='object') && ($objectType=='default'))
                 {
                     // Permission determined from database default
-                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." was denied. ".$myAuth->authFailReason, $defaultErrType);
+                    tellervoTriggerError("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." was denied. ".$myAuth->authFailReason, $defaultErrType);
                     break;
                 }
                 
@@ -294,7 +295,7 @@ if($myMetaHeader->status != "Error")
 					else
 					{
 						// Permission determined from parent object so the error message should be set accordingly
-	                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." associated with ".$objectType." ".$myID." was denied. ".$myAuth->authFailReason, $defaultErrType);
+	                    tellervoTriggerError("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." associated with ".$objectType." ".$myID." was denied. ".$myAuth->authFailReason, $defaultErrType);
 	                    break;
 					}
 				}
@@ -302,14 +303,14 @@ if($myMetaHeader->status != "Error")
                 else if ($originalObjectType!=$objectType)
                 {
                     // Permission determined from parent object so the error message should be set accordingly
-                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." associated with ".$objectType." ".$myID." was denied. ".$myAuth->authFailReason, $defaultErrType);
+                    tellervoTriggerError("103"."Permission to ".$myRequest->getCrudMode()." a ".$originalObjectType." associated with ".$objectType." ".$myID." was denied. ".$myAuth->authFailReason, $defaultErrType);
                     break;
 
                 }
                 else
                 {
                     // Standard error message
-                    trigger_error("103"."Permission to ".$myRequest->getCrudMode()." ".$objectType." was denied. ".$myAuth->authFailReason, $defaultErrType);
+                    tellervoTriggerError("103"."Permission to ".$myRequest->getCrudMode()." ".$objectType." was denied. ".$myAuth->authFailReason, $defaultErrType);
                     break;
                 }
             }
@@ -322,7 +323,7 @@ if($myMetaHeader->status != "Error")
 	{
 		if(!$myAuth->isAdmin())
 		{
-			trigger_error("103"."Merges can only be done by administrators", $defaultErrType);
+			tellervoTriggerError("103"."Merges can only be done by administrators", $defaultErrType);
 		}
 	}
 
@@ -352,7 +353,7 @@ if($myMetaHeader->status != "Error")
 					$seq = $myAuth->sequence();
 				    $myMetaHeader->requestLogin($myAuth->nonce($seq), $seq, 'OK');
 		    
-                    //trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                    //tellervoTriggerError($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
         }
@@ -378,7 +379,7 @@ if($myMetaHeader->status != "Error")
                 }
                 else
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                    tellervoTriggerError($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
         }
@@ -399,7 +400,7 @@ if($myMetaHeader->status != "Error")
 			$success = $myObject->setParamsFromParamsClass($paramObj, $myAuth);
 			if(!$success)
 			{
-			    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+			    tellervoTriggerError($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
 			}
 		}
 		else
@@ -414,7 +415,7 @@ if($myMetaHeader->status != "Error")
 			{
 			    if ($myObject->getLastErrorCode()==701)
 			    {
-				trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+				tellervoTriggerError($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
 			    }
 			    else
 			    {
@@ -438,7 +439,7 @@ if($myMetaHeader->status != "Error")
                 $success = $myObject->setParamsFromParamsClass($paramObj, $myAuth);
                 if(!$success)
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                    tellervoTriggerError($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
 
@@ -449,7 +450,7 @@ if($myMetaHeader->status != "Error")
                 $success = $myObject->writeToDB($myRequest->getCrudMode());
                 if(!$success)
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                    tellervoTriggerError($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
         }
@@ -466,7 +467,7 @@ if($myMetaHeader->status != "Error")
                 $success = $myObject->deleteFromDB();
                 if(!$success)
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                    tellervoTriggerError($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
         }
@@ -485,7 +486,7 @@ if($myMetaHeader->status != "Error")
                 $success = $myObject->setParamsFromParamsClass($paramObj, $myAuth);
                 if(!$success)
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                    tellervoTriggerError($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
 
@@ -508,7 +509,7 @@ if($myMetaHeader->status != "Error")
                 
                 if(!$success)
                 {
-                    trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                    tellervoTriggerError($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                 }
             }
             
@@ -537,7 +538,7 @@ if($myMetaHeader->status != "Error")
                     else
                     {
                         // Full blown error
-                        trigger_error($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
+                        tellervoTriggerError($myObject->getLastErrorCode().$myObject->getLastErrorMessage(), E_USER_ERROR);
                     }
                 }
             }

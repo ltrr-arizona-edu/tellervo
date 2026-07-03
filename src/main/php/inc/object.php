@@ -89,7 +89,7 @@ class tobject extends objectEntity implements IDBAccessor {
 				break;
 			
 			default :
-				trigger_error ( '667' . 'Unknown database id type.', E_USER_ERROR );
+				tellervoTriggerError( '667' . 'Unknown database id type.', E_USER_ERROR);
 				die ();
 		}
 		
@@ -99,7 +99,7 @@ class tobject extends objectEntity implements IDBAccessor {
 			$result = pg_get_result ( $dbconn );
 			if (pg_num_rows ( $result ) == 0) {
 				// No records match the id specified
-				trigger_error ( "903" . "No records match the specified id. $sql", E_USER_ERROR );
+				tellervoTriggerError( "903" . "No records match the specified id. $sql", E_USER_ERROR);
 				return FALSE;
 			} else {
 				// Set parameters from db
@@ -108,7 +108,7 @@ class tobject extends objectEntity implements IDBAccessor {
 			}
 		} else {
 			// Connection bad
-			trigger_error ( "001" . "Error connecting to database", E_USER_ERROR );
+			tellervoTriggerError( "001" . "Error connecting to database", E_USER_ERROR);
 			return FALSE;
 		}
 		
@@ -815,11 +815,11 @@ class tobject extends objectEntity implements IDBAccessor {
 			
 			case "merge" :
 				if ($paramsObj->getID () == NULL) {
-					trigger_error ( "902" . "Missing parameter - 'id' field is required when merging.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameter - 'id' field is required when merging.", E_USER_ERROR);
 					return false;
 				}
 				if ($paramsObj->mergeWithID == NULL) {
-					trigger_error ( "902" . "Missing parameter - 'mergeWithID' field is required when merging.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameter - 'mergeWithID' field is required when merging.", E_USER_ERROR);
 					return false;
 				}
 				return true;

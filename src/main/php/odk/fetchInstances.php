@@ -23,7 +23,7 @@ try{
 	require_once("../systemconfig.php");
 } catch (Exception $e)
 {
-	trigger_error('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_ERROR);
+	tellervoTriggerError('704'.'System configuration file missing.  Server administrator needs to run tellervo-server --reconfigure', E_USER_ERROR);
 }
 
 if($myAuth->isLoggedIn===TRUE)

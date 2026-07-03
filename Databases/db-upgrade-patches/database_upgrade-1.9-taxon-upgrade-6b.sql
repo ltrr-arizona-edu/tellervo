@@ -261,14 +261,23 @@ END;$BODY$
   LANGUAGE plpgsql VOLATILE
   COST 100;
 
+UPDATE tlkptaxon SET colid = 'legacy-' || taxonid WHERE COALESCE(colid, '') = '';
+UPDATE tlkptaxon AS taxon
+SET colparentid = parent.colid
+FROM tlkptaxon AS parent
+WHERE taxon.parenttaxonid = parent.taxonid
+AND COALESCE(taxon.colparentid, '') = ''
+AND COALESCE(parent.colid, '') <> '';
 UPDATE tblelement SET colid = tlkptaxon.colid FROM tlkptaxon WHERE tblelement.taxonid=tlkptaxon.taxonid;
+ALTER TABLE tblelement DROP CONSTRAINT IF EXISTS fkey_element_taxon;
 CREATE TRIGGER update_element_rebuildmetacache 
   AFTER INSERT OR UPDATE 
   ON tblelement 
   FOR EACH ROW 
   EXECUTE PROCEDURE cpgdb.rebuildmetacacheforelement();
 	
-	ALTER TABLE tlkptaxon DROP CONSTRAINT "pkey_taxon";
+	ALTER TABLE tlkptaxon DROP CONSTRAINT IF EXISTS "pkey_taxon";
+	DROP VIEW IF EXISTS vwipt;
 	DROP VIEW IF EXISTS vwtblelement;
 	DROP VIEW IF EXISTS vwtblelement2;
 	DROP VIEW IF EXISTS vwtlkptaxon;
@@ -637,10 +646,11 @@ others.e_height,
    FROM tblobject tlo
 LEFT JOIN vw_elementtoradius others ON others.tlo_objectid = tlo.objectid;
 
-DROP FUNCTION cpgdb.qrytaxonflat1;
-DROP FUNCTION cpgdb.qrytaxonflat2;
-DROP FUNCTION cpgdb.qrytaxonomy;
-DROP FUNCTION cpgdb._gettaxonfordepth(integer, typfulltaxonomy);
+DROP FUNCTION IF EXISTS cpgdb.qrytaxonomy2(character varying);
+DROP FUNCTION IF EXISTS cpgdb.qrytaxonflat1(character varying);
+DROP FUNCTION IF EXISTS cpgdb.qrytaxonflat2(character varying);
+DROP FUNCTION IF EXISTS cpgdb.qrytaxonomy(character varying);
+DROP FUNCTION IF EXISTS cpgdb._gettaxonfordepth(integer, typfulltaxonomy);
 
 
 DROP TYPE typtaxonrankname;
@@ -1045,4 +1055,3 @@ UNION
 
 
  
-

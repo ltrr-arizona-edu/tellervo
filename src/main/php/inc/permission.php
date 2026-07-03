@@ -93,7 +93,7 @@ class permission extends permissionEntity implements IDBAccessor
 		    if(pg_num_rows($result)==0)
 		    {
 			// No records match
-			trigger_error("903"."No records match the specified permissions request. $sql", E_USER_ERROR);
+			tellervoTriggerError("903"."No records match the specified permissions request. $sql", E_USER_ERROR);
 			return FALSE;
 		    }
 		    else
@@ -137,7 +137,7 @@ class permission extends permissionEntity implements IDBAccessor
 		    if(pg_num_rows($result)==0)
 		    {
 			// No records match
-			trigger_error("903"."No records match the specified permissions request. $sql", E_USER_ERROR);
+			tellervoTriggerError("903"."No records match the specified permissions request. $sql", E_USER_ERROR);
 			return FALSE;
 		    }
 		    else

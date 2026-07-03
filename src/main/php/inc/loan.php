@@ -169,7 +169,7 @@ class loan extends loanEntity implements IDBAccessor
             case "read":
                 if($paramsObj->getID()===NULL)
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required when reading a loan.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required when reading a loan.", E_USER_ERROR);
                     return false;
                 }
                 
@@ -178,7 +178,7 @@ class loan extends loanEntity implements IDBAccessor
             case "update":
                 if($paramsObj->getID()===NULL)
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 
@@ -187,7 +187,7 @@ class loan extends loanEntity implements IDBAccessor
             case "delete":
                 if($paramsObj->getID() ===NULL) 
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -444,7 +444,7 @@ class loan extends loanEntity implements IDBAccessor
     				{
     					if(pg_result_error_field($result, PGSQL_DIAG_SQLSTATE))
     					{
-    						trigger_error("002".pg_result_error($result)."--- SQL was $stmt", E_USER_ERROR);
+    						tellervoTriggerError("002".pg_result_error($result)."--- SQL was $stmt", E_USER_ERROR);
     			
     						pg_query($dbconn, "rollback;");
     							

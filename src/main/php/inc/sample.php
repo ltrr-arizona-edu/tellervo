@@ -287,11 +287,11 @@ class sample extends sampleEntity implements IDBAccessor {
 			
 			case "merge" :
 				if ($paramsObj->getID () === NULL) {
-					trigger_error ( "902" . "Missing parameter - 'id' field is required when merging.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameter - 'id' field is required when merging.", E_USER_ERROR);
 					return false;
 				}
 				if ($paramsObj->mergeWithID === NULL) {
-					trigger_error ( "902" . "Missing parameter - 'mergeWithID' field is required when merging.", E_USER_ERROR );
+					tellervoTriggerError( "902" . "Missing parameter - 'mergeWithID' field is required when merging.", E_USER_ERROR);
 					return false;
 				}
 				return true;

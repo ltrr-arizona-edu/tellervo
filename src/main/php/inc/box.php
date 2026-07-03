@@ -77,7 +77,7 @@ class box extends boxEntity implements IDBAccessor
             	//$firebug->log(__LINE__, "line no");
             	//$firebug->log($sql, "sql is");
                 // No records match the id specified
-                trigger_error("903"."No records match the specified box id", E_USER_ERROR);
+                tellervoTriggerError("903"."No records match the specified box id", E_USER_ERROR);
                 return FALSE;
             }
             else
@@ -90,7 +90,7 @@ class box extends boxEntity implements IDBAccessor
         else
         {
             // Connection bad
-            trigger_Error("001"."Error connecting to database", E_USER_ERROR);
+            tellervoTriggerError("001"."Error connecting to database", E_USER_ERROR);
             return FALSE;
         }
 
@@ -116,7 +116,7 @@ class box extends boxEntity implements IDBAccessor
             	//$firebug->log(__LINE__, "line no");
             	//$firebug->log($sql, "sql is");
                 // No records match the id specified
-                trigger_error("903"."No records match the specified id", E_USER_ERROR);
+                tellervoTriggerError("903"."No records match the specified id", E_USER_ERROR);
                 return FALSE;
             }
             else
@@ -129,7 +129,7 @@ class box extends boxEntity implements IDBAccessor
         else
         {
             // Connection bad
-            trigger_Error("001"."Error connecting to database", E_USER_ERROR);
+            tellervoTriggerError("001"."Error connecting to database", E_USER_ERROR);
             return FALSE;
         }
 
@@ -208,7 +208,7 @@ class box extends boxEntity implements IDBAccessor
             case "read":
                 if($paramsObj->getID()==NULL)
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required when reading a radius.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required when reading a radius.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -216,7 +216,7 @@ class box extends boxEntity implements IDBAccessor
             case "update":
                 if($paramsObj->getID()==NULL)
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -224,7 +224,7 @@ class box extends boxEntity implements IDBAccessor
             case "delete":
                 if($paramsObj->getID() == NULL) 
                 {
-                    trigger_error("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
+                    tellervoTriggerError("902"."Missing parameter - 'id' field is required.", E_USER_ERROR);
                     return false;
                 }
                 return true;
@@ -468,7 +468,7 @@ class box extends boxEntity implements IDBAccessor
         // Check for required parameters
         if($this->getID() == NULL) 
         {
-            trigger_error("902". "Missing parameter - 'id' field is required.", E_USER_ERROR);
+            tellervoTriggerError("902". "Missing parameter - 'id' field is required.", E_USER_ERROR);
             return FALSE;
         }
 
