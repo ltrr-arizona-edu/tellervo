@@ -212,11 +212,10 @@ if(isset($args["auto-configure"]))
 	exec("chown -R www-data:www-data /usr/share/tellervo-server/mediastore");
 
 	// Check if the server is already configured
-	if( (file_exists($configfile)) && (file_exists($dbsetupfile)) )
+	if( (file_exists($configfile)) && (file_exists($dbsetupfile)) && (file_exists($systemconfig)) )
 	{
 		// Include config files as they already exist
 		include($configfile);
-		include($dbsetupfile);
 
 		// Verify if the configuration is already ok
 		if(verifySetup(TRUE)===TRUE)
@@ -226,6 +225,17 @@ if(isset($args["auto-configure"]))
 			verifySetup();
 			printComplete();
 			exit(0);
+		}
+
+		if(doesTellervoDBExist()===TRUE)
+		{
+			echo "\nExisting Tellervo database '$dbname' found, but the configured credentials do not connect.\n";
+			echo "Auto-configure creates fresh instances and will not overwrite an existing database.\n\n";
+			echo "To repair this instance, reset the database password and regenerate config:\n";
+			echo "  tellervo-server --instance ".$instanceName." --set-db-pwd\n";
+			echo "  tellervo-server --instance ".$instanceName." --sysconfig\n";
+			echo "  tellervo-server --instance ".$instanceName." --repair-web-assets\n\n";
+			exit(1);
 		}
 	}
 
@@ -541,6 +551,10 @@ else if(isset($args["set-db-pwd"]))
 {
 	requireRoot();
 	setDBUser();
+	writeCredentialsFile($user, $pwd);
+	applyDatabaseUserPermissions();
+	exec("/etc/init.d/postgresql restart\n");
+	echo "Database credentials updated.\n";
 	echo "\n";
 	exit(0);
 }
@@ -2361,6 +2375,40 @@ function readCredentialsFile($filename)
 }
 
 /**
+ * Create or update the configured PostgreSQL role and password.
+ */
+function applyDatabaseUserPermissions()
+{
+  global $logfile;
+  global $permsfile;
+  global $permstemplate;
+  global $user;
+  global $pwd;
+
+  copy($permstemplate, $permsfile);
+
+  $snr = new File_SearchReplace("%%DBUSER%%",
+                          trim($user, "\n\r"),
+                          $permsfile,
+                          '', // directorie(s) to search
+                          false) ;
+  $snr->doSearch();
+  $snr = new File_SearchReplace("%%DBPWD%%",
+                          sqlLiteral(trim($pwd, "\n\r")),
+                          $permsfile,
+                          '', // directorie(s) to search
+                          false) ;
+  $snr->doSearch();
+
+  exec("su - postgres -c \"psql --file=".escapeshellarg($permsfile)." 2>> ".$logfile."\"", $output, $returnvar);
+  if($returnvar!=0)
+  {
+    echo "Unable to apply PostgreSQL database permissions.  See ".$logfile." for details.\n";
+    exit(1);
+  }
+}
+
+/**
  * Escape a value that will be inserted into a SQL single-quoted literal.
  */
 function sqlLiteral($value)
@@ -2447,19 +2495,7 @@ function postgresSetup($quick=false)
 
       // Create db user and set permissions
       echo "Setting database permissions...\n";
-      $snr = new File_SearchReplace("%%DBUSER%%",
-                              trim($user, "\n\r"),
-			      $permsfile,
-                              '', // directorie(s) to search
-                              false) ;
-      $snr->doSearch();
-      $snr = new File_SearchReplace("%%DBPWD%%",
-                              sqlLiteral(trim($pwd, "\n\r")),
-			      $permsfile,
-                              '', // directorie(s) to search
-                              false) ;
-      $snr->doSearch();
-      exec("su - postgres -c \"psql --file=/usr/share/tellervo-server/set_database_permission.sql 2>> ".$logfile."\"");
+      applyDatabaseUserPermissions();
       setConfigVariable("%%DBNAME%%", $dbname);
 
       // Create the database and populate from the database template

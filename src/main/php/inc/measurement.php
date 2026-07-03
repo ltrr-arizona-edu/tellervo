@@ -1168,7 +1168,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 			$xml .= "<tridas:genericField name=\"tellervo.operationParameter\" type=\"xs:string\">" . dbhelper::escapeXMLChars ( $this->getIndexNameFromParamID ( $this->vmeasurementOpParam ) ) . "</tridas:genericField>\n";
 		if ($this->getAuthor () != NULL)
 			$xml .= "<tridas:genericField name=\"tellervo.authorID\" type=\"xs:int\">" . dbhelper::escapeXMLChars ( $this->author->getID () ) . "</tridas:genericField>\n";
-		$xml .= "<tridas:genericField name=\"tellervo.isReconciled\" type=\"xs:boolean\">" . dbHelper::formatBool ( $this->getIsReconciled (), 'english' ) . "</tridas:genericField>\n";
+		$xml .= "<tridas:genericField name=\"tellervo.isReconciled\" type=\"xs:boolean\">" . dbHelper::formatBool ( $this->getIsReconciled (), 'xml' ) . "</tridas:genericField>\n";
 		
 		$xml .= $this->getPermissionsXML ();
 		// if($this->hasGeometry()) $xml.= "<tridas:genericField name=\"tellervo.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
@@ -1230,16 +1230,16 @@ class measurement extends measurementEntity implements IDBAccessor {
 			// if($this->hasGeometry()) $xml.= "<tridas:genericField name=\"tellervo.mapLink\" type=\"xs:string\">".dbHelper::escapeXMLChars($this->getMapLink())."</tridas:genericField>\n";;
 			
 			if ($this->getIsReconciled () != NULL)
-				$xml .= "<tridas:genericField name=\"tellervo.isReconciled\" type=\"xs:boolean\">" . dbHelper::formatBool ( $this->isReconciled, "english" ) . "</tridas:genericField>\n";
+				$xml .= "<tridas:genericField name=\"tellervo.isReconciled\" type=\"xs:boolean\">" . dbHelper::formatBool ( $this->isReconciled, "xml" ) . "</tridas:genericField>\n";
 			if (isset ( $this->isPublished ))
-				$xml .= "<tridas:genericField name=\"tellervo.isPublished\" type=\"xs:boolean\">" . dbHelper::formatBool ( $this->isPublished, "english" ) . "</tridas:genericField>\n";
+				$xml .= "<tridas:genericField name=\"tellervo.isPublished\" type=\"xs:boolean\">" . dbHelper::formatBool ( $this->isPublished, "xml" ) . "</tridas:genericField>\n";
 			if ($this->analyst->getID () != NULL)
 				$xml .= "<tridas:genericField name=\"tellervo.analystID\" type=\"xs:int\">" . $this->analyst->getID () . "</tridas:genericField>\n";
 			if ($this->dendrochronologist->getID () != NULL)
 				$xml .= "<tridas:genericField name=\"tellervo.dendrochronologistID\" type=\"xs:int\">" . $this->dendrochronologist->getID () . "</tridas:genericField>\n";
 			if ($this->getReadingCount () != NULL)
 				$xml .= "<tridas:genericField name=\"tellervo.readingCount\" type=\"xs:int\">" . $this->getReadingCount () . "</tridas:genericField>\n";
-			$xml .= "<tridas:genericField name=\"tellervo.isReconciled\" type=\"xs:boolean\">" . dbHelper::formatBool ( $this->getIsReconciled (), 'english' ) . "</tridas:genericField>\n";
+			$xml .= "<tridas:genericField name=\"tellervo.isReconciled\" type=\"xs:boolean\">" . dbHelper::formatBool ( $this->getIsReconciled (), 'xml' ) . "</tridas:genericField>\n";
 			$xml .= "<tridas:genericField name=\"tellervo.directChildCount\" type=\"xs:int\">" . $this->getDirectChildCount () . "</tridas:genericField>\n";
 			
 			if ($this->getUserDefinedFieldAndValueArray () != null && count ( $this->getUserDefinedFieldAndValueArray () > 0 )) {

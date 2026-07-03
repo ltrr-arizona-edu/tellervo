@@ -236,7 +236,7 @@ class securityUser extends securityUserEntity implements IDBAccessor
             $xml.= "firstName=\"".dbHelper::escapeXMLChars($this->firstName)."\" ";
             $xml.= "lastName=\"".dbHelper::escapeXMLChars($this->lastName)."\" ";
 	    //if(isset($this->odkPassword) $xml.= "odkPassword=\"".dbHelper::escapeXMLChars("xxxxx")."\" ";
-            $xml.= "isActive=\"".dbHelper::formatBool($this->isActive, 'english')."\" ";
+            $xml.= "isActive=\"".dbHelper::formatBool($this->isActive, 'xml')."\" ";
             
 
        

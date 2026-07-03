@@ -101,11 +101,11 @@ class permission extends permissionEntity implements IDBAccessor
 			// Set parameters from db
 			$row = pg_fetch_array($result);
 			$xml.= "<permission decidedBy=\"".$row['decidedby']."\">\n";
-			$xml.= "<permissionToCreate>".dbhelper::formatBool($row['cancreate'], "english")."</permissionToCreate>\n";
-			$xml.= "<permissionToRead>".dbhelper::formatBool($row['canread'], "english")."</permissionToRead>\n";
-			$xml.= "<permissionToUpdate>".dbhelper::formatBool($row['canupdate'], "english")."</permissionToUpdate>\n";
-			$xml.= "<permissionToDelete>".dbhelper::formatBool($row['candelete'], "english")."</permissionToDelete>\n";
-			$xml.= "<permissionDenied>".dbhelper::formatBool($row['denied'], "english")."</permissionDenied>\n";
+			$xml.= "<permissionToCreate>".dbhelper::formatBool($row['cancreate'], "xml")."</permissionToCreate>\n";
+			$xml.= "<permissionToRead>".dbhelper::formatBool($row['canread'], "xml")."</permissionToRead>\n";
+			$xml.= "<permissionToUpdate>".dbhelper::formatBool($row['canupdate'], "xml")."</permissionToUpdate>\n";
+			$xml.= "<permissionToDelete>".dbhelper::formatBool($row['candelete'], "xml")."</permissionToDelete>\n";
+			$xml.= "<permissionDenied>".dbhelper::formatBool($row['denied'], "xml")."</permissionDenied>\n";
 	    	        $xml.= "<entity type=\"".$entity['type']."\" id=\"".$entity['id']."\"/>\n";	
 		   	$xml.= "<securityUser id=\"".$user."\"/>\n";
 	    		$xml.= "</permission>\n";    	
@@ -145,11 +145,11 @@ class permission extends permissionEntity implements IDBAccessor
 			// Set parameters from db
 			$row = pg_fetch_array($result);
 			$xml.= "<permission decidedBy=\"".$row['decidedby']."\">\n";
-			$xml.= "<permissionToCreate>".dbhelper::formatBool($row['cancreate'], "english")."</permissionToCreate>\n";
-			$xml.= "<permissionToRead>".dbhelper::formatBool($row['canread'], "english")."</permissionToRead>\n";
-			$xml.= "<permissionToUpdate>".dbhelper::formatBool($row['canupdate'], "english")."</permissionToUpdate>\n";
-			$xml.= "<permissionToDelete>".dbhelper::formatBool($row['candelete'], "english")."</permissionToDelete>\n";
-			$xml.= "<permissionDenied>".dbhelper::formatBool($row['denied'], "english")."</permissionDenied>\n";
+			$xml.= "<permissionToCreate>".dbhelper::formatBool($row['cancreate'], "xml")."</permissionToCreate>\n";
+			$xml.= "<permissionToRead>".dbhelper::formatBool($row['canread'], "xml")."</permissionToRead>\n";
+			$xml.= "<permissionToUpdate>".dbhelper::formatBool($row['canupdate'], "xml")."</permissionToUpdate>\n";
+			$xml.= "<permissionToDelete>".dbhelper::formatBool($row['candelete'], "xml")."</permissionToDelete>\n";
+			$xml.= "<permissionDenied>".dbhelper::formatBool($row['denied'], "xml")."</permissionDenied>\n";
 	    	        $xml.= "<entity type=\"".$entity['type']."\" id=\"".$entity['id']."\"/>\n";	
 		   	$xml.= "<securityGroup id=\"".$group."\"/>\n";
 	    		$xml.= "</permission>\n";    	

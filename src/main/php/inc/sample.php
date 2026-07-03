@@ -409,7 +409,7 @@ class sample extends sampleEntity implements IDBAccessor {
 				if ($this->getState () !== NULL)
 					$xml .= "<tridas:state>" . dbhelper::escapeXMLChars ( $this->getState () ) . "</tridas:state>\n";
 				if ($this->getKnots () !== NULL)
-					$xml .= "<tridas:knots>" . dbhelper::formatBool ( $this->getKnots (), "english" ) . "</tridas:knots>\n";
+					$xml .= "<tridas:knots>" . dbhelper::formatBool ( $this->getKnots (), "xml" ) . "</tridas:knots>\n";
 			}
 			
 			if ($this->getBoxID () != NULL)

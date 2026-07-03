@@ -213,7 +213,7 @@ class odkFormDefinition extends odkFormDefinitionEntity implements IDBAccessor
                 $xml.="<odkFormDefinition ";
 				$xml.="id=\"".$this->getID()."\" ";
 				$xml.="name=\"".$this->getName()."\" ";
-				$xml.="ispublic=\"".dbHelper::formatBool($this->getIsPublic(), "english")."\" >\n";
+				$xml.="ispublic=\"".dbHelper::formatBool($this->getIsPublic(), "xml")."\" >\n";
 			$xml.=$this->getDefinition();
 				
                 $xml.="</odkFormDefinition>\n";
