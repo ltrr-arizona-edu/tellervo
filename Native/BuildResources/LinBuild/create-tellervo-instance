@@ -103,7 +103,5 @@ exec ("ln -s /var/www/tellervo/odk/mediafile.php ".$webfolder."/odk/");
 exec ("ln -s /var/www/tellervo/odk/submission.php ".$webfolder."/odk/");
 exec ("ln -s /var/www/tellervo/odk/inc/odkauth.php ".$webfolder."/odk/inc/");
 exec ("ln -s /var/www/tellervo/odk/inc/odkhelper.php ".$webfolder."/odk/inc/");
-passthru ("tellervo-server --configure --dbname ".$dbname." --webfolder ".$webfolder);
-
-
+passthru ("tellervo-server --configure --instance ".escapeshellarg($dbname)." --dbname ".escapeshellarg($dbname)." --webfolder ".escapeshellarg($webfolder));
 

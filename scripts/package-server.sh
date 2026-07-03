@@ -134,6 +134,8 @@ install_dir_copy "$REPO_ROOT/Databases/db-upgrade-patches" "$SHARE_DIR/db-upgrad
 install_dir_copy "$REPO_ROOT/Databases/db-templates" "$SHARE_DIR/db-templates"
 install_dir_copy "$REPO_ROOT/Databases/db-options" "$SHARE_DIR/db-options"
 install_dir_copy "$REPO_ROOT/src/main/php" "$WEB_DIR"
+find "$WEB_DIR" -type d -exec chmod 0755 {} +
+find "$WEB_DIR" -type f -exec chmod 0644 {} +
 
 mkdir -p "$SHARE_DIR/mediastore"
 

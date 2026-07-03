@@ -17,15 +17,25 @@ global $dbName;
 global $hostname;
 global $pgport;
 
-$contents = str_replace("\n", "=", file_get_contents($cdbCredentialsFile));
-$myarray = explode("=", $contents, 5);
-$username = $myarray[1];
-$password = $myarray[3];
+$credentials = array();
+foreach(file($cdbCredentialsFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line)
+{
+  $parts = explode("=", $line, 2);
+  if(count($parts)==2)
+  {
+    $credentials[$parts[0]] = $parts[1];
+  }
+}
+$username = isset($credentials["username"]) ? $credentials["username"] : "";
+$password = isset($credentials["password"]) ? $credentials["password"] : "";
 
 //Set up database connection
-$conn_string = "dbname=$dbName user=".$username." password=".$password;
-//$conn_string = "host=$hostname port=$pgport dbname=$dbName user=".$username." password=".$password;
+$conn_string = "host=$hostname port=$pgport dbname=$dbName user=".$username." password=".$password;
 $dbconn = pg_connect ($conn_string);
+if($dbconn===FALSE)
+{
+  die("Unable to connect to PostgreSQL database using configured credentials.\n");
+}
 
 //Date format
 $sql = "set datestyle to 'ISO'";

@@ -33,14 +33,42 @@ if(hasRootPrivileges())
  * Grab command line arguments either using long or short options
  */
 $shortopts = "htrcnesvu";
-$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "upgrade", "set-db-pwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info", "set-admin-pwd", "backup-db:", "restore-db:", "dbname:", "webfolder:", "cascade-delete:", "auto-configure");
+$longopts = array("help", "test", "reconfigure", "configure", "network", "emptylog", "sysconfig", "version", "upgrade", "set-db-pwd", "start", "stop", "restart", "upgrade-db","firstrun", "deploy", "add-wms-name:", "add-wms-url:", "del-wms-name:", "info", "set-admin-pwd", "backup-db:", "restore-db:", "dbname:", "webfolder:", "cascade-delete:", "auto-configure", "instance:", "cluster:", "cluster-config:", "list-instances");
 $args = getopt($shortopts,$longopts);
 
+$clusterConfigFile = isset($args["cluster-config"]) ? $args["cluster-config"] : "/etc/tellervo-server/instances.conf";
+$instanceName = isset($args["instance"]) ? normaliseInstanceName($args["instance"]) : "";
+$instance = null;
+
+if(isset($args["list-instances"]))
+{
+	printInstances();
+	exit(0);
+}
+
+if(isset($args["cluster"]) && $args["cluster"]!=null)
+{
+	runClusterCommand($args["cluster"]);
+	exit(0);
+}
+
+if($instanceName!="")
+{
+	$instance = getInstanceConfig($instanceName);
+	if($instance===false)
+	{
+		$instance = getDefaultInstanceConfig($instanceName);
+	}
+}
 
 // Grab database and web folder names if specified for a multiple database setup
 if(isset($args["dbname"]) && isset($args["dbname"]))
 {
 	$dbname = $args["dbname"];
+}
+else if($instance!==null)
+{
+	$dbname = $instance["dbname"];
 }
 else
 {
@@ -49,6 +77,11 @@ else
 if(isset($args["webfolder"]) && isset($args["webfolder"]))
 {
 	$wsbase = $args["webfolder"];
+	if(substr($wsbase, -1)!="/") $wsbase = $wsbase."/";
+}
+else if($instance!==null)
+{
+	$wsbase = $instance["webfolder"];
 	if(substr($wsbase, -1)!="/") $wsbase = $wsbase."/";
 }
 else
@@ -74,16 +107,17 @@ $folderbase       = "/usr/share/tellervo-server/";
 $pg_hba_file      = "/etc/postgres/?";  // set later
 $pg_hba_file_orig = "/etc/postgres/?"; // set later
 $permsfile        = $folderbase."set_database_permission.sql";
-$permstemplate    = $folderbase."set_database_permission.template";
+$permstemplate    = $folderbase."db-templates/set_database_permission.template";
 $configtemplate   = $folderbase."config.php.template";
-$dbtemplate       = $folderbase."tellervo_database_template_2.0.sql";
-$pljavaexttemplate= $folderbase."pljava_extension.sql";
-$credentialsFile  = $folderbase."server_credentials";
+$dbtemplate       = $folderbase."db-templates/tellervo_database_template_2.0.sql";
+$pljavaexttemplate= $folderbase."db-templates/pljava_extension.sql";
+$credentialsFile  = $instanceName=="" ? $folderbase."server_credentials" : $folderbase."server_credentials.".$instanceName;
 $upgradeScripts   = $folderbase."db-upgrade-patches";
 $configfile       = $wsbase."config.php";
 $dbsetupfile      = $wsbase."inc/dbsetup.php";
 $systemconfig     = $wsbase."systemconfig.php";
-$postgisfolder    = "/usr/share/postgresql/".$postgresversion."/contrib/postgis-".$postgisversion."/";
+$postgisfolder    = detectPostgisFolder($postgresversion);
+$apacheInstancesConfig = "/etc/apache2/conf-available/tellervo-instances.conf";
 /*******************************************************************/;
 
 function detectPostgresVersion()
@@ -112,6 +146,46 @@ function detectPostgresVersion()
 	}
 
 	return "17";
+}
+
+function detectPostgisFolder($postgresversion)
+{
+	$candidates = glob("/usr/share/postgresql/".$postgresversion."/contrib/postgis-*", GLOB_ONLYDIR);
+
+	if($candidates!==false)
+	{
+		rsort($candidates, SORT_NATURAL);
+		foreach($candidates as $candidate)
+		{
+			$path = rtrim($candidate, "/")."/";
+			if(file_exists($path."postgis.sql") && file_exists($path."spatial_ref_sys.sql") && file_exists($path."legacy.sql"))
+			{
+				return $path;
+			}
+		}
+	}
+
+	return "/usr/share/postgresql/".$postgresversion."/contrib/postgis-3/";
+}
+
+function ensurePlJavaAvailable()
+{
+	global $postgresversion;
+
+	$controlFile = "/usr/share/postgresql/".$postgresversion."/extension/pljava.control";
+	if(file_exists($controlFile))
+	{
+		return true;
+	}
+
+	echo "\nUnable to find the PostgreSQL PL/Java extension for PostgreSQL ".$postgresversion.".\n";
+	echo "Tellervo requires PL/Java before the database can be created or upgraded.\n\n";
+	echo "On Debian Trixie this may require enabling the PostgreSQL APT repository\n";
+	echo "and installing the matching package, for example:\n\n";
+	echo "  apt install postgresql-".$postgresversion."-pljava\n\n";
+	echo "Expected extension control file:\n";
+	echo "  ".$controlFile."\n\n";
+	exit(1);
 }
 
 // Depending on command line arguments run different functions
@@ -151,6 +225,7 @@ if(isset($args["auto-configure"]))
 	runDBUpgrades(TRUE);
 	apacheSetup(TRUE);
 	verifySetup();
+	registerCurrentInstance();
 	printComplete();
 	exit(0);
 
@@ -254,6 +329,7 @@ else if(isset($args["firstrun"]))
 	include($systemconfig);
 	apacheSetup();
 	verifySetup();
+	registerCurrentInstance();
 	printComplete();
 	exec("$folderbase/firstrun");
 	exit(0);
@@ -365,6 +441,7 @@ else if(isset($args["reconfigure"]) || isset($args["r"]))
 	runDBUpgrades(true);
 	apacheSetup();
 	verifySetup();
+	registerCurrentInstance();
 	printComplete();
 	exit(0);
 }
@@ -398,6 +475,7 @@ else if(isset($args["dockerconfigure"]))
 	runDBUpgrades(true);
 	apacheSetup(true);
 	verifySetup(true);
+	registerCurrentInstance();
 	printComplete();
 	exit(0);
 }
@@ -504,6 +582,7 @@ else if (isset($args["configure"]) || isset($args["c"]))
 	runDBUpgrades(true);
 	apacheSetup();
 	verifySetup();
+	registerCurrentInstance();
 	printComplete();
 	exit(0);
 }
@@ -600,6 +679,268 @@ exit(1);
  * END OF SCRIPT BODY
  */
 
+function normaliseInstanceName($name)
+{
+	$name = trim($name);
+	if(!preg_match('/^[A-Za-z0-9][A-Za-z0-9_.-]*$/', $name))
+	{
+		echo "Invalid instance name '$name'. Use letters, numbers, dots, dashes or underscores.\n";
+		exit(1);
+	}
+
+	return $name;
+}
+
+function getDefaultInstanceConfig($name)
+{
+	return array(
+		"name" => $name,
+		"dbname" => "tellervo_".str_replace(array(".", "-"), "_", strtolower($name)),
+		"webfolder" => "/var/www/tellervo-".$name."/"
+	);
+}
+
+function getClusterInstances()
+{
+	global $clusterConfigFile;
+	$instances = array();
+
+	if(!file_exists($clusterConfigFile))
+	{
+		return $instances;
+	}
+
+	$lines = file($clusterConfigFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+	foreach($lines as $line)
+	{
+		$line = trim($line);
+		if($line=="" || substr($line, 0, 1)=="#")
+		{
+			continue;
+		}
+
+		$parts = preg_split('/\s+/', $line, 3);
+		if(count($parts)!=3)
+		{
+			continue;
+		}
+
+		$name = normaliseInstanceName($parts[0]);
+		$webfolder = $parts[2];
+		if(substr($webfolder, -1)!="/") $webfolder = $webfolder."/";
+		$instances[$name] = array("name" => $name, "dbname" => $parts[1], "webfolder" => $webfolder);
+	}
+
+	return $instances;
+}
+
+function getInstanceConfig($name)
+{
+	$instances = getClusterInstances();
+	if(isset($instances[$name]))
+	{
+		return $instances[$name];
+	}
+
+	return false;
+}
+
+function registerCurrentInstance()
+{
+	global $clusterConfigFile;
+	global $instanceName;
+	global $dbname;
+	global $wsbase;
+	global $errorsFound;
+
+	if($instanceName=="" || $errorsFound!==FALSE)
+	{
+		return;
+	}
+
+	$instances = getClusterInstances();
+	$instances[$instanceName] = array("name" => $instanceName, "dbname" => $dbname, "webfolder" => $wsbase);
+	ksort($instances);
+
+	$folder = dirname($clusterConfigFile);
+	if(!file_exists($folder))
+	{
+		mkdir($folder, 0755, true);
+	}
+
+	$contents = "# Tellervo server instances\n";
+	$contents .= "# name dbname webfolder\n";
+	foreach($instances as $instance)
+	{
+		$contents .= $instance["name"]." ".$instance["dbname"]." ".$instance["webfolder"]."\n";
+	}
+
+	file_put_contents($clusterConfigFile, $contents);
+}
+
+function getInstanceWebPath($webfolder=null)
+{
+	global $wsbase;
+	$folder = $webfolder===null ? $wsbase : $webfolder;
+	$folder = rtrim($folder, "/");
+	$name = basename($folder);
+
+	if($name=="tellervo")
+	{
+		return "/";
+	}
+
+	return "/".$name."/";
+}
+
+function writeApacheInstancesConfig()
+{
+	global $apacheInstancesConfig;
+	global $instanceName;
+	global $dbname;
+	global $wsbase;
+	global $logfile;
+
+	$instances = getClusterInstances();
+	if($instanceName!="")
+	{
+		$instances[$instanceName] = array("name" => $instanceName, "dbname" => $dbname, "webfolder" => $wsbase);
+	}
+
+	if(empty($instances))
+	{
+		return;
+	}
+
+	$contents = "# Generated by tellervo-server.  Named instances are served below the default host.\n";
+	foreach($instances as $instance)
+	{
+		$webfolder = rtrim($instance["webfolder"], "/");
+		$path = getInstanceWebPath($webfolder);
+		if($path=="/")
+		{
+			continue;
+		}
+
+		$contents .= "\nAlias ".$path." ".$webfolder."/\n";
+		$contents .= "<Directory ".$webfolder."/>\n";
+		$contents .= "    Options Indexes FollowSymLinks MultiViews\n";
+		$contents .= "    AllowOverride None\n";
+		$contents .= "    Require all granted\n";
+		$contents .= "</Directory>\n";
+	}
+
+	file_put_contents($apacheInstancesConfig, $contents);
+	exec("a2enconf tellervo-instances.conf 2>> $logfile", $response);
+}
+
+function linkIfMissing($source, $destination)
+{
+	if(file_exists($destination) || is_link($destination))
+	{
+		return;
+	}
+
+	symlink($source, $destination);
+}
+
+function prepareWebFolder()
+{
+	global $wsbase;
+
+	$defaultWebFolder = "/var/www/tellervo/";
+	if(rtrim($wsbase, "/")==rtrim($defaultWebFolder, "/"))
+	{
+		return;
+	}
+
+	if(!file_exists($defaultWebFolder))
+	{
+		echo "Default webservice folder $defaultWebFolder is missing.  Cannot create instance web folder.\n";
+		exit(1);
+	}
+
+	if(!file_exists($wsbase)) mkdir($wsbase, 0755, true);
+	if(!file_exists($wsbase."odk")) mkdir($wsbase."odk", 0755, true);
+	if(!file_exists($wsbase."odk/inc")) mkdir($wsbase."odk/inc", 0755, true);
+
+	linkIfMissing($defaultWebFolder."inc", $wsbase."inc");
+	linkIfMissing($defaultWebFolder."css", $wsbase."css");
+	linkIfMissing($defaultWebFolder."img", $wsbase."img");
+	linkIfMissing($defaultWebFolder."jscript", $wsbase."jscript");
+	linkIfMissing($defaultWebFolder."schemas", $wsbase."schemas");
+	linkIfMissing($defaultWebFolder."scripts", $wsbase."scripts");
+	linkIfMissing($defaultWebFolder."index.php", $wsbase."index.php");
+	linkIfMissing($defaultWebFolder."post.php", $wsbase."post.php");
+
+	linkIfMissing($defaultWebFolder."odk/.htaccess", $wsbase."odk/.htaccess");
+	linkIfMissing($defaultWebFolder."odk/deleteFormDefinitions.php", $wsbase."odk/deleteFormDefinitions.php");
+	linkIfMissing($defaultWebFolder."odk/deleteFormInstances.php", $wsbase."odk/deleteFormInstances.php");
+	linkIfMissing($defaultWebFolder."odk/fetchInstances.php", $wsbase."odk/fetchInstances.php");
+	linkIfMissing($defaultWebFolder."odk/formList.php", $wsbase."odk/formList.php");
+	linkIfMissing($defaultWebFolder."odk/forms.php", $wsbase."odk/forms.php");
+	linkIfMissing($defaultWebFolder."odk/index.php", $wsbase."odk/index.php");
+	linkIfMissing($defaultWebFolder."odk/mediafile.php", $wsbase."odk/mediafile.php");
+	linkIfMissing($defaultWebFolder."odk/submission.php", $wsbase."odk/submission.php");
+	linkIfMissing($defaultWebFolder."odk/inc/odkauth.php", $wsbase."odk/inc/odkauth.php");
+	linkIfMissing($defaultWebFolder."odk/inc/odkhelper.php", $wsbase."odk/inc/odkhelper.php");
+}
+
+function printInstances()
+{
+	$instances = getClusterInstances();
+	echo "\nTellervo server instances\n\n";
+
+	if(empty($instances))
+	{
+		echo "No instances are registered yet.\n";
+		echo "Create one with: tellervo-server --instance NAME --configure\n\n";
+		return;
+	}
+
+	foreach($instances as $instance)
+	{
+		echo "  ".$instance["name"]."\n";
+		echo "    Database  : ".$instance["dbname"]."\n";
+		echo "    Web folder: ".$instance["webfolder"]."\n";
+	}
+	echo "\n";
+}
+
+function runClusterCommand($clusterCommand)
+{
+	global $clusterConfigFile;
+
+	$allowedCommands = array("test", "sysconfig", "upgrade-db", "version", "info", "emptylog", "network");
+	if(!in_array($clusterCommand, $allowedCommands))
+	{
+		echo "Unsupported cluster command '$clusterCommand'.\n";
+		echo "Supported commands: ".implode(", ", $allowedCommands)."\n";
+		exit(1);
+	}
+
+	$instances = getClusterInstances();
+	if(empty($instances))
+	{
+		echo "No Tellervo instances are registered in $clusterConfigFile.\n";
+		exit(1);
+	}
+
+	$overallReturn = 0;
+	foreach($instances as $instance)
+	{
+		echo "\n=== ".$instance["name"]." ===\n";
+		$cmd = PHP_BINARY." ".escapeshellarg(__FILE__)." --cluster-config ".escapeshellarg($clusterConfigFile)." --instance ".escapeshellarg($instance["name"])." --".$clusterCommand;
+		passthru($cmd, $return);
+		if($return!=0)
+		{
+			$overallReturn = $return;
+		}
+	}
+
+	exit($overallReturn);
+}
+
 
 
 function backupDB($dbfilename)
@@ -663,7 +1004,7 @@ function restoreDB($dbfilename)
 	$postgisspatialrefsys = $postgisfolder."spatial_ref_sys.sql";
 	$postgislegacy = $postgisfolder."legacy.sql";
 
-	if(!file_exists($postgisfolder) || !file_exists($postgisrestore) || !file_exists($postgissql)
+	if(!file_exists($postgisfolder) || !file_exists($postgissql)
 			|| !file_exists($postgisspatialrefsys) || !file_exists($postgislegacy)){
 		echo "Unable to find PostGIS upgrade files\n";
 		exit(0);
@@ -697,7 +1038,14 @@ function restoreDB($dbfilename)
     echo "\nConfiguring PLJava extension.\n";
     exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-1.3.0e.notransaction.sql 2>> ".$logfile."\"");
     echo "\nApplying PostGIS upgrade patches.  This could take some time on larger databases...\n";
-    shell_exec("su - postgres -c \"".$postgisrestore." ".$dbfilename." | psql ".$dbname." 2>> ".$logfile."\"");
+    if(file_exists($postgisrestore))
+    {
+		shell_exec("su - postgres -c \"".$postgisrestore." ".$dbfilename." | psql ".$dbname." 2>> ".$logfile."\"");
+    }
+    else
+    {
+		exec("su - postgres -c \"pg_restore --dbname=".$dbname." ".$dbfilename." 2>> ".$logfile."\"");
+    }
     echo "\nFinalising PLJava extension configuration...\n";
 
 	include($dbsetupfile);
@@ -883,6 +1231,8 @@ function printHelp($forced=false)
   echo "\nUseage: tellervo-server [<option> ...]\n";
   echo "e.g:\n";
   echo "  tellervo-server --configure\n";
+  echo "  tellervo-server --instance lab-a --configure\n";
+  echo "  tellervo-server --cluster test\n";
   echo "  tellervo-server --reconfigure\n";
   echo "  tellervo-server -c\n";
   echo "  tellervo-server --add-wms-name \"New Server\" --add-wms-url \"http://...\"\n";
@@ -909,8 +1259,15 @@ function printHelp($forced=false)
   echo "      --backup-db      *Backup database to the specified file\n";
   echo "      --restore-db     *Restore database from specified file\n";
   echo "      --cascade-delete *Either true or false to enabled/disable cascade delete\n";
-  //echo "      --dbname          Specify nonstandard database name [experimental]\n";
-  //echo "      --webfolder       Specify nonstandard Apache webfolder [experimental]\n";
+  echo "      --instance        Select or create a named webservice/database instance\n";
+  echo "      --list-instances  List registered named instances\n";
+  echo "      --cluster         Run a command for every registered instance\n";
+  echo "      --cluster-config  Use an alternate instance registry file\n";
+  echo "      --dbname          Specify nonstandard database name\n";
+  echo "      --webfolder       Specify nonstandard Apache webfolder\n";
+  echo "\n";
+  echo "Cluster commands: test, sysconfig, upgrade-db, version, info, emptylog, network\n";
+  echo "Instances are registered in /etc/tellervo-server/instances.conf after configure.\n";
   echo "\n";
   echo "  * Root or sudo privileges are required to run these commands\n";
   echo "\n";
@@ -1149,6 +1506,11 @@ function runSQLUpgradeFile($filename)
 	global $upgradeScripts;
 	global $dbname;
 	$colors = new Colors();
+
+	if($filename=="database_upgrade-1.3.0e.notransaction.sql")
+	{
+		ensurePlJavaAvailable();
+	}
 
 	$sql = "SELECT * FROM tblupgradelog WHERE filename = '$filename'";
 	$dbconnstatus = pg_connection_status($dbconn);
@@ -1429,12 +1791,14 @@ function createScriptsFromTemplates($auto=false)
   global $configtemplate;
   global $logfile;
   global $database;
+  global $credentialsFile;
   global $pg_hba_file;
   global $pg_hba_file_orig;
   global $wsbase;
   global $postgresversion;
 
-  if(!file_exists($wsbase)) mkdir($wsbase);
+  if(!file_exists($wsbase)) mkdir($wsbase, 0755, true);
+  prepareWebFolder();
 
   exec("cp $permstemplate $permsfile >> $logfile" );
   exec("cp $configtemplate $configfile >> $logfile" );
@@ -1500,8 +1864,14 @@ function createScriptsFromTemplates($auto=false)
   }
   setConfigVariable("%%DOMAIN%%", trim($response, "\n\r"));
 
+  // Set credentials file.  Named instances keep separate credentials so they
+  // can use independent PostgreSQL users/passwords on the same host.
+  setConfigVariable("%%CREDENTIALSFILE%%", $credentialsFile);
+
   // Set timezone from system
-  setConfigVariable("%%TIMEZONE%%", trim(file_get_contents('/etc/timezone')));
+  $timezone = trim(file_get_contents('/etc/timezone'));
+  if($timezone=="") $timezone = "UTC";
+  setConfigVariable("%%TIMEZONE%%", $timezone);
 
   // Set web folder base
   setConfigVariable("%%WSBASE%%", $wsbase);
@@ -1555,6 +1925,49 @@ function setConfigVariable($var, $value)
                               '', // directorie(s) to search
                               false) ;
   $snr->doSearch();
+}
+
+/**
+ * Write the web service database credentials without going through a shell.
+ */
+function writeCredentialsFile($username, $password)
+{
+  global $credentialsFile;
+
+  $contents = "username=".trim($username, "\n\r")."\npassword=".trim($password, "\n\r")."\n";
+  if(file_put_contents($credentialsFile, $contents, LOCK_EX)===FALSE)
+  {
+    die("Unable to write PostgreSQL credentials file.\n");
+  }
+
+  chmod($credentialsFile, 0600);
+  exec("chown www-data ".escapeshellarg($credentialsFile));
+}
+
+/**
+ * Read a simple key=value credentials file.
+ */
+function readCredentialsFile($filename)
+{
+  $credentials = array();
+  foreach(file($filename, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line)
+  {
+    $parts = explode("=", $line, 2);
+    if(count($parts)==2)
+    {
+      $credentials[$parts[0]] = $parts[1];
+    }
+  }
+
+  return $credentials;
+}
+
+/**
+ * Escape a value that will be inserted into a SQL single-quoted literal.
+ */
+function sqlLiteral($value)
+{
+  return str_replace("'", "''", $value);
 }
 
 /**
@@ -1622,11 +2035,8 @@ function postgresSetup($quick=false)
        // Create a new user or get details of an existing one
        setDBUser($quick);
 
-       // Create credentials file
-       exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile");
-       exec("chown www-data $credentialsFile");
-       exec("chmod o-rwx $credentialsFile");
-       exec("chmod g-rwx $credentialsFile");
+      // Create credentials file
+      writeCredentialsFile($user, $pwd);
       }
    }
    else
@@ -1635,10 +2045,7 @@ function postgresSetup($quick=false)
       setDBUser($quick);
 
       // Write to credentials file
-      exec("echo \"username=".$user."\npassword=".$pwd."\" > $credentialsFile");
-      exec("chown www-data $credentialsFile");
-      exec("chmod o-rwx $credentialsFile");
-      exec("chmod g-rwx $credentialsFile");
+      writeCredentialsFile($user, $pwd);
 
       // Create db user and set permissions
       echo "Setting database permissions...\n";
@@ -1649,7 +2056,7 @@ function postgresSetup($quick=false)
                               false) ;
       $snr->doSearch();
       $snr = new File_SearchReplace("%%DBPWD%%",
-                              trim($pwd, "\n\r"),
+                              sqlLiteral(trim($pwd, "\n\r")),
 			      $permsfile,
                               '', // directorie(s) to search
                               false) ;
@@ -1662,7 +2069,9 @@ function postgresSetup($quick=false)
 
       // Set pg_hba.conf file entry
       $pg_hba_str = "local        all      ".trim($user, "\n\r")."                  trust\\n".
-                    "host         all      ".trim($user, "\n\r")."   samenet        md5\\n";
+                    "host         all      ".trim($user, "\n\r")."   127.0.0.1/32   scram-sha-256\\n".
+                    "host         all      ".trim($user, "\n\r")."   ::1/128        scram-sha-256\\n".
+                    "host         all      ".trim($user, "\n\r")."   samenet        scram-sha-256\\n";
       //$command = "sudo -u postgres sh -c \"sed '1 i\\# ADDED BY TELLERVO CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
       $command = "su - postgres -c \"sed '1 i\\# ADDED BY TELLERVO CONFIG SCRIPT\\n$pg_hba_str' $pg_hba_file_orig > $pg_hba_file\"";
 
@@ -1753,6 +2162,7 @@ function createDatabase($auto=false)
     exec("su - postgres -c \"createdb ".$dbname." 2>> ".$logfile."\"");
 
     echo "\nConfiguring PLJava extension.\n";
+    ensurePlJavaAvailable();
     exec("su - postgres -c \"psql -d ".$dbname." -f ".$upgradeScripts."/database_upgrade-1.3.0e.notransaction.sql 2>> ".$logfile."\"");
 
     echo "\nCreating database.  This could take a while...\n";
@@ -1770,6 +2180,7 @@ function setDBUser($quick=false)
 {
   global $user;
   global $pwd;
+  global $instanceName;
 
   if($quick)
   {
@@ -1809,7 +2220,7 @@ function setDBUser($quick=false)
   }
   else
   {
-      $user = "tellervo";
+      $user = $instanceName=="" ? "tellervo" : "tellervo_".preg_replace('/[^a-z0-9_]/', '_', strtolower($instanceName));
 
       if($quick===TRUE)
       {
@@ -1911,6 +2322,7 @@ function apacheSetup($auto=false)
 
   echo "\nSetting up webservice...\n";
   exec("a2ensite tellervo-apache.conf 2>> $logfile", $response);
+  writeApacheInstancesConfig();
   exec("a2dissite 000-default.conf 2>> $logfile", $response);
 
   echo "\nRestarting webserver...\n";
@@ -1999,11 +2411,11 @@ function verifySetup($silent=false)
   // Compile webservice URL
   if($securehttp===TRUE)
   {
-    $wsurl = "https://$ip/";
+    $wsurl = "https://$ip".getInstanceWebPath();
   }
   else
   {
-    $wsurl = "http://$ip/";
+    $wsurl = "http://$ip".getInstanceWebPath();
   }
 
   writeLogMsg("Webservice url: $wsurl");
@@ -2050,28 +2462,27 @@ function verifySetup($silent=false)
 
 	if($silent!=TRUE) echoTruncatedString("    - Checking connection to PostgreSQL database:");
 
-	$contents = str_replace("\n", "=", file_get_contents($cdbCredentialsFile));
-	$myarray = explode("=", $contents, 5);
-	$username = $myarray[1];
-	$password = $myarray[3];
+	$credentials = readCredentialsFile($cdbCredentialsFile);
+	$username = isset($credentials["username"]) ? $credentials["username"] : "";
+	$password = isset($credentials["password"]) ? $credentials["password"] : "";
 
 	//Set up database connection
-	$conn_string = "dbname=$dbName user=".$username." password=".$password;
+	$conn_string = "host=$hostname port=$pgport dbname=$dbName user=".$username." password=".$password;
 	$dbconn = pg_connect ($conn_string);
-
-	//Date format
-	$sql = "set datestyle to 'ISO'";
-	pg_query($dbconn, $sql);
 
 	if($silent!=TRUE)
 	{
-		printResult(!$dbconn===FALSE);
-		$runningresult = FALSE;
+		printResult($dbconn!==FALSE);
+		if($dbconn===FALSE) $runningresult = FALSE;
 	}
 	else
 	{
 		if($dbconn===FALSE) return FALSE;
 	}
+
+	//Date format
+	$sql = "set datestyle to 'ISO'";
+	pg_query($dbconn, $sql);
 
 	if($silent!=TRUE)	echoTruncatedString("    - Checking webservice is accessible:");
 		if(fopen($wsurl, "r"))

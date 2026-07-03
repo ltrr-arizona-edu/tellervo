@@ -60,6 +60,7 @@ CREATE OR REPLACE VIEW vwtblsample2 AS
     s.samplestatusid,
     s.dendrochronologist,
     ss.samplestatus,
+    udf.userdefinedfields::text AS userdefinedfieldsastext,
     udf.userdefinedfields
    FROM tblsample s
      LEFT JOIN tlkpsamplestatus ss ON s.samplestatusid = ss.samplestatusid
@@ -156,5 +157,3 @@ WHERE s.sampleid IS NOT NULL;
 DROP TABLE IF EXISTS staticvwipt;
 CREATE TABLE staticvwipt AS SELECT * FROM vwipt;
 GRANT ALL ON staticvwipt TO tellervo;
-     
-    

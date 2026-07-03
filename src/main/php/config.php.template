@@ -28,7 +28,7 @@ $labacronym = "%%LABACRONYM%%";
  * POSTGRESQL SETTINGS
  */
 // PostgreSQL credentials file
-$cdbCredentialsFile = "/usr/share/tellervo-server/server_credentials";
+$cdbCredentialsFile = "%%CREDENTIALSFILE%%";
 
 // Hostname or IP of the server running PostgreSQL
 $hostname = "localhost";
