@@ -120,6 +120,45 @@ sudo apt install \
   ./target/server/2.0/Linux/tellervo-server-web-2.0.deb
 ```
 
+## Remote Database Webservice Wizard
+
+When the webservice and PostgreSQL run on separate hosts, create the database and
+database role on the database host first. The webservice wizard can point at a
+remote PostgreSQL server, but database creation is still a local PostgreSQL
+operation.
+
+On the database host, make sure PostgreSQL accepts connections from the web host:
+
+- set `listen_addresses` appropriately in PostgreSQL
+- allow the web host in `pg_hba.conf`
+- open TCP port `5432` in the firewall
+- create the Tellervo database and database role
+
+On the web host, run the named instance wizard:
+
+```bash
+sudo tellervo-server --instance ltrr --configure
+```
+
+When prompted for the PostgreSQL connection, enter the database host name or IP
+and port. If the host is not local, the wizard will not try to create a new
+database. It will collect the existing database name, PostgreSQL user and
+password, write them into the instance configuration, regenerate
+`systemconfig.php`, and test the remote database connection.
+
+After configuration:
+
+```bash
+sudo tellervo-server --instance ltrr --test
+sudo systemctl reload apache2
+```
+
+The setup test treats public webservice reachability as a warning rather than a
+hard failure. Production deployments often finish HTTPS certificates, DNS or
+reverse proxy configuration outside the Tellervo package wizard. The wizard
+still performs hard checks for Apache, configuration files and the PostgreSQL
+connection.
+
 The split package dependency graph is deliberately simple:
 
 - web host: `tellervo-server-web` depends on `tellervo-server-common`

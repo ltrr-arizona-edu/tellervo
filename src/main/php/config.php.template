@@ -31,20 +31,20 @@ $labacronym = "%%LABACRONYM%%";
 $cdbCredentialsFile = "%%CREDENTIALSFILE%%";
 
 // Hostname or IP of the server running PostgreSQL
-$hostname = "localhost";
+$hostname = "%%PGHOST%%";
 
 // PostgreSQL Database name e.g. "tellervo"
 $dbName = "%%DBNAME%%";
 
 // Port on which PostgreSQL is running (normally "5432")
-$pgport = "5432";
+$pgport = "%%PGPORT%%";
 
 
 /**
  * WEBSERVER SETTINGS
  */
 // Domain name for this webservice e.g. "dendro.cornell.edu"
-$domain = "%%DBNAME%%";
+$domain = "%%DOMAIN%%";
 
 // IP address of this server
 $ip = "%%IP%%";

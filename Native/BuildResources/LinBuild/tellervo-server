@@ -101,6 +101,8 @@ $user 			  = "tellervo";
 $pwd 			  = "";
 $wsurl 			  = "";
 $errorsFound 	  = FALSE;
+$postgresHost     = "localhost";
+$postgresPort     = "5432";
 $postgresversion  = detectPostgresVersion();
 $postgisversion   = "3";
 $folderbase       = "/usr/share/tellervo-server/";
@@ -248,8 +250,8 @@ if(isset($args["auto-configure"]))
 	include($systemconfig);
 	runDBUpgrades(TRUE);
 	apacheSetup(TRUE);
-	verifySetup();
 	registerCurrentInstance();
+	verifySetup();
 	printComplete();
 	exit(0);
 
@@ -352,8 +354,8 @@ else if(isset($args["firstrun"]))
 	generateSystemsConfig();
 	include($systemconfig);
 	apacheSetup();
-	verifySetup();
 	registerCurrentInstance();
+	verifySetup();
 	printComplete();
 	exec("$folderbase/firstrun");
 	exit(0);
@@ -464,8 +466,8 @@ else if(isset($args["reconfigure"]) || isset($args["r"]))
 	include($systemconfig);
 	runDBUpgrades(true);
 	apacheSetup();
-	verifySetup();
 	registerCurrentInstance();
+	verifySetup();
 	printComplete();
 	exit(0);
 }
@@ -498,8 +500,8 @@ else if(isset($args["dockerconfigure"]))
 	include($systemconfig);
 	runDBUpgrades(true);
 	apacheSetup(true);
-	verifySetup(true);
 	registerCurrentInstance();
+	verifySetup(true);
 	printComplete();
 	exit(0);
 }
@@ -609,8 +611,8 @@ else if (isset($args["configure"]) || isset($args["c"]))
 	include($systemconfig);
 	runDBUpgrades(true);
 	apacheSetup();
-	verifySetup();
 	registerCurrentInstance();
+	verifySetup();
 	printComplete();
 	exit(0);
 }
@@ -779,9 +781,8 @@ function registerCurrentInstance()
 	global $instanceName;
 	global $dbname;
 	global $wsbase;
-	global $errorsFound;
 
-	if($instanceName=="" || $errorsFound!==FALSE)
+	if($instanceName=="")
 	{
 		return;
 	}
@@ -853,13 +854,19 @@ function writeApacheInstancesConfig()
 function writeClusterInstances($instances)
 {
 	global $clusterConfigFile;
+	global $logfile;
 
 	ksort($instances);
 
 	$folder = dirname($clusterConfigFile);
 	if(!file_exists($folder))
 	{
-		mkdir($folder, 0755, true);
+		if(!mkdir($folder, 0755, true) && !file_exists($folder))
+		{
+			echo "Unable to create instance registry folder: ".$folder."\n";
+			writeLogMsg("Unable to create instance registry folder: ".$folder, "ERROR");
+			return false;
+		}
 	}
 
 	$contents = "# Tellervo server instances\n";
@@ -869,7 +876,15 @@ function writeClusterInstances($instances)
 		$contents .= $instance["name"]." ".$instance["dbname"]." ".$instance["webfolder"]."\n";
 	}
 
-	file_put_contents($clusterConfigFile, $contents);
+	if(file_put_contents($clusterConfigFile, $contents, LOCK_EX)===FALSE)
+	{
+		echo "Unable to write instance registry: ".$clusterConfigFile."\n";
+		writeLogMsg("Unable to write instance registry: ".$clusterConfigFile, "ERROR");
+		return false;
+	}
+
+	chmod($clusterConfigFile, 0644);
+	return true;
 }
 
 function isSafeInstanceWebFolder($webfolder)
@@ -2208,6 +2223,8 @@ function createScriptsFromTemplates($auto=false)
   global $pg_hba_file_orig;
   global $wsbase;
   global $postgresversion;
+  global $postgresHost;
+  global $postgresPort;
 
   if(!file_exists($wsbase)) mkdir($wsbase, 0755, true);
   prepareWebFolder();
@@ -2276,6 +2293,40 @@ function createScriptsFromTemplates($auto=false)
   }
   setConfigVariable("%%DOMAIN%%", trim($response, "\n\r"));
 
+  if($auto===TRUE)
+  {
+    $postgresHost = "localhost";
+    $postgresPort = "5432";
+  }
+  else
+  {
+      $dialog = new Tui();
+	  $dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'PostgreSQL Connection' --inputbox '\n\nHostname or IP address of the PostgreSQL server:\n\nPress Enter for the standard single-machine setup.\n' 17 70 'localhost'");
+	  $dialog->processStop();
+      $retcode = $dialog->getReturnCode();
+      if($retcode!=0)
+ 	  {
+	     clear();
+	     die();
+      }
+      $response = trim($dialog->getPipeTwo(), "\n\r");
+      $postgresHost = $response=="" ? "localhost" : $response;
+
+      $dialog = new Tui();
+	  $dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'PostgreSQL Connection' --inputbox '\n\nPostgreSQL port:\n\nPress Enter for the standard PostgreSQL port.\n' 14 60 '5432'");
+	  $dialog->processStop();
+      $retcode = $dialog->getReturnCode();
+      if($retcode!=0)
+ 	  {
+	     clear();
+	     die();
+      }
+      $response = trim($dialog->getPipeTwo(), "\n\r");
+      $postgresPort = preg_match('/^[0-9]+$/', $response) ? $response : "5432";
+  }
+  setConfigVariable("%%PGHOST%%", $postgresHost);
+  setConfigVariable("%%PGPORT%%", $postgresPort);
+
   // Set credentials file.  Named instances keep separate credentials so they
   // can use independent PostgreSQL users/passwords on the same host.
   setConfigVariable("%%CREDENTIALSFILE%%", $credentialsFile);
@@ -2288,8 +2339,9 @@ function createScriptsFromTemplates($auto=false)
   // Set web folder base
   setConfigVariable("%%WSBASE%%", $wsbase);
 
-  // Set the pg_hba location
-  if (file_exists("/etc/postgresql/".$postgresversion."/main/pg_hba.conf"))
+  // Set the local pg_hba location. Remote PostgreSQL hosts must be configured
+  // on the database server itself.
+  if (isLocalPostgresHost($postgresHost) && file_exists("/etc/postgresql/".$postgresversion."/main/pg_hba.conf"))
   {
   	$pg_hba_file = "/etc/postgresql/".$postgresversion."/main/pg_hba.conf";
   	$pg_hba_file_orig = "/etc/postgresql/".$postgresversion."/main/pg_hba.conf.bak";
@@ -2298,7 +2350,7 @@ function createScriptsFromTemplates($auto=false)
 
   echo "\n";
   // Back up pg_hba file if it hasn't been already
-  if(!file_exists($pg_hba_file_orig))
+  if(isLocalPostgresHost($postgresHost) && !file_exists($pg_hba_file_orig))
   {
      //exec("sudo -u postgres sh -c \"cp $pg_hba_file $pg_hba_file_orig >> $logfile\"" );
      exec("su - postgres -c \"cp $pg_hba_file $pg_hba_file_orig >> $logfile\"" );
@@ -2315,6 +2367,12 @@ function getIP()
   exec("hostname -I | awk '{print $1}'", $response);
   
   return $response[0];
+}
+
+function isLocalPostgresHost($host)
+{
+  $host = strtolower(trim($host));
+  return $host=="" || $host=="localhost" || $host=="127.0.0.1" || $host=="::1";
 }
 
 /**
@@ -2430,10 +2488,18 @@ function postgresSetup($quick=false)
   global $dbtemplate;
   global $credentialsFile;
   global $dbname;
+  global $postgresHost;
 
   if($quick)
   {
   	  $response = "y";
+  }
+  else if(!isLocalPostgresHost($postgresHost))
+  {
+      $dialog = new Tui();
+	  $dialog->processStart("dialog --backtitle 'Tellervo Server Configuration' --title 'Remote PostgreSQL Database' --msgbox '\n\nThis webservice is configured to use PostgreSQL on ".$postgresHost.".\n\nThe Tellervo wizard can create a database only when PostgreSQL is local. Please create the Tellervo database and database user on the database server first. This wizard will now collect the existing database name and credentials.\n' 18 75");
+	  $dialog->processStop();
+      $response = "n";
   }
   else
   {
@@ -2820,7 +2886,71 @@ function isSysConfigValid()
 		else
 		{
 		  return FALSE;
+	}
+}
+
+function getWebserviceUrlCandidates($domain, $securehttp)
+{
+	$path = getInstanceWebPath();
+	$hosts = array();
+
+	$domain = trim((string) $domain);
+	if($domain!="" && strpos($domain, "%")===false)
+	{
+		$hosts[] = $domain;
+	}
+
+	$ip = getIP();
+	if($ip!="")
+	{
+		$hosts[] = $ip;
+	}
+
+	$hosts = array_values(array_unique($hosts));
+	$schemes = $securehttp===TRUE ? array("https", "http") : array("http", "https");
+	$urls = array();
+	foreach($schemes as $scheme)
+	{
+		foreach($hosts as $host)
+		{
+			$urls[] = $scheme."://".$host.$path;
 		}
+	}
+
+	return array_values(array_unique($urls));
+}
+
+function isWebserviceUrlReachable($url)
+{
+	$context = stream_context_create(array(
+		"http" => array("timeout" => 5),
+		"ssl" => array(
+			"verify_peer" => false,
+			"verify_peer_name" => false
+		)
+	));
+
+	$handle = @fopen($url, "r", false, $context);
+	if($handle===FALSE)
+	{
+		return false;
+	}
+
+	fclose($handle);
+	return true;
+}
+
+function findReachableWebserviceUrl($urls)
+{
+	foreach($urls as $url)
+	{
+		if(isWebserviceUrlReachable($url))
+		{
+			return $url;
+		}
+	}
+
+	return false;
 }
 
 /**
@@ -2838,27 +2968,19 @@ function verifySetup($silent=false)
   include($configfile);
   include($systemconfig);
 
-  $ip = getIP();
   global $baseFolder;
   global $securehttp;
-
-  // Compile webservice URL
-  if($securehttp===TRUE)
-  {
-    $wsurl = "https://$ip".getInstanceWebPath();
-  }
-  else
-  {
-    $wsurl = "http://$ip".getInstanceWebPath();
-  }
+  $urlCandidates = getWebserviceUrlCandidates(isset($domain) ? $domain : "", isset($securehttp) ? $securehttp : FALSE);
+  $reachableUrl = findReachableWebserviceUrl($urlCandidates);
+  $wsurl = $reachableUrl!==false ? $reachableUrl : (isset($urlCandidates[0]) ? $urlCandidates[0] : "http://".getIP().getInstanceWebPath());
 
   writeLogMsg("Webservice url: $wsurl");
+  writeLogMsg("Webservice url candidates: ".implode(", ", $urlCandidates));
 
 	if($silent)
 	{
 		if(checkServiceIsRunning("apache2")==FALSE) return FALSE;
-		if(checkServiceIsRunning("postgres")==FALSE) return FALSE;
-		if(!fopen($wsurl, "r")) return FALSE;
+		if(isLocalPostgresHost($hostname) && checkServiceIsRunning("postgres")==FALSE) return FALSE;
 		if(!fopen($cdbCredentialsFile, "r")) return FALSE;
 		if(isSysConfigValid()===FALSE) return FALSE;
 		if(isConfigPhpValid()===FALSE) return FALSE;
@@ -2869,9 +2991,17 @@ function verifySetup($silent=false)
 		printResult(checkServiceIsRunning("apache2"));
 		if(checkServiceIsRunning("apache2")===FALSE) $runningresult = FALSE;
 
-		echoTruncatedString("    - Checking PostgreSQL is running:");
-		printResult(checkServiceIsRunning("postgres"));
-		if(checkServiceIsRunning("postgres")===FALSE) $runningresult = FALSE;
+		if(isLocalPostgresHost($hostname))
+		{
+			echoTruncatedString("    - Checking PostgreSQL is running:");
+			printResult(checkServiceIsRunning("postgres"));
+			if(checkServiceIsRunning("postgres")===FALSE) $runningresult = FALSE;
+		}
+		else
+		{
+			echoTruncatedString("    - Checking PostgreSQL host is remote:");
+			printResult(TRUE);
+		}
 
 		echoTruncatedString("    - Checking database credentials file is valid:");
 		if(fopen($cdbCredentialsFile, "r"))
@@ -2918,24 +3048,22 @@ function verifySetup($silent=false)
 	$sql = "set datestyle to 'ISO'";
 	pg_query($dbconn, $sql);
 
-	if($silent!=TRUE)	echoTruncatedString("    - Checking webservice is accessible:");
-		if(fopen($wsurl, "r"))
+	if($silent!=TRUE)
+	{
+		echoTruncatedString("    - Checking webservice is accessible:");
+		if($reachableUrl!==false)
 		{
-			if(getIP()=="127.0.0.1")
-			{
-				if($silent!=TRUE) printResult(FALSE);
-				$runningresult = FALSE;
-			}
-			else
-			{
-		    		if($silent!=TRUE) printResult(TRUE);
-		   	}
+			printResult(TRUE);
 		}
 		else
 		{
-		    if($silent!=TRUE) printResult(FALSE);
-		    $runningresult = FALSE;
+			$colors = new Colors();
+			echo $colors->getColoredString("WARNING", "yellow")."\n";
+			echo "      Webservice URL was not reachable from this machine during setup.\n";
+			echo "      This is common before DNS, HTTPS or reverse proxy configuration is complete.\n";
+			echo "      First URL checked: ".$wsurl."\n";
 		}
+	}
 
 
 	// Check that webservice and database versions are in sync
