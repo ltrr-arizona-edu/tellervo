@@ -1,0 +1,15 @@
+Package: tellervo-server-db-pg{{POSTGRES_VERSION}}
+Version: {{SERVER_VERSION}}
+Section: misc
+Priority: optional
+Architecture: all
+Depends: tellervo-server-common (= {{SERVER_VERSION}}), postgresql-{{POSTGRES_VERSION}}, postgresql-client-{{POSTGRES_VERSION}}, postgresql-contrib-{{POSTGRES_VERSION}}, postgresql-server-dev-{{POSTGRES_VERSION}}, postgresql-{{POSTGRES_VERSION}}-postgis-3, postgresql-{{POSTGRES_VERSION}}-postgis-3-scripts, postgresql-{{POSTGRES_VERSION}}-pljava, default-jdk
+Suggests: openssh-server, pgadmin3
+Replaces: tellervo-server (<= {{SERVER_VERSION}})
+Maintainer: Peter Brewer <p.brewer@ltrr.arizona.edu>
+Description: PostgreSQL {{POSTGRES_VERSION}} dependencies for Tellervo server databases
+ This package installs the PostgreSQL {{POSTGRES_VERSION}}, PostGIS and PL/Java
+ runtime dependencies needed by a Tellervo database host. It is intended for
+ deployments where PostgreSQL runs separately from the PHP/Apache webservice, or
+ as the database dependency bundle selected by the tellervo-server-db package.
+Distribution: development

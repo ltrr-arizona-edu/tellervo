@@ -3,11 +3,11 @@ Version: {{SERVER_VERSION}}
 Section: misc
 Priority: optional
 Architecture: all
-Depends: apache2, postgresql-17, postgresql-contrib-17, postgresql-server-dev-17, postgresql-17-postgis-3, postgresql-17-postgis-3-scripts, postgresql-17-pljava, default-jdk, php, libapache2-mod-php, php-pgsql, php-mbstring, php-xml, php-zip, php-curl, php-common, expect, dialog
+Depends: tellervo-server-common (= {{SERVER_VERSION}}), tellervo-server-web (= {{SERVER_VERSION}}), tellervo-server-db (= {{SERVER_VERSION}})
 Suggests: openssh-server, pgadmin3, tellervo
 Replaces: tellervo-server (<< {{SERVER_VERSION}})
 Maintainer: Peter Brewer <p.brewer@ltrr.arizona.edu>
-Description: Database and webservice for the Tellervo dendrochronology desktop application
- The Tellervo server provides a PHP/PostgreSQL-based web service for managing dendrochronology
- samples, data and metadata alongside the Tellervo desktop application.
+Description: Tellervo server single-host meta package
+ This package depends on the common, web and database Tellervo server packages.
+ Install it when Apache/PHP and PostgreSQL should run on the same host.
 Distribution: development

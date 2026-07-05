@@ -1,0 +1,13 @@
+#!/bin/bash
+echo "*******************" >> /var/log/tellervo-installation.log
+echo "Database postinst run {{SERVER_VERSION}} with $1 argument " >> /var/log/tellervo-installation.log
+date '+%R.%S' >> /var/log/tellervo-installation.log
+echo "*******************" >> /var/log/tellervo-installation.log
+
+if [ "$1" = 'configure' ]; then
+  if command -v service >/dev/null 2>&1; then
+    service postgresql restart || true
+  fi
+fi
+
+exit 0

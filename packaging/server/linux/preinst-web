@@ -1,0 +1,15 @@
+#!/bin/bash
+echo "*******************" >> /var/log/tellervo-installation.log
+echo "Web preinst run {{SERVER_VERSION}} with $1 argument" >> /var/log/tellervo-installation.log
+date '+%R.%S' >> /var/log/tellervo-installation.log
+
+if [ "$1" = 'upgrade' ]; then
+  if [ -e "/var/www/tellervo/config.php" ]; then
+    echo "Backing up config.php for reinstatement after the web package upgrade" >> /var/log/tellervo-installation.log
+    cp /var/www/tellervo/config.php /usr/share/tellervo-server/config.bak
+  fi
+elif [ "$1" = 'abort-upgrade' ]; then
+  echo "Web preinst upgrade routine failed" >> /var/log/tellervo-installation.log
+fi
+
+exit 0

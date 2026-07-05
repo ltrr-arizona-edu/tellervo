@@ -1,0 +1,14 @@
+Package: tellervo-server-common
+Version: {{SERVER_VERSION}}
+Section: misc
+Priority: optional
+Architecture: all
+Depends: php-cli | php, php-pgsql, php-mbstring, php-xml, php-common, postgresql-client, expect, dialog
+Suggests: tellervo-server-web, tellervo-server-db
+Replaces: tellervo-server (<= {{SERVER_VERSION}})
+Maintainer: Peter Brewer <p.brewer@ltrr.arizona.edu>
+Description: Shared administration files for Tellervo server deployments
+ Tellervo server common provides the administration commands, database templates,
+ upgrade scripts and shared configuration templates used by both web and database
+ Tellervo server installations.
+Distribution: development

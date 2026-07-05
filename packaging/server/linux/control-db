@@ -1,0 +1,14 @@
+Package: tellervo-server-db
+Version: {{SERVER_VERSION}}
+Section: misc
+Priority: optional
+Architecture: all
+Depends: tellervo-server-db-pg18 (= {{SERVER_VERSION}}) | tellervo-server-db-pg17 (= {{SERVER_VERSION}})
+Suggests: openssh-server, pgadmin3
+Replaces: tellervo-server (<= {{SERVER_VERSION}})
+Maintainer: Peter Brewer <p.brewer@ltrr.arizona.edu>
+Description: PostgreSQL dependency selector for Tellervo server databases
+ The Tellervo database package selects an installable PostgreSQL dependency
+ bundle for a database host. PostgreSQL 18 is preferred when its PL/Java package
+ is available; otherwise apt can fall back to the PostgreSQL 17 bundle.
+Distribution: development

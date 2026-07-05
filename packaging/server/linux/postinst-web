@@ -1,0 +1,66 @@
+#!/bin/bash
+echo "*******************" >> /var/log/tellervo-installation.log
+echo "Web postinst run {{SERVER_VERSION}} with $1 argument " >> /var/log/tellervo-installation.log
+date '+%R.%S' >> /var/log/tellervo-installation.log
+echo "*******************" >> /var/log/tellervo-installation.log
+
+if [ "$1" = 'configure' ]; then
+  mkdir -p /usr/share/tellervo-server/mediastore
+  if id -u www-data >/dev/null 2>&1; then
+    chown -R www-data:www-data /usr/share/tellervo-server/mediastore || true
+  fi
+
+  echo "Repairing named instance web assets" >> /var/log/tellervo-installation.log
+  /usr/bin/tellervo-server --repair-web-assets >> /var/log/tellervo-installation.log 2>&1 || true
+
+  if [[ $2 ]]; then
+    if [ -e "/usr/share/tellervo-server/config.bak" ]; then
+      echo "Reinstating config.php from previous web package installation" >> /var/log/tellervo-installation.log
+      cp /usr/share/tellervo-server/config.bak /var/www/tellervo/config.php
+    fi
+
+    if [[ "$2" = "1.0.9" || "$2" = "1.1.0" || "$2" = "1.1.1" ]]; then
+      if [ -e "/var/www/tellervo/config.php" ]; then
+        echo "Upgrading config file" >> /var/log/tellervo-installation.log
+
+        echo "<?php
+/**
+ * Additional settings added when upgraded from v. $2
+ */
+
+ // IP address of this server
+ \$ip = \$hostname;
+
+ // Length of time a login is valid for in seconds. (1800 = 30mins)
+ \$timeout = 2700;
+ ?>" >> /var/www/tellervo/config.php
+      fi
+    fi
+
+    if [ -e "/var/www/tellervo/config.php" ]; then
+      echo "Running database upgrade scripts" >> /var/log/tellervo-installation.log
+      /usr/bin/tellervo-server --upgrade-db
+
+      echo "Regenerating systemconfig.php" >> /var/log/tellervo-installation.log
+      /usr/bin/tellervo-server --sysconfig
+
+      echo "Testing configuration" >> /var/log/tellervo-installation.log
+      /usr/bin/tellervo-server --test
+
+      echo "Removing backup config file" >> /var/log/tellervo-installation.log
+      rm -f /usr/share/tellervo-server/config.bak
+    else
+      echo "You need to configure your Tellervo Server by running as root/sudo: "
+      echo "tellervo-server --configure"
+    fi
+  else
+    echo "Configuring new web package installation" >> /var/log/tellervo-installation.log
+    echo "You need to configure your Tellervo Server by running as root/sudo: "
+    echo "tellervo-server --configure"
+  fi
+
+  a2enmod rewrite
+  service apache2 restart
+fi
+
+exit 0

@@ -1,0 +1,18 @@
+#!/bin/bash
+echo "*******************" >> /var/log/tellervo-installation.log
+echo "Common postrm run {{SERVER_VERSION}} with $1 argument" >> /var/log/tellervo-installation.log
+date '+%R.%S' >> /var/log/tellervo-installation.log
+echo "*******************" >> /var/log/tellervo-installation.log
+
+if [ "$1" = 'remove' ] || [ "$1" = 'purge' ]; then
+  rm -f /usr/share/tellervo-server/*.backup
+  rm -f /usr/share/tellervo-server/server_credentials
+  rm -f /usr/share/tellervo-server/server_credentials.*
+  rm -f /usr/share/tellervo-server/set_database_permission.sql
+
+  if [ -d "/usr/share/tellervo-server" ]; then
+    rmdir --ignore-fail-on-non-empty /usr/share/tellervo-server
+  fi
+fi
+
+exit 0

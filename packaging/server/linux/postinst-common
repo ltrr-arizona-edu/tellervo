@@ -1,0 +1,14 @@
+#!/bin/bash
+echo "*******************" >> /var/log/tellervo-installation.log
+echo "Common postinst run {{SERVER_VERSION}} with $1 argument " >> /var/log/tellervo-installation.log
+date '+%R.%S' >> /var/log/tellervo-installation.log
+echo "*******************" >> /var/log/tellervo-installation.log
+
+if [ "$1" = 'configure' ]; then
+  mkdir -p /usr/share/tellervo-server/mediastore
+  if id -u www-data >/dev/null 2>&1; then
+    chown -R www-data:www-data /usr/share/tellervo-server/mediastore || true
+  fi
+fi
+
+exit 0

@@ -1,0 +1,18 @@
+#!/bin/bash
+echo "*******************" >> /var/log/tellervo-installation.log
+echo "Web postrm run {{SERVER_VERSION}} with $1 argument" >> /var/log/tellervo-installation.log
+date '+%R.%S' >> /var/log/tellervo-installation.log
+echo "*******************" >> /var/log/tellervo-installation.log
+
+if [ "$1" = 'remove' ] || [ "$1" = 'purge' ]; then
+  rm -f /var/www/tellervo/config.php
+  rm -f /var/www/tellervo/systemconfig.php
+
+  if [ -d "/var/www/tellervo" ]; then
+    rmdir --ignore-fail-on-non-empty /var/www/tellervo
+  fi
+elif [ "$1" = 'failed-upgrade' ]; then
+  echo "Previous version web postrm script failed, but continuing anyway..." >> /var/log/tellervo-installation.log
+fi
+
+exit 0

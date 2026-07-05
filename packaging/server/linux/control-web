@@ -1,0 +1,14 @@
+Package: tellervo-server-web
+Version: {{SERVER_VERSION}}
+Section: misc
+Priority: optional
+Architecture: all
+Depends: tellervo-server-common (= {{SERVER_VERSION}}), apache2, php, libapache2-mod-php, php-pgsql, php-mbstring, php-xml, php-zip, php-curl, php-common
+Suggests: openssh-server, tellervo
+Replaces: tellervo-server (<= {{SERVER_VERSION}})
+Maintainer: Peter Brewer <p.brewer@ltrr.arizona.edu>
+Description: Tellervo PHP webservice package
+ The Tellervo web package installs the PHP webservice and Apache configuration.
+ It can be installed on an application server that connects to a PostgreSQL
+ database on another host.
+Distribution: development
