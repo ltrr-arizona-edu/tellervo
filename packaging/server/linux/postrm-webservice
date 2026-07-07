@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "*******************" >> /var/log/tellervo-installation.log
-echo "Web postrm run {{SERVER_VERSION}} with $1 argument" >> /var/log/tellervo-installation.log
+echo "Webservice postrm run {{SERVER_VERSION}} with $1 argument" >> /var/log/tellervo-installation.log
 date '+%R.%S' >> /var/log/tellervo-installation.log
 echo "*******************" >> /var/log/tellervo-installation.log
 

@@ -87,10 +87,10 @@ fi
 
 META_ROOT="$STAGING_DIR/tellervo-server"
 COMMON_ROOT="$STAGING_DIR/tellervo-server-common"
-WEB_ROOT="$STAGING_DIR/tellervo-server-web"
+WEBSERVICE_ROOT="$STAGING_DIR/tellervo-server-webservice"
 DB_ROOT="$STAGING_DIR/tellervo-server-db"
 
-rm -rf "$META_ROOT" "$COMMON_ROOT" "$WEB_ROOT" "$DB_ROOT" "$STAGING_DIR"/tellervo-server-db-pg*
+rm -rf "$META_ROOT" "$COMMON_ROOT" "$WEBSERVICE_ROOT" "$DB_ROOT" "$STAGING_DIR"/tellervo-server-db-pg*
 mkdir -p "$DEST_DIR"
 
 render_template() {
@@ -145,7 +145,7 @@ install_common_payload() {
   mkdir -p "$share_dir/mediastore"
 }
 
-install_web_payload() {
+install_webservice_payload() {
   local package_root="$1"
   local web_dir="$package_root/var/www/tellervo"
 
@@ -165,12 +165,12 @@ install_db_payload() {
   if [[ -n "$postgres_version" ]]; then
     printf '%s\n' \
       "This package installs PostgreSQL $postgres_version-side dependencies for a Tellervo database host." \
-      'Install tellervo-server-web on the PHP/Apache host and configure it to use this database host.' \
+      'Install tellervo-server-webservice on the PHP/Apache host and configure it to use this database host.' \
       > "$package_root/usr/share/doc/$package_name/README.Debian"
   else
     printf '%s\n' \
       'This package selects an installable PostgreSQL dependency bundle for a Tellervo database host.' \
-      'Install tellervo-server-web on the PHP/Apache host and configure it to use this database host.' \
+      'Install tellervo-server-webservice on the PHP/Apache host and configure it to use this database host.' \
       > "$package_root/usr/share/doc/$package_name/README.Debian"
   fi
   chmod 0644 "$package_root/usr/share/doc/$package_name/README.Debian"
@@ -220,9 +220,9 @@ install_common_payload "$COMMON_ROOT"
 install_control "$COMMON_ROOT" control-common \
   postinst-common:postinst postrm-common:postrm
 
-install_web_payload "$WEB_ROOT"
-install_control "$WEB_ROOT" control-web \
-  preinst-web:preinst postinst-web:postinst prerm:prerm postrm-web:postrm
+install_webservice_payload "$WEBSERVICE_ROOT"
+install_control "$WEBSERVICE_ROOT" control-webservice \
+  preinst-webservice:preinst postinst-webservice:postinst prerm:prerm postrm-webservice:postrm
 
 install_db_payload "$DB_ROOT" tellervo-server-db
 install_control "$DB_ROOT" control-db
@@ -240,7 +240,7 @@ done
 
 build_deb "$META_ROOT" tellervo-server
 build_deb "$COMMON_ROOT" tellervo-server-common
-build_deb "$WEB_ROOT" tellervo-server-web
+build_deb "$WEBSERVICE_ROOT" tellervo-server-webservice
 build_deb "$DB_ROOT" tellervo-server-db
 for db_provider_package in "${DB_PROVIDER_PACKAGES[@]}"; do
   build_deb "$STAGING_DIR/$db_provider_package" "$db_provider_package"
@@ -253,7 +253,7 @@ PostgreSQL package majors: ${POSTGRES_VERSIONS[*]}
 Local install command for a single-host server:
   sudo apt install \\
     $DEST_DIR/tellervo-server-common-$SERVER_VERSION.deb \\
-    $DEST_DIR/tellervo-server-web-$SERVER_VERSION.deb \\
+    $DEST_DIR/tellervo-server-webservice-$SERVER_VERSION.deb \\
     $DEST_DIR/tellervo-server-db-pg17-$SERVER_VERSION.deb \\
     $DEST_DIR/tellervo-server-db-$SERVER_VERSION.deb \\
     $DEST_DIR/tellervo-server-$SERVER_VERSION.deb

@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "*******************" >> /var/log/tellervo-installation.log
-echo "Web postinst run {{SERVER_VERSION}} with $1 argument " >> /var/log/tellervo-installation.log
+echo "Webservice postinst run {{SERVER_VERSION}} with $1 argument " >> /var/log/tellervo-installation.log
 date '+%R.%S' >> /var/log/tellervo-installation.log
 echo "*******************" >> /var/log/tellervo-installation.log
 
@@ -15,7 +15,7 @@ if [ "$1" = 'configure' ]; then
 
   if [[ $2 ]]; then
     if [ -e "/usr/share/tellervo-server/config.bak" ]; then
-      echo "Reinstating config.php from previous web package installation" >> /var/log/tellervo-installation.log
+      echo "Reinstating config.php from previous webservice package installation" >> /var/log/tellervo-installation.log
       cp /usr/share/tellervo-server/config.bak /var/www/tellervo/config.php
     fi
 
@@ -54,7 +54,7 @@ if [ "$1" = 'configure' ]; then
       echo "tellervo-server --configure"
     fi
   else
-    echo "Configuring new web package installation" >> /var/log/tellervo-installation.log
+    echo "Configuring new webservice package installation" >> /var/log/tellervo-installation.log
     echo "You need to configure your Tellervo Server by running as root/sudo: "
     echo "tellervo-server --configure"
   fi

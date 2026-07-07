@@ -8,7 +8,7 @@ packages:
   and owns no application files itself.
 - `tellervo-server-common`: shared administration commands, database templates,
   upgrade scripts and configuration templates.
-- `tellervo-server-web`: Apache/PHP webservice files. Install this on the
+- `tellervo-server-webservice`: Apache/PHP webservice files. Install this on the
   application server.
 - `tellervo-server-db`: database dependency selector package. It prefers the
   PostgreSQL 18 dependency bundle when it is installable, otherwise apt can fall
@@ -38,7 +38,7 @@ example `target/server/2.0/Linux/`:
 ```text
 tellervo-server-2.0.deb
 tellervo-server-common-2.0.deb
-tellervo-server-web-2.0.deb
+tellervo-server-webservice-2.0.deb
 tellervo-server-db-2.0.deb
 tellervo-server-db-pg18-2.0.deb
 tellervo-server-db-pg17-2.0.deb
@@ -80,7 +80,7 @@ repository, so include the PostgreSQL provider package you want to use:
 ```bash
 sudo apt install \
   ./target/server/2.0/Linux/tellervo-server-common-2.0.deb \
-  ./target/server/2.0/Linux/tellervo-server-web-2.0.deb \
+  ./target/server/2.0/Linux/tellervo-server-webservice-2.0.deb \
   ./target/server/2.0/Linux/tellervo-server-db-pg17-2.0.deb \
   ./target/server/2.0/Linux/tellervo-server-db-2.0.deb \
   ./target/server/2.0/Linux/tellervo-server-2.0.deb
@@ -117,7 +117,7 @@ On the web host, install the common and web packages together:
 ```bash
 sudo apt install \
   ./target/server/2.0/Linux/tellervo-server-common-2.0.deb \
-  ./target/server/2.0/Linux/tellervo-server-web-2.0.deb
+  ./target/server/2.0/Linux/tellervo-server-webservice-2.0.deb
 ```
 
 ## Remote Database Webservice Wizard
@@ -161,12 +161,12 @@ connection.
 
 The split package dependency graph is deliberately simple:
 
-- web host: `tellervo-server-web` depends on `tellervo-server-common`
+- web host: `tellervo-server-webservice` depends on `tellervo-server-common`
 - database host: `tellervo-server-db` depends on `tellervo-server-db-pg18` or
   `tellervo-server-db-pg17`; each provider depends on
   `tellervo-server-common`
 - single host: `tellervo-server` depends on `tellervo-server-common`,
-  `tellervo-server-web` and `tellervo-server-db`
+  `tellervo-server-webservice` and `tellervo-server-db`
 - PostgreSQL is selected by the database provider package
 
 After package installation, configure the web host with `tellervo-server

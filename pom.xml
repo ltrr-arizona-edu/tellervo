@@ -1067,6 +1067,16 @@
 				</dependencies>
 			</plugin>
 
+			<!-- Run the desktop client with: mvn exec:java -->
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>exec-maven-plugin</artifactId>
+				<version>3.5.0</version>
+				<configuration>
+					<mainClass>org.tellervo.desktop.gui.Startup</mainClass>
+				</configuration>
+			</plugin>
+
 		</plugins>
 
 
