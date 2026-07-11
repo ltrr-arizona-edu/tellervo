@@ -51,19 +51,19 @@ function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd
 	if($debugFlag)
 	{
 		global $tellervoXSD;
-		$origErrorLevel = error_reporting(E_ERROR);
+		$origErrorLevel = error_reporting(FE_ERROR);
 		$doc = new DomDocument;
 		$doc->loadXML($theOutput);
 		libxml_use_internal_errors(true);
 
 		if($doc->schemaValidate($tellervoXSD))
 		{
-			header('Content-Type: application/xhtml+xml; charset=utf-8');
+			header('Content-Type: application/xml; charset=utf-8');
 			echo $theOutput;
 		}
 		else
 		{
-			header('Content-Type: application/xhtml+xml; charset=utf-8');
+			header('Content-Type: application/xml; charset=utf-8');
 			$therrs = libxml_get_errors();
 			foreach($therrs as $err)
 			{
@@ -76,7 +76,7 @@ function writeOutput($metaHeader, $xmldata="", $parentTagBegin="", $parentTagEnd
 	}
 	else
 	{
-		header('Content-Type: application/xhtml+xml; charset=utf-8');
+		header('Content-Type: application/xml; charset=utf-8');
 		echo $theOutput;
 	}
 
@@ -180,7 +180,7 @@ function writeHelpOutput($metaHeader)
 function writeWelcomeOutput($metaHeader)
 {
 	global $labname; 
-	header('Content-Type: application/xhtml+xml; charset=utf-8');
+	header('Content-Type: application/xml; charset=utf-8');
 	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 	echo "<?xml-stylesheet type=\"text/css\" href=\"css/tellervo.css\"?>";
 	echo "<?xml-stylesheet type=\"text/css\" href=\"css/docbook/driver.css\"?>";
@@ -196,7 +196,7 @@ function writeWelcomeOutput($metaHeader)
 
 function writeIntroOutput($metaHeader)
 {
-	header('Content-Type: application/xhtml+xml; charset=utf-8');
+	header('Content-Type: application/xml; charset=utf-8');
 	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 	echo "<?xml-stylesheet type=\"text/css\" href=\"css/tellervo.css\"?>";
 	echo "<?xml-stylesheet type=\"text/css\" href=\"css/docbook/driver.css\"?>";
@@ -212,7 +212,7 @@ function writeIntroOutput($metaHeader)
 function writeKMLOutput($xmldata)
 {
 
-	header('Content-Type: application/xhtml+xml; charset=utf-8');
+	header('Content-Type: application/vnd.google-earth.kml+xml; charset=utf-8');
 	$xml.= "<kml xmlns=\"http://earth.google.com/kml/2.2\"> ";
 	$xml.= "<Document>";
 	/*    $xml.= "<name>Tellervo Sites</name>";

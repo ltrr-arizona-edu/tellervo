@@ -32,8 +32,8 @@ after `target/tellervo-pljava.jar` exists:
 scripts/package-server.sh
 ```
 
-The generated packages are written to `target/server/VERSION/Linux/`, for
-example `target/server/2.0/Linux/`:
+The generated packages are written to `target/binaries/server/VERSION/Linux/`, for
+example `target/binaries/server/2.0/Linux/`:
 
 ```text
 tellervo-server-2.0.deb
@@ -79,11 +79,11 @@ repository, so include the PostgreSQL provider package you want to use:
 
 ```bash
 sudo apt install \
-  ./target/server/2.0/Linux/tellervo-server-common-2.0.deb \
-  ./target/server/2.0/Linux/tellervo-server-webservice-2.0.deb \
-  ./target/server/2.0/Linux/tellervo-server-db-pg17-2.0.deb \
-  ./target/server/2.0/Linux/tellervo-server-db-2.0.deb \
-  ./target/server/2.0/Linux/tellervo-server-2.0.deb
+  ./target/binaries/server/2.0/Linux/tellervo-server-common-2.0.deb \
+  ./target/binaries/server/2.0/Linux/tellervo-server-webservice-2.0.deb \
+  ./target/binaries/server/2.0/Linux/tellervo-server-db-pg17-2.0.deb \
+  ./target/binaries/server/2.0/Linux/tellervo-server-db-2.0.deb \
+  ./target/binaries/server/2.0/Linux/tellervo-server-2.0.deb
 ```
 
 Use `apt install ./package.deb` for local packages rather than `dpkg --install`.
@@ -107,17 +107,17 @@ On the database host, install the common and database packages together:
 
 ```bash
 sudo apt install \
-  ./target/server/2.0/Linux/tellervo-server-common-2.0.deb \
-  ./target/server/2.0/Linux/tellervo-server-db-pg17-2.0.deb \
-  ./target/server/2.0/Linux/tellervo-server-db-2.0.deb
+  ./target/binaries/server/2.0/Linux/tellervo-server-common-2.0.deb \
+  ./target/binaries/server/2.0/Linux/tellervo-server-db-pg17-2.0.deb \
+  ./target/binaries/server/2.0/Linux/tellervo-server-db-2.0.deb
 ```
 
 On the web host, install the common and web packages together:
 
 ```bash
 sudo apt install \
-  ./target/server/2.0/Linux/tellervo-server-common-2.0.deb \
-  ./target/server/2.0/Linux/tellervo-server-webservice-2.0.deb
+  ./target/binaries/server/2.0/Linux/tellervo-server-common-2.0.deb \
+  ./target/binaries/server/2.0/Linux/tellervo-server-webservice-2.0.deb
 ```
 
 ## Remote Database Webservice Wizard
@@ -133,6 +133,20 @@ On the database host, make sure PostgreSQL accepts connections from the web host
 - allow the web host in `pg_hba.conf`
 - open TCP port `5432` in the firewall
 - create the Tellervo database and database role
+
+For example, if the web host is `150.135.25.225`, the database is
+`tellervoltrr`, and the PostgreSQL role is `tellervo`, add a rule like this to
+the database host's `pg_hba.conf` before broader reject rules:
+
+```text
+host    tellervoltrr    tellervo    150.135.25.225/32    scram-sha-256
+```
+
+Then reload PostgreSQL:
+
+```bash
+sudo systemctl reload postgresql
+```
 
 On the web host, run the named instance wizard:
 
@@ -173,6 +187,69 @@ After package installation, configure the web host with `tellervo-server
 --configure` or the named-instance flow, using the database host name or address
 when prompted for the PostgreSQL server.
 
+## Multi-Instance Server Clusters
+
+The server package supports multiple named Tellervo instances on one web host.
+Each instance has its own database name, web folder, credentials file and Apache
+alias. This is useful for lab clusters where one packaged web host serves several
+independent Tellervo databases.
+
+Create or configure a named instance with:
+
+```bash
+sudo tellervo-server --instance lab-a --configure
+```
+
+Unless overridden, named instances use these conventions:
+
+```text
+Instance:    lab-a
+Database:    tellervo_lab_a
+Web folder:  /var/www/lab-a/
+URL path:    /lab-a/
+Credentials: /usr/share/tellervo-server/server_credentials.lab-a
+```
+
+To use explicit names or folders:
+
+```bash
+sudo tellervo-server \
+  --instance lab-a \
+  --dbname tellervo_lab_a \
+  --webfolder /var/www/lab-a \
+  --configure
+```
+
+Configured instances are registered in
+`/etc/tellervo-server/instances.conf`. The registry is used by package upgrade
+hooks, Apache alias generation and cluster-wide maintenance commands.
+
+Common operations:
+
+```bash
+sudo tellervo-server --list-instances
+sudo tellervo-server --cluster test
+sudo tellervo-server --cluster upgrade-db
+sudo tellervo-server --repair-web-assets
+sudo tellervo-server --delete-instance lab-a
+```
+
+`--cluster` currently supports `test`, `sysconfig`, `upgrade-db`, `version`,
+`info`, `emptylog` and `network`. The delete command is intentionally separate
+and interactive because it drops the instance database and removes the instance
+web folder.
+
+The legacy wrapper is still available for older automation:
+
+```bash
+sudo create-tellervo-instance \
+  --dbname tellervo_lab_a \
+  --webfolder /var/www/lab-a
+```
+
+It now delegates to the same `tellervo-server --instance ... --configure` flow
+used above.
+
 ## Publishing An APT Repository
 
 The easiest repeatable publishing flow is:
@@ -184,7 +261,7 @@ scripts/publish-apt-repo.sh \
   --gpg-key "Tellervo APT Repository"
 ```
 
-By default this publishes the packages from `target/server/VERSION/Linux/` into
+By default this publishes the packages from `target/binaries/server/VERSION/Linux/` into
 a static APT repository with two suites:
 
 ```text

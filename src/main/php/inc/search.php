@@ -197,6 +197,16 @@ class search Implements IDBAccessor
         // Do SQL Query
         pg_send_query($dbconn, $fullSQL);
         $result = pg_get_result($dbconn);
+        if($result===FALSE)
+        {
+            $this->setErrorMessage("002", "Search query failed. Database returned: ".pg_last_error($dbconn).". SQL was $fullSQL");
+            return false;
+        }
+        if(pg_result_status($result)==PGSQL_FATAL_ERROR)
+        {
+            $this->setErrorMessage("002", "Search query failed. Database returned: ".pg_result_error($result).". SQL was $fullSQL");
+            return false;
+        }
         $this->recordHits = pg_num_rows($result);
 
         $firebug->log("Begin permissions check");

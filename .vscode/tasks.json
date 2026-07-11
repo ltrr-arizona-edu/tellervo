@@ -18,6 +18,32 @@
       "problemMatcher": []
     },
     {
+      "label": "Tellervo Compile",
+      "type": "shell",
+      "command": "mvn",
+      "args": [
+        "-q",
+        "-DskipTests",
+        "compile"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "GITHUB_ACTOR": "${env:GITHUB_ACTOR}",
+          "GITHUB_TOKEN": "${env:GITHUB_TOKEN}"
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "Tellervo Startup (Maven)",
       "type": "shell",
       "command": "mvn",

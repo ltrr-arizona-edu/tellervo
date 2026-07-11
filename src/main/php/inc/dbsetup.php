@@ -23,7 +23,7 @@ foreach(file($cdbCredentialsFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES)
   $parts = explode("=", $line, 2);
   if(count($parts)==2)
   {
-    $credentials[$parts[0]] = $parts[1];
+    $credentials[trim($parts[0])] = ltrim(trim($parts[1]), "=");
   }
 }
 $username = isset($credentials["username"]) ? $credentials["username"] : "";

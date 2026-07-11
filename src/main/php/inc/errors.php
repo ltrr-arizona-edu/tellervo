@@ -107,6 +107,16 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum)
                         E_WARNING, 
                         E_CORE_WARNING
                     );
+    if(defined('E_DEPRECATED'))
+    {
+        $errortype[E_DEPRECATED] = 'Deprecated';
+        $phpwarnings[] = E_DEPRECATED;
+    }
+    if(defined('E_USER_DEPRECATED'))
+    {
+        $errortype[E_USER_DEPRECATED] = 'User Deprecated';
+        $phpwarnings[] = E_USER_DEPRECATED;
+    }
     // Associative array that translates Tellervo error codes into PHP error types
     $tellervoErrCodes = array(
                         001 => E_USER_ERROR,
@@ -129,6 +139,19 @@ function userErrorHandler($errno, $errmsg, $filename, $linenum)
                         909 => E_USER_ERROR,
                     );
     
+    // PHP compatibility notices should not change the Tellervo API response.
+    // They are useful during development, but clients treat Warning responses
+    // as failed resource queries.
+    if((defined('E_DEPRECATED') && $errno==E_DEPRECATED)
+        || (defined('E_USER_DEPRECATED') && $errno==E_USER_DEPRECATED)
+        || $errno==E_STRICT)
+    {
+        $etype = array_key_exists($errno, $errortype) ? $errortype[$errno] : "Compatibility Notice";
+        $message = "PHP ".$etype." - ".$errmsg.". See line $linenum in file $filename";
+        $firebug->log($message, "PHP compatibility notice $errno");
+        error_log($message);
+        return true;
+    }
 
     // Generic PHP errors
     if (in_array($errno, $phperrors))

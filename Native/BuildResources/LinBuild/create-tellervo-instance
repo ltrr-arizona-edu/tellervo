@@ -13,7 +13,7 @@ if (!isset($argc))
 /**
  * Grab command line arguments either using long or short options
  */
-$shortopts = "dw";
+$shortopts = "d:w:";
 $longopts = array("dbname:", "webfolder:", "help");
 $args = getopt($shortopts,$longopts);
 
@@ -22,7 +22,7 @@ if(isset($args['help']))
 {
 	 echo "\n";
   
-  echo "\nUseage: create-tellervo-instance [<option> ...]\n";
+  echo "\nUsage: create-tellervo-instance [<option> ...]\n";
   echo "e.g:\n";
   echo "  create-tellervo-instance --dbname tellervo --webfolder /var/www/my-new-server\n";
   echo "  create-tellervo-instance --help\n";
@@ -81,27 +81,4 @@ else
 	die();
 }
 
-exec ("mkdir -p $webfolder/odk/inc");
-exec ("ln -s /var/www/tellervo/inc ".$webfolder);
-exec ("ln -s /var/www/tellervo/css ".$webfolder);
-exec ("ln -s /var/www/tellervo/img ".$webfolder);
-exec ("ln -s /var/www/tellervo/jscript/ ".$webfolder);
-exec ("ln -s /var/www/tellervo/schemas ".$webfolder);
-exec ("ln -s /var/www/tellervo/scripts/ ".$webfolder);
-exec ("ln -s /var/www/tellervo/index.php ".$webfolder); 
-exec ("ln -s /var/www/tellervo/post.php ".$webfolder);
-
-// Note ODK files need to be symlinked individually otherwise relative paths get broken
-exec ("ln -s /var/www/tellervo/odk/.htaccess ".$webfolder."/odk/");
-exec ("ln -s /var/www/tellervo/odk/deleteFormDefinitions.php ".$webfolder."/odk/");
-exec ("ln -s /var/www/tellervo/odk/deleteFormInstances.php ".$webfolder."/odk/");
-exec ("ln -s /var/www/tellervo/odk/fetchInstances.php ".$webfolder."/odk/");
-exec ("ln -s /var/www/tellervo/odk/formList.php ".$webfolder."/odk/");
-exec ("ln -s /var/www/tellervo/odk/forms.php ".$webfolder."/odk/");
-exec ("ln -s /var/www/tellervo/odk/index.php ".$webfolder."/odk/");
-exec ("ln -s /var/www/tellervo/odk/mediafile.php ".$webfolder."/odk/");
-exec ("ln -s /var/www/tellervo/odk/submission.php ".$webfolder."/odk/");
-exec ("ln -s /var/www/tellervo/odk/inc/odkauth.php ".$webfolder."/odk/inc/");
-exec ("ln -s /var/www/tellervo/odk/inc/odkhelper.php ".$webfolder."/odk/inc/");
 passthru ("tellervo-server --configure --instance ".escapeshellarg($dbname)." --dbname ".escapeshellarg($dbname)." --webfolder ".escapeshellarg($webfolder));
-

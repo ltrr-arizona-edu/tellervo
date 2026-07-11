@@ -74,7 +74,7 @@ if [[ ! -f "$PLJAVA_JAR" ]]; then
 fi
 
 if [[ -z "$DEST_DIR" ]]; then
-  DEST_DIR="$REPO_ROOT/target/server/$SERVER_VERSION/Linux"
+  DEST_DIR="$REPO_ROOT/target/binaries/server/$SERVER_VERSION/Linux"
 fi
 
 if [[ -z "$STAGING_DIR" ]]; then

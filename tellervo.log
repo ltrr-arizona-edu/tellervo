@@ -127,3 +127,125 @@ Please check and try again.
 06 Jul 2026 09:46:45,675 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
 06 Jul 2026 09:46:45,676 [org.tellervo.desktop.gui.Startup.main()] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
 06 Jul 2026 09:46:46,071 [org.tellervo.desktop.gui.Startup.main()] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+09 Jul 2026 20:52:42,441 [main] WARN org.tellervo.desktop.ui.Builder - Unabled to find icon warning.png.  Replacing with the 'missing icon' icon.
+09 Jul 2026 20:52:43,511 [Finalizer] ERROR org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice - The specified port does not exist on this computer. 
+Please check and try again.
+09 Jul 2026 20:52:44,400 [main] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+09 Jul 2026 20:52:52,334 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,338 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,339 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,341 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,342 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,343 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,344 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,345 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,347 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,348 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,349 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,350 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,352 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,355 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,360 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,364 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,366 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,367 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,369 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,373 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:52:52,834 [main] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+09 Jul 2026 20:54:52,220 [Thread-4] ERROR org.tellervo.desktop.wsi.Resource - Failed to query resource dictionaries
+09 Jul 2026 20:54:57,036 [Thread-5] ERROR org.tellervo.desktop.wsi.Resource - Failed to query resource tridas.objects
+09 Jul 2026 20:55:04,426 [Thread-6] ERROR org.tellervo.desktop.wsi.Resource - Failed to query resource tridas.projects
+09 Jul 2026 20:55:49,199 [main] WARN org.tellervo.desktop.ui.Builder - Unabled to find icon warning.png.  Replacing with the 'missing icon' icon.
+09 Jul 2026 20:55:50,661 [Finalizer] ERROR org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice - The specified port does not exist on this computer. 
+Please check and try again.
+09 Jul 2026 20:55:50,823 [main] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+09 Jul 2026 20:55:56,932 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,934 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,936 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,937 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,939 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,941 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,942 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,943 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,945 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,946 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,947 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,948 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,948 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,949 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,950 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,951 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,953 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,955 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,958 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:56,959 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:55:57,368 [main] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+09 Jul 2026 20:56:06,704 [Thread-6] ERROR org.tellervo.desktop.wsi.Resource - Failed to query resource tridas.projects
+09 Jul 2026 20:56:12,743 [Thread-5] ERROR org.tellervo.desktop.wsi.Resource - Failed to query resource tridas.objects
+09 Jul 2026 20:58:21,856 [main] WARN org.tellervo.desktop.ui.Builder - Unabled to find icon warning.png.  Replacing with the 'missing icon' icon.
+09 Jul 2026 20:58:23,359 [Finalizer] ERROR org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice - The specified port does not exist on this computer. 
+Please check and try again.
+09 Jul 2026 20:58:23,517 [main] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+09 Jul 2026 20:58:41,850 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,852 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,854 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,856 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,857 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,859 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,860 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,862 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,863 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,865 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,867 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,868 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,869 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,871 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,874 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,875 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,876 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,878 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,880 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:41,882 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 20:58:42,249 [main] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+09 Jul 2026 21:07:46,795 [main] WARN org.tellervo.desktop.ui.Builder - Unabled to find icon warning.png.  Replacing with the 'missing icon' icon.
+09 Jul 2026 21:07:47,985 [Finalizer] ERROR org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice - The specified port does not exist on this computer. 
+Please check and try again.
+09 Jul 2026 21:07:48,569 [main] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+09 Jul 2026 21:08:04,707 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,708 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,709 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,710 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,711 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,712 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,712 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,713 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,713 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,714 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,714 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,715 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,715 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,716 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,716 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,717 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,718 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,719 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,720 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:04,722 [main] WARN com.dmurph.mvc.monitor.LoggingMonitor - There are no listeners for event key 'DICTIONARY_DICTIONARY_REGISTERED'
+09 Jul 2026 21:08:05,146 [main] WARN org.tridas.io.defaults.values.StringDefaultValue - The string 'Unnamed series' is too big and must be truncated.  Maximum length is 8 characters.
+09 Jul 2026 21:10:05,420 [Thread-4] ERROR org.tellervo.desktop.wsi.Resource - Failed to query resource dictionaries
+09 Jul 2026 21:10:09,481 [Thread-5] ERROR org.tellervo.desktop.wsi.Resource - Failed to query resource tridas.objects
+09 Jul 2026 21:10:16,958 [Thread-6] ERROR org.tellervo.desktop.wsi.Resource - Failed to query resource tridas.projects
+09 Jul 2026 21:10:26,745 [Thread-11] ERROR org.tellervo.desktop.wsi.Resource - Failed to query resource ELEMENTSearch
+09 Jul 2026 21:10:26,766 [AWT-EventQueue-0] ERROR org.tellervo.desktop.gui.widgets.TridasTreeViewPanel - Error searching for updates to tree view
+09 Jul 2026 21:11:32,372 [Thread-13] ERROR org.tellervo.desktop.wsi.Resource - Failed to query resource ELEMENTSearch
+09 Jul 2026 21:11:32,396 [AWT-EventQueue-0] ERROR org.tellervo.desktop.gui.widgets.TridasTreeViewPanel - Error searching for updates to tree view
+09 Jul 2026 21:19:30,192 [AWT-EventQueue-0] ERROR org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel - Invalid value for generic field.  Doesn't match specified data type
+09 Jul 2026 21:19:30,206 [AWT-EventQueue-0] ERROR org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel - Invalid value for generic field.  Doesn't match specified data type
+09 Jul 2026 21:19:30,210 [AWT-EventQueue-0] ERROR org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel - Invalid value for generic field.  Doesn't match specified data type
+09 Jul 2026 21:19:30,210 [AWT-EventQueue-0] ERROR org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel - Invalid value for generic field.  Doesn't match specified data type
+09 Jul 2026 21:19:30,220 [AWT-EventQueue-0] ERROR org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel - Invalid value for generic field.  Doesn't match specified data type
+09 Jul 2026 21:19:32,864 [AWT-EventQueue-0] ERROR org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel - Invalid value for generic field.  Doesn't match specified data type
+09 Jul 2026 21:19:32,874 [AWT-EventQueue-0] ERROR org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel - Invalid value for generic field.  Doesn't match specified data type
+09 Jul 2026 21:19:32,877 [AWT-EventQueue-0] ERROR org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel - Invalid value for generic field.  Doesn't match specified data type
+09 Jul 2026 21:19:32,877 [AWT-EventQueue-0] ERROR org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel - Invalid value for generic field.  Doesn't match specified data type
+09 Jul 2026 21:19:32,885 [AWT-EventQueue-0] ERROR org.tellervo.desktop.tridasv2.ui.TellervoPropertySheetPanel - Invalid value for generic field.  Doesn't match specified data type

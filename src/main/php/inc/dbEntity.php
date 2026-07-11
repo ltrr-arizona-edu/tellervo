@@ -888,6 +888,13 @@ class objectEntity extends UserExtendableEntity
 	protected $type = NULL;
 
 	/**
+	 * Backwards-compatible alias used by legacy object code.
+	 *
+	 * @var objectType
+	 */
+	protected $object = NULL;
+
+	/**
 	 * Name, place of the workshop/wharf
 	 *
 	 * @var String

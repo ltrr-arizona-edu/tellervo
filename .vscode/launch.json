@@ -3,10 +3,11 @@
   "configurations": [
     {
       "type": "java",
-      "name": "Tellervo Startup",
+      "name": "Run Tellervo Desktop",
       "request": "launch",
       "mainClass": "org.tellervo.desktop.gui.Startup",
       "projectName": "tellervo",
+      "preLaunchTask": "Tellervo Compile",
       "classPaths": [
         "$Runtime",
         "${workspaceFolder}/target/classes"

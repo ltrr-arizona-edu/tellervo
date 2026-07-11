@@ -22,7 +22,7 @@ Options:
   --repo-dir DIR          Repository root to update, for example /srv/apt/tellervo
   --server-version VER    Server version. Defaults to pom.xml <serverversion>
   --package-dir DIR       Directory containing .deb files. Defaults to
-                          target/server/VERSION/Linux
+                          target/binaries/server/VERSION/Linux
   --suite NAME            Suite/codename to publish. May be repeated.
                           Defaults: trixie resolute
   --component NAME        Repository component. Default: main
@@ -111,7 +111,7 @@ if [[ -z "$SERVER_VERSION" ]]; then
 fi
 
 if [[ -z "$PACKAGE_DIR" ]]; then
-  PACKAGE_DIR="$REPO_ROOT/target/server/$SERVER_VERSION/Linux"
+  PACKAGE_DIR="$REPO_ROOT/target/binaries/server/$SERVER_VERSION/Linux"
 fi
 
 if [[ ! -d "$PACKAGE_DIR" ]]; then
