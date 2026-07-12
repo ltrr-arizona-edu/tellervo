@@ -1951,10 +1951,12 @@ function runSQLFile($filename, $helptext)
 
 	    	if(!$result)
 	    	{
+				$error = trim(pg_last_error($dbconn));
 		    	echo $colors->getColoredString("FAILED", "red");
 	    		echo "\n";
+				echo "PostgreSQL error: ".$error."\n";
 
-	    		writeLogMsg("Error running script '".escapeshellcmd($filename)."'" );
+				writeLogMsg("Error running script '".escapeshellcmd($filename)."': ".$error, "ERROR");
 
     			// Only run in transaction if safe
     			pg_query($dbconn, "ROLLBACK");
@@ -2031,10 +2033,12 @@ function runSQLUpgradeFile($filename)
 
 	    	if(!$result)
 	    	{
+				$error = trim(pg_last_error($dbconn));
 		    	echo $colors->getColoredString("FAILED", "red");
 	    		echo "\n";
+				echo "PostgreSQL error: ".$error."\n";
 
-	    		writeLogMsg("Error running upgrade script '".escapeshellcmd($filename)."'" );
+				writeLogMsg("Error running upgrade script '".escapeshellcmd($filename)."': ".$error, "ERROR");
 
     			// Only run in transaction if safe
     			pg_query($dbconn, "ROLLBACK");

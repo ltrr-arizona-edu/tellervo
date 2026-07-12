@@ -150,7 +150,10 @@ install_webservice_payload() {
   local web_dir="$package_root/var/www/tellervo"
 
   install_file "$REPO_ROOT/Native/BuildResources/LinBuild/tellervo-apache.conf" \
-    "$package_root/etc/apache2/sites-available/tellervo-apache.conf" 0755
+    "$package_root/etc/apache2/sites-available/tellervo-apache.conf" 0644
+  mkdir -p "$package_root/DEBIAN"
+  printf '%s\n' '/etc/apache2/sites-available/tellervo-apache.conf' \
+    > "$package_root/DEBIAN/conffiles"
   install_dir_copy "$REPO_ROOT/src/main/php" "$web_dir"
   find "$web_dir" -type d -exec chmod 0755 {} +
   find "$web_dir" -type f -exec chmod 0644 {} +

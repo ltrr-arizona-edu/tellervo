@@ -343,11 +343,6 @@
 			<artifactId>tricycle</artifactId>
 			<version>2.0.0</version>
 		</dependency>
-		<dependency>
-			<groupId>postgresql</groupId>
-			<artifactId>pljava-public</artifactId>
-			<version>1.4.2</version>
-		</dependency>
 		<!-- <dependency>
 			<groupId>org.swinglabs.swingx</groupId>
 			<artifactId>swingx-all</artifactId>
