@@ -66,6 +66,29 @@ scripts/package-server.sh --postgres-version 18
 
 ## Single-Host Install
 
+PL/Java is not available from the main Debian and Ubuntu repositories used by
+the supported systems. On every database host, enable the official PostgreSQL
+APT repository before installing Tellervo:
+
+```bash
+sudo apt update
+sudo apt install postgresql-common ca-certificates
+sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
+sudo apt update
+```
+
+The helper is interactive, installs the PGDG repository configuration and
+signing key, and only needs to be run once per database host. Verify that the
+PL/Java package matching the chosen PostgreSQL provider has a candidate:
+
+```bash
+apt-cache policy postgresql-17-pljava
+```
+
+Do not install the database provider if this reports `Candidate: (none)`.
+Confirm that the helper completed successfully and that the host can reach
+`apt.postgresql.org`. A web-only host does not need PGDG.
+
 For the traditional single-host deployment from an apt repository, install the
 meta package:
 
@@ -103,7 +126,8 @@ sudo apt install -f
 
 ## Split Web and Database Install
 
-On the database host, install the common and database packages together:
+Enable PGDG on the database host using the procedure above, then install the
+common and database packages together:
 
 ```bash
 sudo apt install \
@@ -112,46 +136,122 @@ sudo apt install \
   ./target/binaries/server/2.0/Linux/tellervo-server-db-2.0.deb
 ```
 
-On the web host, install the common and web packages together:
+On the web host, install the common and web packages together. Installing the
+PostgreSQL client makes it possible to test the connection separately:
 
 ```bash
-sudo apt install \
+sudo apt install postgresql-client \
   ./target/binaries/server/2.0/Linux/tellervo-server-common-2.0.deb \
   ./target/binaries/server/2.0/Linux/tellervo-server-webservice-2.0.deb
 ```
 
 ## Remote Database Webservice Wizard
 
-When the webservice and PostgreSQL run on separate hosts, create the database and
-database role on the database host first. The webservice wizard can point at a
-remote PostgreSQL server, but database creation is still a local PostgreSQL
-operation.
+When the webservice and PostgreSQL run on separate hosts, create and initialise
+the database on the database host first. This example uses database host
+`192.0.2.10`, web host `192.0.2.20`, and `tellervo_lab_a` for both the database
+and login role. Replace these documentation addresses and names at your site.
 
-On the database host, make sure PostgreSQL accepts connections from the web host:
+Create the expected group, login, and database as the PostgreSQL administrator:
 
-- set `listen_addresses` appropriately in PostgreSQL
-- allow the web host in `pg_hba.conf`
-- open TCP port `5432` in the firewall
-- create the Tellervo database and database role
-
-For example, if the web host is `150.135.25.225`, the database is
-`tellervoltrr`, and the PostgreSQL role is `tellervo`, add a rule like this to
-the database host's `pg_hba.conf` before broader reject rules:
-
-```text
-host    tellervoltrr    tellervo    150.135.25.225/32    scram-sha-256
+```sql
+sudo -u postgres psql
+SET password_encryption = 'scram-sha-256';
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT FROM pg_roles WHERE rolname = 'Webgroup'
+  ) THEN
+    CREATE ROLE "Webgroup"
+      SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
+  END IF;
+  IF NOT EXISTS (
+    SELECT FROM pg_roles WHERE rolname = 'tellervo'
+  ) THEN
+    CREATE ROLE tellervo NOLOGIN;
+  END IF;
+  IF NOT EXISTS (
+    SELECT FROM pg_roles WHERE rolname = 'pbrewer'
+  ) THEN
+    CREATE ROLE pbrewer NOLOGIN;
+  END IF;
+END
+$$;
+CREATE ROLE tellervo_lab_a
+  LOGIN SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
+GRANT "Webgroup" TO tellervo_lab_a;
+CREATE DATABASE tellervo_lab_a;
+\password tellervo_lab_a
+\quit
 ```
 
-Then reload PostgreSQL:
+The interactive `\password` command avoids putting the password in shell
+history. The role currently needs superuser privileges for the packaged
+PL/Java functions and upgrade process, so protect the credential. Initialise
+the database from the database package. The non-login `tellervo` and `pbrewer`
+roles exist only because some historical upgrade scripts refer to them as
+object owners:
 
 ```bash
-sudo systemctl reload postgresql
+sudo -u postgres psql \
+  --dbname=tellervo_lab_a \
+  --set=ON_ERROR_STOP=1 \
+  --file=/usr/share/tellervo-server/db-upgrade-patches/database_upgrade-1.3.0e.notransaction.sql
+
+sudo -u postgres pg_restore \
+  --exit-on-error \
+  --no-owner \
+  --dbname=tellervo_lab_a \
+  /usr/share/tellervo-server/db-templates/tellervo_database_template_2.0.sql
+```
+
+The template has a `.sql` name but is a PostgreSQL custom-format archive.
+Discover the active configuration files:
+
+```bash
+sudo -u postgres psql -Atqc "SHOW config_file;"
+sudo -u postgres psql -Atqc "SHOW hba_file;"
+```
+
+In the reported `postgresql.conf`, bind to the private database address:
+
+```text
+listen_addresses = 'localhost,192.0.2.10'
+```
+
+In the reported `pg_hba.conf`, add this rule before broader reject rules:
+
+```text
+host    tellervo_lab_a    tellervo_lab_a    192.0.2.20/32    scram-sha-256
+```
+
+Restart PostgreSQL because `listen_addresses` cannot be changed with a reload:
+
+```bash
+sudo systemctl restart postgresql
+```
+
+Restrict TCP port 5432 to the web host in the host and network firewalls. With
+UFW, for example:
+
+```bash
+sudo ufw allow from 192.0.2.20 to 192.0.2.10 port 5432 proto tcp
+```
+
+Do not use a rule such as `host all all 0.0.0.0/0` or expose PostgreSQL to the
+public Internet. Test from the web host before running the wizard:
+
+```bash
+psql --host=192.0.2.10 --port=5432 \
+  --dbname=tellervo_lab_a \
+  --username=tellervo_lab_a \
+  --command='SELECT current_database(), current_user;'
 ```
 
 On the web host, run the named instance wizard:
 
 ```bash
-sudo tellervo-server --instance ltrr --configure
+sudo tellervo-server --instance lab-a --configure
 ```
 
 When prompted for the PostgreSQL connection, enter the database host name or IP
@@ -163,7 +263,7 @@ password, write them into the instance configuration, regenerate
 After configuration:
 
 ```bash
-sudo tellervo-server --instance ltrr --test
+sudo tellervo-server --instance lab-a --test
 sudo systemctl reload apache2
 ```
 

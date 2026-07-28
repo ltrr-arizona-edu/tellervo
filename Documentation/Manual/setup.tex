@@ -16,6 +16,7 @@
 \RequirePackage{parskip}
 \RequirePackage{eso-pic}
 \RequirePackage{listings}
+\RequirePackage{accsupp}
 
 %% Restyle the Table of Contents
 \setlength{\cftbeforechapskip}{2ex}
@@ -97,12 +98,39 @@ keepaspectratio]{Images/background2.png}%
 
 
 %% Set up code listings
+\definecolor{listingnumberbg}{gray}{0.86}
+\newdimen\listinglineheight
+\newcommand{\listingnumbergutter}{%
+  \begingroup
+  \listinglineheight=\baselineskip
+  \setlength{\fboxsep}{0pt}%
+  \smash{\colorbox{listingnumberbg}{%
+    \makebox[2em][r]{%
+      \vrule width 0.4pt height .72\listinglineheight
+        depth .28\listinglineheight}}}%
+  \endgroup}
+\newcommand{\listingnumberstyle}[1]{%
+  \makebox[2em][r]{%
+    \color{black}\tiny
+    \BeginAccSupp{method=escape,ActualText={}}#1\EndAccSupp{}%
+    \hspace{3pt}}}
+\makeatletter
+\lst@AddToHook{EveryLine}{%
+  \llap{\listingnumbergutter\kern\lst@numbersep}}
+\makeatother
+
 \lstset{ %
 basicstyle=\footnotesize,
 numbers=left, 
-numberstyle=\tiny,
+numberstyle=\listingnumberstyle,
+numbersep=3pt,
+numberblanklines=false,
+xleftmargin=2.25em,
+framexleftmargin=2em,
 breaklines=true, 
 frame=single,
+framerule=0.4pt,
+rulecolor=\color{black},
 showspaces=false,               % show spaces adding particular underscores
 showstringspaces=false,         % underline spaces within strings
 showtabs=false,                 % show tabs within strings adding particular underscores

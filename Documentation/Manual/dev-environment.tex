@@ -22,9 +22,12 @@ The IDE of choice of the main Tellervo developers is Eclipse (\url{http://www.ec
 
 We have successfully developed Tellervo on Mac, Windows and Linux computers over the years.  The methods for setting up are almost identical.  
 
-The first step is to install Eclipse, Java 7 JDK, Subversion and Maven.  These are all readily available from their respective websites.  On Ubuntu they can be install from the command line easily as follows:
+The first step is to install a Java 21 JDK, Git, and Maven. Tellervo can be
+edited in Eclipse, IntelliJ IDEA, Visual Studio Code, or another Java IDE. On a
+Debian- or Ubuntu-based development machine, install the command-line
+requirements with:
 
-\code{sudo apt-get install eclipse subversion openjdk-7-jdk maven2}
+\code{sudo apt install git openjdk-21-jdk maven}
 
 Once installed, you can then launch Eclipse. To access the Tellervo source code you may need to install one or more Git plugins. Go to \menutwo{Help}{Install} new software then select the main Update site in the `Work with' box, then locate the Git plugins under collaboration. You will also need to install the m2e Maven plugin to Eclipse. You may need to add the Maven update site as this plugin may not be available in the main Eclipse repository. You can do this by clicking the `Add' button and using the URL \url{http://m2eclipse.sonatype.org/sites/m2e}. Once installed you will need to restart Eclipse before continuing.
 
@@ -324,7 +327,15 @@ Please note that JAXB supports plugins and extensions for enhancing the classes 
 \section{Java version}
 \label{txt:java}
 \index{Java}
-Tellervo requires Java 8 or later to run.  Support for Java 6 was dropped following it's end of life in 2013 and Java 7 support was dropped in August 2017.  As always, we recommend you use the most recent version of Java possible for security reasons. Tellervo has been tested with Java distributions from both Oracle and OpenJDK, but development is focused using OpenJDK to follow the open source ethics of the project.
+Tellervo 2.0 requires Java 21. A Java 21 JDK is required to compile, test, and
+package the project. The native Windows, macOS, and Linux desktop packages
+contain a Java 21 runtime, so end users of those packages do not need a separate
+system Java installation. Developers and anyone running the application
+directly from Maven or a JAR must provide Java 21 themselves.
+
+Development and automated packaging use OpenJDK 21. Other conforming Java 21
+distributions may work, but builds and bug reports should first be reproduced
+with OpenJDK 21.
 
 
 \section{Developing graphical interfaces}
@@ -360,7 +371,22 @@ Once your new class is complete you need to inform Tellervo that it exists.  To 
 \index{Documentation}
 The documentation in Tellervo is written in the well established typesetting language {\LaTeXe}.  {\LaTeX} is a great tool for producing high quality documentation with a good structure and style.  Unlike standard WYSIWYG (what you see is what you get) word processing applications like Microsoft Word, {\LaTeX} uses simple plain text code to layout a document so that it is often described as WYSIWYM (what you see is what you mean)!  The style of a {\LaTeX} document is handled separated enabling the author to concentrate on content.  By removing the possibility for authors to tinker with font sizes etc, {\LaTeX} forces you to create clear, well structured documents.  For further details see \url{http://en.wikibooks.org/wiki/LaTeX/}.
 
-The master document is `Documentation/tellervo-manual.tex' and imports each chapter file.  To build the documentation you will need a editor to update and compile to PDF.  One of the easiest editors is the online service Sharelatex.com.  Alternatively, if you want to write offline: on Linux I would suggest Kile; on MacOSX TeXShop; and on Windows WinEdt.  To add or edit bibliography entries you will also need a {\BibTeX} editor such as JabRef or BibDesk.
+The canonical manual source is `Documentation/Manual/tellervo-manual.tex',
+which imports the chapter files in the same directory. Build the complete
+manual, including its bibliography, index, and cross-references, from the
+repository root with:
+
+\code{make -C Documentation/Manual}
+
+To copy the completed PDF to the location distributed by the project, run:
+
+\code{make -C Documentation/Manual publish}
+
+Generated {\LaTeX} files are ignored by Git and can be removed with
+\verb|make -C Documentation/Manual clean|. Further build notes are in
+`Documentation/README.md'. Any {\LaTeX} editor may be used for writing, but the
+Makefile should be used for the final build so that local editor settings do not
+omit the bibliography or index.
 
 {\LaTeX} has fantastic cross-referencing and citation functionality built in.  Please follow the lead of the existing documentation!
 

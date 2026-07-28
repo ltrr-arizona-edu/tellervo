@@ -2,3 +2,19 @@
 .mvn-repo/
 *.log
 *.log.*
+
+# LaTeX build products. The published manual is Documentation/tellervo-manual.pdf.
+Documentation/Manual/*.aux
+Documentation/Manual/*.bbl
+Documentation/Manual/*.blg
+Documentation/Manual/*.fdb_latexmk
+Documentation/Manual/*.fls
+Documentation/Manual/*.idx
+Documentation/Manual/*.ilg
+Documentation/Manual/*.ind
+Documentation/Manual/*.lof
+Documentation/Manual/*.lot
+Documentation/Manual/*.out
+Documentation/Manual/*.pdf
+Documentation/Manual/*.synctex.gz
+Documentation/Manual/*.toc

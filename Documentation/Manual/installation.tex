@@ -1,217 +1,370 @@
-
 \chapter{Installation}
 \label{txt:installation}
 
-\section{Introduction}
+\section{Choosing how to run Tellervo}
 
-Tellervo is a cross-platform and open source application primarily aimed at dendro data collection and management. 
+Tellervo is a cross-platform, open-source application for dendrochronological
+measurement, data management, analysis, and curation. It can run in either full
+or lite mode.
 
-Tellervo can be run in one of two `modes': full Tellervo and Tellervo-lite.  Tellervo running in full mode is an enterprise-style tool requiring access to an installation of Tellervo server.  Tellervo server manages all data and metadata within a relational database, based on the Tree Ring Data Standard \citep[TRiDaS -- ][]{tridas}.  Tellervo provides a host of advanced features such as: integrated 3D mapping; field data collection with mobile devices; graphing; metadata management; barcode-based curation; dendro data indexing; crossdating; secure access permissions system; collaborative sharing of data; amongst others. 
+\begin{description}
+ \item[Full Tellervo] connects to a Tellervo Server. The server stores series,
+ metadata, users, permissions, and curatorial records in a shared PostgreSQL
+ database. This is the normal choice for a laboratory or any collaborative
+ installation.
+ \item[Tellervo-lite] does not require a server. It reads and writes local
+ dendrochronology files and provides the measuring and series-editing tools, but
+ not the shared metadata, mapping, permissions, or curation facilities.
+\end{description}
 
-For users looking for a simple tool to just measure dendro samples and edit existing data files, the cut-down Tellervo-lite may be a more appropriate option.  Tellervo-lite is a standalone desktop application that doesn't require access to a server.  It provides a very similar interface for measuring samples as the full Tellervo but instead of the data being stored and managed within the Tellervo server, they are saved to one of a wide variety of legacy dendro data file formats.  The lack of relational database, however, means that many of the advanced functions offered by the full Tellervo (e.g. 3D mapping, metadata management; curation etc) are not available within Tellervo-lite.
+If your laboratory already operates a Tellervo Server, ask its administrator
+for the webservice URL, your username, and your initial password. You only need
+to install the desktop application. If you are responsible for a new full
+Tellervo installation, install the server first and then install the desktop
+application on each user's computer.
 
-Unless specified otherwise, this manual describes the functionality of the full Tellervo application with the exception of chapter \ref{txt:tellervolite} which outlines all the behaviour specific to Tellervo-lite. 
-
-Tellervo is made up of two packages: the Tellervo desktop application and the Tellervo database server.  Tellervo was designed primarily for laboratories with multiple users, each running the Tellervo desktop application on their own computer connecting to a single central server containing the lab's data. The Tellervo server is only required if you are running the full Tellervo.  If you intend to use Tellervo in lite mode then you can skip the server installation and move directly to section \ref{txt:desktopinstall}.
-
-
-\section{Server installation}
+\section{Installing Tellervo Server}
 \index{Installation!Server}
 \label{txt:serverinstallation}
-To make use of all the features of Tellervo desktop you will require access to a Tellervo server.  If you are running Tellervo in a lab where the Tellervo server has already been set up by your systems administrator, all you will require is the URL of your server and your login credentials.  Otherwise you will need to install Tellervo server yourself.
 
-How you install Tellervo server will depend on how you intend to use it.  In medium to large laboratories, you would typically install the server package on a dedicated server.  However, in smaller laboratories this is probably not necessary or feasible.  In which case it is perfectly fine to install the server on the same machine that is connected to your measuring equipment.  This is likely to be the situation if you simply want to try out Tellervo, if you don't have a separate server, or if you do not work in a multi-user laboratory.
+Tellervo Server 2.0 is packaged for current Debian- and Ubuntu-based systems.
+The standard package installs Apache, PHP, PostgreSQL, PostGIS, PL/Java, the
+Tellervo webservice, and the database administration tools. The server is not
+distributed as the former VirtualBox appliance.
 
-The Tellervo server is made up of a number of components, which unlike the desktop client, can't be easily combined together into cross-platform packages.  Although all the constituent components are open-source and available for all major platforms, building and maintaining separate packages for each platform is too large a task for a small development team.  To conserve resources, we therefore made the decision to utilize Virtual Machine technology to ensure that the Tellervo server could still be run on all major operating systems.  This means that we can package the Tellervo server for a single operating system (Ubuntu Linux) and then distribute it as a Virtual Appliance that can be run as a program on your preferred operating system. 
+\subsection{Enable the PostgreSQL package repository}
 
-The Tellervo server is therefore available via three methods.  The first is as a VirtualBox\footnote{Note that the Tellervo appliance is provided in the open standard format OVA.  You should be able to run the appliance in other Virtual Machine applications (e.g. VMWare, Citrix etc) but this is not tested or supported. } Virtual Appliance which can be run on any major operating system and we strongly recommend that you stick with this option unless you are experienced with Linux and running servers.  The second option is to intall the native Ubuntu package on an Ubuntu Linux server. The source code for the server is also available so it is perfectly possible for more experienced users to set up the Tellervo server to run natively on other platforms.  To do this you will require a good knowledge of Apache 2, PHP and PostgreSQL.  Choose the most applicable method and follow the instructions in the following sections.
+PL/Java is not supplied by the main Debian and Ubuntu repositories supported
+by Tellervo. Before installing Tellervo on any host that will run the database,
+enable the official PostgreSQL APT repository (PGDG). The
+\verb|postgresql-common| package provides a script that installs the repository
+configuration and signing key:
 
+\begin{lstlisting}[language=bash]
+sudo apt update
+sudo apt install postgresql-common ca-certificates
+sudo /usr/share/postgresql-common/pgdg/apt.postgresql.org.sh
+sudo apt update
+\end{lstlisting}
 
-\subsection[Install as Virtual Appliance]{Install as Virtual Appliance (recommended method)}
-\label{txt:virtualAppliance}
-\index{Virtual appliance}
-To run the Tellervo server Virtual Appliance, you will first need to download and install VirtualBox from \url{https://www.virtualbox.org}.  Installation packages are available for Windows, MacOSX, OpenSolaris and many Linux distributions.
+The repository script is interactive and may ask for confirmation of the
+detected operating-system release. It only needs to be run once on each
+database host. It is not required on a separate web-only host.
 
-Once you have VirtualBox installed, you will then need to download the Tellervo server from the Tellervo website \url{https://www.tellervo.org/download}.  This package contains a bare-bones Ubuntu Linux server with everything required to run the Tellervo server installed and ready to use.  As VirtualBox, the entire Ubuntu operating system and Tellervo server components are all open source there are no license fees to pay.
+Verify that APT can see the PL/Java package matching the PostgreSQL provider
+you intend to install. For PostgreSQL 17:
 
-\begin{wrapfigure}{r}{0.5\textwidth}
-  \begin{center}
-    \includegraphics[width=0.48\textwidth]{Images/serverconfig.png}
-  \end{center}
-  \caption{Screenshot of VirtualBox running the Tellervo server.  The console contains the results of the tests run at the end of the configuration routine.}
-  \label{fig:serverconfig}
-\end{wrapfigure}
+\begin{lstlisting}[language=bash]
+apt-cache policy postgresql-17-pljava
+\end{lstlisting}
 
-\begin{enumerate}
- \item Open VirtualBox and go to \menutwo{File}{Import Appliance}
- \item Press the choose button and locate the virtual appliance file that you downloaded from the website
- \item Rename the server if you choose, then press the finish/import button
- \item Once the server is installed, highlight it in the virtual machine list and press the `settings' button
- \item Go to `Network' and choose `Attached to Bridged Adapter'.  You may also like to give the system more RAM if you have powerful machine
- \item Click ok, then back on the main page, press the `run' button
- \item Read and accept the information about how to gain and release control of the keyboard in VirtualBox
- \item The server will boot and eventually present you with a command line login screen.  Log in with the following temporary details but please note that as is normal in command lines the password will be hidden:
-    \begin{description}
-      \item[Username] : tellervo
-      \item[Password] : dendrochronology
-    \end{description}
- \item Once you are logged in, the server will automatically ask you a series of questions.  The configuration will finish by testing your new server (see figure \ref{fig:serverconfig}). 
- \item Note down the URL of your new Tellervo webservice as you will need to enter this when you start your Tellervo desktop client.  If you need to know the URL at a later date you can run the tests again by typing: \code{tellervo-server --test}
- \item You can now install and run the Tellervo Desktop application (see section \ref{txt:desktopinstall})
-\end{enumerate}
+The output should contain a candidate version. If it shows
+\verb|Candidate: (none)|, do not continue with the Tellervo database package:
+check that the PGDG script completed successfully and that the operating
+system can reach \verb|apt.postgresql.org|. A PostgreSQL provider cannot be
+used unless its matching \verb|postgresql-MAJOR-pljava| package is available.
 
-To save on download size and disk space only the essential packages to make the server run have been installed.  This means there is no graphical interface just a command line.  Hopefully this should not be a problem as once set up, the only interaction needed with the Virtual Appliance will be through the normal Tellervo desktop application.  If you would prefer to use a graphical interface to the server this can be easily installed.  See chapter \ref{txt:servermaintenance} for further details.
+\subsection{Single-host installation}
 
-There are a number of limitations caused by distributing the server software in this way. The operating system has already been configured to use networking without a proxy server, so if your computer requires a proxy then you won't be able to connect to the Internet.  Please contact the developers for more details.
+Most laboratories should run the webservice and database on one server. If the
+Tellervo and PostgreSQL APT repositories have been configured, install the
+meta-package:
 
-VirtualBox has a number of methods for providing network connectivity to the Tellervo virtual appliance.  The default setup described above is to use \textbf{bridged networking}.  This makes the virtual server appear as if it was another physical computer on your network with its own IP address.  This works best in most situations, but can cause problems if your network administration is particularly strict.  Note for instance that some institutions require the network card MAC address of new computers been registered before they will be allowed access to a network.  It is also not suited to those installing Tellervo Server on a laptop which is used on different networks, especially via wifi.  If you have problems with bridged networking, then it may be better to use one of the alternatives listed below.  
+\code{sudo apt update}
+\code{sudo apt install tellervo-server}
 
-The first network alternative is to use \textbf{host-only networking}.  To use this you simple select your server in VirtualBox, click settings then on the network tab choose host-only adapter.  This setting means that your server will only be visible to the physical computer you are running Tellervo server on.  This may not be a problem (it may even be desirable) if you are installing for your personal use but of course it is not suitable if you are intending to share the server with colleagues.  Note though that your server will not have access to the Internet so will not be able to download updates or use remote backup tools etc.
+The package selects a supported PostgreSQL dependency bundle. Tellervo 2.0
+packages provide PostgreSQL 18 and PostgreSQL 17 alternatives; APT selects the
+first complete alternative available for the operating system.
 
-The second network alternative is to use \textbf{NAT networking}.  NAT stands for Network Address Translation and means that requests and responses sent to/from your physical computer are intercepted and forwarded on to the virtual Tellervo server.  Instead of Tellervo server having its own IP address, Tellervo clients wanting to talk to the server send requests to your physical computer.  This has the benefit of being more likely to work if your institution has strict network policies.  The drawbacks are that networking is slower, it takes a little more effort, and perhaps requires a better understanding of systems administration to set up.  
+If you received local package files instead of using an APT repository, install
+the meta-package and all its local dependencies together with
+\verb|apt install ./filename.deb|. Do not use \verb|dpkg --install|: it cannot
+resolve the external PostgreSQL, PostGIS, PL/Java, Apache, and PHP dependencies.
+For example:
 
-With your virtual machine powered off, select it in VirtualBox, click settings and go to the network tab.  Change the network type to NAT and then click the port forwarding button.  Add an entry to the list:
-\begin{description}
- \item[Name] - TellervoHTTP
- \item[Protocol] - TCP
- \item[Host Port] - 8080
- \item[Guest Port] - 80 
-\end{description}
-You can leave the other fields blank.  The host port is the port that your Tellervo users connect to.  The normal port that users connect to for web services is port 80, however, on most secure operating systems (e.g. Linux and OSX) you cannot port forward to ports below 1024, although it should be possible in Windows.  If you are running Windows you may therefore be able to use a host port of 80.  If you use 8080 (or any other port other than 80) you will need to include this in the URL of your webservice when you try to connect.  The other complication of using NAT networking is that the URL provided by the Tellervo server configuration utility is incorrect as the server has no way of knowing that NAT is being used.  The URL that you need to use to connect to is: \url{http://ip.of.your.physical.machine:8080/tellervo/}  
+\begin{lstlisting}
+sudo apt install \
+  ./tellervo-server-common-2.0.deb \
+  ./tellervo-server-webservice-2.0.deb \
+  ./tellervo-server-db-pg17-2.0.deb \
+  ./tellervo-server-db-2.0.deb \
+  ./tellervo-server-2.0.deb
+\end{lstlisting}
 
+After installation, run the configuration wizard and its tests:
 
-\subsection{Ubuntu native installation}
-\label{txt:installnativeserver}
-If you are fortunate enough to be running Ubuntu then the native Ubuntu deb package is the best and easiest method for installing the Tellervo server, otherwise see section \ref{txt:virtualAppliance} to install the server as a Virtual Appliance.  Note that due to limited resources we only support Tellervo Server on one version of Ubuntu at a time (typically the latest LTS release).  Attempting to install Tellervo Server on a different version of Ubuntu and especially other distros such as Debian are likely to fail.  If you really want to use a different operating system see section \ref{txt:installadvancedserver}.
+\code{sudo tellervo-server --configure}
+\code{sudo tellervo-server --test}
 
-To install the Tellervo server in Ubuntu simply download the deb package from the Tellervo server \url{https://www.tellervo.org/download} and install with your favourite package manager.  For instance, to install from the command line simply type: 
-\code{sudo dpkg --install tellervo-server.deb}  
+The wizard creates the database and database role, writes the webservice
+configuration, configures Apache, applies database upgrades, and reports the
+webservice URL. Save that URL for desktop users. Public DNS, HTTPS certificates,
+firewalls, and reverse proxies are normally completed by the local systems
+administrator after this wizard.
 
-Almost certainly you'll be missing one or more required dependencies, in which cause dpkg will return an error.  This can be fixed by running: 
-\code{sudo apt install -f} 
+\subsection{Separate web and database hosts}
+\label{txt:splitinstall}
 
-This will install all the missing packages, and will automatically allow dpkg to run to completion.  The package will automatically run a configuration script to assist with creating a database user, building the Tellervo PostgreSQL database, setting database permissions and setting up the Apache webservice.  The configuration ends with a test routine to check all services are set up correctly and if so, will provide you with the URL of the newly configured Tellervo webservice.
+Large installations may place PostgreSQL and the Apache/PHP webservice on
+different hosts. The example below uses documentation-only private addresses:
+the database host is \verb|192.0.2.10| and the web host is
+\verb|192.0.2.20|. It creates the named instance \verb|lab-a|, with database
+and login role both named \verb|tellervo_lab_a|. Replace all of these values
+with the private addresses and names for your site.
 
-\subsection{Advanced install on other operating systems}
-\label{txt:installadvancedserver}
-The limited resources available for Tellervo development means that we have been unable to produce native installers for platforms other that Ubuntu.  The VirtualBox method can be used on all modern operating systems so we strongly suggest you stick with this method.  However, if you are an experience systems administrator and are feeling brave, it is possible to set up the Tellervo server manually.  
+\subsubsection{Prepare the database host}
 
-\index{Dependencies!Server}
-The Tellervo server is essentially a PostgreSQL database running PostGIS and PLJava extensions accessed via a PHP webservice running on Apache 2.  The current dependencies are listed in the control file at: \url{https://github.com/ltrr-arizona-edu/tellervo/blob/master/Native/BuildResources/LinBuild/ServerControl/control}.  Note the interdependencies for PostgreSQL and PostGIS are very specific, so be careful to install the correct versions.
+First enable PGDG as described above and verify that the matching PL/Java
+package is available. Then install the common package, the package matching the
+PostgreSQL major version, and the database package:
 
-The basic procedure for installation is as follows:
+\begin{lstlisting}[language=bash]
+sudo apt install \
+  ./tellervo-server-common-2.0.deb \
+  ./tellervo-server-db-pg17-2.0.deb \
+  ./tellervo-server-db-2.0.deb
+\end{lstlisting}
 
-\begin{itemize*}
- \item Install all dependencies
- \item Create PostgreSQL database 
- \item Install PostGIS to database 
- \item Install PLJava to database 
- \item Restore Tellervo tables and data from template SQL file
- \item Set up a database user and provide access to the server in the pg\_hba.conf file
- \item Give this user read and write permissions to the database
- \item Copy the webservice code into a web accessible folder
- \item Set up Apache to see this folder by creating an entry in the sites-enabled folder
- \item Restart PostgreSQL and Apache and check you can access the webservice from a web browser
-\end{itemize*}
+Create the group role expected by the packaged database, a login role for this
+instance, and an empty database. The \verb|\password| command prompts securely
+for the password instead of placing it in shell history. The login is
+currently a PostgreSQL superuser because the server's PL/Java functions and
+upgrade process require elevated privileges. Protect this credential and do
+not reuse it for another application.
 
-A great deal of the complexity in setting up databases and running the server are hidden in the standard Ubuntu package through the tellervo-server script.  The script is highly tailored to Ubuntu so is unlikely to work on another OS, but reading it may helpful.
+\begin{lstlisting}[language=SQL]
+sudo -u postgres psql
+SET password_encryption = 'scram-sha-256';
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT FROM pg_roles WHERE rolname = 'Webgroup'
+  ) THEN
+    CREATE ROLE "Webgroup"
+      SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
+  END IF;
+  IF NOT EXISTS (
+    SELECT FROM pg_roles WHERE rolname = 'tellervo'
+  ) THEN
+    CREATE ROLE tellervo NOLOGIN;
+  END IF;
+  IF NOT EXISTS (
+    SELECT FROM pg_roles WHERE rolname = 'pbrewer'
+  ) THEN
+    CREATE ROLE pbrewer NOLOGIN;
+  END IF;
+END
+$$;
+CREATE ROLE tellervo_lab_a
+  LOGIN SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
+GRANT "Webgroup" TO tellervo_lab_a;
+CREATE DATABASE tellervo_lab_a;
+\password tellervo_lab_a
+\quit
+\end{lstlisting}
 
+Use fresh database and login-role names. If either already exists, stop and
+verify that it is not an installation you need to preserve. The non-login
+\verb|tellervo| and \verb|pbrewer| roles are retained only because some
+packaged upgrade scripts refer to these historical object owners; they cannot
+be used to connect.
+
+Initialise the database with the PL/Java setup and packaged database template:
+
+\begin{lstlisting}[language=bash]
+sudo -u postgres psql \
+  --dbname=tellervo_lab_a \
+  --set=ON_ERROR_STOP=1 \
+  --file=/usr/share/tellervo-server/db-upgrade-patches/database_upgrade-1.3.0e.notransaction.sql
+
+sudo -u postgres pg_restore \
+  --exit-on-error \
+  --no-owner \
+  --dbname=tellervo_lab_a \
+  /usr/share/tellervo-server/db-templates/tellervo_database_template_2.0.sql
+\end{lstlisting}
+
+Despite its \verb|.sql| suffix, the template is a PostgreSQL custom-format
+archive and must be loaded with \verb|pg_restore|.
+
+\subsubsection{Permit the web host to connect}
+
+Ask PostgreSQL for its active configuration paths rather than assuming a
+version-specific directory:
+
+\begin{lstlisting}[language=bash]
+sudo -u postgres psql -Atqc "SHOW config_file;"
+sudo -u postgres psql -Atqc "SHOW hba_file;"
+\end{lstlisting}
+
+Edit the reported \verb|postgresql.conf| and bind PostgreSQL to the database
+host's private address as well as localhost:
+
+\begin{lstlisting}
+listen_addresses = 'localhost,192.0.2.10'
+\end{lstlisting}
+
+Edit the reported \verb|pg_hba.conf| and add this line before any broader
+reject rule:
+
+\begin{lstlisting}
+host  tellervo_lab_a  tellervo_lab_a  192.0.2.20/32  scram-sha-256
+\end{lstlisting}
+
+This permits only the named database and role, from the single web-host
+address, using SCRAM password authentication. Do not use an unrestricted rule
+such as \verb|host all all 0.0.0.0/0|, and do not expose PostgreSQL to the
+public Internet. Restart PostgreSQL because a \verb|listen_addresses| change
+cannot be applied by a reload alone:
+
+\begin{lstlisting}[language=bash]
+sudo systemctl restart postgresql
+\end{lstlisting}
+
+If a host or network firewall is enabled, permit TCP port 5432 only from the
+web host. For example, with UFW:
+
+\begin{lstlisting}[language=bash]
+sudo ufw allow from 192.0.2.20 \
+  to 192.0.2.10 port 5432 proto tcp
+\end{lstlisting}
+
+\subsubsection{Configure and test the web host}
+
+Install the web-service packages and PostgreSQL client on the web host:
+
+\begin{lstlisting}[language=bash]
+sudo apt install postgresql-client \
+  ./tellervo-server-common-2.0.deb \
+  ./tellervo-server-webservice-2.0.deb
+\end{lstlisting}
+
+First test the network route, authentication, and HBA rule independently of
+Tellervo. Enter the password created above when prompted:
+
+\begin{lstlisting}[language=bash]
+psql --host=192.0.2.10 --port=5432 \
+  --dbname=tellervo_lab_a \
+  --username=tellervo_lab_a \
+  --command='SELECT current_database(), current_user;'
+\end{lstlisting}
+
+Once this succeeds, run the webservice wizard and supply the same database
+host, port, database name, role, and password:
+
+\code{sudo tellervo-server --instance lab-a --configure}
+\code{sudo tellervo-server --instance lab-a --test}
+
+The wizard deliberately does not create a database on a remote PostgreSQL
+host. It verifies the prepared database and applies any outstanding upgrades.
+See chapter \ref{txt:runningserver} for named instances and routine
+administration.
 
 \section{Installing the desktop application}
 \label{txt:desktopinstall}
 \index{Installation!Desktop application}
-Installation packages for the Tellervo desktop application are available for Windows, MacOSX and Ubuntu Linux.  Tellervo can also be run on other operating systems as long as they support Java 8 or later (see section \ref{txt:java}, page \pageref{txt:java} for more information).
 
-To install Tellervo, download the installation file for your operating system from \url{https://tellervo.org/download}. The website should provide you with a link to the installer for your current operating system:
+Tellervo Desktop 2.0 uses Java 21 and is distributed as a native package
+containing its Java 21 runtime. Users of the native packages do not need to
+install Java separately. Obtain the package for your operating system from the
+Tellervo download page or the project's release assets. A Java 21 JDK is
+required only when building Tellervo or running it directly from Maven or a
+JAR.
 
 \begin{description}
-\item \includegraphics[width=3mm]{Images/windows.png} \textbf{Windows} -- Run the setup.exe and follow the instructions. 
+ \item[Windows] Run the MSI package and follow Windows Installer. The default
+ per-user installation is placed below \verb|%LOCALAPPDATA%\Tellervo| and does
+ not require administrator privileges. The required 64-bit serial library is
+ included.
+ \item[macOS] Open the DMG and install Tellervo in the usual Applications
+ location. Depending on local security policy, the first launch may require
+ approval in macOS Privacy \& Security settings.
+ \item[Debian or Ubuntu Linux] Install the DEB with APT so that the RXTX and
+ JOGL runtime dependencies are installed:
 
-\item \includegraphics[width=3mm]{Images/mac.png} \textbf{Mac OS X} -- Download then open the zip file and drag the Tellervo.app into your applications folder.  If you want to use a measuring platform you may need to run the `fixserialportpermissions.sh' script located in the package.   
+ \code{sudo apt install ./tellervo\_2.0.0\_amd64.deb}
 
-\item \includegraphics[width=3mm]{Images/ubuntu.png} \textbf{Ubuntu Linux} --  A deb file is available which was designed for use on Ubuntu distributions but should work on any Debian based system. Install using your favorite package management system or from the command line like this: e.g. \code{sudo dpkg --install tellervo.xx.xx\_all.deb} On Ubuntu and similar distributions, the package should add a Tellervo shortcut to your applications menu. Alternatively you can start Tellervo from the command line by typing tellervo.  
-
-\item \includegraphics[width=3mm]{Images/unix.png} \textbf{Unix} -- The installation script will work on most flavours of Unix and Linux.  You will need to install Java, RXTX serial port library and JOGL graphics libraries manually though.
-
+ The package adds an application-menu entry and a \verb|tellervo| command in
+ \verb|/usr/bin|.
 \end{description}
 
-Once you have installed your Tellervo Desktop application and you have access to a Tellervo server you are now ready to launch Tellervo for the first time.
+Current Tellervo desktop packages are 64-bit. Measuring hardware connected by
+USB or a serial adapter may require an operating-system driver and permission
+for the user to access the device. See chapter
+\ref{txt:MeasuringPlatformConfig}.
 
-\subsection{First time launch}
+\subsection{First launch}
 \index{Wizard, Setup}
-When you launch Tellervo for the first time you will be presented with a setup wizard (figure \ref{fig:setupwizard}).  Following the wizard to configure the main settings required before you can begin to use Tellervo.  If you want to re-run this wizard at any time you can do so from the entry in the Help menu. You can also manually edit all these settings from the Tellervo preferences dialog which can be found in \menutwo{Edit}{Preferences}.
 
-\begin{figure}[hbtp]
-  \centering
-    \includegraphics[width=0.6\textwidth]{Images/setupwizard.png}
-  \caption{The Tellervo setup wizard will launch the first time you start Tellervo.}
-  \label{fig:setupwizard}
-\end{figure}
-
-The pages of the wizard include:
+On first launch, Tellervo opens its setup wizard. The wizard can be run again
+from \menutwo{Help}{Setup Wizard}; the same settings can be changed in
+\menutwo{Edit}{Preferences}.
 
 \begin{description}
- \item[Tellervo mode] -- asks the user to choose whether they want to run Tellervo in full or lite mode.
- \item[Network connection] -- this configures how your computer accesses the internet.  Most users will be able to use the default `Use system default proxy settings' option here, but if you know that your computer is behind a corporate proxy server you may choose to manually provide the settings.
- \item[Configuring the Tellervo server] -- Tellervo comes in two parts: the Tellervo desktop client that you are using; and the Tellervo server which runs the database that stores your data.  If you are working in a lab your systems administrator may have already set up the Tellervo server and given you the URL to connect to.  Alternatively, you may have already installed the Tellervo server yourself.  If so the installation program should have given you the URL. If you don't have access to a Tellervo server yet, you should close this wizard, then go to the Tellervo website and download it.
- \item[Measuring platform configuration] -- the next page enables you to configure measuring platform hardware attached to your computer.  Some measuring platforms have fixed settings in which case the port settings will be set automatically, but others can be changed in the hardware and must be set explicitly here. Use the `Test Connection' button to make sure that Tellervo can successfully communicate with your platform.
+ \item[Tellervo mode] Choose full mode to connect to a server or lite mode to
+ work with local files.
+ \item[Network connection] In most environments the system proxy settings are
+ correct. Enter a manual proxy only when instructed by your network
+ administrator.
+ \item[Tellervo Server] In full mode, enter the complete webservice URL supplied
+ by the server administrator. Use HTTPS for servers reached across an
+ untrusted network.
+ \item[Measuring platform] Select the connected device and port, enter any
+ device-specific serial settings, and use Test Connection before measuring
+ samples.
 \end{description}
 
-
-Once you have completed the wizard you will be presented with a dialog (figure \ref{fig:login}) for logging in to your Tellervo server.
-
-\begin{wrapfigure}{r}{0.5\textwidth}
-  \begin{center}
-    \includegraphics[width=0.46\textwidth]{Images/login.png}
-  \end{center}
-  \caption{Tellervo server login dialog.}
-  \label{fig:login}
-\end{wrapfigure}
-
-The username and password details requested are your Tellervo login credentials (not your system or network credentials) provided to you by your systems administrator.  If you are using your own Virtual Appliance server, the default admin user details are provided in section \ref{txt:passwords}, page \pageref{txt:passwords}.  The dialog gives you the option for saving your username and/or password if you prefer.  We recommend using this feature only on personal machines.  You may choose to cancel the login if you like and Tellervo will continue to load, however, you will not have access to the Tellervo database therefore very few functions will be available to you.
-
+Full mode then displays the Tellervo login dialog. These are Tellervo database
+credentials, not operating-system credentials. Saving a password is appropriate
+only on a trusted personal workstation.
 
 \subsection{Mapping support}
 \index{Mapping}
-Tellervo includes 3D mapping for visualization of sampling locations. Although this is not necessary for most tasks, to make use of the mapping functions you will require a OpenGL 3D capable graphics card. To check whether your computer already supports 3D mapping, open Tellervo, go to Admin, then Site map.  Tellervo will warn you if your graphics card is not supported.
 
-All MacOSX computers should automatically support OpenGL.  Most Windows and Linux computers made since 2006 should also support OpenGL, however, this does require proper drivers to be installed. In some cases Windows computers may include a compatible graphics card, but may only have the default Windows video drivers installed.  If you are having trouble with the mapping in Tellervo make sure you have installed the most recent drivers for your graphics card.  Linux users may be required to install proprietary graphics drivers.  
+Tellervo's three-dimensional map requires working OpenGL support. Native
+packages include the Java graphics components, but the operating system must
+provide a suitable graphics driver. Open \menutwo{Admin}{Site map} to test map
+initialization. If it fails, update the graphics driver and consult the system
+information and error log under the Help menu.
 
-The mapping component of Tellervo makes use of NASA's open source World Wind Java.  NASA's website \url{http://worldwind.arc.nasa.gov/} contains further information and instructions that you may find helpful if you are having problems getting the mapping to work.  
-
-
-\section{Upgrading Tellervo desktop}
+\section{Upgrading}
 \index{Upgrading}
 \index{Upgrading!Tellervo desktop}
-There are no special requirements for upgrading the Tellervo desktop client.  You need simply install the new version over the top of your previous version.  Any personal settings will be maintained after the upgrade.
 
+To upgrade Tellervo Desktop, close the application and install the new native
+package over the existing version. User preferences are retained. If a release
+requires a newer Tellervo Server, upgrade and test the server before deploying
+the desktop package to users.
 
-\section{Upgrading Tellervo Server}
-Complete instructions for upgrading Tellervo Server run both natively or in Virtualbox can be found in section \ref{txt:upgradeserver}.
+Always back up the server before an upgrade. A server installed from an APT
+repository is upgraded with:
 
+\code{sudo apt update}
+\code{sudo apt upgrade}
+\code{sudo tellervo-server --test}
+
+Local DEB upgrades should again use \verb|apt install| with all required local
+packages. Detailed backup, database upgrade, and multi-instance procedures are
+in chapter \ref{txt:runningserver}.
 
 \section{Uninstalling}
 
-We understand that Tellervo will never suit the requirements of all users, but as an open source product, we would really appreciate feedback as to why it didn't work for you.  Without this feedback it is difficult to prioritize future development.
+Use Windows Installed Apps, remove the macOS application, or use the Linux
+package manager to uninstall Tellervo Desktop. On Debian or Ubuntu:
 
-\subsection{Tellervo desktop application}
-For Windows users, Tellervo desktop can be uninstalled using the standard add/remove programs feature in control panel, or via the item in the Tellervo start menu.  Mac users should simply delete the application from their applications folder.  Linux users should use their prefered package management tool e.g.\ from the command line:
-\code{sudo dpkg --remove tellervo}
+\code{sudo apt remove tellervo}
 
-\subsection{Tellervo server}
+\warn{Removing server packages is not the same as deleting a Tellervo
+database. Before changing or decommissioning a server, make a database backup
+and a separate backup of uploaded media files. Verify both backups on another
+machine.}
 
-If you are running the Tellervo server as a virtual appliance simply follow the uninstall instructions for VirtualBox. Please note that uninstalling the Virtualbox Tellervo server will delete your Tellervo database and all the data it contains.  Make sure that you export any data you need before uninstalling.  
+To remove the server software while preserving data, use:
 
-If you are running Tellervo server on a native Linux computer, you should use your preferred package mangement tool.  To remove the server software but leave the database in place:
-\code{sudo dpkg --remove tellervo-server}
+\code{sudo apt remove tellervo-server}
 
-To do a complete removal of the software and database then you should run:
-\code{sudo dpkg --purge tellervo-server}
-
-
-
-
-
-
-
-
+Do not purge packages, delete a named instance, or remove PostgreSQL data
+directories unless the database and media are intentionally being destroyed.
+The named-instance deletion command is interactive because it removes both the
+instance database and its web folder.
