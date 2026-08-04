@@ -364,7 +364,7 @@ class radius extends radiusEntity implements IDBAccessor {
 				if ($this->getAzimuth () !== NULL)
 					$xml .= "<tridas:azimuth>" . dbhelper::escapeXMLChars ( $this->getAzimuth () ) . "</tridas:azimuth>\n";
 				
-				if ($this->getUserDefinedFieldAndValueArray () != null && count ( $this->getUserDefinedFieldAndValueArray () > 0 )) {
+				if (is_countable($this->getUserDefinedFieldAndValueArray ()) && count ( $this->getUserDefinedFieldAndValueArray () ) > 0) {
 					foreach ( $this->getUserDefinedFieldAndValueArray () as $field ) {
 						$xml .= $field->getAsTridasXML ();
 					}

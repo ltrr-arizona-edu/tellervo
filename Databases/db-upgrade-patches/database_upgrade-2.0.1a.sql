@@ -1,3 +1,38 @@
+-- Compatibility for restored databases whose historical owner/ACL entries
+-- were omitted from the archive. Views and functions below may execute using
+-- either legacy owner role, so refresh access to every existing Tellervo
+-- object before building objects that query through them.
+DO $$
+DECLARE
+  schema_name text;
+BEGIN
+  FOREACH schema_name IN ARRAY ARRAY['public', 'cpgdb', 'cpgdbj', 'portal']
+  LOOP
+    IF EXISTS (
+      SELECT 1
+      FROM pg_namespace
+      WHERE nspname = schema_name
+    ) THEN
+      EXECUTE format(
+        'GRANT ALL PRIVILEGES ON SCHEMA %I TO "Webgroup", tellervo, pbrewer',
+        schema_name
+      );
+      EXECUTE format(
+        'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA %I TO "Webgroup", tellervo, pbrewer',
+        schema_name
+      );
+      EXECUTE format(
+        'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA %I TO "Webgroup", tellervo, pbrewer',
+        schema_name
+      );
+      EXECUTE format(
+        'GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA %I TO "Webgroup", tellervo, pbrewer',
+        schema_name
+      );
+    END IF;
+  END LOOP;
+END
+$$;
 
 -- FIX QRYTAXONOMY 
 DROP FUNCTION cpgdb.qrytaxonomy(varchar);
@@ -66,6 +101,14 @@ FROM   tlkptaxon e,
 cpgdb.qrytaxonomy(e.taxonid) t, 
 tlkptaxonrank tr 
 WHERE tr.taxonrankid = e.taxonrankid;
+
+-- These views form a dependency chain and restored databases may contain
+-- older definitions with additional columns. CREATE OR REPLACE VIEW cannot
+-- remove columns, so rebuild the chain explicitly without cascading into
+-- unrelated user objects.
+DROP VIEW IF EXISTS vwipt;
+DROP VIEW IF EXISTS vwtblsample2;
+DROP VIEW IF EXISTS vwlocation;
 
 -- UNION QUERY FOR ALL LOCATION FIELDS BY ENTITY
 CREATE OR REPLACE VIEW vwlocation AS 

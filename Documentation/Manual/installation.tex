@@ -29,8 +29,118 @@ application on each user's computer.
 
 Tellervo Server 2.0 is packaged for current Debian- and Ubuntu-based systems.
 The standard package installs Apache, PHP, PostgreSQL, PostGIS, PL/Java, the
-Tellervo webservice, and the database administration tools. The server is not
-distributed as the former VirtualBox appliance.
+Tellervo webservice, and the database administration tools. A preconfigured
+VirtualBox appliance is also an option for users who want a self-contained
+server without maintaining a separate Linux host.
+
+% TODO: Review and update the restored VirtualBox appliance instructions,
+% including the supported host platforms, appliance download location, guest
+% operating system, first-boot prompts, networking UI, and screenshots.
+\subsection{VirtualBox appliance installation}
+\label{txt:virtualAppliance}
+\index{Virtual appliance}
+\index{Installation!Virtual appliance}
+
+The VirtualBox appliance is intended for small laboratories, demonstrations,
+and users who do not have a dedicated Linux server. It contains a minimal Linux
+guest with the Tellervo Server components already installed. The native package
+installation described later in this chapter remains the usual choice for a
+centrally managed production server.
+
+Install VirtualBox from \url{https://www.virtualbox.org}, then obtain the
+Tellervo Server OVA file from the Tellervo download page or the project's
+release assets. The appliance is supplied in the standard OVA format. Other
+virtualisation products may be able to import it, but the instructions and
+testing here are for VirtualBox.
+
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=0.7\textwidth]{Images/serverconfig.png}
+  \caption{VirtualBox running Tellervo Server. The console shows the tests at
+  the end of the configuration routine.}
+  \label{fig:serverconfig}
+\end{figure}
+
+\begin{enumerate}
+ \item Open VirtualBox and select \menutwo{File}{Import Appliance}.
+ \item Select the downloaded OVA file, review the proposed virtual-machine
+ settings, give the machine a recognisable name, and import it.
+ \item With the new machine powered off, open its settings. Allocate sufficient
+ memory for the database workload and choose the required network mode as
+ described below.
+ \item Start the virtual machine and read VirtualBox's explanation of how to
+ capture and release the keyboard and pointer.
+ \item Wait for the command-line login prompt. Log in using the temporary
+ system credentials supplied with the appliance or its release notes.
+ \item Complete the first-boot questions. The configuration routine configures
+ the database and webservice and finishes by testing the server, as shown in
+ figure \ref{fig:serverconfig}.
+ \item Change every temporary system, database, and Tellervo password before
+ making the server available to other computers.
+ \item Record the displayed Tellervo webservice URL. If it is needed later, log
+ in to the appliance and run:
+
+ \code{sudo tellervo-server --test}
+
+ \item Install Tellervo Desktop as described in section
+ \ref{txt:desktopinstall}, and enter the recorded URL during first launch.
+\end{enumerate}
+
+The appliance deliberately has no graphical Linux desktop. Normal work is
+performed from Tellervo Desktop, while server administration uses the
+\verb|tellervo-server| command in the appliance console. Keep the appliance's
+operating system and Tellervo packages patched, and treat the host computer and
+the guest as two systems that both require backups and security updates.
+
+\subsubsection{Choosing the VirtualBox network mode}
+
+\begin{description}
+ \item[Bridged adapter] makes the guest appear as another computer on the local
+ network with its own address. This is generally the simplest mode when several
+ workstations must reach Tellervo. The network administrator may need to
+ register or permit the guest's MAC address. Bridging through a wireless
+ interface is implemented differently from bridging through wired Ethernet and
+ has platform- and protocol-specific limitations; use a wired interface where
+ the local wireless configuration does not work reliably.
+
+\item[Host-only network] connects the host computer and any local virtual
+ machines attached to the same host-only network, but not computers on the
+ external LAN. It is useful for a personal or demonstration installation, but
+ other laboratory computers cannot connect. A guest using only a host-only
+ adapter has no Internet access; arrange another controlled method for guest
+ operating-system and Tellervo updates, or add a separate NAT adapter for
+ outbound access. Current macOS hosts use the \emph{Host-Only Network} option;
+ other hosts may present \emph{Host-Only Adapter}.
+
+\item[NAT] gives this guest outbound network access through VirtualBox's NAT
+ engine. The guest is not directly reachable from the host or LAN unless a port
+ is forwarded. This per-VM \emph{NAT} mode is distinct from VirtualBox's
+ separately configured \emph{NAT Network} mode. With the virtual machine
+ powered off, select NAT for its network adapter and open that adapter's
+ \emph{Port Forwarding} controls. Add a TCP rule such as:
+
+ \begin{itemize}
+  \item Name: TellervoHTTP
+  \item Host address: \verb|127.0.0.1| for access from the host computer only,
+  or the host's LAN address for access from selected laboratory computers
+  \item Host port: 8080
+  \item Guest port: 80
+ \end{itemize}
+
+ The guest address can normally be left blank when the guest uses VirtualBox's
+ built-in DHCP service. Do not leave the host address blank unless listening on
+ every host interface is intentional: a blank host address makes the forwarded
+ port available on all of them. With \verb|127.0.0.1|, only Tellervo Desktop on
+ the host can connect, using
+ \url{http://127.0.0.1:8080/tellervo/}. For other laboratory computers, bind the
+ rule to the host's LAN address and have clients use, for example,
+ \url{http://host-address:8080/tellervo/}. Permit the port only from the required
+ network in the host firewall.
+
+ If HTTPS is configured in the appliance, forward its HTTPS port instead and
+ use the corresponding \verb|https://| URL. Do not expose an unencrypted
+ webservice to the public Internet.
+\end{description}
 
 \subsection{Enable the PostgreSQL package repository}
 
@@ -126,67 +236,26 @@ sudo apt install \
   ./tellervo-server-db-2.0.deb
 \end{lstlisting}
 
-Create the group role expected by the packaged database, a login role for this
-instance, and an empty database. The \verb|\password| command prompts securely
-for the password instead of placing it in shell history. The login is
-currently a PostgreSQL superuser because the server's PL/Java functions and
-upgrade process require elevated privileges. Protect this credential and do
-not reuse it for another application.
-
-\begin{lstlisting}[language=SQL]
-sudo -u postgres psql
-SET password_encryption = 'scram-sha-256';
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT FROM pg_roles WHERE rolname = 'Webgroup'
-  ) THEN
-    CREATE ROLE "Webgroup"
-      SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
-  END IF;
-  IF NOT EXISTS (
-    SELECT FROM pg_roles WHERE rolname = 'tellervo'
-  ) THEN
-    CREATE ROLE tellervo NOLOGIN;
-  END IF;
-  IF NOT EXISTS (
-    SELECT FROM pg_roles WHERE rolname = 'pbrewer'
-  ) THEN
-    CREATE ROLE pbrewer NOLOGIN;
-  END IF;
-END
-$$;
-CREATE ROLE tellervo_lab_a
-  LOGIN SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
-GRANT "Webgroup" TO tellervo_lab_a;
-CREATE DATABASE tellervo_lab_a;
-\password tellervo_lab_a
-\quit
-\end{lstlisting}
-
-Use fresh database and login-role names. If either already exists, stop and
-verify that it is not an installation you need to preserve. The non-login
-\verb|tellervo| and \verb|pbrewer| roles are retained only because some
-packaged upgrade scripts refer to these historical object owners; they cannot
-be used to connect.
-
-Initialise the database with the PL/Java setup and packaged database template:
+Initialise an empty database using the administration command supplied by
+\verb|tellervo-server-common|:
 
 \begin{lstlisting}[language=bash]
-sudo -u postgres psql \
-  --dbname=tellervo_lab_a \
-  --set=ON_ERROR_STOP=1 \
-  --file=/usr/share/tellervo-server/db-upgrade-patches/database_upgrade-1.3.0e.notransaction.sql
-
-sudo -u postgres pg_restore \
-  --exit-on-error \
-  --no-owner \
-  --dbname=tellervo_lab_a \
-  /usr/share/tellervo-server/db-templates/tellervo_database_template_2.0.sql
+sudo tellervo-server-db init \
+  --dbname tellervo_lab_a \
+  --user tellervo_lab_a
 \end{lstlisting}
 
-Despite its \verb|.sql| suffix, the template is a PostgreSQL custom-format
-archive and must be loaded with \verb|pg_restore|.
+The command prompts twice for the webservice login password, creates the
+database and the compatibility roles required by historical Tellervo objects,
+configures PL/Java, and restores the packaged empty database template. If
+\verb|--user| is omitted, the login role defaults to the database name.
+
+The initializer refuses to change an existing database. Use fresh database and
+login-role names; if the database already exists, stop and verify that it is
+not an installation you need to preserve. The login is currently a PostgreSQL
+superuser because the server's PL/Java functions and upgrade process require
+elevated privileges. Protect this credential and do not reuse it for another
+application.
 
 \subsubsection{Permit the web host to connect}
 

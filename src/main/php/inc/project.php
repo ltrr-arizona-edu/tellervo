@@ -311,7 +311,7 @@ class project extends projectEntity implements IDBAccessor {
 
 				
 				// Generic fields
-				if ($this->getUserDefinedFieldAndValueArray () != null && count ( $this->getUserDefinedFieldAndValueArray () > 0 )) {
+				if (is_countable($this->getUserDefinedFieldAndValueArray ()) && count ( $this->getUserDefinedFieldAndValueArray () ) > 0) {
 					foreach ( $this->getUserDefinedFieldAndValueArray () as $field ) {
 						$xml .= $field->getAsTridasXML ();
 					}
@@ -458,7 +458,7 @@ class project extends projectEntity implements IDBAccessor {
 				}
 				
 				// Write user defined fields to database
-				if (count ( $this->userDefinedFieldAndValueArray ) > 0) {
+				if (is_countable($this->userDefinedFieldAndValueArray) && count ( $this->userDefinedFieldAndValueArray ) > 0) {
 						
 					foreach ( $this->userDefinedFieldAndValueArray as $field ) {
 						try {

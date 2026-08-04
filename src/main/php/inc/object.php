@@ -162,7 +162,7 @@ class tobject extends objectEntity implements IDBAccessor {
 			
 					// Loop through all the parents
 					while ( $row = pg_fetch_array ( $result ) ) {
-						$myObject = new tobjectt ();
+						$myObject = new tobject ();
 						$success = $myObject->setParamsFromDB ( $row ['objectid'] );
 						if ($success === FALSE) {
 							trigger_error ( $myObject->getLastErrorCode () . $myObject->getLastErrorMessage () );
@@ -474,7 +474,7 @@ class tobject extends objectEntity implements IDBAccessor {
 				if( ($this->getProjectID()!= NULL))
 					$xml .= "<tridas:genericField name=\"tellervo.object.projectid\" type=\"xs:string\">" . $this->getProjectID() . "</tridas:genericField>\n";
 				
-				if ($this->getUserDefinedFieldAndValueArray () != null && count ( $this->getUserDefinedFieldAndValueArray () > 0 )) {
+				if (is_countable($this->getUserDefinedFieldAndValueArray ()) && count ( $this->getUserDefinedFieldAndValueArray () ) > 0) {
 					foreach ( $this->getUserDefinedFieldAndValueArray () as $field ) {
 						$xml .= $field->getAsTridasXML ();
 					}
@@ -692,7 +692,7 @@ class tobject extends objectEntity implements IDBAccessor {
 				}
 				
 				// Write user defined fields to database
-				if (count ( $this->userDefinedFieldAndValueArray ) > 0) {
+				if (is_countable($this->userDefinedFieldAndValueArray) && count ( $this->userDefinedFieldAndValueArray ) > 0) {
 						
 					foreach ( $this->userDefinedFieldAndValueArray as $field ) {
 						try {

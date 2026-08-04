@@ -57,16 +57,84 @@ only on the Tellervo host will be lost with that host. Encrypt backups that
 contain sensitive research, location, or user information, restrict access to
 them, and test restoration regularly.
 
+% TODO: Review and update these restored VirtualBox backup and restore steps
+% against the appliance version and current VirtualBox user interface.
+\subsection{Backing up a VirtualBox appliance}
+\label{txt:BackupVA}
+
+Exporting the complete appliance captures its operating system, Tellervo
+installation, database, and local files in one OVA. It is convenient for
+occasional snapshots or moving a small installation, but it requires downtime
+and consumes considerably more storage than a database dump. It should
+supplement, not replace, regular database and media backups.
+
+\begin{enumerate}
+ \item In the guest console, perform a clean shutdown:
+
+ \code{sudo shutdown -h now}
+
+ \item After the guest has stopped, open VirtualBox, select the Tellervo virtual
+ machine, and choose \menutwo{File}{Export Appliance}.
+ \item Follow the export wizard and save the OVA on a different physical device
+ or managed backup system.
+ \item Record the Tellervo and appliance versions, and periodically verify that
+ the exported appliance can be imported and started on a test host.
+\end{enumerate}
+
+Do not copy or export a running virtual disk as an ordinary file: a
+crash-inconsistent PostgreSQL disk image may not restore cleanly.
+
+\subsection{Restoring a VirtualBox appliance}
+
+Open VirtualBox, choose \menutwo{File}{Import Appliance}, and select the
+exported OVA. Review its name, MAC-address policy, storage location, and network
+mode before importing it. If the original appliance still exists, give the
+restored machine a different name and do not start both with the same network
+identity.
+
+After the restored guest boots, check its address and webservice URL, update
+DNS or client configuration if necessary, and run:
+
+\code{sudo tellervo-server --test}
+
+Confirm that the database, uploaded media, users, and recent records are
+present before treating the restore as successful. Apply outstanding guest
+operating-system and Tellervo updates only after preserving the known-good
+export.
+
 \subsection{Database backup}
 \label{txt:dbbackup}
 
-Back up the default instance to an explicitly named destination:
+On a database host, create a custom-format archive with an explicitly named
+destination:
 
-\code{sudo tellervo-server --backup-db /srv/backups/tellervo.dump}
+\begin{lstlisting}[language=bash]
+sudo tellervo-server-db backup \
+  --dbname tellervo \
+  --file /srv/backups/tellervo.dump
+\end{lstlisting}
 
-For a named instance:
+The command writes through a temporary file, validates the archive, and refuses
+to replace an existing backup file. It prints a SHA-256 checksum when complete.
 
-\code{sudo tellervo-server --instance lab-a --backup-db /srv/backups/lab-a.dump}
+An older Tellervo host does not need the new package installed. Copy the
+standalone command from the new database host:
+
+\begin{lstlisting}[language=bash]
+scp /usr/bin/tellervo-server-db old-db-host:/tmp/
+\end{lstlisting}
+
+Then run only its portable backup operation on the old host:
+
+\begin{lstlisting}[language=bash]
+chmod 0755 /tmp/tellervo-server-db
+sudo /tmp/tellervo-server-db backup \
+  --dbname old_tellervo_database \
+  --file /tmp/old_tellervo_database.dump
+\end{lstlisting}
+
+Copy the dump to the new host and compare its SHA-256 checksum at both ends
+before attempting a restore.
 
 Use a scheduler such as a systemd timer, cron, or an institutional backup agent
 to run backups automatically. Include the date and instance in each filename,
@@ -91,17 +159,25 @@ to an unmanaged synchronization account.
 \subsection{Restoring a database}
 \label{txt:dbrestore}
 
-\warn{A restore replaces the selected instance database. Confirm the instance
-name and backup file before continuing, and keep a backup of the current
-database until the restored service has been verified.}
+\warn{Always restore the first migration into a new test database. The database
+administration command refuses to replace an existing database; do not
+circumvent this safeguard by dropping a database that has not been backed up.}
 
-Restore the default instance with:
+Restore a validated archive into a new database:
 
-\code{sudo tellervo-server --restore-db /srv/backups/tellervo.dump}
+\begin{lstlisting}[language=bash]
+sudo tellervo-server-db restore \
+  --dbname old_tellervo_database_test \
+  --user webuser \
+  --file /srv/backups/old_tellervo_database.dump
+\end{lstlisting}
 
-Restore a named instance with:
-
-\code{sudo tellervo-server --instance lab-a --restore-db /srv/backups/lab-a.dump}
+The command validates the archive before creating the target, configures the
+current PL/Java extension and Tellervo JAR, filters incompatible extension and
+access-control entries from older dumps, and reapplies Tellervo privileges. If
+restoration fails, it removes only the new incomplete target database. An
+existing login role is reused without changing its password; restore prompts
+for a password only when it must create the role.
 
 After restoration, replace the matching media files if necessary, apply any
 outstanding database upgrades, regenerate the system configuration, and test:
@@ -200,8 +276,8 @@ database and media backups before using it.}
 In a split installation the database host runs the common and database
 packages, while the application host runs the common and webservice packages.
 Section \ref{txt:splitinstall} gives the complete initial setup procedure,
-including creation of the role and database, loading the packaged template,
-and testing the connection from the web host.
+including use of \verb|tellervo-server-db init| to create the role and database,
+load the packaged template, and test the connection from the web host.
 
 PostgreSQL should listen only on the required interfaces. Add a
 \verb|pg_hba.conf| rule limited to the web host, database, and role. For

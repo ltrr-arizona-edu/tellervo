@@ -1,84 +1,4 @@
 
-CREATE OR REPLACE FUNCTION cpgdb.getvmeasurementsummaryinfo(uuid) RETURNS public.typvmeasurementsummaryinfo
-    LANGUAGE plpgsql STABLE
-    AS $_$
-DECLARE
-   VMID ALIAS FOR $1;
-   numrows integer;
-   taxondepth integer;
-
-   curtf text;
-   prevtf text;
-
-   rec record;
-   curtaxa typfulltaxonomy;
-   prevtaxa typfulltaxonomy;
-
-   ret typVMeasurementSummaryInfo;   
-BEGIN
-   ret.VMeasurementID := VMID;
-   numrows := 0;
-
-   FOR rec IN SELECT s.code 
-	FROM tblVMeasurementDerivedCache d
-	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
-	INNER JOIN tblRadius r on r.radiusID = m.radiusID
-	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
-	INNER JOIN tblElement t on t.elementID = sp.elementID
-	INNER JOIN tblObject s on s.objectID = t.objectID
-	WHERE d.VMeasurementID = VMID
-	GROUP BY(s.code)   
-   LOOP
-      IF numrows = 0 THEN
-         ret.objectCode = rec.code;
-      ELSE
-         ret.objectCode = ret.objectCode || ';' || rec.code;
-      END IF;
-      numrows := numrows + 1;
-   END LOOP;
-   ret.objectCount = numrows;   
-
-   numrows := 0;
-   FOR rec IN SELECT txbasic.*, cpgdb.qryTaxonomy(txbasic.taxonID) as tx FROM
- 	(SELECT t.taxonID::varchar FROM tblVMeasurementDerivedCache d
-	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
-	INNER JOIN tblRadius r on r.radiusID = m.radiusID
-	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
-	INNER JOIN tblElement t on t.elementID = sp.elementID
-	INNER JOIN tlkpTaxon tx on tx.taxonID = t.taxonID
-	WHERE d.VMeasurementID = VMID
-	GROUP BY(t.taxonID)) as txbasic
-   LOOP
-      curtaxa := rec.tx;
-
-      IF numrows = 0 THEN
-         taxondepth := 15;
-         LOOP
-            curtf := cpgdb._getTaxonForDepth(taxondepth, curtaxa);
-            EXIT WHEN curtf IS NOT NULL;
-            taxondepth := taxondepth - 1;
-         END LOOP;
-      ELSE
-         LOOP
-            curtf := cpgdb._getTaxonForDepth(taxondepth, curtaxa);
-            prevtf := cpgdb._getTaxonForDepth(taxondepth, prevtaxa);            
-            EXIT WHEN curtf = prevtf OR taxondepth = 1;
-            taxondepth := taxondepth - 1;
-         END LOOP;
-      END IF;
-
-      numrows := numrows + 1;
-      prevtaxa := curtaxa;
-   END LOOP;
-
-   ret.taxonCount := numrows;
-   ret.commonTaxonName := curtf;
-   
-   RETURN ret;
-END;
-$_$;
-
-
 CREATE OR REPLACE FUNCTION cpgdb.ElementLocationChangedTrigger() RETURNS trigger AS $$
 DECLARE
    vmid tblVMeasurement.VMeasurementID%TYPE;
@@ -650,7 +570,12 @@ DROP FUNCTION IF EXISTS cpgdb.qrytaxonomy2(character varying);
 DROP FUNCTION IF EXISTS cpgdb.qrytaxonflat1(character varying);
 DROP FUNCTION IF EXISTS cpgdb.qrytaxonflat2(character varying);
 DROP FUNCTION IF EXISTS cpgdb.qrytaxonomy(character varying);
+DROP FUNCTION IF EXISTS cpgdb.qrytaxonomy2(integer);
+DROP FUNCTION IF EXISTS cpgdb.qrytaxonflat1(integer);
+DROP FUNCTION IF EXISTS cpgdb.qrytaxonflat2(integer);
+DROP FUNCTION IF EXISTS cpgdb.qrytaxonomy(integer);
 DROP FUNCTION IF EXISTS cpgdb._gettaxonfordepth(integer, typfulltaxonomy);
+DROP FUNCTION IF EXISTS cpgdb.getvmeasurementsummaryinfo(uuid);
 
 
 DROP TYPE typtaxonrankname;
@@ -808,6 +733,85 @@ as
   LANGUAGE 'sql' VOLATILE;
 
 COMMENT ON FUNCTION cpgdb.qrytaxonomy(taxonid varchar) IS 'This is a cross tab query that builds on qrytaxonflat1 and 2 to flatten out the entire taxonomic element for a given taxonid. ';
+
+CREATE OR REPLACE FUNCTION cpgdb.getvmeasurementsummaryinfo(uuid) RETURNS public.typvmeasurementsummaryinfo
+    LANGUAGE plpgsql STABLE
+    AS $_$
+DECLARE
+   VMID ALIAS FOR $1;
+   numrows integer;
+   taxondepth integer;
+
+   curtf text;
+   prevtf text;
+
+   rec record;
+   curtaxa typfulltaxonomy;
+   prevtaxa typfulltaxonomy;
+
+   ret typVMeasurementSummaryInfo;
+BEGIN
+   ret.VMeasurementID := VMID;
+   numrows := 0;
+
+   FOR rec IN SELECT s.code
+	FROM tblVMeasurementDerivedCache d
+	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
+	INNER JOIN tblRadius r on r.radiusID = m.radiusID
+	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
+	INNER JOIN tblElement t on t.elementID = sp.elementID
+	INNER JOIN tblObject s on s.objectID = t.objectID
+	WHERE d.VMeasurementID = VMID
+	GROUP BY(s.code)
+   LOOP
+      IF numrows = 0 THEN
+         ret.objectCode = rec.code;
+      ELSE
+         ret.objectCode = ret.objectCode || ';' || rec.code;
+      END IF;
+      numrows := numrows + 1;
+   END LOOP;
+   ret.objectCount = numrows;
+
+   numrows := 0;
+   FOR rec IN SELECT txbasic.*, cpgdb.qryTaxonomy(txbasic.taxonID) as tx FROM
+	(SELECT t.taxonID::varchar FROM tblVMeasurementDerivedCache d
+	INNER JOIN tblMeasurement m ON m.MeasurementID = d.MeasurementID
+	INNER JOIN tblRadius r on r.radiusID = m.radiusID
+	INNER JOIN tblSample sp on sp.sampleID = r.sampleID
+	INNER JOIN tblElement t on t.elementID = sp.elementID
+	INNER JOIN tlkpTaxon tx on tx.taxonID = t.taxonID
+	WHERE d.VMeasurementID = VMID
+	GROUP BY(t.taxonID)) as txbasic
+   LOOP
+      curtaxa := rec.tx;
+
+      IF numrows = 0 THEN
+         taxondepth := 15;
+         LOOP
+            curtf := cpgdb._getTaxonForDepth(taxondepth, curtaxa);
+            EXIT WHEN curtf IS NOT NULL;
+            taxondepth := taxondepth - 1;
+         END LOOP;
+      ELSE
+         LOOP
+            curtf := cpgdb._getTaxonForDepth(taxondepth, curtaxa);
+            prevtf := cpgdb._getTaxonForDepth(taxondepth, prevtaxa);
+            EXIT WHEN curtf = prevtf OR taxondepth = 1;
+            taxondepth := taxondepth - 1;
+         END LOOP;
+      END IF;
+
+      numrows := numrows + 1;
+      prevtaxa := curtaxa;
+   END LOOP;
+
+   ret.taxonCount := numrows;
+   ret.commonTaxonName := curtf;
+
+   RETURN ret;
+END;
+$_$;
 
 CREATE OR REPLACE VIEW vwfirstyear AS 
 SELECT tbluserdefinedfieldvalue.entityid,

@@ -242,7 +242,7 @@ class element extends elementEntity implements IDBAccessor {
 		}
 		
 		if ($paramsClass->parentID != NULL) {
-			$parentObj = new tsobject ();
+			$parentObj = new tobject ();
 			$parentObj->setParamsFromDB ( $paramsClass->parentID );
 			array_push ( $this->parentEntityArray, $parentObj );
 		}
@@ -515,7 +515,7 @@ class element extends elementEntity implements IDBAccessor {
 				
 				$xml .= "<tridas:genericField name=\"tellervo.objectLabCode\" type=\"xs:string\">" . $this->getSummaryObjectCode () . "</tridas:genericField>\n";
 				
-				if ($this->getUserDefinedFieldAndValueArray () != null && count ( $this->getUserDefinedFieldAndValueArray () > 0 )) {
+				if (is_countable($this->getUserDefinedFieldAndValueArray ()) && count ( $this->getUserDefinedFieldAndValueArray () ) > 0) {
 					foreach ( $this->getUserDefinedFieldAndValueArray () as $field ) {
 						$xml .= $field->getAsTridasXML ();
 					}

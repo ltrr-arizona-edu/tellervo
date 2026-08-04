@@ -1,0 +1,426 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+PROGRAM_NAME="${0##*/}"
+SHARE_DIR="/usr/share/tellervo-server"
+TEMPLATE_FILE="$SHARE_DIR/db-templates/tellervo_database_template_2.0.sql"
+PLJAVA_PATCH="$SHARE_DIR/db-upgrade-patches/database_upgrade-1.3.0e.notransaction.sql"
+TELLERVO_JAR="$SHARE_DIR/tellervo-pljava.jar"
+
+usage() {
+  cat <<EOF
+Usage:
+  $PROGRAM_NAME init --dbname NAME [--user NAME]
+  $PROGRAM_NAME backup --dbname NAME --file FILE
+  $PROGRAM_NAME restore --dbname NEW_NAME --file FILE [--user NAME]
+  $PROGRAM_NAME --help
+
+Administer Tellervo databases on a database host.
+
+Options:
+  --dbname NAME  Source database for backup or new target for init/restore
+  --file FILE    Custom-format PostgreSQL backup file
+  --user NAME    Login role for init/restore (defaults to the database name)
+  -h, --help     Show this help
+
+Init prompts for the login role's password. Restore prompts only when its login
+role does not exist, validates its archive, and never replaces a database.
+EOF
+}
+
+fail() {
+  echo "$PROGRAM_NAME: $*" >&2
+  exit 1
+}
+
+if [[ $# -eq 0 ]]; then
+  usage >&2
+  exit 1
+fi
+
+COMMAND="$1"
+shift
+
+if [[ "$COMMAND" == "-h" || "$COMMAND" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+if [[ "$COMMAND" != "init" && "$COMMAND" != "backup" && "$COMMAND" != "restore" ]]; then
+  fail "unknown command '$COMMAND'"
+fi
+
+DB_NAME=""
+DB_USER=""
+BACKUP_FILE=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --dbname)
+      [[ $# -ge 2 ]] || fail "--dbname requires a value"
+      DB_NAME="$2"
+      shift 2
+      ;;
+    --user)
+      [[ $# -ge 2 ]] || fail "--user requires a value"
+      DB_USER="$2"
+      shift 2
+      ;;
+    --file)
+      [[ $# -ge 2 ]] || fail "--file requires a value"
+      BACKUP_FILE="$2"
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      exit 0
+      ;;
+    *)
+      fail "unknown option '$1'"
+      ;;
+  esac
+done
+
+[[ "$(id -u)" -eq 0 ]] || fail "run this command as root or with sudo"
+[[ -n "$DB_NAME" ]] || fail "--dbname is required"
+[[ "$DB_NAME" != *$'\n'* && "$DB_NAME" != *$'\r'* ]] \
+  || fail "database names cannot contain newlines"
+
+for command in psql pg_restore runuser mktemp; do
+  command -v "$command" >/dev/null 2>&1 || fail "required command '$command' was not found"
+done
+
+database_exists() {
+  local database_name="$1"
+  local query_result
+
+  if ! query_result="$(
+  runuser -u postgres -- psql --dbname=postgres --tuples-only --no-align \
+    --set=ON_ERROR_STOP=1 \
+        --set=db_name="$database_name" <<'SQL'
+SELECT 1 FROM pg_database WHERE datname = :'db_name';
+SQL
+  )"; then
+    fail "could not query the local PostgreSQL server"
+  fi
+
+  grep -qx 1 <<<"$query_result"
+}
+
+role_exists() {
+  local role_name="$1"
+  local query_result
+
+  if ! query_result="$(
+    runuser -u postgres -- psql --dbname=postgres --tuples-only --no-align \
+      --set=ON_ERROR_STOP=1 \
+      --set=role_name="$role_name" <<'SQL'
+SELECT 1 FROM pg_roles WHERE rolname = :'role_name';
+SQL
+  )"; then
+    fail "could not query PostgreSQL roles"
+  fi
+
+  grep -qx 1 <<<"$query_result"
+}
+
+if [[ "$COMMAND" == "backup" ]]; then
+  command -v pg_dump >/dev/null 2>&1 || fail "required command 'pg_dump' was not found"
+  command -v sha256sum >/dev/null 2>&1 || fail "required command 'sha256sum' was not found"
+  [[ -n "$BACKUP_FILE" ]] || fail "--file is required for backup"
+  [[ "$BACKUP_FILE" != *$'\n'* && "$BACKUP_FILE" != *$'\r'* ]] \
+    || fail "backup filenames cannot contain newlines"
+  database_exists "$DB_NAME" || fail "database '$DB_NAME' does not exist"
+  [[ ! -e "$BACKUP_FILE" ]] || fail "backup file '$BACKUP_FILE' already exists"
+
+  BACKUP_DIR="$(dirname "$BACKUP_FILE")"
+  BACKUP_BASENAME="$(basename "$BACKUP_FILE")"
+  [[ -d "$BACKUP_DIR" ]] || fail "backup directory '$BACKUP_DIR' does not exist"
+
+  umask 077
+  PARTIAL_BACKUP="$(mktemp "$BACKUP_DIR/.$BACKUP_BASENAME.partial.XXXXXX")"
+  cleanup_partial_backup() {
+    local exit_code=$?
+    rm -f "$PARTIAL_BACKUP"
+    exit "$exit_code"
+  }
+  trap cleanup_partial_backup EXIT
+
+  echo "Backing up database '$DB_NAME'..."
+  runuser -u postgres -- \
+    pg_dump --format=custom --dbname="$DB_NAME" > "$PARTIAL_BACKUP"
+  pg_restore --list "$PARTIAL_BACKUP" >/dev/null
+  mv "$PARTIAL_BACKUP" "$BACKUP_FILE"
+  chmod 0600 "$BACKUP_FILE"
+  if [[ "${SUDO_UID:-}" =~ ^[0-9]+$ && "${SUDO_GID:-}" =~ ^[0-9]+$ ]]; then
+    chown "$SUDO_UID:$SUDO_GID" "$BACKUP_FILE"
+  fi
+  trap - EXIT
+
+  echo "Backup complete: $BACKUP_FILE"
+  echo "SHA-256: $(sha256sum "$BACKUP_FILE" | awk '{print $1}')"
+  exit 0
+fi
+
+if [[ -z "$DB_USER" ]]; then
+  DB_USER="$DB_NAME"
+fi
+
+[[ "$DB_USER" =~ ^[A-Za-z_][A-Za-z0-9_]{0,62}$ ]] \
+  || fail "user names must contain at most 63 letters, numbers or underscores and cannot start with a number"
+[[ "$DB_USER" != "Webgroup" ]] \
+  || fail "'Webgroup' is a reserved Tellervo compatibility role"
+
+for command in createdb dropdb sed grep; do
+  command -v "$command" >/dev/null 2>&1 || fail "required command '$command' was not found"
+done
+
+[[ -r "$PLJAVA_PATCH" ]] || fail "PL/Java bootstrap patch not found at $PLJAVA_PATCH"
+[[ -r "$TELLERVO_JAR" ]] || fail "Tellervo PL/Java archive not found at $TELLERVO_JAR"
+
+if [[ "$COMMAND" == "init" ]]; then
+  [[ -z "$BACKUP_FILE" ]] || fail "--file is not used with init"
+  [[ -r "$TEMPLATE_FILE" ]] || fail "database template not found at $TEMPLATE_FILE"
+  ARCHIVE_FILE="$TEMPLATE_FILE"
+  ACTION_DESCRIPTION="Initialisation"
+else
+  [[ -n "$BACKUP_FILE" ]] || fail "--file is required for restore"
+  [[ -r "$BACKUP_FILE" ]] || fail "backup file '$BACKUP_FILE' is not readable"
+  pg_restore --list "$BACKUP_FILE" >/dev/null \
+    || fail "backup file '$BACKUP_FILE' is not a readable custom-format archive"
+  ARCHIVE_FILE="$BACKUP_FILE"
+  ACTION_DESCRIPTION="Restore"
+fi
+
+if database_exists "$DB_NAME"; then
+  fail "database '$DB_NAME' already exists; it was not changed"
+fi
+
+RESET_DB_USER_PASSWORD=true
+if [[ "$COMMAND" == "restore" ]] && role_exists "$DB_USER"; then
+  RESET_DB_USER_PASSWORD=false
+  echo "Reusing existing PostgreSQL role '$DB_USER' without changing its password."
+fi
+
+if [[ "$RESET_DB_USER_PASSWORD" == true ]]; then
+  if [[ ! -t 0 ]]; then
+    fail "a terminal is required to enter the database password"
+  fi
+
+  read -r -s -p "Password for PostgreSQL role '$DB_USER': " DB_PASSWORD
+  echo
+  [[ -n "$DB_PASSWORD" ]] || fail "password cannot be empty"
+  read -r -s -p "Enter password again: " DB_PASSWORD_CONFIRM
+  echo
+  [[ "$DB_PASSWORD" == "$DB_PASSWORD_CONFIRM" ]] || fail "passwords do not match"
+  unset DB_PASSWORD_CONFIRM
+
+  export TELLERVO_DB_INIT_PASSWORD="$DB_PASSWORD"
+  unset DB_PASSWORD
+else
+  export TELLERVO_DB_INIT_PASSWORD=""
+fi
+
+echo "Creating PostgreSQL roles..."
+runuser -u postgres --preserve-environment -- \
+  psql --dbname=postgres --set=ON_ERROR_STOP=1 \
+    --set=db_user="$DB_USER" \
+    --set=reset_db_user_password="$RESET_DB_USER_PASSWORD" <<'SQL'
+\getenv db_password TELLERVO_DB_INIT_PASSWORD
+SET password_encryption = 'scram-sha-256';
+
+SELECT 'CREATE ROLE "Webgroup" SUPERUSER INHERIT NOCREATEDB NOCREATEROLE'
+WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'Webgroup')
+\gexec
+
+SELECT 'CREATE ROLE tellervo NOLOGIN'
+WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'tellervo')
+\gexec
+
+SELECT 'CREATE ROLE pbrewer NOLOGIN'
+WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'pbrewer')
+\gexec
+
+SELECT format(
+  'CREATE ROLE %I LOGIN SUPERUSER INHERIT NOCREATEDB NOCREATEROLE PASSWORD %L',
+  :'db_user',
+  :'db_password'
+)
+WHERE NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'db_user')
+\gexec
+
+SELECT format(
+  'ALTER ROLE %I LOGIN SUPERUSER INHERIT NOCREATEDB NOCREATEROLE',
+  :'db_user'
+)
+WHERE EXISTS (SELECT FROM pg_roles WHERE rolname = :'db_user')
+\gexec
+
+SELECT format('ALTER ROLE %I PASSWORD %L', :'db_user', :'db_password')
+WHERE :'reset_db_user_password'::boolean
+\gexec
+
+SELECT format('GRANT "Webgroup" TO %I', :'db_user')
+\gexec
+
+-- Historical Tellervo views and functions may retain either of these NOLOGIN
+-- roles as their owner. They need the same underlying-object privileges as the
+-- application role when PostgreSQL evaluates an owner-security view.
+GRANT "Webgroup" TO tellervo;
+GRANT "Webgroup" TO pbrewer;
+SQL
+unset TELLERVO_DB_INIT_PASSWORD
+
+DATABASE_CREATED=false
+RESTORE_LIST=""
+cleanup_partial_database() {
+  local exit_code=$?
+  unset TELLERVO_DB_INIT_PASSWORD 2>/dev/null || true
+  if [[ -n "$RESTORE_LIST" ]]; then
+    rm -f "$RESTORE_LIST"
+  fi
+  if [[ "$DATABASE_CREATED" == true && $exit_code -ne 0 ]]; then
+    echo "$ACTION_DESCRIPTION failed; removing the incomplete database '$DB_NAME'." >&2
+    runuser -u postgres -- dropdb --if-exists "$DB_NAME" >/dev/null 2>&1 || true
+  fi
+  exit "$exit_code"
+}
+trap cleanup_partial_database EXIT
+
+echo "Creating database '$DB_NAME'..."
+runuser -u postgres -- createdb --owner="$DB_USER" "$DB_NAME"
+DATABASE_CREATED=true
+
+echo "Configuring PL/Java..."
+runuser -u postgres -- \
+  psql --dbname="$DB_NAME" --set=ON_ERROR_STOP=1 --file="$PLJAVA_PATCH"
+
+echo "Reloading PostgreSQL configuration..."
+runuser -u postgres -- \
+  psql --dbname="$DB_NAME" --set=ON_ERROR_STOP=1 \
+    --command="SELECT pg_reload_conf();"
+
+PLJAVA_VMOPTIONS=""
+for attempt in {1..10}; do
+  PLJAVA_VMOPTIONS="$(
+    runuser -u postgres -- \
+      psql --dbname="$DB_NAME" --tuples-only --no-align \
+        --command="SHOW pljava.vmoptions;" 2>/dev/null || true
+  )"
+  if [[ "$PLJAVA_VMOPTIONS" == *"-Djava.security.manager=allow"* ]]; then
+    break
+  fi
+  sleep 1
+done
+[[ "$PLJAVA_VMOPTIONS" == *"-Djava.security.manager=allow"* ]] \
+  || fail "PostgreSQL did not reload the required PL/Java VM options"
+
+echo "Creating PostgreSQL compatibility objects..."
+runuser -u postgres -- \
+  psql --dbname="$DB_NAME" --set=ON_ERROR_STOP=1 <<'SQL'
+CREATE AGGREGATE public.array_accum(anycompatible)
+(
+  SFUNC = pg_catalog.array_append,
+  STYPE = anycompatiblearray,
+  INITCOND = '{}'
+);
+SQL
+
+if [[ "$COMMAND" == "init" ]]; then
+  echo "Restoring the empty Tellervo database template..."
+else
+  echo "Restoring backup '$BACKUP_FILE'..."
+fi
+RESTORE_LIST="$(mktemp /tmp/tellervo-restore-list.XXXXXX)"
+pg_restore --list "$ARCHIVE_FILE" \
+  | sed -E \
+    -e '/ ACL / s/^/;/' \
+    -e '/[[:space:]](sqlj|pljava)([[:space:]]|$)/ s/^/;/' \
+    -e '/ AGGREGATE public array_accum[(]/ s/^/;/' \
+  > "$RESTORE_LIST"
+if grep -Eq \
+  '^[^;].*( ACL |[[:space:]](sqlj|pljava)([[:space:]]|$)| AGGREGATE public array_accum[(])' \
+  "$RESTORE_LIST"; then
+  fail "unable to filter incompatible entries from the database template"
+fi
+chmod 0644 "$RESTORE_LIST"
+runuser -u postgres -- \
+  pg_restore --exit-on-error --no-owner --no-acl --use-list="$RESTORE_LIST" \
+    --dbname="$DB_NAME" < "$ARCHIVE_FILE"
+
+echo "Installing the current Tellervo PL/Java archive..."
+runuser -u postgres -- \
+  psql --dbname="$DB_NAME" --set=ON_ERROR_STOP=1 <<'SQL'
+DELETE FROM sqlj.jar_repository WHERE jarname = 'tellervo_jar';
+SELECT sqlj.install_jar(
+  'file:///usr/share/tellervo-server/tellervo-pljava.jar',
+  'tellervo_jar',
+  false
+);
+SELECT sqlj.set_classpath('cpgdb', 'tellervo_jar')
+WHERE EXISTS (
+  SELECT 1
+  FROM pg_namespace
+  WHERE nspname = 'cpgdb'
+);
+UPDATE sqlj.jar_repository
+SET jarowner = 'tellervo'
+WHERE jarname = 'tellervo_jar';
+SQL
+
+echo "Applying Tellervo database privileges..."
+runuser -u postgres -- \
+  psql --dbname="$DB_NAME" --set=ON_ERROR_STOP=1 --set=db_name="$DB_NAME" <<'SQL'
+GRANT ALL PRIVILEGES ON DATABASE :"db_name" TO "Webgroup";
+
+SELECT format(
+  'GRANT ALL PRIVILEGES ON SCHEMA %I TO "Webgroup", tellervo, pbrewer',
+  nspname
+)
+FROM pg_namespace
+WHERE nspname IN ('public', 'cpgdb', 'cpgdbj', 'portal')
+ORDER BY nspname
+\gexec
+
+SELECT format(
+  'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA %I TO "Webgroup", tellervo, pbrewer',
+  nspname
+)
+FROM pg_namespace
+WHERE nspname IN ('public', 'cpgdb', 'cpgdbj', 'portal')
+ORDER BY nspname
+\gexec
+
+SELECT format(
+  'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA %I TO "Webgroup", tellervo, pbrewer',
+  nspname
+)
+FROM pg_namespace
+WHERE nspname IN ('public', 'cpgdb', 'cpgdbj', 'portal')
+ORDER BY nspname
+\gexec
+
+SELECT format(
+  'GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA %I TO "Webgroup", tellervo, pbrewer',
+  nspname
+)
+FROM pg_namespace
+WHERE nspname IN ('public', 'cpgdb', 'cpgdbj', 'portal')
+ORDER BY nspname
+\gexec
+SQL
+
+DATABASE_CREATED=false
+rm -f "$RESTORE_LIST"
+RESTORE_LIST=""
+trap - EXIT
+
+echo
+if [[ "$COMMAND" == "init" ]]; then
+  echo "Tellervo database '$DB_NAME' is ready."
+else
+  echo "Tellervo backup restored to new database '$DB_NAME'."
+fi
+echo "Configure the webservice with:"
+echo "  database: $DB_NAME"
+echo "  user:     $DB_USER"

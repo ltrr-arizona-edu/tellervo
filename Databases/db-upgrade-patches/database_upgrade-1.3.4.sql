@@ -1,4 +1,10 @@
-CREATE TYPE date_prec AS ENUM ('day', 'month', 'year');
+DO $$
+BEGIN
+  IF to_regtype('public.date_prec') IS NULL THEN
+    CREATE TYPE date_prec AS ENUM ('day', 'month', 'year');
+  END IF;
+END
+$$;
 
 CREATE OR REPLACE FUNCTION cpgdb.getdatefromstr(datestr character varying)
   RETURNS date AS
@@ -101,10 +107,12 @@ ALTER FUNCTION cpgdb.getdatestring(date, date_prec)
 
   
 
-ALTER TABLE tblsample ADD samplingdateprec date_prec NOT NULL DEFAULT 'day';
-ALTER TABLE tblsample ADD userdefinedfielddata varchar[];
+ALTER TABLE tblsample
+  ADD COLUMN IF NOT EXISTS samplingdateprec date_prec NOT NULL DEFAULT 'day';
+ALTER TABLE tblsample
+  ADD COLUMN IF NOT EXISTS userdefinedfielddata varchar[];
 
-DROP VIEW vwtblsample;
+DROP VIEW IF EXISTS vwtblsample;
 
 CREATE OR REPLACE VIEW public.vwtblsample AS 
  SELECT s.externalid,

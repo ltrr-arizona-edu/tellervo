@@ -1,0 +1,5 @@
+# Tellervo overrides for GNU dialog.
+# Keep the standard blue screen used behind dialogs, but make the backtitle
+# readable on terminals where the default cyan is rendered as light green.
+use_colors = ON
+screen_color = (BLACK,BLUE,OFF)

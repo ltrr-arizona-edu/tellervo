@@ -152,60 +152,19 @@ the database on the database host first. This example uses database host
 `192.0.2.10`, web host `192.0.2.20`, and `tellervo_lab_a` for both the database
 and login role. Replace these documentation addresses and names at your site.
 
-Create the expected group, login, and database as the PostgreSQL administrator:
-
-```sql
-sudo -u postgres psql
-SET password_encryption = 'scram-sha-256';
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT FROM pg_roles WHERE rolname = 'Webgroup'
-  ) THEN
-    CREATE ROLE "Webgroup"
-      SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
-  END IF;
-  IF NOT EXISTS (
-    SELECT FROM pg_roles WHERE rolname = 'tellervo'
-  ) THEN
-    CREATE ROLE tellervo NOLOGIN;
-  END IF;
-  IF NOT EXISTS (
-    SELECT FROM pg_roles WHERE rolname = 'pbrewer'
-  ) THEN
-    CREATE ROLE pbrewer NOLOGIN;
-  END IF;
-END
-$$;
-CREATE ROLE tellervo_lab_a
-  LOGIN SUPERUSER INHERIT NOCREATEDB NOCREATEROLE;
-GRANT "Webgroup" TO tellervo_lab_a;
-CREATE DATABASE tellervo_lab_a;
-\password tellervo_lab_a
-\quit
-```
-
-The interactive `\password` command avoids putting the password in shell
-history. The role currently needs superuser privileges for the packaged
-PL/Java functions and upgrade process, so protect the credential. Initialise
-the database from the database package. The non-login `tellervo` and `pbrewer`
-roles exist only because some historical upgrade scripts refer to them as
-object owners:
-
 ```bash
-sudo -u postgres psql \
-  --dbname=tellervo_lab_a \
-  --set=ON_ERROR_STOP=1 \
-  --file=/usr/share/tellervo-server/db-upgrade-patches/database_upgrade-1.3.0e.notransaction.sql
-
-sudo -u postgres pg_restore \
-  --exit-on-error \
-  --no-owner \
-  --dbname=tellervo_lab_a \
-  /usr/share/tellervo-server/db-templates/tellervo_database_template_2.0.sql
+sudo tellervo-server-db init \
+  --dbname tellervo_lab_a \
+  --user tellervo_lab_a
 ```
 
-The template has a `.sql` name but is a PostgreSQL custom-format archive.
+The command prompts twice for the webservice login password, creates the
+database and required compatibility roles, configures PL/Java, and restores the
+empty Tellervo template. It is supplied by `tellervo-server-common`, which is
+installed on both hosts, and refuses to change an existing database. The login
+role currently needs superuser privileges for the packaged PL/Java functions
+and upgrade process, so protect the credential.
+
 Discover the active configuration files:
 
 ```bash
@@ -272,6 +231,47 @@ hard failure. Production deployments often finish HTTPS certificates, DNS or
 reverse proxy configuration outside the Tellervo package wizard. The wizard
 still performs hard checks for Apache, configuration files and the PostgreSQL
 connection.
+
+## Migrating Databases From An Older Server
+
+The database administration command can be copied to an older Tellervo host
+without installing the new packages there. From the new database host, copy the
+single script:
+
+```bash
+scp /usr/bin/tellervo-server-db old-db-host:/tmp/
+```
+
+On the old host, create a validated custom-format backup. The command uses the
+local PostgreSQL administrator account, writes through a temporary file, and
+refuses to replace an existing backup:
+
+```bash
+chmod 0755 /tmp/tellervo-server-db
+sudo /tmp/tellervo-server-db backup \
+  --dbname old_tellervo_database \
+  --file /tmp/old_tellervo_database.dump
+```
+
+Copy the dump to the new database host and compare its SHA-256 checksum at both
+ends. Restore the first migration into a new test database:
+
+```bash
+sudo tellervo-server-db restore \
+  --dbname old_tellervo_database_test \
+  --user webuser \
+  --file /srv/backups/old_tellervo_database.dump
+```
+
+Restore validates the archive before creating anything and refuses to replace
+an existing database. If restoration fails, it removes only the new incomplete
+target database. It configures the current PL/Java extension and JAR, filters
+obsolete extension and access-control entries from older dumps, and reapplies
+Tellervo privileges. An existing login role is reused without changing its
+password; restore prompts for a password only when it must create the role.
+After restoring, configure a test webservice instance, apply outstanding
+Tellervo database upgrades, and compare record counts and representative data
+with the source before migrating further databases.
 
 The split package dependency graph is deliberately simple:
 

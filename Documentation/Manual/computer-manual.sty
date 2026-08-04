@@ -97,15 +97,22 @@ morestring=[b]",
 }
 
 \definecolor{listingnumberbg}{gray}{0.86}
-\newdimen\listinglineheight
+\newdimen\listinggutterheight
+\newdimen\listinggutterdepth
 \newcommand{\listingnumbergutter}{%
   \begingroup
-  \listinglineheight=\baselineskip
+  % With framesep=0pt, exact strut dimensions fill the listing vertically
+  % without entering the outer frame. Adjacent rows form one solid gutter.
+  \listinggutterheight=\ht\strutbox
+  \listinggutterdepth=\dp\strutbox
   \setlength{\fboxsep}{0pt}%
-  \smash{\colorbox{listingnumberbg}{%
-    \makebox[2em][r]{%
-      \vrule width 0.4pt height .72\listinglineheight
-        depth .28\listinglineheight}}}%
+  \smash{%
+    {\color{black}\vrule width 0.4pt height \listinggutterheight
+      depth \listinggutterdepth}%
+    \colorbox{listingnumberbg}{%
+      \makebox[\dimexpr2em-0.4pt\relax][r]{%
+        \vrule width 0.4pt height \listinggutterheight
+          depth \listinggutterdepth}}}%
   \endgroup}
 \newcommand{\listingnumberstyle}[1]{%
   \makebox[2em][r]{%
@@ -125,11 +132,12 @@ numberstyle=\listingnumberstyle,
 numbersep=3pt,
 numberblanklines=false,
 xleftmargin=2.25em,
-framexleftmargin=2em,
+framexleftmargin=2.25em,
 breaklines=true, 
 keywordstyle=\color{red},
 frame=single,
 framerule=0.4pt,
+framesep=0pt,
 rulecolor=\color{black},
 showspaces=false,               % show spaces adding particular underscores
 showstringspaces=false,         % underline spaces within strings

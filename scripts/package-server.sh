@@ -122,6 +122,8 @@ install_common_payload() {
 
   install_file "$REPO_ROOT/Native/BuildResources/LinBuild/tellervo-server" \
     "$package_root/usr/bin/tellervo-server" 0755
+  install_file "$REPO_ROOT/Native/BuildResources/LinBuild/tellervo-server-db" \
+    "$package_root/usr/bin/tellervo-server-db" 0755
   install_file "$REPO_ROOT/Native/BuildResources/LinBuild/create-tellervo-instance" \
     "$package_root/usr/bin/create-tellervo-instance" 0755
   install_file "$PLJAVA_JAR" \
@@ -134,6 +136,8 @@ install_common_payload() {
     "$share_dir/pljava-pg9.5-amd64-Linux-gpp.jar" 0755
   install_file "$REPO_ROOT/Native/BuildResources/LinBuild/tui.php" \
     "$share_dir/tui.php" 0777
+  install_file "$REPO_ROOT/Native/BuildResources/LinBuild/tellervo-dialogrc" \
+    "$share_dir/tellervo-dialogrc" 0644
   install_file "$REPO_ROOT/Native/BuildResources/LinBuild/firstrun.template" \
     "$share_dir/firstrun.template" 0777
   install_file "$REPO_ROOT/src/main/php/config.php.template" \
@@ -173,6 +177,8 @@ install_db_payload() {
   else
     printf '%s\n' \
       'This package selects an installable PostgreSQL dependency bundle for a Tellervo database host.' \
+      'Run "sudo tellervo-server-db init --dbname NAME" to initialise an empty Tellervo database.' \
+      'Use "tellervo-server-db backup" and "tellervo-server-db restore" for validated, non-overwriting migrations.' \
       'Install tellervo-server-webservice on the PHP/Apache host and configure it to use this database host.' \
       > "$package_root/usr/share/doc/$package_name/README.Debian"
   fi

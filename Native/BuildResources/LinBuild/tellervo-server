@@ -352,6 +352,7 @@ else if(isset($args["firstrun"]))
 	postgresSetup(true);
 	include($configfile);
 	include($dbsetupfile);
+	clear();
 	generateSystemsConfig();
 	include($systemconfig);
 	runDBUpgrades(true);
@@ -359,6 +360,7 @@ else if(isset($args["firstrun"]))
 	include($systemconfig);
 	apacheSetup();
 	registerCurrentInstance();
+	clear();
 	verifySetup();
 	printComplete();
 	exec("$folderbase/firstrun");
@@ -466,11 +468,13 @@ else if(isset($args["reconfigure"]) || isset($args["r"]))
 	postgresSetup(true);
 	include($configfile);
 	include($dbsetupfile);
+	clear();
 	generateSystemsConfig();
 	include($systemconfig);
 	runDBUpgrades(true);
 	apacheSetup();
 	registerCurrentInstance();
+	clear();
 	verifySetup();
 	printComplete();
 	exit(0);
@@ -616,11 +620,13 @@ else if (isset($args["configure"]) || isset($args["c"]))
 	postgresSetup();
 	include($configfile);
 	include($dbsetupfile);
+	clear();
 	generateSystemsConfig();
 	include($systemconfig);
 	runDBUpgrades(true);
 	apacheSetup();
 	registerCurrentInstance();
+	clear();
 	verifySetup();
 	printComplete();
 	exit(0);
@@ -1853,6 +1859,10 @@ function runDBUpgrades($skipbackup=false)
 	generateSystemsConfig();
 
 	$f = getTellervoDPKGVersion();
+	if($f===false || trim($f)=="")
+	{
+		die("Unable to determine the installed Tellervo server version from the Debian packages.\n");
+	}
 
 	// Remove +SNAPSHOT from end
 	$f = str_replace("+SNAPSHOT", "", $f);
@@ -1889,17 +1899,33 @@ function runDBUpgrades($skipbackup=false)
  */
 function getTellervoDPKGVersion()
 {
-	$f = exec("dpkg-query -W tellervo-server");
+	$packages = array(
+		"tellervo-server",
+		"tellervo-server-common",
+		"tellervo-server-webservice",
+		"tellervo-server-db"
+	);
 
-	if(strpos($f, "No packages found")===TRUE)
+	foreach($packages as $package)
 	{
-	 return false;
+		$output = array();
+		$returnvar = 0;
+		exec(
+			"dpkg-query -W -f='\${Version}' ".escapeshellarg($package)." 2>/dev/null",
+			$output,
+			$returnvar
+		);
+		if($returnvar===0 && !empty($output))
+		{
+			$version = trim(implode("\n", $output));
+			if($version!="")
+			{
+				return $version;
+			}
+		}
 	}
 
-	// Trim off the 'tellervo-server' from the beginning
-	$f = str_replace("tellervo-server", "", $f);
-
-	return trim($f);
+	return false;
 }
 
 /**
@@ -3052,6 +3078,7 @@ function verifySetup($silent=false)
   global $wsurl;
   global $systemconfig;
   global $configfile;
+  global $dbconn;
 
 
   $runningresult = TRUE;
@@ -3063,10 +3090,14 @@ function verifySetup($silent=false)
   global $securehttp;
   $urlCandidates = getWebserviceUrlCandidates(isset($domain) ? $domain : "", isset($securehttp) ? $securehttp : FALSE);
   $reachableUrl = findReachableWebserviceUrl($urlCandidates);
-  $wsurl = $reachableUrl!==false ? $reachableUrl : (isset($urlCandidates[0]) ? $urlCandidates[0] : "http://".getIP().getInstanceWebPath());
+  $wsurl = isset($urlCandidates[0]) ? $urlCandidates[0] : "http://".getIP().getInstanceWebPath();
 
   writeLogMsg("Webservice url: $wsurl");
   writeLogMsg("Webservice url candidates: ".implode(", ", $urlCandidates));
+  if($reachableUrl!==false)
+  {
+    writeLogMsg("Reachable webservice url: $reachableUrl");
+  }
 
 	if($silent)
 	{

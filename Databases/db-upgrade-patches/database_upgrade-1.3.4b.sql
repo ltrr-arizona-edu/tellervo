@@ -1,13 +1,58 @@
-ALTER TABLE tblcuration RENAME TO tblcurationevent;
-DROP VIEW vwtblcuration;
+DO $$
+BEGIN
+  IF to_regclass('public.tblcurationevent') IS NULL
+     AND to_regclass('public.tblcuration') IS NOT NULL THEN
+    ALTER TABLE tblcuration RENAME TO tblcurationevent;
+  END IF;
+END
+$$;
+DROP VIEW IF EXISTS vwtblcuration;
 
-ALTER TABLE tblcurationevent RENAME COLUMN curationid TO curationeventid;
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'tblcurationevent'
+      AND column_name = 'curationid'
+  ) AND NOT EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'tblcurationevent'
+      AND column_name = 'curationeventid'
+  ) THEN
+    ALTER TABLE tblcurationevent
+      RENAME COLUMN curationid TO curationeventid;
+  END IF;
+END
+$$;
 
-ALTER TABLE tblcurationevent ADD COLUMN boxid uuid;
+ALTER TABLE tblcurationevent ADD COLUMN IF NOT EXISTS boxid uuid;
 
-ALTER TABLE tblcurationevent ADD CONSTRAINT "fkey_tblcuration-tblbox" FOREIGN KEY (boxid)
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conrelid = 'public.tblcurationevent'::regclass
+      AND conname = 'fkey_tblcuration-tblbox'
+  ) THEN
+    ALTER TABLE tblcurationevent
+      ADD CONSTRAINT "fkey_tblcuration-tblbox" FOREIGN KEY (boxid)
       REFERENCES public.tblbox (boxid) MATCH SIMPLE
       ON UPDATE NO ACTION ON DELETE NO ACTION;
+  END IF;
+END
+$$;
+
+-- Restored archives omit historical ACL entries. The table may have been
+-- renamed after the restore-time compatibility grants were applied, while
+-- views created below execute with either legacy owner role's permissions.
+GRANT ALL PRIVILEGES ON TABLE public.tblcurationevent TO "Webgroup";
+GRANT ALL PRIVILEGES ON TABLE public.tblcurationevent TO tellervo;
+GRANT ALL PRIVILEGES ON TABLE public.tblcurationevent TO pbrewer;
 
 CREATE OR REPLACE VIEW public.vwtblcurationevent AS 
  SELECT c.curationeventid,
@@ -92,7 +137,7 @@ CREATE OR REPLACE VIEW public.vwtblsample AS
 ALTER TABLE public.vwtblsample
   OWNER TO pbrewer;
 
-DROP VIEW vwtblbox;
+DROP VIEW IF EXISTS vwtblbox;
 
   CREATE OR REPLACE VIEW public.vwtblbox AS 
  SELECT b.boxid,
@@ -157,7 +202,9 @@ $BODY$
 ALTER FUNCTION cpgdb.loanhasoutstandingitems(uuid)
   OWNER TO tellervo;
   
- INSERT INTO tlkpcurationstatus (curationstatusid, curationstatus) VALUES (10, 'Returned from loan');
+ INSERT INTO tlkpcurationstatus (curationstatusid, curationstatus)
+ VALUES (10, 'Returned from loan')
+ ON CONFLICT DO NOTHING;
   
  
 CREATE OR REPLACE FUNCTION enforce_no_loan_when_on_loan()
@@ -221,4 +268,3 @@ END;$BODY$
   COST 100;
 ALTER FUNCTION public.check_tblcuration_loanid_is_not_null_when_loaned()
   OWNER TO tellervo;
-

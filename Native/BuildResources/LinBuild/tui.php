@@ -1,5 +1,10 @@
 <?php 
 
+$tellervoDialogTheme = __DIR__ . '/tellervo-dialogrc';
+if (is_readable($tellervoDialogTheme)) {
+	putenv('DIALOGRC=' . $tellervoDialogTheme);
+}
+
 class Tui {
 	protected $pipes = array();
 	protected $process = null;

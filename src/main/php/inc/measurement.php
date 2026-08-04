@@ -1128,6 +1128,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 		return $tags;
 	}
 	private function getDerivedSeriesXML($format, $parts, $recurseLevel = 2) {
+		global $dbconn;
 		global $domain;
 		$xml = "";
 		
@@ -1177,7 +1178,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 			$xml .= "<tridas:genericField name=\"tellervo.readingCount\" type=\"xs:int\">" . $this->getReadingCount () . "</tridas:genericField>\n";
 		$xml .= "<tridas:genericField name=\"tellervo.directChildCount\" type=\"xs:int\">" . $this->getDirectChildCount () . "</tridas:genericField>\n";
 		
-		if ($this->getUserDefinedFieldAndValueArray () != null && count ( $this->getUserDefinedFieldAndValueArray () > 0 )) {
+		if (is_countable($this->getUserDefinedFieldAndValueArray ()) && count ( $this->getUserDefinedFieldAndValueArray () ) > 0) {
 			foreach ( $this->getUserDefinedFieldAndValueArray () as $field ) {
 				$xml .= $field->getAsTridasXML ();
 			}
@@ -1242,7 +1243,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 			$xml .= "<tridas:genericField name=\"tellervo.isReconciled\" type=\"xs:boolean\">" . dbHelper::formatBool ( $this->getIsReconciled (), 'xml' ) . "</tridas:genericField>\n";
 			$xml .= "<tridas:genericField name=\"tellervo.directChildCount\" type=\"xs:int\">" . $this->getDirectChildCount () . "</tridas:genericField>\n";
 			
-			if ($this->getUserDefinedFieldAndValueArray () != null && count ( $this->getUserDefinedFieldAndValueArray () > 0 )) {
+			if (is_countable($this->getUserDefinedFieldAndValueArray ()) && count ( $this->getUserDefinedFieldAndValueArray () ) > 0) {
 				foreach ( $this->getUserDefinedFieldAndValueArray () as $field ) {
 					$xml .= $field->getAsTridasXML ();
 				}
@@ -1393,7 +1394,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 			$xml .= ">";
 			
 			// Add any notes that are in the notesArray subarray
-			if (count ( $value ['notesArray'] ) > 0) {
+			if (is_countable($value ['notesArray']) && count ( $value ['notesArray'] ) > 0) {
 				foreach ( $value ['notesArray'] as $myReadingNote ) {
 					$xml .= "\n" . $myReadingNote->asXML ();
 				}
@@ -1412,7 +1413,9 @@ class measurement extends measurementEntity implements IDBAccessor {
 	 * @return UUID
 	 */
 	private function getCreateNewVMeasurementSQL() {
+		global $dbconn;
 		global $firebug;
+		global $myAuth;
 		/*
 		 * -- VMeasurementOp - Varchar - From tlkpVMeasurementOp -- VMeasurementOpParameter - Integer - Must be specified for REDATE or INDEX; otherwise NULL -- OwerUserID - Integer - -- Name - Varchar - Must be specified -- Comments - Varchar - May be NULL -- MeasurementID - Integer - For direct only; the measurement derived from. -- Constituents - Array - Array of VMeasurementID - Must be NULL for DIRECT type, an array of one value for any type -- other than SUM and DIRECT, and an array of one or more values for SUM -- Objective - Varchar - -- Version - Varchar - -- Birthdate				- Date - maps to measuringDate and derivationDate -- RETURNS: A new VMeasurementID
 		 */
@@ -1730,7 +1733,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 					$this->setParamsFromDB ( $localVMID );
 					
 					// Write user defined fields to database
-					if (is_countable($this->userDefinedFieldAndValue) && count ( $this->userDefinedFieldAndValueArray ) > 0) {
+					if (is_countable($this->userDefinedFieldAndValueArray) && count ( $this->userDefinedFieldAndValueArray ) > 0) {
 							
 						foreach ( $this->userDefinedFieldAndValueArray as $field ) {
 							try {
@@ -1866,7 +1869,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 					$this->addReadingNotesToDB ();
 					
 					// Write user defined fields to database
-					if (count ( $this->userDefinedFieldAndValueArray ) > 0) {
+					if (is_countable($this->userDefinedFieldAndValueArray) && count ( $this->userDefinedFieldAndValueArray ) > 0) {
 							
 						foreach ( $this->userDefinedFieldAndValueArray as $field ) {
 							try {
@@ -1919,7 +1922,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 		$relyear = 0;
 		foreach ( $this->readingsArray as $key => $value ) {
 			
-			if (count ( $value ['notesArray'] ) > 0) {
+			if (is_countable($value ['notesArray']) && count ( $value ['notesArray'] ) > 0) {
 				$firebug->log ( $value ['notesArray'], "Notes array for ring $relyear" );
 				// There are notes associated with this reading.
 				foreach ( $value ['notesArray'] as $note ) {

@@ -109,6 +109,8 @@ class geometry
 	 */
 	function setPointGeometryFromLatLong($lat, $long, $srid=4326)
 	{
+		global $dbconn;
+
 		// Make sure the parameters are numbers to stop sql injection
 		$lat = (float) $lat;
 		$long = (float) $long;	
