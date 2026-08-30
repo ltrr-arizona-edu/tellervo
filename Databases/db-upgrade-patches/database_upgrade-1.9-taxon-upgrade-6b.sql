@@ -189,6 +189,27 @@ WHERE taxon.parenttaxonid = parent.taxonid
 AND COALESCE(taxon.colparentid, '') = ''
 AND COALESCE(parent.colid, '') <> '';
 UPDATE tblelement SET colid = tlkptaxon.colid FROM tlkptaxon WHERE tblelement.taxonid=tlkptaxon.taxonid;
+
+-- Do not discard the original taxon IDs unless every element was mapped.  The
+-- replacement column must also retain the NOT NULL guarantee from the column
+-- it replaces.
+DO $$
+DECLARE
+  unmapped_count bigint;
+BEGIN
+  SELECT count(*) INTO unmapped_count
+  FROM tblelement
+  WHERE colid IS NULL OR colid = '';
+
+  IF unmapped_count > 0 THEN
+    RAISE EXCEPTION
+      'Taxon upgrade aborted: % elements could not be mapped to a Catalogue of Life ID',
+      unmapped_count;
+  END IF;
+END
+$$;
+ALTER TABLE tblelement ALTER COLUMN colid SET NOT NULL;
+
 ALTER TABLE tblelement DROP CONSTRAINT IF EXISTS fkey_element_taxon;
 CREATE TRIGGER update_element_rebuildmetacache 
   AFTER INSERT OR UPDATE 

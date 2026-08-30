@@ -254,9 +254,12 @@ class taxon extends taxonEntity implements IDBAccessor
 
     function asXML()
     {
-    	global $taxonomicAuthorityEdition;
-    	$xml = "<tridas:taxon normalStd=\"$taxonomicAuthorityEdition\" normalId=\"".$this->getCoLID()."\" normal=\"".$this->getLabel()."\">".$this->getOriginalTaxon()."</tridas:taxon>\n";    	
-    	return $xml;
+        global $taxonomicAuthorityEdition;
+        $normalStd = dbHelper::escapeXMLChars($taxonomicAuthorityEdition);
+        $normalId = dbHelper::escapeXMLChars($this->getCoLID());
+        $originalTaxon = dbHelper::escapeXMLChars($this->getOriginalTaxon());
+        $xml = "<tridas:taxon normalStd=\"$normalStd\" normalId=\"$normalId\" normal=\"".$this->getLabel()."\">$originalTaxon</tridas:taxon>\n";
+        return $xml;
     }
     
     function getHigherTaxonomyXML()

@@ -26,13 +26,14 @@ package org.tellervo.desktop.bulkdataentry.model;
 import org.tridas.schema.TridasIdentifier;
 
 import com.dmurph.mvc.ICloneable;
+import com.dmurph.mvc.IModel;
 import com.dmurph.mvc.model.HashModel.PropertyType;
 
 /**
  * @author daniel
  *
  */
-public interface IBulkImportSingleRowModel extends ICloneable{
+public interface IBulkImportSingleRowModel extends ICloneable, IModel{
 	public static final String IMPORTED = "Imported";
 	
 	public TridasIdentifier getImported();

@@ -250,12 +250,11 @@ class measurement extends measurementEntity implements IDBAccessor {
 			while ( $row = pg_fetch_array ( $result ) ) {
 				if ($relYearCheck == $row ['relyear']) {
 					// Compile notes array
-					
+					$notesArray = array ();
+
 				    if($row['jsonnotes']!=null)
 				    {
     					$jsonNotes = json_decode ( $row ['jsonnotes'], true );
-    					
-    					$notesArray = array ();
     					
     					if ($jsonNotes) {
     						foreach ( $jsonNotes as $note ) {
@@ -270,18 +269,18 @@ class measurement extends measurementEntity implements IDBAccessor {
     							array_push ( $notesArray, $currReadingNote );
     						}
     					}
-    					
-    					// Get all reading values to array
-    					$this->readingsArray [$row ['relyear']] = array (
-    							'value' => unit::unitsConverter ( $row ['reading'], $theUnits, "db-default" ),
-    							'ewwidth' => unit::unitsConverter ( $row ['ewwidth'], $theUnits, "db-default" ),
-    							'lwwidth' => unit::unitsConverter ( $row ['lwwidth'], $theUnits, "db-default" ),
-    							'wjinc' => $row ['wjinc'],
-    							'wjdec' => $row ['wjdec'],
-    							'count' => $row ['count'],
-    							'notesArray' => $notesArray 
-    					);
 				    }
+
+					// Every result row is a reading. Notes are optional.
+					$this->readingsArray [$row ['relyear']] = array (
+							'value' => unit::unitsConverter ( $row ['reading'], $theUnits, "db-default" ),
+							'ewwidth' => unit::unitsConverter ( $row ['ewwidth'], $theUnits, "db-default" ),
+							'lwwidth' => unit::unitsConverter ( $row ['lwwidth'], $theUnits, "db-default" ),
+							'wjinc' => $row ['wjinc'],
+							'wjdec' => $row ['wjdec'],
+							'count' => $row ['count'],
+							'notesArray' => $notesArray
+					);
 					$relYearCheck ++;
 				} else {
 					// Something screwy going on with relyears in the vmeasurementResult
@@ -756,7 +755,7 @@ class measurement extends measurementEntity implements IDBAccessor {
 	 * @param unknown $text
 	 * @param unknown $dom
 	 */
-	function textAsNode($text, $dom) {
+	function textAsNode($text, $dom, $context = "component") {
 		global $tellervoNS;
 		global $tridasNS;
 		global $gmlNS;
@@ -766,11 +765,30 @@ class measurement extends measurementEntity implements IDBAccessor {
 		$domfoot = "</root>";
 		
 		$tmpdom = new DomDocument ();
-		if ($tmpdom->loadXML ( $domhead . $text . $domfoot ) === FALSE) {
-			trigger_error ( "Malformed XML in textAsNode: Internal Error.\n" . $text );
+		$previousUseInternalErrors = libxml_use_internal_errors(true);
+		$loaded = $tmpdom->loadXML($domhead . $text . $domfoot, LIBXML_NONET);
+		$parseErrors = libxml_get_errors();
+		libxml_clear_errors();
+		libxml_use_internal_errors($previousUseInternalErrors);
+
+		if ($loaded === FALSE || $tmpdom->documentElement === null) {
+			$detail = count($parseErrors) > 0 ? trim($parseErrors[0]->message) : "unknown XML error";
+			error_log("Tellervo could not serialize $context in the derivation hierarchy: $detail");
+			return null;
 		}
-		
-		return $dom->importNode ( $tmpdom->documentElement->childNodes->item ( 0 ), true );
+
+		// Ignore whitespace and other non-element nodes surrounding the fragment.
+		$child = $tmpdom->documentElement->firstChild;
+		while ($child !== null && $child->nodeType !== XML_ELEMENT_NODE) {
+			$child = $child->nextSibling;
+		}
+
+		if ($child === null) {
+			error_log("Tellervo could not serialize $context in the derivation hierarchy: empty XML fragment");
+			return null;
+		}
+
+		return $dom->importNode($child, true);
 	}
 	
 
@@ -781,20 +799,35 @@ class measurement extends measurementEntity implements IDBAccessor {
 		
 		$firebug->log($projectTree, "Project tree");
 		$firebug->log($all, "All in outputDerivationTreeFromProject");
+
+		// Some derived series (including orphaned/redated series) do not have a
+		// project hierarchy.  In that case, emit any available object hierarchy
+		// directly beneath the current node instead of dereferencing a missing
+		// project entry.
+		if (empty($projectTree) || !isset($all['project']) || !is_array($all['project']))
+		{
+			$this->outputDerivationTree($dom, $curNode, $objectTree, $elementTree, $objectToElementMap, $all, $format);
+			return;
+		}
 		
 		reset( $projectTree );
 		$projid = key( $projectTree );
 				
 		$firebug->log($projid, "ProjID");
-		$proj = $all['project'][$projid];
+		$proj = isset($all['project'][$projid]) ? $all['project'][$projid] : null;
 		
 		if($proj==null)
 		{
-			$this->outputDerivationTree($dom, $node, $objectTree, $elementTree, $objectToElementMap, $all, $format);
+			$this->outputDerivationTree($dom, $curNode, $objectTree, $elementTree, $objectToElementMap, $all, $format);
 		}
 		else
 		{
-			$node = $this->textAsNode ( $proj->asXML (), $dom );
+			$node = $this->textAsNode ( $proj->asXML (), $dom, "project $projid" );
+			if ($node === null)
+			{
+				$this->outputDerivationTree($dom, $curNode, $objectTree, $elementTree, $objectToElementMap, $all, $format);
+				return;
+			}
 			$curNode->appendChild ( $node );
 			
 			$firebug->log($all, "All now in outputDerivationTreeFromProject");
@@ -824,7 +857,15 @@ class measurement extends measurementEntity implements IDBAccessor {
 		foreach ( $objectTree as $objid => $subObjectTree ) {
 			$obj = $all ['object'] [$objid];
 			
-			$node = $this->textAsNode ( $obj->asXML (), $dom );
+			$node = $this->textAsNode ( $obj->asXML (), $dom, "object $objid" );
+			if ($node === null)
+			{
+				// Preserve any serializable descendant objects instead of losing the
+				// entire branch because one object contains invalid legacy data.
+				if (count($subObjectTree) > 0)
+					$this->outputDerivationTree($dom, $curNode, $subObjectTree, $elementTree, $objectToElementMap, $all, $format);
+				continue;
+			}
 			$curNode->appendChild ( $node );
 			
 			// do subtrees first
@@ -850,25 +891,32 @@ class measurement extends measurementEntity implements IDBAccessor {
 	 */
 	function outputElementDerivationTree($elementID, &$dom, $curNode, &$elementTree, &$all, $format) {
 		$myElement = $all ['element'] [$elementID];
-		$myElementNode = $this->textAsNode ( $myElement->asXML (), $dom );
+		$myElementNode = $this->textAsNode ( $myElement->asXML (), $dom, "element $elementID" );
+		if ($myElementNode === null)
+			return;
 		$curNode->appendChild ( $myElementNode );
 	
 		foreach ( $elementTree [$elementID] as $sampleID => $radii ) {
 			$mySample = $all ['sample'] [$sampleID];
-			$mySampleNode = $this->textAsNode ( $mySample->asXML (), $dom );
+			$mySampleNode = $this->textAsNode ( $mySample->asXML (), $dom, "sample $sampleID" );
+			if ($mySampleNode === null)
+				continue;
 			$myElementNode->appendChild ( $mySampleNode );
 				
 			foreach ( $radii as $radiusID => $measurements ) {
 				$myRadius = $all ['radius'] [$radiusID];
-				$myRadiusNode = $this->textAsNode ( $myRadius->asXML (), $dom );
+				$myRadiusNode = $this->textAsNode ( $myRadius->asXML (), $dom, "radius $radiusID" );
+				if ($myRadiusNode === null)
+					continue;
 				$mySampleNode->appendChild ( $myRadiusNode );
 	
 				foreach ( $measurements as $measurementID => $dummy ) {
 					$myMeasurement = $all ['measurement'] [$measurementID];
 					$myFormat = ($myMeasurement == $this) ? $format : (($format == 'standard') ? 'summary' : $format);
 						
-					$myMeasurementNode = $this->textAsNode ( $myMeasurement->_asXML ( $myFormat, "full" ), $dom );
-					$myRadiusNode->appendChild ( $myMeasurementNode );
+					$myMeasurementNode = $this->textAsNode ( $myMeasurement->_asXML ( $myFormat, "full" ), $dom, "measurement series $measurementID" );
+					if ($myMeasurementNode !== null)
+						$myRadiusNode->appendChild ( $myMeasurementNode );
 				}
 			}
 		}
@@ -910,7 +958,9 @@ class measurement extends measurementEntity implements IDBAccessor {
 		foreach ( $derived as $d ) {
 			$myformat = ($d == $this) ? $format : (($format == 'standard') ? 'summary' : $format);
 			try {
-				$dom->documentElement->appendChild ( $this->textAsNode ( $d->_asXML ( $myformat, "full" ), $dom ) );
+				$derivedNode = $this->textAsNode ( $d->_asXML ( $myformat, "full" ), $dom, "derived series ".$d->getID() );
+				if ($derivedNode !== null)
+					$dom->documentElement->appendChild($derivedNode);
 			} catch ( Exception $e ) {
 				$firebug->log ( $e->getMessage (), "DOM exception" );
 			}

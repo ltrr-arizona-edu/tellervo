@@ -275,6 +275,9 @@ public class ElementListTableModel extends AbstractTableModel {
 	}
 	
     public Class<?> getColumnClass(int c) {
+		if(c == 3){
+			return SampleType.class;
+		}
     	// reconciled is true/false
     	if(c== 9 || c==5)
     	{
@@ -282,7 +285,8 @@ public class ElementListTableModel extends AbstractTableModel {
     	}
     	if(c==7 || c==8)
     	{
-    		return SafeIntYear.class;
+			// formattedYear() returns a display string, not a SafeIntYear.
+			return String.class;
     	}
     	if(c == 10){
     		return Boolean.class;

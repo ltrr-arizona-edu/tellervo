@@ -183,7 +183,9 @@ public class SingleSampleModel extends HashModel implements IBulkImportSingleRow
 	}
 	
 	public void setImported(TridasIdentifier argImported){
+		TridasIdentifier oldImported = getImported();
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
+		firePropertyChange(IMPORTED, oldImported, argImported);
 	}
 	
 	public TridasIdentifier getImported(){

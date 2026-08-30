@@ -1,0 +1,911 @@
+# Find tellervoadp VM
+
+> Do you have a vm with tellervoadp in it?
+
+<details><summary>2 previous messages</summary>
+
+> I’ll check the workspace and local VM/container definitions for anything named `tellervoadp`.
+>
+> The repo only mentions `tellervoadp` as an old database name. I’m checking whether any locally registered VM or running container actually contains it.
+</details>
+
+I found a stopped Windows 11 VM named `WinBoat`, but no evidence that it contains `tellervoadp`. The only confirmed reference is an old PostgreSQL database name in `scripts/backup-old-tellervo-databases.sh`.
+
+I can boot and inspect the VM if you’d like.
+
+> restore /tmp/tellervoadp.dump into a vm postgres db
+
+<details><summary>15 previous messages</summary>
+
+> I’ll inspect the dump and the available PostgreSQL VM/container targets, then restore it into an isolated database named `tellervoadp` and verify the restore.
+>
+> The dump is valid-looking but was created by a newer PostgreSQL tool than the host provides. I’ll use the existing PostgreSQL 17 container tooling so the archive format is supported.
+>
+> The dump requires both PostGIS and PL/Java, so a plain PostgreSQL image would produce an incomplete restore. I’m checking the host PostgreSQL installation and available image capabilities before choosing the target.
+>
+> A complete target is feasible: PostgreSQL 17 packages for both PostGIS and PL/Java are available. I’m creating a dedicated local containerized VM-style database on `127.0.0.1:54321`, isolated from the existing databases.
+>
+> <details><summary>Created 2 files</summary>
+>
+> - Wrote `/tmp/tellervoadp-postgres.Dockerfile` (+7 -0)
+> - Wrote `/tmp/tellervoadp-image/Dockerfile` (+7 -0)
+>
+> </details>
+>
+> The database image is building now; after it starts, the 1.2 GB restore may take several minutes.
+>
+> The first restore stopped immediately at PL/Java because Java 21 requires an explicit compatibility option. I’m applying that setting, recreating the new empty target, and retrying; no source or existing database is affected.
+>
+> The archive includes PL/Java’s internal tables with pre-existing foreign keys, so parallel restore violates their row ordering. I’m retrying serially, which preserves the required order.
+>
+> skip over the pljava stuff its not important
+>
+> Understood—I’ll exclude the PL/Java extension and its `sqlj` objects entirely, then restore only the application data and PostGIS content.
+>
+> There are additional application functions implemented in Java whose TOC entries aren’t labeled as PL/Java. I’m identifying and excluding all `LANGUAGE java` functions, then retrying from a clean database.
+>
+> The PL/Java-free restore is now loading the database data and indexes. The schema phase completed cleanly.
+>
+> The restore is still progressing without errors. I’m checking database growth and active workers while it continues.
+>
+> The restored database has reached about 14 GB; it’s now in the slower index/constraint phase with one active worker and no reported failures.
+>
+> The restore completed successfully. I’m running final integrity checks on extensions, table counts, constraints, size, and the local connection endpoint.
+</details>
+
+Restored `/tmp/tellervoadp.dump` successfully into an isolated PostgreSQL 17 Docker container.
+
+Connection:
+
+```text
+Host:     127.0.0.1
+Port:     54321
+Database: tellervoadp
+User:     postgres
+Password: tellervo
+```
+
+Verification:
+
+- Container: `tellervoadp-pg` — healthy
+- Database size: 16 GB
+- User tables: 89
+- Extensions: PostGIS 3.6.4, pgcrypto
+- Unvalidated constraints: 0
+- PL/Java and all Java functions: excluded
+- Persistent volume: `tellervoadp-pg-data`
+
+This is a containerized PostgreSQL instance, not a full hypervisor VM.
+
+> add a second database to this /tmp/taxonfix.dump
+
+<details><summary>2 previous messages</summary>
+
+> I’ll inspect the archive, confirm whether `taxonfix` already exists, then restore it as a second database in the same `tellervoadp-pg` container and verify it.
+>
+> The archive is valid but contains no schema or table entries—it represents an empty PostgreSQL 17 database named `taxonfix`. I’ll still add that database exactly as dumped.
+</details>
+
+Added `taxonfix` as a second database in `tellervoadp-pg`.
+
+```text
+Host:     127.0.0.1
+Port:     54321
+Database: taxonfix
+User:     postgres
+Password: tellervo
+```
+
+Restore succeeded and the database is accepting connections. The dump contains no user tables or schema objects, so `taxonfix` is empty as expected.
+
+> populate it with /tmp/taxon-evidence2.csv
+
+<details><summary>3 previous messages</summary>
+
+> I’ll inspect the CSV structure and data types, then create an appropriate table in `taxonfix`, import the rows, and verify the load.
+>
+> The repository defines the intended destination as `taxon_recovery.element_taxon_evidence`, including its column types, primary key, two indexes, and `latest`/`conflicts` views. I’ll use that exact schema rather than inventing a generic CSV table.
+>
+> All 627,367 CSV rows loaded successfully. I’m adding the repository-defined lookup indexes and the `latest` and `conflicts` views, then I’ll validate counts and constraints.
+</details>
+
+Populated `taxonfix` from `/tmp/taxon-evidence2.csv`.
+
+- Table: `taxon_recovery.element_taxon_evidence`
+- Evidence rows: 627,367
+- Distinct elements: 172,207
+- Latest-evidence rows: 172,207
+- Conflicts: 0
+- Indexes: primary key plus two lookup indexes
+- Views: `element_taxon_evidence_latest` and `element_taxon_evidence_conflicts`
+- Database size: 142 MB
+- Status: accepting connections
+
+> In a previous chat you helped me build the taxon-evidence table.  It contains evidence to map elementid to taxonid from various databases and sources.  This is to help in recovering as many tblelement.taxonid values as possible following a failed taxon upgrade script in June 2022.  Using this table can you see how many taxonids can be recovered in the tellervoadp.tblelement table?
+
+<details><summary>3 previous messages</summary>
+
+> I’ll compare `tellervoadp.public.tblelement` against the evidence by `elementid`, separating missing taxon IDs, unambiguous recoveries, conflicting evidence, and rows with no evidence. I’ll keep this analysis read-only.
+>
+> `tblelement` has 20,505 rows, and 20,485 currently have a null `taxonid`. I’m now measuring how many of those have a latest evidence candidate, while also flagging elements whose historical evidence contains more than one taxon ID.
+>
+> The evidence yields 159 unambiguous missing values, but there’s an important validation split: 85 candidates already exist in `tellervoadp.tlkptaxon`; the other 74 all use legacy ID `281`, which is absent from the current dictionary. I’m checking whether the project has a reviewed alias for that legacy ID before calling those 74 safe to apply.
+</details>
+
+Yes. Of the 20,485 `tellervoadp.tblelement` rows with a null `taxonid`, 159 can be recovered from the evidence table:
+
+| Recovered taxon ID | Elements |
+|---|---:|
+| `P` via legacy `281` | 74 |
+| `76HN` | 48 |
+| `6QPY` | 28 |
+| `56YL` | 7 |
+| `4J22N` | 1 |
+| `627WF` | 1 |
+| **Total** | **159** |
+
+Key findings:
+
+- All 159 mappings are unambiguous; none have conflicting historical taxa.
+- 85 evidence values already exist directly in the current `tlkptaxon`.
+- The other 74 use legacy ID `281`. Their request-log label is consistently `Plantae`, whose current dictionary ID is `P`, supporting `281 → P`.
+- 20,326 null rows have no evidence and cannot be recovered from this table.
+- The 20 existing non-null values agree with their latest evidence.
+- No database changes were made during this analysis.
+
+> can you see if there is any addtional trace of taxonid values in the tblrequestlog table
+
+<details><summary>5 previous messages</summary>
+
+> I’ll inspect `tellervoadp.tblrequestlog` directly for taxon-bearing requests that the evidence compiler excluded—especially unmatched updates, creates outside the five-second window, unresolved legacy IDs, and alternate XML forms. I’ll keep the investigation read-only.
+>
+> Only 231 rows contain an actual `<tridas:taxon normalId="…">`; the larger text-search count included unrelated occurrences of the word “taxon.” I’m reproducing the original correlation rules and measuring what was rejected at each step.
+>
+> The log contains several legacy IDs that can be translated by their taxon labels, plus two author-format variants not captured by the evidence compiler. I’m correlating these traces back to currently null elements and separating strong identifier matches from weaker create-time matches.
+>
+> Beyond the six exact identifier/key correlations missed by the evidence table, three “create” requests appear recoverable despite code normalization changes: they match the same parent object and an element creation within 0.37 seconds. I’m checking uniqueness and ensuring those elements do not already have evidence.
+>
+> There is also a second log format: form submissions with a plain `<tridas_element_taxon>` label rather than a TRiDaS `normalId`. Most are blank form definitions, but several contain `Pinus longaeva…` or `Plantae`. I’m checking whether those submissions include enough object/element identity to map them safely.
+</details>
+
+Yes. `tblrequestlog` contains high-confidence traces for 5 additional null `tblelement.taxonid` values beyond the original 159:
+
+| Elements | Evidence | Legacy value | Likely current ID |
+|---:|---|---|---|
+| 3 | Update request names the exact `elementid` | `1616834`, “Pinus longaeva D. K. Bailey” | `77L64` |
+| 1 | Update request names the exact `elementid` | `1646865`, “Cedrus libani” | `S24H` |
+| 1 | Create request matches parent, code, and creation time within 0.102 seconds | `51976`, “Pseudotsuga” | `73Y7` |
+
+This raises the high-confidence recovery total from 159 to 164 elements. Two of the Pinus mappings also have independent create-time evidence.
+
+There is one additional low-confidence possibility:
+
+- One existing 2015 element matches three 2022 create requests for `Quercus` (`76HN`) by parent and code.
+- The six-year timestamp gap suggests these could be rejected duplicate-creation attempts, so I would not apply this automatically.
+
+I also found nine form-log entries containing taxon labels—eight `Pinus longaeva` and one `Plantae`—but they contain no usable element or object identifier and therefore cannot recover additional rows.
+
+No database changes were made.
+
+> restore /tmp/tellervobigio.dump
+
+<details><summary>3 previous messages</summary>
+
+> I’ll inspect the `tellervobigio` archive and target state, then restore it into the same PostgreSQL container and verify the result. I’ll apply the established PL/Java exclusion if this dump contains the same legacy Java objects.
+>
+> The archive uses the same legacy PL/Java objects as `tellervoadp`. I’ll omit the `sqlj` schema and all Java-backed functions, while restoring PostGIS and the rest of the database normally.
+>
+> The restore completed cleanly. I’m checking database size, extensions, table counts, constraints, and key Tellervo row counts.
+</details>
+
+Restored `/tmp/tellervobigio.dump` successfully into the existing PostgreSQL container.
+
+```text
+Host:     127.0.0.1
+Port:     54321
+Database: tellervobigio
+User:     postgres
+Password: tellervo
+```
+
+Verification:
+
+- Database size: 34 MB
+- User tables: 87
+- `tblelement` rows: 805
+- Null `tblelement.taxonid`: 0
+- `tblrequestlog` rows: 8,099
+- Unvalidated constraints: 0
+- PostGIS restored
+- PL/Java objects excluded
+- Database is accepting connections
+
+> the tlkptaxon table in this database is part way through a failed upgrade.  Can you use the sql files in Databases folder to reconstruct this table
+
+<details><summary>6 previous messages</summary>
+
+> I’ll inspect the taxonomy schema and upgrade SQL in `Databases`, determine the intended final `tlkptaxon` state for this database version, then rebuild it transactionally with validation and a recoverable backup.
+>
+> The repository includes a purpose-built audit and per-database repair generator for exactly this failed upgrade. The runbook explicitly warns against using the older static repair, so I’m following the database-specific workflow: audit, dump only `tlkptaxon`, generate guarded SQL, take a verified full backup, apply, and re-audit.
+>
+> make this as a script so that I can reapply to the top copy of this database
+>
+> The audit found a database-specific partial variant: 852 corrupted legacy rows rather than the historical 864-row shape. I’ll generate a guarded repair script from this exact `tellervobigio` table state; its preflight will refuse to run against a database whose rows differ, making it suitable for safely reapplying to another copy of the same damaged database.
+>
+> The generated script is database-specific and guarded: 858 initial taxa, 852 restorations, and 3 displaced-ID moves. Before testing it on this restored copy, I’m taking and validating a fresh full backup so the test is fully reversible.
+>
+> The script passed its preflight and completed successfully on the restored copy. It repaired 852 legacy rows, moved 3 displaced taxa, retargeted element links, and committed. I’m now running the repository audit and independent integrity checks.
+</details>
+
+Created and tested the reusable repair script:
+
+[repair-tellervobigio-tlkptaxon.sql](./Databases/scripts/repair-tellervobigio-tlkptaxon.sql)
+
+It:
+
+- Verifies the exact corrupted source state before changing anything
+- Restores 852 legacy taxa
+- Moves 3 displaced taxa
+- Retargets all 805 element links
+- Recreates and validates the foreign key
+- Runs post-repair integrity checks
+- Uses a single transaction and rolls back on failure
+
+The local `tellervobigio` copy now passes the audit:
+
+- 858 valid taxa
+- 0 legacy IDs
+- 0 `n/a` labels
+- 0 orphaned elements
+- All 805 elements resolve to a taxon
+
+Apply it to another matching damaged copy with:
+
+```bash
+psql --no-psqlrc --set=ON_ERROR_STOP=1 \
+  --dbname=tellervobigio \
+  --file=Databases/scripts/repair-tellervobigio-tlkptaxon.sql
+```
+
+The script intentionally refuses to run against an already-repaired or differently corrupted database. A rollback backup is at `/tmp/tellervobigio-before-taxon-repair.dump`.
+
+> This document contains rough tables that contain the latin names for the taxa for elements in tellervoadp for the object 'ACM'.  Is it possible to recover taxonids from this and similar documents?
+>
+> User context
+>
+> Attachments:
+> - ACMOLD.PRO: `/tmp/ACMOLD.PRO`
+
+<details><summary>8 previous messages</summary>
+
+> I’ll identify the document format, extract its table structure, and compare the Latin names and element codes against `tellervoadp` and its current taxonomy dictionary. Then I can estimate how many IDs are recoverable and how reliable the method would be for similar files.
+>
+> It’s a WordPerfect 5.1 document. I’ll convert a copy to plain text so the table rows, sample codes, and Latin names can be parsed without altering the original.
+>
+> The document aligns well with the database: object `ACM` has 258 numbered elements, and the document uses matching `ACM-1`, `ACM-2`, etc. I’m normalizing the botanical names against the repaired taxonomy dictionary, while treating alternatives such as “Pinus sylvestris/nigra” and multi-species samples as ambiguous rather than forcing a species ID.
+>
+> <details><summary>Created a file</summary>
+>
+> - Wrote `/tmp/analyze_acmold_taxa.py` (+81 -0)
+>
+> </details>
+>
+> There is a cleaner Word doc
+>
+> User context
+>
+> Attachments:
+> - ACM.doc: `/tmp/ACM.doc`
+>
+> Great—I’ll use `ACM.doc` as the primary source and compare its extracted rows against the WordPerfect version, which should reduce parsing ambiguity.
+>
+> <details><summary>Edited a file</summary>
+>
+> - Wrote `/tmp/analyze_acmold_taxa.py` (+3 -1)
+> - Wrote `/tmp/analyze_acmold_taxa.py` (+32 -8)
+> - Wrote `/tmp/analyze_acmold_taxa.py` (+1 -1)
+> - Wrote `/tmp/analyze_acmold_taxa.py` (+8 -2)
+>
+> </details>
+>
+> The cleaner document supports a strong result: 207 of the 258 ACM elements have a single defensible taxon mapping. I’m doing one final cross-check against the WordPerfect copy to identify any disagreements before reporting the recovery rate.
+</details>
+
+Yes. The cleaner `ACM.doc` can recover candidate taxon IDs for 207 of the 258 ACM elements—about 80%.
+
+| Taxon ID | Normalized taxon | Elements |
+|---|---|---:|
+| `56YL` | Juniperus | 93 |
+| `63PVP` | Populus | 55 |
+| `6QPY` | Pinus | 19 |
+| `76HN` | Quercus | 15 |
+| `S24H` | Cedrus libani | 9 |
+| `3JXB` | Cedrus | 6 |
+| `62HXK` | Buxus | 4 |
+| `4J2J5` | Pinus sylvestris | 3 |
+| `6QX7` | Pistacia | 2 |
+| `6NGHP` | Juniperus foetidissima | 1 |
+
+Evidence quality:
+
+- 182 mappings are stated explicitly on individual rows.
+- 22 come from clear group statements such as “ACM 262–274 are all Populus.”
+- 3 are inherited through explicit “same tree/species as” statements.
+- 4 elements are ambiguous and should not be assigned automatically:
+  - ACM-14: Abies or Juniperus
+  - ACM-162: Quercus or Juniperus
+  - ACM-163: Quercus or Buxus
+  - ACM-175: Populus or Salix
+- 47 database elements have no usable single mapping.
+
+The two documents agree on 117 of the 118 mappings present in both. The sole conflict is ACM-164:
+
+- `ACM.doc`: Populus, identified by Schoch
+- `ACMOLD.PRO`: Buxus
+
+I would therefore treat 206 mappings as immediately defensible and send ACM-164 for manual review. None of these ACM elements currently have evidence in `taxonfix`, so these would all be additional recoveries.
+
+This approach should work for similar documents: extract entries, match the object prefix and element code, normalize Latin names against `tlkptaxon`, record provenance and confidence, and emit a reviewable recovery script. No database changes were made.
+
+> restore /tmp/tellervobioplots.dump
+
+<details><summary>4 previous messages</summary>
+
+> I’ll inspect the archive, restore it into the same PostgreSQL container as `tellervobioplots`, exclude the established legacy PL/Java objects if present, and verify the database.
+>
+> The dump contains PostGIS, dblink, and the same legacy PL/Java objects. I’ll restore PostGIS and dblink normally while omitting only PL/Java and Java-backed functions.
+>
+> The database has been created and the restore is loading data and indexes now.
+>
+> The restore completed successfully. I’m checking database integrity and also recording the taxonomy-corruption state, since this appears to be another database from the affected set.
+</details>
+
+Restored `/tmp/tellervobioplots.dump` successfully.
+
+```text
+Host:     127.0.0.1
+Port:     54321
+Database: tellervobioplots
+User:     postgres
+Password: tellervo
+```
+
+Verification:
+
+- Database size: 1,528 MB
+- User tables: 105
+- `tblelement` rows: 2,757
+- Null `tblelement.taxonid`: 681
+- `tblrequestlog` rows: 39,305
+- Unvalidated constraints: 0
+- PostGIS and dblink restored
+- PL/Java excluded
+- Database is accepting connections
+
+The taxonomy table also shows failed-upgrade corruption: 861 of its 867 rows have `legacy-*` IDs and `n/a` labels.
+
+> build another repair script for this database
+
+<details><summary>7 previous messages</summary>
+
+> I’ll follow the same guarded, database-specific workflow: audit `tellervobioplots`, dump its exact corrupted taxonomy state, generate a reusable repair script, back up the restored database, test the script locally, and re-audit.
+>
+> The audit confirms a partial database-specific variant: 861 corrupted legacy rows and 3 displaced-ID collisions. The generic historical repair is unsafe here, so I’m generating from this exact table snapshot.
+>
+> The generated repair has exact preflight checks for 867 initial rows, 861 restorations, and 3 moves. I’m taking a fresh rollback backup before testing it on the restored copy.
+>
+> The generated script committed successfully. The database emitted legacy metacache notices while element taxon links were updated because this local restore intentionally lacks PL/Java; they were handled notices, not repair failures. I’m verifying taxonomy integrity independently now.
+>
+> Context compaction
+>
+> Source: automatic
+> Status: completed
+>
+> The repair has applied cleanly to the restored copy. I’m doing one final independent integrity pass now—counts, foreign keys, element links, and the taxon view—before handing you the reusable script.
+>
+> One check exposed an old-schema detail: `taxonid` is stored as text in this database, not an integer. The repair itself already accounts for that; I’m rerunning the independent checks with type-correct predicates.
+</details>
+
+Created and tested [repair-tellervobioplots-tlkptaxon.sql](./Databases/scripts/repair-tellervobioplots-tlkptaxon.sql).
+
+Local verification succeeded:
+
+- 867 valid taxa
+- 0 legacy IDs or `n/a` labels
+- 2,076 element taxon links preserved/repaired
+- 681 elements remain without a taxon
+- 0 orphaned links
+- Foreign key valid
+- Taxon view returns all 867 rows
+
+The script is transactional and checks the expected corrupt database state before making changes. Apply it with:
+
+```bash
+psql --no-psqlrc --set=ON_ERROR_STOP=1 \
+  --dbname=tellervobioplots \
+  --file=Databases/scripts/repair-tellervobioplots-tlkptaxon.sql
+```
+
+A pre-repair backup is at `/tmp/tellervobioplots-before-taxon-repair.dump`. The PL/Java-related metacache notices during local testing were expected because PL/Java was omitted from this VM restore; they did not prevent the repair from committing.
+
+> you can drop the tellervobioplots, tellervobigio and tellerboazmd databases as we don't need those any more
+
+<details><summary>2 previous messages</summary>
+
+> I’ll verify the exact database names first, then drop only those three requested databases. PostgreSQL will reject a missing or misspelled name rather than affecting anything else.
+>
+> `tellervobioplots` and `tellervobigio` exist. There is no database named `tellerboazmd`, so I’m checking similarly named databases to avoid guessing at a destructive target.
+</details>
+
+Dropped:
+
+- `tellervobioplots`
+- `tellervobigio`
+
+`tellerboazmd` did not exist. The remaining working databases are `tellervoadp` and `taxonfix`.
+
+> I meant tellervoazmd
+
+<details><summary>1 previous message</summary>
+
+> Got it—`tellervoazmd`. I’ll check that exact name and drop it if present.
+</details>
+
+`tellervoazmd` does not exist in this PostgreSQL VM. The only remaining working databases are `tellervoadp` and `taxonfix`.
+
+> from your experience of creating these repair scripts, can't you create a generic script that handles the variety of records in tlkptaxon?  They should all follow the same idea, and they should all end up with the same table in the end
+
+<details><summary>7 previous messages</summary>
+
+> Yes—the common invariant is stronger than the individual corruption patterns: every damaged copy should converge to the same canonical `tlkptaxon`, while each database’s old IDs are translated to canonical IDs before replacement. I’m reviewing the existing generator and both repair scripts to separate the reusable mapping logic from database-specific preflight checks.
+>
+> The existing “generic” file is only generic in name—it embeds one observed corruption shape and does not guarantee convergence. A genuinely generic repair should carry one authoritative canonical snapshot, derive translations from whatever damaged rows are present, replace the lookup table, and verify the final table byte-for-byte. I’m checking which restored database is the clean authoritative 867-row source and whether its rows differ from the repaired outputs.
+>
+> The two failed databases confirm the same recoverable pattern, including the awkward ID collisions: a row’s current ID can belong to one taxon while its contents identify another. I’m building the generic repair around content-aware translation plus a fixed canonical snapshot, so it will also be idempotent on an already-clean database and will refuse unknown custom taxa instead of silently deleting them.
+>
+> <details><summary>Created a file</summary>
+>
+> - Wrote `./scripts/generate-generic-tlkptaxon-repair.py` (+318 -0)
+>
+> </details>
+>
+> The generic script is generated: 867 embedded canonical rows, with no per-database row-count assumption. I’m testing it against both saved corruption shapes (`tellervobigio` and `tellervobioplots`), then running it a second time on the repaired state to prove idempotence.
+>
+> Both different corruption shapes converged successfully: the 858-row `bigio` form and the 867-row `bioplots` form now contain the same 867-row dictionary, with their element references translated. I’m rerunning the script on one repaired copy and comparing hashes across both outputs.
+>
+> The nine rows added to the smaller database are not arbitrary: they are the nine authoritative upgrade-6 taxa it lacked. The upgrade SQL defines exactly 867 canonical taxa, matching the larger source, so 867 is the correct convergence target. The cross-database hashes now match; I’m removing the temporary test databases and doing a final source/status check.
+</details>
+
+Yes. I created a genuinely generic repair:
+
+- [repair-tlkptaxon-generic.sql](./Databases/scripts/repair-tlkptaxon-generic.sql)
+- [generate-generic-tlkptaxon-repair.py](./scripts/generate-generic-tlkptaxon-repair.py)
+
+The SQL script:
+
+- Embeds the authoritative 867-row taxonomy.
+- Handles legacy IDs, missing rows, damaged contents, and ID collisions.
+- Retargets `tblelement.taxonid`.
+- Produces exactly the same `tlkptaxon` in every database.
+- Is transactional and idempotent.
+- Refuses unknown/custom taxa requiring manual review.
+
+I tested it against both saved corruption patterns:
+
+- `tellervobigio`: 858 → 867 taxa
+- `tellervobioplots`: 867 → 867 taxa
+- Resulting table hashes were identical.
+- No legacy IDs or orphaned element links remained.
+- A second application made no link changes and completed successfully.
+
+Apply it after making a backup:
+
+```bash
+psql --no-psqlrc --set=ON_ERROR_STOP=1 \
+  --dbname=DATABASE_NAME \
+  --file=Databases/scripts/repair-tlkptaxon-generic.sql
+```
+
+> restore /tmp/tellervochristy.dump
+
+<details><summary>6 previous messages</summary>
+
+> I’ll restore it as database `tellervochristy` in the existing PostgreSQL VM, using the same PL/Java-exclusion approach as the other legacy dumps. I’ll first verify the dump and ensure the target database doesn’t already exist.
+>
+> The 90 MB archive is a PostgreSQL 17 custom dump and its checksum is recorded. I’m scanning its object list now; that takes a little longer because the archive must be read through the PostgreSQL 17 container.
+>
+> The dump contains the expected PL/Java extension, `sqlj` data, and two Java test functions. I’ll exclude precisely those entries, restore everything else into `tellervochristy`, and then validate the core schema and row counts.
+>
+> The first restore attempt stopped safely at the first Java-language function—some production Java functions aren’t named `pljava`, so the archive name scan didn’t catch them. I’m enumerating every `LANGUAGE java` definition from the schema, adding those exact functions to the exclusion list, then I’ll recreate the partially restored target and retry.
+>
+> The Java exclusions are now complete. The retry reached legacy grants for roles that don’t exist in this VM (`Webgroup`, `tellervo`, `pbrewer`); those permissions are not database data, so I’m retrying with ownership and ACL restoration disabled, as appropriate for this isolated VM.
+>
+> The filtered restore completed successfully. I’m validating table counts, extensions, constraints, and the restored `tlkptaxon` condition now; this is read-only and won’t apply the repair script automatically.
+</details>
+
+Restored `/tmp/tellervochristy.dump` as `tellervochristy`.
+
+Validation:
+
+- Database size: 1,076 MB
+- Objects: 137
+- Elements: 1,442
+- Samples: 1,561
+- Measurements: 1,622
+- Taxa: 939
+- Legacy-prefixed taxa: 933
+- Orphaned element taxon links: 0
+- Invalid constraints: 0
+
+PL/Java and legacy ACLs were excluded; PostGIS restored successfully. The damaged `tlkptaxon` remains untouched pending repair.
+
+> This database includes some additional taxa that aren't in the master tlkptaxon table.  Specifically:  legacy-3CGWZ, legacy-3CGZ9, legacy-3G73J, legacy-3JZCN, legacy-3KS3L, legacy-3WVTL, legacy-3XH8R, legacy-3XQYH, legacy-3XQZ7, legacy-44FQ8, legacy-44FT6, legacy-4LVJ3, legacy-4M8TM, legacy-4N8P4, legacy-4N8YR, legacy-4N927, legacy-4N93X, legacy-4N978, legacy-4N9CF, legacy-4N9DD, legacy-4QX95, legacy-4R46Y, legacy-4R4RZ, legacy-4R5FD, legacy-4R5QY, legacy-4R63X, legacy-4XL9C, legacy-4XL9J, legacy-53BWG, legacy-542G3, legacy-55LZ8, legacy-56WRL, legacy-56WTN, legacy-56WVQ, legacy-5CZ8S, legacy-5FCZ7, legacy-5JHYF, legacy-5KTF8, legacy-64FGB, legacy-65BMG, legacy-65BZW, legacy-67TV7, legacy-68K9V, legacy-6BB4S, legacy-6BB6D, legacy-6H5K5, legacy-6JLYR, legacy-6JMFX, legacy-6JMRS, legacy-6JMRT, legacy-6NK3F, legacy-6QSX9, legacy-6WKWB, legacy-6XCGV, legacy-6Y48V, legacy-6YR9C, legacy-7CHJF, legacy-7DFNR, legacy-7DFNZ, legacy-7DFZ6, legacy-7NHJZ, legacy-8WRQD, legacy-93LXC, legacy-93QC3, legacy-93RPM, legacy-9488, legacy-948G, legacy-94M5, legacy-94NJ, legacy-CQNY, legacy-RNTN, legacy-S4N4, legacy-S4VC, legacy-VQL2, legacy-YGL2, legacy-Z7VW, legacy-Z7Y4, legacy-Z8B6, legacy-Z8C5, legacy-Z8GX, legacy-Z8KD
+
+<details><summary>4 previous messages</summary>
+
+> That explains why the generic repair’s “unknown/custom taxa” guard is necessary: these rows must be added to the canonical snapshot rather than discarded. I’ll verify that this list exactly accounts for Christy’s additional rows, then inspect element names and any surviving metadata that can supply their labels, ranks, and parents.
+>
+> The list is exact: it accounts for all 81 IDs the current generator could not resolve. Their original `tlkptaxon` labels were overwritten with `n/a`, but the request log still contains historical taxon IDs and Latin names—for example, `3CGWZ` survives as “Euonymus hamiltonianus Wall.” I’m measuring how completely those logs recover the 81 names.
+>
+> The request log recovers names for 80 of the 81 additional IDs; only `93LXC` has no element reference or historical request entry. Rank information survived for all 81 (77 species and four infraspecific taxa). Parent IDs are still missing, so before extending the canonical snapshot I need to resolve those relationships from an authoritative Catalogue of Life source rather than infer them from names.
+>
+> <details><summary>Searched the web</summary>
+>
+> Searched the web for `Catalogue of Life API taxon ID endpoint documentation ...`
+>
+> </details>
+</details>
+
+Confirmed. These are exactly the 81 taxa absent from the 867-row master—not corruption artifacts.
+
+Key findings:
+
+- Christy has all 81 as additional taxa.
+- 78 are species-level; three are infraspecific.
+- Request logs recover Latin names for 80.
+- Catalogue of Life resolves the remaining `93LXC` as *Tilia × europaea* L., parent `7WX3`. [Catalogue of Life record](https://api.catalogueoflife.org/dataset/3LR/taxon/93LXC)
+- Christy is also missing nine master taxa.
+
+Therefore, Christy’s correct repaired table should contain:
+
+```text
+867 master taxa + 81 Christy taxa = 948 taxa
+```
+
+The current generic repair will safely abort rather than discard these records. It needs an authoritative 81-row supplement containing ID, label, HTML label, parent, and rank before being applied to Christy.
+
+> Go ahead and add these additional taxa to the authoritative table
+
+<details><summary>9 previous messages</summary>
+
+> I’ll add the 81 rows as a maintained authoritative supplement, regenerate the generic repair to contain 948 taxa, and test it against Christy. I’ll use the stable Catalogue of Life IDs for labels and parents, while cross-checking the recovered request-log names so changes in modern nomenclature are visible rather than silently accepted.
+>
+> <details><summary>Created 2 files</summary>
+>
+> - Wrote `./Databases/scripts/tlkptaxon-authoritative-extra-ids.txt` (+81 -0)
+> - Wrote `./scripts/fetch-col-taxon-supplement.py` (+116 -0)
+>
+> </details>
+>
+> The current Catalogue of Life release resolves 69 IDs directly; 12 older IDs have been removed from the current taxon tree. I’m preserving those historical IDs and resolving them against the recovered request-log names and an older Catalogue of Life release, rather than substituting new IDs.
+>
+> <details><summary>Edited a file</summary>
+>
+> - Wrote `./scripts/fetch-col-taxon-supplement.py` (+23 -5)
+> - Wrote `./scripts/fetch-col-taxon-supplement.py` (+38 -3)
+>
+> </details>
+>
+> The supplement is complete: 69 currently accepted taxa, 10 retained historical IDs now classified as synonyms, and two retired IDs tied to exact current accepted matches while preserving their historical labels. I’m wiring this CSV into the generator as the default authoritative supplement, so every newly generated generic repair targets 948 rows.
+>
+> <details><summary>Edited a file</summary>
+>
+> - Wrote `./scripts/generate-generic-tlkptaxon-repair.py` (+58 -2)
+>
+> </details>
+>
+> The generated canonical SQL now embeds all 948 rows, including the two historical-ID exceptions with documented current matches. I’m applying it to a full clone of `tellervochristy` so the test covers the real schema, triggers, constraints, and all 1,442 elements without changing the restored source database.
+>
+> The full Christy clone repaired successfully: 939 damaged rows converged to the 948-row authoritative table, and 629 element links were translated. The metacache notices are the expected consequence of testing without PL/Java; the transaction committed. I’m checking exact table equality, all element links, and repeatability now.
+>
+> All integrity checks and the idempotence rerun passed. I’m removing the disposable 1 GB test clone; the original restored `tellervochristy` remains unchanged, while the authoritative CSV, generator, and 948-row repair SQL remain in the workspace.
+</details>
+
+Added all 81 taxa to the authoritative taxonomy.
+
+Updated artifacts:
+
+- [Authoritative supplement CSV](./Databases/scripts/tlkptaxon-authoritative-supplement.csv)
+- [Generic 948-row repair](./Databases/scripts/repair-tlkptaxon-generic.sql)
+- [Supplement generator](./scripts/fetch-col-taxon-supplement.py)
+- [Generic repair generator](./scripts/generate-generic-tlkptaxon-repair.py)
+
+The supplement contains 69 accepted taxa, 10 synonyms, and two retired historical IDs matched to current [Catalogue of Life](https://api.catalogueoflife.org/dataset/3LR) records.
+
+Testing against a full Christy clone succeeded:
+
+- 948 canonical taxa
+- 1,442 element links retained
+- 0 legacy IDs
+- 0 orphaned links
+- 0 invalid constraints
+- Idempotent second run made zero link changes
+
+The restored `tellervochristy` database itself remains unrepaired; only the disposable test clone was modified and subsequently removed.
+
+> using the taxonfix databaes, how many missing tblelement.taxonid values can you recover?
+
+<details><summary>3 previous messages</summary>
+
+> I’ll treat `tellervochristy` as the target database. I’ll inspect the `taxonfix` evidence schema, count Christy elements with null or otherwise missing taxon IDs, and separate uniquely recoverable mappings from conflicting evidence.
+>
+> Christy has 813 genuinely missing (`NULL`) taxon IDs and 629 surviving legacy links. The evidence database contains 172,207 latest element mappings with no same-timestamp conflicts. I’m intersecting those 813 UUIDs now, then checking whether recovered IDs are canonical, legacy-prefixed, or contradictory across historical sources.
+>
+> The evidence supports 731 of the 813 missing values (89.9%). For 729 elements, every historical record agrees. Two elements changed taxon over time, so I’m reviewing their dated histories; if the latest change is a clear user update, they remain recoverable, otherwise I’ll report them separately.
+</details>
+
+Using `taxonfix`, **731 of the 813 missing `tellervochristy.tblelement.taxonid` values can be recovered**.
+
+- 729 have completely consistent historical evidence.
+- 2 changed through explicit later update requests; the latest values are clear.
+- All 28 resulting taxon IDs exist in the new 948-row authoritative table.
+- 82 elements have no available taxon evidence and would remain null.
+- Recovery rate: **89.9%**.
+
+No database values were changed. The 731 mappings should be applied after, or within the same transaction as, the generic `tlkptaxon` repair.
+
+> create a script for using the taxonfix database table to recover taxonids after the tlkptaxon repair has been run.  This should be a generic fix for use on other databases
+
+<details><summary>6 previous messages</summary>
+
+> I’ll make this a two-part reusable repair: a shell wrapper that exports conflict-free latest mappings from `taxonfix`, and a transactional SQL script that imports them into any target database. It will refuse to run before the `tlkptaxon` repair, update only null/blank values, normalize `legacy-` evidence IDs, require the candidate taxon to exist, and report recoverable versus unresolved counts.
+>
+> <details><summary>Created 2 files</summary>
+>
+> - Wrote `./Databases/scripts/recover-missing-taxonids-from-evidence.sql` (+154 -0)
+> - Wrote `./scripts/recover-missing-taxonids.sh` (+76 -0)
+>
+> </details>
+>
+> The reusable scripts are in place. I’m validating the full workflow on another Christy clone: canonical `tlkptaxon` repair first, then the new cross-database evidence recovery. I’ll also rerun recovery to confirm it is safe when no recoverable nulls remain.
+>
+> The first end-to-end run found a psql limitation: variables are not expanded inside `\copy` filenames. The transaction stopped before any target updates. I’m changing the wrapper to render a temporary SQL copy containing its safely generated evidence path, then rerunning the test.
+>
+> <details><summary>Edited 2 files</summary>
+>
+> - Wrote `./Databases/scripts/recover-missing-taxonids-from-evidence.sql` (+3 -7)
+> - Wrote `./scripts/recover-missing-taxonids.sh` (+7 -3)
+>
+> </details>
+>
+> The end-to-end result is exactly as expected: 731 recovered, 82 left missing, zero evidence IDs rejected, and a second run updated nothing. I’m doing the final lint/integrity checks and removing the disposable clone.
+</details>
+
+Created the generic recovery workflow:
+
+- [recover-missing-taxonids.sh](./scripts/recover-missing-taxonids.sh)
+- [recover-missing-taxonids-from-evidence.sql](./Databases/scripts/recover-missing-taxonids-from-evidence.sql)
+
+Usage after the `tlkptaxon` repair:
+
+```bash
+scripts/recover-missing-taxonids.sh TARGET_DATABASE taxonfix
+```
+
+The script:
+
+- Exports latest conflict-free evidence from `taxonfix`.
+- Updates only null or blank `tblelement.taxonid` values.
+- Normalizes `legacy-` evidence IDs.
+- Requires candidates to exist in repaired `tlkptaxon`.
+- Runs the target update transactionally.
+- Reports unresolved evidence without applying it.
+- Refuses to run while legacy taxa or orphaned links remain.
+
+Full Christy clone testing recovered 731 values:
+
+```text
+missing_before:          813
+with_evidence:           731
+recovered:               731
+evidence_taxon_not_found:  0
+remaining_missing:        82
+```
+
+A second run updated zero rows. The original `tellervochristy` remains unchanged.
+
+> Does this need taxonfix database?
+
+Yes. The wrapper currently requires access to the `taxonfix` database because it reads:
+
+- `taxon_recovery.element_taxon_evidence_latest`
+- `taxon_recovery.element_taxon_evidence_conflicts`
+
+It defaults to a database named `taxonfix`:
+
+```bash
+scripts/recover-missing-taxonids.sh TARGET_DATABASE
+```
+
+You can specify another evidence database:
+
+```bash
+scripts/recover-missing-taxonids.sh TARGET_DATABASE EVIDENCE_DATABASE
+```
+
+I can also make the repair entirely self-contained by embedding/exporting the evidence mappings into a file, eliminating the runtime dependency on `taxonfix`.
+
+> yes please
+
+<details><summary>10 previous messages</summary>
+
+> I’ll bundle a compressed, conflict-free snapshot of the 172,207 latest mappings and change the recovery wrapper to read that file locally. `taxonfix` will then be needed only if someone deliberately regenerates the snapshot, not when repairing databases.
+>
+> The complete evidence set compresses from 18 MB to 2.9 MB. I’m pinning its SHA-256 in the wrapper so a truncated or altered snapshot is rejected before any database transaction begins.
+>
+> <details><summary>Edited a file</summary>
+>
+> - Wrote `./scripts/recover-missing-taxonids.sh` (+28 -21)
+>
+> </details>
+>
+> Context compaction
+>
+> Source: automatic
+> Status: completed
+>
+> The bundled snapshot is in place. I’m doing the final syntax and end-to-end checks now, including proving the script works with only the target database connection and no access to `taxonfix`.
+>
+> <details><summary>Edited a file</summary>
+>
+> - Wrote `./scripts/recover-missing-taxonids.sh` (+1 -1)
+>
+> </details>
+>
+> The snapshot passed integrity checks: 172,207 evidence mappings plus its header, with the expected checksum. Next I’m applying both repair stages to a disposable clone of `tellervochristy`, then I’ll rerun recovery to verify it is idempotent.
+>
+> The first recovery run produced the expected 731 updates and left 82 unresolved. I’m making one usability refinement: suppressing the known `CreateMetaCache` notice flood during this transaction, while retaining warnings and errors, so real runs present a readable recovery summary.
+>
+> <details><summary>Edited a file</summary>
+>
+> - Wrote `./Databases/scripts/recover-missing-taxonids-from-evidence.sql` (+5 -0)
+>
+> </details>
+>
+> The disposable repaired database now validates cleanly: 948 taxa, 1,442 elements, 731 recovered IDs, 82 still missing, no orphan taxon links, and no unvalidated constraints. A second run changed zero rows, and the original `tellervochristy` still has its original 813 missing values. I’ve removed the disposable clone and am checking the final files.
+</details>
+
+Done. The recovery no longer needs the `taxonfix` database at runtime.
+
+Run after repairing `tlkptaxon`:
+
+```bash
+scripts/recover-missing-taxonids.sh TARGET_DATABASE
+```
+
+For example:
+
+```bash
+scripts/recover-missing-taxonids.sh postgresql://postgres:password@localhost/tellervochristy
+```
+
+Files:
+
+- [Recovery wrapper](./scripts/recover-missing-taxonids.sh)
+- [Recovery SQL](./Databases/scripts/recover-missing-taxonids-from-evidence.sql)
+- [Bundled evidence snapshot](./Databases/scripts/element-taxon-evidence-latest.csv.gz)
+
+The snapshot contains 172,207 conflict-free mappings and is checksum-verified before use.
+
+Tested on a disposable `tellervochristy` clone:
+
+- Missing before: 813
+- Recovered: 731
+- Remaining: 82
+- Orphan taxon references: 0
+- Second run updated: 0
+
+The original `tellervochristy` database remains unchanged.
+
+> Run the scripts on tellervoadp to see how well it does
+
+<details><summary>6 previous messages</summary>
+
+> I’ll inspect `tellervoadp` first, then run the generic `tlkptaxon` repair followed by the bundled taxon-ID recovery. I’ll report before/after counts and verify there are no orphaned taxon references.
+>
+> The starting state has 20,505 elements but only 20 populated taxon IDs; 20,485 are missing. Its `tlkptaxon` has 757 non-legacy rows, so I’m applying the authoritative 948-row reconstruction before recovery.
+>
+> Recovery completed, but it exposed an important limitation: 159 missing elements had evidence; 85 were restored, while 74 all point to old taxon ID `281`, which is absent from the authoritative table. I’m checking whether the repair sources contain a canonical replacement for `281` before giving the final assessment.
+>
+> The existing repair sources explicitly map legacy request-log ID `281` to authoritative taxon `P` (`Plantae`). I’m adding the established legacy-ID mapping table to the generic recovery script, then I’ll rerun it so those 74 valid matches are recovered rather than merely reported.
+>
+> <details><summary>Edited a file</summary>
+>
+> - Wrote `./Databases/scripts/recover-missing-taxonids-from-evidence.sql` (+49 -11)
+>
+> </details>
+>
+> All 159 evidence-backed candidates are now recovered: 85 directly and 74 through the established `281 → P` legacy mapping. I’m doing the final database integrity check and calculating the recovery rate.
+</details>
+
+The scripts ran successfully on `tellervoadp`.
+
+- `tlkptaxon`: 757 → 948 authoritative taxa
+- Elements: 20,505
+- Taxon IDs populated before: 20
+- Missing before: 20,485
+- Recovered: 159
+- Populated after: 179
+- Still missing: 20,326
+- Overall recovery rate: 0.78%
+- Orphan taxon references: 0
+- Unvalidated constraints: 0
+
+The first pass recovered 85. Another 74 used the established legacy mapping `281 → P` (`Plantae`), which I added to the [generic recovery SQL](./Databases/scripts/recover-missing-taxonids-from-evidence.sql).
+
+All 159 elements for which the snapshot had usable evidence were recovered. A final repeat run updated zero rows, confirming the process is idempotent.
+
+> I'm still seeing some databases with old numeric taxonid that aren't being handled including 441, 464, 8, 433
+
+<details><summary>6 previous messages</summary>
+
+> I’ll trace those four legacy IDs through the taxon-upgrade SQL and the authoritative table, then extend the generic recovery mapping and test the result against affected evidence records.
+>
+> Those IDs do have canonical replacements: `8 → 63Z5D`, `433 → 6Q7C`, `441 → 4HQ2V`, and `464 → 4J24Y`. The deeper issue is that numeric IDs in `tblelement` use a different legacy namespace from numeric IDs embedded in request logs—for example, `281` means different things in those two contexts. I’m separating those mappings by evidence source so the generic script handles this safely rather than adding four ambiguous global substitutions.
+>
+> <details><summary>Edited 2 files</summary>
+>
+> - Wrote `./Databases/scripts/recover-missing-taxonids-from-evidence.sql` (+21 -5)
+> - Wrote `./scripts/recover-missing-taxonids.sh` (+15 -1)
+>
+> </details>
+>
+> The source-aware mapping is now implemented: 20 request-log mappings remain separate, and 868 old database-taxonomy mappings are bundled from the official upgrade SQL. I’m validating the four reported IDs and checking how many currently missing elements across the evidence snapshot become recoverable with this broader map.
+>
+> The affected evidence is confirmed in `tellervocwfold`: 1 row for `8`, 4 for `433`, 76 for `441`, and 57 for `464`, all sourced from `tblelement`, so the new database-ID mapping branch applies correctly. The environment has now refused another database execution because its approval/usage allowance was exhausted; I won’t bypass that restriction. I can still complete the static integrity checks on the generated mapping and scripts.
+>
+> <details><summary>Edited a file</summary>
+>
+> - Wrote `./Databases/scripts/recover-missing-taxonids-from-evidence.sql` (+1 -0)
+>
+> </details>
+</details>
+
+Fixed. Numeric `tblelement` evidence is now mapped using the complete legacy database-taxonomy mapping from the official upgrade SQL.
+
+Confirmed mappings:
+
+- `8 → 63Z5D`
+- `433 → 6Q7C`
+- `441 → 4HQ2V`
+- `464 → 4J24Y`
+- Database-table `281 → 6H4NQ`
+- Request-log `281 → P`
+
+That last distinction is why mappings are now source-aware.
+
+Added [legacy-database-taxonid-map.csv](./Databases/scripts/legacy-database-taxonid-map.csv), containing 868 unique legacy IDs. Every target exists in the authoritative 948-row taxonomy.
+
+The evidence snapshot contains 158 mapped numeric records from `tellervocwfold`, including:
+
+- `8`: 1
+- `433`: 4
+- `441`: 76
+- `464`: 57
+
+Rerun the usual command after repairing `tlkptaxon`:
+
+```bash
+scripts/recover-missing-taxonids.sh TARGET_DATABASE
+```
+
+Static integrity and syntax checks passed. A further database execution test was prevented by the environment’s exhausted execution-approval allowance; I did not bypass that restriction.
+
+> https://www.catalogueoflife.org/data/taxon/XXXXX should give you what you need
+
+<details><summary>1 previous message</summary>
+
+> System error
+>
+> You've hit your usage limit. Upgrade to Pro (https://chatgpt.com/explore/pro), visit https://chatgpt.com/codex/settings/usage to purchase more credits or try again at Aug 11th, 2026 9:03 PM.
+</details>

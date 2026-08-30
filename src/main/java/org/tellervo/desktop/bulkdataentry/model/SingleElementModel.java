@@ -110,7 +110,9 @@ public class SingleElementModel extends HashModel implements IBulkImportSingleRo
 	}
 	
 	public void setImported(TridasIdentifier argImported){
+		TridasIdentifier oldImported = getImported();
 		registerProperty(IMPORTED, PropertyType.READ_ONLY, argImported);
+		firePropertyChange(IMPORTED, oldImported, argImported);
 	}
 	
 	public TridasIdentifier getImported(){

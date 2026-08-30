@@ -190,14 +190,15 @@ public class SeriesResource extends TellervoEntityAssociatedResource<List<BaseSa
 	 * @param identifier
 	 * @return a sample, or null
 	 */
-	public Sample getSample(TridasIdentifier identifier) {
+	public Sample getSample(TridasIdentifier identifier) throws IOException {
 		
 		log.debug("Associated result: "+this.getAssociatedResult());
 		
 		for(BaseSample bs : getAssociatedResult()) {
 			if(bs.getSeries().getIdentifier().getValue().equals(identifier.getValue())) {
 				if(!(bs instanceof Sample))
-					throw new IllegalStateException("Found identifier but no sample??");
+					throw new IOException("The server returned series "
+							+ identifier.getValue() + " without measurement values");
 				
 				return (Sample) bs;
 			}

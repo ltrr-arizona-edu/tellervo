@@ -1,0 +1,12 @@
+raw_taxonid,taxonid
+# Reviewed legacy Catalogue of Life identifiers whose labels changed only by
+# an author suffix or abbreviation. Add further fleet aliases here only after
+# verifying the target taxon in tlkptaxon.
+968088,94JK
+45022,6Y6H
+56941,PTB
+58212,3HXZ
+4230,622TP
+89078,84MS
+4344,3HP
+100868,8BDZ

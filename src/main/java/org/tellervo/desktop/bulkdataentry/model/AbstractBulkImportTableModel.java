@@ -24,9 +24,12 @@ import java.beans.IndexedPropertyChangeEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.Set;
 
+import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
 import org.slf4j.Logger;
@@ -52,7 +55,15 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 	private MVCArrayList<IBulkImportSingleRowModel> models;
 	
 	private MVCArrayList<String> columns;
-	private final HashMap<IBulkImportSingleRowModel, Boolean> selected = new HashMap<IBulkImportSingleRowModel, Boolean>();
+	private final IdentityHashMap<IBulkImportSingleRowModel, Boolean> selected = new IdentityHashMap<IBulkImportSingleRowModel, Boolean>();
+	private final Set<IBulkImportSingleRowModel> listenedRows = Collections.newSetFromMap(
+			new IdentityHashMap<IBulkImportSingleRowModel, Boolean>());
+	private final PropertyChangeListener rowPropertyChangeListener = new PropertyChangeListener() {
+		@Override
+		public void propertyChange(PropertyChangeEvent evt) {
+			dispatchPropertyChange(evt, true);
+		}
+	};
 	private boolean recreateSelectedLock = false;
 	
 	public AbstractBulkImportTableModel(IBulkImportSectionModel argModel){
@@ -78,6 +89,7 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 	@SuppressWarnings("unchecked")
 	public void setModel(IBulkImportSectionModel model) {
 		if(this.model != null){
+			detachRowListeners();
 			models.removePropertyChangeListener(this);
 			columns.removePropertyChangeListener(this);
 		}
@@ -86,6 +98,7 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		this.columns = (MVCArrayList<String>) this.model.getColumnModel();
 		models.addPropertyChangeListener(this);
 		columns.addPropertyChangeListener(this);
+		syncRowListeners();
 		recreateSelected();
 	}
 	
@@ -95,18 +108,20 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 	}
 	
 	public void getSelected(ArrayList<IBulkImportSingleRowModel> argModels){
-		for(IBulkImportSingleRowModel key : selected.keySet()){
-			if(selected.get(key)){
-				argModels.add(key);
+		for(IBulkImportSingleRowModel row : models){
+			if(Boolean.TRUE.equals(selected.get(row))){
+				argModels.add(row);
 			}
 		}
 	}
 	
 	public void setSelected(IBulkImportSingleRowModel argSOM, boolean argSelected){
-		if(!models.contains(argSOM)){
+		int row = indexOfRow(argSOM);
+		if(row < 0){
 			throw new IllegalArgumentException("The provided model is not in this list.");
 		}
 		selected.put(argSOM, argSelected);
+		fireTableCellUpdatedOnEdt(argSOM, 0);
 	}
 	
 	/**
@@ -140,7 +155,10 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 				// careful, as changing the models list causes recreateSelected to be called, so we want to make sure
 				// that we remove from the selected list first.
 				it.remove();
-				models.remove(som);
+				int row = indexOfRow(som);
+				if(row >= 0){
+					models.remove(row);
+				}
 				argRemovedObjects.add(som);
 			}
 		}finally{
@@ -175,10 +193,14 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 			}
 		}
 		
+		Set<IBulkImportSingleRowModel> currentRows = Collections.newSetFromMap(
+				new IdentityHashMap<IBulkImportSingleRowModel, Boolean>());
+		currentRows.addAll(models);
+
 		// remove any rows that aren't in the model anymore
 		Iterator<IBulkImportSingleRowModel> it = selected.keySet().iterator();
 		while(it.hasNext()){
-			if(!models.contains(it.next())){
+			if(!currentRows.contains(it.next())){
 				it.remove();
 			}
 		}
@@ -350,6 +372,7 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 		IBulkImportSingleRowModel som = models.get(argRowIndex);
 		if(argColumnIndex == 0){
 			selected.put(som, (Boolean) argAValue);
+			fireTableCellUpdatedOnEdt(som, 0);
 			return;
 		}
 		argColumnIndex--;
@@ -404,6 +427,28 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 	 */
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
+		dispatchPropertyChange(evt, false);
+	}
+
+	private void dispatchPropertyChange(final PropertyChangeEvent evt, final boolean rowEvent) {
+		if(!SwingUtilities.isEventDispatchThread()){
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					handlePropertyChange(evt, rowEvent);
+				}
+			});
+			return;
+		}
+		handlePropertyChange(evt, rowEvent);
+	}
+
+	private void handlePropertyChange(PropertyChangeEvent evt, boolean rowEvent) {
+		if(rowEvent){
+			handleRowPropertyChange(evt);
+			return;
+		}
+
 		String prop = evt.getPropertyName();
 		Object source = evt.getSource();
 		if(source == models){
@@ -416,6 +461,7 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 					fireTableDataChanged();
 				}
 				
+				syncRowListeners();
 				recreateSelected();
 			}
 			else if(prop.equals(MVCArrayList.REMOVED)){
@@ -427,20 +473,23 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 					fireTableDataChanged();
 				}
 				
+				syncRowListeners();
 				recreateSelected();
 			}
 			else if(prop.equals(MVCArrayList.CHANGED)){
 				IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
-				fireTableCellUpdated(event.getIndex(), event.getIndex());
+				syncRowListeners();
+				fireTableRowsUpdated(event.getIndex(), event.getIndex());
 			}
 			else if(prop.equals(MVCArrayList.ADDED_ALL)){
 				MVCPropertiesAddedEvent event = (MVCPropertiesAddedEvent) evt;
-				fireTableRowsInserted(event.getStartIndex(), event.getStartIndex());
+				syncRowListeners();
+				fireTableRowsInserted(event.getStartIndex(), event.getEndIndex());
 				recreateSelected();
 			}
 			else if(prop.equals(MVCArrayList.ADDED)){
 				IndexedPropertyChangeEvent event = (IndexedPropertyChangeEvent) evt;
-				System.out.println(event.getIndex());
+				syncRowListeners();
 				fireTableRowsInserted(event.getIndex(), event.getIndex());
 				recreateSelected();
 			}
@@ -452,6 +501,89 @@ public abstract class AbstractBulkImportTableModel extends AbstractTableModel im
 			else if(prop.equals(MVCArrayList.SIZE)){
 				fireTableStructureChanged();
 			}
+		}
+	}
+
+	private void handleRowPropertyChange(PropertyChangeEvent evt) {
+		if(!(evt.getSource() instanceof IBulkImportSingleRowModel)){
+			return;
+		}
+
+		IBulkImportSingleRowModel rowModel = (IBulkImportSingleRowModel) evt.getSource();
+		int row = indexOfRow(rowModel);
+		if(row < 0){
+			return;
+		}
+
+		String property = evt.getPropertyName();
+		int modelColumn = columns.indexOf(property);
+		if(modelColumn >= 0){
+			fireTableCellUpdated(row, modelColumn + 1);
+		}
+
+		// Imported status is derived from both the identifier and dirty state.
+		if(com.dmurph.mvc.IModel.DIRTY.equals(property)){
+			int importedColumn = columns.indexOf(IBulkImportSingleRowModel.IMPORTED);
+			if(importedColumn >= 0){
+				fireTableCellUpdated(row, importedColumn + 1);
+			}
+		}
+	}
+
+	private void syncRowListeners() {
+		Set<IBulkImportSingleRowModel> currentRows = Collections.newSetFromMap(
+				new IdentityHashMap<IBulkImportSingleRowModel, Boolean>());
+		currentRows.addAll(models);
+
+		Iterator<IBulkImportSingleRowModel> listened = listenedRows.iterator();
+		while(listened.hasNext()){
+			IBulkImportSingleRowModel row = listened.next();
+			if(!currentRows.contains(row)){
+				row.removePropertyChangeListener(rowPropertyChangeListener);
+				listened.remove();
+			}
+		}
+
+		for(IBulkImportSingleRowModel row : currentRows){
+			if(listenedRows.add(row)){
+				row.addPropertyChangeListener(rowPropertyChangeListener);
+			}
+		}
+	}
+
+	private void detachRowListeners() {
+		for(IBulkImportSingleRowModel row : listenedRows){
+			row.removePropertyChangeListener(rowPropertyChangeListener);
+		}
+		listenedRows.clear();
+	}
+
+	private int indexOfRow(IBulkImportSingleRowModel target) {
+		for(int i = 0; i < models.size(); i++){
+			if(models.get(i) == target){
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	private void fireTableCellUpdatedOnEdt(final IBulkImportSingleRowModel rowModel,
+			final int column) {
+		if(SwingUtilities.isEventDispatchThread()){
+			int row = indexOfRow(rowModel);
+			if(row >= 0){
+				fireTableCellUpdated(row, column);
+			}
+		}else{
+			SwingUtilities.invokeLater(new Runnable() {
+				@Override
+				public void run() {
+					int row = indexOfRow(rowModel);
+					if(row >= 0){
+						fireTableCellUpdated(row, column);
+					}
+				}
+			});
 		}
 	}
 }

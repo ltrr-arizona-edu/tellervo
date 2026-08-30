@@ -170,7 +170,10 @@ private enum DBCheckConstraint{
 			
 			if(wie.getMessageCode().equals(WebInterfaceCode.INVALID_XML_REQUEST) || wie.getMessageCode().equals(WebInterfaceCode.GENERIC_SQL))
 			{
-				return new Exception("The request sent to the server was invalid.  This typically means mandatory fields were missing.");
+				String detail = (msg == null || msg.trim().isEmpty())
+						? "The server did not provide any additional detail."
+						: msg;
+				return new Exception("The server rejected the request: " + detail, e);
 				
 			}
 		}

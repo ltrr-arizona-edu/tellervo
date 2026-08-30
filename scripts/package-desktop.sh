@@ -90,6 +90,7 @@ INSTALL_DIR=""
 RESOURCE_DIR=""
 NATIVE_LIB_DIR=""
 NATIVE_LIB_FILES=()
+JOGAMP_NATIVE_PLATFORM=""
 EXTRA_ARGS=()
 
 case "$PLATFORM" in
@@ -98,13 +99,14 @@ case "$PLATFORM" in
     ICON="$REPO_ROOT/src/main/resources/Icons/256x256/tellervo-application.png"
     INSTALL_DIR="/opt/tellervo"
     RESOURCE_DIR="$REPO_ROOT/packaging/jpackage/linux"
+    JOGAMP_NATIVE_PLATFORM="linux-amd64"
     EXTRA_ARGS+=(
       --linux-shortcut
       --linux-menu-group Science
       --linux-app-category Science
       --linux-package-name tellervo
       --linux-deb-maintainer p.brewer@ltrr.arizona.edu
-      --linux-package-deps "librxtx-java, libjogl2-java"
+      --linux-package-deps "librxtx-java, libgl1"
     )
     ;;
   Darwin*)
@@ -147,6 +149,30 @@ if [[ -d "$REPO_ROOT/target/dependency" ]]; then
   cp "$REPO_ROOT"/target/dependency/* "$INPUT_DIR/" || true
 fi
 
+if [[ -n "$JOGAMP_NATIVE_PLATFORM" ]]; then
+  if ! command -v unzip >/dev/null 2>&1; then
+    echo "Unable to locate unzip, which is required to package JogAmp native libraries." >&2
+    exit 1
+  fi
+
+  shopt -s nullglob
+  gluegen_native_jars=(
+    "$REPO_ROOT"/target/dependency/gluegen-rt-*-natives-"$JOGAMP_NATIVE_PLATFORM".jar
+  )
+  jogl_native_jars=(
+    "$REPO_ROOT"/target/dependency/jogl-all-*-natives-"$JOGAMP_NATIVE_PLATFORM".jar
+  )
+  shopt -u nullglob
+
+  if [[ "${#gluegen_native_jars[@]}" -ne 1 || "${#jogl_native_jars[@]}" -ne 1 ]]; then
+    echo "Expected exactly one GlueGen and one JOGL native jar for $JOGAMP_NATIVE_PLATFORM." >&2
+    exit 1
+  fi
+
+  unzip -q -o -j "${gluegen_native_jars[0]}" '*.so' -d "$INPUT_DIR"
+  unzip -q -o -j "${jogl_native_jars[0]}" '*.so' -d "$INPUT_DIR"
+fi
+
 if [[ -n "$NATIVE_LIB_DIR" ]]; then
   if [[ ! -d "$NATIVE_LIB_DIR" ]]; then
     echo "Native library directory not found: $NATIVE_LIB_DIR" >&2
@@ -175,10 +201,15 @@ ARGS=(
   --java-options "-Dfile.encoding=UTF-8"
   --java-options "-Djava.awt.headless=false"
   --java-options "-Dcom.sun.xml.bind.v2.bytecode.ClassTailor.noOptimize=true"
+  --java-options "--add-opens=java.base/java.lang=ALL-UNNAMED"
 )
 
-if [[ -n "$NATIVE_LIB_DIR" ]]; then
+if [[ -n "$NATIVE_LIB_DIR" || -n "$JOGAMP_NATIVE_PLATFORM" ]]; then
   ARGS+=(--java-options '-Djava.library.path=$APPDIR')
+fi
+
+if [[ -n "$JOGAMP_NATIVE_PLATFORM" ]]; then
+  ARGS+=(--java-options '-Djogamp.gluegen.UseTempJarCache=false')
 fi
 
 if [[ -n "$ICON" && -f "$ICON" ]]; then

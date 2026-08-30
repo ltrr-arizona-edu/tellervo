@@ -185,7 +185,7 @@ public class TellervoWSILoader extends AbstractTellervoGUIDeletableSampleLoader<
 	@Override
 	protected SeriesResource getResource(Map<String, ? extends Object> properties) {
 		SeriesResource resource = new SeriesResource(identifier,
-				EntityType.MEASUREMENT_SERIES, TellervoRequestType.READ);
+				getEntityType(), TellervoRequestType.READ);
 				
 		// set resource properties
 		if(properties != null && !properties.isEmpty())
@@ -326,7 +326,13 @@ public class TellervoWSILoader extends AbstractTellervoGUIDeletableSampleLoader<
 
 	@Override
 	protected SeriesResource getDeletionResource() {
-		return new SeriesResource(identifier, EntityType.MEASUREMENT_SERIES, TellervoRequestType.DELETE);
+		return new SeriesResource(identifier, getEntityType(), TellervoRequestType.DELETE);
+	}
+
+	private EntityType getEntityType() {
+		return type.isDerived()
+				? EntityType.DERIVED_SERIES
+				: EntityType.MEASUREMENT_SERIES;
 	}
 
 	@Override

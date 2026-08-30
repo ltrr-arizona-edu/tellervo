@@ -1,0 +1,82 @@
+taxonid,colid,colparentid,taxonrankid,label,htmllabel,parenttaxonid,status,dataset_key,source_url
+3CGWZ,3CGWZ,4G5H,9,Euonymus hamiltonianus Wall.,<i>Euonymus hamiltonianus</i> Wall.,4G5H,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/3CGWZ
+3CGZ9,3CGZ9,4G5H,9,Euonymus maackii Rupr.,<i>Euonymus maackii</i> Rupr.,4G5H,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/3CGZ9
+3G73J,3G73J,9CKW3,9,Gleditsia japonica Miq.,<i>Gleditsia japonica</i> Miq.,9CKW3,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/3G73J
+3JZCN,3JZCN,635X2,9,Hedlundia hybrida (L.) Sennikov & Kurtto,<i>Hedlundia hybrida</i> (L.) Sennikov & Kurtto,635X2,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/3JZCN
+3KS3L,3KS3L,4VC3,9,Hemiptelea davidii (Hance) Planch.,<i>Hemiptelea davidii</i> (Hance) Planch.,4VC3,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/3KS3L
+3WVTL,3WVTL,9CL8X,9,Maackia amurensis Rupr.,<i>Maackia amurensis</i> Rupr.,9CL8X,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/3WVTL
+3XH8R,3XH8R,8VZ4K,9,Magnolia denudata Desr.,<i>Magnolia denudata</i> Desr.,8VZ4K,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/3XH8R
+3XQYH,3XQYH,5KQ9,9,Malus sylvestris Mill.,<i>Malus sylvestris</i> Mill.,5KQ9,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/3XQYH
+3XQZ7,3XQZ7,CGNRG,9,Malus × dawsoniana Rehder,<i>Malus</i> × <i>dawsoniana</i> Rehder,CGNRG,synonym,315777,https://api.catalogueoflife.org/dataset/3LR/nameusage/3XQZ7
+44FQ8,44FQ8,68QX8,9,Morus australis Poir.,<i>Morus australis</i> Poir.,68QX8,synonym,315777,https://api.catalogueoflife.org/dataset/3LR/nameusage/44FQ8
+44FT6,44FT6,5VCQ,9,Morus mongolica (Bureau) C.K.Schneid.,<i>Morus mongolica</i> (Bureau) C.K.Schneid.,5VCQ,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/44FT6
+4LVJ3,4LVJ3,BQYDV,9,Populus afghanica (Aitch. & Hemsl.) C.K.Schneid.,<i>Populus afghanica</i> (Aitch. & Hemsl.) C.K.Schneid.,BQYDV,synonym,315777,https://api.catalogueoflife.org/dataset/3LR/nameusage/4LVJ3
+4M8TM,4M8TM,3XQXF,9,Prameles prattii (Hemsl.) Rushforth,<i>Prameles prattii</i> (Hemsl.) Rushforth,3XQXF,synonym,315777,https://api.catalogueoflife.org/dataset/3LR/nameusage/4M8TM
+4N8P4,4N8P4,6Y6H,9,Prunus avium (L.) L.,<i>Prunus avium</i> (L.) L.,6Y6H,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4N8P4
+4N8YR,4N8YR,6Y6H,9,Prunus maackii Rupr.,<i>Prunus maackii</i> Rupr.,6Y6H,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4N8YR
+4N927,4N927,6Y6H,9,Prunus munsoniana W.Wight & Hedrick,<i>Prunus munsoniana</i> W.Wight & Hedrick,6Y6H,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4N927
+4N93X,4N93X,6Y6H,9,Prunus padus L.,<i>Prunus padus</i> L.,6Y6H,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4N93X
+4N978,4N978,6Y6H,9,Prunus sargentii Rehder,<i>Prunus sargentii</i> Rehder,6Y6H,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4N978
+4N9CF,4N9CF,6Y6H,9,Prunus × juddii E.S.Anderson,<i>Prunus</i> × <i>juddii</i> E.S.Anderson,6Y6H,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4N9CF
+4N9DD,4N9DD,6Y6H,9,Prunus × yedoensis Matsum.,<i>Prunus</i> × <i>yedoensis</i> Matsum.,6Y6H,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4N9DD
+4QX95,4QX95,7689,9,Pyrus pashia Buch.-Ham. ex D.Don,<i>Pyrus pashia</i> Buch.-Ham. ex D.Don,7689,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4QX95
+4R46Y,4R46Y,8W2YL,9,Quercus acutissima Carruth.,<i>Quercus acutissima</i> Carruth.,8W2YL,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4R46Y
+4R4RZ,4R4RZ,8W2YL,9,Quercus dentata Thunb.,<i>Quercus dentata</i> Thunb.,8W2YL,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4R4RZ
+4R5FD,4R5FD,8W2YL,9,Quercus lyrata Walter,<i>Quercus lyrata</i> Walter,8W2YL,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4R5FD
+4R5QY,4R5QY,8W2YL,9,Quercus palustris Münchh.,<i>Quercus palustris</i> Münchh.,8W2YL,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4R5QY
+4R63X,4R63X,8W2YL,9,Quercus serrata Murray,<i>Quercus serrata</i> Murray,8W2YL,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/4R63X
+4XL9C,4XL9C,3XQXP,9,Sinomalus rockii (Rehder) Rushforth,<i>Sinomalus rockii</i> (Rehder) Rushforth,3XQXP,synonym,315777,https://api.catalogueoflife.org/dataset/3LR/nameusage/4XL9C
+4XL9J,4XL9J,3XQYR,9,Sinomalus toringoides (Rehder) Koidz.,<i>Sinomalus toringoides</i> (Rehder) Koidz.,3XQYR,synonym,315777,https://api.catalogueoflife.org/dataset/3LR/nameusage/4XL9J
+53BWG,53BWG,9CM5J,9,Styphnolobium japonicum (L.) Schott,<i>Styphnolobium japonicum</i> (L.) Schott,9CM5J,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/53BWG
+542G3,542G3,8W3XN,9,Syringa reticulata (Blume) H.Hara,<i>Syringa reticulata</i> (Blume) H.Hara,8W3XN,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/542G3
+55LZ8,55LZ8,63V3M,9,Tetradium daniellii (Benn.) T.G.Hartley,<i>Tetradium daniellii</i> (Benn.) T.G.Hartley,63V3M,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/55LZ8
+56WRL,56WRL,7WX3,9,Tilia japonica (Miq.) Simonk.,<i>Tilia japonica</i> (Miq.) Simonk.,7WX3,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/56WRL
+56WTN,56WTN,7WX3,9,Tilia oliveri Szyszył.,<i>Tilia oliveri</i> Szyszył.,7WX3,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/56WTN
+56WVQ,56WVQ,7WX3,9,Tilia tomentosa Moench,<i>Tilia tomentosa</i> Moench,7WX3,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/56WVQ
+5CZ8S,5CZ8S,63WXW,9,Zelkova serrata (Thunb.) Makino,<i>Zelkova serrata</i> (Thunb.) Makino,63WXW,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/5CZ8S
+5FCZ7,5FCZ7,64FK9,10,Acer monspessulanum subsp. monspessulanum,<i>Acer monspessulanum</i> subsp. <i>monspessulanum</i>,64FK9,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/5FCZ7
+5JHYF,5JHYF,9Y3RX,10,Malus sylvestris subsp. orientalis (Uglitzk.) Browicz,<i>Malus sylvestris</i> subsp. <i>orientalis</i> (Uglitzk.) Browicz,9Y3RX,synonym,315777,https://api.catalogueoflife.org/dataset/3LR/nameusage/5JHYF
+5KTF8,5KTF8,4QWMZ,10,Pyrus communis subsp. caucasica (Fed.) Browicz,<i>Pyrus communis</i> subsp. <i>caucasica</i> (Fed.) Browicz,4QWMZ,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/5KTF8
+64FGB,64FGB,MLD,9,Acer heldreichii Orph.,<i>Acer heldreichii</i> Orph.,MLD,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/64FGB
+65BMG,65BMG,PTB,9,Aesculus turbinata Blume,<i>Aesculus turbinata</i> Blume,PTB,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/65BMG
+65BZW,65BZW,PTB,9,Aesculus glabra Willd.,<i>Aesculus glabra</i> Willd.,PTB,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/65BZW
+67TV7,67TV7,C6FDH,9,Asimina triloba (L.) Dunal,<i>Asimina triloba</i> (L.) Dunal,C6FDH,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/67TV7
+68K9V,68K9V,8VVK7,9,Betula lenta L.,<i>Betula lenta</i> L.,8VVK7,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/68K9V
+6BB4S,6BB4S,3VBV,9,Crataegus coccinioides Ashe,<i>Crataegus coccinioides</i> Ashe,3VBV,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/6BB4S
+6BB6D,6BB6D,3VBV,9,Crataegus persimilis Sarg.,<i>Crataegus persimilis</i> Sarg.,3VBV,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/6BB6D
+6H5K5,6H5K5,8VXJV,9,Eucommia ulmoides Oliv.,<i>Eucommia ulmoides</i> Oliv.,8VXJV,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/6H5K5
+6JLYR,6JLYR,8VXQ9,9,Fraxinus quadrangulata Michx.,<i>Fraxinus quadrangulata</i> Michx.,8VXQ9,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/6JLYR
+6JMFX,6JMFX,8VXQ9,9,Fraxinus mandshurica Rupr.,<i>Fraxinus mandshurica</i> Rupr.,8VXQ9,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/6JMFX
+6JMRS,6JMRS,8VXQ9,9,Fraxinus angustifolia Vahl,<i>Fraxinus angustifolia</i> Vahl,8VXQ9,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/6JMRS
+6JMRT,6JMRT,8VXQ9,9,Fraxinus albicans Buckley,<i>Fraxinus albicans</i> Buckley,8VXQ9,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/6JMRT
+6NK3F,6NK3F,8VYLL,9,Kalopanax septemlobus (Thunb.) Koidz.,<i>Kalopanax septemlobus</i> (Thunb.) Koidz.,8VYLL,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/6NK3F
+6QSX9,6QSX9,CGNP4,9,Malus coronaria (L.) Mill.,<i>Malus coronaria</i> (L.) Mill.,CGNP4,synonym,315777,https://api.catalogueoflife.org/dataset/3LR/nameusage/6QSX9
+6WKWB,6WKWB,74N8,9,Pterocarya stenoptera C.DC.,<i>Pterocarya stenoptera</i> C.DC.,74N8,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/6WKWB
+6XCGV,6XCGV,7BWB,9,Salix alba L.,<i>Salix alba</i> L.,7BWB,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/6XCGV
+6Y48V,6Y48V,V56MN,9,Scandosorbus × intermedia (Ehrh.) Sennikov,<i>Scandosorbus</i> × <i>intermedia</i> (Ehrh.) Sennikov,V56MN,synonym,315777,https://api.catalogueoflife.org/dataset/3LR/nameusage/6Y48V
+6YR9C,6YR9C,9Y3S4,9,Sinomalus sieboldii (Regel) Rushforth,<i>Sinomalus sieboldii</i> (Regel) Rushforth,9Y3S4,synonym,315777,https://api.catalogueoflife.org/dataset/3LR/nameusage/6YR9C
+7CHJF,7CHJF,7XR8,9,Toona sinensis (A.Juss.) M.Roem.,<i>Toona sinensis</i> (A.Juss.) M.Roem.,7XR8,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/7CHJF
+7DFNR,7DFNR,84MS,9,Ulmus minor Mill.,<i>Ulmus minor</i> Mill.,84MS,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/7DFNR
+7DFNZ,7DFNZ,84MS,9,Ulmus szechuanica W.P.Fang,<i>Ulmus szechuanica</i> W.P.Fang,84MS,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/7DFNZ
+7DFZ6,7DFZ6,84MS,9,Ulmus americana L.,<i>Ulmus americana</i> L.,84MS,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/7DFZ6
+7NHJZ,7NHJZ,5KQ9,9,Malus domestica (Suckow) Borkh.,<i>Malus domestica</i> (Suckow) Borkh.,5KQ9,historical ID; current accepted match VK8LK,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/VK8LK
+8WRQD,8WRQD,8VVK7,9,Betula dauurica Pall.,<i>Betula dauurica</i> Pall.,8VVK7,historical ID; current accepted match 9L569,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/9L569
+93LXC,93LXC,7WX3,9,Tilia × europaea L.,<i>Tilia</i> × <i>europaea</i> L.,7WX3,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/93LXC
+93QC3,93QC3,7WX3,9,Tilia × euchlora K.Koch,<i>Tilia</i> × <i>euchlora</i> K.Koch,7WX3,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/93QC3
+93RPM,93RPM,63WXW,9,Zelkova carpinifolia (Pall.) K.Koch,<i>Zelkova carpinifolia</i> (Pall.) K.Koch,63WXW,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/93RPM
+9488,9488,MLD,9,Acer crataegifolium Siebold & Zucc.,<i>Acer crataegifolium</i> Siebold & Zucc.,MLD,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/9488
+948G,948G,MLD,9,Acer davidii Franch.,<i>Acer davidii</i> Franch.,MLD,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/948G
+94M5,94M5,MLD,9,Acer triflorum Kom.,<i>Acer triflorum</i> Kom.,MLD,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/94M5
+94NJ,94NJ,MLD,9,Acer × freemanii A.E.Murray,<i>Acer</i> × <i>freemanii</i> A.E.Murray,MLD,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/94NJ
+CQNY,CQNY,6298M,9,Amelanchier laevis Wiegand,<i>Amelanchier laevis</i> Wiegand,6298M,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/CQNY
+RNTN,RNTN,8VVZQ,9,Castanea mollissima Blume,<i>Castanea mollissima</i> Blume,8VVZQ,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/RNTN
+S4N4,S4N4,3K3G,9,Celtis bungeana Blume,<i>Celtis bungeana</i> Blume,3K3G,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/S4N4
+S4VC,S4VC,3K3G,9,Celtis tetrandra Roxb.,<i>Celtis tetrandra</i> Roxb.,3K3G,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/S4VC
+VQL2,VQL2,9CKCW,9,Cladrastis kentukea (Dum.Cours.) Rudd,<i>Cladrastis kentukea</i> (Dum.Cours.) Rudd,9CKCW,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/VQL2
+YGL2,YGL2,8VWH2,9,Cornus mas L.,<i>Cornus mas</i> L.,8VWH2,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/YGL2
+Z7VW,Z7VW,3VBV,9,Crataegus crus-galli L.,<i>Crataegus crus-galli</i> L.,3VBV,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/Z7VW
+Z7Y4,Z7Y4,3VBV,9,Crataegus erythropoda Ashe,<i>Crataegus erythropoda</i> Ashe,3VBV,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/Z7Y4
+Z8B6,Z8B6,3VBV,9,Crataegus phaenopyrum (L.fil.) Borkh.,<i>Crataegus phaenopyrum</i> (L.fil.) Borkh.,3VBV,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/Z8B6
+Z8C5,Z8C5,3VBV,9,Crataegus pruinosa H.L.Wendl.,<i>Crataegus pruinosa</i> H.L.Wendl.,3VBV,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/Z8C5
+Z8GX,Z8GX,3VBV,9,Crataegus suborbiculata Sarg.,<i>Crataegus suborbiculata</i> Sarg.,3VBV,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/Z8GX
+Z8KD,Z8KD,3VBV,9,Crataegus viridis L.,<i>Crataegus viridis</i> L.,3VBV,accepted,315777,https://api.catalogueoflife.org/dataset/3LR/taxon/Z8KD

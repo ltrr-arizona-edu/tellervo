@@ -122,13 +122,10 @@ public class QueryWrapper {
 
 		/*
 		 * 1 = paramVMeasurementID
-		 * 2 = paramRedate
-		 * 3 = paramCurrentVMeasurementResultID
+		 * 2 = paramCurrentVMeasurementResultID
 		 */
 		addQuery("qupdVMeasurementResultOpRedate",
-				"UPDATE tblVMeasurementResult SET VMeasurementID = ?, " +
-				"StartYear = ? " +
-				"WHERE VMeasurementResultID=?");
+				"SELECT cpgdbj.qupdVMeasurementResultOpRedate(?, ?)");
 	
 		/*
 		 * 1 = paramVMeasurementID

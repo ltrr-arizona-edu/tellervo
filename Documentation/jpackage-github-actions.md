@@ -59,15 +59,24 @@ It currently produces native artifacts for:
 Linux `deb` packages also declare runtime package dependencies on:
 
 - `librxtx-java`
-- `libjogl2-java`
+- the X11/OpenGL libraries required by JOGL
 
 Linux `deb` packages also install a `/usr/bin/tellervo` launcher symlink so the
 application can be started directly from a shell.
+
+The Linux package extracts the version-matched JOGL and GlueGen native
+libraries from their Maven dependency jars into the application directory. It
+disables JogAmp's temporary native-library cache and adds the application
+directory to `java.library.path`, avoiding both mixed Ubuntu/Maven JogAmp
+versions and failures on systems where native libraries cannot be loaded from
+the temporary directory.
 
 The Windows package includes `Native/Libraries/windows-amd64/rxtxSerial.dll`
 in the application directory and adds that directory to `java.library.path`.
 JOGL and GlueGen load their version-matched native libraries from their Maven
 dependency jars; the older loose graphics DLLs are deliberately not packaged.
+All launchers open the narrow `java.lang` module access needed by the legacy
+JogAmp 2.1.5 native-library fallback when running on Java 21.
 The MSI installs per-user under `%LOCALAPPDATA%\Tellervo`, so administrator
 privileges are not required.
 

@@ -303,6 +303,10 @@ class element extends elementEntity implements IDBAccessor {
 						tellervoTriggerError( "902" . "Missing parameter - 'elementType' field is required when creating an element", E_USER_ERROR);
 						return false;
 					}
+					if ($paramsObj->taxon->getCoLID () == NULL || $paramsObj->taxon->getCoLID () == "") {
+						tellervoTriggerError( "902" . "Missing parameter - 'taxon' field is required when creating an element", E_USER_ERROR);
+						return false;
+					}
 				}
 				return true;
 			

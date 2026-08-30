@@ -162,7 +162,8 @@ try {
         "--main-class", $MainClass,
         "--install-dir", $platform.InstallDir,
         "--java-options", "-Dfile.encoding=UTF-8",
-        "--java-options", "-Djava.awt.headless=false"
+        "--java-options", "-Djava.awt.headless=false",
+        "--java-options", "--add-opens=java.base/java.lang=ALL-UNNAMED"
     )
 
     if ($platform.NativeLibDir) {
