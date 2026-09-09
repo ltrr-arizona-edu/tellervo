@@ -597,7 +597,13 @@ public class ComponentViewerOld extends JPanel implements ResourceEventListener,
 			setStatus("Done", false);
 			
 			SeriesResource resource = (SeriesResource) re.getSource();
-			Sample s = resource.getSample(sample.getIdentifier());
+			Sample s;
+			try {
+				s = resource.getSample(sample.getIdentifier());
+			} catch (IOException ioe) {
+				setStatus("Error loading view: " + ioe.getLocalizedMessage(), false);
+				return;
+			}
 			
 			if(s == null) {
 				setStatus("Error: Series was not found.", false);

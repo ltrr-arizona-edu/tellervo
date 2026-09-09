@@ -27,7 +27,7 @@ application on each user's computer.
 \index{Installation!Server}
 \label{txt:serverinstallation}
 
-Tellervo Server 2.0 is packaged for current Debian- and Ubuntu-based systems.
+Tellervo Server 2.1 is packaged for current Debian- and Ubuntu-based systems.
 The standard package installs Apache, PHP, PostgreSQL, PostGIS, PL/Java, the
 Tellervo webservice, and the database administration tools. A preconfigured
 VirtualBox appliance is also an option for users who want a self-contained
@@ -183,7 +183,7 @@ meta-package:
 \code{sudo apt update}
 \code{sudo apt install tellervo-server}
 
-The package selects a supported PostgreSQL dependency bundle. Tellervo 2.0
+The package selects a supported PostgreSQL dependency bundle. Tellervo Server 2.1
 packages provide PostgreSQL 18 and PostgreSQL 17 alternatives; APT selects the
 first complete alternative available for the operating system.
 
@@ -195,11 +195,11 @@ For example:
 
 \begin{lstlisting}
 sudo apt install \
-  ./tellervo-server-common-2.0.deb \
-  ./tellervo-server-webservice-2.0.deb \
-  ./tellervo-server-db-pg17-2.0.deb \
-  ./tellervo-server-db-2.0.deb \
-  ./tellervo-server-2.0.deb
+  ./tellervo-server-common-2.1.deb \
+  ./tellervo-server-webservice-2.1.deb \
+  ./tellervo-server-db-pg17-2.1.deb \
+  ./tellervo-server-db-2.1.deb \
+  ./tellervo-server-2.1.deb
 \end{lstlisting}
 
 After installation, run the configuration wizard and its tests:
@@ -231,9 +231,9 @@ PostgreSQL major version, and the database package:
 
 \begin{lstlisting}[language=bash]
 sudo apt install \
-  ./tellervo-server-common-2.0.deb \
-  ./tellervo-server-db-pg17-2.0.deb \
-  ./tellervo-server-db-2.0.deb
+  ./tellervo-server-common-2.1.deb \
+  ./tellervo-server-db-pg17-2.1.deb \
+  ./tellervo-server-db-2.1.deb
 \end{lstlisting}
 
 Initialise an empty database using the administration command supplied by
@@ -305,8 +305,8 @@ Install the web-service packages and PostgreSQL client on the web host:
 
 \begin{lstlisting}[language=bash]
 sudo apt install postgresql-client \
-  ./tellervo-server-common-2.0.deb \
-  ./tellervo-server-webservice-2.0.deb
+  ./tellervo-server-common-2.1.deb \
+  ./tellervo-server-webservice-2.1.deb
 \end{lstlisting}
 
 First test the network route, authentication, and HBA rule independently of

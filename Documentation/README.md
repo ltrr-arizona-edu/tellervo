@@ -4,6 +4,12 @@ The canonical LaTeX manual source is in `Documentation/Manual`. The other files
 in `Documentation` are supporting technical notes, diagrams, and legacy export
 formats; they are not a second manual source tree.
 
+For server setup, see the [detailed installation and database migration
+guide](server-installation-details.md). Package building and repository publishing
+are covered in [server packaging](server-packaging.md).
+See the [Server 2.1 release notes](server-release-2.1.md) for the release scope
+and upgrade considerations.
+
 ## Build the manual
 
 The build requires a TeX distribution containing `latexmk`, `pdflatex`,

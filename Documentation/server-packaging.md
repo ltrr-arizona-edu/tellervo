@@ -33,15 +33,15 @@ scripts/package-server.sh
 ```
 
 The generated packages are written to `target/binaries/server/VERSION/Linux/`, for
-example `target/binaries/server/2.0/Linux/`:
+example `target/binaries/server/2.1/Linux/`:
 
 ```text
-tellervo-server-2.0.deb
-tellervo-server-common-2.0.deb
-tellervo-server-webservice-2.0.deb
-tellervo-server-db-2.0.deb
-tellervo-server-db-pg18-2.0.deb
-tellervo-server-db-pg17-2.0.deb
+tellervo-server-2.1.deb
+tellervo-server-common-2.1.deb
+tellervo-server-webservice-2.1.deb
+tellervo-server-db-2.1.deb
+tellervo-server-db-pg18-2.1.deb
+tellervo-server-db-pg17-2.1.deb
 ```
 
 By default the build emits PostgreSQL 18 and PostgreSQL 17 dependency bundles:
@@ -102,11 +102,11 @@ repository, so include the PostgreSQL provider package you want to use:
 
 ```bash
 sudo apt install \
-  ./target/binaries/server/2.0/Linux/tellervo-server-common-2.0.deb \
-  ./target/binaries/server/2.0/Linux/tellervo-server-webservice-2.0.deb \
-  ./target/binaries/server/2.0/Linux/tellervo-server-db-pg17-2.0.deb \
-  ./target/binaries/server/2.0/Linux/tellervo-server-db-2.0.deb \
-  ./target/binaries/server/2.0/Linux/tellervo-server-2.0.deb
+  ./target/binaries/server/2.1/Linux/tellervo-server-common-2.1.deb \
+  ./target/binaries/server/2.1/Linux/tellervo-server-webservice-2.1.deb \
+  ./target/binaries/server/2.1/Linux/tellervo-server-db-pg17-2.1.deb \
+  ./target/binaries/server/2.1/Linux/tellervo-server-db-2.1.deb \
+  ./target/binaries/server/2.1/Linux/tellervo-server-2.1.deb
 ```
 
 Use `apt install ./package.deb` for local packages rather than `dpkg --install`.
@@ -131,9 +131,9 @@ common and database packages together:
 
 ```bash
 sudo apt install \
-  ./target/binaries/server/2.0/Linux/tellervo-server-common-2.0.deb \
-  ./target/binaries/server/2.0/Linux/tellervo-server-db-pg17-2.0.deb \
-  ./target/binaries/server/2.0/Linux/tellervo-server-db-2.0.deb
+  ./target/binaries/server/2.1/Linux/tellervo-server-common-2.1.deb \
+  ./target/binaries/server/2.1/Linux/tellervo-server-db-pg17-2.1.deb \
+  ./target/binaries/server/2.1/Linux/tellervo-server-db-2.1.deb
 ```
 
 On the web host, install the common and web packages together. Installing the
@@ -141,8 +141,8 @@ PostgreSQL client makes it possible to test the connection separately:
 
 ```bash
 sudo apt install postgresql-client \
-  ./target/binaries/server/2.0/Linux/tellervo-server-common-2.0.deb \
-  ./target/binaries/server/2.0/Linux/tellervo-server-webservice-2.0.deb
+  ./target/binaries/server/2.1/Linux/tellervo-server-common-2.1.deb \
+  ./target/binaries/server/2.1/Linux/tellervo-server-webservice-2.1.deb
 ```
 
 ## Remote Database Webservice Wizard
