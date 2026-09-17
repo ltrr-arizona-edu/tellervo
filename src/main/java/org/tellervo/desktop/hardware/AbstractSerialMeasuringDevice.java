@@ -373,36 +373,6 @@ public abstract class AbstractSerialMeasuringDevice extends
 	protected void doInitialize() throws IOException {
 		openPort();
 	}
-	
-	/**
-	 * Set the baud rate
-	 * @param baudRate
-	 */
-	protected void setBaudRate(BaudRate baudRate) {
-		close();
-		this.baudRate = baudRate;
-		try {
-			openPort();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
-	 * Set the stop bits
-	 * @param stopBits
-	 */
-	protected void setStopBits(StopBits stopBits) {
-		close();
-		this.stopBits = stopBits;
-		try {
-			openPort();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
 
 	
 	/**
