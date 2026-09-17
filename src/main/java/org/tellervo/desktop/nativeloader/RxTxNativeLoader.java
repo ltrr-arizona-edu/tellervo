@@ -20,18 +20,18 @@ public class RxTxNativeLoader {
 		
 		if(os.startsWith("Windows"))
 		{
-			if(arch.equals("x86"))
-			{
-				lib = "/Libraries/windows-i586/rxtxSerial.dll";
-			}
-			else if (arch.equals("x86-64") || arch.equals("amd64"))
-			{
-				lib = "/Libraries/windows-amd64/rxtxSerial.dll";
-			}
-			else
-			{
-				throw new Exception(arch+" architecture is not supported");
-			}
+			// The jpackage build (scripts/package-desktop.sh) already places rxtxSerial.dll
+			// directly alongside the application jars and sets -Djava.library.path to that
+			// directory, so RXTX's own driver classes (RXTXCommDriver, RXTXPort, etc.) load it
+			// themselves via their usual System.loadLibrary("rxtxSerial") calls. Extracting the
+			// copy embedded in our jar to a second, randomly-named temp file and System.load()-ing
+			// it here would load a *second*, independent instance of the same native library into
+			// the process. That has been confirmed (via a user-submitted hs_err_pid crash log) to
+			// cause native EXCEPTION_ACCESS_VIOLATION crashes inside rxtxSerial.dll, since native
+			// global/static state ends up split across the two loaded copies. So on Windows we
+			// deliberately do nothing here and let RXTX load its own library exactly once.
+			log.debug("Windows RXTX native library is bundled next to the app and resolved via java.library.path; skipping manual extraction to avoid a duplicate native library load");
+			return;
 		}
 		else if(os.startsWith("MacOSX"))
 		{
