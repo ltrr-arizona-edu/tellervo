@@ -218,10 +218,11 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
                 }
 		
 			}
-			catch (IOException ioe) {
-				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port");
+			catch (Exception ioe) {
+				log.error("Error reading from serial port", ioe);
+				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port: " + ioe.getMessage());
 
-			}   	
+			}
 		}
 	}
 	

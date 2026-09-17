@@ -169,10 +169,12 @@ public class VRODevice extends GenericASCIIDevice {
                 if(strReadBuffer.endsWith("in"))
                 {
 					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in inches.  Only millimetre units are supported in Tellervo.");
+					return;
                 }
                 else if (strReadBuffer.endsWith("ct"))
                 {
 					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in raw counts.  You have not yet configured your VRO.  See your VRO Quick Start Guide for directions.");
+					return;
                 }
                 
 		    	// Raw data is in mm like "2.575"
@@ -186,7 +188,7 @@ public class VRODevice extends GenericASCIIDevice {
 				else
 				{
 					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Invalid value from device");
-
+					return;
 				}
                 
                 
@@ -219,14 +221,16 @@ public class VRODevice extends GenericASCIIDevice {
 
 			}
 			catch (Exception ioe) {
-				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port");
+				log.error("Error reading from serial port", ioe);
+				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error reading from serial port: " + ioe.getMessage());
 
-			}   	
-			 
-			// Only zero the measurement if we're not measuring cumulatively
-			if(!measureCumulatively)
-			{
-				zeroMeasurement();
+			}
+			finally {
+				// Only zero the measurement if we're not measuring cumulatively
+				if(!measureCumulatively)
+				{
+					zeroMeasurement();
+				}
 			}
 	
 		}
