@@ -98,15 +98,13 @@ jobs:
 
           # File existence alone doesn't prove the serial native library actually loads (this is
           # exactly the class of regression that shipped an RXTX DLL that crashed on open) - so
-          # run the installed app's own bundled runtime against its own bundled jars and make it
-          # actually initialize jSerialComm's native library.
-          $bundledJava = Join-Path $installDir "runtime/bin/java.exe"
-          if (-not (Test-Path $bundledJava -PathType Leaf)) {
-            throw "Installed bundled Java runtime not found: $bundledJava"
-          }
-
+          # actually initialize jSerialComm's native library from the installed app's own bundled
+          # jars. jpackage's app-image runtime is a minimized jlink image with no standalone
+          # java.exe/javaw.exe (the app only launches via Tellervo.exe's native launcher), so use
+          # the build JDK already on this runner instead - the native-loading code path being
+          # tested doesn't depend on which JVM launches it.
           $appDir = Join-Path $installDir "app"
-          $smokeTestOutput = & $bundledJava -cp "$appDir\*" org.tellervo.desktop.nativeloader.SerialLibrarySmokeTest 2>&1
+          $smokeTestOutput = & java -cp "$appDir\*" org.tellervo.desktop.nativeloader.SerialLibrarySmokeTest 2>&1
           $smokeTestExitCode = $LASTEXITCODE
           Write-Host $smokeTestOutput
           if ($smokeTestExitCode -ne 0) {
