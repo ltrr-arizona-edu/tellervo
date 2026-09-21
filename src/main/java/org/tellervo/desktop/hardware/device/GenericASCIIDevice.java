@@ -32,12 +32,16 @@ import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice.LineFeed;
 
+import gnu.io.SerialPort;
 import gnu.io.SerialPortEvent;
 
 public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 	
 	private final static Logger log = LoggerFactory.getLogger(GenericASCIIDevice.class);
 	private static final int EVE_ENQ = 5;
+	private static final int MAX_SERIAL_READ = 1024;
+	private static final int MAX_SERIAL_LINE_LENGTH = 256;
+	private final StringBuffer pendingSerialData = new StringBuffer();
 		
 	@Override
 	public void setDefaultPortParams(){
@@ -100,91 +104,46 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 	
 	public void serialEvent(SerialPortEvent e) {
 		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-			InputStream input;
-			
+			boolean processedLine = false;
 			try {
-				input = getSerialPort().getInputStream();
-	    
-			    StringBuffer readBuffer = new StringBuffer();
-			    int intReadFromPort;
-			    	//Read from port into buffer while not line feed
-			    	while ((intReadFromPort=input.read()) != this.lineFeed.toInt()){
-			    		//If a timeout then show bad sample
-						if(intReadFromPort == -1) {
-							fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Port timeout or line feed problems");
-							return;
+				if(getState() == PortState.DIE) {
+					return;
+				}
 
+				SerialPort serialPort = getSerialPort();
+				if(serialPort == null) {
+					return;
+				}
+
+				InputStream input = serialPort.getInputStream();
+				int availableBytes = input.available();
+				if(availableBytes <= 0) {
+					return;
+				}
+
+				byte[] buffer = new byte[Math.min(availableBytes, MAX_SERIAL_READ)];
+				int bytesRead = input.read(buffer, 0, buffer.length);
+				if(bytesRead <= 0) {
+					return;
+				}
+
+				for(int i = 0; i < bytesRead; i++) {
+					int intReadFromPort = buffer[i] & 0xff;
+
+					if(intReadFromPort == this.lineFeed.toInt()) {
+						processSerialLine(pendingSerialData.toString());
+						pendingSerialData.setLength(0);
+						processedLine = true;
+					}
+					else if(intReadFromPort != 13) {
+						pendingSerialData.append((char) intReadFromPort);
+
+						if(pendingSerialData.length() > MAX_SERIAL_LINE_LENGTH) {
+							pendingSerialData.setLength(0);
+							fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Serial data line too long");
 						}
-
-						//Ignore CR (13)
-			    		if(intReadFromPort!=13)  {
-			    			readBuffer.append((char) intReadFromPort);
-			    		}
-			    	}
-
-                String strReadBuffer = readBuffer.toString();
-                fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
- 	
-                // Check units 
-                if(strReadBuffer.endsWith("in") || strReadBuffer.endsWith("inch") )
-                {
-					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in inches.  Only millimetre units are supported in Tellervo.");
-					return;
-                }
-                else if(strReadBuffer.endsWith("deg") || strReadBuffer.endsWith("dms"))
-                {
-					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in degrees.  Only millimetre units are supported in Tellervo.");
-					return;
-                }
-                else if (strReadBuffer.endsWith("ct"))
-                {
-					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in raw counts.  See your device's manual for directions.");
-					return;
-                }
-                
-                
-		    	// Raw data is in mm like "2.575"
-                // Strip label and/or units if present
-				String regex = "[\\d\\.]+";
-				Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-				Matcher m = p.matcher(strReadBuffer);
-				if (m.find()) {
-					strReadBuffer = m.group();
+					}
 				}
-				else
-				{
-					fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Invalid value from device");
-					return;
-				}
-                
-                
-             	// Round up to micron integers
-		    	Float fltValue = new Float(strReadBuffer) * unitMultiplier.toFloat();
-		    	Integer intValue = Math.round(fltValue);
-				
-		    	// Handle any correction factor
-		    	intValue = getCorrectedValue(intValue);
-		    	
-		    	// Do calculation if working in cumulative mode
-		    	if(this.measureCumulatively)
-		    	{
-		    		Integer cumValue = intValue;
-		    		intValue = intValue - getPreviousPosition();
-		    		setPreviousPosition(cumValue);
-		    	}
-		    	
-		    	if(intValue>0)
-		    	{	    	
-			    	// Fire event
-			    	fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
-		    	}
-		    	else
-		    	{
-		    		// Fire bad event as value is a negative number
-		    		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Negative value = "+intValue);
-		    	}
-			    							
-
 			}
 			catch (Exception ioe) {
 				log.error("Error reading from serial port", ioe);
@@ -193,12 +152,73 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 			}
 			finally {
 				// Only zero the measurement if we're not measuring cumulatively
-				if(!measureCumulatively)
+				if(processedLine && !measureCumulatively)
 				{
 					zeroMeasurement();
 				}
 			}
 	
+		}
+	}
+
+	private void processSerialLine(String strReadBuffer) {
+		fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.RAW_DATA, strReadBuffer, DataDirection.RECEIVED);
+
+		// Check units
+		if(strReadBuffer.endsWith("in") || strReadBuffer.endsWith("inch") )
+		{
+			fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in inches.  Only millimetre units are supported in Tellervo.");
+			return;
+		}
+		else if(strReadBuffer.endsWith("deg") || strReadBuffer.endsWith("dms"))
+		{
+			fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in degrees.  Only millimetre units are supported in Tellervo.");
+			return;
+		}
+		else if (strReadBuffer.endsWith("ct"))
+		{
+			fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Device is transmitting values in raw counts.  See your device's manual for directions.");
+			return;
+		}
+
+		// Raw data is in mm like "2.575"
+		// Strip label and/or units if present
+		String regex = "[\\d\\.]+";
+		Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+		Matcher m = p.matcher(strReadBuffer);
+		if (m.find()) {
+			strReadBuffer = m.group();
+		}
+		else
+		{
+			fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Invalid value from device");
+			return;
+		}
+
+		// Round up to micron integers
+		Float fltValue = new Float(strReadBuffer) * unitMultiplier.toFloat();
+		Integer intValue = Math.round(fltValue);
+
+		// Handle any correction factor
+		intValue = getCorrectedValue(intValue);
+
+		// Do calculation if working in cumulative mode
+		if(this.measureCumulatively)
+		{
+			Integer cumValue = intValue;
+			intValue = intValue - getPreviousPosition();
+			setPreviousPosition(cumValue);
+		}
+
+		if(intValue>0)
+		{
+			// Fire event
+			fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.NEW_SAMPLE_EVENT, intValue);
+		}
+		else
+		{
+			// Fire bad event as value is a negative number
+			fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.BAD_SAMPLE_EVENT, "Negative value = "+intValue);
 		}
 	}
 	

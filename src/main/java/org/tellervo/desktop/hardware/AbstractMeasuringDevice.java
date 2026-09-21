@@ -52,7 +52,7 @@ public abstract class AbstractMeasuringDevice
 	protected final static Logger log = LoggerFactory.getLogger(AbstractMeasuringDevice.class);
 	
 	/** The state our serial port is in */
-	protected PortState state;	
+	protected volatile PortState state;
 		
 	/** Port settings */
 	protected String portName;

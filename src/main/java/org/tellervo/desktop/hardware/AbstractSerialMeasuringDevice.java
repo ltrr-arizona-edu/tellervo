@@ -33,7 +33,7 @@ public abstract class AbstractSerialMeasuringDevice extends
 
 
 	/** The actual serial port we're operating on */
-	private SerialPort port;
+	private volatile SerialPort port;
 	
 	/**
 	 * Create a new serial measuring device, but do not open. Typically for 
@@ -212,12 +212,7 @@ public abstract class AbstractSerialMeasuringDevice extends
 	
 		state = PortState.DIE;
 		finishInitialize();
-		
-		if(port != null) {
-			log.debug("Closing port (finalize): " + ((SerialPort) port).getName());
-			((SerialPort) port).close();
-			port = null;
-		}
+		closePort("finalize");
 	}
 	
 	/**
@@ -274,29 +269,19 @@ public abstract class AbstractSerialMeasuringDevice extends
 	 * Close the port
 	 */
 	public void close() {
-		if(port == null) {
-			log.debug("dataport already closed; ignoring close call?");
-			return;
-		}
-		
-		log.debug("Closing port (manual): " + ((SerialPort) port).getName());
-		
 		state = PortState.DIE;
 		finishInitialize();
-		try {
-			finalize();
-		} catch (Throwable e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		port = null;
+		closePort("manual");
 	}
 	
 	public SerialPort getSerialPort()
 	{
 		if(port==null)
 		{
+			if(getState() == PortState.DIE) {
+				log.debug("Serial port is closed; not reopening while port state is DIE");
+				return null;
+			}
 			try {
 				openPort(this.portName);
 			} catch (IOException e) {
@@ -385,7 +370,7 @@ public abstract class AbstractSerialMeasuringDevice extends
 	public SerialPort openPort(String portName) throws IOException {
 		
 		// Make sure the port is closed
-		try	{((SerialPort) port).close();}catch( Exception e){};
+		closePort("reopen");
 		
 		this.portName = portName;
 		portId = null;
@@ -447,6 +432,31 @@ public abstract class AbstractSerialMeasuringDevice extends
 			throw new IOException("Unable to open port: TooManyListenersException\n"+e.getLocalizedMessage());
 		}
 
+	}
+
+	private synchronized void closePort(String reason) {
+		SerialPort closingPort = port;
+		if(closingPort == null) {
+			log.debug("dataport already closed; ignoring " + reason + " close call?");
+			return;
+		}
+
+		port = null;
+		log.debug("Closing port (" + reason + "): " + closingPort.getName());
+
+		try {
+			closingPort.notifyOnDataAvailable(false);
+		} catch (Exception e) {
+			log.debug("Unable to disable serial data notifications while closing port", e);
+		}
+
+		try {
+			closingPort.removeEventListener();
+		} catch (Exception e) {
+			log.debug("Unable to remove serial event listener while closing port", e);
+		}
+
+		closingPort.close();
 	}
 	
 
