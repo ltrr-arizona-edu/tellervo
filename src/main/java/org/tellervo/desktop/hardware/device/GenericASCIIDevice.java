@@ -183,7 +183,7 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 
 		// Raw data is in mm like "2.575"
 		// Strip label and/or units if present
-		String regex = "[\\d\\.]+";
+		String regex = "-?[\\d\\.]+";
 		Pattern p = Pattern.compile(regex, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 		Matcher m = p.matcher(strReadBuffer);
 		if (m.find()) {
