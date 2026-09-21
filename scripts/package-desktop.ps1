@@ -51,8 +51,6 @@ function Get-PlatformConfig {
             DefaultType = "msi"
             Icon = "src/main/resources/Icons/128x128/pdf.ico"
             InstallDir = "Tellervo"
-            NativeLibDir = "Native/Libraries/windows-amd64"
-            NativeLibFiles = @("rxtxSerial.dll")
             ExtraArgs = @("--win-per-user-install", "--win-shortcut", "--win-menu")
         }
     }
@@ -63,8 +61,6 @@ function Get-PlatformConfig {
             DefaultType = "app-image"
             Icon = ""
             InstallDir = "/Applications/Tellervo"
-            NativeLibDir = ""
-            NativeLibFiles = @()
             ExtraArgs = @()
         }
     }
@@ -74,8 +70,6 @@ function Get-PlatformConfig {
         DefaultType = "app-image"
         Icon = "src/main/resources/Icons/128x128/tellervo-application.png"
         InstallDir = "/opt/tellervo"
-        NativeLibDir = ""
-        NativeLibFiles = @()
         ExtraArgs = @("--linux-shortcut", "--linux-menu-group", "Science", "--linux-app-category", "Science")
     }
 }
@@ -135,20 +129,6 @@ try {
         }
     }
 
-    if ($platform.NativeLibDir) {
-        $nativeLibDir = Join-Path $repoRoot $platform.NativeLibDir
-        if (-not (Test-Path $nativeLibDir -PathType Container)) {
-            throw "Native library directory not found: $nativeLibDir"
-        }
-        foreach ($nativeLibFile in $platform.NativeLibFiles) {
-            $nativeLibrary = Join-Path $nativeLibDir $nativeLibFile
-            if (-not (Test-Path $nativeLibrary -PathType Leaf)) {
-                throw "Required Windows native library not found: $nativeLibrary"
-            }
-            Copy-Item -LiteralPath $nativeLibrary -Destination $InputDir
-        }
-    }
-
     $args = @(
         "--type", $Type,
         "--dest", $DestDir,
@@ -165,10 +145,6 @@ try {
         "--java-options", "-Djava.awt.headless=false",
         "--java-options", "--add-opens=java.base/java.lang=ALL-UNNAMED"
     )
-
-    if ($platform.NativeLibDir) {
-        $args += @("--java-options", '-Djava.library.path=$APPDIR')
-    }
 
     if ($platform.Icon) {
         $iconPath = Join-Path $repoRoot $platform.Icon

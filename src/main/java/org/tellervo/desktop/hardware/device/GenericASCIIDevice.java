@@ -32,8 +32,8 @@ import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 import org.tellervo.desktop.hardware.AbstractMeasuringDevice.LineFeed;
 
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEvent;
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortEvent;
 
 public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 	
@@ -103,7 +103,7 @@ public class GenericASCIIDevice extends AbstractSerialMeasuringDevice{
 	}
 	
 	public void serialEvent(SerialPortEvent e) {
-		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+		if(e.getEventType() == SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
 			boolean processedLine = false;
 			try {
 				if(getState() == PortState.DIE) {

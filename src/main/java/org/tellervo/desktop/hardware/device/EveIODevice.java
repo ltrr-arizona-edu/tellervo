@@ -27,7 +27,8 @@ import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 
-import gnu.io.SerialPortEvent;
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortEvent;
 
 /**
  * This is the implementation of the Cornell EveIO measuring device.  It is an open source device
@@ -98,19 +99,9 @@ public class EveIODevice extends AbstractSerialMeasuringDevice {
 	}
 	
 	public void serialEvent(SerialPortEvent e) {
-		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
-			InputStream input;
-			
-			try {
-				input = getSerialPort().getInputStream();
-			}
-			catch (IOException ioe) {
-				// uh.. ?
-				fireMeasuringSampleEvent(this, MeasuringSampleIOEvent.ERROR, "Error getting serial port input stream");
+		if(e.getEventType() == SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
+			InputStream input = getSerialPort().getInputStream();
 
-				return;
-			}
-			
 			try {
 				switch(getState())
 				{

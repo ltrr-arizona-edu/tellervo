@@ -1,17 +1,10 @@
 package org.tellervo.desktop.hardware;
 
-import gnu.io.CommPort;
-import gnu.io.CommPortIdentifier;
-import gnu.io.CommPortOwnershipListener;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.SerialPortEventListener;
-import gnu.io.UnsupportedCommOperationException;
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
+import com.fazecast.jSerialComm.SerialPortInvalidPortException;
 
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.TooManyListenersException;
 import java.util.Vector;
 
 import org.slf4j.Logger;
@@ -26,8 +19,8 @@ import org.tellervo.desktop.ui.I18n;
  * Defaults to 9600,8,N,1, no flow control
  */
 public abstract class AbstractSerialMeasuringDevice extends
-		AbstractMeasuringDevice implements 
-		SerialPortEventListener, CommPortOwnershipListener{
+		AbstractMeasuringDevice implements
+		SerialPortDataListener{
 	
 	protected final static Logger log = LoggerFactory.getLogger(AbstractSerialMeasuringDevice.class);
 
@@ -64,26 +57,27 @@ public abstract class AbstractSerialMeasuringDevice extends
 	{
 		return;
 	}
-	
+
+	/**
+	 * All devices only care about data-available events; subclasses just implement serialEvent().
+	 */
+	public int getListeningEvents() {
+		return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+	}
+
 	/**
 	 * Get a vector of all the ports identified on this computer
-	 * 
+	 *
 	 * @return
 	 */
 
 	public static Vector enumerateSerialPorts() {
-		Enumeration ports = CommPortIdentifier.getPortIdentifiers();
 		Vector portStrings = new Vector();
-				
-		while(ports.hasMoreElements()) {
-			CommPortIdentifier currentPort = (CommPortIdentifier)ports.nextElement();
-			
-			if(currentPort.getPortType() != CommPortIdentifier.PORT_SERIAL)
-				continue;
-			
-			portStrings.add(new String(currentPort.getName()));
+
+		for(SerialPort currentPort : SerialPort.getCommPorts()) {
+			portStrings.add(currentPort.getSystemPortName());
 		}
-		
+
 		return portStrings;
 	}
 	
@@ -114,22 +108,6 @@ public abstract class AbstractSerialMeasuringDevice extends
 			return false;
 		}
 	}
-	
-    public void ownershipChange(int type) {
-        switch (type) {
-            case CommPortOwnershipListener.PORT_OWNED:
-                log.debug("Tellervo has successfully taken ownership of the serial port");
-                break;
-            case CommPortOwnershipListener.PORT_UNOWNED:
-            	log.debug("Tellervo has just lost ownership of the serial port");
-            	close();
-                break;
-            case CommPortOwnershipListener.PORT_OWNERSHIP_REQUESTED:
-            	log.debug("Someone is asking for ownership of the serial port");
-            	close();
-                break;
-        }
-    }
 	
 	/**
 	 * Returns true if a USB measuring device known to Tellervo
@@ -162,15 +140,8 @@ public abstract class AbstractSerialMeasuringDevice extends
 		hscChecked = true;
 		
 		try {
-			// Check what libs are loaded
-			/*final String[] libraries = ClassScope.getLoadedLibraries(ClassLoader.getSystemClassLoader()); 
-			//MyClassName.class.getClassLoader()
-			for(String lib: libraries)
-			{
-				log.debug(lib+" is loaded");
-			}*/
-			
-			Class.forName("gnu.io.RXTXCommDriver");
+			// Actually exercise native library loading/initialization, not just class presence.
+			SerialPort.getCommPorts();
 			hscResult = true;
 		}
 		catch (Exception e) {
@@ -368,70 +339,45 @@ public abstract class AbstractSerialMeasuringDevice extends
 	 * @throws IOException
 	 */
 	public SerialPort openPort(String portName) throws IOException {
-		
+
 		// Make sure the port is closed
 		closePort("reopen");
-		
+
 		this.portName = portName;
-		portId = null;
-		
+
+		SerialPort newPort;
 		try {
 			// get the port by name.
-			portId = CommPortIdentifier.getPortIdentifier(portName);
-			
-			portId.addPortOwnershipListener(this);
-			
-			// take ownership...
-			CommPort basePort = portId.open("Tellervo", 1000);
-			
-			// it's a serial port. If it's not, something's fubar.
-			if(!(basePort instanceof SerialPort)) {
-				throw new IOException(I18n.getText("preferences.hardware.unsupportedporttype"));
-			}
-			
-			port = (SerialPort) basePort;
-			
-			// defaults to 9600 8N1, no flow control...
-			port.setSerialPortParams(getBaud(),
-								     getDataBits().toInt(),
-								     getStopBits().toInt(),
-								     getParity().toInt());
-			
-			port.setFlowControlMode(getFlowControl().toInt());
-
-			// set up our event listener
-			port.addEventListener(this);
-			port.notifyOnDataAvailable(true);
-			
-			// time out after 500ms when reading...
-			port.enableReceiveTimeout(500);
-			
-			//dataOutStream = new BufferedOutputStream((port.getOutputStream()));
-			
-			state = PortState.NORMAL;
-			return port;
+			newPort = SerialPort.getCommPort(portName);
 		}
-		catch (NoSuchPortException e) {
+		catch (SerialPortInvalidPortException e) {
 			throw new IOException(I18n.getText("preferences.hardware.portdoesntexist"));
 		}
-		catch (PortInUseException e) {
-			try{				
-				throw new IOException(I18n.getText("preferences.hardware.portinuse", portId.getCurrentOwner()));
-			} catch (Exception e2)
-			{
-				throw new IOException(I18n.getText("preferences.hardware.portinuse", "(most likely) another Tellervo screen"));
-			}
-			
-		}
-		catch (UnsupportedCommOperationException e) {
-			// something is broken??
-			throw new IOException("Unable to open port: UnsupportedCommOperationException\n"+e.getLocalizedMessage());
-		}
-		catch (TooManyListenersException e) {
-			// uh... we just made it. and set the listener.  something is broken.
-			throw new IOException("Unable to open port: TooManyListenersException\n"+e.getLocalizedMessage());
+
+		// defaults to 9600 8N1, no flow control...
+		newPort.setComPortParameters(getBaud(),
+			                     getDataBits().toInt(),
+			                     getStopBits().toInt(),
+			                     getParity().toInt());
+
+		newPort.setFlowControl(getFlowControl().toInt());
+
+		// time out after 500ms when reading...
+		newPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 500, 0);
+
+		// jSerialComm doesn't distinguish *why* opening failed (in use, removed, denied, ...)
+		// the way RXTX's PortInUseException/owner tracking did - it just returns false.
+		if(!newPort.openPort()) {
+			throw new IOException(I18n.getText("preferences.hardware.portopenfailed"));
 		}
 
+		port = newPort;
+
+		// set up our event listener
+		port.addDataListener(this);
+
+		state = PortState.NORMAL;
+		return port;
 	}
 
 	private synchronized void closePort(String reason) {
@@ -442,21 +388,15 @@ public abstract class AbstractSerialMeasuringDevice extends
 		}
 
 		port = null;
-		log.debug("Closing port (" + reason + "): " + closingPort.getName());
+		log.debug("Closing port (" + reason + "): " + closingPort.getSystemPortName());
 
 		try {
-			closingPort.notifyOnDataAvailable(false);
-		} catch (Exception e) {
-			log.debug("Unable to disable serial data notifications while closing port", e);
-		}
-
-		try {
-			closingPort.removeEventListener();
+			closingPort.removeDataListener();
 		} catch (Exception e) {
 			log.debug("Unable to remove serial event listener while closing port", e);
 		}
 
-		closingPort.close();
+		closingPort.closePort();
 	}
 	
 

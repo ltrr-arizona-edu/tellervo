@@ -92,12 +92,28 @@ jobs:
 
           $installDir = Join-Path $env:LOCALAPPDATA "Tellervo"
           $launcher = Join-Path $installDir "Tellervo.exe"
-          $serialLibrary = Join-Path $installDir "app/rxtxSerial.dll"
           if (-not (Test-Path $launcher -PathType Leaf)) {
             throw "Installed launcher not found: $launcher"
           }
-          if (-not (Test-Path $serialLibrary -PathType Leaf)) {
-            throw "Installed serial library not found: $serialLibrary"
+
+          # File existence alone doesn't prove the serial native library actually loads (this is
+          # exactly the class of regression that shipped an RXTX DLL that crashed on open) - so
+          # run the installed app's own bundled runtime against its own bundled jars and make it
+          # actually initialize jSerialComm's native library.
+          $bundledJava = Join-Path $installDir "runtime/bin/java.exe"
+          if (-not (Test-Path $bundledJava -PathType Leaf)) {
+            throw "Installed bundled Java runtime not found: $bundledJava"
+          }
+
+          $appDir = Join-Path $installDir "app"
+          $smokeTestOutput = & $bundledJava -cp "$appDir\*" org.tellervo.desktop.nativeloader.SerialLibrarySmokeTest 2>&1
+          $smokeTestExitCode = $LASTEXITCODE
+          Write-Host $smokeTestOutput
+          if ($smokeTestExitCode -ne 0) {
+            throw "Serial library smoke test failed (exit code $smokeTestExitCode) against the installed app"
+          }
+          if (-not ($smokeTestOutput -match "Serial library loaded OK")) {
+            throw "Serial library smoke test did not report success"
           }
 
       - name: Upload Windows installer log

@@ -42,8 +42,8 @@ package org.tellervo.desktop.maventests;
 
 import junit.framework.TestCase;
 
+import com.fazecast.jSerialComm.SerialPort;
 import org.apache.commons.text.StringEscapeUtils;
-import org.tellervo.desktop.nativeloader.RxTxNativeLoader;
 import org.tellervo.desktop.tridasv2.NumberThenStringComparator2;
 import org.tellervo.desktop.util.StringUtils;
 
@@ -168,15 +168,16 @@ public class UtilTest extends TestCase {
     }*/
     
     public void testLoadSerialLib(){
-    	
-    	try {    
-    	      RxTxNativeLoader.loadNativeLib();
-    	    } catch (Exception e) {  
-    	    	
-    	      e.printStackTrace(); 
+
+    	try {
+    	      // Exercises jSerialComm's native library extraction/initialization.
+    	      SerialPort.getCommPorts();
+    	    } catch (Throwable e) {
+
+    	      e.printStackTrace();
     	      fail();
-    	    }    
-    	
+    	    }
+
     }
     
 }

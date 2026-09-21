@@ -57,7 +57,6 @@ install_with_generated_pom "org/tridas/schema" "org.tridas.schema" "tridas-annot
 install_with_generated_pom "com/sun/tools/xjc" "com.sun.tools.xjc" "collection-setter-injector" "0.1" "collection-setter-injector-0.1.jar"
 install_with_generated_pom "jpedal" "jpedal" "jpedal" "4.45-b-105" "jpedal-4.45-b-105.jar"
 install_with_generated_pom "org/osgeo" "org.osgeo" "gdal" "0.2" "gdal.jar"
-install_with_generated_pom "org/rxtx" "org.rxtx" "rxtx" "2.2-20081207" "RXTXcomm.jar"
 install_with_pom_file "gov/nasa/worldwind" "worldwindjava-tellervo" "2.0.0" "worldwindjava-tellervo-2.0.0.jar" "worldwindjava-pom.xml"
 install_with_pom_file "com/dmurph/mvc" "java-simple-mvc" "1.4.2" "java-simple-mvc-1.4.2.jar" "java-simple-mvc-1.4.2.pom"
 install_with_pom_file "com/dmurph/mvc" "java-simple-mvc" "1.4.4" "java-simple-mvc-1.4.4.jar" "java-simple-mvc-1.4.4.pom"

@@ -301,7 +301,7 @@ public class BugReport {
 		if(App.prefs !=null)
 		{
 			buf.append("Native libraries\n");
-			buf.append("   RXTX serial library present : "+App.prefs.getPref(PrefKey.SERIAL_LIBRARY_PRESENT, "undetermined")+"\n");
+			buf.append("   Serial library present : "+App.prefs.getPref(PrefKey.SERIAL_LIBRARY_PRESENT, "undetermined")+"\n");
 			buf.append("   OpenGL libraries present : "+App.prefs.getPref(PrefKey.OPENGL_LIBRARY_PRESENT, "undetermined")+"\n");
 		}
 		else

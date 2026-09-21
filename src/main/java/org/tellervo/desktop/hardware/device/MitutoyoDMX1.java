@@ -20,7 +20,8 @@
  ******************************************************************************/
 package org.tellervo.desktop.hardware.device;
 
-import gnu.io.SerialPortEvent;
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortEvent;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -143,7 +144,7 @@ public class MitutoyoDMX1 extends GenericASCIIDevice {
 	
 	@Override
 	public void serialEvent(SerialPortEvent e) {
-		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+		if(e.getEventType() == SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
 			InputStream input;
 			
 			//try {

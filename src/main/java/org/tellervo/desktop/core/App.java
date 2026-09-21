@@ -57,7 +57,6 @@ import org.tellervo.desktop.gui.ProgressMeter;
 import org.tellervo.desktop.gui.Splash;
 import org.tellervo.desktop.gui.UserCancelledException;
 import org.tellervo.desktop.gui.dbbrowse.DBBrowserSettings;
-import org.tellervo.desktop.nativeloader.RxTxNativeLoader;
 import org.tellervo.desktop.platform.OSX;
 import org.tellervo.desktop.platform.Platform;
 import org.tellervo.desktop.prefs.PreferencesDialog;
@@ -287,17 +286,7 @@ public static synchronized void init(ProgressMeter meter, Splash splash)
       meter.setProgress(0);
     }
 
-    if (meter != null) {
-    	meter.setNote(I18n.getText("login.initJOGL"));
-    	meter.setProgress(1);
-    	try {    
-  	      RxTxNativeLoader.loadNativeLib();
-  	    } catch (Exception e) {  
-  	    	log.error("Failed to load native serial port library");
-  	    }  
-    }
-
-    // Load preferences 
+    // Load preferences
     if (meter != null) {
     	meter.setProgress(2);
       meter.setNote(I18n.getText("login.initPreferences"));

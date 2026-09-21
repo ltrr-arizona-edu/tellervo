@@ -20,7 +20,8 @@
  ******************************************************************************/
 package org.tellervo.desktop.hardware.device;
 
-import gnu.io.SerialPortEvent;
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortEvent;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -112,7 +113,7 @@ public class HeidenhainND287 extends AbstractSerialMeasuringDevice {
 		
 		//log.debug("Received serial port event (type "+e.getEventType()+")");
 		
-		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+		if(e.getEventType() == SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
 			InputStream input;
 			
 			try {

@@ -20,9 +20,7 @@
  ******************************************************************************/
 package org.tellervo.desktop.hardware;
 
-import gnu.io.CommPortIdentifier;
-import gnu.io.CommPortOwnershipListener;
-import gnu.io.SerialPort;
+import com.fazecast.jSerialComm.SerialPort;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -66,7 +64,6 @@ public abstract class AbstractMeasuringDevice
 	protected Boolean measureCumulatively = false;
 	protected Boolean measureInReverse = false;
 	protected Double correctionMultiplier = 1.0;
-	protected CommPortIdentifier portId;
 	private final DeviceProtocol protocol;
  
 	/** The previous measurement position. Used in 
@@ -698,11 +695,11 @@ public abstract class AbstractMeasuringDevice
 	 *
 	 */
 	public enum PortParity{
-		NONE(SerialPort.PARITY_NONE),
-		EVEN(SerialPort.PARITY_EVEN),
-		MARK(SerialPort.PARITY_MARK),
-		ODD(SerialPort.PARITY_ODD),
-		SPACE(SerialPort.PARITY_SPACE);
+		NONE(SerialPort.NO_PARITY),
+		EVEN(SerialPort.EVEN_PARITY),
+		MARK(SerialPort.MARK_PARITY),
+		ODD(SerialPort.ODD_PARITY),
+		SPACE(SerialPort.SPACE_PARITY);
 		
 		private int br;
 		
@@ -867,8 +864,8 @@ public abstract class AbstractMeasuringDevice
 	 *
 	 */
 	public enum StopBits{
-		STOPBITS_1(SerialPort.STOPBITS_1),
-		STOPBITS_2(SerialPort.STOPBITS_2);		
+		STOPBITS_1(SerialPort.ONE_STOP_BIT),
+		STOPBITS_2(SerialPort.TWO_STOP_BITS);
 
 		private int br;
 		
@@ -976,11 +973,13 @@ public abstract class AbstractMeasuringDevice
 	 *
 	 */
 	public enum FlowControl{
-		NONE(SerialPort.FLOWCONTROL_NONE),
-		RTSCTS_IN(SerialPort.FLOWCONTROL_RTSCTS_IN),
-		RTSCTS_OUT(SerialPort.FLOWCONTROL_RTSCTS_OUT),
-		XONXOFF_IN(SerialPort.FLOWCONTROL_XONXOFF_IN),
-		XONXOFF_OUT(SerialPort.FLOWCONTROL_XONXOFF_OUT);
+		NONE(SerialPort.FLOW_CONTROL_DISABLED),
+		// RTSCTS_IN throttles what *we* send, i.e. we watch the far end's CTS signal before transmitting.
+		RTSCTS_IN(SerialPort.FLOW_CONTROL_CTS_ENABLED),
+		// RTSCTS_OUT throttles what *they* send, i.e. we assert/drop RTS to tell the far end when we can receive.
+		RTSCTS_OUT(SerialPort.FLOW_CONTROL_RTS_ENABLED),
+		XONXOFF_IN(SerialPort.FLOW_CONTROL_XONXOFF_IN_ENABLED),
+		XONXOFF_OUT(SerialPort.FLOW_CONTROL_XONXOFF_OUT_ENABLED);
 
 		private int br;
 		
@@ -1024,10 +1023,10 @@ public abstract class AbstractMeasuringDevice
 	 *
 	 */
 	public enum DataBits{
-		DATABITS_5(SerialPort.DATABITS_5),
-		DATABITS_6(SerialPort.DATABITS_6),
-		DATABITS_7(SerialPort.DATABITS_7),
-		DATABITS_8(SerialPort.DATABITS_8);		
+		DATABITS_5(5),
+		DATABITS_6(6),
+		DATABITS_7(7),
+		DATABITS_8(8);
 
 		private int br;
 		

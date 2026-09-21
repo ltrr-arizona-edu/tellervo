@@ -32,7 +32,8 @@ import org.tellervo.desktop.hardware.AbstractMeasuringDevice;
 import org.tellervo.desktop.hardware.AbstractSerialMeasuringDevice;
 import org.tellervo.desktop.hardware.MeasuringSampleIOEvent;
 
-import gnu.io.SerialPortEvent;
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortEvent;
 
 /**
  * The LINTAB platform is made by RINNTECH.  The original platform uses a protocol
@@ -103,7 +104,7 @@ public class LintabDevice extends AbstractSerialMeasuringDevice{
 	
 	@Override
 	public void serialEvent(SerialPortEvent e) {
-		if(e.getEventType() == SerialPortEvent.DATA_AVAILABLE) {
+		if(e.getEventType() == SerialPort.LISTENING_EVENT_DATA_AVAILABLE) {
 			InputStream input;
 			
 			try {

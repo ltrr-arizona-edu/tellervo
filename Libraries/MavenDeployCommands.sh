@@ -27,5 +27,3 @@ mvn deploy:deploy-file  -DgroupId=jpedal    -DartifactId=jpedal                -
 ## replaced with an official build some time in the future
 mvn deploy:deploy-file -Durl=https://repo.ltrr.arizona.edu/ltrr-releases  -DrepositoryId=ltrr-releases  -Dfile=worldwindjava-tellervo-2.0.0.jar     -DpomFile=../worldwindjava-pom.xml
 mvn deploy:deploy-file  -DgroupId=org.osgeo          -DartifactId=gdal              -Dversion=0.2         -Dpackaging=jar -Dfile=gdal.jar                     -DrepositoryId=ltrr-releases  -Durl=https://repo.ltrr.arizona.edu/ltrr-releases
-
-mvn deploy:deploy-file -DgroupId=org.rxtx         -DartifactId=rxtx                       -Dversion=2.2-20081207	       -Dpackaging=jar -Dfile=RXTXcomm.jar -DrepositoryId=ltrr-releases  -Durl=https://repo.ltrr.arizona.edu/ltrr-releases

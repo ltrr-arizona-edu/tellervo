@@ -88,8 +88,6 @@ PLATFORM="$(uname -s)"
 ICON=""
 INSTALL_DIR=""
 RESOURCE_DIR=""
-NATIVE_LIB_DIR=""
-NATIVE_LIB_FILES=()
 JOGAMP_NATIVE_PLATFORM=""
 EXTRA_ARGS=()
 
@@ -106,7 +104,7 @@ case "$PLATFORM" in
       --linux-app-category Science
       --linux-package-name tellervo
       --linux-deb-maintainer p.brewer@ltrr.arizona.edu
-      --linux-package-deps "librxtx-java, libgl1"
+      --linux-package-deps "libgl1"
     )
     ;;
   Darwin*)
@@ -118,8 +116,6 @@ case "$PLATFORM" in
     DEFAULT_TYPE="msi"
     ICON="$REPO_ROOT/src/main/resources/Icons/tellervo-application.ico"
     INSTALL_DIR="Tellervo"
-    NATIVE_LIB_DIR="$REPO_ROOT/Native/Libraries/windows-amd64"
-    NATIVE_LIB_FILES+=(rxtxSerial.dll)
     EXTRA_ARGS+=(--win-per-user-install --win-shortcut --win-menu --win-dir-chooser)
     ;;
   *)
@@ -173,20 +169,6 @@ if [[ -n "$JOGAMP_NATIVE_PLATFORM" ]]; then
   unzip -q -o -j "${jogl_native_jars[0]}" '*.so' -d "$INPUT_DIR"
 fi
 
-if [[ -n "$NATIVE_LIB_DIR" ]]; then
-  if [[ ! -d "$NATIVE_LIB_DIR" ]]; then
-    echo "Native library directory not found: $NATIVE_LIB_DIR" >&2
-    exit 1
-  fi
-  for native_lib in "${NATIVE_LIB_FILES[@]}"; do
-    if [[ ! -f "$NATIVE_LIB_DIR/$native_lib" ]]; then
-      echo "Required Windows native library not found: $NATIVE_LIB_DIR/$native_lib" >&2
-      exit 1
-    fi
-    cp "$NATIVE_LIB_DIR/$native_lib" "$INPUT_DIR/"
-  done
-fi
-
 ARGS=(
   --type "$TYPE"
   --dest "$DEST_DIR"
@@ -204,7 +186,7 @@ ARGS=(
   --java-options "--add-opens=java.base/java.lang=ALL-UNNAMED"
 )
 
-if [[ -n "$NATIVE_LIB_DIR" || -n "$JOGAMP_NATIVE_PLATFORM" ]]; then
+if [[ -n "$JOGAMP_NATIVE_PLATFORM" ]]; then
   ARGS+=(--java-options '-Djava.library.path=$APPDIR')
 fi
 

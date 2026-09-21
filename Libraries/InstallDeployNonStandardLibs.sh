@@ -44,10 +44,6 @@ mvn install:install-file  -DgroupId=jpedal                -DartifactId=jpedal   
 mvn deploy:deploy-file  -DgroupId=org.osgeo          -DartifactId=gdal              -Dversion=0.2         -Dpackaging=jar -Dfile=gdal.jar                     -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
 mvn install:install-file -DgroupId=org.osgeo          -DartifactId=gdal                       -Dversion=0.2	       -Dpackaging=jar -Dfile=gdal.jar
 
-# Serial port lib
-mvn deploy:deploy-file -DgroupId=org.rxtx         -DartifactId=rxtx                       -Dversion=2.2-20081207	       -Dpackaging=jar -Dfile=RXTXcomm.jar -DrepositoryId=tridas-releases  -Durl=http://maven.tridas.org/repository/tridas-releases
-mvn install:install-file -DgroupId=org.rxtx         -DartifactId=rxtx                       -Dversion=2.2-20081207	       -Dpackaging=jar -Dfile=RXTXcomm.jar
-
 ## WorldWindJava 2
 ## WWJ package in Maven central is fubar so this is a manual build with the correct dependencies specified.  This should be able to be 
 ## replaced with an official build some time in the future     
