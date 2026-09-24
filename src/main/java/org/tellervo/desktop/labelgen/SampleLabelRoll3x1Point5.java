@@ -178,15 +178,17 @@ public class SampleLabelRoll3x1Point5 extends AbstractTellervoLabelStyle {
 	        	//System.out.println("Yline = "+ct.getYLine());
 	        	//float barheight = ct.getYLine();
 	        	float barheight = 22;
-	        	
+	        	// Extra space below barcode (0.2") so it isn't trimmed by the printer
+	        	float bottomPadding = 0.2f * 72;
+
 	        	ct = new ColumnText(cb);
 	        	
 	        	System.out.println("Bar height = "+barheight);
 	       
         		llx = margin+9;
-	        	lly = margin;
+	        	lly = margin + bottomPadding;
 	        	urx = this.document.getPageSize().getWidth() -margin;
-	        	ury = barheight+margin;
+	        	ury = barheight + margin + bottomPadding;
 	        	int leading = 1;
 	        	
 	        	System.out.println("llx = "+llx);
