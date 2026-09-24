@@ -342,10 +342,7 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 		myTable.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 		
 		// select the first year
-		myTable.setRowSelectionInterval(0, 0);
-		myTable.setColumnSelectionInterval(
-				mySample.getRange().getStart().column() + 1, mySample.getRange()
-						.getStart().column() + 1);
+		selectFirstYear();
 						
 		// make the last column a jprogressbar, % of max
 		int max = 0;
@@ -488,6 +485,10 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 				/*int currentWidth = (int) getSize().getWidth();
 				int currentHeight = (int) getSize().getHeight();	
 				setSize(currentWidth+this.measuringPanelWidth, currentHeight);*/	
+				
+				// Table selection is lost when the sample is redated (e.g. when
+				// initialising the data grid) so make sure a cell is selected
+				ensureMeasurableCellSelected();
 				
 				validate();
 				repaint();
@@ -985,6 +986,39 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	}
 
 	/**
+	 * Select the cell for the first year of the sample
+	 */
+	private void selectFirstYear()
+	{
+		int col = mySample.getRange().getStart().column() + 1;
+		myTable.setRowSelectionInterval(0, 0);
+		myTable.setColumnSelectionInterval(col, col);
+	}
+	
+	/**
+	 * Make sure the selected cell is one that a measurement can be written
+	 * to (a year within the range, or the year after the end).  JTable
+	 * clears its selection whenever the whole model changes, so if nothing
+	 * sensible is selected fall back to the first year.
+	 */
+	private void ensureMeasurableCellSelected()
+	{
+		int row = myTable.getSelectedRow();
+		int col = myTable.getSelectedColumn();
+		
+		if(row != -1 && col >= 1 && col <= 10)
+		{
+			Year y = getSelectedYear();
+			if(mySample.getRange().contains(y) || mySample.getRange().getEnd().add(1).equals(y))
+			{
+				return;
+			}
+		}
+		
+		selectFirstYear();
+	}
+	
+	/**
 	 * Set whole ring width value programatically
 	 * 
 	 * @param x
@@ -1006,6 +1040,8 @@ public class SeriesDataMatrix extends JPanel implements SampleListener,
 	 */
 	public Year measured(int firstval, Integer secondval)
 	{
+		ensureMeasurableCellSelected();
+		
 		Year y = ((UnitAwareDecadalModel) myTable.getModel()).getYear(myTable
 				.getSelectedRow(), myTable.getSelectedColumn());
 	
